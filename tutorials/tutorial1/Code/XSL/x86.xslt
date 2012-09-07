@@ -29,8 +29,6 @@
         <xsl:apply-templates select="sourceCode:bufferContainer">
             <xsl:with-param name="curIndent" select="$curIndent"/>
         </xsl:apply-templates>
-        <xsl:value-of select="concat($curIndent,'pthread_t comThread;',$new_line)"/>
-        <xsl:value-of select="$new_line"/>
         
         <xsl:apply-templates select="sourceCode:threadDeclaration" mode="prototype"/>
         <xsl:value-of select="$new_line"/>
@@ -131,7 +129,7 @@
         </xsl:variable>
         <!-- removing last coma -->
         <xsl:variable name="buffers2" select="substring($buffers,1,string-length($buffers)-2)"/>
-        <xsl:value-of select="concat($buffers2,');',$new_line)"/>
+        <xsl:value-of select="concat($buffers2,'); //',@comment,$new_line)"/>
     </xsl:template>
     
     <!-- Small blocks for special assignment, assign a variable a value -->
@@ -162,67 +160,26 @@
         <xsl:apply-templates select="sourceCode:buffer | sourceCode:subBuffer | sourceCode:constant"/>
     </xsl:template>
     
-    <xsl:template match="sourceCode:semaphorePost">
-        <xsl:param name="curIndent"/>
-        <xsl:value-of select="concat($curIndent,'sem_post','(&amp;')"/>
-        <xsl:value-of select="concat(sourceCode:buffer/@name,'[',@number,']')"/>
-        <xsl:value-of select="concat(');',' //',@type,$new_line)"/>
-    </xsl:template>
-    
-    <xsl:template match="sourceCode:semaphorePend">
-        <xsl:param name="curIndent"/>
-        <xsl:value-of select="concat($curIndent,'sem_wait','(&amp;')"/>
-        <xsl:value-of select="concat(sourceCode:buffer/@name,'[',@number,']')"/>
-        <xsl:value-of select="concat(');',' //',@type,$new_line)"/>
-    </xsl:template>
-    
-    <xsl:template match="sourceCode:semaphoreInit">
-        <xsl:param name="curIndent"/>
-        <xsl:value-of select="concat($curIndent,'sems_init','(')"/>
-        <!-- adding buffers -->
-        <xsl:variable name="buffers">
-            <xsl:apply-templates select="sourceCode:buffer | sourceCode:constant"/>
-        </xsl:variable>
-        <!-- removing last coma -->
-        <xsl:variable name="buffers2" select="substring($buffers,1,string-length($buffers)-2)"/>
-        <xsl:value-of select="concat($buffers2,');',$new_line)"/>
-    </xsl:template>
-    
-    
     <xsl:template match="sourceCode:sendMsg">
         <xsl:param name="curIndent"/>
-        <xsl:choose>
-            <xsl:when test="sourceCode:routeStep/@type='med' and sourceCode:routeStep/@mediumDef='tcp_c64'">
-                <xsl:value-of select="concat($curIndent,'sendC64Tcp(')"/>
-                <xsl:value-of select="concat(sourceCode:buffer/@name,',',sourceCode:buffer/@size,'*sizeof(',sourceCode:buffer/@type,')')"/>  
-                <xsl:value-of select="concat(');',$new_line)"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="concat($curIndent,'sendData(')"/>
-                <xsl:apply-templates select="sourceCode:routeStep"/>
-                <xsl:value-of select="concat(',',$coreName,',',@target,',')"/>
-                <!-- adding buffer -->
-                <xsl:value-of select="concat(sourceCode:buffer/@name,',',sourceCode:buffer/@size,'*sizeof(',sourceCode:buffer/@type,')',');',$new_line)"/>
-            </xsl:otherwise>
-        </xsl:choose>
+		<xsl:if  test="@phase='Start'">
+	        <xsl:value-of select="concat($curIndent,'sendData(')"/>
+	        <xsl:apply-templates select="sourceCode:routeStep"/>
+	        <xsl:value-of select="concat(',',$coreName,',',@target,',')"/>
+	        <!-- adding buffer -->
+	        <xsl:value-of select="concat(sourceCode:buffer/@name,',',sourceCode:buffer/@size,'*sizeof(',sourceCode:buffer/@type,')','); // ',@comment,$new_line)"/>
+   		</xsl:if>
     </xsl:template>
     
     <xsl:template match="sourceCode:receiveMsg">
         <xsl:param name="curIndent"/>
-        <xsl:choose>
-            <xsl:when test="sourceCode:routeStep/@type='med' and sourceCode:routeStep/@mediumDef='tcp_c64'">
-                <xsl:value-of select="concat($curIndent,'receiveC64Tcp(')"/>  
-                <xsl:value-of select="concat(sourceCode:buffer/@name,',',sourceCode:buffer/@size,'*sizeof(',sourceCode:buffer/@type,')')"/>  
-                <xsl:value-of select="concat(');',$new_line)"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="concat($curIndent,'receiveData(')"/>
-                <xsl:apply-templates select="sourceCode:routeStep"/>
-                <xsl:value-of select="concat(',',@source,',',$coreName,',')"/>
-                <!-- adding buffer -->
-                <xsl:value-of select="concat(sourceCode:buffer/@name,',',sourceCode:buffer/@size,'*sizeof(',sourceCode:buffer/@type,')',');',$new_line)"/>
-            </xsl:otherwise>
-        </xsl:choose>
+        <xsl:if  test="@phase='End'">
+	        <xsl:value-of select="concat($curIndent,'receiveData(')"/>
+	        <xsl:apply-templates select="sourceCode:routeStep"/>
+	        <xsl:value-of select="concat(',',@source,',',$coreName,',')"/>
+	        <!-- adding buffer -->
+	        <xsl:value-of select="concat(sourceCode:buffer/@name,',',sourceCode:buffer/@size,'*sizeof(',sourceCode:buffer/@type,')','); // ',@comment,$new_line)"/>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="sourceCode:sendInit">
@@ -265,7 +222,6 @@
     
     <xsl:template match="sourceCode:routeStep">
         <xsl:choose>
-            <xsl:when test="@type='dma'">dma</xsl:when>
             <xsl:when test="@type='msg'">
                 <xsl:choose>
                     <xsl:when test="sourceCode:node/@def='TCP'">TCP</xsl:when>
@@ -304,10 +260,10 @@
         <xsl:param name="curIndent"/>
         <xsl:choose>
             <xsl:when test="@size = '0' ">
-                <xsl:value-of select="concat($curIndent,@type,' *',@name,';',$new_line)"/>
+                <xsl:value-of select="concat($curIndent,@type,' *',@name,'; //',@comment,$new_line)"/>
             </xsl:when>
             <xsl:otherwise>   
-                <xsl:value-of select="concat($curIndent,@type,' ',@name,'[',@size,'];',$new_line)"/>
+                <xsl:value-of select="concat($curIndent,@type,' ',@name,'[',@size,']; //',@comment,$new_line)"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -315,7 +271,7 @@
     
     <xsl:template match="sourceCode:subBufferAllocation">
         <xsl:param name="curIndent"/>
-        <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [',@index,'];',$new_line)"/>  
+        <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [',@index,']; //',@comment,$new_line)"/>  
  <!--       <xsl:choose>
             <xsl:when test="@modulo">
                 <xsl:choose>

@@ -72,6 +72,15 @@ void parallel(char* i1, char* o1, int size){
 	}
 }
 
+void parallel2(char* i1, char* i2, char* o1, int size){
+	//printf("parallel");
+	int i = 0;
+
+	for(i=0;i<size;i++){
+		o1[i] = i1[i];
+	}
+}
+
 void gen_int(char* i1,char* i2,char* o1,char* o2, int size){
 	//printf("gen_int");
 	int i = 0;

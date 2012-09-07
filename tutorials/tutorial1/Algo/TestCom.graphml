@@ -53,8 +53,16 @@
                 <argument name="size" value="size"/>
             </data>
         </node>
-        <node id="ParallelTest">
-            <data key="name">ParallelTest</data>
+        <node id="2InputParallelTest">
+            <data key="name">2InputParallelTest</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/ParallelTest2Input.idl</data>
+            <data key="arguments">
+                <argument name="size" value="size"/>
+            </data>
+        </node>
+        <node id="ParallelTest1">
+            <data key="name">ParallelTest1</data>
             <data key="kind">vertex</data>
             <data key="graph_desc">../Code/IDL/ParallelTest.idl</data>
             <data key="arguments">
@@ -63,14 +71,6 @@
         </node>
         <node id="ParallelTest2">
             <data key="name">ParallelTest2</data>
-            <data key="kind">vertex</data>
-            <data key="graph_desc">../Code/IDL/ParallelTest.idl</data>
-            <data key="arguments">
-                <argument name="size" value="size"/>
-            </data>
-        </node>
-        <node id="ParallelTest3">
-            <data key="name">ParallelTest3</data>
             <data key="kind">vertex</data>
             <data key="graph_desc">../Code/IDL/ParallelTest.idl</data>
             <data key="arguments">
@@ -109,14 +109,15 @@
             <data key="edge_cons">size</data>
             <data key="data_type">char</data>
         </edge>
-        <edge source="Sensor" sourceport="o3" target="ParallelTest" targetport="i2">
+        <edge source="Sensor" sourceport="o3"
+            target="2InputParallelTest" targetport="i2">
             <data key="edge_prod">size</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">size</data>
             <data key="data_type">char</data>
         </edge>
-        <edge source="ParallelTest" sourceport="o1"
-            target="ParallelTest2" targetport="i1">
+        <edge source="2InputParallelTest" sourceport="o1"
+            target="ParallelTest1" targetport="i1">
             <data key="edge_prod">size</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">size</data>
@@ -128,20 +129,21 @@
             <data key="edge_cons">size</data>
             <data key="data_type">char</data>
         </edge>
-        <edge source="ParallelTest3" sourceport="o1" target="Actuator" targetport="i3">
+        <edge source="ParallelTest2" sourceport="o1" target="Actuator" targetport="i3">
             <data key="edge_prod">size</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">size</data>
             <data key="data_type">char</data>
         </edge>
-        <edge source="ParallelTest2" sourceport="o1"
-            target="ParallelTest3" targetport="i1">
+        <edge source="ParallelTest1" sourceport="o1"
+            target="ParallelTest2" targetport="i1">
             <data key="edge_prod">size</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">size</data>
             <data key="data_type">char</data>
         </edge>
-        <edge source="Sensor2" sourceport="o1" target="ParallelTest" targetport="i1">
+        <edge source="Sensor2" sourceport="o1"
+            target="2InputParallelTest" targetport="i1">
             <data key="edge_prod">size</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">size</data>
