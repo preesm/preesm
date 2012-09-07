@@ -254,6 +254,8 @@ public class XMLPrinter implements IAbstractPrinter {
 					String.valueOf(domElt.getBuffer().getSize()));
 			bufferAllocation.setAttribute("type", domElt.getBuffer().getType()
 					.getTypeName());
+			bufferAllocation.setAttribute("comment",
+					String.valueOf(domElt.getBuffer().toString()));
 		}
 
 		return currentLocation;
@@ -294,9 +296,11 @@ public class XMLPrinter implements IAbstractPrinter {
 			((Element) currentLocation).appendChild(userFunctionCall);
 
 			userFunctionCall.setAttribute("name", domElt.getName());
-			if (domElt.getReturn() != null)
+			if (domElt.getReturn() != null){
 				userFunctionCall.setAttribute("sets", domElt.getReturn()
 						.getName());
+			}
+			userFunctionCall.setAttribute("comment", domElt.getVertexName());
 			currentLocation = userFunctionCall;
 		}
 
@@ -439,6 +443,7 @@ public class XMLPrinter implements IAbstractPrinter {
 			send.setAttribute("target", domElt.getTarget().getInstanceName());
 			send.setAttribute("phase", domElt.getPhase().toString());
 			send.setAttribute("ID", String.valueOf(domElt.getComID()));
+			send.setAttribute("comment", String.valueOf(domElt.getVertexName()));
 			currentLocation = send;
 		}
 
@@ -457,6 +462,7 @@ public class XMLPrinter implements IAbstractPrinter {
 			receive.setAttribute("source", domElt.getSource().getInstanceName());
 			receive.setAttribute("phase", domElt.getPhase().toString());
 			receive.setAttribute("ID", String.valueOf(domElt.getComID()));
+			receive.setAttribute("comment", String.valueOf(domElt.getVertexName()));
 			currentLocation = receive;
 		}
 
@@ -492,6 +498,8 @@ public class XMLPrinter implements IAbstractPrinter {
 					.getBuffer()).getParentBuffer().getName());
 			bufferAllocation.setAttribute("index",
 					((SubBuffer) element.getBuffer()).getIndex().toString());
+			bufferAllocation.setAttribute("comment",
+					String.valueOf(element.getBuffer().toString()));
 		}
 
 		return currentLocation;

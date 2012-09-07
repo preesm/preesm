@@ -78,6 +78,11 @@ public class UserFunctionCall extends AbstractCodeElement {
 
 	private FunctionArgument returnSet;
 
+	/**
+	 * The vertex responsible of this call
+	 */
+	private SDFAbstractVertex vertex = null;
+
 	public UserFunctionCall(String name, AbstractBufferContainer parentContainer) {
 		super(name, parentContainer, null);
 		callParameters = new Vector<FunctionArgument>();
@@ -148,6 +153,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 			boolean ignoreSendReceive) {
 		super(vertex.getName(), parentContainer, vertex);
 
+		this.vertex = vertex;
 		// Buffers associated to the function call
 		callParameters = new Vector<FunctionArgument>();
 		// Replacing the name of the vertex by the name of the prototype, if any
@@ -381,5 +387,17 @@ public class UserFunctionCall extends AbstractCodeElement {
 		code += ");";
 
 		return code;
+	}
+	
+	/**
+	 * Returning the related vertex name if relevant
+	 */
+	public String getVertexName() {
+		if(vertex != null){
+			return vertex.getName();
+		}
+		else{
+			return "";
+		}
 	}
 }

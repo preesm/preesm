@@ -208,4 +208,12 @@ public class Buffer extends FunctionArgument {
 			}
 		}
 	}
+
+	/**
+	 * This toString information will be used to comment the generated code
+	 */
+	@Override
+	public String toString() {
+		return getEdge().getSource().getName() + " -> " + getEdge().getTarget().getName();
+	}
 }

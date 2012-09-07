@@ -85,6 +85,11 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 	
 	private Phase phase = Phase.START;
 
+	/**
+	 * The vertex responsible of this call
+	 */
+	private SDFAbstractVertex vertex = null;
+
 	public CommunicationFunctionCall(String name,
 			AbstractBufferContainer parentContainer, List<Buffer> bufferSet,
 			AbstractRouteStep routeStep, SDFAbstractVertex correspondingVertex,
@@ -97,6 +102,7 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 		this.routeStep = routeStep;
 		this.comID = comID;
 		this.phase = phase;
+		this.vertex = correspondingVertex;
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
@@ -150,5 +156,17 @@ public class CommunicationFunctionCall extends AbstractCodeElement {
 		}
 
 		return code;
+	}
+	
+	/**
+	 * Returning the related vertex name if relevant
+	 */
+	public String getVertexName() {
+		if(vertex != null){
+			return vertex.getName();
+		}
+		else{
+			return "";
+		}
 	}
 }
