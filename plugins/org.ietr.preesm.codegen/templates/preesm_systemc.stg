@@ -1,22 +1,26 @@
 group simple ;
 
-actor_file(includes, actor, symbol)::=<<
+actor_file(includes, actor, symbol, defines)::=<<
 #ifndef <symbol>
 #define <symbol>
+<defines;separator=";\n">
 
-#include"systemc.h"
+#include \<systemc\>
+#include "app-utils.h" //should contains all your app related includes
 <includes:{inc|#include "<inc>.h"}; separator=" \n">
+
+using namespace std ;
 
 <actor>
 
 #endif
 >>
 
-actor_declaration(name,ports, actor_declarations, actor_instanciations, edge_declarations, body, firing_rules, firing_rules_sensitivity, edge_delay)::=<<
+actor_declaration(name,ports, actor_declarations, actor_instanciations, connections, edge_declarations, edges_instanciations, body, firing_rules, firing_rules_sensitivity, edge_delay)::=<<
 SC_MODULE(<name>){
 	
-	sc_out\<bool\> enable_port ;
-	sc_in\<bool\> invoke_port ; 
+	sc_core::sc_out\<bool\> enable_port ;
+	sc_core::sc_in\<bool\> invoke_port ; 
 	
 	<if(ports)><ports; separator="; \n">;<endif>
 	<if(edge_declarations)><edge_declarations; separator="; \n">;<endif>
@@ -27,13 +31,13 @@ SC_MODULE(<name>){
 		while(1){
 			 isEnable = true ;
 			enable_port.write(false);
-			wait(1, SC_NS);
+			sc_core::wait(10, sc_core::SC_NS);
 			<if(firing_rules_sensitivity)>
-			wait(100, SC_NS,<firing_rules_sensitivity; separator=" | ">);
+			sc_core::wait(100, sc_core::SC_NS,<firing_rules_sensitivity; separator=" | ">);
 			<firing_rules:{f|isEnable &=<f>};separator=";\n">;
 			<endif>
 			enable_port.write(isEnable);
-			wait(1, SC_NS);
+			sc_core::wait(10, sc_core::SC_NS);
 		}
 	}
 	
@@ -43,6 +47,7 @@ SC_MODULE(<name>){
 	void invoke(){ // runs one iteration of the actor
 		while(1){
 			wait(invoke_port.posedge_event());
+			cout \<\< "invoking actor: " \<\< "<name>" \<\< endl ;
 			actor_firing();
 		}
 	}
@@ -50,6 +55,7 @@ SC_MODULE(<name>){
 	void invoke(){ // runs one iteration of the actor
 		while(1){
 			wait(invoke_port.posedge_event());
+			cout \<\< "invoking actor: " \<\< "<name>" \<\< endl ;
 			<edge_delay; separator="\n">;
 			//TODO:init delay edges
 		}
@@ -57,36 +63,30 @@ SC_MODULE(<name>){
 	<endif>
 	
 	
-	SC_CTOR(<name>)<if(actor_instanciations)>:<actor_instanciations; separator=", "><endif>{
+	SC_CTOR(<name>)<if(edges_instanciations)>:<edges_instanciations; separator=", ">,<actor_instanciations; separator=", "><endif>{
 		SC_THREAD(invoke);
 		SC_THREAD(enable);
-		<if(body)><body>;<endif>
+		<if(connections)><connections; separator="; \n">;<endif>
 	}
 };
 
 >>
 
 
-test_bed(name,actor_declarations, edge_declarations, body)::=<<
+test_bed(name,actor_declarations, edge_declarations, edges_instanciations, connections)::=<<
 
 	
 	<if(edge_declarations)><edge_declarations; separator="; \n">;<endif>
 	
 	
 	int sc_main(int argc, char* argv[]) {
+		<edges_instanciations; separator=";\n ">;
 		<actor_declarations; separator=";\n">;
-		<if(body)><body>;<endif>
-		sc_start();
+		<connections; separator=";\n">;
+		sc_core::sc_start();
 		return 0 ;
 	}
 
->>
-
-
-
-actor_body( edges_instanciations, connections)::=<<
-<connections; separator="; \n">;
-<edges_instanciations; separator="; \n">;
 >>
 
 vertex_declaration(name, type, type_template)::=<<
@@ -106,21 +106,20 @@ template_attribute(attributes) ::=<<
 >>
 
 
-
 input_port(name, type)::=<<
-sc_fifo_in\<<type>\> <name>
+sc_core::sc_fifo_in\<<type>\> <name>
 >>
 
 output_port(name, type)::=<<
-sc_fifo_out\< <type> \> <name>
+sc_core::sc_fifo_out\<<type>\> <name>
 >>
 
 edge_declaration(name, type)::=<<
-sc_fifo\< <type> \> <name>
+sc_core::sc_fifo\< <type> \> <name>
 >>
 
 edge_instanciation(name, type, size)::=<<
-sc_fifo\< <type> \> <name>  ("<name>", <size>)
+<if(type)>sc_core::sc_fifo\< <type> \> <endif><name>  ("<name>", <size>)
 >>
 
 edge_delay(fifo, delay_size, delay_value)::=<<
@@ -130,7 +129,7 @@ edge_delay(fifo, delay_size, delay_value)::=<<
 >>
 
 signal_declaration(name, type)::=<<
-sc_signal\< <type> \> <name>
+sc_core::sc_signal\< <type> \> <name>
 >>
 
 connection(actor, port, edge) ::=<<
@@ -141,8 +140,20 @@ sdf_firing_rule(port, nb_tokens) ::=<<
 	(<port>.num_available() >= <nb_tokens>)
 >>
 
+fire_actor(actor, latency) ::=<<
+	<actor>.invoke_port.write(HIGH);
+	wait(1, SC_NS);
+	<actor>.invoke_port.write(LOW);
+>>
+
 
 port_event(port) ::=<<
 <port>.data_written_event()
 >>
+
+define(label, value) ::=<<
+#define <label> <value>
+>>
+
+
 
