@@ -55,6 +55,12 @@ import org.ietr.preesm.codegen.model.main.ICodeElement;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
 
+/**
+ * Vertex representing token initialization for a delay
+ * 
+ * @author jpiat
+ * @author mpelcat
+ */
 public class CodeGenSDFTokenInitVertex extends SDFInitVertex implements
 		ICodeGenSDFVertex {
 
@@ -110,7 +116,7 @@ public class CodeGenSDFTokenInitVertex extends SDFInitVertex implements
 					.outgoingEdgesOf(this)) {
 				outgoingEdge = outEdge;
 			}
-			if (outgoingEdge != null) {
+			if (outgoingEdge != null && this.getDelayVariable() != null) {
 				UserFunctionCall delayCall = new UserFunctionCall("pull",
 						parentContainer);
 				delayCall.addArgument("fifo",

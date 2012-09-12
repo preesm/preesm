@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -36,17 +36,16 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.codegen.model.threads;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
-import org.ietr.preesm.codegen.model.containers.ForLoop;
-import org.ietr.preesm.codegen.model.containers.LinearCodeContainer;
 import org.ietr.preesm.codegen.model.printer.CodeZoneId;
 import org.ietr.preesm.codegen.model.printer.IAbstractPrinter;
-import org.ietr.preesm.codegen.model.types.CodeSectionType;
 
 /**
- * Declaration of a thread for code generation. Threads can be communication or
- * computation threads.
+ * Declaration of a thread for code generation.
  * 
  * @author mwipliez
  * @author mpelcat
@@ -54,20 +53,9 @@ import org.ietr.preesm.codegen.model.types.CodeSectionType;
 public class ThreadDeclaration extends AbstractBufferContainer {
 
 	/**
-	 * A thread is composed of:
-	 * <ul>
-	 * <li>a buffer allocation</li>
-	 * <li>a linear beginning code</li>
-	 * <li>a loop code</li>
-	 * <li>a linear end code</li>
-	 * </ul>
-	 * -
+	 * Each code container is a linear or a loop code section
 	 */
-	protected LinearCodeContainer beginningCode;
-
-	protected LinearCodeContainer endCode;
-
-	protected ForLoop loopCode;
+	protected List<AbstractCodeContainer> codeContainers;
 
 	/**
 	 * Thread name
@@ -87,9 +75,11 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 
 		this.name = name;
 
-		beginningCode = new LinearCodeContainer(this);
-		loopCode = new ForLoop(this);
-		endCode = new LinearCodeContainer(this);
+		codeContainers = new ArrayList<AbstractCodeContainer>();
+	}
+	
+	public void addContainer(AbstractCodeContainer container){
+		codeContainers.add(container);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
@@ -97,9 +87,9 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
 																					// self
 		super.accept(printer, currentLocation); // Accept the buffer allocation
-		beginningCode.accept(printer, currentLocation);
-		loopCode.accept(printer, currentLocation);
-		endCode.accept(printer, currentLocation);
+		for(AbstractBufferContainer container : codeContainers){
+			container.accept(printer, currentLocation);
+		}
 	}
 
 	public boolean equals(Object obj) {
@@ -110,29 +100,6 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 		} else {
 			return false;
 		}
-	}
-
-	public LinearCodeContainer getBeginningCode() {
-		return beginningCode;
-	}
-
-	public LinearCodeContainer getEndCode() {
-		return endCode;
-	}
-
-	public ForLoop getLoopCode() {
-		return loopCode;
-	}
-
-	public AbstractCodeContainer getCodeContainer(CodeSectionType type) {
-		if (type.equals(CodeSectionType.beginning)) {
-			return beginningCode;
-		} else if (type.equals(CodeSectionType.loop)) {
-			return loopCode;
-		} else if (type.equals(CodeSectionType.end)) {
-			return endCode;
-		}
-		return null;
 	}
 
 	public String getName() {
@@ -152,15 +119,11 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 		// Buffer allocation
 		code += super.toString();
 
-		code += "\n//beginningCode\n";
-		code += beginningCode.toString();
-
-		code += "\n//loopCode\n";
-		code += loopCode.toString();
-
-		code += "\n//endCode\n";
-		code += endCode.toString();
-
+		for(AbstractBufferContainer container : codeContainers){
+			code += "\n\n";
+			code += container.toString();
+		}
+		
 		code += "}//end thread: " + getName() + "\n";
 
 		return code;

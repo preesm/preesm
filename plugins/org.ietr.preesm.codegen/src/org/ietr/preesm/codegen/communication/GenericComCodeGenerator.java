@@ -26,8 +26,8 @@ import org.ietr.preesm.codegen.model.com.ReceiveMsg;
 import org.ietr.preesm.codegen.model.com.SendInit;
 import org.ietr.preesm.codegen.model.com.SendMsg;
 import org.ietr.preesm.codegen.model.com.WaitForCore;
+import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
 import org.ietr.preesm.codegen.model.main.ICodeElement;
-import org.ietr.preesm.codegen.model.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.codegen.model.types.CodeSectionType;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
@@ -43,9 +43,9 @@ import org.jgrapht.alg.DirectedNeighborIndex;
 public class GenericComCodeGenerator implements IComCodeGenerator {
 
 	/**
-	 * Computation thread
+	 * Code container where we want to add communication
 	 */
-	protected ComputationThreadDeclaration compThread = null;
+	protected AbstractCodeContainer container = null;
 
 	/**
 	 * Initializing the Send and Receive channels only for the channels really
@@ -73,10 +73,10 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 	 */
 	protected List<CommunicationFunctionCall> endComZoneCalls = null;
 
-	public GenericComCodeGenerator(ComputationThreadDeclaration compThread,
+	public GenericComCodeGenerator(AbstractCodeContainer container,
 			SortedSet<SDFAbstractVertex> vertices, AbstractRouteStep step) {
 		super();
-		this.compThread = compThread;
+		this.container = container;
 		this.alreadyInits = new HashSet<CommunicationFunctionInit>();
 		this.vertices = vertices;
 		this.step = step;
@@ -95,7 +95,7 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 
 		// createCalls returns the computing call to which communication calls
 		// must be synchronized (sender or receiver call).
-		List<ICodeElement> relativeCalls = createCalls(compThread, vertex,
+		List<ICodeElement> relativeCalls = createCalls(container, vertex,
 				CodeSectionType.loop);
 
 		for (int i = 0; i < startComZoneCalls.size(); i++) {
@@ -103,26 +103,29 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 			CommunicationFunctionCall endCall = endComZoneCalls.get(i);
 			// Normal case, the sender/receiver is a computing actor:
 			// start is added after the last sender/receiver
-			compThread.getLoopCode().addCodeElementAfter(
-					relativeCalls.get(relativeCalls.size() - 1), startCall);
 
-			if(!VertexType.isIntermediateReceive(vertex)){
-				// Normal case, the sender/receiver is a computing actor:
-				// end is added before the first sender/receiver
-				compThread.getLoopCode().addCodeElementBefore(
-						relativeCalls.get(0), endCall);
-			}
-			else{
-				//If the vertex is an intermediate communication, end is put just after start
-				compThread.getLoopCode().addCodeElementAfter(
-						startCall, endCall);
-			}
-			
-			// Adding initialization calls for the communication
-			createinits(startCall, compThread.getGlobalContainer(), alreadyInits);
+			if (relativeCalls.size() > 0) {
+				container.addCodeElementAfter(
+						relativeCalls.get(relativeCalls.size() - 1), startCall);
 
-			
+				if (!VertexType.isIntermediateReceive(vertex)) {
+					// Normal case, the sender/receiver is a computing actor:
+					// end is added before the first sender/receiver
+					container.addCodeElementBefore(relativeCalls.get(0),
+							endCall);
+				} else {
+					// If the vertex is an intermediate communication, end is
+					// put
+					// just after start
+					container.addCodeElementAfter(startCall, endCall);
+				}
+			}
 		}
+
+		// Adding initialization calls for the communication
+		// createinits(startCall, compThread.getGlobalContainer(),
+		// alreadyInits);
+
 	}
 
 	/**
@@ -169,15 +172,15 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 		}
 
 		// Adding Send and Receive initialization calls
-		if (init != null) {
-			compThread.getBeginningCode().addCodeElementFirst(init);
+		/*if (init != null) {
+			container.getBeginningCode().addCodeElementFirst(init);
 			alreadyInits.add(init);
 		}
 
 		// Adding other cores wait
 		if (wait != null) {
-			compThread.getBeginningCode().addCodeElement(wait);
-		}
+			container.getBeginningCode().addCodeElement(wait);
+		}*/
 
 	}
 
@@ -214,7 +217,7 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 
 		Set<SDFEdge> inEdges = (comVertex.getBase().incomingEdgesOf(comVertex));
 
-		List<ICodeElement> relativeSenderCalls = compThread.getLoopCode()
+		List<ICodeElement> relativeSenderCalls = container
 				.getCodeElements(senderVertex);
 
 		List<Buffer> bufferSet = parentContainer.getBuffers(inEdges);
@@ -233,14 +236,14 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 					|| VertexType.isIntermediateSend(comVertex)) {
 				List<Buffer> singleBufferSet = new ArrayList<Buffer>();
 				singleBufferSet.add(buf);
-				
-				int comId = compThread.getComNumber();
-				
+
+				int comId = container.getComNumber();
+
 				startComZoneCalls.add(new SendMsg(parentContainer, comVertex,
 						singleBufferSet, rs, target, comId, Phase.START));
 				endComZoneCalls.add(new SendMsg(parentContainer, comVertex,
-						singleBufferSet, rs, target,comId, Phase.END));
-				compThread.incrementComNumber();
+						singleBufferSet, rs, target, comId, Phase.END));
+				container.incrementComNumber();
 			}
 		}
 
@@ -282,7 +285,7 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 
 		Set<SDFEdge> outEdges = (comVertex.getBase().outgoingEdgesOf(comVertex));
 
-		List<ICodeElement> relativeReceiverCalls = compThread.getLoopCode()
+		List<ICodeElement> relativeReceiverCalls = container
 				.getCodeElements(receiverVertex);
 
 		List<Buffer> bufferSet = parentContainer.getBuffers(outEdges);
@@ -300,14 +303,15 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 					|| VertexType.isIntermediateReceive(senderVertex)) {
 				List<Buffer> singleBufferSet = new ArrayList<Buffer>();
 				singleBufferSet.add(buf);
-				
-				int comId = compThread.getComNumber();
-				
+
+				int comId = container.getComNumber();
+
 				startComZoneCalls.add(new ReceiveMsg(parentContainer,
-						comVertex, singleBufferSet, rs, source, comId, Phase.START));
+						comVertex, singleBufferSet, rs, source, comId,
+						Phase.START));
 				endComZoneCalls.add(new ReceiveMsg(parentContainer, comVertex,
 						singleBufferSet, rs, source, comId, Phase.END));
-				compThread.incrementComNumber();
+				container.incrementComNumber();
 			}
 		}
 

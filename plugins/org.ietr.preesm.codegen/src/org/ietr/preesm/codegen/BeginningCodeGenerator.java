@@ -50,33 +50,31 @@ import net.sf.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.communication.ComCodeGeneratorFactory;
 import org.ietr.preesm.codegen.communication.IComCodeGenerator;
 import org.ietr.preesm.codegen.model.CodeGenSDFTokenInitVertex;
-import org.ietr.preesm.codegen.model.FunctionPrototype;
 import org.ietr.preesm.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.call.UserFunctionCall;
 import org.ietr.preesm.codegen.model.call.Variable;
-import org.ietr.preesm.codegen.model.containers.ForLoop;
-import org.ietr.preesm.codegen.model.containers.LinearCodeContainer;
+import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
 import org.ietr.preesm.codegen.model.factories.CodeElementFactory;
 import org.ietr.preesm.codegen.model.main.ICodeElement;
-import org.ietr.preesm.codegen.model.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.codegen.model.types.CodeSectionType;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 
 /**
- * Generates code for a computation thread
+ * Generates code for the computation beginning phase
  * 
- * @author Matthieu Wipliez
  * @author mpelcat
  */
-public class CompThreadCodeGenerator {
+public class BeginningCodeGenerator extends AbstractPhaseCodeGenerator {
 
-	private ComputationThreadDeclaration thread;
 
-	public CompThreadCodeGenerator(ComputationThreadDeclaration thread) {
-		this.thread = thread;
+	private AbstractCodeContainer container;
+
+	public BeginningCodeGenerator(AbstractCodeContainer container) {
+		super(container);
+		this.container = container;
 	}
 
 
@@ -85,13 +83,14 @@ public class CompThreadCodeGenerator {
 	 * core. Vertices are already in the correct order. The code thread com
 	 * generator delegates com creation to each route step appropriate generator
 	 */
+	@Override
 	public void addSendsAndReceives(SortedSet<SDFAbstractVertex> vertices,
 			AbstractBufferContainer bufferContainer) {
 
 		// a com code generator factory outputs the commmunication generator
 		// that will add communication primitives into the code
 		ComCodeGeneratorFactory factory = new ComCodeGeneratorFactory(
-				thread, vertices);
+				container, vertices);
 		for (SDFAbstractVertex vertex : vertices) {
 			AbstractRouteStep step = (AbstractRouteStep) vertex
 					.getPropertyBean().getValue(
@@ -108,12 +107,12 @@ public class CompThreadCodeGenerator {
 	/**
 	 * Adding variables for PSDF parameters
 	 */
+	@Override
 	public void addDynamicParameter(ParameterSet params) {
 		if (params != null) {
 			for (Parameter param : params.values()) {
 				if (param instanceof PSDFDynamicParameter) {
-					thread.getLoopCode()
-							.addVariable(
+					container.addVariable(
 									new Variable(param.getName(), new DataType(
 											"long")));
 				}
@@ -124,47 +123,32 @@ public class CompThreadCodeGenerator {
 	/**
 	 * Adds one function call for each vertex in the ordered set
 	 */
+	@Override
 	public void addUserFunctionCalls(SortedSet<SDFAbstractVertex> vertices) {
-
-		LinearCodeContainer beginningCode = thread.getBeginningCode();
-		ForLoop loopCode = thread.getLoopCode();
-		LinearCodeContainer endCode = thread.getEndCode();
 
 		// Treating regular vertices
 		for (SDFAbstractVertex vertex : vertices) {
+
 			if (vertex instanceof ICodeGenSDFVertex
-					&& vertex.getGraphDescription() == null) {
-				FunctionPrototype vertexCall = (FunctionPrototype) vertex.getRefinement();
+					&& vertex.getGraphDescription() == null) {				
 				if (vertex instanceof CodeGenSDFTokenInitVertex) {
 					ICodeElement beginningCall = new UserFunctionCall(
-							(CodeGenSDFTokenInitVertex) vertex, thread,
+							(CodeGenSDFTokenInitVertex) vertex, container,
 							CodeSectionType.beginning, false);
 					// Adding init call if any
-					beginningCode.addCodeElement(beginningCall);
-					// PreesmLogger.getLogger().log(Level.INFO, "");
-				} else if ((vertexCall != null && vertexCall.getInitCall() != null)) {
-					ICodeElement beginningCall = new UserFunctionCall(vertex,
-							thread, CodeSectionType.beginning, false);
-					// Adding init call if any
-					beginningCode.addCodeElement(beginningCall);
-				}
-				if (vertexCall != null && vertexCall.getEndCall() != null) {
-					ICodeElement endCall = new UserFunctionCall(vertex, thread,
-							CodeSectionType.end, false);
-					// Adding end call if any
-					endCode.addCodeElement(endCall);
-				}
 
+					container.addInitCodeElement(beginningCall);
+				} 
 			}
-
+			
 			if (vertex instanceof ICodeGenSDFVertex) {
 				ICodeElement loopCall = CodeElementFactory.createElement(
-						vertex.getName(), loopCode, vertex);
+						vertex.getName(), container, vertex);
 				if (loopCall != null) {
 					if (vertex instanceof PSDFInitVertex) {
-						loopCode.addInitCodeElement(loopCall);
+						container.addInitCodeElement(loopCall);
 					} else if (vertex instanceof PSDFSubInitVertex) {
-						loopCode.addCodeElementFirst(loopCall);
+						container.addCodeElementFirst(loopCall);
 					} else {
 						// Adding loop call if any
 						WorkflowLogger.getLogger()
@@ -172,12 +156,13 @@ public class CompThreadCodeGenerator {
 										"Adding code elt "
 												+ loopCall.toString()
 												+ " on operator "
-												+ thread.getParentContainer()
+												+ container.getParentContainer().getParentContainer()
 														.getName());
-						loopCode.addCodeElement(loopCall);
+						container.addCodeElement(loopCall);
 					}
 				}
 			}
 		}
 	}
+	
 }

@@ -54,6 +54,7 @@ import org.ietr.preesm.codegen.model.printer.IAbstractPrinter;
  * 
  * @author Maxime Pelcat
  * @author Matthieu Wipliez
+ * @author jpiat
  */
 public abstract class AbstractCodeContainer extends AbstractBufferContainer {
 
@@ -61,14 +62,37 @@ public abstract class AbstractCodeContainer extends AbstractBufferContainer {
 	 * List of the elements that are not included in the main loop
 	 */
 	private List<ICodeElement> codeElements;
-
+	
+	/**
+	 * Position corresponding to the end of an init phase inside the container
+	 */
 	private int initPos = 0;
+
+	/**
+	 * Number of communications present in the container
+	 */
+	private int comNumber;
 
 	public AbstractCodeContainer(AbstractBufferContainer parentContainer) {
 		super(parentContainer);
 		codeElements = new ArrayList<ICodeElement>();
+		comNumber = 0;
 	}
 
+	/**
+	 * Get number of communications present in the thread
+	 */
+	public int getComNumber() {
+		return comNumber;
+	}
+	
+	/**
+	 * Increment number of communications present in the thread
+	 */
+	public int incrementComNumber() {
+		return comNumber = comNumber + 1;
+	}
+	
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit

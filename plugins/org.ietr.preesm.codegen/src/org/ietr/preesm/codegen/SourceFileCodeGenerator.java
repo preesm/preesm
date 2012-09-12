@@ -45,6 +45,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import net.sf.dftools.algorithm.iterators.SDFIterator;
 import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.parameters.ParameterSet;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
@@ -60,7 +61,11 @@ import org.ietr.preesm.codegen.model.CodeGenSDFRoundBufferVertex;
 import org.ietr.preesm.codegen.model.FunctionPrototype;
 import org.ietr.preesm.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.codegen.model.allocators.VirtualHeapAllocator;
+import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.buffer.Buffer;
+import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
+import org.ietr.preesm.codegen.model.containers.ForLoop;
+import org.ietr.preesm.codegen.model.containers.LinearCodeContainer;
 import org.ietr.preesm.codegen.model.main.SchedulingOrderComparator;
 import org.ietr.preesm.codegen.model.main.SourceFile;
 import org.ietr.preesm.codegen.model.threads.ComputationThreadDeclaration;
@@ -194,21 +199,48 @@ public class SourceFileCodeGenerator {
 		ComputationThreadDeclaration computationThread = new ComputationThreadDeclaration(
 				file);
 		file.addThread(computationThread);
-		CompThreadCodeGenerator compCodegen = new CompThreadCodeGenerator(
+
+		// Generating code for the beginning phase
+		LinearCodeContainer beginning = new LinearCodeContainer(
 				computationThread);
+		computationThread.addContainer(beginning);
+		AbstractPhaseCodeGenerator beginningCodegen = new LoopCodeGenerator(
+				beginning);
 
 		// Inserts the user function calls and adds their parameters; possibly
 		// including graph parameters
-		
+
+		fillSection(beginningCodegen, beginning, algorithm.getParameters(),
+				ownTaskVertices, ownCommunicationVertices,
+				file.getGlobalContainer());
+
+		// Generating code for the computation loop
+		ForLoop loop = new ForLoop(computationThread);
+		computationThread.addContainer(loop);
+		AbstractPhaseCodeGenerator loopCodegen = new LoopCodeGenerator(loop);
+
+		// Inserts the user function calls and adds their parameters; possibly
+		// including graph parameters
+
+		fillSection(loopCodegen, loop, algorithm.getParameters(),
+				ownTaskVertices, ownCommunicationVertices,
+				file.getGlobalContainer());
+	}
+
+	private void fillSection(AbstractPhaseCodeGenerator codegen,
+			AbstractCodeContainer container, ParameterSet parameterSet,
+			SortedSet<SDFAbstractVertex> tasks,
+			SortedSet<SDFAbstractVertex> coms,
+			AbstractBufferContainer bufferContainer) {
+
 		// PSDF code
-		compCodegen.addDynamicParameter(algorithm.getParameters());
-		compCodegen.addUserFunctionCalls(ownTaskVertices);
+		codegen.addDynamicParameter(parameterSet);
+		codegen.addUserFunctionCalls(tasks);
 
 		// Inserts the communication function calls, the communication
 		// thread semaphore post and pends and the communication
 		// initializations
-		compCodegen.addSendsAndReceives(ownCommunicationVertices,
-				file.getGlobalContainer());
+		codegen.addSendsAndReceives(coms, bufferContainer);
 	}
 
 	/**
@@ -287,12 +319,14 @@ public class SourceFileCodeGenerator {
 			return true;
 		}
 
-		if (!(vertex.getRefinement() instanceof FunctionPrototype)) { // TODO : treat
-																	// when the
-																	// vertex
-																	// has a
-																	// graph
-																	// refinement
+		if (!(vertex.getRefinement() instanceof FunctionPrototype)) { // TODO :
+																		// treat
+																		// when
+																		// the
+																		// vertex
+																		// has a
+																		// graph
+																		// refinement
 			return true;
 		}
 
@@ -302,21 +336,21 @@ public class SourceFileCodeGenerator {
 		}
 
 		FunctionPrototype call = ((FunctionPrototype) vertex.getRefinement());
-		
+
 		// loop call references its init and end calls
 		if (call != null) {
 
 			switch (codeContainerType) {
-				case beginning:
-					call = call.getInitCall();
-					break;
-				case loop:
-					break;
-				case end:
-					call = call.getEndCall();
-					break;
-				default:
-					break;
+			case beginning:
+				call = call.getInitCall();
+				break;
+			case loop:
+				break;
+			case end:
+				call = call.getEndCall();
+				break;
+			default:
+				break;
 			}
 		}
 

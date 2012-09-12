@@ -7,9 +7,9 @@ Maxime Pelcat, Jean-Fran�ois Nezan, Micka�l Raulet
 This software is a computer program whose purpose is to prototype
 parallel applications.
 
-This software is governed by the CeCILL-C license under French law and
+This software is governed by the CeCILL-B license under French law and
 abiding by the rules of distribution of free software.  You can  use, 
-modify and/ or redistribute the software under the terms of the CeCILL-C
+modify and/ or redistribute the software under the terms of the CeCILL-B
 license as circulated by CEA, CNRS and INRIA at the following URL
 "http://www.cecill.info". 
 
@@ -31,22 +31,45 @@ data to be ensured and,  more generally, to use and operate it in the
 same conditions as regards security. 
 
 The fact that you are presently reading this means that you have had
-knowledge of the CeCILL-C license and that you accept its terms.
+knowledge of the CeCILL-B license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.codegen.model.threads;
+package org.ietr.preesm.codegen;
+
+import java.util.SortedSet;
+
+import net.sf.dftools.algorithm.model.parameters.ParameterSet;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
+import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
 
 /**
- * Declaration of a computation thread for code generation. A computation
- * thread calls the functions corresponding to the dag tasks.
+ * Generates code for a code phase
  * 
  * @author mpelcat
  */
-public class ComputationThreadDeclaration extends ThreadDeclaration {
-	
-	public ComputationThreadDeclaration(AbstractBufferContainer parentContainer) {
-		super("computationThread", parentContainer);
+public abstract class AbstractPhaseCodeGenerator {
+
+	public AbstractPhaseCodeGenerator(AbstractCodeContainer container) {
 	}
+
+
+	/**
+	 * Adds send and receive functions from vertices allocated on the current
+	 * core. Vertices are already in the correct order. The code thread com
+	 * generator delegates com creation to each route step appropriate generator
+	 */
+	public abstract void addSendsAndReceives(SortedSet<SDFAbstractVertex> vertices,
+			AbstractBufferContainer bufferContainer);
+
+	/**
+	 * Adding variables for PSDF parameters
+	 */
+	public abstract void addDynamicParameter(ParameterSet params);
+
+	/**
+	 * Adds one function call for each vertex in the ordered set
+	 */
+	public abstract void addUserFunctionCalls(SortedSet<SDFAbstractVertex> vertices);
 }

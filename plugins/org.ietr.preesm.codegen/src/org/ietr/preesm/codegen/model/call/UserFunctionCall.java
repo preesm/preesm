@@ -159,7 +159,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 		// Replacing the name of the vertex by the name of the prototype, if any
 		// is available.
 		if (vertex instanceof ICodeGenSDFVertex) {
-			FunctionPrototype call = getFunctionCall(vertex, section);
+			FunctionPrototype call = getFunctionPrototype(vertex, section);
 			if (call != null) {
 
 				// Filters and orders the buffers to fit the prototype
@@ -215,7 +215,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 		}
 	}
 
-	private FunctionPrototype getFunctionCall(SDFAbstractVertex vertex,
+	private FunctionPrototype getFunctionPrototype(SDFAbstractVertex vertex,
 			CodeSectionType section) {
 		FunctionPrototype call = ((FunctionPrototype) vertex.getRefinement());
 		if (call != null) {

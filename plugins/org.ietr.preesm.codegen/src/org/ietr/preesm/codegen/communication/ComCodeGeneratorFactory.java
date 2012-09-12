@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.codegen.model.threads.ComputationThreadDeclaration;
+import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.DmaRouteStep;
 import org.ietr.preesm.core.architecture.route.MemRouteStep;
@@ -24,20 +24,27 @@ import org.ietr.preesm.core.architecture.route.MessageRouteStep;
  */
 public class ComCodeGeneratorFactory {
 
+	/**
+	 * Communication generators for the different types of communication
+	 */
 	private Map<AbstractRouteStep, IComCodeGenerator> generators = null;
-	private ComputationThreadDeclaration compThread;
+	
+	/**
+	 * Loop or initialization code container
+	 */
+	private AbstractCodeContainer container;
 
 	/**
 	 * The considered communication vertices (send, receive)
 	 */
 	private SortedSet<SDFAbstractVertex> vertices;
 
-	public ComCodeGeneratorFactory(ComputationThreadDeclaration compThread,
+	public ComCodeGeneratorFactory(AbstractCodeContainer container,
 			SortedSet<SDFAbstractVertex> vertices) {
 		super();
 		this.generators = new HashMap<AbstractRouteStep, IComCodeGenerator>();
 		this.vertices = vertices;
-		this.compThread = compThread;
+		this.container = container;
 	}
 
 	public IComCodeGenerator getCodeGenerator(AbstractRouteStep step) {
@@ -55,7 +62,7 @@ public class ComCodeGeneratorFactory {
 		if (step.getType() == DmaRouteStep.type
 				|| step.getType() == MessageRouteStep.type
 				|| step.getType() == MemRouteStep.type) {
-			generator = new GenericComCodeGenerator(compThread, vertices, step);
+			generator = new GenericComCodeGenerator(container, vertices, step);
 		} else {
 			WorkflowLogger.getLogger().log(
 					Level.SEVERE,
