@@ -255,7 +255,7 @@ public class CompoundCodeElement extends AbstractCodeContainer implements
 					&& !(vertex instanceof SDFInterfaceVertex)
 					&& !treated.contains(vertex)) {
 				ICodeElement loopCall = CodeElementFactory.createElement(
-						vertex.getName(), this, vertex);
+						this, vertex);
 				if (loopCall != null) {
 					if (vertex instanceof CodeGenSDFInitVertex) {
 						AbstractBufferContainer parentCodeContainer = this;

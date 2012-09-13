@@ -70,6 +70,8 @@ import org.ietr.preesm.codegen.model.main.SchedulingOrderComparator;
 import org.ietr.preesm.codegen.model.main.SourceFile;
 import org.ietr.preesm.codegen.model.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.codegen.model.types.CodeSectionType;
+import org.ietr.preesm.codegen.phase.AbstractPhaseCodeGenerator;
+import org.ietr.preesm.codegen.phase.LoopCodeGenerator;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;

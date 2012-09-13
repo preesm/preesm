@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-B license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.codegen;
+package org.ietr.preesm.codegen.phase;
 
 import java.util.SortedSet;
 import java.util.logging.Level;
@@ -143,7 +143,7 @@ public class BeginningCodeGenerator extends AbstractPhaseCodeGenerator {
 			
 			if (vertex instanceof ICodeGenSDFVertex) {
 				ICodeElement loopCall = CodeElementFactory.createElement(
-						vertex.getName(), container, vertex);
+						container, vertex);
 				if (loopCall != null) {
 					if (vertex instanceof PSDFInitVertex) {
 						container.addInitCodeElement(loopCall);

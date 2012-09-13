@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-B license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.codegen;
+package org.ietr.preesm.codegen.phase;
 
 import java.util.SortedSet;
 

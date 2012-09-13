@@ -36,19 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.codegen.model;
 
-import jscl.math.Expression;
-import jscl.math.JSCLInteger;
 import net.sf.dftools.algorithm.model.IRefinement;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.algorithm.model.sdf.SDFVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 
-import org.ietr.preesm.codegen.model.call.UserFunctionCall;
-import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
-import org.ietr.preesm.codegen.model.containers.CompoundCodeElement;
-import org.ietr.preesm.codegen.model.containers.FiniteForLoop;
-import org.ietr.preesm.codegen.model.main.ICodeElement;
-import org.ietr.preesm.codegen.model.types.CodeSectionType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
 
@@ -116,31 +107,6 @@ public class CodeGenSDFTaskVertex extends SDFVertex implements
 					snk.setDataType(arg.getType());
 				}
 			}
-		}
-	}
-
-	@Override
-	public ICodeElement getCodeElement(AbstractCodeContainer parentContainer)
-			throws InvalidExpressionException {
-		if ((this.getNbRepeat() instanceof Integer && (this
-				.getNbRepeatAsInteger() > 1))
-				|| this.getNbRepeat() instanceof Expression
-				|| (this.getNbRepeat() instanceof JSCLInteger && (this
-						.getNbRepeatAsInteger() > 1))) {
-			FiniteForLoop loop = new FiniteForLoop(parentContainer,
-					(ICodeGenSDFVertex) this);
-			return loop;
-		} else if (this.getGraphDescription() == null) {
-			UserFunctionCall call = new UserFunctionCall(this, parentContainer,
-					CodeSectionType.loop, false);
-			if (call.getName() == null) {
-				return null;
-			}
-			return call;
-		} else {
-			CompoundCodeElement compound = new CompoundCodeElement(
-					this.getName(), parentContainer, (ICodeGenSDFVertex) this);
-			return compound;
 		}
 	}
 }

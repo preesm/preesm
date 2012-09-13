@@ -36,7 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.codegen.model;
 
-import net.sf.dftools.algorithm.SDFMath;
 import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
@@ -46,18 +45,11 @@ import net.sf.dftools.architecture.slam.ComponentInstance;
 
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.buffer.Buffer;
-import org.ietr.preesm.codegen.model.buffer.BufferAtIndex;
 import org.ietr.preesm.codegen.model.buffer.SubBuffer;
 import org.ietr.preesm.codegen.model.buffer.SubBufferAllocation;
-import org.ietr.preesm.codegen.model.call.Constant;
-import org.ietr.preesm.codegen.model.call.UserFunctionCall;
-import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
-import org.ietr.preesm.codegen.model.containers.CompoundCodeElement;
 import org.ietr.preesm.codegen.model.expression.BinaryExpression;
 import org.ietr.preesm.codegen.model.expression.ConstantExpression;
 import org.ietr.preesm.codegen.model.expression.IExpression;
-import org.ietr.preesm.codegen.model.main.Assignment;
-import org.ietr.preesm.codegen.model.main.ICodeElement;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
@@ -90,77 +82,6 @@ public class CodeGenSDFBroadcastVertex extends SDFBroadcastVertex implements
 
 	public void setPos(int pos) {
 		this.getPropertyBean().setValue(POS, getPos(), pos);
-	}
-
-	@Override
-	public ICodeElement getCodeElement(AbstractCodeContainer parentContainer) {
-		SDFEdge incomingEdge = null;
-		CompoundCodeElement container = new CompoundCodeElement(this.getName(),
-				parentContainer);
-		container.setCorrespondingVertex(this);
-		for (SDFEdge inEdge : ((SDFGraph) this.getBase()).incomingEdgesOf(this)) {
-			incomingEdge = inEdge;
-		}
-		for (SDFEdge outEdge : ((SDFGraph) this.getBase())
-				.outgoingEdgesOf(this)) {
-			try {
-				if (outEdge.getProd().intValue() == incomingEdge.getCons()
-						.intValue()) {
-					if (outEdge.getTarget() instanceof CodeGenSDFSendVertex
-							|| outEdge.getTarget() instanceof CodeGenSDFSinkInterfaceVertex) {
-						UserFunctionCall copyCall = new UserFunctionCall(
-								"memcpy", parentContainer);
-						copyCall.addArgument(parentContainer.getBuffer(outEdge));
-						copyCall.addArgument(parentContainer
-								.getBuffer(incomingEdge));
-						try {
-							copyCall.addArgument(new Constant("size",
-									incomingEdge.getCons().intValue()
-											+ "*sizeof("
-											+ incomingEdge.getDataType()
-													.toString() + ")"));
-						} catch (InvalidExpressionException e) {
-							copyCall.addArgument(new Constant("size", 0));
-						}
-						container.addCall(copyCall);
-					} else {
-						Buffer outBuff = parentContainer.getBuffer(outEdge);
-						if (outBuff == null) {
-							container.addBuffer(
-									container.getBuffer(incomingEdge), outEdge);
-						} else {
-							outBuff.setSize(0);
-							Assignment ass = new Assignment(outBuff, "&"
-									+ parentContainer.getBuffer(incomingEdge)
-											.getName() + "[0]");
-							container.addCall(ass);
-						}
-
-					}
-				} else if (outEdge.getProd().intValue() > incomingEdge
-						.getCons().intValue()) {
-					int minToken = SDFMath.gcd(outEdge.getProd().intValue(),
-							incomingEdge.getCons().intValue());
-					for (int i = 0; i < outEdge.getProd().intValue() / minToken; i++) {
-						UserFunctionCall copyCall = new UserFunctionCall(
-								"memcpy", parentContainer);
-						copyCall.addArgument(new BufferAtIndex(
-								new ConstantExpression(i * minToken),
-								parentContainer.getBuffer(outEdge)));
-						copyCall.addArgument(parentContainer
-								.getBuffer(incomingEdge));
-						copyCall.addArgument(new Constant("size", minToken
-								+ "*sizeof("
-								+ incomingEdge.getDataType().toString() + ")"));
-						container.addCall(copyCall);
-					}
-				}
-			} catch (InvalidExpressionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		return container;
 	}
 
 	@Override

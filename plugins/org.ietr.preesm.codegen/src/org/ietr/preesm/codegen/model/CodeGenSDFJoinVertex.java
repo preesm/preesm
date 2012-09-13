@@ -47,17 +47,11 @@ import net.sf.dftools.architecture.slam.ComponentInstance;
 
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.buffer.Buffer;
-import org.ietr.preesm.codegen.model.buffer.BufferAtIndex;
 import org.ietr.preesm.codegen.model.buffer.SubBuffer;
 import org.ietr.preesm.codegen.model.buffer.SubBufferAllocation;
-import org.ietr.preesm.codegen.model.call.Constant;
-import org.ietr.preesm.codegen.model.call.UserFunctionCall;
-import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
-import org.ietr.preesm.codegen.model.containers.CompoundCodeElement;
 import org.ietr.preesm.codegen.model.expression.BinaryExpression;
 import org.ietr.preesm.codegen.model.expression.ConstantExpression;
 import org.ietr.preesm.codegen.model.expression.IExpression;
-import org.ietr.preesm.codegen.model.main.ICodeElement;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
@@ -133,37 +127,6 @@ public class CodeGenSDFJoinVertex extends SDFJoinVertex implements
 
 	public String toString() {
 		return "";
-	}
-
-	@Override
-	public ICodeElement getCodeElement(AbstractCodeContainer parentContainer) {
-		SDFEdge outgoingEdge = null;
-		CompoundCodeElement container = new CompoundCodeElement(this.getName(),
-				parentContainer);
-		container.setCorrespondingVertex(this);
-		for (SDFEdge outedge : ((SDFGraph) this.getBase())
-				.outgoingEdgesOf(this)) {
-			outgoingEdge = outedge;
-		}
-		for (SDFEdge inEdge : ((SDFGraph) this.getBase()).incomingEdgesOf(this)) {
-			UserFunctionCall copyCall = new UserFunctionCall("memcpy",
-					parentContainer);
-			try {
-				copyCall.addArgument(new BufferAtIndex(new ConstantExpression(
-						"", new DataType("int"), this.getEdgeIndex(inEdge)
-								* inEdge.getProd().intValue()), parentContainer
-						.getBuffer(outgoingEdge)));
-				copyCall.addArgument(parentContainer.getBuffer(inEdge));
-				copyCall.addArgument(new Constant("size", inEdge.getCons()
-						.intValue()
-						+ "*sizeof("
-						+ outgoingEdge.getDataType().toString() + ")"));
-			} catch (InvalidExpressionException e) {
-				copyCall.addArgument(new Constant("size", 0));
-			}
-			container.addCall(copyCall);
-		}
-		return container;
 	}
 
 	@Override

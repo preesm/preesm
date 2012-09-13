@@ -37,21 +37,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.codegen.model;
 
 import net.sf.dftools.algorithm.model.IRefinement;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 
-import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
-import org.ietr.preesm.codegen.model.call.Constant;
-import org.ietr.preesm.codegen.model.call.PointerOn;
-import org.ietr.preesm.codegen.model.call.UserFunctionCall;
 import org.ietr.preesm.codegen.model.call.Variable;
-import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
-import org.ietr.preesm.codegen.model.containers.CompoundCodeElement;
-import org.ietr.preesm.codegen.model.containers.ForLoop;
-import org.ietr.preesm.codegen.model.main.ICodeElement;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
 
@@ -106,42 +95,5 @@ public class CodeGenSDFTokenInitVertex extends SDFInitVertex implements
 
 	public Variable getDelayVariable() {
 		return this.delayVariable;
-	}
-
-	@Override
-	public ICodeElement getCodeElement(AbstractCodeContainer parentContainer) {
-		SDFEdge outgoingEdge = null;
-		if (parentContainer instanceof ForLoop) {
-			for (SDFEdge outEdge : ((SDFGraph) this.getBase())
-					.outgoingEdgesOf(this)) {
-				outgoingEdge = outEdge;
-			}
-			if (outgoingEdge != null && this.getDelayVariable() != null) {
-				UserFunctionCall delayCall = new UserFunctionCall("pull",
-						parentContainer);
-				delayCall.addArgument("fifo",
-						new PointerOn(this.getDelayVariable()));
-				delayCall.addArgument("buffer",
-						parentContainer.getBuffer(outgoingEdge));
-				try {
-					delayCall.addArgument("nb_token", new Constant("nb_token",
-							outgoingEdge.getProd().intValue()));
-					return delayCall;
-				} catch (InvalidExpressionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		} else {
-			AbstractBufferContainer newContainer = (AbstractBufferContainer) parentContainer
-					.getParentContainer();
-			while (newContainer instanceof AbstractCodeContainer
-					&& !(newContainer instanceof CompoundCodeElement)) {
-				newContainer = newContainer.getParentContainer();
-			}
-
-		}
-
-		return null;
 	}
 }

@@ -40,8 +40,6 @@ import net.sf.dftools.algorithm.model.AbstractGraph;
 import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 
-import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
-import org.ietr.preesm.codegen.model.main.ICodeElement;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 
 public interface ICodeGenSDFVertex {
@@ -65,8 +63,5 @@ public interface ICodeGenSDFVertex {
 	public void setNbRepeat(Object repeat);
 
 	public Object getNbRepeat() throws InvalidExpressionException;
-
-	public ICodeElement getCodeElement(AbstractCodeContainer parentContainer)
-			throws InvalidExpressionException;
 
 }

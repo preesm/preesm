@@ -36,12 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.codegen.model;
 
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
-
-import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
-import org.ietr.preesm.codegen.model.main.ICodeElement;
 
 public class CodeGenSDFSinkInterfaceVertex extends SDFSinkInterfaceVertex
 		implements ICodeGenSDFVertex {
@@ -69,12 +65,5 @@ public class CodeGenSDFSinkInterfaceVertex extends SDFSinkInterfaceVertex
 
 	public String toString() {
 		return "";
-	}
-
-	@Override
-	public ICodeElement getCodeElement(AbstractCodeContainer parentContainer)
-			throws InvalidExpressionException {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

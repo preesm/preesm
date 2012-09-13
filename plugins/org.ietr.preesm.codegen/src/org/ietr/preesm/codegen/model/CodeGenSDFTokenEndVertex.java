@@ -36,20 +36,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.codegen.model;
 
-import java.util.logging.Level;
-
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.codegen.model.call.Constant;
-import org.ietr.preesm.codegen.model.call.PointerOn;
-import org.ietr.preesm.codegen.model.call.UserFunctionCall;
-import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
-import org.ietr.preesm.codegen.model.main.ICodeElement;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
 
@@ -85,46 +74,6 @@ public class CodeGenSDFTokenEndVertex extends SDFEndVertex implements
 
 	public String toString() {
 		return "";
-	}
-
-	@Override
-	public ICodeElement getCodeElement(AbstractCodeContainer parentContainer) {
-		SDFEdge incomingEdge = null;
-		if (this.getEndReference() != null) {
-			for (SDFEdge inEdge : ((SDFGraph) this.getBase())
-					.incomingEdgesOf(this)) {
-				incomingEdge = inEdge;
-			}
-			if (incomingEdge != null) {
-				UserFunctionCall delayCall = new UserFunctionCall("push",
-						parentContainer);
-				if (((CodeGenSDFTokenInitVertex) this.getEndReference())
-						.getDelayVariable() == null) {
-					WorkflowLogger.getLogger().log(
-							Level.SEVERE,
-							"Fifo variable not found for vertex "
-									+ this.getName() + " with end reference "
-									+ this.getEndReference().getName());
-					return null;
-				}
-
-				delayCall.addArgument(
-						"fifo",
-						new PointerOn(((CodeGenSDFTokenInitVertex) this
-								.getEndReference()).getDelayVariable()));
-				delayCall.addArgument("buffer",
-						parentContainer.getBuffer(incomingEdge));
-				try {
-					delayCall.addArgument("nb_token", new Constant("nb_token",
-							incomingEdge.getCons().intValue()));
-					return delayCall;
-				} catch (InvalidExpressionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-		return null;
 	}
 
 }

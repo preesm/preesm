@@ -10,14 +10,9 @@ import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.buffer.Buffer;
 import org.ietr.preesm.codegen.model.buffer.SubBuffer;
 import org.ietr.preesm.codegen.model.buffer.SubBufferAllocation;
-import org.ietr.preesm.codegen.model.call.Constant;
-import org.ietr.preesm.codegen.model.call.UserFunctionCall;
-import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
-import org.ietr.preesm.codegen.model.containers.CompoundCodeElement;
 import org.ietr.preesm.codegen.model.expression.BinaryExpression;
 import org.ietr.preesm.codegen.model.expression.ConstantExpression;
 import org.ietr.preesm.codegen.model.expression.IExpression;
-import org.ietr.preesm.codegen.model.main.ICodeElement;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
@@ -50,38 +45,6 @@ public class CodeGenSDFRoundBufferVertex extends SDFRoundBufferVertex implements
 
 	public void setPos(int pos) {
 		this.getPropertyBean().setValue(POS, getPos(), pos);
-	}
-
-	@Override
-	public ICodeElement getCodeElement(AbstractCodeContainer parentContainer) {
-		SDFEdge outgoingEdge = null;
-		CompoundCodeElement container = new CompoundCodeElement(this.getName(),
-				parentContainer);
-		container.setCorrespondingVertex(this);
-		for (SDFEdge outedge : ((SDFGraph) this.getBase())
-				.outgoingEdgesOf(this)) {
-			outgoingEdge = outedge;
-		}
-		for (SDFEdge inEdge : ((SDFGraph) this.getBase()).incomingEdgesOf(this)) {
-			if (this.getEdgeIndex(inEdge) == (((SDFGraph) this.getBase())
-					.incomingEdgesOf(this).size() - 1)) {
-				UserFunctionCall copyCall = new UserFunctionCall("memcpy",
-						parentContainer);
-				try {
-					copyCall.addArgument(parentContainer
-							.getBuffer(outgoingEdge));
-					copyCall.addArgument(parentContainer.getBuffer(inEdge));
-					copyCall.addArgument(new Constant("size", inEdge.getProd()
-							.intValue()
-							+ "*sizeof("
-							+ outgoingEdge.getDataType().toString() + ")"));
-				} catch (InvalidExpressionException e) {
-					copyCall.addArgument(new Constant("size", 0));
-				}
-				container.addCall(copyCall);
-			}
-		}
-		return container;
 	}
 
 	@Override
