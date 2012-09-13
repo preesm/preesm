@@ -36,21 +36,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.codegen.model;
 
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
-import net.sf.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import net.sf.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 
-import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
-import org.ietr.preesm.codegen.model.buffer.Buffer;
-import org.ietr.preesm.codegen.model.buffer.SubBuffer;
-import org.ietr.preesm.codegen.model.buffer.SubBufferAllocation;
-import org.ietr.preesm.codegen.model.expression.BinaryExpression;
-import org.ietr.preesm.codegen.model.expression.ConstantExpression;
-import org.ietr.preesm.codegen.model.expression.IExpression;
-import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
 
@@ -83,40 +71,4 @@ public class CodeGenSDFBroadcastVertex extends SDFBroadcastVertex implements
 	public void setPos(int pos) {
 		this.getPropertyBean().setValue(POS, getPos(), pos);
 	}
-
-	@Override
-	public boolean generateSpecialBehavior(
-			AbstractBufferContainer parentContainer)
-			throws InvalidExpressionException {
-		SDFEdge incomingEdge = null;
-		for (SDFEdge inEdge : ((SDFGraph) this.getBase()).incomingEdgesOf(this)) {
-			incomingEdge = inEdge;
-		}
-		Buffer inBuffer = parentContainer.getBuffer(incomingEdge);
-		for (SDFEdge outEdge : ((SDFGraph) this.getBase())
-				.outgoingEdgesOf(this)) {
-			if (!(outEdge.getTarget() instanceof SDFInterfaceVertex)) {
-				ConstantExpression index = new ConstantExpression("",
-						new DataType("int"), 0);
-				String buffName = outEdge.getSourceInterface().getName() + "_"
-						+ outEdge.getTargetInterface().getName();
-				IExpression expr = new BinaryExpression("%",
-						new BinaryExpression("*", index,
-								new ConstantExpression(outEdge.getCons()
-										.intValue())), new ConstantExpression(
-								inBuffer.getSize()));
-				SubBuffer subElt = new SubBuffer(buffName, outEdge.getProd()
-						.intValue(), expr, inBuffer, outEdge, parentContainer);
-				if (parentContainer.getBuffer(outEdge) == null) {
-					parentContainer.removeBufferAllocation(parentContainer
-							.getBuffer(outEdge));
-					parentContainer
-							.addSubBufferAllocation(new SubBufferAllocation(
-									subElt));
-				}
-			}
-		}
-		return true;
-	}
-
 }

@@ -1,11 +1,12 @@
 package org.ietr.preesm.codegen.model;
 
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 
-import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
-
+/**
+ * Interface for vertices necessitating specific code generation
+ * such as broadcast, fork, join and round buffers
+ * 
+ * @author jpiat
+ */
 public interface ICodeGenSpecialBehaviorVertex {
-	public boolean generateSpecialBehavior(
-			AbstractBufferContainer parentContainer)
-			throws InvalidExpressionException;
+	
 }

@@ -39,23 +39,18 @@ package org.ietr.preesm.codegen.model;
 import java.util.Map;
 
 import net.sf.dftools.algorithm.model.AbstractEdge;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.algorithm.model.sdf.SDFEdge;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.algorithm.model.sdf.esdf.SDFForkVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 
-import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
-import org.ietr.preesm.codegen.model.buffer.Buffer;
-import org.ietr.preesm.codegen.model.buffer.SubBuffer;
-import org.ietr.preesm.codegen.model.buffer.SubBufferAllocation;
-import org.ietr.preesm.codegen.model.expression.BinaryExpression;
-import org.ietr.preesm.codegen.model.expression.ConstantExpression;
-import org.ietr.preesm.codegen.model.expression.IExpression;
-import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
 
+/**
+ * A fork vertex dispatches data from one to many edges
+ * 
+ * @author jpiat
+ */
 public class CodeGenSDFForkVertex extends SDFForkVertex implements
 		ICodeGenSDFVertex, ICodeGenSpecialBehaviorVertex {
 
@@ -127,37 +122,6 @@ public class CodeGenSDFForkVertex extends SDFForkVertex implements
 
 	public String toString() {
 		return "";
-	}
-
-	@Override
-	public boolean generateSpecialBehavior(
-			AbstractBufferContainer parentContainer)
-			throws InvalidExpressionException {
-		SDFEdge incomingEdge = null;
-
-		for (SDFEdge inEdge : ((SDFGraph) this.getBase()).incomingEdgesOf(this)) {
-			incomingEdge = inEdge;
-		}
-		Buffer inBuffer = parentContainer.getBuffer(incomingEdge);
-		for (SDFEdge outEdge : ((SDFGraph) this.getBase())
-				.outgoingEdgesOf(this)) {
-			ConstantExpression index = new ConstantExpression("", new DataType(
-					"int"), ((CodeGenSDFForkVertex) this).getEdgeIndex(outEdge));
-			String buffName = parentContainer.getBuffer(outEdge).getName();
-			IExpression expr = new BinaryExpression("%", new BinaryExpression(
-					"*", index, new ConstantExpression(outEdge.getProd()
-							.intValue())), new ConstantExpression(
-					inBuffer.getSize()));
-			SubBuffer subElt = new SubBuffer(buffName, outEdge.getProd()
-					.intValue(), expr, inBuffer, outEdge, parentContainer);
-			if (parentContainer.getBuffer(outEdge) == null) {
-				parentContainer.removeBufferAllocation(parentContainer
-						.getBuffer(outEdge));
-				parentContainer.addSubBufferAllocation(new SubBufferAllocation(
-						subElt));
-			}
-		}
-		return true;
 	}
 
 }
