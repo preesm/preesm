@@ -51,9 +51,13 @@ import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
  */
 public abstract class AbstractPhaseCodeGenerator {
 
+	/**
+	 * Block of code filled by this generator
+	 */
+	protected AbstractCodeContainer container;
+	
 	public AbstractPhaseCodeGenerator(AbstractCodeContainer container) {
 	}
-
 
 	/**
 	 * Adds send and receive functions from vertices allocated on the current

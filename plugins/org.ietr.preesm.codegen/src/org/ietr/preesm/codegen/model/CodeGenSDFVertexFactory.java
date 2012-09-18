@@ -64,6 +64,8 @@ import org.ietr.preesm.core.types.VertexType;
 import org.ietr.preesm.core.workflow.PreesmException;
 
 /**
+ * Generating code generation vertices from mapped vertices
+ * 
  * @author jpiat
  */
 public class CodeGenSDFVertexFactory {
@@ -74,7 +76,7 @@ public class CodeGenSDFVertexFactory {
 		mainFile = parentAlgoFile;
 	}
 
-	public SDFAbstractVertex create(DAGVertex dagVertex)
+	public SDFAbstractVertex create(DAGVertex dagVertex, IDLPrototypeFactory idlPrototypeFactory)
 			throws InvalidExpressionException, SDF4JException, PreesmException {
 		CodeGenSDFGraphFactory graphFactory = new CodeGenSDFGraphFactory(
 				mainFile);
@@ -153,7 +155,7 @@ public class CodeGenSDFVertexFactory {
 			}
 
 			if (codeRef.getLanguage() == Language.IDL) {
-				IDLPrototypeFactory factory = IDLPrototypeFactory.getInstance();
+				IDLPrototypeFactory factory = idlPrototypeFactory;
 				((SDFAbstractVertex) newVertex).setRefinement(factory
 						.create(iFile.getRawLocation().toOSString()));
 			}
@@ -172,21 +174,10 @@ public class CodeGenSDFVertexFactory {
 			}
 		}
 
-		// if ((ArchitectureComponent) dagVertex.getPropertyBean().getValue(
-		// ImplementationPropertyNames.Vertex_Operator) != null) {
-		// newVertex.setOperator((ArchitectureComponent) dagVertex
-		// .getPropertyBean().getValue(
-		// ImplementationPropertyNames.Vertex_Operator));
-		// }
-		// if ((Integer) dagVertex.getPropertyBean().getValue(
-		// ImplementationPropertyNames.Vertex_schedulingOrder) != null) {
-		// newVertex.setPos((Integer) dagVertex.getPropertyBean().getValue(
-		// ImplementationPropertyNames.Vertex_schedulingOrder));
-		// }
 		return ((SDFAbstractVertex) newVertex);
 	}
 
-	public SDFAbstractVertex create(SDFAbstractVertex sdfVertex)
+	public SDFAbstractVertex create(SDFAbstractVertex sdfVertex, IDLPrototypeFactory idlPrototypeFactory)
 			throws InvalidExpressionException, SDF4JException, PreesmException {
 		SDFAbstractVertex newVertex;
 		if (sdfVertex instanceof SDFSinkInterfaceVertex) {
@@ -243,7 +234,7 @@ public class CodeGenSDFVertexFactory {
 			}
 
 			if (codeRef.getLanguage() == Language.IDL) {
-				IDLPrototypeFactory factory = IDLPrototypeFactory.getInstance();
+				IDLPrototypeFactory factory = idlPrototypeFactory;
 				newVertex.setRefinement(factory.create(iFile.getRawLocation()
 						.toOSString()));
 			}

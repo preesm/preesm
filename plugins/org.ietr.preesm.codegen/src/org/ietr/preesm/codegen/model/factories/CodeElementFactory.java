@@ -409,11 +409,12 @@ public class CodeElementFactory {
 	}
 
 	/**
-	 * Creates code for task
+	 * Creates code for user defined task
 	 */
 	public static ICodeElement createElement(
 			AbstractCodeContainer parentContainer, CodeGenSDFTaskVertex vertex) {
 		try {
+			// Generating loop
 			if ((vertex.getNbRepeat() instanceof Integer && (vertex
 					.getNbRepeatAsInteger() > 1))
 					|| vertex.getNbRepeat() instanceof Expression

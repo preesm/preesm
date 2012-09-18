@@ -51,9 +51,8 @@ import org.ietr.preesm.codegen.model.printer.IAbstractPrinter;
 public class LinearCodeContainer extends AbstractCodeContainer implements
 		ICodeElement {
 
-	public LinearCodeContainer(AbstractBufferContainer parentContainer) {
-		super(parentContainer);
-		// TODO Auto-generated constructor stub
+	public LinearCodeContainer(AbstractBufferContainer parentContainer, String comment) {
+		super(parentContainer, comment);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {

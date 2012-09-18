@@ -36,36 +36,84 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.codegen.idl;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+
 import net.sf.dftools.algorithm.model.IRefinement;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 /**
- * Different function prototypes associated to an actor
- * and retrieved from a prototype file
+ * Different function prototypes associated to an actor and retrieved from a
+ * prototype file
  * 
  * @author jpiat
  * @author mpelcat
  */
 public class ActorPrototypes implements IRefinement {
 
-	private Prototype initCall = null;
-	private Prototype loopCall = null;
+	/**
+	 * Prototypes for the different phases of initialization of an actor
+	 */
+	private Map<Integer, Prototype> initPrototypes = null;
+	
+	/**
+	 * Prototype for the loop execution of an actor
+	 */
+	private Prototype loopPrototype = null;
+	
+	private String name = null;
 
 	public ActorPrototypes(String name) {
+		initPrototypes = new HashMap<Integer, Prototype>();
+		this.name = name;
 	}
 
-	public Prototype getInitCall() {
-		return initCall;
+	/**
+	 * Getting the initialization prototype for phase 0
+	 */
+	public Prototype getInitPrototype() {
+		return getInitPrototype(0);
 	}
 
-	public void setInitCall(Prototype init) {
-		initCall = init;
+	/**
+	 * Getting the initialization prototype for phase (-) i
+	 * 
+	 */
+	public Prototype getInitPrototype(int i) {
+		if (initPrototypes.keySet().contains(0)) {
+			return initPrototypes.get(i);
+		} else {
+			// Returning null means that the actor has no prototype for phase is
+			return null;
+		}
 	}
 
-	public Prototype getLoopCall() {
-		return loopCall;
+	/**
+	 * Default init call is call 0
+	 */
+	public void setInitPrototype(Prototype init) {
+		setInitPrototype(init, 0);
 	}
 
-	public void setLoopCall(Prototype init) {
-		loopCall = init;
+	/**
+	 * Init i is added before init i-1 in the code
+	 */
+	public void setInitPrototype(Prototype init, int i) {
+		if(initPrototypes.containsKey(i)){
+			WorkflowLogger.getLogger().log(
+					Level.WARNING,
+					"IDL: Init phase number (-)" + i
+							+ " was defined several time for file " + name);
+		}
+		initPrototypes.put(i, init);
+	}
+
+	public Prototype getLoopPrototype() {
+		return loopPrototype;
+	}
+
+	public void setLoopPrototype(Prototype init) {
+		loopPrototype = init;
 	}
 }

@@ -160,7 +160,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 		// Replacing the name of the vertex by the name of the prototype, if any
 		// is available.
 		if (vertex instanceof ICodeGenSDFVertex) {
-			Prototype call = getFunctionPrototype(vertex, section).getLoopCall();
+			Prototype call = getFunctionPrototype(vertex, section).getLoopPrototype();
 			if (call != null) {
 
 				// Filters and orders the buffers to fit the prototype
@@ -224,13 +224,13 @@ public class UserFunctionCall extends AbstractCodeElement {
 
 			switch (section) {
 				case beginning:
-					if (protos.getInitCall() != null) {
-						proto = protos.getInitCall();
+					if (protos.getInitPrototype() != null) {
+						proto = protos.getInitPrototype();
 						this.setName(proto.getFunctionName());
 					}
 					break;
 				case loop:
-					proto = protos.getLoopCall();
+					proto = protos.getLoopPrototype();
 					if (proto.getFunctionName().isEmpty()) {
 						WorkflowLogger.getLogger().log(
 								Level.INFO,

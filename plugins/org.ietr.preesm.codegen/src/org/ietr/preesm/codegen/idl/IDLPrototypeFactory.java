@@ -38,6 +38,9 @@ package org.ietr.preesm.codegen.idl;
 
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.logging.Level;
+
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
@@ -76,36 +79,34 @@ import org.jacorb.idl.parser;
  */
 public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
 
-	public HashMap<String, ActorPrototypes> createdIdl;
+	/**
+	 * Keeping memory of all created IDL prototypes
+	 */
+	private HashMap<String, ActorPrototypes> createdIdls;
 
+	/**
+	 * Keeping memory of the highest index of init declared.
+	 * Used to determine how many init phases must be generated
+	 */
+	private int maxInitIndex = -1;
+	
 	/**
 	 * Generated prototypes
 	 */
 	private ActorPrototypes finalPrototypes;
-	
+
 	/**
 	 * Temporary prototype used during parsing
 	 */
 	private Prototype currentPrototype;
 
-	/**
-	 * Instance of the singleton class
-	 */
-	public static IDLPrototypeFactory instance = null;
-
-	public static IDLPrototypeFactory getInstance() {
-		if (instance == null) {
-			instance = new IDLPrototypeFactory();
-		}
-		return instance;
-	}
-
-	private IDLPrototypeFactory() {
+	public IDLPrototypeFactory() {
 		resetPrototypes();
 	}
 
 	public void resetPrototypes() {
-		createdIdl = new HashMap<String, ActorPrototypes>();
+		createdIdls = new HashMap<String, ActorPrototypes>();
+		maxInitIndex = -1;
 	}
 
 	/**
@@ -113,18 +114,18 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
 	 */
 	@Override
 	public ActorPrototypes create(String idlPath) {
-		if (createdIdl.get(idlPath) == null) {
+		if (createdIdls.get(idlPath) == null) {
 			parser.setGenerator(this);
 
 			try {
 				finalPrototypes = new ActorPrototypes(idlPath);
 				IDLParser.parse(idlPath, this);
-				createdIdl.put(idlPath, finalPrototypes);
+				createdIdls.put(idlPath, finalPrototypes);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		return createdIdl.get(idlPath);
+		return createdIdls.get(idlPath);
 	}
 
 	@Override
@@ -143,16 +144,51 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
 
 	}
 
+	/**
+	 * Retrieving prototypes for the different code phases
+	 */
 	@Override
 	public void visitInterface(Interface arg0) {
+		// Latest init phase prototype is in the interface "init"
 		if (arg0.name().equals("init")) {
 			currentPrototype = new Prototype();
 			arg0.body.accept(this);
-			finalPrototypes.setInitCall(currentPrototype);
-		} else if (arg0.name().equals("loop")) {
+			finalPrototypes.setInitPrototype(currentPrototype);
+			
+			if(maxInitIndex < 0) maxInitIndex = 0;
+		}
+
+		// Previous init phases to fill the delays
+		else if (arg0.name().startsWith("init_")) {
+			String sIndex = arg0.name().replaceFirst("init_", "");
+
+			// Retrieving the index of the init phase
+			try {
+				int index = Integer.parseInt(sIndex);
+
+				currentPrototype = new Prototype();
+				finalPrototypes.setInitPrototype(currentPrototype, index);
+				arg0.body.accept(this);
+				
+				if(maxInitIndex < index) maxInitIndex = index;
+			} catch (NumberFormatException e) {
+				WorkflowLogger.getLogger().log(
+						Level.SEVERE,
+						"Badly formatted IDL interface, loop, init or init-i accepted : "
+								+ arg0.name());
+			}
+		}
+
+		// loop phase prototype is in the interphase "loop"
+		else if (arg0.name().equals("loop")) {
 			currentPrototype = new Prototype();
-			finalPrototypes.setLoopCall(currentPrototype);
+			finalPrototypes.setLoopPrototype(currentPrototype);
 			arg0.body.accept(this);
+		} else {
+			WorkflowLogger.getLogger().log(
+					Level.WARNING,
+					"Ignored badly formatted IDL interface, loop, init or init-i accepted : "
+							+ arg0.name());
 		}
 	}
 
@@ -173,7 +209,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
 	@Override
 	public void visitModule(Module arg0) {
 		System.out.println(arg0.toString());
-		
+
 		arg0.getDefinitions().accept(this);
 	}
 
@@ -269,5 +305,14 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
 
 	@Override
 	public void visitEnum(EnumType arg0) {
+	}
+	
+	/**
+	 * IDL prototypes determine the number of initialization phases that are necessary
+	 * 
+	 * @return The number of code init phases that must be generated
+	 */
+	public int getNumberOfInitPhases(){
+		return maxInitIndex + 1;
 	}
 }

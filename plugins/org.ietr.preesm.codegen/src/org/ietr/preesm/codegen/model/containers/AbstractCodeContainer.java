@@ -73,10 +73,20 @@ public abstract class AbstractCodeContainer extends AbstractBufferContainer {
 	 */
 	private int comNumber;
 
-	public AbstractCodeContainer(AbstractBufferContainer parentContainer) {
+	/**
+	 * Comment on the code phase that should appear in generated code
+	 */
+	private String comment;
+
+	public AbstractCodeContainer(AbstractBufferContainer parentContainer, String comment) {
 		super(parentContainer);
 		codeElements = new ArrayList<ICodeElement>();
 		comNumber = 0;
+		this.comment = comment;
+	}
+
+	public String getComment() {
+		return comment;
 	}
 
 	/**

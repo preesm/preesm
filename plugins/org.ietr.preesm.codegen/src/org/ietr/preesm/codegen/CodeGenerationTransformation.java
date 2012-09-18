@@ -89,7 +89,7 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 
 		// Resets the parsed IDL prototypes
-		IDLPrototypeFactory.getInstance().resetPrototypes();
+		IDLPrototypeFactory idlPrototypeFactory = new IDLPrototypeFactory();
 
 		// Default source path is given in the workflow
 		String sourcePath = PathTools.getAbsolutePath(
@@ -113,7 +113,7 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 		// Generating the code generation specific graph
 		CodeGenSDFGraph codeGenSDFGraph = null;
 		try {
-			codeGenSDFGraph = generateCodegenGraph(algorithm, scenario);
+			codeGenSDFGraph = generateCodegenGraph(algorithm, scenario, idlPrototypeFactory);
 		} catch (PreesmException e) {
 			throw (new WorkflowException(e.getMessage()));
 		} catch (Exception e) {
@@ -137,7 +137,7 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 		SourceFileList list = new SourceFileList();
 		CodeGenerator codegen = new CodeGenerator(list);
 		// Generate source files
-		codegen.generateSourceFiles(codeGenSDFGraph, architecture, scenario);
+		codegen.generateSourceFiles(codeGenSDFGraph, architecture, scenario, idlPrototypeFactory);
 
 		// Generates the code in xml and translates it to c using XSLT
 		// sheets
@@ -175,14 +175,14 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 	 * @throws PreesmException
 	 */
 	private CodeGenSDFGraph generateCodegenGraph(
-			DirectedAcyclicGraph algorithm, PreesmScenario scenario)
+			DirectedAcyclicGraph algorithm, PreesmScenario scenario, IDLPrototypeFactory idlPrototypeFactory)
 			throws InvalidExpressionException, SDF4JException, PreesmException {
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IFile iFile = workspace.getRoot().getFile(
 				new Path(scenario.getAlgorithmURL()));
 		CodeGenSDFGraphFactory factory = new CodeGenSDFGraphFactory(iFile);
-		CodeGenSDFGraph sdfGraph = factory.create(algorithm);
+		CodeGenSDFGraph sdfGraph = factory.create(algorithm, idlPrototypeFactory);
 
 		return sdfGraph;
 	}

@@ -53,6 +53,7 @@ import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.Design;
 
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
+import org.ietr.preesm.codegen.idl.IDLPrototypeFactory;
 import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenSDFBroadcastVertex;
@@ -72,7 +73,7 @@ import org.ietr.preesm.codegen.model.main.SourceFile;
 import org.ietr.preesm.codegen.model.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.codegen.model.types.CodeSectionType;
 import org.ietr.preesm.codegen.phase.AbstractPhaseCodeGenerator;
-import org.ietr.preesm.codegen.phase.BeginningCodeGenerator;
+import org.ietr.preesm.codegen.phase.InitCodeGenerator;
 import org.ietr.preesm.codegen.phase.LoopCodeGenerator;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
@@ -169,9 +170,10 @@ public class SourceFileCodeGenerator {
 	}
 
 	/**
-	 * Fills its source file from an SDF and an architecture
+	 * Fills its source file from an algorithm, an architecture and a prototype retriever
 	 */
-	public void generateSource(CodeGenSDFGraph algorithm, Design architecture) {
+	public void generateSource(CodeGenSDFGraph algorithm, Design architecture,
+			IDLPrototypeFactory idlPrototypeFactory) {
 
 		// Gets the tasks vertices allocated to the current operator in
 		// scheduling order
@@ -204,33 +206,66 @@ public class SourceFileCodeGenerator {
 				file);
 		file.addThread(computationThread);
 
-		// Generating code for the beginning phase
-		LinearCodeContainer beginning = new LinearCodeContainer(
-				computationThread);
-		computationThread.addContainer(beginning);
-		AbstractPhaseCodeGenerator beginningCodegen = new BeginningCodeGenerator(
-				beginning);
+		// The maximum number of init phases is kept for all cores. May be
+		// improved later
+		int numberOfInitPhases = idlPrototypeFactory.getNumberOfInitPhases();
+
+		// Generating code for the init phases from upper to lower number
+		for (int i = numberOfInitPhases - 1; i >= 0; i--) {
+			generateInitSection(computationThread, algorithm.getParameters(),
+					ownTaskVertices, ownCommunicationVertices,
+					file.getGlobalContainer(), i);
+		}
+
+		// Generating code for the computation loop
+		generateLoopSection(computationThread, algorithm.getParameters(),
+				ownTaskVertices, ownCommunicationVertices,
+				file.getGlobalContainer());
+	}
+
+	/**
+	 * Generates and fill a code section
+	 */
+	private void generateInitSection(
+			ComputationThreadDeclaration computationThread,ParameterSet parameterSet,
+			SortedSet<SDFAbstractVertex> tasks,
+			SortedSet<SDFAbstractVertex> coms,
+			AbstractBufferContainer bufferContainer, int initIndex) {
+		LinearCodeContainer init = new LinearCodeContainer(
+				computationThread, "Initialization phase number " + initIndex);
+		computationThread.addContainer(init);
+		AbstractPhaseCodeGenerator loopCodegen = new InitCodeGenerator(init, initIndex);
 
 		// Inserts the user function calls and adds their parameters; possibly
 		// including graph parameters
 
-		fillSection(beginningCodegen, beginning, algorithm.getParameters(),
-				ownTaskVertices, ownCommunicationVertices,
-				file.getGlobalContainer());
-
-		// Generating code for the computation loop
-		ForLoop loop = new ForLoop(computationThread);
+		fillSection(loopCodegen, init, parameterSet, tasks, coms,
+				bufferContainer);
+	}
+	
+	/**
+	 * Generates and fill a code section
+	 */
+	private void generateLoopSection(
+			ComputationThreadDeclaration computationThread,ParameterSet parameterSet,
+			SortedSet<SDFAbstractVertex> tasks,
+			SortedSet<SDFAbstractVertex> coms,
+			AbstractBufferContainer bufferContainer) {
+		ForLoop loop = new ForLoop(computationThread,
+				"Main loop of computation");
 		computationThread.addContainer(loop);
 		AbstractPhaseCodeGenerator loopCodegen = new LoopCodeGenerator(loop);
 
 		// Inserts the user function calls and adds their parameters; possibly
 		// including graph parameters
 
-		fillSection(loopCodegen, loop, algorithm.getParameters(),
-				ownTaskVertices, ownCommunicationVertices,
-				file.getGlobalContainer());
+		fillSection(loopCodegen, loop, parameterSet, tasks, coms,
+				bufferContainer);
 	}
 
+	/**
+	 * Fill a code section
+	 */
 	private void fillSection(AbstractPhaseCodeGenerator codegen,
 			AbstractCodeContainer container, ParameterSet parameterSet,
 			SortedSet<SDFAbstractVertex> tasks,
@@ -311,7 +346,7 @@ public class SourceFileCodeGenerator {
 	 * Returns true if the vertex function prototype of the given
 	 * codeContainerType uses the buffer buf
 	 */
-	public static boolean usesBufferInCodeContainerType(
+	public static boolean isBufferUsedInCodeContainerType(
 			SDFAbstractVertex vertex, CodeSectionType codeContainerType,
 			Buffer buf, String direction) {
 
@@ -323,14 +358,8 @@ public class SourceFileCodeGenerator {
 			return true;
 		}
 
-		if (!(vertex.getRefinement() instanceof ActorPrototypes)) { // TODO :
-																		// treat
-																		// when
-																		// the
-																		// vertex
-																		// has a
-																		// graph
-																		// refinement
+		if (!(vertex.getRefinement() instanceof ActorPrototypes)) {
+			// TODO: manage hierarchy
 			return true;
 		}
 
@@ -339,6 +368,9 @@ public class SourceFileCodeGenerator {
 			return true;
 		}
 
+		// An actor has several soociated prototypes for the init phases and
+		// loop phase
+		// Getting the prototype from desired phase
 		ActorPrototypes prototypes = ((ActorPrototypes) vertex.getRefinement());
 		Prototype currentPrototype = null;
 
@@ -347,18 +379,20 @@ public class SourceFileCodeGenerator {
 
 			switch (codeContainerType) {
 			case beginning:
-				currentPrototype = prototypes.getInitCall();
+				currentPrototype = prototypes.getInitPrototype();
 				break;
 			case loop:
-				currentPrototype = prototypes.getLoopCall();
+				currentPrototype = prototypes.getLoopPrototype();
 				break;
 			default:
 				break;
 			}
 		}
 
+		// Checking the use of the buffer in the arguments
 		if (prototypes != null) {
-			Set<CodeGenArgument> argSet = currentPrototype.getArguments().keySet();
+			Set<CodeGenArgument> argSet = currentPrototype.getArguments()
+					.keySet();
 
 			for (CodeGenArgument arg : argSet) {
 				if (direction.equals("output")) {
@@ -391,7 +425,7 @@ public class SourceFileCodeGenerator {
 			List<Buffer> bufs, String direction) {
 
 		for (Buffer buf : bufs) {
-			if (usesBufferInCodeContainerType(vertex, codeContainerType, buf,
+			if (isBufferUsedInCodeContainerType(vertex, codeContainerType, buf,
 					direction)) {
 				return true;
 			}

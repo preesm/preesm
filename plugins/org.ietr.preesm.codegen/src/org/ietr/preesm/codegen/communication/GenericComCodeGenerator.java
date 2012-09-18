@@ -231,7 +231,7 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 
 		// Case of one send per buffer
 		for (Buffer buf : bufferSet) {
-			if (SourceFileCodeGenerator.usesBufferInCodeContainerType(
+			if (SourceFileCodeGenerator.isBufferUsedInCodeContainerType(
 					senderVertex, CodeSectionType.loop, buf, "output")
 					|| VertexType.isIntermediateSend(comVertex)) {
 				List<Buffer> singleBufferSet = new ArrayList<Buffer>();
@@ -298,7 +298,7 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 
 		// Case of one receive per buffer
 		for (Buffer buf : bufferSet) {
-			if (SourceFileCodeGenerator.usesBufferInCodeContainerType(
+			if (SourceFileCodeGenerator.isBufferUsedInCodeContainerType(
 					senderVertex, CodeSectionType.loop, buf, "output")
 					|| VertexType.isIntermediateReceive(senderVertex)) {
 				List<Buffer> singleBufferSet = new ArrayList<Buffer>();

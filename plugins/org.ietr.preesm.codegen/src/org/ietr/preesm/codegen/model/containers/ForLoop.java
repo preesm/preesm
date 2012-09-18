@@ -61,8 +61,8 @@ public class ForLoop extends AbstractCodeContainer implements ICodeElement {
 	/**
 	 * 
 	 */
-	public ForLoop(AbstractBufferContainer parentContainer) {
-		super(parentContainer);
+	public ForLoop(AbstractBufferContainer parentContainer, String comment) {
+		super(parentContainer, comment);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {

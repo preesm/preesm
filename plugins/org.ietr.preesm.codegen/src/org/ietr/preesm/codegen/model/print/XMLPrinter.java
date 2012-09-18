@@ -321,7 +321,9 @@ public class XMLPrinter implements IAbstractPrinter {
 		if (index == CodeZoneId.body) {
 			Element forLoop = dom.createElement("forLoop");
 			((Element) currentLocation).appendChild(forLoop);
-
+			forLoop.setAttribute("comment",
+					domElt.getComment());
+			
 			currentLocation = forLoop;
 		}
 
@@ -336,6 +338,8 @@ public class XMLPrinter implements IAbstractPrinter {
 			Element linearCodeContainer = dom
 					.createElement("linearCodeContainer");
 			((Element) currentLocation).appendChild(linearCodeContainer);
+			linearCodeContainer.setAttribute("comment",
+					domElt.getComment());
 
 			currentLocation = linearCodeContainer;
 		}

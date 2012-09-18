@@ -71,8 +71,8 @@ public class IDLParser extends parser {
 
 			new parser().parse();
 		} catch (Exception e) {
-			WorkflowLogger.getLogger().log(Level.INFO,
-					"IDL Parser: " + e.getMessage());
+			WorkflowLogger.getLogger().log(Level.WARNING,
+					"IDL Parser internal exception: " + e.getMessage());
 		}
 	}
 

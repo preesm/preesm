@@ -74,6 +74,7 @@ import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
+import org.ietr.preesm.codegen.idl.IDLPrototypeFactory;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
 import org.ietr.preesm.core.workflow.PreesmException;
@@ -94,7 +95,7 @@ public class CodeGenSDFGraphFactory {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public CodeGenSDFGraph create(DirectedAcyclicGraph dag)
+	public CodeGenSDFGraph create(DirectedAcyclicGraph dag, IDLPrototypeFactory idlPrototypeFactory)
 			throws InvalidExpressionException, SDF4JException, PreesmException {
 		CodeGenSDFVertexFactory vertexFactory = new CodeGenSDFVertexFactory(
 				mainFile);
@@ -107,7 +108,7 @@ public class CodeGenSDFGraphFactory {
 			if (((PSDFGraph) dag.getCorrespondingSDFGraph()).getInitVertex() != null) {
 				SDFAbstractVertex codeGenVertex = vertexFactory
 						.create(((PSDFGraph) dag.getCorrespondingSDFGraph())
-								.getInitVertex());
+								.getInitVertex(), idlPrototypeFactory);
 				output.addVertex(codeGenVertex);
 				codeGenVertex
 						.getPropertyBean()
@@ -132,7 +133,7 @@ public class CodeGenSDFGraphFactory {
 
 		}
 		for (DAGVertex vertex : dag.vertexSet()) {
-			SDFAbstractVertex codeGenVertex = vertexFactory.create(vertex);
+			SDFAbstractVertex codeGenVertex = vertexFactory.create(vertex, idlPrototypeFactory);
 			aliases.put(vertex, codeGenVertex);
 			stringAliases.put(vertex.getName(), codeGenVertex);
 			output.addVertex(codeGenVertex);
@@ -303,7 +304,7 @@ public class CodeGenSDFGraphFactory {
 		}
 	}
 
-	public CodeGenSDFGraph create(SDFGraph sdf)
+	public CodeGenSDFGraph create(SDFGraph sdf, IDLPrototypeFactory idlPrototypeFactory)
 			throws InvalidExpressionException, SDF4JException, PreesmException {
 		clusterizeStronglyConnected(sdf); // Clusterize strongly connected
 		// components, as code generation
@@ -319,7 +320,7 @@ public class CodeGenSDFGraphFactory {
 		int pos = 0;
 		while (iterator.hasNext()) {
 			SDFAbstractVertex vertex = iterator.next();
-			SDFAbstractVertex codeGenVertex = vertexFactory.create(vertex);
+			SDFAbstractVertex codeGenVertex = vertexFactory.create(vertex, idlPrototypeFactory);
 			if (codeGenVertex instanceof CodeGenSDFTaskVertex) {
 				((ICodeGenSDFVertex) codeGenVertex).setNbRepeat(vertex
 						.getNbRepeat());
@@ -405,7 +406,7 @@ private SDFEdge transformEdge(SDFEdge oldEdge, CodeGenSDFGraph newGraph, HashMap
 	
 	
 	@SuppressWarnings("rawtypes")
-	public CodeGenSDFGraph create(PSDFGraph sdf)
+	public CodeGenSDFGraph create(PSDFGraph sdf, IDLPrototypeFactory idlPrototypeFactory)
 			throws InvalidExpressionException, SDF4JException, PreesmException {
 		clusterizeStronglyConnected(sdf); // Clusterize strongly connected
 		// components, as code generation
@@ -421,7 +422,7 @@ private SDFEdge transformEdge(SDFEdge oldEdge, CodeGenSDFGraph newGraph, HashMap
 		int pos = 0;
 		if (sdf.getInitVertex() != null) {
 			SDFAbstractVertex dCodeGenVertex = vertexFactory.create(sdf
-					.getInitVertex());
+					.getInitVertex(), idlPrototypeFactory);
 			output.addVertex(dCodeGenVertex);
 			dCodeGenVertex
 					.getPropertyBean()
@@ -437,7 +438,7 @@ private SDFEdge transformEdge(SDFEdge oldEdge, CodeGenSDFGraph newGraph, HashMap
 		}
 		while (iterator.hasNext()) {
 			SDFAbstractVertex vertex = iterator.next();
-			SDFAbstractVertex codeGenVertex = vertexFactory.create(vertex);
+			SDFAbstractVertex codeGenVertex = vertexFactory.create(vertex, idlPrototypeFactory);
 			if (codeGenVertex instanceof CodeGenSDFTaskVertex) {
 				((ICodeGenSDFVertex) codeGenVertex).setNbRepeat(vertex
 						.getNbRepeat());

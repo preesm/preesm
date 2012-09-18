@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -41,6 +41,7 @@ import java.util.Iterator;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.Design;
 
+import org.ietr.preesm.codegen.idl.IDLPrototypeFactory;
 import org.ietr.preesm.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.codegen.model.main.SourceFile;
 import org.ietr.preesm.codegen.model.main.SourceFileList;
@@ -92,14 +93,14 @@ public class CodeGenerator {
 	 * Creates and fills source files from an SDF and an architecture
 	 */
 	public void generateSourceFiles(CodeGenSDFGraph algorithm,
-			Design architecture, PreesmScenario scenario) {
+			Design architecture, PreesmScenario scenario, IDLPrototypeFactory idlPrototypeFactory) {
 		// Creates one source file per operator
 		createSourceFiles(architecture, scenario);
 
 		// For each source file, generates source code
 		for (SourceFile file : list) {
 			SourceFileCodeGenerator codegen = new SourceFileCodeGenerator(file);
-			codegen.generateSource(algorithm, architecture);
+			codegen.generateSource(algorithm, architecture, idlPrototypeFactory);
 		}
 	}
 }

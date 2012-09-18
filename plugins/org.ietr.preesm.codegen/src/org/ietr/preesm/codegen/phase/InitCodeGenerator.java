@@ -61,18 +61,22 @@ import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 
 /**
- * Generates code for the computation beginning phase
+ * Generates code for the computation init phase
  * 
  * @author mpelcat
  */
-public class BeginningCodeGenerator extends AbstractPhaseCodeGenerator {
+public class InitCodeGenerator extends AbstractPhaseCodeGenerator {
 
+	/**
+	 * Index of the current initialization phase.
+	 * This number decreases to 0 before loop phase
+	 */
+	private int initIndex;
 
-	private AbstractCodeContainer container;
-
-	public BeginningCodeGenerator(AbstractCodeContainer container) {
+	public InitCodeGenerator(AbstractCodeContainer container, int initIndex) {
 		super(container);
 		this.container = container;
+		this.initIndex = initIndex;
 	}
 
 

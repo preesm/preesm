@@ -330,7 +330,7 @@ public class SystemCPrinterVisitor implements
 			if (((CodeGenSDFTaskVertex) sdfVertex).getRefinement() != null
 					&& ((CodeGenSDFTaskVertex) sdfVertex).getRefinement() instanceof ActorPrototypes) {
 				refinementName = ((ActorPrototypes) ((CodeGenSDFTaskVertex) sdfVertex)
-						.getRefinement()).getLoopCall().getFunctionName();
+						.getRefinement()).getLoopPrototype().getFunctionName();
 				includes.add(refinementName);
 				exportAtomicActor((CodeGenSDFTaskVertex) sdfVertex);
 			} else if (((CodeGenSDFTaskVertex) sdfVertex).getRefinement() != null
@@ -410,7 +410,7 @@ public class SystemCPrinterVisitor implements
 		List<StringTemplate> atomicFiringRules = new ArrayList<StringTemplate>();
 		List<StringTemplate> atomicFiringRulesSensitivityList = new ArrayList<StringTemplate>();
 
-		String functionName = ((ActorPrototypes) actomicActor.getRefinement()).getLoopCall()
+		String functionName = ((ActorPrototypes) actomicActor.getRefinement()).getLoopPrototype()
 				.getFunctionName();
 
 		for (IInterface port : actomicActor.getInterfaces()) {
