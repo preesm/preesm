@@ -34,40 +34,41 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.codegen.model.idl;
+package org.ietr.preesm.codegen.idl;
 
-import java.util.logging.Level;
+import net.sf.dftools.algorithm.model.IRefinement;
 
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+/**
+ * Different function prototypes associated to an actor
+ * and retrieved from a prototype file
+ * 
+ * @author jpiat
+ * @author mpelcat
+ */
+public class ActorPrototypes implements IRefinement {
 
-import org.jacorb.idl.ConstDecl;
-import org.jacorb.idl.GlobalInputStream;
-import org.jacorb.idl.IDLTreeVisitor;
-import org.jacorb.idl.NameTable;
-import org.jacorb.idl.TypeMap;
-import org.jacorb.idl.lexer;
-import org.jacorb.idl.parser;
+	private Prototype initCall = null;
+	private Prototype loopCall = null;
 
-public class IDLParser extends parser {
-
-	public static void parse(String filePath, IDLTreeVisitor visitor) {
-		try {
-			init();
-			setGenerator(visitor);
-			GlobalInputStream.init();
-			GlobalInputStream.setInput(filePath);
-
-			/* reset tables everywhere */
-			lexer.reset();
-			NameTable.init();
-			ConstDecl.init();
-			TypeMap.init();
-
-			new parser().parse();
-		} catch (Exception e) {
-			WorkflowLogger.getLogger().log(Level.INFO,
-					"IDL Parser: " + e.getMessage());
-		}
+	public ActorPrototypes() {
 	}
 
+	public ActorPrototypes(String name) {
+	}
+
+	public Prototype getInitCall() {
+		return initCall;
+	}
+
+	public void setInitCall(Prototype init) {
+		initCall = init;
+	}
+
+	public Prototype getLoopCall() {
+		return loopCall;
+	}
+
+	public void setLoopCall(Prototype init) {
+		loopCall = init;
+	}
 }

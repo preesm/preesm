@@ -85,7 +85,7 @@ import org.ietr.preesm.core.types.DataType;
 
 /**
  * A compound element is a code element containing multiple call or code
- * elements limited by closure. All buffer defined in this elemen have a local
+ * elements limited by closure. All buffers defined in this element have a local
  * scope
  * 
  * @author jpiat
@@ -291,29 +291,6 @@ public class CompoundCodeElement extends AbstractCodeContainer implements
 					}
 				}
 			}
-			// else if (vertex instanceof CodeGenSDFBroadcastVertex
-			// && !treated.contains(vertex)) {
-			// SDFEdge incomingEdge = null;
-			// for (SDFEdge inEdge : vertex.getBase().incomingEdgesOf(vertex)) {
-			// incomingEdge = inEdge;
-			// }
-			// for (SDFEdge outEdge : vertex.getBase().outgoingEdgesOf(vertex))
-			// {
-			// UserFunctionCall copyCall = new UserFunctionCall("memcpy",
-			// this);
-			// copyCall.addParameter(this.getBuffer(outEdge));
-			// copyCall.addParameter(this.getBuffer(incomingEdge));
-			// try {
-			// copyCall.addParameter(new Constant("size", incomingEdge
-			// .getCons().intValue()
-			// + "*sizeof("
-			// + incomingEdge.getDataType().toString() + ")"));
-			// } catch (InvalidExpressionException e) {
-			// copyCall.addParameter(new Constant("size", 0));
-			// }
-			// this.addCall(copyCall);
-			// }
-			// }
 		}
 	}
 

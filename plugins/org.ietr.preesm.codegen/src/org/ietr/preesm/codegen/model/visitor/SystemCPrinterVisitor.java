@@ -25,13 +25,13 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.model.CodeGenSDFBroadcastVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFEdge;
 import org.ietr.preesm.codegen.model.CodeGenSDFForkVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.codegen.model.CodeGenSDFJoinVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFTaskVertex;
-import org.ietr.preesm.codegen.model.FunctionPrototype;
 
 public class SystemCPrinterVisitor implements
 		IGraphVisitor<CodeGenSDFGraph, SDFAbstractVertex, CodeGenSDFEdge> {
@@ -328,9 +328,9 @@ public class SystemCPrinterVisitor implements
 		if (sdfVertex instanceof CodeGenSDFTaskVertex) {
 			String refinementName = null;
 			if (((CodeGenSDFTaskVertex) sdfVertex).getRefinement() != null
-					&& ((CodeGenSDFTaskVertex) sdfVertex).getRefinement() instanceof FunctionPrototype) {
-				refinementName = ((FunctionPrototype) ((CodeGenSDFTaskVertex) sdfVertex)
-						.getRefinement()).getFunctionName();
+					&& ((CodeGenSDFTaskVertex) sdfVertex).getRefinement() instanceof ActorPrototypes) {
+				refinementName = ((ActorPrototypes) ((CodeGenSDFTaskVertex) sdfVertex)
+						.getRefinement()).getLoopCall().getFunctionName();
 				includes.add(refinementName);
 				exportAtomicActor((CodeGenSDFTaskVertex) sdfVertex);
 			} else if (((CodeGenSDFTaskVertex) sdfVertex).getRefinement() != null
@@ -410,7 +410,7 @@ public class SystemCPrinterVisitor implements
 		List<StringTemplate> atomicFiringRules = new ArrayList<StringTemplate>();
 		List<StringTemplate> atomicFiringRulesSensitivityList = new ArrayList<StringTemplate>();
 
-		String functionName = ((FunctionPrototype) actomicActor.getRefinement())
+		String functionName = ((ActorPrototypes) actomicActor.getRefinement()).getLoopCall()
 				.getFunctionName();
 
 		for (IInterface port : actomicActor.getInterfaces()) {

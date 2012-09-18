@@ -37,7 +37,6 @@ knowledge of the CeCILL-B license and that you accept its terms.
 package org.ietr.preesm.codegen.phase;
 
 import java.util.SortedSet;
-import java.util.logging.Level;
 
 import net.sf.dftools.algorithm.model.parameters.Parameter;
 import net.sf.dftools.algorithm.model.parameters.ParameterSet;
@@ -45,7 +44,6 @@ import net.sf.dftools.algorithm.model.psdf.PSDFInitVertex;
 import net.sf.dftools.algorithm.model.psdf.PSDFSubInitVertex;
 import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.codegen.communication.ComCodeGeneratorFactory;
 import org.ietr.preesm.codegen.communication.IComCodeGenerator;
@@ -142,23 +140,15 @@ public class BeginningCodeGenerator extends AbstractPhaseCodeGenerator {
 			}
 			
 			if (vertex instanceof ICodeGenSDFVertex) {
-				ICodeElement loopCall = CodeElementFactory.createElement(
+				ICodeElement mainCall = CodeElementFactory.createElement(
 						container, vertex);
-				if (loopCall != null) {
+				if (mainCall != null) {
 					if (vertex instanceof PSDFInitVertex) {
-						container.addInitCodeElement(loopCall);
+						container.addInitCodeElement(mainCall);
 					} else if (vertex instanceof PSDFSubInitVertex) {
-						container.addCodeElementFirst(loopCall);
+						container.addCodeElementFirst(mainCall);
 					} else {
-						// Adding loop call if any
-						WorkflowLogger.getLogger()
-								.log(Level.FINE,
-										"Adding code elt "
-												+ loopCall.toString()
-												+ " on operator "
-												+ container.getParentContainer().getParentContainer()
-														.getName());
-						container.addCodeElement(loopCall);
+						container.addCodeElement(mainCall);
 					}
 				}
 			}

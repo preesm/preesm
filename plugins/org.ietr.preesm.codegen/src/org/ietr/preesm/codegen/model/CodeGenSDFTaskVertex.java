@@ -40,9 +40,16 @@ import net.sf.dftools.algorithm.model.IRefinement;
 import net.sf.dftools.algorithm.model.sdf.SDFVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 
+import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
 
+/**
+ * Actor corresponding to a user function
+ * 
+ * @author jpiat
+ * @author mpelcat
+ */
 public class CodeGenSDFTaskVertex extends SDFVertex implements
 		ICodeGenSDFVertex {
 
@@ -84,11 +91,14 @@ public class CodeGenSDFTaskVertex extends SDFVertex implements
 		return this.getName();
 	}
 	
+	/**
+	 * Creating source and sink vertices from actor prototype
+	 */
 	public void setRefinement(IRefinement desc){
 		super.setRefinement(desc);
-		if(desc instanceof FunctionPrototype){
-			FunctionPrototype codeRef = (FunctionPrototype) desc ;
-			for(CodeGenArgument arg : codeRef.getArguments().keySet()){
+		if(desc instanceof ActorPrototypes){
+			ActorPrototypes codeRef = (ActorPrototypes) desc ;
+			for(CodeGenArgument arg : codeRef.getLoopCall().getArguments().keySet()){
 				if(arg.getDirection().equals(CodeGenArgument.INPUT)){
 					CodeGenSDFSourceInterfaceVertex src = (CodeGenSDFSourceInterfaceVertex) this.getInterface(arg.getName());
 					if(src == null){

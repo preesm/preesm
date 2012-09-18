@@ -52,13 +52,14 @@ import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.Design;
 
+import org.ietr.preesm.codegen.idl.ActorPrototypes;
+import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenSDFBroadcastVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFForkVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.codegen.model.CodeGenSDFJoinVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFRoundBufferVertex;
-import org.ietr.preesm.codegen.model.FunctionPrototype;
 import org.ietr.preesm.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.codegen.model.allocators.VirtualHeapAllocator;
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
@@ -71,6 +72,7 @@ import org.ietr.preesm.codegen.model.main.SourceFile;
 import org.ietr.preesm.codegen.model.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.codegen.model.types.CodeSectionType;
 import org.ietr.preesm.codegen.phase.AbstractPhaseCodeGenerator;
+import org.ietr.preesm.codegen.phase.BeginningCodeGenerator;
 import org.ietr.preesm.codegen.phase.LoopCodeGenerator;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
@@ -206,7 +208,7 @@ public class SourceFileCodeGenerator {
 		LinearCodeContainer beginning = new LinearCodeContainer(
 				computationThread);
 		computationThread.addContainer(beginning);
-		AbstractPhaseCodeGenerator beginningCodegen = new LoopCodeGenerator(
+		AbstractPhaseCodeGenerator beginningCodegen = new BeginningCodeGenerator(
 				beginning);
 
 		// Inserts the user function calls and adds their parameters; possibly
@@ -321,7 +323,7 @@ public class SourceFileCodeGenerator {
 			return true;
 		}
 
-		if (!(vertex.getRefinement() instanceof FunctionPrototype)) { // TODO :
+		if (!(vertex.getRefinement() instanceof ActorPrototypes)) { // TODO :
 																		// treat
 																		// when
 																		// the
@@ -333,31 +335,30 @@ public class SourceFileCodeGenerator {
 		}
 
 		if (vertex.getRefinement() == null
-				|| !(vertex.getRefinement() instanceof FunctionPrototype)) {
+				|| !(vertex.getRefinement() instanceof ActorPrototypes)) {
 			return true;
 		}
 
-		FunctionPrototype call = ((FunctionPrototype) vertex.getRefinement());
+		ActorPrototypes prototypes = ((ActorPrototypes) vertex.getRefinement());
+		Prototype currentPrototype = null;
 
-		// loop call references its init and end calls
-		if (call != null) {
+		// loop call references its init calls
+		if (prototypes != null) {
 
 			switch (codeContainerType) {
 			case beginning:
-				call = call.getInitCall();
+				currentPrototype = prototypes.getInitCall();
 				break;
 			case loop:
-				break;
-			case end:
-				call = call.getEndCall();
+				currentPrototype = prototypes.getLoopCall();
 				break;
 			default:
 				break;
 			}
 		}
 
-		if (call != null) {
-			Set<CodeGenArgument> argSet = call.getArguments().keySet();
+		if (prototypes != null) {
+			Set<CodeGenArgument> argSet = currentPrototype.getArguments().keySet();
 
 			for (CodeGenArgument arg : argSet) {
 				if (direction.equals("output")) {

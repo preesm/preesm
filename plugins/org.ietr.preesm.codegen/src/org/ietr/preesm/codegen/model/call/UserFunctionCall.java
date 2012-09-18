@@ -48,10 +48,11 @@ import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
+import org.ietr.preesm.codegen.idl.ActorPrototypes;
+import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
 import org.ietr.preesm.codegen.model.CodeGenSDFTokenInitVertex;
-import org.ietr.preesm.codegen.model.FunctionPrototype;
 import org.ietr.preesm.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.buffer.Buffer;
@@ -159,7 +160,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 		// Replacing the name of the vertex by the name of the prototype, if any
 		// is available.
 		if (vertex instanceof ICodeGenSDFVertex) {
-			FunctionPrototype call = getFunctionPrototype(vertex, section);
+			Prototype call = getFunctionPrototype(vertex, section).getLoopCall();
 			if (call != null) {
 
 				// Filters and orders the buffers to fit the prototype
@@ -215,20 +216,22 @@ public class UserFunctionCall extends AbstractCodeElement {
 		}
 	}
 
-	private FunctionPrototype getFunctionPrototype(SDFAbstractVertex vertex,
+	private ActorPrototypes getFunctionPrototype(SDFAbstractVertex vertex,
 			CodeSectionType section) {
-		FunctionPrototype call = ((FunctionPrototype) vertex.getRefinement());
-		if (call != null) {
+		ActorPrototypes protos = ((ActorPrototypes) vertex.getRefinement());
+		Prototype proto = null;
+		if (protos != null) {
 
 			switch (section) {
 				case beginning:
-					if (call.getInitCall() != null) {
-						call = call.getInitCall();
-						this.setName(call.getFunctionName());
+					if (protos.getInitCall() != null) {
+						proto = protos.getInitCall();
+						this.setName(proto.getFunctionName());
 					}
 					break;
 				case loop:
-					if (call.getFunctionName().isEmpty()) {
+					proto = protos.getLoopCall();
+					if (proto.getFunctionName().isEmpty()) {
 						WorkflowLogger.getLogger().log(
 								Level.INFO,
 								"Name not found in the IDL for function: "
@@ -236,22 +239,16 @@ public class UserFunctionCall extends AbstractCodeElement {
 						this.setName(null);
 						return null;
 					} else {
-						this.setName(call.getFunctionName());
+						this.setName(proto.getFunctionName());
 					}
 	
-					break;
-				case end:
-					if (call.getEndCall() != null) {
-						call = call.getEndCall();
-						this.setName(call.getFunctionName());
-					}
 					break;
 				default:
 					break;
 			}
 		}
 
-		return call;
+		return protos;
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {

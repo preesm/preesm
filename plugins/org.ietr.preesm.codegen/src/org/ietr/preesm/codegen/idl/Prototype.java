@@ -34,32 +34,38 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.codegen.model;
+package org.ietr.preesm.codegen.idl;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.dftools.algorithm.model.IRefinement;
 
-public class FunctionPrototype implements IRefinement {
+import org.ietr.preesm.codegen.model.CodeGenArgument;
+import org.ietr.preesm.codegen.model.CodeGenParameter;
+
+/**
+ * Function prototype
+ * 
+ * @author mpelcat
+ */
+public class Prototype implements IRefinement {
 
 	private String functionName;
-	public FunctionPrototype initCall = null;
-	public FunctionPrototype endCall = null;
 	private int nbArgs;
 
 	private Map<CodeGenArgument, Integer> arguments;
 
 	private Map<CodeGenParameter, Integer> parameters;
 
-	public FunctionPrototype() {
+	public Prototype() {
 		functionName = "";
 		arguments = new HashMap<CodeGenArgument, Integer>();
 		parameters = new HashMap<CodeGenParameter, Integer>();
 		nbArgs = 0;
 	}
 
-	public FunctionPrototype(String name) {
+	public Prototype(String name) {
 		functionName = name;
 		arguments = new HashMap<CodeGenArgument, Integer>();
 		parameters = new HashMap<CodeGenParameter, Integer>();
@@ -82,22 +88,6 @@ public class FunctionPrototype implements IRefinement {
 	public void addParameter(CodeGenParameter parameterName) {
 		parameters.put(parameterName, nbArgs);
 		nbArgs++;
-	}
-
-	public FunctionPrototype getInitCall() {
-		return initCall;
-	}
-
-	public FunctionPrototype getEndCall() {
-		return endCall;
-	}
-
-	public void setInitCall(FunctionPrototype init) {
-		initCall = init;
-	}
-
-	public void setEndCall(FunctionPrototype end) {
-		endCall = end;
 	}
 
 	public Map<CodeGenArgument, Integer> getArguments() {

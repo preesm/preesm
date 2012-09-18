@@ -58,7 +58,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.codegen.model.idl.IDLFunctionFactory;
+import org.ietr.preesm.codegen.idl.IDLPrototypeFactory;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
 import org.ietr.preesm.core.workflow.PreesmException;
@@ -153,7 +153,7 @@ public class CodeGenSDFVertexFactory {
 			}
 
 			if (codeRef.getLanguage() == Language.IDL) {
-				IDLFunctionFactory factory = IDLFunctionFactory.getInstance();
+				IDLPrototypeFactory factory = IDLPrototypeFactory.getInstance();
 				((SDFAbstractVertex) newVertex).setRefinement(factory
 						.create(iFile.getRawLocation().toOSString()));
 			}
@@ -243,7 +243,7 @@ public class CodeGenSDFVertexFactory {
 			}
 
 			if (codeRef.getLanguage() == Language.IDL) {
-				IDLFunctionFactory factory = IDLFunctionFactory.getInstance();
+				IDLPrototypeFactory factory = IDLPrototypeFactory.getInstance();
 				newVertex.setRefinement(factory.create(iFile.getRawLocation()
 						.toOSString()));
 			}

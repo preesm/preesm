@@ -53,11 +53,11 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.ietr.preesm.codegen.idl.IDLPrototypeFactory;
 import org.ietr.preesm.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.codegen.model.CodeGenSDFGraphFactory;
 import org.ietr.preesm.codegen.model.allocators.AllocationPolicy;
 import org.ietr.preesm.codegen.model.allocators.BufferAllocator;
-import org.ietr.preesm.codegen.model.idl.IDLFunctionFactory;
 import org.ietr.preesm.codegen.model.main.SourceFileList;
 import org.ietr.preesm.codegen.model.print.GenericPrinter;
 import org.ietr.preesm.codegen.model.visitor.SystemCPrinterVisitor;
@@ -89,7 +89,7 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 
 		// Resets the parsed IDL prototypes
-		IDLFunctionFactory.getInstance().resetPrototypes();
+		IDLPrototypeFactory.getInstance().resetPrototypes();
 
 		// Default source path is given in the workflow
 		String sourcePath = PathTools.getAbsolutePath(

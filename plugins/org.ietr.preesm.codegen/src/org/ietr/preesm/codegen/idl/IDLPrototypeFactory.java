@@ -34,14 +34,13 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.codegen.model.idl;
+package org.ietr.preesm.codegen.idl;
 
 import java.util.Enumeration;
 import java.util.HashMap;
 
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
-import org.ietr.preesm.codegen.model.FunctionPrototype;
 import org.ietr.preesm.codegen.model.IFunctionFactory;
 import org.jacorb.idl.AliasTypeSpec;
 import org.jacorb.idl.ConstrTypeSpec;
@@ -73,63 +72,60 @@ import org.jacorb.idl.parser;
  * Retrieving prototype data from an idl file
  * 
  * @author jpiat
+ * @author mpelcat
  */
-public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor {
+public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
 
-	public HashMap<String, FunctionPrototype> createdIdl;
-	private FunctionPrototype finalCall;
-	private FunctionPrototype currentCall;
+	public HashMap<String, ActorPrototypes> createdIdl;
 
-	public static IDLFunctionFactory instance = null;
+	/**
+	 * Generated prototypes
+	 */
+	private ActorPrototypes finalPrototypes;
+	
+	/**
+	 * Temporary prototype used during parsing
+	 */
+	private Prototype currentPrototype;
 
-	public static IDLFunctionFactory getInstance() {
+	/**
+	 * Instance of the singleton class
+	 */
+	public static IDLPrototypeFactory instance = null;
+
+	public static IDLPrototypeFactory getInstance() {
 		if (instance == null) {
-			instance = new IDLFunctionFactory();
+			instance = new IDLPrototypeFactory();
 		}
 		return instance;
 	}
 
-	private IDLFunctionFactory() {
+	private IDLPrototypeFactory() {
 		resetPrototypes();
 	}
 
 	public void resetPrototypes() {
-		createdIdl = new HashMap<String, FunctionPrototype>();
+		createdIdl = new HashMap<String, ActorPrototypes>();
 	}
 
+	/**
+	 * Retrieving prototypes from an IDL file
+	 */
 	@Override
-	public FunctionPrototype create(String idlPath) {
+	public ActorPrototypes create(String idlPath) {
 		if (createdIdl.get(idlPath) == null) {
-			currentCall = null;
 			parser.setGenerator(this);
 
 			try {
-				finalCall = new FunctionPrototype();
+				finalPrototypes = new ActorPrototypes();
 				IDLParser.parse(idlPath, this);
-				createdIdl.put(idlPath, finalCall);
+				createdIdl.put(idlPath, finalPrototypes);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
-			currentCall = null;
 		}
 		return createdIdl.get(idlPath);
-	}
-
-	@Override
-	public void visitAlias(AliasTypeSpec arg0) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void visitConstrTypeSpec(ConstrTypeSpec arg0) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void visitDeclaration(Declaration arg0) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -149,23 +145,15 @@ public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor {
 	}
 
 	@Override
-	public void visitEnum(EnumType arg0) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
 	public void visitInterface(Interface arg0) {
 		if (arg0.name().equals("init")) {
-			currentCall = new FunctionPrototype();
+			currentPrototype = new Prototype();
 			arg0.body.accept(this);
-			finalCall.setInitCall(currentCall);
+			finalPrototypes.setInitCall(currentPrototype);
 		} else if (arg0.name().equals("loop")) {
-			currentCall = finalCall;
+			currentPrototype = new Prototype();
+			finalPrototypes.setLoopCall(currentPrototype);
 			arg0.body.accept(this);
-		} else if (arg0.name().equals("end")) {
-			currentCall = new FunctionPrototype();
-			arg0.body.accept(this);
-			finalCall.setEndCall(currentCall);
 		}
 	}
 
@@ -179,29 +167,26 @@ public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor {
 
 	@Override
 	public void visitMethod(Method arg0) {
-		currentCall.setFunctionName(arg0.name());
+		currentPrototype.setFunctionName(arg0.name());
 		arg0.parameterType.accept(this);
 	}
 
 	@Override
 	public void visitModule(Module arg0) {
-		arg0.getDefinitions().accept(this);
 		System.out.println(arg0.toString());
 	}
 
 	@Override
 	public void visitNative(NativeType arg0) {
-		// TODO Auto-generated method stub
 		System.out.println(arg0.toString());
 	}
 
 	@Override
 	public void visitOpDecl(OpDecl arg0) {
-		currentCall.setFunctionName(arg0.name());
+		currentPrototype.setFunctionName(arg0.name());
 		for (Object param : arg0.paramDecls) {
 			((ParamDecl) param).accept(this);
 		}
-		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -210,30 +195,25 @@ public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor {
 			if (arg0.paramTypeSpec.name().equals("parameter")) {
 				CodeGenParameter parameter = new CodeGenParameter(
 						arg0.simple_declarator.name(), 0);
-				currentCall.addParameter(parameter);
+				currentPrototype.addParameter(parameter);
 			} else {
 				CodeGenArgument argument = new CodeGenArgument(
 						arg0.simple_declarator.name(), CodeGenArgument.INPUT);
 				argument.setType(arg0.paramTypeSpec.getIDLTypeName());
-				currentCall.addArgument(argument);
+				currentPrototype.addArgument(argument);
 			}
 		} else if (arg0.paramAttribute == ParamDecl.MODE_OUT) {
 			if (arg0.paramTypeSpec.name().equals("parameter")) {
 				CodeGenParameter parameter = new CodeGenParameter(
 						arg0.simple_declarator.name(), 1);
-				currentCall.addParameter(parameter);
+				currentPrototype.addParameter(parameter);
 			} else {
 				CodeGenArgument argument = new CodeGenArgument(
 						arg0.simple_declarator.name(), CodeGenArgument.OUTPUT);
 				argument.setType(arg0.paramTypeSpec.getIDLTypeName());
-				currentCall.addArgument(argument);
+				currentPrototype.addArgument(argument);
 			}
 		}
-	}
-
-	@Override
-	public void visitSimpleTypeSpec(SimpleTypeSpec arg0) {
-		// TODO Auto-generated method stub
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -247,43 +227,46 @@ public class IDLFunctionFactory implements IFunctionFactory, IDLTreeVisitor {
 	}
 
 	@Override
+	public void visitSimpleTypeSpec(SimpleTypeSpec arg0) {
+	}
+
+	@Override
 	public void visitStruct(StructType arg0) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void visitTypeDeclaration(TypeDeclaration arg0) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void visitTypeDef(TypeDef arg0) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void visitUnion(UnionType arg0) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void visitValue(Value arg0) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void visitVectorType(VectorType arg0) {
-		// TODO Auto-generated method stub
 	}
 
-	public static void main(String[] args) {
-		if (args.length != 1) {
-			return;
-		}
-		IDLFunctionFactory factory = new IDLFunctionFactory();
-		@SuppressWarnings("unused")
-		FunctionPrototype call = factory.create(args[0]);
-		System.out.println("creation done");
+	@Override
+	public void visitAlias(AliasTypeSpec arg0) {
 	}
 
+	@Override
+	public void visitConstrTypeSpec(ConstrTypeSpec arg0) {
+	}
+
+	@Override
+	public void visitDeclaration(Declaration arg0) {
+	}
+
+	@Override
+	public void visitEnum(EnumType arg0) {
+	}
 }

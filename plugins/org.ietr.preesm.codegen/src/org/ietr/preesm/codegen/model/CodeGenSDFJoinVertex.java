@@ -43,6 +43,7 @@ import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 
+import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
 
@@ -58,7 +59,7 @@ public class CodeGenSDFJoinVertex extends SDFJoinVertex implements
 
 	public CodeGenSDFJoinVertex() {
 		this.getPropertyBean().setValue(TYPE, VertexType.task);
-		FunctionPrototype joinCall = new FunctionPrototype("join");
+		ActorPrototypes joinCall = new ActorPrototypes("join");
 		this.setRefinement(joinCall);
 	}
 

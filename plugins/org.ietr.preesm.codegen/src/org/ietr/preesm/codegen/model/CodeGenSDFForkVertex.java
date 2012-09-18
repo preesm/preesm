@@ -43,6 +43,7 @@ import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.algorithm.model.sdf.esdf.SDFForkVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 
+import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
 
@@ -58,7 +59,7 @@ public class CodeGenSDFForkVertex extends SDFForkVertex implements
 
 	public CodeGenSDFForkVertex() {
 		this.getPropertyBean().setValue(TYPE, VertexType.task);
-		FunctionPrototype forkCall = new FunctionPrototype("fork");
+		ActorPrototypes forkCall = new ActorPrototypes("fork");
 		this.setRefinement(forkCall);
 	}
 

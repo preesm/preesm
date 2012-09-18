@@ -34,14 +34,46 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.codegen.model;
+package org.ietr.preesm.codegen.idl;
 
-import org.ietr.preesm.codegen.idl.ActorPrototypes;
+import java.util.logging.Level;
 
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
+import org.jacorb.idl.ConstDecl;
+import org.jacorb.idl.GlobalInputStream;
+import org.jacorb.idl.IDLTreeVisitor;
+import org.jacorb.idl.NameTable;
+import org.jacorb.idl.TypeMap;
+import org.jacorb.idl.lexer;
+import org.jacorb.idl.parser;
 
 /**
+ * Parsing actor function prototypes from IDL files
+ * 
  * @author jpiat
  */
-public interface IFunctionFactory {
-	public ActorPrototypes create(String calPath);
+
+public class IDLParser extends parser {
+
+	public static void parse(String filePath, IDLTreeVisitor visitor) {
+		try {
+			init();
+			setGenerator(visitor);
+			GlobalInputStream.init();
+			GlobalInputStream.setInput(filePath);
+
+			/* reset tables everywhere */
+			lexer.reset();
+			NameTable.init();
+			ConstDecl.init();
+			TypeMap.init();
+
+			new parser().parse();
+		} catch (Exception e) {
+			WorkflowLogger.getLogger().log(Level.INFO,
+					"IDL Parser: " + e.getMessage());
+		}
+	}
+
 }
