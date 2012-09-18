@@ -50,9 +50,6 @@ public class ActorPrototypes implements IRefinement {
 	private Prototype initCall = null;
 	private Prototype loopCall = null;
 
-	public ActorPrototypes() {
-	}
-
 	public ActorPrototypes(String name) {
 	}
 

@@ -117,11 +117,10 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
 			parser.setGenerator(this);
 
 			try {
-				finalPrototypes = new ActorPrototypes();
+				finalPrototypes = new ActorPrototypes(idlPath);
 				IDLParser.parse(idlPath, this);
 				createdIdl.put(idlPath, finalPrototypes);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -174,6 +173,8 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
 	@Override
 	public void visitModule(Module arg0) {
 		System.out.println(arg0.toString());
+		
+		arg0.getDefinitions().accept(this);
 	}
 
 	@Override
