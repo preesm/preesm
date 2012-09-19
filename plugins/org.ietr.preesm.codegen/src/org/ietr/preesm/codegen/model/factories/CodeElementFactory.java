@@ -48,6 +48,7 @@ import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
+import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.model.CodeGenSDFBroadcastVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFForkVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFInitVertex;
@@ -90,18 +91,18 @@ public class CodeElementFactory {
 	 * Creates code for broadcast
 	 */
 	public static ICodeElement createElement(
-			AbstractCodeContainer parentContainer, SDFAbstractVertex vertex) {
-		if(vertex instanceof CodeGenSDFBroadcastVertex) return createElement(parentContainer,(CodeGenSDFBroadcastVertex)vertex);
-		else if(vertex instanceof CodeGenSDFForkVertex) return createElement(parentContainer,(CodeGenSDFForkVertex)vertex);
-		else if(vertex instanceof CodeGenSDFJoinVertex) return createElement(parentContainer,(CodeGenSDFJoinVertex)vertex);
-		else if(vertex instanceof CodeGenSDFInitVertex) return createElement(parentContainer,(CodeGenSDFInitVertex)vertex);
-		else if(vertex instanceof CodeGenSDFRoundBufferVertex) return createElement(parentContainer,(CodeGenSDFRoundBufferVertex)vertex);
-		else if(vertex instanceof CodeGenSDFSinkInterfaceVertex) return createElement(parentContainer,(CodeGenSDFSinkInterfaceVertex)vertex);
-		else if(vertex instanceof CodeGenSDFSourceInterfaceVertex) return createElement(parentContainer,(CodeGenSDFSourceInterfaceVertex)vertex);
-		else if(vertex instanceof CodeGenSDFSubInitVertex) return createElement(parentContainer,(CodeGenSDFSubInitVertex)vertex);
-		else if(vertex instanceof CodeGenSDFTaskVertex) return createElement(parentContainer,(CodeGenSDFTaskVertex)vertex);
-		else if(vertex instanceof CodeGenSDFTokenEndVertex) return createElement(parentContainer,(CodeGenSDFTokenEndVertex)vertex);
-		else if(vertex instanceof CodeGenSDFTokenInitVertex) return createElement(parentContainer,(CodeGenSDFTokenInitVertex)vertex);
+			AbstractCodeContainer parentContainer, SDFAbstractVertex vertex, CodeSectionType sectionType) {
+		if(vertex instanceof CodeGenSDFBroadcastVertex) return createElement(parentContainer,(CodeGenSDFBroadcastVertex)vertex, sectionType);
+		else if(vertex instanceof CodeGenSDFForkVertex) return createElement(parentContainer,(CodeGenSDFForkVertex)vertex, sectionType);
+		else if(vertex instanceof CodeGenSDFJoinVertex) return createElement(parentContainer,(CodeGenSDFJoinVertex)vertex, sectionType);
+		else if(vertex instanceof CodeGenSDFInitVertex) return createElement(parentContainer,(CodeGenSDFInitVertex)vertex, sectionType);
+		else if(vertex instanceof CodeGenSDFRoundBufferVertex) return createElement(parentContainer,(CodeGenSDFRoundBufferVertex)vertex, sectionType);
+		else if(vertex instanceof CodeGenSDFSinkInterfaceVertex) return createElement(parentContainer,(CodeGenSDFSinkInterfaceVertex)vertex, sectionType);
+		else if(vertex instanceof CodeGenSDFSourceInterfaceVertex) return createElement(parentContainer,(CodeGenSDFSourceInterfaceVertex)vertex, sectionType);
+		else if(vertex instanceof CodeGenSDFSubInitVertex) return createElement(parentContainer,(CodeGenSDFSubInitVertex)vertex, sectionType);
+		else if(vertex instanceof CodeGenSDFTaskVertex) return createElement(parentContainer,(CodeGenSDFTaskVertex)vertex, sectionType);
+		else if(vertex instanceof CodeGenSDFTokenEndVertex) return createElement(parentContainer,(CodeGenSDFTokenEndVertex)vertex, sectionType);
+		else if(vertex instanceof CodeGenSDFTokenInitVertex) return createElement(parentContainer,(CodeGenSDFTokenInitVertex)vertex, sectionType);
 		return null;
 	}
 
@@ -110,7 +111,7 @@ public class CodeElementFactory {
 	 */
 	public static ICodeElement createElement(
 			AbstractCodeContainer parentContainer,
-			CodeGenSDFBroadcastVertex vertex) {
+			CodeGenSDFBroadcastVertex vertex, CodeSectionType sectionType) {
 		SDFEdge incomingEdge = null;
 		CompoundCodeElement container = new CompoundCodeElement(
 				vertex.getName(), parentContainer);
@@ -185,7 +186,7 @@ public class CodeElementFactory {
 	 * Creates code for fork
 	 */
 	public static ICodeElement createElement(
-			AbstractCodeContainer parentContainer, CodeGenSDFForkVertex vertex) {
+			AbstractCodeContainer parentContainer, CodeGenSDFForkVertex vertex, CodeSectionType sectionType) {
 		SDFEdge incomingEdge = null;
 		CompoundCodeElement container = new CompoundCodeElement(
 				vertex.getName(), parentContainer);
@@ -238,7 +239,7 @@ public class CodeElementFactory {
 	 * Creates code for join
 	 */
 	public static ICodeElement createElement(
-			AbstractCodeContainer parentContainer, CodeGenSDFJoinVertex vertex) {
+			AbstractCodeContainer parentContainer, CodeGenSDFJoinVertex vertex, CodeSectionType sectionType) {
 		SDFEdge outgoingEdge = null;
 		CompoundCodeElement container = new CompoundCodeElement(
 				vertex.getName(), parentContainer);
@@ -270,15 +271,15 @@ public class CodeElementFactory {
 	}
 
 	/**
-	 * Creates code for init
+	 * Creates code for init vertices
 	 */
 	public static ICodeElement createElement(
-			AbstractCodeContainer parentContainer, CodeGenSDFInitVertex vertex) {
+			AbstractCodeContainer parentContainer, CodeGenSDFInitVertex vertex, CodeSectionType sectionType) {
 		CompoundCodeElement container = new CompoundCodeElement(
 				vertex.getName(), parentContainer);
 		container.setCorrespondingVertex(vertex);
 		UserFunctionCall call = new UserFunctionCall(vertex, parentContainer,
-				CodeSectionType.loop, false);
+				sectionType, false);
 		container.addCall(call);
 		for (SDFEdge edge : ((SDFGraph) vertex.getBase()).edgeSet()) {
 			if (edge.getCons() instanceof PSDFEdgePropertyType) {
@@ -349,7 +350,7 @@ public class CodeElementFactory {
 	 */
 	public static ICodeElement createElement(
 			AbstractCodeContainer parentContainer,
-			CodeGenSDFRoundBufferVertex vertex) {
+			CodeGenSDFRoundBufferVertex vertex, CodeSectionType sectionType) {
 		SDFEdge outgoingEdge = null;
 		CompoundCodeElement container = new CompoundCodeElement(
 				vertex.getName(), parentContainer);
@@ -386,7 +387,7 @@ public class CodeElementFactory {
 	 */
 	public static ICodeElement createElement(
 			AbstractCodeContainer parentContainer,
-			CodeGenSDFSinkInterfaceVertex vertex) {
+			CodeGenSDFSinkInterfaceVertex vertex, CodeSectionType sectionType) {
 		return null;
 	}
 
@@ -395,7 +396,7 @@ public class CodeElementFactory {
 	 */
 	public static ICodeElement createElement(
 			AbstractCodeContainer parentContainer,
-			CodeGenSDFSourceInterfaceVertex vertex) {
+			CodeGenSDFSourceInterfaceVertex vertex, CodeSectionType sectionType) {
 		return null;
 	}
 
@@ -404,7 +405,7 @@ public class CodeElementFactory {
 	 */
 	public static ICodeElement createElement(
 			AbstractCodeContainer parentContainer,
-			CodeGenSDFSubInitVertex vertex) {
+			CodeGenSDFSubInitVertex vertex, CodeSectionType sectionType) {
 		return null;
 	}
 
@@ -412,30 +413,31 @@ public class CodeElementFactory {
 	 * Creates code for user defined task
 	 */
 	public static ICodeElement createElement(
-			AbstractCodeContainer parentContainer, CodeGenSDFTaskVertex vertex) {
+			AbstractCodeContainer parentContainer, CodeGenSDFTaskVertex vertex, CodeSectionType sectionType) {
 		try {
-			// Generating loop
+			// Generating loop when the vertex is repeated
 			if ((vertex.getNbRepeat() instanceof Integer && (vertex
 					.getNbRepeatAsInteger() > 1))
 					|| vertex.getNbRepeat() instanceof Expression
 					|| (vertex.getNbRepeat() instanceof JSCLInteger && (vertex
 							.getNbRepeatAsInteger() > 1))) {
 				FiniteForLoop loop = new FiniteForLoop(parentContainer,
-						(ICodeGenSDFVertex) vertex);
+						(ICodeGenSDFVertex) vertex, sectionType);
 				return loop;
-			} else if (vertex.getGraphDescription() == null) {
+			} else if (vertex.getGraphDescription() == null && vertex.getRefinement() instanceof ActorPrototypes) {
+				ActorPrototypes protos = ((ActorPrototypes) vertex.getRefinement());
+				if(protos.hasPrototype(sectionType)){
 				UserFunctionCall call = new UserFunctionCall(vertex,
-						parentContainer, CodeSectionType.loop, false);
-				if (call.getName() == null) {
-					return null;
+						parentContainer, sectionType, false);
+					return call;
 				}
-				return call;
-			} else {
+			} else if (vertex.getGraphDescription() != null) {
 				CompoundCodeElement compound = new CompoundCodeElement(
 						vertex.getName(), parentContainer,
-						(ICodeGenSDFVertex) vertex);
+						(ICodeGenSDFVertex) vertex, sectionType);
 				return compound;
 			}
+			return null;
 		} catch (InvalidExpressionException e) {
 			e.printStackTrace();
 			return null;
@@ -447,7 +449,7 @@ public class CodeElementFactory {
 	 */
 	public static ICodeElement createElement(
 			AbstractCodeContainer parentContainer,
-			CodeGenSDFTokenEndVertex vertex) {
+			CodeGenSDFTokenEndVertex vertex, CodeSectionType sectionType) {
 		SDFEdge incomingEdge = null;
 		if (vertex.getEndReference() != null) {
 			for (SDFEdge inEdge : ((SDFGraph) vertex.getBase())
@@ -491,7 +493,7 @@ public class CodeElementFactory {
 	 */
 	public static ICodeElement createElement(
 			AbstractCodeContainer parentContainer,
-			CodeGenSDFTokenInitVertex vertex) {
+			CodeGenSDFTokenInitVertex vertex, CodeSectionType sectionType) {
 		SDFEdge outgoingEdge = null;
 		if (parentContainer instanceof ForLoop) {
 			for (SDFEdge outEdge : ((SDFGraph) vertex.getBase())

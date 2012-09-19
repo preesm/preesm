@@ -87,7 +87,7 @@ public class InitCodeGenerator extends AbstractPhaseCodeGenerator {
 	 */
 	@Override
 	public void addSendsAndReceives(SortedSet<SDFAbstractVertex> vertices,
-			AbstractBufferContainer bufferContainer) {
+			AbstractBufferContainer bufferContainer, CodeSectionType sectionType) {
 
 		// a com code generator factory outputs the commmunication generator
 		// that will add communication primitives into the code
@@ -102,7 +102,7 @@ public class InitCodeGenerator extends AbstractPhaseCodeGenerator {
 			IComCodeGenerator generator = factory.getCodeGenerator(step);
 
 			// Creates all functions and buffers related to the given vertex
-			generator.insertComs(vertex);
+			generator.insertComs(vertex, sectionType);
 		}
 	}
 
@@ -126,7 +126,7 @@ public class InitCodeGenerator extends AbstractPhaseCodeGenerator {
 	 * Adds one function call for each vertex in the ordered set
 	 */
 	@Override
-	public void addUserFunctionCalls(SortedSet<SDFAbstractVertex> vertices) {
+	public void addUserFunctionCalls(SortedSet<SDFAbstractVertex> vertices, CodeSectionType sectionType) {
 
 		// Treating regular vertices
 		for (SDFAbstractVertex vertex : vertices) {
@@ -136,7 +136,7 @@ public class InitCodeGenerator extends AbstractPhaseCodeGenerator {
 				if (vertex instanceof CodeGenSDFTokenInitVertex) {
 					ICodeElement beginningCall = new UserFunctionCall(
 							(CodeGenSDFTokenInitVertex) vertex, container,
-							CodeSectionType.beginning, false);
+							sectionType, false);
 					// Adding init call if any
 
 					container.addInitCodeElement(beginningCall);
@@ -145,7 +145,7 @@ public class InitCodeGenerator extends AbstractPhaseCodeGenerator {
 			
 			if (vertex instanceof ICodeGenSDFVertex) {
 				ICodeElement mainCall = CodeElementFactory.createElement(
-						container, vertex);
+						container, vertex, sectionType);
 				if (mainCall != null) {
 					if (vertex instanceof PSDFInitVertex) {
 						container.addInitCodeElement(mainCall);

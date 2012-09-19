@@ -55,6 +55,7 @@ import org.ietr.preesm.codegen.model.call.Variable;
 import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
 import org.ietr.preesm.codegen.model.factories.CodeElementFactory;
 import org.ietr.preesm.codegen.model.main.ICodeElement;
+import org.ietr.preesm.codegen.model.types.CodeSectionType;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
@@ -82,7 +83,7 @@ public class LoopCodeGenerator extends AbstractPhaseCodeGenerator {
 	 */
 	@Override
 	public void addSendsAndReceives(SortedSet<SDFAbstractVertex> vertices,
-			AbstractBufferContainer bufferContainer) {
+			AbstractBufferContainer bufferContainer, CodeSectionType sectionType) {
 
 		// a com code generator factory outputs the commmunication generator
 		// that will add communication primitives into the code
@@ -97,7 +98,7 @@ public class LoopCodeGenerator extends AbstractPhaseCodeGenerator {
 			IComCodeGenerator generator = factory.getCodeGenerator(step);
 
 			// Creates all functions and buffers related to the given vertex
-			generator.insertComs(vertex);
+			generator.insertComs(vertex, sectionType);
 		}
 	}
 
@@ -121,12 +122,12 @@ public class LoopCodeGenerator extends AbstractPhaseCodeGenerator {
 	 * Adds one function call for each vertex in the ordered set
 	 */
 	@Override
-	public void addUserFunctionCalls(SortedSet<SDFAbstractVertex> vertices) {
+	public void addUserFunctionCalls(SortedSet<SDFAbstractVertex> vertices, CodeSectionType sectionType) {
 
 		// Treating regular vertices
 		for (SDFAbstractVertex vertex : vertices) {
 			if (vertex instanceof ICodeGenSDFVertex) {
-				ICodeElement loopCall = CodeElementFactory.createElement(loop, vertex);
+				ICodeElement loopCall = CodeElementFactory.createElement(loop, vertex, sectionType);
 				if (loopCall != null) {
 					if (vertex instanceof PSDFInitVertex) {
 						loop.addInitCodeElement(loopCall);

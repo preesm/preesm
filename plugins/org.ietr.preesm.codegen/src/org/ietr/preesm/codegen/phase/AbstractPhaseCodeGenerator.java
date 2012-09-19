@@ -43,6 +43,7 @@ import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
+import org.ietr.preesm.codegen.model.types.CodeSectionType;
 
 /**
  * Generates code for a code phase
@@ -55,7 +56,7 @@ public abstract class AbstractPhaseCodeGenerator {
 	 * Block of code filled by this generator
 	 */
 	protected AbstractCodeContainer container;
-	
+
 	public AbstractPhaseCodeGenerator(AbstractCodeContainer container) {
 	}
 
@@ -64,8 +65,9 @@ public abstract class AbstractPhaseCodeGenerator {
 	 * core. Vertices are already in the correct order. The code thread com
 	 * generator delegates com creation to each route step appropriate generator
 	 */
-	public abstract void addSendsAndReceives(SortedSet<SDFAbstractVertex> vertices,
-			AbstractBufferContainer bufferContainer);
+	public abstract void addSendsAndReceives(
+			SortedSet<SDFAbstractVertex> vertices,
+			AbstractBufferContainer bufferContainer, CodeSectionType sectionType);
 
 	/**
 	 * Adding variables for PSDF parameters
@@ -75,5 +77,6 @@ public abstract class AbstractPhaseCodeGenerator {
 	/**
 	 * Adds one function call for each vertex in the ordered set
 	 */
-	public abstract void addUserFunctionCalls(SortedSet<SDFAbstractVertex> vertices);
+	public abstract void addUserFunctionCalls(
+			SortedSet<SDFAbstractVertex> vertices, CodeSectionType sectionType);
 }

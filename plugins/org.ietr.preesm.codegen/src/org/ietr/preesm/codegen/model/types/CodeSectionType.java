@@ -41,7 +41,57 @@ package org.ietr.preesm.codegen.model.types;
  * 
  * @author mpelcat
  */
-public enum CodeSectionType {
+public class CodeSectionType {
 
-	beginning, loop
+	public enum MajorType {
+
+		INIT, LOOP
+	}
+
+	/**
+	 * Main code block identification
+	 */
+	private MajorType major;
+
+	/**
+	 * sub code block identification
+	 */
+	private int minor = -1;
+
+	/**
+	 * creating a section type with major and minor
+	 */
+	public CodeSectionType(MajorType major, int minor) {
+		super();
+		this.major = major;
+		this.minor = minor;
+	}
+
+	/**
+	 * creating a section type with only major
+	 */
+	public CodeSectionType(MajorType major) {
+		super();
+		this.major = major;
+		this.minor = -1;
+	}
+
+	public MajorType getMajor() {
+		return major;
+	}
+
+	public int getMinor() {
+		return minor;
+	}
+
+	@Override
+	public String toString() {
+		if(major.equals(MajorType.LOOP)){
+			return "LOOP";
+		}
+		else if(major.equals(MajorType.INIT)){
+			return "(INIT," + minor + ")";
+		}
+		return "";
+	}
 }

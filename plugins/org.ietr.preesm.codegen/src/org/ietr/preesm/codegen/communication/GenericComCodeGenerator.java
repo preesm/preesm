@@ -15,7 +15,6 @@ import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.codegen.SourceFileCodeGenerator;
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.buffer.Buffer;
 import org.ietr.preesm.codegen.model.com.CommunicationFunctionCall;
@@ -89,14 +88,14 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 	 * Creating coms for a given communication vertex
 	 */
 	@Override
-	public void insertComs(SDFAbstractVertex vertex) {
+	public void insertComs(SDFAbstractVertex vertex, CodeSectionType sectionType) {
 
 		// Creating and adding the calls to send and receive functions
 
 		// createCalls returns the computing call to which communication calls
 		// must be synchronized (sender or receiver call).
 		List<ICodeElement> relativeCalls = createCalls(container, vertex,
-				CodeSectionType.loop);
+				sectionType);
 
 		for (int i = 0; i < startComZoneCalls.size(); i++) {
 			CommunicationFunctionCall startCall = startComZoneCalls.get(i);
@@ -191,7 +190,7 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 	 */
 	@SuppressWarnings("unchecked")
 	protected List<ICodeElement> createSendCalls(SDFAbstractVertex comVertex,
-			AbstractBufferContainer parentContainer) {
+			AbstractBufferContainer parentContainer, CodeSectionType sectionType) {
 
 		// Retrieving the communication route step
 		AbstractRouteStep rs = (AbstractRouteStep) comVertex.getPropertyBean()
@@ -231,9 +230,9 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 
 		// Case of one send per buffer
 		for (Buffer buf : bufferSet) {
-			if (SourceFileCodeGenerator.isBufferUsedInCodeContainerType(
-					senderVertex, CodeSectionType.loop, buf, "output")
-					|| VertexType.isIntermediateSend(comVertex)) {
+			/*if (SourceFileCodeGenerator.isBufferUsedInCodeContainerType(
+					senderVertex, sectionType, buf, "output")
+					|| VertexType.isIntermediateSend(comVertex))*/ {
 				List<Buffer> singleBufferSet = new ArrayList<Buffer>();
 				singleBufferSet.add(buf);
 
@@ -257,7 +256,7 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 	 */
 	@SuppressWarnings("unchecked")
 	protected List<ICodeElement> createReceiveCalls(
-			SDFAbstractVertex comVertex, AbstractBufferContainer parentContainer) {
+			SDFAbstractVertex comVertex, AbstractBufferContainer parentContainer, CodeSectionType sectionType) {
 
 		// Retrieving the communication route step
 		AbstractRouteStep rs = (AbstractRouteStep) comVertex.getPropertyBean()
@@ -298,9 +297,9 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 
 		// Case of one receive per buffer
 		for (Buffer buf : bufferSet) {
-			if (SourceFileCodeGenerator.isBufferUsedInCodeContainerType(
-					senderVertex, CodeSectionType.loop, buf, "output")
-					|| VertexType.isIntermediateReceive(senderVertex)) {
+			/*if (SourceFileCodeGenerator.isBufferUsedInCodeContainerType(
+					senderVertex, sectionType, buf, "output")
+					|| VertexType.isIntermediateReceive(senderVertex))*/ {
 				List<Buffer> singleBufferSet = new ArrayList<Buffer>();
 				singleBufferSet.add(buf);
 
@@ -325,7 +324,7 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 	 */
 	protected List<ICodeElement> createCalls(
 			AbstractBufferContainer parentContainer,
-			SDFAbstractVertex comVertex, CodeSectionType codeContainerType) {
+			SDFAbstractVertex comVertex, CodeSectionType sectionType) {
 
 		// Clearing previously created calls
 		startComZoneCalls.clear();
@@ -340,12 +339,12 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 			// Creating send calls
 			if (type.isSend()) {
 
-				return createSendCalls(comVertex, parentContainer);
+				return createSendCalls(comVertex, parentContainer, sectionType);
 
 				// Creating receive calls
 			} else if (type.isReceive()) {
 
-				return createReceiveCalls(comVertex, parentContainer);
+				return createReceiveCalls(comVertex, parentContainer, sectionType);
 			}
 		}
 

@@ -59,6 +59,7 @@ import org.ietr.preesm.codegen.model.main.VariableAllocation;
 import org.ietr.preesm.codegen.model.printer.CodeZoneId;
 import org.ietr.preesm.codegen.model.printer.IAbstractPrinter;
 import org.ietr.preesm.codegen.model.threads.ComputationThreadDeclaration;
+import org.ietr.preesm.codegen.model.types.CodeSectionType;
 import org.ietr.preesm.core.types.DataType;
 
 /**
@@ -89,7 +90,7 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 	 *            The vertex corresponding to this loop
 	 */
 	public FiniteForLoop(AbstractBufferContainer parentContainer,
-			ICodeGenSDFVertex correspondingVertex) {
+			ICodeGenSDFVertex correspondingVertex, CodeSectionType sectionType) {
 		super(parentContainer);
 		AbstractBufferContainer parentLoop = parentContainer;
 		while (parentLoop != null && !(parentLoop instanceof FiniteForLoop)) {
@@ -189,7 +190,7 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 			}
 		}
 		content = new CompoundCodeElement(this.correspondingVertex.getName(),
-				this, correspondingVertex);
+				this, correspondingVertex, sectionType);
 	}
 
 	public ICodeElement getContent() {

@@ -72,6 +72,7 @@ import org.ietr.preesm.codegen.model.main.SchedulingOrderComparator;
 import org.ietr.preesm.codegen.model.main.SourceFile;
 import org.ietr.preesm.codegen.model.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.codegen.model.types.CodeSectionType;
+import org.ietr.preesm.codegen.model.types.CodeSectionType.MajorType;
 import org.ietr.preesm.codegen.phase.AbstractPhaseCodeGenerator;
 import org.ietr.preesm.codegen.phase.InitCodeGenerator;
 import org.ietr.preesm.codegen.phase.LoopCodeGenerator;
@@ -240,7 +241,7 @@ public class SourceFileCodeGenerator {
 		// including graph parameters
 
 		fillSection(loopCodegen, init, parameterSet, tasks, coms,
-				bufferContainer);
+				bufferContainer,new CodeSectionType(MajorType.INIT,initIndex));
 	}
 	
 	/**
@@ -260,7 +261,7 @@ public class SourceFileCodeGenerator {
 		// including graph parameters
 
 		fillSection(loopCodegen, loop, parameterSet, tasks, coms,
-				bufferContainer);
+				bufferContainer, new CodeSectionType(MajorType.LOOP));
 	}
 
 	/**
@@ -270,16 +271,17 @@ public class SourceFileCodeGenerator {
 			AbstractCodeContainer container, ParameterSet parameterSet,
 			SortedSet<SDFAbstractVertex> tasks,
 			SortedSet<SDFAbstractVertex> coms,
-			AbstractBufferContainer bufferContainer) {
+			AbstractBufferContainer bufferContainer,
+			CodeSectionType sectionType) {
 
 		// PSDF code
 		codegen.addDynamicParameter(parameterSet);
-		codegen.addUserFunctionCalls(tasks);
+		codegen.addUserFunctionCalls(tasks, sectionType);
 
 		// Inserts the communication function calls, the communication
 		// thread semaphore post and pends and the communication
 		// initializations
-		codegen.addSendsAndReceives(coms, bufferContainer);
+		codegen.addSendsAndReceives(coms, bufferContainer, sectionType);
 	}
 
 	/**
@@ -351,7 +353,7 @@ public class SourceFileCodeGenerator {
 			Buffer buf, String direction) {
 
 		// Special vertices are considered to use systematically their buffers
-		if (codeContainerType.equals(CodeSectionType.loop)
+		if (codeContainerType.equals(MajorType.LOOP)
 				&& (vertex instanceof CodeGenSDFBroadcastVertex
 						|| vertex instanceof CodeGenSDFForkVertex
 						|| vertex instanceof CodeGenSDFJoinVertex || vertex instanceof CodeGenSDFRoundBufferVertex)) {
@@ -376,21 +378,11 @@ public class SourceFileCodeGenerator {
 
 		// loop call references its init calls
 		if (prototypes != null) {
-
-			switch (codeContainerType) {
-			case beginning:
-				currentPrototype = prototypes.getInitPrototype();
-				break;
-			case loop:
-				currentPrototype = prototypes.getLoopPrototype();
-				break;
-			default:
-				break;
-			}
+			currentPrototype = prototypes.getPrototype(codeContainerType);
 		}
 
 		// Checking the use of the buffer in the arguments
-		if (prototypes != null) {
+		if (currentPrototype != null) {
 			Set<CodeGenArgument> argSet = currentPrototype.getArguments()
 					.keySet();
 

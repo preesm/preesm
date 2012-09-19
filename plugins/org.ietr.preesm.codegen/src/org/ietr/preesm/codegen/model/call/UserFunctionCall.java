@@ -150,8 +150,8 @@ public class UserFunctionCall extends AbstractCodeElement {
 	 * while retrieving the buffers.
 	 */
 	public UserFunctionCall(SDFAbstractVertex vertex,
-			AbstractBufferContainer parentContainer, CodeSectionType section,
-			boolean ignoreSendReceive) {
+			AbstractBufferContainer parentContainer,
+			CodeSectionType sectionType, boolean ignoreSendReceive) {
 		super(vertex.getName(), parentContainer, vertex);
 
 		this.vertex = vertex;
@@ -160,95 +160,66 @@ public class UserFunctionCall extends AbstractCodeElement {
 		// Replacing the name of the vertex by the name of the prototype, if any
 		// is available.
 		if (vertex instanceof ICodeGenSDFVertex) {
-			Prototype call = getFunctionPrototype(vertex, section).getLoopPrototype();
-			if (call != null) {
 
-				// Filters and orders the buffers to fit the prototype
-				// Adds parameters if no buffer fits the prototype name
-				if (call != null) {
-					callParameters = new Vector<FunctionArgument>(
-							call.getNbArgs());
-					for (CodeGenArgument arg : call.getArguments().keySet()) {
-						FunctionArgument funcArg = FunctionArgumentFactory
-								.createFunctionArgument(arg, vertex,
-										parentContainer);
-						funcArg = FunctionArgumentFactory
-								.createFunctionArgument(arg, vertex,
-										parentContainer);
-						if (funcArg != null) {
-							this.addArgument(FunctionArgumentFactory
+			ActorPrototypes protos = ((ActorPrototypes) vertex.getRefinement());
+			if (protos != null) {
+				Prototype proto = protos.getPrototype(sectionType);
+				if (proto != null) {
+					setName(proto.getFunctionName());
+					// Filters and orders the buffers to fit the prototype
+					// Adds parameters if no buffer fits the prototype name
+					if (proto != null) {
+						callParameters = new Vector<FunctionArgument>(
+								proto.getNbArgs());
+						for (CodeGenArgument arg : proto.getArguments()
+								.keySet()) {
+							FunctionArgument funcArg = FunctionArgumentFactory
 									.createFunctionArgument(arg, vertex,
-											parentContainer), call
-									.getArguments().get(arg));
-						} else {
-							WorkflowLogger
-									.getLogger()
-									.log(Level.SEVERE,
-											"Vertex: "
-													+ vertex.getName()
-													+ ". Error interpreting the prototype: no port found with name: "
-													+ arg.getName());
+											parentContainer);
+							funcArg = FunctionArgumentFactory
+									.createFunctionArgument(arg, vertex,
+											parentContainer);
+							if (funcArg != null) {
+								this.addArgument(FunctionArgumentFactory
+										.createFunctionArgument(arg, vertex,
+												parentContainer), proto
+										.getArguments().get(arg));
+							} else {
+								WorkflowLogger
+										.getLogger()
+										.log(Level.SEVERE,
+												"Vertex: "
+														+ vertex.getName()
+														+ ". Error interpreting the prototype: no port found with name: "
+														+ arg.getName());
 
-						}
-					}
-
-					for (CodeGenParameter param : call.getParameters().keySet()) {
-						FunctionArgument funcArg = FunctionArgumentFactory
-								.createFunctionArgument(param, vertex,
-										parentContainer);
-						if (funcArg != null) {
-							this.addArgument(funcArg,
-									call.getParameters().get(param));
-						} else {
-							WorkflowLogger
-									.getLogger()
-									.log(Level.SEVERE,
-											"Vertex: "
-													+ vertex.getName()
-													+ ". Error interpreting the prototype: no port found with name: "
-													+ param.getName());
-
+							}
 						}
 
+						for (CodeGenParameter param : proto.getParameters()
+								.keySet()) {
+							FunctionArgument funcArg = FunctionArgumentFactory
+									.createFunctionArgument(param, vertex,
+											parentContainer);
+							if (funcArg != null) {
+								this.addArgument(funcArg, proto.getParameters()
+										.get(param));
+							} else {
+								WorkflowLogger
+										.getLogger()
+										.log(Level.SEVERE,
+												"Vertex: "
+														+ vertex.getName()
+														+ ". Error interpreting the prototype: no port found with name: "
+														+ param.getName());
+
+							}
+
+						}
 					}
 				}
 			}
 		}
-	}
-
-	private ActorPrototypes getFunctionPrototype(SDFAbstractVertex vertex,
-			CodeSectionType section) {
-		ActorPrototypes protos = ((ActorPrototypes) vertex.getRefinement());
-		Prototype proto = null;
-		if (protos != null) {
-
-			switch (section) {
-				case beginning:
-					if (protos.getInitPrototype() != null) {
-						proto = protos.getInitPrototype();
-						this.setName(proto.getFunctionName());
-					}
-					break;
-				case loop:
-					proto = protos.getLoopPrototype();
-					if (proto.getFunctionName().isEmpty()) {
-						WorkflowLogger.getLogger().log(
-								Level.INFO,
-								"Name not found in the IDL for function: "
-										+ vertex.getName());
-						this.setName(null);
-						return null;
-					} else {
-						this.setName(proto.getFunctionName());
-					}
-	
-					break;
-				default:
-					break;
-			}
-		}
-
-		return protos;
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
@@ -385,15 +356,14 @@ public class UserFunctionCall extends AbstractCodeElement {
 
 		return code;
 	}
-	
+
 	/**
 	 * Returning the related vertex name if relevant
 	 */
 	public String getVertexName() {
-		if(vertex != null){
+		if (vertex != null) {
 			return vertex.getName();
-		}
-		else{
+		} else {
 			return "";
 		}
 	}

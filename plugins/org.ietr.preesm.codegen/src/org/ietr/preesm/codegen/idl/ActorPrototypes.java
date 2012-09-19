@@ -43,6 +43,8 @@ import java.util.logging.Level;
 import net.sf.dftools.algorithm.model.IRefinement;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
+import org.ietr.preesm.codegen.model.types.CodeSectionType;
+
 /**
  * Different function prototypes associated to an actor and retrieved from a
  * prototype file
@@ -115,5 +117,19 @@ public class ActorPrototypes implements IRefinement {
 
 	public void setLoopPrototype(Prototype init) {
 		loopPrototype = init;
+	}
+	
+	public Prototype getPrototype(CodeSectionType sectionType){
+		if(sectionType.getMajor().equals(CodeSectionType.MajorType.INIT)){
+			return getInitPrototype(sectionType.getMinor());
+		}
+		else if(sectionType.getMajor().equals(CodeSectionType.MajorType.LOOP)){
+			return getLoopPrototype();
+		}
+		return null;
+	}
+	
+	public boolean hasPrototype(CodeSectionType sectionType){
+		return getPrototype(sectionType) != null;
 	}
 }

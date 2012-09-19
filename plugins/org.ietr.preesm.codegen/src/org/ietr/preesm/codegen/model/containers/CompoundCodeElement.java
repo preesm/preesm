@@ -116,7 +116,7 @@ public class CompoundCodeElement extends AbstractCodeContainer implements
 	 */
 	public CompoundCodeElement(String name,
 			AbstractBufferContainer parentContainer,
-			ICodeGenSDFVertex correspondingVertex) {
+			ICodeGenSDFVertex correspondingVertex, CodeSectionType sectionType) {
 		super(parentContainer, "");
 		localBuffers = new HashMap<SDFEdge, Buffer>();
 		this.name = name;
@@ -185,10 +185,10 @@ public class CompoundCodeElement extends AbstractCodeContainer implements
 						this.addCall(initCall);
 					}
 				}
-				manageCalls(graph.vertexSet());
+				manageCalls(graph.vertexSet(), sectionType);
 			} else {
 				this.addCall(new UserFunctionCall(this.correspondingVertex,
-						this, CodeSectionType.loop, false));
+						this, sectionType, false));
 			}
 		} catch (InvalidExpressionException e) {
 			e.printStackTrace();
@@ -244,7 +244,7 @@ public class CompoundCodeElement extends AbstractCodeContainer implements
 	 * 
 	 * @param vertices
 	 */
-	private void manageCalls(Set<SDFAbstractVertex> vertices) {
+	private void manageCalls(Set<SDFAbstractVertex> vertices, CodeSectionType sectionType) {
 		List<SDFAbstractVertex> treated = new ArrayList<SDFAbstractVertex>();
 		// treat special calls which are mainly related to buffer
 		// splitting/grouping or copying
@@ -261,7 +261,7 @@ public class CompoundCodeElement extends AbstractCodeContainer implements
 					&& !(vertex instanceof SDFInterfaceVertex)
 					&& !treated.contains(vertex)) {
 				ICodeElement loopCall = CodeElementFactory.createElement(this,
-						vertex);
+						vertex, sectionType);
 				if (loopCall != null) {
 					if (vertex instanceof CodeGenSDFInitVertex) {
 						AbstractBufferContainer parentCodeContainer = this;
