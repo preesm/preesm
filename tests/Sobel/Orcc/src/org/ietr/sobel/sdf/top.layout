@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+	<vertices>
+		<vertex id="genData" x="57" y="130"/>
+		<vertex id="transformData1" x="193" y="70"/>
+		<vertex id="displayData" x="389" y="119"/>
+		<vertex id="transformData2" x="193" y="189"/>
+	</vertices>
+</layout>

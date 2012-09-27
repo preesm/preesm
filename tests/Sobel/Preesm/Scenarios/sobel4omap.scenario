@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/SobelPreesm/Algo/org.ietr.sobel.sdf.top.graphml"/>
+        <architecture url="/SobelPreesm/Archi/omap.slam"/>
+        <codegenDirectory url=""/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="CortexA9_2"/>
+            <task name="Transformer"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="CortexA9_1"/>
+            <task name="Generator"/>
+            <task name="Displayer"/>
+        </constraintGroup>
+    </constraints>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl=""/>
+    <simuParams>
+        <mainCore>CortexA9_1</mainCore>
+        <mainComNode>Syslink_1</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="i32" size="4"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="CortexA9_2"/>
+            <specialVertexOperator path="CortexA9_1"/>
+        </specialVertexOperators>
+    </simuParams>
+    <variables excelUrl=""/>
+</scenario>

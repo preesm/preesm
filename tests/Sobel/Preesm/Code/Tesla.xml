@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sourceCode xmlns="http://org.ietr.preesm.sourceCode">
+    <coreType>Tesla</coreType>
+    <coreName>Tesla</coreName>
+    <SourceFile>
+        <bufferContainer/>
+        <threadDeclaration name="computationThread">
+            <bufferContainer/>
+            <linearCodeContainer comment="Initialization phase number 1"/>
+            <linearCodeContainer comment="Initialization phase number 0"/>
+            <forLoop comment="Main loop of computation"/>
+        </threadDeclaration>
+    </SourceFile>
+</sourceCode>

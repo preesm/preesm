@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sourceCode xmlns="http://org.ietr.preesm.sourceCode">
+    <coreType>A9</coreType>
+    <coreName>CortexA9_1</coreName>
+    <SourceFile>
+        <bufferContainer>
+            <bufferAllocation
+                comment="Generator -> explode_Generator_data_0"
+                name="data_data__0" size="128" type="i32"/>
+            <bufferAllocation
+                comment="r_implode_Displayer_data2Displayer_0 -> Displayer"
+                name="data_out_d_1" size="128" type="i32"/>
+            <bufferAllocation
+                comment="explode_Generator_data_0 -> s_explode_Generator_data_0Transformer_0_1_0"
+                name="data_data__3" size="64" type="i32"/>
+            <bufferAllocation
+                comment="explode_Generator_data -> s_explode_Generator_dataexplode_Generator_data_end_data_0"
+                name="data_end_in" size="64" type="i32"/>
+            <bufferAllocation
+                comment="explode_Generator_data -> s_explode_Generator_dataTransformer_1_0"
+                name="data_data__2" size="64" type="i32"/>
+            <bufferAllocation
+                comment="Generator -> explode_Generator_data"
+                name="data_data__1" size="128" type="i32"/>
+            <bufferAllocation
+                comment="Transformer_0_0_init_data_in -> s_Transformer_0_0_init_data_inTransformer_0_0_0"
+                name="init_out_d_0" size="64" type="i32"/>
+            <bufferAllocation
+                comment="explode_Generator_data_0 -> explode_Generator_data_0_end_data"
+                name="data_end_i_0" size="0" type="i32"/>
+            <bufferAllocation
+                comment="r_implode_Displayer_data1Displayer_0 -> Displayer"
+                name="data_out_d_0" size="128" type="i32"/>
+            <variableAllocation name="Transformer_0_0_init_data_in" type="Fifo"/>
+            <variableAllocation name="Transformer_0_0_init_data_in" type="Fifo"/>
+        </bufferContainer>
+        <threadDeclaration name="computationThread">
+            <bufferContainer/>
+            <linearCodeContainer comment="Initialization phase number 1">
+                <sendMsg ID="0"
+                    comment="s_Transformer_0_0_init_data_inTransformer_0_0_0"
+                    phase="End" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="init_out_d_0" size="64" type="i32"/>
+                </sendMsg>
+                <userFunctionCall comment="" name="new_fifo">
+                    <variable name="&amp;Transformer_0_0_init_data_in"/>
+                    <constant name="size" type="string" value="sizeof(i32)"/>
+                    <constant name="fifo_size" type="int" value="64"/>
+                </userFunctionCall>
+                <sendMsg ID="0"
+                    comment="s_Transformer_0_0_init_data_inTransformer_0_0_0"
+                    phase="Start" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="init_out_d_0" size="64" type="i32"/>
+                </sendMsg>
+                <userFunctionCall comment="Generator" name="Generator_init_function1">
+                    <constant name="param" type="int" value="1"/>
+                    <buffer name="data_data__1" size="128" type="i32"/>
+                </userFunctionCall>
+                <sendMsg ID="1"
+                    comment="s_explode_Generator_dataexplode_Generator_data_end_data_0"
+                    phase="End" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_end_in" size="64" type="i32"/>
+                </sendMsg>
+                <sendMsg ID="2"
+                    comment="s_explode_Generator_dataTransformer_1_0"
+                    phase="End" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_data__2" size="64" type="i32"/>
+                </sendMsg>
+                <CompoundCode name="explode_Generator_data">
+                    <userFunctionCall comment="" name="memcpy">
+                        <buffer name="data_data__2" size="64" type="i32"/>
+                        <bufferAtIndex index="0" name="data_data__1"/>
+                        <constant name="size" type="string" value="64*sizeof(i32)"/>
+                    </userFunctionCall>
+                    <userFunctionCall comment="" name="memcpy">
+                        <buffer name="data_end_in" size="64" type="i32"/>
+                        <bufferAtIndex index="64" name="data_data__1"/>
+                        <constant name="size" type="string" value="64*sizeof(i32)"/>
+                    </userFunctionCall>
+                </CompoundCode>
+                <sendMsg ID="2"
+                    comment="s_explode_Generator_dataTransformer_1_0"
+                    phase="Start" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_data__2" size="64" type="i32"/>
+                </sendMsg>
+                <sendMsg ID="1"
+                    comment="s_explode_Generator_dataexplode_Generator_data_end_data_0"
+                    phase="Start" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_end_in" size="64" type="i32"/>
+                </sendMsg>
+                <sendMsg ID="3"
+                    comment="s_explode_Generator_data_0Transformer_0_1_0"
+                    phase="End" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_data__3" size="64" type="i32"/>
+                </sendMsg>
+                <CompoundCode name="explode_Generator_data_0">
+                    <Assignment var="data_end_i_0">&amp;data_data__0[128]</Assignment>
+                    <userFunctionCall comment="" name="memcpy">
+                        <buffer name="data_data__3" size="64" type="i32"/>
+                        <bufferAtIndex index="0" name="data_data__0"/>
+                        <constant name="size" type="string" value="64*sizeof(i32)"/>
+                    </userFunctionCall>
+                </CompoundCode>
+                <sendMsg ID="3"
+                    comment="s_explode_Generator_data_0Transformer_0_1_0"
+                    phase="Start" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_data__3" size="64" type="i32"/>
+                </sendMsg>
+                <userFunctionCall comment="" name="push">
+                    <variable name="&amp;Transformer_0_0_init_data_in"/>
+                    <buffer name="data_end_i_0" size="0" type="i32"/>
+                    <constant name="nb_token" type="int" value="64"/>
+                </userFunctionCall>
+            </linearCodeContainer>
+            <linearCodeContainer comment="Initialization phase number 0">
+                <sendMsg ID="0"
+                    comment="s_Transformer_0_0_init_data_inTransformer_0_0_0"
+                    phase="End" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="init_out_d_0" size="64" type="i32"/>
+                </sendMsg>
+                <userFunctionCall comment="" name="new_fifo">
+                    <variable name="&amp;Transformer_0_0_init_data_in"/>
+                    <constant name="size" type="string" value="sizeof(i32)"/>
+                    <constant name="fifo_size" type="int" value="64"/>
+                </userFunctionCall>
+                <sendMsg ID="0"
+                    comment="s_Transformer_0_0_init_data_inTransformer_0_0_0"
+                    phase="Start" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="init_out_d_0" size="64" type="i32"/>
+                </sendMsg>
+                <userFunctionCall comment="Generator" name="Generator_init_function0">
+                    <constant name="param" type="int" value="1"/>
+                    <buffer name="data_data__1" size="128" type="i32"/>
+                </userFunctionCall>
+                <sendMsg ID="1"
+                    comment="s_explode_Generator_dataexplode_Generator_data_end_data_0"
+                    phase="End" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_end_in" size="64" type="i32"/>
+                </sendMsg>
+                <sendMsg ID="2"
+                    comment="s_explode_Generator_dataTransformer_1_0"
+                    phase="End" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_data__2" size="64" type="i32"/>
+                </sendMsg>
+                <CompoundCode name="explode_Generator_data">
+                    <userFunctionCall comment="" name="memcpy">
+                        <buffer name="data_data__2" size="64" type="i32"/>
+                        <bufferAtIndex index="0" name="data_data__1"/>
+                        <constant name="size" type="string" value="64*sizeof(i32)"/>
+                    </userFunctionCall>
+                    <userFunctionCall comment="" name="memcpy">
+                        <buffer name="data_end_in" size="64" type="i32"/>
+                        <bufferAtIndex index="64" name="data_data__1"/>
+                        <constant name="size" type="string" value="64*sizeof(i32)"/>
+                    </userFunctionCall>
+                </CompoundCode>
+                <sendMsg ID="2"
+                    comment="s_explode_Generator_dataTransformer_1_0"
+                    phase="Start" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_data__2" size="64" type="i32"/>
+                </sendMsg>
+                <sendMsg ID="1"
+                    comment="s_explode_Generator_dataexplode_Generator_data_end_data_0"
+                    phase="Start" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_end_in" size="64" type="i32"/>
+                </sendMsg>
+                <sendMsg ID="3"
+                    comment="s_explode_Generator_data_0Transformer_0_1_0"
+                    phase="End" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_data__3" size="64" type="i32"/>
+                </sendMsg>
+                <CompoundCode name="explode_Generator_data_0">
+                    <Assignment var="data_end_i_0">&amp;data_data__0[128]</Assignment>
+                    <userFunctionCall comment="" name="memcpy">
+                        <buffer name="data_data__3" size="64" type="i32"/>
+                        <bufferAtIndex index="0" name="data_data__0"/>
+                        <constant name="size" type="string" value="64*sizeof(i32)"/>
+                    </userFunctionCall>
+                </CompoundCode>
+                <sendMsg ID="3"
+                    comment="s_explode_Generator_data_0Transformer_0_1_0"
+                    phase="Start" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_data__3" size="64" type="i32"/>
+                </sendMsg>
+                <userFunctionCall comment="" name="push">
+                    <variable name="&amp;Transformer_0_0_init_data_in"/>
+                    <buffer name="data_end_i_0" size="0" type="i32"/>
+                    <constant name="nb_token" type="int" value="64"/>
+                </userFunctionCall>
+            </linearCodeContainer>
+            <forLoop comment="Main loop of computation">
+                <userFunctionCall comment="Generator" name="Generator_generate">
+                    <constant name="param" type="int" value="1"/>
+                    <buffer name="data_data__1" size="128" type="i32"/>
+                </userFunctionCall>
+                <userFunctionCall comment="" name="pull">
+                    <variable name="&amp;Transformer_0_0_init_data_in"/>
+                    <buffer name="init_out_d_0" size="64" type="i32"/>
+                    <constant name="nb_token" type="int" value="64"/>
+                </userFunctionCall>
+                <sendMsg ID="1"
+                    comment="s_explode_Generator_dataexplode_Generator_data_end_data_0"
+                    phase="End" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_end_in" size="64" type="i32"/>
+                </sendMsg>
+                <sendMsg ID="2"
+                    comment="s_explode_Generator_dataTransformer_1_0"
+                    phase="End" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_data__2" size="64" type="i32"/>
+                </sendMsg>
+                <CompoundCode name="explode_Generator_data">
+                    <userFunctionCall comment="" name="memcpy">
+                        <buffer name="data_data__2" size="64" type="i32"/>
+                        <bufferAtIndex index="0" name="data_data__1"/>
+                        <constant name="size" type="string" value="64*sizeof(i32)"/>
+                    </userFunctionCall>
+                    <userFunctionCall comment="" name="memcpy">
+                        <buffer name="data_end_in" size="64" type="i32"/>
+                        <bufferAtIndex index="64" name="data_data__1"/>
+                        <constant name="size" type="string" value="64*sizeof(i32)"/>
+                    </userFunctionCall>
+                </CompoundCode>
+                <sendMsg ID="2"
+                    comment="s_explode_Generator_dataTransformer_1_0"
+                    phase="Start" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_data__2" size="64" type="i32"/>
+                </sendMsg>
+                <sendMsg ID="1"
+                    comment="s_explode_Generator_dataexplode_Generator_data_end_data_0"
+                    phase="Start" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_end_in" size="64" type="i32"/>
+                </sendMsg>
+                <sendMsg ID="3"
+                    comment="s_explode_Generator_data_0Transformer_0_1_0"
+                    phase="End" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_data__3" size="64" type="i32"/>
+                </sendMsg>
+                <CompoundCode name="explode_Generator_data_0">
+                    <Assignment var="data_end_i_0">&amp;data_data__0[128]</Assignment>
+                    <userFunctionCall comment="" name="memcpy">
+                        <buffer name="data_data__3" size="64" type="i32"/>
+                        <bufferAtIndex index="0" name="data_data__0"/>
+                        <constant name="size" type="string" value="64*sizeof(i32)"/>
+                    </userFunctionCall>
+                </CompoundCode>
+                <sendMsg ID="3"
+                    comment="s_explode_Generator_data_0Transformer_0_1_0"
+                    phase="Start" target="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_1"/>
+                        <receiver def="A9" name="CortexA9_2"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_data__3" size="64" type="i32"/>
+                </sendMsg>
+                <userFunctionCall comment="" name="push">
+                    <variable name="&amp;Transformer_0_0_init_data_in"/>
+                    <buffer name="data_end_i_0" size="0" type="i32"/>
+                    <constant name="nb_token" type="int" value="64"/>
+                </userFunctionCall>
+                <receiveMsg ID="4"
+                    comment="r_implode_Displayer_data1Displayer_0"
+                    phase="End" source="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_2"/>
+                        <receiver def="A9" name="CortexA9_1"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_out_d_0" size="128" type="i32"/>
+                </receiveMsg>
+                <receiveMsg ID="5"
+                    comment="r_implode_Displayer_data2Displayer_0"
+                    phase="End" source="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_2"/>
+                        <receiver def="A9" name="CortexA9_1"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_out_d_1" size="128" type="i32"/>
+                </receiveMsg>
+                <userFunctionCall comment="Displayer" name="Displayer_display">
+                    <buffer name="data_out_d_0" size="128" type="i32"/>
+                    <buffer name="data_out_d_1" size="128" type="i32"/>
+                </userFunctionCall>
+                <receiveMsg ID="5"
+                    comment="r_implode_Displayer_data2Displayer_0"
+                    phase="Start" source="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_2"/>
+                        <receiver def="A9" name="CortexA9_1"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_out_d_1" size="128" type="i32"/>
+                </receiveMsg>
+                <receiveMsg ID="4"
+                    comment="r_implode_Displayer_data1Displayer_0"
+                    phase="Start" source="CortexA9_2">
+                    <routeStep type="msg">
+                        <sender def="A9" name="CortexA9_2"/>
+                        <receiver def="A9" name="CortexA9_1"/>
+                        <node def="syslink" name="Syslink_1"/>
+                    </routeStep>
+                    <buffer name="data_out_d_0" size="128" type="i32"/>
+                </receiveMsg>
+            </forLoop>
+        </threadDeclaration>
+    </SourceFile>
+</sourceCode>

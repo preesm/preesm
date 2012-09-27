@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
+    <key attr.name="name" attr.type="string" for="graph" id="name"/>
+    <key attr.name="name" attr.type="string" for="node" id="name"/>
+    <key attr.name="arguments" attr.type="string" for="node" id="arguments"/>
+    <key attr.name="parameters" attr.type="string" for="graph" id="parameters"/>
+    <key attr.name="variables" attr.type="string" for="graph" id="variables"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge" id="edge_prod">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_delay" attr.type="string" for="edge" id="edge_delay">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="edge_cons" attr.type="string" for="edge" id="edge_cons">
+        <desc>org.sdf4j.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+    </key>
+    <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
+        <desc>org.sdf4j.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+    </key>
+    <graph edgedefault="directed">
+    	<data key="name">top</data>
+    	<data key="parameters">
+    		<parameter name="param"/>
+    	</data>
+    	<data key="variables">
+    		<variable name="VAR" value="51"/>
+    	</data>
+    	<node id="genData" kind="vertex">
+    		<data key="graph_desc">../Code/IDL/Generator.idl</data>
+    		<data key="name">Generator</data>
+    		<data key="arguments">
+    		<argument name="param" value="1"/>
+    		</data>
+    	</node>
+    	<node id="transformData1" kind="vertex">
+    		<data key="graph_desc">../Code/IDL/Transformer.idl</data>
+    		<data key="name">Transformer</data>
+    		<data key="arguments">
+    		<argument name="OFFSET" value="2"/>
+    		</data>
+    	</node>
+    	<node id="displayData" kind="vertex">
+    		<data key="graph_desc">../Code/IDL/Displayer.idl</data>
+    		<data key="name">Displayer</data>
+    		<data key="arguments"/>
+    	</node>
+    	<node id="transformData2" kind="vertex">
+    		<data key="graph_desc">../Code/IDL/Transformer.idl</data>
+    		<data key="name">Transformer</data>
+    		<data key="arguments">
+    		<argument name="OFFSET" value="1"/>
+    		</data>
+    	</node>
+    	
+    	<edge source="genData" sourceport="data" target="transformData1" targetport="data_in">
+    	    <data key="edge_prod">128</data>
+    	    <data key="edge_delay">64</data>
+    	    <data key="edge_cons">64</data>
+    	    <data key="data_type">i32</data>
+    	</edge><edge source="transformData1" sourceport="data_out" target="displayData" targetport="data1">
+    	    <data key="edge_prod">64</data>
+    	    <data key="edge_delay">0</data>
+    	    <data key="edge_cons">128</data>
+    	    <data key="data_type">i32</data>
+    	</edge><edge source="genData" sourceport="data" target="transformData2" targetport="data_in">
+    	    <data key="edge_prod">128</data>
+    	    <data key="edge_delay">64</data>
+    	    <data key="edge_cons">64</data>
+    	    <data key="data_type">i32</data>
+    	</edge><edge source="transformData2" sourceport="data_out" target="displayData" targetport="data2">
+    	    <data key="edge_prod">64</data>
+    	    <data key="edge_delay">0</data>
+    	    <data key="edge_cons">128</data>
+    	    <data key="data_type">i32</data>
+    	</edge>
+    </graph>
+</graphml>

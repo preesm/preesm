@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XDF name="top">
+    <Decl kind="Param" name="param">
+        <Type name="int">
+            <Entry kind="Expr" name="size">
+                <Expr kind="Literal" literal-kind="Integer" value="32"/>
+            </Entry>
+        </Type>
+    </Decl>
+    <Decl kind="Variable" name="VAR">
+        <Type name="int">
+            <Entry kind="Expr" name="size">
+                <Expr kind="Literal" literal-kind="Integer" value="32"/>
+            </Entry>
+        </Type>
+        <Expr kind="Literal" literal-kind="Integer" value="51"/>
+    </Decl>
+    <Instance id="genData">
+        <Class name="org.ietr.sobel.sdf.Generator"/>
+        <Parameter name="param">
+            <Expr kind="Literal" literal-kind="Integer" value="1"/>
+        </Parameter>
+    </Instance>
+    <Instance id="transformData1">
+        <Class name="org.ietr.sobel.sdf.Transformer"/>
+        <Parameter name="OFFSET">
+            <Expr kind="Literal" literal-kind="Integer" value="2"/>
+        </Parameter>
+    </Instance>
+    <Instance id="displayData">
+        <Class name="org.ietr.sobel.sdf.Displayer"/>
+    </Instance>
+    <Instance id="transformData2">
+        <Class name="org.ietr.sobel.sdf.Transformer"/>
+        <Parameter name="OFFSET">
+            <Expr kind="Literal" literal-kind="Integer" value="1"/>
+        </Parameter>
+    </Instance>
+    <Connection dst="transformData1" dst-port="data_in" src="genData" src-port="data"/>
+    <Connection dst="displayData" dst-port="data1" src="transformData1" src-port="data_out"/>
+    <Connection dst="transformData2" dst-port="data_in" src="genData" src-port="data"/>
+    <Connection dst="displayData" dst-port="data2" src="transformData2" src-port="data_out"/>
+</XDF>
