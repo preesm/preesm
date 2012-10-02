@@ -72,7 +72,5 @@ actor SplitImage (int NB_SLICES = 12, int WIDTH= 640, int HEIGHT = 480) int(size
 				s_out[outputLine*WIDTH + pixel] := frame_in[copiedLine*WIDTH + pixel]; 
 			end
 		end
-		
 	end
-
 end

@@ -32,6 +32,37 @@
 
 package org.ietr.sobel.sdf;
 
-actor MergeImage () ==> :
-
+actor MergeImage (int NB_SLICES = 12, int WIDTH= 640, int HEIGHT = 480) int(size=8) slices_in ==> int(size=8) frame :
+	
+    // Constant definition - Removed because of strange behavior :
+	// Value cannot be different from default in C backend
+	// and considered as state variable in Embedded-C backend
+	//int FRAME_SIZE = WIDTH*HEIGHT;
+	//int SLICE_SIZE = WIDTH*HEIGHT/NB_SLICES + WIDTH*2;
+	
+	split: action slices_in:[ s_in ] repeat WIDTH*(HEIGHT + NB_SLICES*2) // SLICE_SIZE*NB_SLICES
+			==> frame:[ frame_out ] repeat WIDTH*HEIGHT // FRAME_SIZE
+	var
+		int(size=32) frame_out [ WIDTH*HEIGHT ],
+		int currentSlice,
+		int lineToCopy
+		
+	do
+				
+		// Merge slices
+		// iterate over the lines of the output frame
+		foreach int frameLine in 0 .. HEIGHT-1 do
+			
+			// Compute the "number" of the corresponding slice
+			currentSlice := frameLine / (480/NB_SLICES); // integer division
+			
+			// Get the index of the line to copy
+			lineToCopy := frameLine + 1 + 2*currentSlice;
+			
+			// Copy the line
+			foreach int pixel in 0 .. WIDTH-1 do
+				frame_out[frameLine*WIDTH + pixel] := s_in[lineToCopy*WIDTH + pixel]; 
+			end
+		end
+	end
 end

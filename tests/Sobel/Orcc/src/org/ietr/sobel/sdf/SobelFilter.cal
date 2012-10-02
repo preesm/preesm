@@ -32,6 +32,55 @@
 
 package org.ietr.sobel.sdf;
 
-actor SobelFilter () ==> :
-
+actor SobelFilter (int NB_SLICES = 12, int WIDTH= 640, int HEIGHT = 480)
+	int(size=8) slice_in ==> int(size=8) slice_out :
+	
+	// Constant definition - Removed because of strange behavior :
+	// Value cannot be different from default in C backend
+	// and considered as state variable in Embedded-C backend
+	//int SLICE_SIZE = WIDTH*HEIGHT/NB_SLICES + WIDTH*2;
+	
+	filter: action slice_in:[ s_in ] repeat WIDTH*HEIGHT/NB_SLICES + WIDTH*2 // SLICE_SIZE
+			==> slice_out:[ s_out ] repeat WIDTH*HEIGHT/NB_SLICES + WIDTH*2 // SLICE_SIZE
+		var
+			int(size=32) s_out [ WIDTH*HEIGHT/NB_SLICES + WIDTH*2 ],
+			int SLICE_HEIGHT = HEIGHT/NB_SLICES + 2,
+			int Gx, // Subresult 1
+			int Gy  // Subresult 2
+		do
+			// First and Last columns are filled with 0
+			foreach int j in 0 .. SLICE_HEIGHT-1 do
+				s_out[j*WIDTH] := 0;
+				s_out[j*WIDTH + WIDTH-1] := 0;
+			end
+			
+			// Apply the filter to the slice
+			
+			// Iterate over the pixels of the slice			
+			foreach int j in 1 .. SLICE_HEIGHT - 1 do // lines
+				foreach int i in 1 .. WIDTH -2 do // columns
+					// Compute the convolution with the following matrices :
+					//
+					//      |-1  0  1|        |-1 -2 -1|
+					// Gx = |-2  0  2| & Gy = | 0  0  0|
+					//      |-1  0  1|        | 1  2  1|
+					//
+					Gx := - val(s_in, i-1, j-1) - 2*val(s_in, i-1, j) - val(s_in, i-1, j+1)
+						  + val(s_in, i+1, j-1) + 2*val(s_in, i+1, j) + val(s_in, i+1, j+1);
+						  
+				    Gy := - val(s_in, i-1, j-1) - 2*val(s_in, i, j-1) - val(s_in, i+1, j-1)
+						  + val(s_in, i-1, j+1) + 2*val(s_in, i, j+1) + val(s_in, i+1, j+1);
+				    
+				    // Store the result of sqrt(Gx²+Gy²) in output slice
+				    //s_out[j*WIDTH + i] := 0;  
+							
+				end
+			end
+		end
+		
+	// Function that return the value (i,j) of the input array
+	function val(int(size=8) tab[WIDTH*HEIGHT/NB_SLICES + WIDTH*2],int col, int lin) 
+		--> int(size=8) :
+		tab[lin*WIDTH + col]
+	end 
 end
