@@ -63,6 +63,35 @@
             </input>
          </inputs>
       </task>
+      <task
+            id="org.ietr.preesm.algorithm.randomsdf.RandomSDF"
+            name="Random SDF Generator"
+            type="org.ietr.preesm.algorithm.randomsdf.RandomSDF">
+         <inputs>
+            <input
+                  id="SDF"
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+            <input
+                  id="architecture"
+                  object="net.sf.dftools.architecture.slam.Design">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="SDF"
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
+            </output>
+            <output
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </output>
+         </outputs>
+      </task>
    </extension>
 
 </plugin>

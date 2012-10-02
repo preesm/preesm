@@ -10,9 +10,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources;bundle-version="3.4.0",
  net.sf.dftools.workflow,
  org.jgrapht,
- net.sf.dftools.algorithm;bundle-version="0.0.1"
+ net.sf.dftools.algorithm;bundle-version="0.0.1",
+ net.sf.dftools.architecture;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: IETR/INSA of Rennes
 Export-Package: org.ietr.preesm.algorithm.exportDif,
  org.ietr.preesm.algorithm.exportXml,
+ org.ietr.preesm.algorithm.randomsdf,
  org.ietr.preesm.algorithm.transforms
