@@ -48,6 +48,21 @@
             </output>
          </outputs>
       </task>
+      <task
+            id="org.ietr.preesm.algorithm.exportDif.DIFExporter"
+            name="DIF Exporter"
+            type="org.ietr.preesm.algorithm.exportDif.DIFExporter">
+         <inputs>
+            <input
+                  id="SDF"
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+         </inputs>
+      </task>
    </extension>
 
 </plugin>
