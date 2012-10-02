@@ -1,43 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <XDF name="top">
-    <Decl kind="Param" name="param">
+    <Decl kind="Variable" name="HEIGHT">
         <Type name="int">
             <Entry kind="Expr" name="size">
                 <Expr kind="Literal" literal-kind="Integer" value="32"/>
             </Entry>
         </Type>
+        <Expr kind="Literal" literal-kind="Integer" value="480"/>
     </Decl>
-    <Decl kind="Variable" name="VAR">
+    <Decl kind="Variable" name="NB_SLICES">
         <Type name="int">
             <Entry kind="Expr" name="size">
                 <Expr kind="Literal" literal-kind="Integer" value="32"/>
             </Entry>
         </Type>
-        <Expr kind="Literal" literal-kind="Integer" value="51"/>
+        <Expr kind="Literal" literal-kind="Integer" value="12"/>
     </Decl>
-    <Instance id="genData">
-        <Class name="org.ietr.sobel.sdf.Generator"/>
-        <Parameter name="param">
-            <Expr kind="Literal" literal-kind="Integer" value="1"/>
-        </Parameter>
+    <Decl kind="Variable" name="WIDTH">
+        <Type name="int">
+            <Entry kind="Expr" name="size">
+                <Expr kind="Literal" literal-kind="Integer" value="32"/>
+            </Entry>
+        </Type>
+        <Expr kind="Literal" literal-kind="Integer" value="640"/>
+    </Decl>
+    <Instance id="Camera">
+        <Class name="org.ietr.sobel.sdf.Camera"/>
     </Instance>
-    <Instance id="transformData1">
-        <Class name="org.ietr.sobel.sdf.Transformer"/>
-        <Parameter name="OFFSET">
-            <Expr kind="Literal" literal-kind="Integer" value="2"/>
-        </Parameter>
+    <Instance id="SplitImage">
+        <Class name="org.ietr.sobel.sdf.SplitImage"/>
     </Instance>
-    <Instance id="displayData">
-        <Class name="org.ietr.sobel.sdf.Displayer"/>
+    <Instance id="SobelFilter">
+        <Class name="org.ietr.sobel.sdf.SobelFilter"/>
     </Instance>
-    <Instance id="transformData2">
-        <Class name="org.ietr.sobel.sdf.Transformer"/>
-        <Parameter name="OFFSET">
-            <Expr kind="Literal" literal-kind="Integer" value="1"/>
-        </Parameter>
+    <Instance id="MergeImage">
+        <Class name="org.ietr.sobel.sdf.MergeImage"/>
     </Instance>
-    <Connection dst="transformData1" dst-port="data_in" src="genData" src-port="data"/>
-    <Connection dst="displayData" dst-port="data1" src="transformData1" src-port="data_out"/>
-    <Connection dst="transformData2" dst-port="data_in" src="genData" src-port="data"/>
-    <Connection dst="displayData" dst-port="data2" src="transformData2" src-port="data_out"/>
+    <Instance id="Display">
+        <Class name="org.ietr.sobel.sdf.Display"/>
+    </Instance>
+    <Instance id="SeparateY">
+        <Class name="org.ietr.sobel.sdf.SeparateY"/>
+    </Instance>
+    <Connection dst="SeparateY" dst-port="image" src="Camera" src-port="image"/>
+    <Connection dst="SplitImage" dst-port="frame" src="SeparateY" src-port="Y"/>
+    <Connection dst="SobelFilter" dst-port="slice_in" src="SplitImage" src-port="slices_out"/>
+    <Connection dst="MergeImage" dst-port="slices_in" src="SobelFilter" src-port="slice_out"/>
+    <Connection dst="Display" dst-port="frame" src="MergeImage" src-port="frame"/>
 </XDF>

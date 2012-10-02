@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <layout>
 	<vertices>
-		<vertex id="genData" x="57" y="130"/>
-		<vertex id="transformData1" x="193" y="70"/>
-		<vertex id="displayData" x="389" y="119"/>
-		<vertex id="transformData2" x="193" y="189"/>
+		<vertex id="Camera" x="57" y="70"/>
+		<vertex id="SplitImage" x="324" y="96"/>
+		<vertex id="SobelFilter" x="479" y="99"/>
+		<vertex id="MergeImage" x="658" y="104"/>
+		<vertex id="Display" x="818" y="105"/>
+		<vertex id="SeparateY" x="185" y="78"/>
 	</vertices>
 </layout>

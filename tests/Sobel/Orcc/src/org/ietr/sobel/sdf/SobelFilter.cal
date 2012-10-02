@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, INSA of Rennes
+ * Copyright (c) 2012, INSA of Rennes
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -27,43 +27,11 @@
  * SUCH DAMAGE.
  */
 
-// Author: mpelcat (mpelcat@insa-rennes.fr)
 // Author: kdesnos (kdesnos@insa-rennes.fr)
-// Stupid actor that generates data
+// Actor that apply the sobel filter to its input. 
 
 package org.ietr.sobel.sdf;
 
-actor Generator (int param) ==> int(size=32) data :
-	// An initialization procedure with an output
-	init_function: initialize ==> data:[d] repeat 64
-	var
-		int(size=32) d [64] 
-	do
-		print("Generator launched param:" + param);
-		foreach int(size=32) i in 0 .. 63 do
-			d[i] := 1;
-		end
-	end
- 
-	// A test function
-	function f() --> int(size=32) :
-		param
-	end 
-	
-	// A test procedure
-	procedure proc(int(size=32) tab [ 128 ])
-	begin
-		foreach int(size=32) i in 0 .. 127 do
-			tab[i] := f();
-		end
-	end
-	
-	// Dummy action
-	generate: action ==> data:[ d ] repeat 128
-	var
-		int(size=32) d [ 128 ]
-	do
-		proc(d);
-	end
+actor SobelFilter () ==> :
 
 end

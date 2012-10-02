@@ -1,5 +1,4 @@
-/*
- * Copyright (c) 2011, INSA of Rennes
+/**Copyright (c) 2012, INSA of Rennes
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -27,20 +26,30 @@
  * SUCH DAMAGE.
  */
 
-// Author: mpelcat (mpelcat@insa-rennes.fr)
 // Author: kdesnos (kdesnos@insa-rennes.fr)
-// Stupid actor that transforms data
+// Actor that retrieves the images from a webcam
+// It produces the image on its output in the YUV format
 
 package org.ietr.sobel.sdf;
 
-actor Transformer (int OFFSET) int(size=32) data_in ==> int(size=32) data_out :
-
-	transform: action data_in:[ d_in ] repeat 64 ==> data_out:[ d_out ] repeat 64
+actor SeparateY (int WIDTH= 640, int HEIGHT = 480) int(size=8) image 
+	==> int(size=8) Y:
+	
+	// Constant definition - Removed because of strange behavior :
+	// Value cannot be different from default in C backend
+	// and considered as state variable in Embedded-C backend
+	//int YUV_FRAME_SIZE = WIDTH*HEIGHT*2;
+	//int Y_COMP_SIZE = WIDTH*HEIGHT;
+	
+	separate: action image:[ img_in ] repeat WIDTH*HEIGHT*2 
+			==> Y:[ y_out ] repeat WIDTH*HEIGHT
 	var
-		int(size=32) d_out [ 64 ]
+		int(size=8) y_out [ WIDTH*HEIGHT ]
 	do
-		foreach int(size=32) i in 0 .. 63 do
-			d_out[i] := d_in[i] + OFFSET;
+		foreach int i in 0 .. HEIGHT-1 do
+			foreach int j in 0 .. WIDTH-1 do
+				y_out[i*WIDTH+j] := img_in[2*(i*WIDTH+j)]; 
+			end
 		end
 	end
 
