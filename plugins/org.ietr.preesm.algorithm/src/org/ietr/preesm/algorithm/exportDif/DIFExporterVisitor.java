@@ -56,7 +56,9 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
  * This class is a visitor for SDF graphs whose purpose is to export the visited
  * graph into the DIF format. The visitor should be used only on Single-rate
  * SDF. Each actor of the graph can be given a parameter "nb_node" which will be
- * used in the exported format.
+ * used in the exported format. 
+ * 
+ * All edges with delays are removed from the exported graph.
  * 
  * All actors of the graph should have an execution time for cores of type x86.
  * 
@@ -106,6 +108,17 @@ public class DIFExporterVisitor implements
 
 	@Override
 	public void visit(SDFEdge edge) {
+		
+		// Skip edges with delays
+		try {
+			if(edge.getDelay().intValue()>0){
+				return;
+			}
+		} catch (InvalidExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		// Add the edge entry to the actorAttributes Map
 		// With an empty attributes map
 		HashMap<String, Object> attributesMap = new HashMap<String, Object>();
@@ -157,7 +170,7 @@ public class DIFExporterVisitor implements
 		// Only the execution runtime for cores with type x86 will be taken
 		// into account
 		int time = scenario.getTimingManager().getTimingOrDefault(
-				vertex.getName(), "x86");
+				vertex.getId(), "x86");
 		attributesMap.put("exec_time", time);
 		attributesMap.put("hierarchical", false);
 
