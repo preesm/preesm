@@ -64,7 +64,7 @@ actor SplitImage (int NB_SLICES = 12, int WIDTH= 640, int HEIGHT = 480) int(size
 			
 			// More precisely, the last line of the previous slice
 			// and the first line of the next are copied to the current slice
-			currentSlice := outputLine div SLICE_HEIGHT; // integer division
+			currentSlice := outputLine / SLICE_HEIGHT; // integer division
 			copiedLine := outputLine - 1 - 2*currentSlice;
 			
 			// Copy the line
