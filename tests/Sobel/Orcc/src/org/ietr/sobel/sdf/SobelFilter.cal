@@ -54,6 +54,13 @@ actor SobelFilter (int NB_SLICES = 12, int WIDTH= 640, int HEIGHT = 480)
 				s_out[j*WIDTH + WIDTH-1] := 0;
 			end
 			
+			// First and Last lines are filled with 0
+			// Not necessary since those values will never be used
+			//foreach int i in 0 .. WIDTH-1 do
+			//	s_out[i] := 0;
+			//	s_out[(SLICE_HEIGHT-1)*WIDTH + i] := 0;
+			//end			
+			
 			// Apply the filter to the slice
 			
 			// Iterate over the pixels of the slice			
@@ -71,9 +78,8 @@ actor SobelFilter (int NB_SLICES = 12, int WIDTH= 640, int HEIGHT = 480)
 				    Gy := - val(s_in, i-1, j-1) - 2*val(s_in, i, j-1) - val(s_in, i+1, j-1)
 						  + val(s_in, i-1, j+1) + 2*val(s_in, i, j+1) + val(s_in, i+1, j+1);
 				    
-				    // Store the result of sqrt(Gx²+Gy²) in output slice
-				    //s_out[j*WIDTH + i] := 0;  
-							
+				    // Store the result of abs(Gx)+abs(Gy) in output slice
+				    s_out[j*WIDTH + i] := abs(Gx) + abs(Gy);  							
 				end
 			end
 		end
@@ -83,4 +89,8 @@ actor SobelFilter (int NB_SLICES = 12, int WIDTH= 640, int HEIGHT = 480)
 		--> int(size=8) :
 		tab[lin*WIDTH + col]
 	end 
+	
+	function abs(int(size=8) x) --> int(size=8) :
+		if x < 0 then -x else x end
+	end
 end
