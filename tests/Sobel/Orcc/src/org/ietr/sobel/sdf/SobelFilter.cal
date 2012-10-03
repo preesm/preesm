@@ -43,7 +43,7 @@ actor SobelFilter (int NB_SLICES = 12, int WIDTH= 640, int HEIGHT = 480)
 	filter: action slice_in:[ s_in ] repeat WIDTH*HEIGHT/NB_SLICES + WIDTH*2 // SLICE_SIZE
 			==> slice_out:[ s_out ] repeat WIDTH*HEIGHT/NB_SLICES + WIDTH*2 // SLICE_SIZE
 		var
-			int(size=32) s_out [ WIDTH*HEIGHT/NB_SLICES + WIDTH*2 ],
+			int(size=8) s_out [ WIDTH*HEIGHT/NB_SLICES + WIDTH*2 ],
 			int SLICE_HEIGHT = HEIGHT/NB_SLICES + 2,
 			int Gx, // Subresult 1
 			int Gy  // Subresult 2

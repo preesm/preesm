@@ -32,6 +32,15 @@
 
 package org.ietr.sobel.sdf;
 
-actor Display () ==> :
-
+actor Display (int WIDTH= 640, int HEIGHT = 480) int(size=8) frame ==> :
+	
+	@native procedure display(uint(size=8) input[ WIDTH*HEIGHT ], int width, int height)
+	end
+	
+	display: action frame:[ frm_in ] repeat WIDTH*HEIGHT // FRAME_SIZE
+		==> 
+	do
+		display(frm_in,WIDTH,HEIGHT);
+	end
+	 
 end

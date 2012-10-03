@@ -24,27 +24,72 @@
         </Type>
         <Expr kind="Literal" literal-kind="Integer" value="640"/>
     </Decl>
-    <Instance id="Camera">
-        <Class name="org.ietr.sobel.sdf.Camera"/>
+    <Instance id="SeparateY">
+        <Class name="org.ietr.sobel.sdf.SeparateY"/>
+        <Parameter name="HEIGHT">
+            <Expr kind="Var" name="HEIGHT"/>
+        </Parameter>
+        <Parameter name="WIDTH">
+            <Expr kind="Var" name="WIDTH"/>
+        </Parameter>
     </Instance>
     <Instance id="SplitImage">
         <Class name="org.ietr.sobel.sdf.SplitImage"/>
+        <Parameter name="HEIGHT">
+            <Expr kind="Var" name="HEIGHT"/>
+        </Parameter>
+        <Parameter name="NB_SLICES">
+            <Expr kind="Var" name="NB_SLICES"/>
+        </Parameter>
+        <Parameter name="WIDTH">
+            <Expr kind="Var" name="WIDTH"/>
+        </Parameter>
     </Instance>
     <Instance id="SobelFilter">
         <Class name="org.ietr.sobel.sdf.SobelFilter"/>
+        <Parameter name="HEIGHT">
+            <Expr kind="Var" name="HEIGHT"/>
+        </Parameter>
+        <Parameter name="NB_SLICES">
+            <Expr kind="Var" name="NB_SLICES"/>
+        </Parameter>
+        <Parameter name="WIDTH">
+            <Expr kind="Var" name="WIDTH"/>
+        </Parameter>
     </Instance>
     <Instance id="MergeImage">
         <Class name="org.ietr.sobel.sdf.MergeImage"/>
+        <Parameter name="HEIGHT">
+            <Expr kind="Var" name="HEIGHT"/>
+        </Parameter>
+        <Parameter name="NB_SLICES">
+            <Expr kind="Var" name="NB_SLICES"/>
+        </Parameter>
+        <Parameter name="WIDTH">
+            <Expr kind="Var" name="WIDTH"/>
+        </Parameter>
+    </Instance>
+    <Instance id="Camera">
+        <Class name="org.ietr.sobel.sdf.Camera"/>
+        <Parameter name="HEIGHT">
+            <Expr kind="Var" name="HEIGHT"/>
+        </Parameter>
+        <Parameter name="WIDTH">
+            <Expr kind="Var" name="WIDTH"/>
+        </Parameter>
     </Instance>
     <Instance id="Display">
         <Class name="org.ietr.sobel.sdf.Display"/>
+        <Parameter name="HEIGHT">
+            <Expr kind="Var" name="HEIGHT"/>
+        </Parameter>
+        <Parameter name="WIDTH">
+            <Expr kind="Var" name="WIDTH"/>
+        </Parameter>
     </Instance>
-    <Instance id="SeparateY">
-        <Class name="org.ietr.sobel.sdf.SeparateY"/>
-    </Instance>
-    <Connection dst="SeparateY" dst-port="image" src="Camera" src-port="image"/>
     <Connection dst="SplitImage" dst-port="frame" src="SeparateY" src-port="Y"/>
     <Connection dst="SobelFilter" dst-port="slice_in" src="SplitImage" src-port="slices_out"/>
     <Connection dst="MergeImage" dst-port="slices_in" src="SobelFilter" src-port="slice_out"/>
+    <Connection dst="SeparateY" dst-port="frame" src="Camera" src-port="frame"/>
     <Connection dst="Display" dst-port="frame" src="MergeImage" src-port="frame"/>
 </XDF>

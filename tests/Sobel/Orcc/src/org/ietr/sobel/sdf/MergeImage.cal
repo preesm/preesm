@@ -43,7 +43,7 @@ actor MergeImage (int NB_SLICES = 12, int WIDTH= 640, int HEIGHT = 480) int(size
 	split: action slices_in:[ s_in ] repeat WIDTH*(HEIGHT + NB_SLICES*2) // SLICE_SIZE*NB_SLICES
 			==> frame:[ frame_out ] repeat WIDTH*HEIGHT // FRAME_SIZE
 	var
-		int(size=32) frame_out [ WIDTH*HEIGHT ],
+		int(size=8) frame_out [ WIDTH*HEIGHT ],
 		int currentSlice,
 		int lineToCopy
 		
@@ -54,7 +54,7 @@ actor MergeImage (int NB_SLICES = 12, int WIDTH= 640, int HEIGHT = 480) int(size
 		foreach int frameLine in 0 .. HEIGHT-1 do
 			
 			// Compute the "number" of the corresponding slice
-			currentSlice := frameLine / (480/NB_SLICES); // integer division
+			currentSlice := frameLine div (480/NB_SLICES); // integer division
 			
 			// Get the index of the line to copy
 			lineToCopy := frameLine + 1 + 2*currentSlice;

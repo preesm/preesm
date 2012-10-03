@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <layout>
 	<vertices>
-		<vertex id="Camera" x="57" y="70"/>
-		<vertex id="SplitImage" x="324" y="96"/>
-		<vertex id="SobelFilter" x="479" y="99"/>
-		<vertex id="MergeImage" x="658" y="104"/>
-		<vertex id="Display" x="818" y="105"/>
-		<vertex id="SeparateY" x="185" y="78"/>
+		<vertex id="SeparateY" x="188" y="71"/>
+		<vertex id="SplitImage" x="335" y="71"/>
+		<vertex id="SobelFilter" x="522" y="71"/>
+		<vertex id="MergeImage" x="711" y="71"/>
+		<vertex id="Camera" x="57" y="71"/>
+		<vertex id="Display" x="888" y="71"/>
 	</vertices>
 </layout>
