@@ -32,8 +32,8 @@
 
 package org.ietr.sobel.sdf;
 
-actor SeparateY (int WIDTH= 640, int HEIGHT = 480) int(size=8) frame 
-	==> int(size=8) Y:
+actor SeparateY (int WIDTH= 640, int HEIGHT = 480) uint(size=8) frame 
+	==> uint(size=8) Y:
 	
 	// Constant definition - Removed because of strange behavior :
 	// Value cannot be different from default in C backend
@@ -44,7 +44,7 @@ actor SeparateY (int WIDTH= 640, int HEIGHT = 480) int(size=8) frame
 	separate: action frame:[ frm_in ] repeat WIDTH*HEIGHT*2 
 			==> Y:[ y_out ] repeat WIDTH*HEIGHT
 	var
-		int(size=8) y_out [ WIDTH*HEIGHT ]
+		uint(size=8) y_out [ WIDTH*HEIGHT ]
 	do
 		foreach int i in 0 .. HEIGHT-1 do
 			foreach int j in 0 .. WIDTH-1 do

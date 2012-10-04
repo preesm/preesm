@@ -32,7 +32,7 @@
 
 package org.ietr.sobel.sdf;
 
-actor Display (int WIDTH= 640, int HEIGHT = 480) int(size=8) frame ==> :
+actor Display (int WIDTH= 640, int HEIGHT = 480) uint(size=8) frame ==> :
 	
 	@native procedure display(uint(size=8) input[ WIDTH*HEIGHT ], int width, int height)
 	end

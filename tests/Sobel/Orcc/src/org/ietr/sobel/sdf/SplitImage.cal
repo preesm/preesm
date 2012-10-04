@@ -33,7 +33,7 @@
 
 package org.ietr.sobel.sdf;
 
-actor SplitImage (int NB_SLICES = 12, int WIDTH= 640, int HEIGHT = 480) int(size=8) frame ==> int(size=8) slices_out :
+actor SplitImage (int NB_SLICES = 12, int WIDTH= 640, int HEIGHT = 480) uint(size=8) frame ==> uint(size=8) slices_out :
 	
     // Constant definition - Removed because of strange behavior :
 	// Value cannot be different from default in C backend
@@ -44,7 +44,7 @@ actor SplitImage (int NB_SLICES = 12, int WIDTH= 640, int HEIGHT = 480) int(size
 	split: action frame:[ frame_in ] repeat WIDTH*HEIGHT // FRAME_SIZE
 			==> slices_out:[ s_out ] repeat WIDTH*(HEIGHT + NB_SLICES*2) // SLICE_SIZE*NB_SLICES
 	var
-		int(size=8) s_out [ WIDTH*(HEIGHT + NB_SLICES*2) ],
+		uint(size=8) s_out [ WIDTH*(HEIGHT + NB_SLICES*2) ],
 		int SLICE_HEIGHT = HEIGHT/NB_SLICES + 2,
 		int NB_OUTPUT_LINES = HEIGHT + NB_SLICES*2,
 		int currentSlice,

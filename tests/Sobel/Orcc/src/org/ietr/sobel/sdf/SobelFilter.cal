@@ -33,7 +33,7 @@
 package org.ietr.sobel.sdf;
 
 actor SobelFilter (int NB_SLICES = 12, int WIDTH= 640, int HEIGHT = 480)
-	int(size=8) slice_in ==> int(size=8) slice_out :
+	uint(size=8) slice_in ==> uint(size=8) slice_out :
 	
 	// Constant definition - Removed because of strange behavior :
 	// Value cannot be different from default in C backend
@@ -43,10 +43,10 @@ actor SobelFilter (int NB_SLICES = 12, int WIDTH= 640, int HEIGHT = 480)
 	filter: action slice_in:[ s_in ] repeat WIDTH*HEIGHT/NB_SLICES + WIDTH*2 // SLICE_SIZE
 			==> slice_out:[ s_out ] repeat WIDTH*HEIGHT/NB_SLICES + WIDTH*2 // SLICE_SIZE
 		var
-			int(size=8) s_out [ WIDTH*HEIGHT/NB_SLICES + WIDTH*2 ],
+			uint(size=8) s_out [ WIDTH*HEIGHT/NB_SLICES + WIDTH*2 ],
 			int SLICE_HEIGHT = HEIGHT/NB_SLICES + 2,
-			int Gx, // Subresult 1
-			int Gy  // Subresult 2
+			int(size=32) Gx, // Subresult 1
+			int(size=32) Gy  // Subresult 2
 		do
 			// First and Last columns are filled with 0
 			foreach int j in 0 .. SLICE_HEIGHT-1 do
@@ -79,18 +79,20 @@ actor SobelFilter (int NB_SLICES = 12, int WIDTH= 640, int HEIGHT = 480)
 						  + val(s_in, i-1, j+1) + 2*val(s_in, i, j+1) + val(s_in, i+1, j+1);
 				    
 				    // Store the result of abs(Gx)+abs(Gy) in output slice
-				    s_out[j*WIDTH + i] := abs(Gx) + abs(Gy);  							
+				    // Normalize the result between 0 and 255
+				    s_out[j*WIDTH + i] := (abs(Gx) + abs(Gy)) / 8;   							
 				end
 			end
 		end
 		
 	// Function that return the value (i,j) of the input array
+	// Convert it into a 32 bit integer
 	function val(int(size=8) tab[WIDTH*HEIGHT/NB_SLICES + WIDTH*2],int col, int lin) 
-		--> int(size=8) :
+		--> int(size=32) :
 		tab[lin*WIDTH + col]
 	end 
 	
-	function abs(int(size=8) x) --> int(size=8) :
+	function abs(int(size=32) x) --> int(size=32) :
 		if x < 0 then -x else x end
 	end
 end
