@@ -87,7 +87,7 @@ actor SobelFilter (int NB_SLICES = 12, int WIDTH= 640, int HEIGHT = 480)
 		
 	// Function that return the value (i,j) of the input array
 	// Convert it into a 32 bit integer
-	function val(int(size=8) tab[WIDTH*HEIGHT/NB_SLICES + WIDTH*2],int col, int lin) 
+	function val(uint(size=8) tab[WIDTH*HEIGHT/NB_SLICES + WIDTH*2],int col, int lin) 
 		--> int(size=32) :
 		tab[lin*WIDTH + col]
 	end 
