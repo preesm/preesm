@@ -4,7 +4,6 @@
 package org.ietr.preesm.codegen.communication;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -20,10 +19,7 @@ import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.buffer.Buffer;
 import org.ietr.preesm.codegen.model.com.CommunicationFunctionCall;
 import org.ietr.preesm.codegen.model.com.CommunicationFunctionCall.Phase;
-import org.ietr.preesm.codegen.model.com.CommunicationFunctionInit;
-import org.ietr.preesm.codegen.model.com.ReceiveInit;
 import org.ietr.preesm.codegen.model.com.ReceiveMsg;
-import org.ietr.preesm.codegen.model.com.SendInit;
 import org.ietr.preesm.codegen.model.com.SendMsg;
 import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
 import org.ietr.preesm.codegen.model.main.ICodeElement;
@@ -131,12 +127,6 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 	protected AbstractCodeContainer container = null;
 
 	/**
-	 * Initializing the Send and Receive channels only for the channels really
-	 * used and only once per channel
-	 */
-	protected Set<CommunicationFunctionInit> alreadyInits = null;
-
-	/**
 	 * The considered communication vertices (send, receive)
 	 */
 	protected SortedSet<SDFAbstractVertex> vertices = null;
@@ -150,7 +140,6 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 			SortedSet<SDFAbstractVertex> vertices, AbstractRouteStep step) {
 		super();
 		this.container = container;
-		this.alreadyInits = new HashSet<CommunicationFunctionInit>();
 		this.vertices = vertices;
 		this.step = step;
 	}
@@ -275,45 +264,6 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 		// createinits(startCall, compThread.getGlobalContainer(),
 		// alreadyInits);
 
-	}
-
-	/**
-	 * Calls the initialization functions at the beginning of computation
-	 */
-	protected void createinits(CommunicationFunctionCall call,
-			AbstractBufferContainer bufferContainer,
-			Set<CommunicationFunctionInit> alreadyInits) {
-
-		CommunicationFunctionInit init = null;
-
-		// Creating Send and Receive initialization calls
-		if (call instanceof SendMsg) {
-			SendMsg send = (SendMsg) call;
-
-			init = new SendInit(bufferContainer, send.getTarget()
-					.getInstanceName(), send.getRouteStep(), -1);
-		} else if (call instanceof ReceiveMsg) {
-			ReceiveMsg receive = (ReceiveMsg) call;
-
-			init = new ReceiveInit(bufferContainer, receive.getSource()
-					.getInstanceName(), receive.getRouteStep(), -1);
-		}
-
-		// Checking that the initialization has not already been done
-		if (init != null) {
-			for (CommunicationFunctionInit oldInit : alreadyInits) {
-				if (oldInit.getConnectedCoreId().equals(
-						init.getConnectedCoreId())
-						&& oldInit.getRouteStep().equals(init.getRouteStep())) {
-
-					if (oldInit.getName().equals(init.getName())) {
-						// init has already been done with same direction
-						init = null;
-					}
-					break;
-				}
-			}
-		}
 	}
 
 	/**

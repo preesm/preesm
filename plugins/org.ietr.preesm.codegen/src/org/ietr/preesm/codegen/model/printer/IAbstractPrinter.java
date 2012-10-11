@@ -48,7 +48,6 @@ import org.ietr.preesm.codegen.model.call.SpecialBehaviorCall;
 import org.ietr.preesm.codegen.model.call.UserFunctionCall;
 import org.ietr.preesm.codegen.model.call.Variable;
 import org.ietr.preesm.codegen.model.com.CommunicationFunctionCall;
-import org.ietr.preesm.codegen.model.com.CommunicationFunctionInit;
 import org.ietr.preesm.codegen.model.com.ReceiveMsg;
 import org.ietr.preesm.codegen.model.com.SendMsg;
 import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
@@ -103,9 +102,6 @@ public interface IAbstractPrinter {
 			Object currentLocation);
 
 	public Object visit(CommunicationFunctionCall element, CodeZoneId index,
-			Object currentLocation);
-
-	public Object visit(CommunicationFunctionInit element, CodeZoneId index,
 			Object currentLocation);
 
 	public Object visit(ForLoop element, CodeZoneId index,

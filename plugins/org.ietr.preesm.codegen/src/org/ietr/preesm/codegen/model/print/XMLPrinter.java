@@ -54,7 +54,6 @@ import org.ietr.preesm.codegen.model.call.SpecialBehaviorCall;
 import org.ietr.preesm.codegen.model.call.UserFunctionCall;
 import org.ietr.preesm.codegen.model.call.Variable;
 import org.ietr.preesm.codegen.model.com.CommunicationFunctionCall;
-import org.ietr.preesm.codegen.model.com.CommunicationFunctionInit;
 import org.ietr.preesm.codegen.model.com.ReceiveMsg;
 import org.ietr.preesm.codegen.model.com.SendMsg;
 import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
@@ -413,25 +412,6 @@ public class XMLPrinter implements IAbstractPrinter {
 	@Override
 	public Object visit(CommunicationFunctionCall domElt, CodeZoneId index,
 			Object currentLocation) {
-		return currentLocation;
-	}
-
-	@Override
-	public Object visit(CommunicationFunctionInit domElt, CodeZoneId index,
-			Object currentLocation) {
-
-		if (index == CodeZoneId.body) {
-			Element init = dom.createElement(domElt.getName());
-			((Element) currentLocation).appendChild(init);
-
-			init.setAttribute("connectedCoreId", domElt.getConnectedCoreId());
-			int callIndex = domElt.getCallIndex();
-			if (callIndex != -1)
-				init.setAttribute("index", String.valueOf(callIndex));
-			domElt.getRouteStep().appendRouteStep(dom, init);
-			currentLocation = init;
-		}
-
 		return currentLocation;
 	}
 
