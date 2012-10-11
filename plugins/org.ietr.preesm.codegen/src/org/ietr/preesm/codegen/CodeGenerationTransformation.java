@@ -59,7 +59,7 @@ import org.ietr.preesm.codegen.model.CodeGenSDFGraphFactory;
 import org.ietr.preesm.codegen.model.allocators.AllocationPolicy;
 import org.ietr.preesm.codegen.model.allocators.BufferAllocator;
 import org.ietr.preesm.codegen.model.main.SourceFileList;
-import org.ietr.preesm.codegen.model.print.GenericPrinter;
+import org.ietr.preesm.codegen.model.printer.GenericPrinter;
 import org.ietr.preesm.codegen.model.visitor.SystemCPrinterVisitor;
 import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.scenario.PreesmScenario;

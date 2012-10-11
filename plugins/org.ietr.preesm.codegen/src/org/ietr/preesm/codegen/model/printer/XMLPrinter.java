@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-B license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.codegen.model.print;
+package org.ietr.preesm.codegen.model.printer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -65,8 +65,6 @@ import org.ietr.preesm.codegen.model.main.AbstractCodeElement;
 import org.ietr.preesm.codegen.model.main.Assignment;
 import org.ietr.preesm.codegen.model.main.SourceFile;
 import org.ietr.preesm.codegen.model.main.VariableAllocation;
-import org.ietr.preesm.codegen.model.printer.CodeZoneId;
-import org.ietr.preesm.codegen.model.printer.IAbstractPrinter;
 import org.ietr.preesm.codegen.model.threads.LaunchThread;
 import org.ietr.preesm.codegen.model.threads.ThreadDeclaration;
 import org.w3c.dom.DOMImplementation;
