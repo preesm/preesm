@@ -117,7 +117,7 @@ public class CompoundCodeElement extends AbstractCodeContainer implements
 	public CompoundCodeElement(String name,
 			AbstractBufferContainer parentContainer,
 			ICodeGenSDFVertex correspondingVertex, CodeSectionType sectionType) {
-		super(parentContainer, "");
+		super(parentContainer, sectionType.toString(), "");
 		localBuffers = new HashMap<SDFEdge, Buffer>();
 		this.name = name;
 		this.parentContainer = parentContainer;
@@ -205,8 +205,8 @@ public class CompoundCodeElement extends AbstractCodeContainer implements
 	 *            The parent container of this element
 	 */
 	public CompoundCodeElement(String name,
-			AbstractBufferContainer parentContainer) {
-		super(parentContainer, "");
+			AbstractBufferContainer parentContainer, String sectionType) {
+		super(parentContainer, sectionType, "");
 		localBuffers = new HashMap<SDFEdge, Buffer>();
 		this.name = name;
 		this.parentContainer = parentContainer;

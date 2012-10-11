@@ -36,7 +36,9 @@ knowledge of the CeCILL-B license and that you accept its terms.
 
 package org.ietr.preesm.codegen;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.Design;
@@ -96,11 +98,22 @@ public class CodeGenerator {
 			Design architecture, PreesmScenario scenario, IDLPrototypeFactory idlPrototypeFactory) {
 		// Creates one source file per operator
 		createSourceFiles(architecture, scenario);
+		
+		Map<SourceFile,SourceFileCodeGenerator> fileToGen = new HashMap<SourceFile,SourceFileCodeGenerator>();
 
-		// For each source file, generates source code
+		// All computation is added before communication so that we can adapt communication 
+		// to computation needs
+		// For each source file, generates computation source code
 		for (SourceFile file : list) {
 			SourceFileCodeGenerator codegen = new SourceFileCodeGenerator(file);
-			codegen.generateSource(algorithm, architecture, idlPrototypeFactory);
+			fileToGen.put(file, codegen);
+			codegen.generateComputationSource(algorithm, architecture, idlPrototypeFactory);
+		}
+
+		// For each source file, generates communication source code
+		for (SourceFile file : list) {
+			SourceFileCodeGenerator codegen = fileToGen.get(file);
+			codegen.generateCommunicationSource(algorithm, architecture, idlPrototypeFactory, list);
 		}
 	}
 }

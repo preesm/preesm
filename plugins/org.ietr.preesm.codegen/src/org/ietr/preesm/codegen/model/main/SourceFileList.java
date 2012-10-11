@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -39,6 +39,8 @@ package org.ietr.preesm.codegen.model.main;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
+import net.sf.dftools.architecture.slam.ComponentInstance;
 
 /**
  * A generated code is the gathering of source files, each one corresponding to
@@ -94,6 +96,18 @@ public class SourceFileList extends ArrayList<SourceFile> {
 	 */
 	public Set<String> getBufferNames() {
 		return bufferNames;
+	}
+
+	/**
+	 * Returns the source file corresponding to an operator
+	 */
+	public SourceFile get(ComponentInstance operator) {
+		for(SourceFile file : this){
+			if(file.getOperator().getInstanceName().equals(operator.getInstanceName())){
+				return file;
+			}
+		}
+		return null;
 	}
 
 	/**

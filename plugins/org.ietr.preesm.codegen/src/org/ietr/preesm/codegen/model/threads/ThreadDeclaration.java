@@ -81,7 +81,14 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 	public void addContainer(AbstractCodeContainer container){
 		codeContainers.add(container);
 	}
+	
+	public List<AbstractCodeContainer> getCodeContainers(){
+		return codeContainers;
+	}
 
+	/**
+	 * Accepting printer visitor
+	 */
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit

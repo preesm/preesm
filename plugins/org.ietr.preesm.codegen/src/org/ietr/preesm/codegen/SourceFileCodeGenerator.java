@@ -70,12 +70,11 @@ import org.ietr.preesm.codegen.model.containers.ForLoop;
 import org.ietr.preesm.codegen.model.containers.LinearCodeContainer;
 import org.ietr.preesm.codegen.model.main.SchedulingOrderComparator;
 import org.ietr.preesm.codegen.model.main.SourceFile;
+import org.ietr.preesm.codegen.model.main.SourceFileList;
 import org.ietr.preesm.codegen.model.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.codegen.model.types.CodeSectionType;
 import org.ietr.preesm.codegen.model.types.CodeSectionType.MajorType;
-import org.ietr.preesm.codegen.phase.AbstractPhaseCodeGenerator;
-import org.ietr.preesm.codegen.phase.InitCodeGenerator;
-import org.ietr.preesm.codegen.phase.LoopCodeGenerator;
+import org.ietr.preesm.codegen.phase.PhaseCodeGenerator;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
@@ -173,7 +172,7 @@ public class SourceFileCodeGenerator {
 	/**
 	 * Fills its source file from an algorithm, an architecture and a prototype retriever
 	 */
-	public void generateSource(CodeGenSDFGraph algorithm, Design architecture,
+	public void generateComputationSource(CodeGenSDFGraph algorithm, Design architecture,
 			IDLPrototypeFactory idlPrototypeFactory) {
 
 		// Gets the tasks vertices allocated to the current operator in
@@ -181,15 +180,9 @@ public class SourceFileCodeGenerator {
 		SortedSet<SDFAbstractVertex> ownTaskVertices = getOwnVertices(
 				algorithm, VertexType.task);
 
-		// Gets the communication vertices allocated to the current operator in
-		// scheduling order
-		SortedSet<SDFAbstractVertex> ownCommunicationVertices = getOwnVertices(
-				algorithm, VertexType.send);
-		ownCommunicationVertices.addAll(getOwnVertices(algorithm,
-				VertexType.receive));
-
 		// Buffers defined as global variables are retrieved here. They are
 		// added globally to the file
+		
 		try {
 			allocateBuffers(algorithm);
 		} catch (InvalidExpressionException e) {
@@ -198,15 +191,18 @@ public class SourceFileCodeGenerator {
 			return;
 		}
 
-		// Allocation of route step buffers
-		allocateRouteSteps(ownCommunicationVertices);
-
-		// Creating computation thread in which all SDF function calls will be
+		// Creating computation thread in which all function calls will be
 		// located
 		ComputationThreadDeclaration computationThread = new ComputationThreadDeclaration(
 				file);
 		file.addThread(computationThread);
-
+		
+		// Creating linear container to insert communication initialization to be customized in XSLT
+		CodeSectionType sectionType = new CodeSectionType(MajorType.COMINIT);
+		LinearCodeContainer comInit = new LinearCodeContainer(
+				computationThread, sectionType, "COMINIT");
+		computationThread.addContainer(comInit);
+		
 		// The maximum number of init phases is kept for all cores. May be
 		// improved later
 		int numberOfInitPhases = idlPrototypeFactory.getNumberOfInitPhases();
@@ -214,34 +210,71 @@ public class SourceFileCodeGenerator {
 		// Generating code for the init phases from upper to lower number
 		for (int i = numberOfInitPhases - 1; i >= 0; i--) {
 			generateInitSection(computationThread, algorithm.getParameters(),
-					ownTaskVertices, ownCommunicationVertices,
+					ownTaskVertices,
 					file.getGlobalContainer(), i);
 		}
 
 		// Generating code for the computation loop
 		generateLoopSection(computationThread, algorithm.getParameters(),
-				ownTaskVertices, ownCommunicationVertices,
+				ownTaskVertices,
 				file.getGlobalContainer());
+	}
+
+	/**
+	 * Fills its source file from an algorithm, an architecture and a prototype retriever
+	 */
+	public void generateCommunicationSource(CodeGenSDFGraph algorithm, Design architecture,
+			IDLPrototypeFactory idlPrototypeFactory, SourceFileList sourceFiles) {
+
+		// Gets the communication vertices allocated to the current operator in
+		// scheduling order
+		SortedSet<SDFAbstractVertex> ownCommunicationVertices = getOwnVertices(
+				algorithm, VertexType.send);
+		ownCommunicationVertices.addAll(getOwnVertices(algorithm,
+				VertexType.receive));
+
+		// Allocation of route step buffers
+		allocateRouteSteps(ownCommunicationVertices);
+
+		// The maximum number of init phases is kept for all cores. May be
+		// improved later
+		int numberOfInitPhases = idlPrototypeFactory.getNumberOfInitPhases();
+
+		// Generating code for the init phases from upper to lower number
+		for (int i = numberOfInitPhases - 1; i >= 0; i--) {
+			CodeSectionType codeSectionType = new CodeSectionType(MajorType.INIT,i);
+			AbstractCodeContainer initContainer = file.getContainer(codeSectionType);
+			addCommunication(initContainer, ownCommunicationVertices,
+					file.getGlobalContainer(), codeSectionType, sourceFiles);
+		}
+
+		CodeSectionType codeSectionType = new CodeSectionType(MajorType.LOOP);
+		AbstractCodeContainer loopContainer = file.getContainer(codeSectionType);
+		// Generating code for the computation loop
+		addCommunication(loopContainer, ownCommunicationVertices,
+				file.getGlobalContainer(), codeSectionType, sourceFiles);
 	}
 
 	/**
 	 * Generates and fill a code section
 	 */
-	private void generateInitSection(
+	private PhaseCodeGenerator generateInitSection(
 			ComputationThreadDeclaration computationThread,ParameterSet parameterSet,
 			SortedSet<SDFAbstractVertex> tasks,
-			SortedSet<SDFAbstractVertex> coms,
 			AbstractBufferContainer bufferContainer, int initIndex) {
+		CodeSectionType sectionType = new CodeSectionType(MajorType.INIT,initIndex);
 		LinearCodeContainer init = new LinearCodeContainer(
-				computationThread, "Initialization phase number " + initIndex);
+				computationThread, sectionType, "Initialization phase number " + initIndex);
 		computationThread.addContainer(init);
-		AbstractPhaseCodeGenerator loopCodegen = new InitCodeGenerator(init, initIndex);
+		PhaseCodeGenerator initCodegen = new PhaseCodeGenerator(init);
 
 		// Inserts the user function calls and adds their parameters; possibly
 		// including graph parameters
 
-		fillSection(loopCodegen, init, parameterSet, tasks, coms,
-				bufferContainer,new CodeSectionType(MajorType.INIT,initIndex));
+		addComputation(initCodegen, init, parameterSet, tasks,
+				bufferContainer,sectionType);
+		
+		return initCodegen;
 	}
 	
 	/**
@@ -250,38 +283,49 @@ public class SourceFileCodeGenerator {
 	private void generateLoopSection(
 			ComputationThreadDeclaration computationThread,ParameterSet parameterSet,
 			SortedSet<SDFAbstractVertex> tasks,
-			SortedSet<SDFAbstractVertex> coms,
 			AbstractBufferContainer bufferContainer) {
+		CodeSectionType sectionType = new CodeSectionType(MajorType.LOOP);
 		ForLoop loop = new ForLoop(computationThread,
-				"Main loop of computation");
+				sectionType, "Main loop of computation");
 		computationThread.addContainer(loop);
-		AbstractPhaseCodeGenerator loopCodegen = new LoopCodeGenerator(loop);
+		PhaseCodeGenerator loopCodegen = new PhaseCodeGenerator(loop);
 
 		// Inserts the user function calls and adds their parameters; possibly
 		// including graph parameters
 
-		fillSection(loopCodegen, loop, parameterSet, tasks, coms,
-				bufferContainer, new CodeSectionType(MajorType.LOOP));
+		addComputation(loopCodegen, loop, parameterSet, tasks,
+				bufferContainer, sectionType);
 	}
 
 	/**
-	 * Fill a code section
+	 * Fill a code section with computation
 	 */
-	private void fillSection(AbstractPhaseCodeGenerator codegen,
+	private void addComputation(PhaseCodeGenerator codegen,
 			AbstractCodeContainer container, ParameterSet parameterSet,
 			SortedSet<SDFAbstractVertex> tasks,
-			SortedSet<SDFAbstractVertex> coms,
 			AbstractBufferContainer bufferContainer,
 			CodeSectionType sectionType) {
 
 		// PSDF code
 		codegen.addDynamicParameter(parameterSet);
 		codegen.addUserFunctionCalls(tasks, sectionType);
+	}
 
+	/**
+	 * Fill a code section with communication
+	 */
+	private void addCommunication(AbstractCodeContainer codeContainer,
+			SortedSet<SDFAbstractVertex> coms,
+			AbstractBufferContainer bufferContainer,
+			CodeSectionType sectionType,
+			SourceFileList sourceFiles) {
+
+		PhaseCodeGenerator codegen = new PhaseCodeGenerator(codeContainer);
+		
 		// Inserts the communication function calls, the communication
 		// thread semaphore post and pends and the communication
 		// initializations
-		codegen.addSendsAndReceives(coms, bufferContainer, sectionType);
+		codegen.addSendsAndReceives(coms, bufferContainer, sectionType, sourceFiles);
 	}
 
 	/**

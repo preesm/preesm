@@ -47,36 +47,32 @@ import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 import org.ietr.preesm.codegen.communication.ComCodeGeneratorFactory;
 import org.ietr.preesm.codegen.communication.IComCodeGenerator;
-import org.ietr.preesm.codegen.model.CodeGenSDFTokenInitVertex;
 import org.ietr.preesm.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
-import org.ietr.preesm.codegen.model.call.UserFunctionCall;
 import org.ietr.preesm.codegen.model.call.Variable;
 import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
 import org.ietr.preesm.codegen.model.factories.CodeElementFactory;
 import org.ietr.preesm.codegen.model.main.ICodeElement;
+import org.ietr.preesm.codegen.model.main.SourceFileList;
 import org.ietr.preesm.codegen.model.types.CodeSectionType;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 
 /**
- * Generates code for the computation init phase
+ * Generates code for a code phase, init or loop
  * 
  * @author mpelcat
  */
-public class InitCodeGenerator extends AbstractPhaseCodeGenerator {
+public class PhaseCodeGenerator {
 
 	/**
-	 * Index of the current initialization phase.
-	 * This number decreases to 0 before loop phase
+	 * Block of code filled by this generator
 	 */
-	private int initIndex;
+	protected AbstractCodeContainer container;
 
-	public InitCodeGenerator(AbstractCodeContainer container, int initIndex) {
-		super(container);
+	public PhaseCodeGenerator(AbstractCodeContainer container) {
 		this.container = container;
-		this.initIndex = initIndex;
 	}
 
 
@@ -85,9 +81,8 @@ public class InitCodeGenerator extends AbstractPhaseCodeGenerator {
 	 * core. Vertices are already in the correct order. The code thread com
 	 * generator delegates com creation to each route step appropriate generator
 	 */
-	@Override
 	public void addSendsAndReceives(SortedSet<SDFAbstractVertex> vertices,
-			AbstractBufferContainer bufferContainer, CodeSectionType sectionType) {
+			AbstractBufferContainer bufferContainer, CodeSectionType sectionType, SourceFileList sourceFiles) {
 
 		// a com code generator factory outputs the commmunication generator
 		// that will add communication primitives into the code
@@ -102,14 +97,13 @@ public class InitCodeGenerator extends AbstractPhaseCodeGenerator {
 			IComCodeGenerator generator = factory.getCodeGenerator(step);
 
 			// Creates all functions and buffers related to the given vertex
-			generator.insertComs(vertex, sectionType);
+			generator.insertComs(vertex, sectionType, sourceFiles);
 		}
 	}
 
 	/**
 	 * Adding variables for PSDF parameters
 	 */
-	@Override
 	public void addDynamicParameter(ParameterSet params) {
 		if (params != null) {
 			for (Parameter param : params.values()) {
@@ -123,15 +117,15 @@ public class InitCodeGenerator extends AbstractPhaseCodeGenerator {
 	}
 
 	/**
-	 * Adds one function call for each vertex in the ordered set
+	 * Adds one code element (function call or hierarchical element) for each vertex if prototype
+	 * advises it.
 	 */
-	@Override
 	public void addUserFunctionCalls(SortedSet<SDFAbstractVertex> vertices, CodeSectionType sectionType) {
 
-		// Treating regular vertices
 		for (SDFAbstractVertex vertex : vertices) {
 
-			if (vertex instanceof ICodeGenSDFVertex
+			// Managing regular vertices
+			/*if (vertex instanceof ICodeGenSDFVertex
 					&& vertex.getGraphDescription() == null) {				
 				if (vertex instanceof CodeGenSDFTokenInitVertex) {
 					ICodeElement beginningCall = new UserFunctionCall(
@@ -141,8 +135,9 @@ public class InitCodeGenerator extends AbstractPhaseCodeGenerator {
 
 					container.addInitCodeElement(beginningCall);
 				} 
-			}
-			
+			}*/
+
+			// Managing regular vertices
 			if (vertex instanceof ICodeGenSDFVertex) {
 				ICodeElement mainCall = CodeElementFactory.createElement(
 						container, vertex, sectionType);
@@ -152,11 +147,11 @@ public class InitCodeGenerator extends AbstractPhaseCodeGenerator {
 					} else if (vertex instanceof PSDFSubInitVertex) {
 						container.addCodeElementFirst(mainCall);
 					} else {
+						
 						container.addCodeElement(mainCall);
 					}
 				}
 			}
 		}
 	}
-	
 }

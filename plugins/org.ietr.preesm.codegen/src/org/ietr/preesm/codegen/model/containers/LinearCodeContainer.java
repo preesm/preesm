@@ -42,6 +42,7 @@ import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.main.ICodeElement;
 import org.ietr.preesm.codegen.model.printer.CodeZoneId;
 import org.ietr.preesm.codegen.model.printer.IAbstractPrinter;
+import org.ietr.preesm.codegen.model.types.CodeSectionType;
 
 /**
  * Code container executed once (no loop)
@@ -51,8 +52,8 @@ import org.ietr.preesm.codegen.model.printer.IAbstractPrinter;
 public class LinearCodeContainer extends AbstractCodeContainer implements
 		ICodeElement {
 
-	public LinearCodeContainer(AbstractBufferContainer parentContainer, String comment) {
-		super(parentContainer, comment);
+	public LinearCodeContainer(AbstractBufferContainer parentContainer, CodeSectionType sectionType, String comment) {
+		super(parentContainer, sectionType.toString(), comment);
 	}
 
 	public void accept(IAbstractPrinter printer, Object currentLocation) {

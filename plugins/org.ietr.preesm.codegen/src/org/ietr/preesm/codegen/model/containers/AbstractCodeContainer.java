@@ -62,10 +62,11 @@ public abstract class AbstractCodeContainer extends AbstractBufferContainer {
 	 * List of the elements that are not included in the main loop
 	 */
 	private List<ICodeElement> codeElements;
-	
+
 	/**
 	 * Position corresponding to the end of an init phase inside the container
 	 */
+	@Deprecated
 	private int initPos = 0;
 
 	/**
@@ -78,15 +79,26 @@ public abstract class AbstractCodeContainer extends AbstractBufferContainer {
 	 */
 	private String comment;
 
-	public AbstractCodeContainer(AbstractBufferContainer parentContainer, String comment) {
+	/**
+	 * ID that can help identifying code phase
+	 */
+	private String id;
+
+	public AbstractCodeContainer(AbstractBufferContainer parentContainer,
+			String id, String comment) {
 		super(parentContainer);
 		codeElements = new ArrayList<ICodeElement>();
 		comNumber = 0;
 		this.comment = comment;
+		this.id = id;
 	}
 
 	public String getComment() {
 		return comment;
+	}
+
+	public String getId() {
+		return id;
 	}
 
 	/**
@@ -95,14 +107,14 @@ public abstract class AbstractCodeContainer extends AbstractBufferContainer {
 	public int getComNumber() {
 		return comNumber;
 	}
-	
+
 	/**
 	 * Increment number of communications present in the thread
 	 */
 	public int incrementComNumber() {
 		return comNumber = comNumber + 1;
 	}
-	
+
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
@@ -206,6 +218,14 @@ public abstract class AbstractCodeContainer extends AbstractBufferContainer {
 
 	public List<ICodeElement> getCodeElements() {
 		return codeElements;
+	}
+
+	public ICodeElement getCodeElement(int index) {
+		if (index >= codeElements.size() || index < 0) {
+			return null;
+		} else {
+			return codeElements.get(index);
+		}
 	}
 
 	/**

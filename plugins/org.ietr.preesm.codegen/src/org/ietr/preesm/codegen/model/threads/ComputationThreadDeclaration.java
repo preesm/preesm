@@ -46,7 +46,8 @@ import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
  */
 public class ComputationThreadDeclaration extends ThreadDeclaration {
 	
+	public static String ID = "computationThread";
 	public ComputationThreadDeclaration(AbstractBufferContainer parentContainer) {
-		super("computationThread", parentContainer);
+		super(ID, parentContainer);
 	}
 }

@@ -45,7 +45,7 @@ public class CodeSectionType {
 
 	public enum MajorType {
 
-		INIT, LOOP
+		COMINIT, INIT, LOOP
 	}
 
 	/**
@@ -88,6 +88,9 @@ public class CodeSectionType {
 	public String toString() {
 		if(major.equals(MajorType.LOOP)){
 			return "LOOP";
+		}
+		else if(major.equals(MajorType.COMINIT)){
+			return "COMINIT";
 		}
 		else if(major.equals(MajorType.INIT)){
 			return "(INIT," + minor + ")";

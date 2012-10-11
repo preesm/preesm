@@ -57,7 +57,6 @@ import org.ietr.preesm.codegen.model.com.CommunicationFunctionCall;
 import org.ietr.preesm.codegen.model.com.CommunicationFunctionInit;
 import org.ietr.preesm.codegen.model.com.ReceiveMsg;
 import org.ietr.preesm.codegen.model.com.SendMsg;
-import org.ietr.preesm.codegen.model.com.WaitForCore;
 import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
 import org.ietr.preesm.codegen.model.containers.CompoundCodeElement;
 import org.ietr.preesm.codegen.model.containers.FiniteForLoop;
@@ -531,21 +530,6 @@ public class XMLPrinter implements IAbstractPrinter {
 				visit(outputBuffer, index, outputBuffers);
 			}
 			currentLocation = specialCall;
-		}
-
-		return currentLocation;
-	}
-
-	@Override
-	public Object visit(WaitForCore domElt, CodeZoneId index,
-			Object currentLocation) {
-
-		if (index == CodeZoneId.body) {
-			Element wait = dom.createElement(domElt.getName());
-			((Element) currentLocation).appendChild(wait);
-
-			domElt.getRouteStep().appendRouteStep(dom, wait);
-			currentLocation = wait;
 		}
 
 		return currentLocation;

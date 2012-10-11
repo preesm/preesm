@@ -43,9 +43,12 @@ import java.util.List;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
+import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
 import org.ietr.preesm.codegen.model.printer.CodeZoneId;
 import org.ietr.preesm.codegen.model.printer.IAbstractPrinter;
+import org.ietr.preesm.codegen.model.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.codegen.model.threads.ThreadDeclaration;
+import org.ietr.preesm.codegen.model.types.CodeSectionType;
 
 /**
  * Source file to be executed on a given core. A source file contains Buffer
@@ -117,6 +120,24 @@ public class SourceFile extends AbstractBufferContainer {
 	 */
 	public void addThread(ThreadDeclaration thread) {
 		threads.add(thread);
+	}
+	
+	/**
+	 * Returns the code container corresponding to the code section type in source's computation thread.
+	 * 
+	 * @return the code container corresponding to the code section type in source's computation thread.
+	 */
+	public AbstractCodeContainer getContainer(CodeSectionType sectionType){
+		for (ThreadDeclaration thread:threads){
+			if(thread.getName().equals(ComputationThreadDeclaration.ID)){
+				for(AbstractCodeContainer container:thread.getCodeContainers()){
+					if(container.getId().equals(sectionType.toString())){
+						return container;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
