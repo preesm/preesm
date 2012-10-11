@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PIMeMoC
+Bundle-SymbolicName: org.ietr.preesm.experiment.ui.pimemoc; singleton:=true
+Bundle-Version: 0.1.0.v20121009
+Bundle-Activator: org.ietr.preesm.experiment.ui.pimemoc.Activator
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.graphiti,
+ org.eclipse.graphiti.ui,
+ org.ietr.preesm.experiment.model;bundle-version="0.1.0",
+ org.eclipse.graphiti.examples.common;bundle-version="0.9.1",
+ org.eclipse.graphiti.examples.tutorial;bundle-version="0.9.1"

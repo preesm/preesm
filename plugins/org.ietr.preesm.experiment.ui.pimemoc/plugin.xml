@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.graphiti.ui.diagramTypes">
+      <diagramType
+            name="PIMeMoC Diagram Type"
+            type="PIMeMoC"
+            id="org.ietr.preesm.experiment.ui.pimemoc.pimemocDiagramType">
+      </diagramType>
+   </extension>
+   <extension
+         point="org.eclipse.graphiti.ui.diagramTypeProviders">
+      <diagramTypeProvider
+            name="PIMeMoC Diagram Type Provider"
+            class="org.ietr.preesm.experiment.ui.pimemoc.diagram.PimemocDiagramTypeProvider"
+            id="org.ietr.preesm.experiment.ui.pimemoc.pimemocDiagramTypeProvider">
+         <diagramType
+               id="org.ietr.preesm.experiment.ui.pimemoc.pimemocDiagramType">
+         </diagramType>
+      </diagramTypeProvider>
+   </extension>
+
+</plugin>
