@@ -178,7 +178,7 @@ public class GraphMLWriter {
 			descElt.setTextContent(key.getTypeClass().getName());
 		}
 
-		return null;
+		return newElt;
 	}
 
 	/**
