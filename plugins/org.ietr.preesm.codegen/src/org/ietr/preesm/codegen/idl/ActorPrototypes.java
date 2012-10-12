@@ -43,7 +43,7 @@ import java.util.logging.Level;
 import net.sf.dftools.algorithm.model.IRefinement;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
-import org.ietr.preesm.codegen.model.types.CodeSectionType;
+import org.ietr.preesm.codegen.model.containers.CodeSectionType;
 
 /**
  * Different function prototypes associated to an actor and retrieved from a

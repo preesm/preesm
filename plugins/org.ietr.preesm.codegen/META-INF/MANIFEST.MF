@@ -31,5 +31,4 @@ Export-Package: org.ietr.preesm.codegen,
  org.ietr.preesm.codegen.model.factories,
  org.ietr.preesm.codegen.model.main,
  org.ietr.preesm.codegen.model.printer,
- org.ietr.preesm.codegen.model.threads,
- org.ietr.preesm.codegen.model.types
+ org.ietr.preesm.codegen.model.threads

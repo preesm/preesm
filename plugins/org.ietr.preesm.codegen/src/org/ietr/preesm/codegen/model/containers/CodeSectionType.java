@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.codegen.model.types;
+package org.ietr.preesm.codegen.model.containers;
 
 /**
  * Defining a type of section in a thread

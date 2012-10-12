@@ -48,9 +48,9 @@ import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.preesm.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.codegen.model.call.Variable;
 import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
+import org.ietr.preesm.codegen.model.containers.CodeSectionType;
 import org.ietr.preesm.codegen.model.factories.CodeElementFactory;
 import org.ietr.preesm.codegen.model.main.ICodeElement;
-import org.ietr.preesm.codegen.model.types.CodeSectionType;
 import org.ietr.preesm.core.types.DataType;
 
 /**

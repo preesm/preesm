@@ -70,14 +70,14 @@ import org.ietr.preesm.codegen.model.call.Constant;
 import org.ietr.preesm.codegen.model.call.PointerOn;
 import org.ietr.preesm.codegen.model.call.UserFunctionCall;
 import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
+import org.ietr.preesm.codegen.model.containers.CodeSectionType;
 import org.ietr.preesm.codegen.model.containers.CompoundCodeElement;
 import org.ietr.preesm.codegen.model.containers.FiniteForLoop;
 import org.ietr.preesm.codegen.model.containers.ForLoop;
+import org.ietr.preesm.codegen.model.containers.CodeSectionType.MajorType;
 import org.ietr.preesm.codegen.model.expression.ConstantExpression;
 import org.ietr.preesm.codegen.model.main.Assignment;
 import org.ietr.preesm.codegen.model.main.ICodeElement;
-import org.ietr.preesm.codegen.model.types.CodeSectionType;
-import org.ietr.preesm.codegen.model.types.CodeSectionType.MajorType;
 import org.ietr.preesm.core.types.DataType;
 
 /**

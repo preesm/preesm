@@ -80,7 +80,6 @@ import org.ietr.preesm.codegen.model.main.ICodeElement;
 import org.ietr.preesm.codegen.model.main.VariableAllocation;
 import org.ietr.preesm.codegen.model.printer.CodeZoneId;
 import org.ietr.preesm.codegen.model.printer.IAbstractPrinter;
-import org.ietr.preesm.codegen.model.types.CodeSectionType;
 import org.ietr.preesm.core.types.DataType;
 
 /**

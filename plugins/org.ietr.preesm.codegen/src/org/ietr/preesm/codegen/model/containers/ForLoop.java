@@ -46,7 +46,6 @@ import org.ietr.preesm.codegen.model.main.ICodeElement;
 import org.ietr.preesm.codegen.model.main.VariableAllocation;
 import org.ietr.preesm.codegen.model.printer.CodeZoneId;
 import org.ietr.preesm.codegen.model.printer.IAbstractPrinter;
-import org.ietr.preesm.codegen.model.types.CodeSectionType;
 
 /**
  * Each thread runs indefinitely. It contains a for loop. Thanks to SDF

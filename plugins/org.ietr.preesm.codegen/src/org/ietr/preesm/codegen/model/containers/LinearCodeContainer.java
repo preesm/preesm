@@ -42,7 +42,6 @@ import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.main.ICodeElement;
 import org.ietr.preesm.codegen.model.printer.CodeZoneId;
 import org.ietr.preesm.codegen.model.printer.IAbstractPrinter;
-import org.ietr.preesm.codegen.model.types.CodeSectionType;
 
 /**
  * Code container executed once (no loop)

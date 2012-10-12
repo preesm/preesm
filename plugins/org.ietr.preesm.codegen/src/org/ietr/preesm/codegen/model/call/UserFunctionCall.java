@@ -56,11 +56,11 @@ import org.ietr.preesm.codegen.model.CodeGenSDFFifoPullVertex;
 import org.ietr.preesm.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.buffer.Buffer;
+import org.ietr.preesm.codegen.model.containers.CodeSectionType;
 import org.ietr.preesm.codegen.model.factories.FunctionArgumentFactory;
 import org.ietr.preesm.codegen.model.main.AbstractCodeElement;
 import org.ietr.preesm.codegen.model.printer.CodeZoneId;
 import org.ietr.preesm.codegen.model.printer.IAbstractPrinter;
-import org.ietr.preesm.codegen.model.types.CodeSectionType;
 import org.ietr.preesm.core.types.DataType;
 
 /**
