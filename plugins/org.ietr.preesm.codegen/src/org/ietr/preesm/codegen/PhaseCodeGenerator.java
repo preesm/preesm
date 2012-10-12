@@ -102,7 +102,6 @@ public class PhaseCodeGenerator {
 					} else if (vertex instanceof PSDFSubInitVertex) {
 						container.addCodeElementFirst(mainCall);
 					} else {
-						
 						container.addCodeElement(mainCall);
 					}
 				}
