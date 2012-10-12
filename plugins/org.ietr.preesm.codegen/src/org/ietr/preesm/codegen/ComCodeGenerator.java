@@ -122,10 +122,13 @@ public class ComCodeGenerator {
 		 * testing if calls are necessary
 		 * 
 		 * @return true if the communication calls are necessary because used by
-		 *         both sender and receiver code
+		 *         both sender and receiver code or used to transmit to another operator
 		 */
 		public boolean isNecessary() {
-			return !getSenderCalls().isEmpty() && !getReceiverCalls().isEmpty();
+			return (!getSenderCalls().isEmpty() && !getReceiverCalls()
+					.isEmpty())
+					|| VertexType.isIntermediateSend(vertex)
+					|| VertexType.isIntermediateReceive(vertex);
 		}
 
 		/**
@@ -174,35 +177,47 @@ public class ComCodeGenerator {
 				sourceFiles);
 
 		if (comCalls.isNecessary()) {
-			WorkflowLogger.getLogger().log(
+			/*WorkflowLogger.getLogger().log(
 					Level.INFO,
 					"Relative computation call found for communication: "
 							+ vertex.getName()
 							+ ". Inserted communication call in section "
-							+ sectionType);
-			
+							+ sectionType);*/
+
 			if (comCalls.getType().isSend()) {
-				insertStartSend(comCalls, vertex);
-				insertEndSend(comCalls, vertex);
+				insertStartInOrder(comCalls, vertex);
+				if(VertexType.isIntermediateSend(vertex)){
+					insertEndInOrder(comCalls, vertex);
+				}
+				else{
+					// Delaying end to improve communication parallelism
+					insertEndSendBeforeSender(comCalls, vertex);
+				}
 			} else if (comCalls.getType().isReceive()) {
-				insertEndReceive(comCalls, vertex);
-				insertStartReceive(comCalls, vertex);
+				if(VertexType.isIntermediateSend(vertex)){
+					insertStartInOrder(comCalls, vertex);
+				}
+				else{
+					// anticipating start to improve communication parallelism
+					insertStartReceiveAfterReceiver(comCalls, vertex);
+				}
+				insertEndInOrder(comCalls, vertex);
 			}
-		}
-		else{
-			WorkflowLogger.getLogger().log(
+		} else {
+			/*WorkflowLogger.getLogger().log(
 					Level.WARNING,
 					"No relative computation call found for communication: "
 							+ vertex.getName()
 							+ ". No inserted communication call in section "
-							+ sectionType);
+							+ sectionType);*/
 		}
 	}
 
 	/**
-	 * Inserting calls to start sending data when necessary based on scheduling order
+	 * Inserting calls to start communicating data when necessary based on scheduling
+	 * order
 	 */
-	private void insertStartSend(ComCalls comCalls, SDFAbstractVertex vertex) {
+	private void insertStartInOrder(ComCalls comCalls, SDFAbstractVertex vertex) {
 		List<CommunicationFunctionCall> startComZoneCalls = comCalls
 				.getStartComZoneCalls();
 
@@ -210,59 +225,61 @@ public class ComCodeGenerator {
 	}
 
 	/**
+	 * Inserting calls to end communicating data when necessary based on scheduling
+	 * order
+	 */
+	private void insertEndInOrder(ComCalls comCalls, SDFAbstractVertex vertex) {
+		List<CommunicationFunctionCall> endComZoneCalls = comCalls.getEndComZoneCalls();
+
+		insertInSchedulingOrder(endComZoneCalls, vertex);
+	}
+
+	/**
 	 * Inserting calls to end sending data just before new actor firing
 	 */
-	private void insertEndSend(ComCalls comCalls, SDFAbstractVertex vertex) {
+	private void insertEndSendBeforeSender(ComCalls comCalls, SDFAbstractVertex vertex) {
 		ICodeElement nextElement = comCalls.getSenderCalls().get(0);
 
 		for (CommunicationFunctionCall comCall : comCalls.getEndComZoneCalls()) {
 			container.addCodeElementBefore(nextElement, comCall);
 		}
 	}
-
+	
 	/**
 	 * Inserting calls to start receiving data just after new actor firing
 	 */
-	private void insertStartReceive(ComCalls comCalls, SDFAbstractVertex vertex) {
-		ICodeElement previousElement = comCalls.getReceiverCalls().get(comCalls.getReceiverCalls()
-				.size() - 1);
+	private void insertStartReceiveAfterReceiver(ComCalls comCalls, SDFAbstractVertex vertex) {
+		ICodeElement previousElement = comCalls.getReceiverCalls().get(
+				comCalls.getReceiverCalls().size() - 1);
 
-		for (CommunicationFunctionCall comCall : comCalls.getStartComZoneCalls()) {
+		for (CommunicationFunctionCall comCall : comCalls
+				.getStartComZoneCalls()) {
 			container.addCodeElementAfter(previousElement, comCall);
 		}
 	}
 
-	/**
-	 * Inserting calls to end receiving data when necessary based on scheduling order
-	 */
-	private void insertEndReceive(ComCalls comCalls, SDFAbstractVertex vertex) {
-		List<CommunicationFunctionCall> endComZoneCalls = comCalls
-				.getEndComZoneCalls();
-
-		insertInSchedulingOrder(endComZoneCalls, vertex);
-
-	}
-	
-	private void insertInSchedulingOrder(List<CommunicationFunctionCall> comCalls, SDFAbstractVertex vertex){
+	private void insertInSchedulingOrder(
+			List<CommunicationFunctionCall> comCalls, SDFAbstractVertex vertex) {
 		int vertexSchedulingOrder = (Integer) vertex.getPropertyBean()
-				.getValue(
-						ImplementationPropertyNames.Vertex_schedulingOrder);
-		
+				.getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
+
 		ICodeElement previousElement = null;
-		
-		// Inserting the calls in total order. A send is always preceded by at least an element
-		for(ICodeElement element : container.getCodeElements()){
-			int currentSchedulingOrder = (Integer) element.getCorrespondingVertex().getPropertyBean()
-			.getValue(
-					ImplementationPropertyNames.Vertex_schedulingOrder);
-			if(vertexSchedulingOrder < currentSchedulingOrder){
+
+		// Inserting the calls in total order. A send is always preceded by at
+		// least an element
+		for (ICodeElement element : container.getCodeElements()) {
+			int currentSchedulingOrder = (Integer) element
+					.getCorrespondingVertex()
+					.getPropertyBean()
+					.getValue(
+							ImplementationPropertyNames.Vertex_schedulingOrder);
+			if (vertexSchedulingOrder < currentSchedulingOrder) {
 				break;
-			}
-			else{
+			} else {
 				previousElement = element;
 			}
 		}
-		
+
 		for (CommunicationFunctionCall comCall : comCalls) {
 			container.addCodeElementAfter(previousElement, comCall);
 		}
@@ -332,24 +349,16 @@ public class ComCodeGenerator {
 
 		// Case of one send per buffer
 		for (Buffer buf : bufferSet) {
-			/*
-			 * if (SourceFileCodeGenerator.isBufferUsedInCodeContainerType(
-			 * senderVertex, sectionType, buf, "output") ||
-			 * VertexType.isIntermediateSend(comVertex))
-			 */{
-				List<Buffer> singleBufferSet = new ArrayList<Buffer>();
-				singleBufferSet.add(buf);
+			List<Buffer> singleBufferSet = new ArrayList<Buffer>();
+			singleBufferSet.add(buf);
 
-				int comId = container.getComNumber();
+			int comId = container.getComNumber();
 
-				comCalls.addStartComZoneCall(new SendMsg(parentContainer,
-						comVertex, singleBufferSet, rs, target, comId,
-						Phase.START));
-				comCalls.addEndComZoneCall(new SendMsg(parentContainer,
-						comVertex, singleBufferSet, rs, target, comId,
-						Phase.END));
-				container.incrementComNumber();
-			}
+			comCalls.addStartComZoneCall(new SendMsg(parentContainer,
+					comVertex, singleBufferSet, rs, target, comId, Phase.START));
+			comCalls.addEndComZoneCall(new SendMsg(parentContainer, comVertex,
+					singleBufferSet, rs, target, comId, Phase.END));
+			container.incrementComNumber();
 		}
 
 		return comCalls;
@@ -415,24 +424,16 @@ public class ComCodeGenerator {
 
 		// Case of one receive per buffer
 		for (Buffer buf : bufferSet) {
-			/*
-			 * if (SourceFileCodeGenerator.isBufferUsedInCodeContainerType(
-			 * senderVertex, sectionType, buf, "output") ||
-			 * VertexType.isIntermediateReceive(senderVertex))
-			 */{
-				List<Buffer> singleBufferSet = new ArrayList<Buffer>();
-				singleBufferSet.add(buf);
+			List<Buffer> singleBufferSet = new ArrayList<Buffer>();
+			singleBufferSet.add(buf);
 
-				int comId = container.getComNumber();
+			int comId = container.getComNumber();
 
-				comCalls.addStartComZoneCall(new ReceiveMsg(parentContainer,
-						comVertex, singleBufferSet, rs, source, comId,
-						Phase.START));
-				comCalls.addEndComZoneCall(new ReceiveMsg(parentContainer,
-						comVertex, singleBufferSet, rs, source, comId,
-						Phase.END));
-				container.incrementComNumber();
-			}
+			comCalls.addStartComZoneCall(new ReceiveMsg(parentContainer,
+					comVertex, singleBufferSet, rs, source, comId, Phase.START));
+			comCalls.addEndComZoneCall(new ReceiveMsg(parentContainer,
+					comVertex, singleBufferSet, rs, source, comId, Phase.END));
+			container.incrementComNumber();
 		}
 
 		return comCalls;
