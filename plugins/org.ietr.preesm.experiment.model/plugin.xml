@@ -16,5 +16,12 @@
             class="org.ietr.preesm.experiment.model.pimemoc.PIMeMoCPackage"
             genModel="model/PIMeMoC.genmodel"/>
    </extension>
+   <extension
+         point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            class="org.ietr.preesm.experiment.model.pimemoc.serialize.GraphMLResourceFactoryImpl"
+            type="graphml">
+      </parser>
+   </extension>
 
 </plugin>

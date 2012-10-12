@@ -12,4 +12,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.graphiti.ui,
  org.ietr.preesm.experiment.model;bundle-version="0.1.0",
  org.eclipse.graphiti.examples.common;bundle-version="0.9.1",
- org.eclipse.graphiti.examples.tutorial;bundle-version="0.9.1"
+ org.eclipse.graphiti.examples.tutorial;bundle-version="0.9.1",
+ net.sf.graphiti.ui;bundle-version="1.3.10",
+ org.eclipse.core.resources;bundle-version="3.8.1",
+ org.eclipse.ui.ide;bundle-version="3.8.1"

@@ -1,5 +1,6 @@
 package org.ietr.preesm.experiment.model.pimemoc.serialize;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +9,8 @@ import java.util.List;
 import net.sf.dftools.algorithm.exporter.Key;
 import net.sf.dftools.architecture.utils.DomUtil;
 
+import org.ietr.preesm.experiment.model.pimemoc.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimemoc.Actor;
 import org.ietr.preesm.experiment.model.pimemoc.Graph;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -27,16 +30,6 @@ public class GraphMLWriter {
 	protected Document domDocument;
 
 	/**
-	 * Root {@link Element} of the DOM {@link Document} of this Writer
-	 */
-	protected Element rootElt;
-
-	/**
-	 * Graph {@link Element} of the DOM {@link Document} of this Writer
-	 */
-	protected Element graphElt;
-
-	/**
 	 * This HashMap associates a List to each <b>element</b> (graph, node, edge,
 	 * port) of a GraphML description. For each <b>element</b>, a list of
 	 * {@link Key}s is associated. A {@link Key} can be seen as an attribute of
@@ -45,20 +38,46 @@ public class GraphMLWriter {
 	protected HashMap<String, List<Key>> elementKeys;
 
 	/**
+	 * Graph {@link Element} of the DOM {@link Document} of this Writer
+	 */
+	protected Element graphElement;
+
+	/**
+	 * Root {@link Element} of the DOM {@link Document} of this Writer
+	 */
+	protected Element rootElement;
+
+	/**
 	 * Default constructor of the GraphMLWriter
 	 */
 	public GraphMLWriter() {
 		// Instantiate an empty elementKeys Map
 		elementKeys = new HashMap<>();
-		
+
 		// Initialize attributes to null
-		rootElt = null;
-		graphElt = null;
-		
+		rootElement = null;
+		graphElement = null;
+
+	}
+
+	/**
+	 * Creates and appends the Graph Element of the document
+	 * 
+	 * @param parentElement
+	 *            The parent element of the graph
+	 * @return The created element
+	 */
+	protected Element addGraphElt(Element parentElement) {
+		Element newElt = appendChild(parentElement, "graph");
+		graphElement = newElt;
+		newElt.setAttribute("edgedefault", "directed");
+
+		return newElt;
 	}
 
 	/**
 	 * Adds a Key to the elementKeys map with the specified informations. Also
+	 * insert the key at the document root.
 	 * 
 	 * @param id
 	 *            Id of the key (identical to name)
@@ -87,7 +106,7 @@ public class GraphMLWriter {
 
 			// Add the KeyElement to the document
 			// also works if graphElt does not exist yet
-			rootElt.insertBefore(keyElt, graphElt);
+			rootElement.insertBefore(keyElt, graphElement);
 		}
 
 	}
@@ -106,21 +125,6 @@ public class GraphMLWriter {
 	protected Element appendChild(Node parentElement, String name) {
 		Element newElt = domDocument.createElement(name);
 		parentElement.appendChild(newElt);
-		return newElt;
-	}
-
-	/**
-	 * Creates and appends the Graph Element of the document
-	 * 
-	 * @param parentElement
-	 *            The parent element of the graph
-	 * @return The created element
-	 */
-	protected Element createGraphElt(Element parentElement) {
-		Element newElt = appendChild(parentElement, "graph");
-		graphElt = newElt;
-		newElt.setAttribute("edgedefault", "directed");
-
 		return newElt;
 	}
 
@@ -192,13 +196,80 @@ public class GraphMLWriter {
 				"http://graphml.graphdrawing.org/xmlns", "graphml");
 
 		// Retrieve the root element of the document
-		rootElt = domDocument.getDocumentElement();
+		rootElement = domDocument.getDocumentElement();
 
 		// Fill the root Element with the Graph
-		writeGraphML(rootElt, graph);
+		writeGraphML(rootElement, graph);
 
 		// Produce the output file
 		DomUtil.writeDocument(outputStream, domDocument);
+
+		// Close the output stream
+		try {
+			outputStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Write information of the {@link Actor} in the given {@link Element}.
+	 * 
+	 * @param vertexElt
+	 *            The {@link Element} to write
+	 * @param actor
+	 *            The {@link Actor} to serialize
+	 */
+	protected void writeActor(Element vertexElt, Actor actor) {
+		// TODO change this method when severa kinds will exist
+		// Write type of the Actor
+		writeDataElt(vertexElt, "kind", "actor");
+
+	}
+
+	/**
+	 * Add a data child {@link Element} to the parent {@link Element} whit the
+	 * given key name and the given content. If the {@link Key} does not exist
+	 * yet, it will be created automatically.
+	 * 
+	 * @param parentElt
+	 *            The element to which the data is added
+	 * @param keyName
+	 *            The name of the key for the added data
+	 * @param textContent
+	 *            The text content of the data element
+	 */
+	protected void writeDataElt(Element parentElt, String keyName,
+			String textContent) {
+		addKey(keyName, null, parentElt.getTagName(), "string", null);
+		Element nameElt = appendChild(parentElt, "data");
+		nameElt.setAttribute("key", keyName);
+		nameElt.setTextContent(textContent);
+	}
+
+	/**
+	 * Create the Graph Element of the document and fill it
+	 * 
+	 * @param rootElt
+	 *            The parent element of the Graph element (i.e. the root of the
+	 *            document)
+	 * @param graph
+	 *            The serialized Graph
+	 */
+	protected void writeGraph(Element rootElt, Graph graph) {
+		// Create and add the graphElt to the Document
+		Element graphElt = addGraphElt(rootElt);
+
+		// TODO addProperties() of the graph
+		// TODO writeParameters()
+
+		// Write the vertices of the graph
+		for (AbstractVertex vertex : graph.getVertices()) {
+			writeVertex(graphElt, vertex);
+		}
+
+		// TODO writeDependencies()
+		// TODO writeFIFOs()
 	}
 
 	/**
@@ -215,33 +286,41 @@ public class GraphMLWriter {
 		addKey("parameters", "parameters", "graph", null, null);
 		addKey("variables", "variables", "graph", null, null);
 		addKey("arguments", "arguments", "node", null, null);
-		
-		// Create and add the graphElt to the Document
-		createGraphElt(parentElt);
 
-		
+		// Write the Graph
+		writeGraph(parentElt, graph);
 	}
-	
-	protected void exportKeys(PropertySource source, String forElt,
-			Element parentElt) {
-		for (String key : source.getPublicProperties()) {
-			if (!(key.equals("parameters") || key.equals("variables") || key
-					.equals("arguments"))) {
-				if (source.getPropertyStringValue(key) != null) {
-					Element dataElt = appendChild(parentElt, "data");
-					dataElt.setAttribute("key", key);
-					dataElt.setTextContent(source.getPropertyStringValue(key));
-					if (source.getPropertyBean().getValue(key) != null
-							&& source.getPropertyBean().getValue(key) instanceof Number) {
-						this.addKey(forElt, new Key(key, forElt, "int", null));
-					} else {
-						this.addKey(forElt,
-								new Key(key, forElt, "string", null));
-					}
 
-				}
-			}
-		}
+	/**
+	 * Create and add a node {@link Element} to the given parent {@link Element}
+	 * for the given vertex and write its informations.
+	 * 
+	 * @param graphElt
+	 *            The parent element of the node element (i.e. the graph of the
+	 *            document)
+	 * @param vertex
+	 *            The vertex to write in the {@link Document}
+	 */
+	protected void writeVertex(Element graphElt, AbstractVertex vertex) {
+		// Add the node to the document
+		Element vertexElt = appendChild(graphElt, "node");
+
+		// Set the unique ID of the node (equal to the vertex name)
+		vertexElt.setAttribute("id", vertex.getName());
+
+		// Add the name in the data of the node
+		writeDataElt(graphElt, "name", vertex.getName());
+
+		if (vertex instanceof Actor) {
+			writeActor(vertexElt, (Actor) vertex);
+		} /*
+		 * else if(vertex instanceof InterfaceVertex) {
+		 * 
+		 * }
+		 */
+
+		// TODO writePorts()
+		// TODO addProperties() of the vertex
 	}
 
 }

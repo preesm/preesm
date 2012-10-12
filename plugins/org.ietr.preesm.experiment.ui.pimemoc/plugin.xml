@@ -21,5 +21,17 @@
          </diagramType>
       </diagramTypeProvider>
    </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            canFinishEarly="false"
+            category="net.sf.dftools.architecture.ui.ArchitectureCategory"
+            class="org.ietr.preesm.experiment.ui.pimemoc.wizards.NewPIMeMoCWizard"
+            hasPages="true"
+            id="org.ietr.preesm.experiment.ui.pimemoc.wizards.NewPIMeMoCWizard"
+            name="Algorithm Description (PIMeMoC)"
+            project="true">
+      </wizard>
+   </extension>
 
 </plugin>
