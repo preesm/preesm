@@ -50,7 +50,7 @@ public class CodeGenSDFVertex extends SDFVertex {
 	public static final String TYPE = ImplementationPropertyNames.Vertex_vertexType;
 
 	public CodeGenSDFVertex() {
-		this.getPropertyBean().setValue(TYPE, VertexType.task);
+		this.getPropertyBean().setValue(TYPE, VertexType.TASK);
 	}
 
 	public ComponentInstance getOperator() {

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ietr.preesm.codegen.communication;
+package org.ietr.preesm.codegen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ import org.jgrapht.alg.DirectedNeighborIndex;
  * 
  * @author mpelcat
  */
-public class GenericComCodeGenerator implements IComCodeGenerator {
+public class ComCodeGenerator {
 
 	/**
 	 * This class gathers communication function calls and existing calls that
@@ -65,6 +65,11 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 		 */
 		SDFAbstractVertex vertex;
 
+		/**
+		 * Type (send or receive) of the current vertex
+		 */
+		VertexType type;
+
 		public ComCalls(SDFAbstractVertex vertex) {
 			super();
 			this.startComZoneCalls = new ArrayList<CommunicationFunctionCall>();
@@ -72,6 +77,8 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 			this.senderCalls = new ArrayList<ICodeElement>();
 			this.receiverCalls = new ArrayList<ICodeElement>();
 			this.vertex = vertex;
+			this.type = (VertexType) vertex.getPropertyBean().getValue(
+					ImplementationPropertyNames.Vertex_vertexType);
 		}
 
 		public List<CommunicationFunctionCall> getStartComZoneCalls() {
@@ -113,11 +120,19 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 
 		/**
 		 * testing if calls are necessary
-		 * @return true if the communication calls are necessary because used by both 
-		 * sender and receiver code
+		 * 
+		 * @return true if the communication calls are necessary because used by
+		 *         both sender and receiver code
 		 */
 		public boolean isNecessary() {
 			return !getSenderCalls().isEmpty() && !getReceiverCalls().isEmpty();
+		}
+
+		/**
+		 * @return the type (send or receive)
+		 */
+		public VertexType getType() {
+			return type;
 		}
 	}
 
@@ -136,7 +151,7 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 	 */
 	protected AbstractRouteStep step = null;
 
-	public GenericComCodeGenerator(AbstractCodeContainer container,
+	public ComCodeGenerator(AbstractCodeContainer container,
 			SortedSet<SDFAbstractVertex> vertices, AbstractRouteStep step) {
 		super();
 		this.container = container;
@@ -147,123 +162,110 @@ public class GenericComCodeGenerator implements IComCodeGenerator {
 	/**
 	 * Creating coms for a given communication vertex
 	 */
-	@Override
 	public void insertComs(SDFAbstractVertex vertex,
 			CodeSectionType sectionType, SourceFileList sourceFiles) {
 
-		// Creating and adding the calls to send and receive functions
+		// Creating he calls to send and receive functions
 
-		// createCalls returns the computing call to which communication calls
-		// must be synchronized (sender or receiver call).
+		// createComCalls returns the calls to insert and the computing call
+		// to which communication calls must be synchronized (sender or receiver
+		// call).
 		ComCalls comCalls = createComCalls(container, vertex, sectionType,
 				sourceFiles);
 
-		List<CommunicationFunctionCall> startComZoneCalls = comCalls
-				.getStartComZoneCalls();
-		List<CommunicationFunctionCall> endComZoneCalls = comCalls
-				.getEndComZoneCalls();
-
-		List<ICodeElement> relativeCalls = null;
-
-		// retrieving the vertex type
-		VertexType type = (VertexType) vertex.getPropertyBean().getValue(
-				ImplementationPropertyNames.Vertex_vertexType);
-
 		if (comCalls.isNecessary()) {
-			if (type.isSend()) {
-				relativeCalls = comCalls.getSenderCalls();
-			} else if (type.isReceive()) {
-				relativeCalls = comCalls.getReceiverCalls();
-			}
-
 			WorkflowLogger.getLogger().log(
 					Level.INFO,
 					"Relative computation call found for communication: "
 							+ vertex.getName()
 							+ ". Inserted communication call in section "
 							+ sectionType);
-
-		} else {
-
+			
+			if (comCalls.getType().isSend()) {
+				insertStartSend(comCalls, vertex);
+				insertEndSend(comCalls, vertex);
+			} else if (comCalls.getType().isReceive()) {
+				insertEndReceive(comCalls, vertex);
+				insertStartReceive(comCalls, vertex);
+			}
+		}
+		else{
 			WorkflowLogger.getLogger().log(
 					Level.WARNING,
 					"No relative computation call found for communication: "
 							+ vertex.getName()
 							+ ". No inserted communication call in section "
 							+ sectionType);
-
-			return;
 		}
+	}
 
-		for (int i = 0; i < startComZoneCalls.size(); i++) {
-			CommunicationFunctionCall startCall = startComZoneCalls.get(i);
-			CommunicationFunctionCall endCall = endComZoneCalls.get(i);
-			// Normal case, the sender/receiver is a computing actor:
-			// start is added after the last sender/receiver
-			// but scheduling order is respected relative to other vertices
+	/**
+	 * Inserting calls to start sending data when necessary based on scheduling order
+	 */
+	private void insertStartSend(ComCalls comCalls, SDFAbstractVertex vertex) {
+		List<CommunicationFunctionCall> startComZoneCalls = comCalls
+				.getStartComZoneCalls();
 
-			int schedulingOrder = (Integer) vertex.getPropertyBean().getValue(
-					ImplementationPropertyNames.Vertex_schedulingOrder);
-			
-			// Starting from last relative call and checking for calls with lower scheduling order
-			ICodeElement previousElement = relativeCalls.get(relativeCalls.size() - 1);
-			int position = container.getCodeElementPosition(previousElement);
-			ICodeElement currentElement = previousElement;
-			
-			while(currentElement != null){
-				SDFAbstractVertex currentVertex = currentElement.getCorrespondingVertex();
-				int currentSchedulingOrder = (Integer) currentVertex.getPropertyBean().getValue(
+		insertInSchedulingOrder(startComZoneCalls, vertex);
+	}
+
+	/**
+	 * Inserting calls to end sending data just before new actor firing
+	 */
+	private void insertEndSend(ComCalls comCalls, SDFAbstractVertex vertex) {
+		ICodeElement nextElement = comCalls.getSenderCalls().get(0);
+
+		for (CommunicationFunctionCall comCall : comCalls.getEndComZoneCalls()) {
+			container.addCodeElementBefore(nextElement, comCall);
+		}
+	}
+
+	/**
+	 * Inserting calls to start receiving data just after new actor firing
+	 */
+	private void insertStartReceive(ComCalls comCalls, SDFAbstractVertex vertex) {
+		ICodeElement previousElement = comCalls.getReceiverCalls().get(comCalls.getReceiverCalls()
+				.size() - 1);
+
+		for (CommunicationFunctionCall comCall : comCalls.getStartComZoneCalls()) {
+			container.addCodeElementAfter(previousElement, comCall);
+		}
+	}
+
+	/**
+	 * Inserting calls to end receiving data when necessary based on scheduling order
+	 */
+	private void insertEndReceive(ComCalls comCalls, SDFAbstractVertex vertex) {
+		List<CommunicationFunctionCall> endComZoneCalls = comCalls
+				.getEndComZoneCalls();
+
+		insertInSchedulingOrder(endComZoneCalls, vertex);
+
+	}
+	
+	private void insertInSchedulingOrder(List<CommunicationFunctionCall> comCalls, SDFAbstractVertex vertex){
+		int vertexSchedulingOrder = (Integer) vertex.getPropertyBean()
+				.getValue(
 						ImplementationPropertyNames.Vertex_schedulingOrder);
-				
-				if(currentSchedulingOrder <= schedulingOrder){
-					previousElement = currentElement;
-				}
-				else break;
-
-				position++;
-				currentElement = container.getCodeElement(position);
+		
+		ICodeElement previousElement = null;
+		
+		// Inserting the calls in total order. A send is always preceded by at least an element
+		for(ICodeElement element : container.getCodeElements()){
+			int currentSchedulingOrder = (Integer) element.getCorrespondingVertex().getPropertyBean()
+			.getValue(
+					ImplementationPropertyNames.Vertex_schedulingOrder);
+			if(vertexSchedulingOrder < currentSchedulingOrder){
+				break;
 			}
-			
-			container.addCodeElementAfter(previousElement, startCall);
-
-			if (!VertexType.isIntermediateReceive(vertex)) {
-				// Normal case, the sender/receiver is a computing actor:
-				// end is added before the first sender/receiver
-
-				// but scheduling order is respected relative to other vertices
-				
-				// Starting from first relative call and checking for calls with higher scheduling order
-				ICodeElement nextElement = relativeCalls.get(0);
-				/*position = container.getCodeElementPosition(nextElement);
-				currentElement = nextElement;
-				
-				while(currentElement != null){
-					SDFAbstractVertex currentVertex = currentElement.getCorrespondingVertex();
-					int currentSchedulingOrder = (Integer) currentVertex.getPropertyBean().getValue(
-							ImplementationPropertyNames.Vertex_schedulingOrder);
-					
-					if(currentSchedulingOrder > schedulingOrder){
-						previousElement = currentElement;
-					}
-					else break;
-
-					position--;
-					currentElement = container.getCodeElement(position);
-				}*/
-				
-				container.addCodeElementBefore(nextElement, endCall);
-			} else {
-				// If the vertex is an intermediate communication, end is
-				// put
-				// just after start
-				container.addCodeElementAfter(startCall, endCall);
+			else{
+				previousElement = element;
 			}
 		}
-
-		// Adding initialization calls for the communication
-		// createinits(startCall, compThread.getGlobalContainer(),
-		// alreadyInits);
-
+		
+		for (CommunicationFunctionCall comCall : comCalls) {
+			container.addCodeElementAfter(previousElement, comCall);
+		}
 	}
 
 	/**

@@ -12,7 +12,7 @@ public class CodeGenSDFInitVertex extends PSDFInitVertex implements
 	public static final String TYPE = ImplementationPropertyNames.Vertex_vertexType;
 
 	public CodeGenSDFInitVertex() {
-		this.getPropertyBean().setValue(TYPE, VertexType.task);
+		this.getPropertyBean().setValue(TYPE, VertexType.TASK);
 	}
 
 	public ComponentInstance getOperator() {

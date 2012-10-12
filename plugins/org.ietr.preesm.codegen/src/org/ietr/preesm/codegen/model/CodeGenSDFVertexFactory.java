@@ -83,7 +83,7 @@ public class CodeGenSDFVertexFactory {
 		ICodeGenSDFVertex newVertex;
 		VertexType vertexType = (VertexType) dagVertex.getPropertyBean()
 				.getValue(ImplementationPropertyNames.Vertex_vertexType);
-		if (vertexType != null && vertexType.equals(VertexType.task)) {
+		if (vertexType != null && vertexType.equals(VertexType.TASK)) {
 			SDFAbstractVertex sdfVertex = dagVertex.getCorrespondingSDFVertex();
 			if (sdfVertex instanceof SDFBroadcastVertex
 					&& !(sdfVertex instanceof SDFRoundBufferVertex)) {
@@ -111,9 +111,9 @@ public class CodeGenSDFVertexFactory {
 			} else {
 				newVertex = new CodeGenSDFTaskVertex();
 			}
-		} else if (vertexType != null && vertexType.equals(VertexType.send)) {
+		} else if (vertexType != null && vertexType.equals(VertexType.SEND)) {
 			newVertex = new CodeGenSDFSendVertex();
-		} else if (vertexType != null && vertexType.equals(VertexType.receive)) {
+		} else if (vertexType != null && vertexType.equals(VertexType.RECEIVE)) {
 			newVertex = new CodeGenSDFReceiveVertex();
 		} else {
 			newVertex = new CodeGenSDFTaskVertex();

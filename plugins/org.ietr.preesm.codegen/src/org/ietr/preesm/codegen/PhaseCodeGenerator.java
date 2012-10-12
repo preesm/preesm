@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-B license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.codegen.phase;
+package org.ietr.preesm.codegen;
 
 import java.util.SortedSet;
 
@@ -45,19 +45,13 @@ import net.sf.dftools.algorithm.model.psdf.PSDFSubInitVertex;
 import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
-import org.ietr.preesm.codegen.communication.ComCodeGeneratorFactory;
-import org.ietr.preesm.codegen.communication.IComCodeGenerator;
 import org.ietr.preesm.codegen.model.ICodeGenSDFVertex;
-import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.call.Variable;
 import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
 import org.ietr.preesm.codegen.model.factories.CodeElementFactory;
 import org.ietr.preesm.codegen.model.main.ICodeElement;
-import org.ietr.preesm.codegen.model.main.SourceFileList;
 import org.ietr.preesm.codegen.model.types.CodeSectionType;
-import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.types.DataType;
-import org.ietr.preesm.core.types.ImplementationPropertyNames;
 
 /**
  * Generates code for a code phase, init or loop
@@ -73,32 +67,6 @@ public class PhaseCodeGenerator {
 
 	public PhaseCodeGenerator(AbstractCodeContainer container) {
 		this.container = container;
-	}
-
-
-	/**
-	 * Adds send and receive functions from vertices allocated on the current
-	 * core. Vertices are already in the correct order. The code thread com
-	 * generator delegates com creation to each route step appropriate generator
-	 */
-	public void addSendsAndReceives(SortedSet<SDFAbstractVertex> vertices,
-			AbstractBufferContainer bufferContainer, CodeSectionType sectionType, SourceFileList sourceFiles) {
-
-		// a com code generator factory outputs the commmunication generator
-		// that will add communication primitives into the code
-		ComCodeGeneratorFactory factory = new ComCodeGeneratorFactory(
-				container, vertices);
-		for (SDFAbstractVertex vertex : vertices) {
-			AbstractRouteStep step = (AbstractRouteStep) vertex
-					.getPropertyBean().getValue(
-							ImplementationPropertyNames.SendReceive_routeStep);
-
-			// Delegates the com creation to the appropriate generator
-			IComCodeGenerator generator = factory.getCodeGenerator(step);
-
-			// Creates all functions and buffers related to the given vertex
-			generator.insertComs(vertex, sectionType, sourceFiles);
-		}
 	}
 
 	/**

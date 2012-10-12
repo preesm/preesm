@@ -48,7 +48,7 @@ public class CodeGenSDFTokenEndVertex extends SDFEndVertex implements
 	public static final String TYPE = ImplementationPropertyNames.Vertex_vertexType;
 
 	public CodeGenSDFTokenEndVertex() {
-		this.getPropertyBean().setValue(TYPE, VertexType.task);
+		this.getPropertyBean().setValue(TYPE, VertexType.TASK);
 	}
 
 	public ComponentInstance getOperator() {

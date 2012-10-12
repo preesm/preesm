@@ -58,7 +58,7 @@ public class CodeGenSDFForkVertex extends SDFForkVertex implements
 	public static final String TYPE = ImplementationPropertyNames.Vertex_vertexType;
 
 	public CodeGenSDFForkVertex() {
-		this.getPropertyBean().setValue(TYPE, VertexType.task);
+		this.getPropertyBean().setValue(TYPE, VertexType.TASK);
 		ActorPrototypes forkCall = new ActorPrototypes("fork");
 		this.setRefinement(forkCall);
 	}

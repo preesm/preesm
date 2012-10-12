@@ -151,8 +151,8 @@ public class CodeGenSDFGraphFactory {
 			ComponentInstance operatorTarget = (ComponentInstance) target
 					.getPropertyBean().getValue(
 							ImplementationPropertyNames.Vertex_Operator);
-			if ((sourceType.equals(VertexType.send) && targetType
-					.equals(VertexType.receive))
+			if ((sourceType.equals(VertexType.SEND) && targetType
+					.equals(VertexType.RECEIVE))
 					|| operatorSource.getInstanceName().equals(
 							operatorTarget.getInstanceName())) {
 				SDFAbstractVertex newSource = aliases.get(source);

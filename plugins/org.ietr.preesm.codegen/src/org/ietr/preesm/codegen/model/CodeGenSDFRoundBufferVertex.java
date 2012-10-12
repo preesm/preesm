@@ -18,7 +18,7 @@ public class CodeGenSDFRoundBufferVertex extends SDFRoundBufferVertex implements
 	public static final String TYPE = ImplementationPropertyNames.Vertex_vertexType;
 
 	public CodeGenSDFRoundBufferVertex() {
-		this.getPropertyBean().setValue(TYPE, VertexType.task);
+		this.getPropertyBean().setValue(TYPE, VertexType.TASK);
 	}
 
 	public ComponentInstance getOperator() {

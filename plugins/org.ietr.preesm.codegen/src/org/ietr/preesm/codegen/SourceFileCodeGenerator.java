@@ -74,7 +74,7 @@ import org.ietr.preesm.codegen.model.main.SourceFileList;
 import org.ietr.preesm.codegen.model.threads.ComputationThreadDeclaration;
 import org.ietr.preesm.codegen.model.types.CodeSectionType;
 import org.ietr.preesm.codegen.model.types.CodeSectionType.MajorType;
-import org.ietr.preesm.codegen.phase.PhaseCodeGenerator;
+import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
@@ -178,7 +178,7 @@ public class SourceFileCodeGenerator {
 		// Gets the tasks vertices allocated to the current operator in
 		// scheduling order
 		SortedSet<SDFAbstractVertex> ownTaskVertices = getOwnVertices(
-				algorithm, VertexType.task);
+				algorithm, VertexType.TASK);
 
 		// Buffers defined as global variables are retrieved here. They are
 		// added globally to the file
@@ -229,9 +229,9 @@ public class SourceFileCodeGenerator {
 		// Gets the communication vertices allocated to the current operator in
 		// scheduling order
 		SortedSet<SDFAbstractVertex> ownCommunicationVertices = getOwnVertices(
-				algorithm, VertexType.send);
+				algorithm, VertexType.SEND);
 		ownCommunicationVertices.addAll(getOwnVertices(algorithm,
-				VertexType.receive));
+				VertexType.RECEIVE));
 
 		// Allocation of route step buffers
 		allocateRouteSteps(ownCommunicationVertices);
@@ -320,12 +320,17 @@ public class SourceFileCodeGenerator {
 			CodeSectionType sectionType,
 			SourceFileList sourceFiles) {
 
-		PhaseCodeGenerator codegen = new PhaseCodeGenerator(codeContainer);
-		
-		// Inserts the communication function calls, the communication
-		// thread semaphore post and pends and the communication
-		// initializations
-		codegen.addSendsAndReceives(coms, bufferContainer, sectionType, sourceFiles);
+		for (SDFAbstractVertex vertex : coms) {
+			AbstractRouteStep step = (AbstractRouteStep) vertex
+					.getPropertyBean().getValue(
+							ImplementationPropertyNames.SendReceive_routeStep);
+
+			// Delegates the com creation to the appropriate generator
+			ComCodeGenerator generator = new ComCodeGenerator(codeContainer, coms, step);
+
+			// Creates all functions and buffers related to the given vertex
+			generator.insertComs(vertex, sectionType, sourceFiles);
+		}
 	}
 
 	/**

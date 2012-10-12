@@ -58,7 +58,7 @@ public class CodeGenSDFJoinVertex extends SDFJoinVertex implements
 	public static final String TYPE = ImplementationPropertyNames.Vertex_vertexType;
 
 	public CodeGenSDFJoinVertex() {
-		this.getPropertyBean().setValue(TYPE, VertexType.task);
+		this.getPropertyBean().setValue(TYPE, VertexType.TASK);
 		ActorPrototypes joinCall = new ActorPrototypes("join");
 		this.setRefinement(joinCall);
 	}

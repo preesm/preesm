@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -45,7 +45,7 @@ public class CodeGenSDFSendVertex extends CodeGenSDFTaskVertex {
 	public static final String TYPE = ImplementationPropertyNames.Vertex_vertexType;
 
 	public CodeGenSDFSendVertex() {
-		this.getPropertyBean().setValue(TYPE, VertexType.send);
+		this.getPropertyBean().setValue(TYPE, VertexType.SEND);
 	}
 	/*
 	 * public Interface getInterface() { return (Interface)
