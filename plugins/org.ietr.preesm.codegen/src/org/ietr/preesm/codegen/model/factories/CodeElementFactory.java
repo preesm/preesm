@@ -50,6 +50,8 @@ import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.model.CodeGenSDFBroadcastVertex;
+import org.ietr.preesm.codegen.model.CodeGenSDFFifoPullVertex;
+import org.ietr.preesm.codegen.model.CodeGenSDFFifoPushVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFForkVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFInitVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFJoinVertex;
@@ -59,8 +61,6 @@ import org.ietr.preesm.codegen.model.CodeGenSDFSinkInterfaceVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFSourceInterfaceVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFSubInitVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFTaskVertex;
-import org.ietr.preesm.codegen.model.CodeGenSDFTokenEndVertex;
-import org.ietr.preesm.codegen.model.CodeGenSDFTokenInitVertex;
 import org.ietr.preesm.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.buffer.Buffer;
@@ -117,8 +117,8 @@ public class CodeElementFactory {
 		else if(vertex instanceof CodeGenSDFSourceInterfaceVertex) return createElement(parentContainer,(CodeGenSDFSourceInterfaceVertex)vertex, sectionType);
 		else if(vertex instanceof CodeGenSDFSubInitVertex) return createElement(parentContainer,(CodeGenSDFSubInitVertex)vertex, sectionType);
 		else if(vertex instanceof CodeGenSDFTaskVertex) return createElement(parentContainer,(CodeGenSDFTaskVertex)vertex, sectionType);
-		else if(vertex instanceof CodeGenSDFTokenEndVertex) return createElement(parentContainer,(CodeGenSDFTokenEndVertex)vertex, sectionType);
-		else if(vertex instanceof CodeGenSDFTokenInitVertex) return createElement(parentContainer,(CodeGenSDFTokenInitVertex)vertex, sectionType);
+		else if(vertex instanceof CodeGenSDFFifoPushVertex) return createElement(parentContainer,(CodeGenSDFFifoPushVertex)vertex, sectionType);
+		else if(vertex instanceof CodeGenSDFFifoPullVertex) return createElement(parentContainer,(CodeGenSDFFifoPullVertex)vertex, sectionType);
 		return null;
 	}
 
@@ -465,7 +465,7 @@ public class CodeElementFactory {
 	 */
 	public static ICodeElement createElement(
 			AbstractCodeContainer parentContainer,
-			CodeGenSDFTokenEndVertex vertex, CodeSectionType sectionType) {
+			CodeGenSDFFifoPushVertex vertex, CodeSectionType sectionType) {
 		SDFEdge incomingEdge = null;
 		if (vertex.getEndReference() != null) {
 			for (SDFEdge inEdge : ((SDFGraph) vertex.getBase())
@@ -474,8 +474,8 @@ public class CodeElementFactory {
 			}
 			if (incomingEdge != null) {
 				UserFunctionCall delayCall = new UserFunctionCall("push",
-						parentContainer);
-				if (((CodeGenSDFTokenInitVertex) vertex.getEndReference())
+						parentContainer, vertex);
+				if (((CodeGenSDFFifoPullVertex) vertex.getEndReference())
 						.getDelayVariable() == null) {
 					WorkflowLogger.getLogger().log(
 							Level.SEVERE,
@@ -487,7 +487,7 @@ public class CodeElementFactory {
 
 				delayCall.addArgument(
 						"fifo",
-						new PointerOn(((CodeGenSDFTokenInitVertex) vertex
+						new PointerOn(((CodeGenSDFFifoPullVertex) vertex
 								.getEndReference()).getDelayVariable()));
 				delayCall.addArgument("buffer",
 						parentContainer.getBuffer(incomingEdge));
@@ -509,7 +509,7 @@ public class CodeElementFactory {
 	 */
 	public static ICodeElement createElement(
 			AbstractCodeContainer parentContainer,
-			CodeGenSDFTokenInitVertex vertex, CodeSectionType sectionType) {
+			CodeGenSDFFifoPullVertex vertex, CodeSectionType sectionType) {
 		SDFEdge outgoingEdge = null;
 		if (parentContainer instanceof ForLoop) {
 			for (SDFEdge outEdge : ((SDFGraph) vertex.getBase())
@@ -518,7 +518,7 @@ public class CodeElementFactory {
 			}
 			if (outgoingEdge != null && vertex.getDelayVariable() != null) {
 				UserFunctionCall delayCall = new UserFunctionCall("pull",
-						parentContainer);
+						parentContainer, vertex);
 				delayCall.addArgument("fifo",
 						new PointerOn(vertex.getDelayVariable()));
 				delayCall.addArgument("buffer",

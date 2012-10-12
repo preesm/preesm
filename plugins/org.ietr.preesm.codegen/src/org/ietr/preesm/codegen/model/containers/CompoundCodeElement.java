@@ -55,13 +55,13 @@ import net.sf.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import net.sf.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 
 import org.ietr.preesm.codegen.model.CodeGenSDFBroadcastVertex;
+import org.ietr.preesm.codegen.model.CodeGenSDFFifoPullVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFForkVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.codegen.model.CodeGenSDFInitVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFJoinVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFRoundBufferVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFSubInitVertex;
-import org.ietr.preesm.codegen.model.CodeGenSDFTokenInitVertex;
 import org.ietr.preesm.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.codegen.model.ICodeGenSpecialBehaviorVertex;
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
@@ -172,7 +172,7 @@ public class CompoundCodeElement extends AbstractCodeContainer implements
 						}
 					}
 					if (edge.getDelay().intValue() > 0
-							&& !(edge.getTarget() instanceof CodeGenSDFTokenInitVertex)) {
+							&& !(edge.getTarget() instanceof CodeGenSDFFifoPullVertex)) {
 						UserFunctionCall initCall = new UserFunctionCall(
 								"memset", this);
 

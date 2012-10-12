@@ -52,7 +52,7 @@ import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
-import org.ietr.preesm.codegen.model.CodeGenSDFTokenInitVertex;
+import org.ietr.preesm.codegen.model.CodeGenSDFFifoPullVertex;
 import org.ietr.preesm.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.buffer.Buffer;
@@ -78,19 +78,19 @@ public class UserFunctionCall extends AbstractCodeElement {
 	private Vector<FunctionArgument> callParameters;
 
 	private FunctionArgument returnSet;
-
-	/**
-	 * The vertex responsible of this call
-	 */
-	private SDFAbstractVertex vertex = null;
-
+	
 	public UserFunctionCall(String name, AbstractBufferContainer parentContainer) {
 		super(name, parentContainer, null);
 		callParameters = new Vector<FunctionArgument>();
 	}
+	
+	public UserFunctionCall(String name, AbstractBufferContainer parentContainer, SDFAbstractVertex vertex) {
+		super(name, parentContainer, vertex);
+		callParameters = new Vector<FunctionArgument>();
+	}
 
 	@SuppressWarnings("unchecked")
-	public UserFunctionCall(CodeGenSDFTokenInitVertex vertex,
+	public UserFunctionCall(CodeGenSDFFifoPullVertex vertex,
 			AbstractBufferContainer parentContainer, CodeSectionType section,
 			boolean ignoreSendReceive) {
 		super(vertex.getName(), parentContainer, vertex);
@@ -123,7 +123,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 				}
 			}
 		}
-		// Managing fifo
+		// Managing fifo for vertices without input edges
 		else {
 			AbstractBufferContainer globalContainer = parentContainer
 					.getGlobalContainer();
@@ -154,7 +154,6 @@ public class UserFunctionCall extends AbstractCodeElement {
 			CodeSectionType sectionType, boolean ignoreSendReceive) {
 		super(vertex.getName(), parentContainer, vertex);
 
-		this.vertex = vertex;
 		// Buffers associated to the function call
 		callParameters = new Vector<FunctionArgument>();
 		// Replacing the name of the vertex by the name of the prototype, if any
@@ -361,8 +360,8 @@ public class UserFunctionCall extends AbstractCodeElement {
 	 * Returning the related vertex name if relevant
 	 */
 	public String getVertexName() {
-		if (vertex != null) {
-			return vertex.getName();
+		if (getCorrespondingVertex() != null) {
+			return getCorrespondingVertex().getName();
 		} else {
 			return "";
 		}

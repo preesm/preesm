@@ -240,6 +240,7 @@ public class ComCodeGenerator {
 	private void insertEndSendBeforeSender(ComCalls comCalls, SDFAbstractVertex vertex) {
 		ICodeElement nextElement = comCalls.getSenderCalls().get(0);
 
+		// This adds automatically elements in order because they are inserted before an element
 		for (CommunicationFunctionCall comCall : comCalls.getEndComZoneCalls()) {
 			container.addCodeElementBefore(nextElement, comCall);
 		}
@@ -255,6 +256,7 @@ public class ComCodeGenerator {
 		for (CommunicationFunctionCall comCall : comCalls
 				.getStartComZoneCalls()) {
 			container.addCodeElementAfter(previousElement, comCall);
+			previousElement = comCall;
 		}
 	}
 
@@ -263,25 +265,38 @@ public class ComCodeGenerator {
 		int vertexSchedulingOrder = (Integer) vertex.getPropertyBean()
 				.getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
 
-		ICodeElement previousElement = null;
-
-		// Inserting the calls in total order. A send is always preceded by at
-		// least an element
-		for (ICodeElement element : container.getCodeElements()) {
-			int currentSchedulingOrder = (Integer) element
-					.getCorrespondingVertex()
-					.getPropertyBean()
-					.getValue(
-							ImplementationPropertyNames.Vertex_schedulingOrder);
-			if (vertexSchedulingOrder < currentSchedulingOrder) {
-				break;
-			} else {
-				previousElement = element;
+		if(container.getCodeElements().isEmpty()){
+			for (CommunicationFunctionCall comCall : comCalls) {
+				container.addCodeElement(comCall);
 			}
 		}
-
-		for (CommunicationFunctionCall comCall : comCalls) {
-			container.addCodeElementAfter(previousElement, comCall);
+		else{
+			ICodeElement previousElement = null;
+	
+			// Inserting the calls in total order. A send is always preceded by at
+			// least an element
+			for (ICodeElement element : container.getCodeElements()) {
+				int currentSchedulingOrder = (Integer) element
+						.getCorrespondingVertex()
+						.getPropertyBean()
+						.getValue(
+								ImplementationPropertyNames.Vertex_schedulingOrder);
+				if (vertexSchedulingOrder < currentSchedulingOrder) {
+					break;
+				} else {
+					previousElement = element;
+				}
+			}
+	
+			for (CommunicationFunctionCall comCall : comCalls) {
+				if(previousElement == null){
+					container.addCodeElementFirst(comCall);
+				}
+				else{
+					container.addCodeElementAfter(previousElement, comCall);
+				}
+				previousElement = comCall;
+			}
 		}
 	}
 

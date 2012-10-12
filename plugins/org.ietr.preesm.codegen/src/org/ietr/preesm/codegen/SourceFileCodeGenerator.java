@@ -57,6 +57,7 @@ import org.ietr.preesm.codegen.idl.IDLPrototypeFactory;
 import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenSDFBroadcastVertex;
+import org.ietr.preesm.codegen.model.CodeGenSDFFifoPullVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFForkVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.codegen.model.CodeGenSDFJoinVertex;
@@ -65,9 +66,11 @@ import org.ietr.preesm.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.codegen.model.allocators.VirtualHeapAllocator;
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.buffer.Buffer;
+import org.ietr.preesm.codegen.model.call.UserFunctionCall;
 import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;
 import org.ietr.preesm.codegen.model.containers.ForLoop;
 import org.ietr.preesm.codegen.model.containers.LinearCodeContainer;
+import org.ietr.preesm.codegen.model.main.ICodeElement;
 import org.ietr.preesm.codegen.model.main.SchedulingOrderComparator;
 import org.ietr.preesm.codegen.model.main.SourceFile;
 import org.ietr.preesm.codegen.model.main.SourceFileList;
@@ -203,6 +206,8 @@ public class SourceFileCodeGenerator {
 				computationThread, sectionType, "COMINIT");
 		computationThread.addContainer(comInit);
 		
+		generateFifoInitSection(computationThread, ownTaskVertices);
+		
 		// The maximum number of init phases is kept for all cores. May be
 		// improved later
 		int numberOfInitPhases = idlPrototypeFactory.getNumberOfInitPhases();
@@ -218,6 +223,28 @@ public class SourceFileCodeGenerator {
 		generateLoopSection(computationThread, algorithm.getParameters(),
 				ownTaskVertices,
 				file.getGlobalContainer());
+	}
+
+	/**
+	 * Generates a section to initialize fifos
+	 */
+	public void generateFifoInitSection(ComputationThreadDeclaration computationThread, Set<SDFAbstractVertex> vertices) {
+		CodeSectionType sectionType = new CodeSectionType(MajorType.FIFOINIT);
+		LinearCodeContainer fifoInit = new LinearCodeContainer(
+				computationThread, sectionType, "Fifo Initialization Section");
+		computationThread.addContainer(fifoInit);
+		
+		for (SDFAbstractVertex vertex : vertices) {
+			
+			// Initializing FIFO that are considered like user functions
+			if (vertex instanceof CodeGenSDFFifoPullVertex) {
+				ICodeElement beginningCall = new UserFunctionCall(
+						(CodeGenSDFFifoPullVertex) vertex, fifoInit,
+						sectionType, false);
+
+				fifoInit.addInitCodeElement(beginningCall);
+			} 
+		}
 	}
 
 	/**

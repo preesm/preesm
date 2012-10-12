@@ -247,22 +247,22 @@ public class CodeGenSDFGraphFactory {
 			}
 		}
 		for (AbstractVertex codeGenVertex : output.vertexSet()) {
-			if (codeGenVertex instanceof CodeGenSDFTokenInitVertex) {
+			if (codeGenVertex instanceof CodeGenSDFFifoPullVertex) {
 				if (output
-						.getVertex(((CodeGenSDFTokenInitVertex) codeGenVertex)
+						.getVertex(((CodeGenSDFFifoPullVertex) codeGenVertex)
 								.getEndReference().getName()) != null) {
-					((CodeGenSDFTokenInitVertex) codeGenVertex)
+					((CodeGenSDFFifoPullVertex) codeGenVertex)
 							.setEndReference((SDFEndVertex) output
-									.getVertex(((CodeGenSDFTokenInitVertex) codeGenVertex)
+									.getVertex(((CodeGenSDFFifoPullVertex) codeGenVertex)
 											.getEndReference().getName()));
 				}
-			} else if (codeGenVertex instanceof CodeGenSDFTokenEndVertex) {
-				if (output.getVertex(((CodeGenSDFTokenEndVertex) codeGenVertex)
+			} else if (codeGenVertex instanceof CodeGenSDFFifoPushVertex) {
+				if (output.getVertex(((CodeGenSDFFifoPushVertex) codeGenVertex)
 						.getEndReference().getName()) != null) {
 					SDFInitVertex initVertex = (SDFInitVertex) output
-							.getVertex(((CodeGenSDFTokenEndVertex) codeGenVertex)
+							.getVertex(((CodeGenSDFFifoPushVertex) codeGenVertex)
 									.getEndReference().getName());
-					((CodeGenSDFTokenEndVertex) codeGenVertex)
+					((CodeGenSDFFifoPushVertex) codeGenVertex)
 							.setEndReference((SDFInitVertex) initVertex);
 
 					SDFEdge outEdge = (SDFEdge) output.outgoingEdgesOf(

@@ -95,16 +95,16 @@ public class CodeGenSDFVertexFactory {
 			} else if (sdfVertex instanceof SDFRoundBufferVertex) {
 				newVertex = new CodeGenSDFRoundBufferVertex();
 			} else if (sdfVertex instanceof SDFEndVertex) {
-				newVertex = new CodeGenSDFTokenEndVertex();
-				((CodeGenSDFTokenEndVertex) newVertex)
+				newVertex = new CodeGenSDFFifoPushVertex();
+				((CodeGenSDFFifoPushVertex) newVertex)
 						.setEndReference(((SDFInitVertex) sdfVertex)
 								.getEndReference());
 			} else if (sdfVertex instanceof SDFInitVertex) {
-				newVertex = new CodeGenSDFTokenInitVertex();
-				((CodeGenSDFTokenInitVertex) newVertex)
+				newVertex = new CodeGenSDFFifoPullVertex();
+				((CodeGenSDFFifoPullVertex) newVertex)
 						.setEndReference(((SDFInitVertex) sdfVertex)
 								.getEndReference());
-				((CodeGenSDFTokenInitVertex) newVertex)
+				((CodeGenSDFFifoPullVertex) newVertex)
 						.setInitSize(((SDFInitVertex) sdfVertex).getInitSize());
 			} else if (sdfVertex instanceof PSDFInitVertex) {
 				newVertex = new CodeGenSDFInitVertex();
@@ -194,7 +194,7 @@ public class CodeGenSDFVertexFactory {
 			} else if (sdfVertex instanceof SDFRoundBufferVertex) {
 				newVertex = new CodeGenSDFRoundBufferVertex();
 			} else if (sdfVertex instanceof SDFInitVertex) {
-				newVertex = new CodeGenSDFTokenInitVertex();
+				newVertex = new CodeGenSDFFifoPullVertex();
 			} else if (sdfVertex instanceof PSDFInitVertex) {
 				newVertex = new CodeGenSDFInitVertex();
 			} else if (sdfVertex instanceof PSDFSubInitVertex) {

@@ -36,18 +36,27 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.codegen.model;
 
-import net.sf.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
+import net.sf.dftools.algorithm.model.IRefinement;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 
+import org.ietr.preesm.codegen.model.call.Variable;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
 
-public class CodeGenSDFTokenEndVertex extends SDFEndVertex implements
+/**
+ * Vertex representing token pulling data from a fifo
+ * 
+ * @author jpiat
+ * @author mpelcat
+ */
+public class CodeGenSDFFifoPullVertex extends SDFInitVertex implements
 		ICodeGenSDFVertex {
 
+	private Variable delayVariable;
 	public static final String TYPE = ImplementationPropertyNames.Vertex_vertexType;
 
-	public CodeGenSDFTokenEndVertex() {
+	public CodeGenSDFFifoPullVertex() {
 		this.getPropertyBean().setValue(TYPE, VertexType.TASK);
 	}
 
@@ -76,4 +85,15 @@ public class CodeGenSDFTokenEndVertex extends SDFEndVertex implements
 		return "";
 	}
 
+	public IRefinement getRefinement() {
+		return null;
+	}
+
+	public void setDelayVariable(Variable var) {
+		this.delayVariable = var;
+	}
+
+	public Variable getDelayVariable() {
+		return this.delayVariable;
+	}
 }

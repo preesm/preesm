@@ -93,19 +93,6 @@ public class PhaseCodeGenerator {
 		for (SDFAbstractVertex vertex : vertices) {
 
 			// Managing regular vertices
-			/*if (vertex instanceof ICodeGenSDFVertex
-					&& vertex.getGraphDescription() == null) {				
-				if (vertex instanceof CodeGenSDFTokenInitVertex) {
-					ICodeElement beginningCall = new UserFunctionCall(
-							(CodeGenSDFTokenInitVertex) vertex, container,
-							sectionType, false);
-					// Adding init call if any
-
-					container.addInitCodeElement(beginningCall);
-				} 
-			}*/
-
-			// Managing regular vertices
 			if (vertex instanceof ICodeGenSDFVertex) {
 				ICodeElement mainCall = CodeElementFactory.createElement(
 						container, vertex, sectionType);

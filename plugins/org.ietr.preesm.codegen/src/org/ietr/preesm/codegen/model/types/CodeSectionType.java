@@ -45,7 +45,7 @@ public class CodeSectionType {
 
 	public enum MajorType {
 
-		COMINIT, INIT, LOOP
+		FIFOINIT, COMINIT, INIT, LOOP
 	}
 
 	/**
@@ -94,6 +94,9 @@ public class CodeSectionType {
 		}
 		else if(major.equals(MajorType.INIT)){
 			return "(INIT," + minor + ")";
+		}
+		else if(major.equals(MajorType.FIFOINIT)){
+			return "FIFOINIT";
 		}
 		return "";
 	}
