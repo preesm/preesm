@@ -93,7 +93,7 @@ public class GraphMLParser {
 		// document
 		Element graphElt = (Element) graphElts.item(0);
 
-		// TODO parseProperties() of the graph
+		// TODO parseGraphProperties() of the graph
 
 		// Parse the elements of the graph
 		NodeList childList = graphElt.getChildNodes();
@@ -104,10 +104,12 @@ public class GraphMLParser {
 
 			switch (eltName) {
 			case "data":
-				String keyName = elt.getAttributes().getNamedItem("key").getNodeValue();
+				// Properties of the Graph.
+				// TODO transfer this code in a separate function parseGraphProperties()
+				String keyName = elt.getAttributes().getNamedItem("key")
+						.getNodeValue();
 				String keyValue = elt.getTextContent();
-				if(keyName.equals("name"))
-				{
+				if (keyName.equals("name")) {
 					graph.setName(keyValue);
 				}
 				break;
@@ -122,9 +124,7 @@ public class GraphMLParser {
 			default:
 
 			}
-
 		}
-
 	}
 
 	/**
@@ -180,8 +180,8 @@ public class GraphMLParser {
 		// Instantiate the new actor
 		Actor actor = PIMeMoCFactory.eINSTANCE.createActor();
 
-		// Set the actor properties
-		actor.setName(getProperty(nodeElt, "name"));
+		// Get the actor properties
+		actor.setName(nodeElt.getAttribute("id"));
 
 		// Add the actor to the parsed graph
 		graph.getVertices().add(actor);

@@ -20,12 +20,12 @@ import org.ietr.preesm.experiment.model.pimemoc.Graph;
 
 public class AddActorFeature extends AbstractAddFeature {
 	
-	private static final IColorConstant E_CLASS_TEXT_FOREGROUND = IColorConstant.BLACK;
+	private static final IColorConstant ACTOR_TEXT_FOREGROUND = IColorConstant.BLACK;
 
-	private static final IColorConstant E_CLASS_FOREGROUND = new ColorConstant(
+	private static final IColorConstant ACTOR_FOREGROUND = new ColorConstant(
 			98, 131, 167);
 
-	private static final IColorConstant E_CLASS_BACKGROUND = new ColorConstant(
+	private static final IColorConstant ACTOR_BACKGROUND = new ColorConstant(
 			187, 218, 247);
 
 	public AddActorFeature(IFeatureProvider fp) {
@@ -49,18 +49,18 @@ public class AddActorFeature extends AbstractAddFeature {
              peCreateService.createContainerShape(targetDiagram, true);
  
         // define a default size for the shape
-        //TODO: Automatic size
+        //TODO: Automatic size as a function of the content
         int width = 100;
         int height = 50;
         IGaService gaService = Graphiti.getGaService();
+        
         RoundedRectangle roundedRectangle; // need to access it later
- 
         {
             // create and set graphics algorithm
             roundedRectangle =
                 gaService.createRoundedRectangle(containerShape, 5, 5);
-            roundedRectangle.setForeground(manageColor(E_CLASS_FOREGROUND));
-            roundedRectangle.setBackground(manageColor(E_CLASS_BACKGROUND));
+            roundedRectangle.setForeground(manageColor(ACTOR_FOREGROUND));
+            roundedRectangle.setBackground(manageColor(ACTOR_BACKGROUND));
             roundedRectangle.setLineWidth(2);
             gaService.setLocationAndSize(roundedRectangle,
                 context.getX(), context.getY(), width, height);
@@ -84,7 +84,7 @@ public class AddActorFeature extends AbstractAddFeature {
  
             // create and set text graphics algorithm
             Text text = gaService.createText(shape, addedActor.getName());
-            text.setForeground(manageColor(E_CLASS_TEXT_FOREGROUND));
+            text.setForeground(manageColor(ACTOR_TEXT_FOREGROUND));
             text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER );
             // vertical alignment has as default value "center"
             text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));

@@ -310,7 +310,7 @@ public class GraphMLWriter {
 		vertexElt.setAttribute("id", vertex.getName());
 
 		// Add the name in the data of the node
-		writeDataElt(graphElt, "name", vertex.getName());
+		//writeDataElt(vertexElt, "name", vertex.getName());
 
 		if (vertex instanceof Actor) {
 			writeActor(vertexElt, (Actor) vertex);
