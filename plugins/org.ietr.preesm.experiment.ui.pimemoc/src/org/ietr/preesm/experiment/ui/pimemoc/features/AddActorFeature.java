@@ -16,6 +16,7 @@ import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
+import org.ietr.preesm.experiment.model.pimemoc.Graph;
 
 public class AddActorFeature extends AbstractAddFeature {
 	
@@ -68,7 +69,8 @@ public class AddActorFeature extends AbstractAddFeature {
             // of the diagram
             // in a real scenario the business model would have its own resource
             if (addedActor.eResource() == null) {
-                     getDiagram().eResource().getContents().add(addedActor);
+            	Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
+                graph.getVertices().add(addedActor);
             }
             // create link and wire it
             link(containerShape, addedActor);

@@ -71,7 +71,7 @@ public class GraphMLWriter {
 		Element newElt = appendChild(parentElement, "graph");
 		graphElement = newElt;
 		newElt.setAttribute("edgedefault", "directed");
-
+		
 		return newElt;
 	}
 
@@ -241,7 +241,7 @@ public class GraphMLWriter {
 	 */
 	protected void writeDataElt(Element parentElt, String keyName,
 			String textContent) {
-		addKey(keyName, null, parentElt.getTagName(), "string", null);
+		addKey(null, keyName, parentElt.getTagName(), "string", null);
 		Element nameElt = appendChild(parentElt, "data");
 		nameElt.setAttribute("key", keyName);
 		nameElt.setTextContent(textContent);
@@ -259,7 +259,8 @@ public class GraphMLWriter {
 	protected void writeGraph(Element rootElt, Graph graph) {
 		// Create and add the graphElt to the Document
 		Element graphElt = addGraphElt(rootElt);
-
+		writeDataElt(graphElt, "name", graph.getName());
+		
 		// TODO addProperties() of the graph
 		// TODO writeParameters()
 

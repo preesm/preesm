@@ -1,7 +1,5 @@
 package org.ietr.preesm.experiment.ui.pimemoc.wizards;
 
-import net.sf.graphiti.ui.wizards.WizardSaveGraphPage;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -28,8 +26,9 @@ public class NewPIMeMoCWizard extends Wizard implements INewWizard {
 	@Override
 	public void addPages() {
 		NewPIMeMoCPage page = new NewPIMeMoCPage("saveGraph",selection);
-		page.setFileName("NewGraph");
+		page.setFileName("NewGraph.diagram");
 		page.setDescription("Creates a new network design.");
+		page.setFileExtension("diagram");
 		addPage(page);
 		
 		//Configuration configuration = GraphitiModelPlugin.getDefault()

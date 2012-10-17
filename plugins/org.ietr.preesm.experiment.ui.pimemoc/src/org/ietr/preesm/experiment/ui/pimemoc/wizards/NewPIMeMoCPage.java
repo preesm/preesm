@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -57,7 +55,7 @@ public class NewPIMeMoCPage extends WizardNewFileCreationPage {
 
 	private Graph createGraph(IPath path) {
 		graphName = getFileName();
-		int idx = graphName.indexOf("graphml");
+		int idx = graphName.indexOf("diagram");
 		if (idx != -1) {
 			graphName = graphName.substring(0, idx - 1);
 		}
@@ -121,8 +119,7 @@ public class NewPIMeMoCPage extends WizardNewFileCreationPage {
 
 		// create the resource (safe because the wizard does not allow existing
 		// resources to be overridden)
-		URI uri = URI.createPlatformResourceURI(path.append(getFileName())
-				.removeFileExtension().addFileExtension("diagram").toString(),
+		URI uri = URI.createPlatformResourceURI(path.append(getFileName()).toString(),
 				true);
 		Resource resource = set.createResource(uri);
 		resource.getContents().add(diagram);

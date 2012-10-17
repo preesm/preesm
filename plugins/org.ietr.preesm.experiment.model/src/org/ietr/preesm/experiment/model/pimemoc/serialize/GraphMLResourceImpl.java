@@ -45,16 +45,16 @@ public class GraphMLResourceImpl extends ResourceImpl {
 		// Write the Graph to the OutputStream using the GraphML format
 		new GraphMLWriter().write(graph, outputStream);
 	}
-	
+
 	@Override
 	protected void doLoad(InputStream inputStream, Map<?, ?> options)
-			throws IOException {		
+			throws IOException {
 		// Parse the Graph from the InputStream using the GraphML format
 		Graph graph = new GraphMLParser(uri).parse(inputStream);
-		
+
 		// If the graph was correctly parsed, add it to the Resource
-		if(graph != null) { 
-			// TODO Why is !this.getContents.contains(graph) checked in Slam 
+		if (graph != null) {
+			// TODO Why is !this.getContents.contains(graph) checked in Slam
 			this.getContents().add(graph);
 		}
 	}

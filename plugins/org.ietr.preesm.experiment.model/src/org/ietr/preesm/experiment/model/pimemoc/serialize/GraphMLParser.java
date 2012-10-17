@@ -10,6 +10,7 @@ import org.ietr.preesm.experiment.model.pimemoc.Graph;
 import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class GraphMLParser {
@@ -49,7 +50,7 @@ public class GraphMLParser {
 			return null;
 		}
 
-		return null;
+		return graph;
 	}
 
 	/**
@@ -97,15 +98,31 @@ public class GraphMLParser {
 		// Parse the elements of the graph
 		NodeList childList = graphElt.getChildNodes();
 		for (int i = 0; i < childList.getLength(); i++) {
-			Element elt = (Element) childList.item(i);
-			// Node elements
-			if (elt.getNodeName().equals("node")) {
-				parseNode(elt, graph);
+			Node elt = childList.item(i);
+
+			String eltName = elt.getNodeName();
+
+			switch (eltName) {
+			case "data":
+				String keyName = elt.getAttributes().getNamedItem("key").getNodeValue();
+				String keyValue = elt.getTextContent();
+				if(keyName.equals("name"))
+				{
+					graph.setName(keyValue);
+				}
+				break;
+			case "node":
+				// Node elements
+				parseNode((Element) elt, graph);
+				break;
+			case "edge":
+				// Edge elements
+				parseEdge((Element) elt, graph);
+				break;
+			default:
+
 			}
-			// Edge elements
-			if (elt.getNodeName().equals("edge")) {
-				parseEdge(elt, graph);
-			}
+
 		}
 
 	}
