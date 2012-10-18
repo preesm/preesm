@@ -76,7 +76,7 @@
             <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="Tesla"/>
         </spirit:interconnection>
         <spirit:interconnection>
-            <spirit:name>w1aab2b4</spirit:name>
+            <spirit:name>w1aab2b8</spirit:name>
             <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="CortexA9_2"/>
             <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="Syslink_0"/>
         </spirit:interconnection>
@@ -119,7 +119,7 @@
             <slam:linkDescription slam:directedLink="undirected"
                 slam:linkType="DataLink" slam:referenceId="w1aab2b4"/>
             <slam:linkDescription slam:directedLink="undirected"
-                slam:linkType="DataLink" slam:referenceId="w1aab2b4"/>
+                slam:linkType="DataLink" slam:referenceId="w1aab2b8"/>
             <slam:linkDescription slam:directedLink="undirected"
                 slam:linkType="DataLink" slam:referenceId="w1aab2b5"/>
             <slam:linkDescription slam:directedLink="undirected"
