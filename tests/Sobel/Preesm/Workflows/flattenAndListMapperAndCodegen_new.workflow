@@ -58,6 +58,8 @@
         </dftools:data>
     </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
+        targetport="scenario" to="Gantt Plotter"/>
+    <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="codegen"/>
     <dftools:dataTransfer from="scenario" sourceport="SDF"
         targetport="SDF" to="ImplementationExporter"/>
@@ -69,6 +71,8 @@
         targetport="DAG" to="codegen"/>
     <dftools:dataTransfer from="FAST scheduler" sourceport="DAG"
         targetport="DAG" to="ImplementationExporter"/>
+    <dftools:dataTransfer from="FAST scheduler" sourceport="ABC"
+        targetport="ABC" to="Gantt Plotter"/>
     <dftools:dataTransfer from="scenario" sourceport="architecture"
         targetport="architecture" to="FAST scheduler"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
@@ -85,10 +89,4 @@
         targetport="SDF" to="Exporter2"/>
     <dftools:dataTransfer from="FAST scheduler" sourceport="DAG"
         targetport="DAG" to="DAGExporter"/>
-    <dftools:dataTransfer from="DAGExporter" sourceport="void"
-        targetport="void" to="codegen"/>
-    <dftools:dataTransfer from="FAST scheduler" sourceport="ABC"
-        targetport="ABC" to="Gantt Plotter"/>
-    <dftools:dataTransfer from="scenario" sourceport="scenario"
-        targetport="scenario" to="Gantt Plotter"/>
 </dftools:workflow>

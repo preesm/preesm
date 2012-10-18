@@ -17,7 +17,7 @@
         <xsl:variable name="coreType" select="sourceCode:coreType"/>  
         
         <!-- checking the core type of the target core -->
-        <xsl:if test="$coreType='Tesla'">
+        <xsl:if test="$coreType='M3'">
             <xsl:apply-templates select="sourceCode:SourceFile"/>
         </xsl:if>
     </xsl:template>
@@ -41,6 +41,7 @@
         <xsl:value-of select="$new_line"/>
         <xsl:value-of select="concat($curIndent,'// Communicator definition',$new_line)"/>
         <xsl:value-of select="concat($curIndent,'static communicator com;',$new_line)"/>
+        <xsl:value-of select="$new_line"/>
     </xsl:template>
     
     <!-- Declaring thread functions prototypes -->
@@ -48,19 +49,34 @@
         <xsl:value-of select="concat($curIndent,'void ',@name,'(UArg arg1, UArg arg2);',$new_line)"/>
     </xsl:template>
     
-    <xsl:template match="sourceCode:threadDeclaration">
-        <xsl:value-of select="concat($curIndent,'void ',@name,'(UArg arg1, UArg arg2){',$new_line)"/>
-        <xsl:choose>
+<xsl:template match="sourceCode:threadDeclaration">
+	<xsl:value-of select="concat($curIndent,'void ',@name,'(UArg arg1, UArg arg2){',$new_line)"/>
+	<xsl:choose>
 		<xsl:when test="@name='computationThread'">
 			<xsl:value-of select="concat($curIndent,$sglIndent,'communicator_init(&amp;com, ',$coreName,');',$new_line)"/>
 			<xsl:value-of select="concat($curIndent,$sglIndent,'communicator_openLink(&amp;com, RCV, CortexA9_1);',$new_line)"/>
 			<xsl:value-of select="concat($curIndent,$sglIndent,'communicator_openLink(&amp;com, RCV, CortexA9_2);',$new_line)"/>
-			<xsl:value-of select="concat($curIndent,$sglIndent,'//communicator_openLink(&amp;com, RCV, SysM3);',$new_line)"/>
-			<xsl:value-of select="concat($curIndent,$sglIndent,'//communicator_openLink(&amp;com, RCV, AppM3);',$new_line)"/>
+			<xsl:choose>
+				<xsl:when test="$coreName='AppM3'">
+					<xsl:value-of select="concat($curIndent,$sglIndent,'communicator_openLink(&amp;com, RCV, SysM3);',$new_line)"/>
+				</xsl:when>
+				<xsl:when test="$coreName='SysM3'">
+					<xsl:value-of select="concat($curIndent,$sglIndent,'communicator_openLink(&amp;com, RCV, AppM3);',$new_line)"/>
+				</xsl:when>
+			</xsl:choose>
+			<xsl:value-of select="concat($curIndent,$sglIndent,'//communicator_openLink(&amp;com, RCV, Tesla);',$new_line)"/>
+
 			<xsl:value-of select="concat($curIndent,$sglIndent,'communicator_openLink(&amp;com, SEND, CortexA9_1);',$new_line)"/>
 			<xsl:value-of select="concat($curIndent,$sglIndent,'communicator_openLink(&amp;com, SEND, CortexA9_2);',$new_line)"/>
-			<xsl:value-of select="concat($curIndent,$sglIndent,'//communicator_openLink(&amp;com, SEND, SysM3);',$new_line)"/>
-			<xsl:value-of select="concat($curIndent,$sglIndent,'//communicator_openLink(&amp;com, SEND, AppM3);',$new_line)"/>
+			<xsl:choose>
+				<xsl:when test="$coreName='AppM3'">
+					<xsl:value-of select="concat($curIndent,$sglIndent,'communicator_openLink(&amp;com, SEND, SysM3);',$new_line)"/>
+				</xsl:when>
+				<xsl:when test="$coreName='SysM3'">
+					<xsl:value-of select="concat($curIndent,$sglIndent,'communicator_openLink(&amp;com, SEND, AppM3);',$new_line)"/>
+				 </xsl:when>
+			</xsl:choose>
+			<xsl:value-of select="concat($curIndent,$sglIndent,'//communicator_openLink(&amp;com, SEND, Tesla);',$new_line,$new_line)"/>
 			<xsl:value-of select="concat($curIndent,$sglIndent,'join(&amp;com);',$new_line,$new_line)"/>
 		</xsl:when>
 	</xsl:choose>
@@ -70,19 +86,34 @@
 	<xsl:choose>
 		<xsl:when test="@name='computationThread'">
 			<xsl:value-of select="concat($curIndent,$sglIndent,'join(&amp;com);',$new_line,$new_line)"/>
+			<xsl:value-of select="concat($curIndent,$sglIndent,'communicator_openLink(&amp;com, SEND, CortexA9_1);',$new_line)"/>
+			<xsl:value-of select="concat($curIndent,$sglIndent,'communicator_openLink(&amp;com, SEND, CortexA9_2);',$new_line)"/>
+			<xsl:choose>
+				<xsl:when test="$coreName='AppM3'">
+					<xsl:value-of select="concat($curIndent,$sglIndent,'communicator_closeLink(&amp;com, SEND, SysM3);',$new_line)"/>
+				</xsl:when>
+				<xsl:when test="$coreName='SysM3'">
+					<xsl:value-of select="concat($curIndent,$sglIndent,'communicator_closeLink(&amp;com, SEND, AppM3);',$new_line)"/>
+				 </xsl:when>
+			</xsl:choose>
+			<xsl:value-of select="concat($curIndent,$sglIndent,'//communicator_closeLink(&amp;com, SEND, Tesla);',$new_line,$new_line)"/>
 			<xsl:value-of select="concat($curIndent,$sglIndent,'communicator_closeLink(&amp;com, RCV, CortexA9_1);',$new_line)"/>
 			<xsl:value-of select="concat($curIndent,$sglIndent,'communicator_closeLink(&amp;com, RCV, CortexA9_2);',$new_line)"/>
-			<xsl:value-of select="concat($curIndent,$sglIndent,'//communicator_closeLink(&amp;com, RCV, SysM3);',$new_line)"/>
-			<xsl:value-of select="concat($curIndent,$sglIndent,'//communicator_closeLink(&amp;com, RCV, AppM3);',$new_line)"/>
-			<xsl:value-of select="concat($curIndent,$sglIndent,'communicator_closeLink(&amp;com, SEND, CortexA9_1);',$new_line)"/>
-			<xsl:value-of select="concat($curIndent,$sglIndent,'communicator_closeLink(&amp;com, SEND, CortexA9_2);',$new_line)"/>
-			<xsl:value-of select="concat($curIndent,$sglIndent,'//communicator_closeLink(&amp;com, SEND, SysM3);',$new_line)"/>
-			<xsl:value-of select="concat($curIndent,$sglIndent,'//communicator_closeLink(&amp;com, SEND, AppM3);',$new_line)"/>
+			<xsl:choose>
+				<xsl:when test="$coreName='AppM3'">
+					<xsl:value-of select="concat($curIndent,$sglIndent,'communicator_closeLink(&amp;com, RCV, SysM3);',$new_line)"/>
+				</xsl:when>
+				<xsl:when test="$coreName='SysM3'">
+					<xsl:value-of select="concat($curIndent,$sglIndent,'communicator_closeLink(&amp;com, RCV, AppM3);',$new_line)"/>
+				</xsl:when>
+			</xsl:choose>
+			<xsl:value-of select="concat($curIndent,$sglIndent,'//communicator_openLink(&amp;com, RCV, Tesla);',$new_line)"/>
+
 		</xsl:when>
 	</xsl:choose>
-        <xsl:value-of select="concat($curIndent,'}//',@name,$new_line)"/>
-        <xsl:value-of select="$new_line"/>
-    </xsl:template>
+	<xsl:value-of select="concat($curIndent,'}//',@name,$new_line)"/>
+	<xsl:value-of select="$new_line"/>
+</xsl:template>
     
     <!-- Middle blocks level -->
     
@@ -152,8 +183,8 @@
             <xsl:apply-templates select="sourceCode:buffer | sourceCode:subBuffer | sourceCode:constant | sourceCode:bufferAtIndex"/>
         </xsl:variable>
         <!-- removing last coma -->
-        <xsl:variable name="buffers" select="substring($buffers,1,string-length($buffers)-2)"/>
-        <xsl:value-of select="concat($buffers,');',$new_line)"/>
+        <xsl:variable name="buffers2" select="substring($buffers,1,string-length($buffers)-2)"/>
+        <xsl:value-of select="concat($buffers2,');',$new_line)"/>
     </xsl:template>
     
     <!-- Small blocks for special assignment, assign a variable a value -->
@@ -170,9 +201,6 @@
         <xsl:variable name="buffers">
             <xsl:apply-templates select="sourceCode:inputBuffers | sourceCode:outputBuffers "/>
         </xsl:variable>
-        <!-- removing last coma -->
-        <xsl:variable name="buffers" select="substring($buffers,1,string-length($buffers)-1)"/>
-        <xsl:value-of select="concat($buffers,');',$new_line)"/>
     </xsl:template>
     
     <!-- Small blocks for special call like broadcast, fork and join -->
@@ -206,10 +234,10 @@
             <xsl:apply-templates select="sourceCode:buffer | sourceCode:constant"/>
         </xsl:variable>
         <!-- removing last coma -->
-        <xsl:variable name="buffers" select="substring($buffers,1,string-length($buffers)-2)"/>
-        <xsl:value-of select="concat($buffers,');',$new_line)"/>
+        <xsl:variable name="buffers2" select="substring($buffers,1,string-length($buffers)-2)"/>
+        <xsl:value-of select="concat($buffers2,');',$new_line)"/>
     </xsl:template>
-
+        
     <xsl:template match="sourceCode:sendMsg">
         <xsl:param name="curIndent"/>
         <xsl:value-of select="concat($curIndent,'communicator_send(&amp;com, ',@target,', ')"/>
@@ -224,17 +252,10 @@
         <xsl:value-of select="concat(', FOREVER);',$new_line)"/>
     </xsl:template>
     
-    <xsl:template match="sourceCode:launchThread">
-        <xsl:param name="curIndent"/>
-        <xsl:value-of select="concat($curIndent,'Task_create(',@threadName,', NULL, NULL')"/>       
-        <xsl:value-of select="concat(');',$new_line)"/>
-    </xsl:template>
-    
     <xsl:template match="sourceCode:sendInit">
         <xsl:param name="curIndent"/>
         <!-->
-        <xsl:value-of select="concat($curIndent,'comInit(MEDIUM_SEND')"/>
-        <xsl:value-of select="concat(',',@connectedCoreId)"/>       
+        <xsl:value-of select="concat($curIndent,'communicator_openLink(&amp;com, SEND,',@connectedCoreId)"/>
         <xsl:value-of select="concat(');',$new_line)"/>
         </-->
     </xsl:template>
@@ -242,10 +263,15 @@
     <xsl:template match="sourceCode:receiveInit">
         <xsl:param name="curIndent"/>
         <!-->
-        <xsl:value-of select="concat($curIndent,'comInit(MEDIUM_RCV')"/>
-        <xsl:value-of select="concat(',',@connectedCoreId)"/>         
+        <xsl:value-of select="concat($curIndent,'communicator_openLink(&amp;com, RCV,',@connectedCoreId)"/>
         <xsl:value-of select="concat(');',$new_line)"/>
         </-->
+    </xsl:template>
+    
+    <xsl:template match="sourceCode:launchThread">
+        <xsl:param name="curIndent"/>
+        <xsl:value-of select="concat($curIndent,'Task_create(',@threadName,', NULL, NULL')"/>       
+        <xsl:value-of select="concat(');',$new_line)"/>
     </xsl:template>
     
     <xsl:template match="sourceCode:sendAddress">
@@ -277,10 +303,10 @@
                 <xsl:when test="$direction='SEND'">
                     <xsl:value-of select="sourceCode:routeStep/sourceCode:receiver/@name"/>
                 </xsl:when>
-                <xsl:otherwise>
-                    <xsl:value-of select="sourceCode:routeStep/sourceCode:sender/@name"/>
-                </xsl:otherwise>
-            </xsl:choose>
+	     <xsl:otherwise>
+	         <xsl:value-of select="sourceCode:routeStep/sourceCode:sender/@name"/>
+	     </xsl:otherwise>
+	 </xsl:choose>
         </xsl:variable>
         <xsl:value-of select="concat($curIndent,'//waitForOtherCore(',$direction)"/> 
         <xsl:value-of select="concat(',',$connectedCoreId)"/> 
@@ -289,21 +315,21 @@
     
     <xsl:template match="sourceCode:routeStep">
         <xsl:choose>
-            <xsl:when test="@type='dma'">
-                <xsl:choose>
-                    <xsl:when test="sourceCode:node/@def='RIO'">RIO</xsl:when>
-                    <xsl:otherwise>EDMA3</xsl:otherwise>
-                </xsl:choose>
-            </xsl:when>
-            <xsl:when test="@type='msg'">
-                <xsl:choose>
-                    <xsl:when test="sourceCode:node/@def='TCP'">TCP</xsl:when>
-                    <xsl:otherwise>msg</xsl:otherwise>
-                </xsl:choose>
-            </xsl:when>
-            <xsl:when test="@type='med'">
-                <xsl:value-of select="@mediumDef"/>
-            </xsl:when>
+	 <xsl:when test="@type='dma'">
+	     <xsl:choose>
+	         <xsl:when test="sourceCode:node/@def='RIO'">RIO</xsl:when>
+	         <xsl:otherwise>EDMA3</xsl:otherwise>
+	     </xsl:choose>
+	 </xsl:when>
+	 <xsl:when test="@type='msg'">
+	     <xsl:choose>
+	         <xsl:when test="sourceCode:node/@def='TCP'">TCP</xsl:when>
+	         <xsl:otherwise>msg</xsl:otherwise>
+	     </xsl:choose>
+	 </xsl:when>
+	 <xsl:when test="@type='med'">
+	     <xsl:value-of select="@mediumDef"/>
+	 </xsl:when>
         </xsl:choose>
     </xsl:template>
     
@@ -328,19 +354,19 @@
     <xsl:template match="sourceCode:bufferAllocation">
         <xsl:param name="curIndent"/>
         <xsl:choose>
-            <xsl:when test="@size = '0' ">
-                <xsl:value-of select="concat($curIndent,@type,' *',@name,';',$new_line)"/>
-            </xsl:when>
-            <xsl:otherwise> 
-                <xsl:choose>
-                    <xsl:when test="@type = 'semaphore' ">
-                        <xsl:value-of select="concat($curIndent,'Semaphore_Handle ',@name,'[',@size,'];',$new_line)"/>
-                    </xsl:when>
-                    <xsl:otherwise>  
-                        <xsl:value-of select="concat($curIndent,@type,' ',@name,'[',@size,'];',$new_line)"/>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:otherwise>
+	 <xsl:when test="@size = '0' ">
+	     <xsl:value-of select="concat($curIndent,@type,' *',@name,';',$new_line)"/>
+	 </xsl:when>
+	 <xsl:otherwise> 
+	     <xsl:choose>
+	         <xsl:when test="@type = 'semaphore' ">
+		  <xsl:value-of select="concat($curIndent,'Semaphore_Handle ',@name,'[',@size,'];',$new_line)"/>
+	         </xsl:when>
+	         <xsl:otherwise>  
+		  <xsl:value-of select="concat($curIndent,@type,' ',@name,'[',@size,'];',$new_line)"/>
+	         </xsl:otherwise>
+	     </xsl:choose>
+	 </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
     
@@ -349,25 +375,25 @@
         <xsl:param name="curIndent"/>
         <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [',@index,'];',$new_line)"/>  
  <!--       <xsl:choose>
-            <xsl:when test="@modulo">
-                <xsl:choose>
-                    <xsl:when test="offset = '0'">
-                        <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,')','];',$new_line)"/>  
-                    </xsl:when>
-                    <xsl:when test="@modulo = '0'">
-                        <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,' * ',@offset,')','];',$new_line)"/>  
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,' * ',@offset,')',' % ',@modulo,'];',$new_line)"/>  
-                    </xsl:otherwise>    
-                </xsl:choose>
-            </xsl:when>
-            <xsl:when test="@offset = '0'">
-                <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,')','];',$new_line)"/>  
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,' * ',@offset,')','];',$new_line)"/>  
-            </xsl:otherwise>
+	 <xsl:when test="@modulo">
+	     <xsl:choose>
+	         <xsl:when test="offset = '0'">
+		  <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,')','];',$new_line)"/>  
+	         </xsl:when>
+	         <xsl:when test="@modulo = '0'">
+		  <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,' * ',@offset,')','];',$new_line)"/>  
+	         </xsl:when>
+	         <xsl:otherwise>
+		  <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,' * ',@offset,')',' % ',@modulo,'];',$new_line)"/>  
+	         </xsl:otherwise>    
+	     </xsl:choose>
+	 </xsl:when>
+	 <xsl:when test="@offset = '0'">
+	     <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,')','];',$new_line)"/>  
+	 </xsl:when>
+	 <xsl:otherwise>
+	     <xsl:value-of select="concat($curIndent,@type,' *',@name,' = &amp;',@parentBuffer,' [','(',@index,' * ',@offset,')','];',$new_line)"/>  
+	 </xsl:otherwise>
         </xsl:choose> -->
     </xsl:template>
     

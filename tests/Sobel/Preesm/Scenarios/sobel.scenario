@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/SobelPreesm/Algo/org.ietr.sobel.sdf.top.graphml"/>
+        <architecture url="/SobelPreesm/Archi/omap.slam"/>
+        <codegenDirectory url="/SobelPreesm/Code"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="AppM3"/>
+        </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup>
+            <operator name="Tesla"/>
+            <task name="SobelFilter"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="CortexA9_1"/>
+            <task name="MergeImage"/>
+            <task name="SeparateY"/>
+            <task name="Camera"/>
+            <task name="Display"/>
+            <task name="SplitImage"/>
+            <task name="SobelFilter"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="SysM3"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="CortexA9_2"/>
+            <task name="SobelFilter"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl="">
+        <timing opname="A9" time="150" vertexname="SobelFilter"/>
+        <timing opname="Tesla" time="5000" vertexname="SobelFilter"/>
+        <timing opname="M3" time="800" vertexname="SobelFilter"/>
+    </timings>
+    <simuParams>
+        <mainCore>CortexA9_1</mainCore>
+        <mainComNode>Syslink_1</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes/>
+        <specialVertexOperators>
+            <specialVertexOperator path="CortexA9_2"/>
+            <specialVertexOperator path="CortexA9_1"/>
+        </specialVertexOperators>
+    </simuParams>
+    <variables excelUrl=""/>
+</scenario>

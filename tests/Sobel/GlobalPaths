@@ -1,0 +1,15 @@
+#DIR
+
+BIOS=/opt/ti/bios_6_31_00_18
+BIOS_SYSLINK=/home/jheulot/pandaboard/bios-syslink
+USERSPACE_SYSLINK=/home/jheulot/pandaboard/userspace-syslink
+
+BUILDROOT=/home/jheulot/pandaboard/buildroot-2012.05_rc3
+
+CROSSCC=/home/jheulot/pandaboard/buildroot-2012.05_rc3/output/host/opt/ext-toolchain/bin
+CROSSXDC=/opt/ti/xdctools_3_20_08_88
+CROSSC6000=/opt/ti/c6000_7.4.1
+CROSSTMS=/opt/ti/ccsv5/tools/compiler/tms470_4.9.5
+
+WORKSPACE=/home/jheulot/svn/preesm_public/trunk/tests/Sobel
+OUTPUT=~/workspace_makefile/output
