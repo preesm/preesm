@@ -222,8 +222,9 @@ public class GraphMLWriter {
 	 */
 	protected void writeActor(Element vertexElt, Actor actor) {
 		// TODO change this method when severa kinds will exist
-		// Write type of the Actor
-		writeDataElt(vertexElt, "kind", "actor");
+		// Set the kind of the Actor
+		vertexElt.setAttribute("kind", "actor");
+		//writeDataElt(vertexElt, "kind", "actor");
 
 	}
 

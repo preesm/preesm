@@ -7,7 +7,7 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
 import org.ietr.preesm.experiment.model.pimemoc.Graph;
 import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCFactory;
-import org.ietr.preesm.experiment.model.pimemoc.util.NewGraphVertexNameValidator;
+import org.ietr.preesm.experiment.model.pimemoc.util.VertexNameValidator;
 import org.ietr.preesm.experiment.ui.pimemoc.util.PimemocUtil;
 
 public class CreateActorFeature extends AbstractCreateFeature {
@@ -16,9 +16,18 @@ public class CreateActorFeature extends AbstractCreateFeature {
 
 	private static final String FEATURE_DESCRIPTION = "Create Actor";
 
+	protected Boolean hasDoneChanges;
+
+	/**
+	 * Default constructor
+	 * 
+	 * @param fp
+	 *            the feature provider
+	 */
 	public CreateActorFeature(IFeatureProvider fp) {
 		// Set name and description of the creation feature
 		super(fp, FEATURE_NAME, FEATURE_DESCRIPTION);
+		hasDoneChanges = false;
 	}
 
 	@Override
@@ -35,9 +44,10 @@ public class CreateActorFeature extends AbstractCreateFeature {
 		String question = "Enter new actor name";
 		String newActorName = "ActorName";
 
-		newActorName = PimemocUtil.askString("Create Actor",
-				question, newActorName, new NewGraphVertexNameValidator(graph));
+		newActorName = PimemocUtil.askString("Create Actor", question,
+				newActorName, new VertexNameValidator(graph, null));
 		if (newActorName == null || newActorName.trim().length() == 0) {
+			this.hasDoneChanges = false; // If this is not done, the graph is considered modified.
 			return EMPTY;
 		}
 
@@ -46,13 +56,21 @@ public class CreateActorFeature extends AbstractCreateFeature {
 		newActor.setName(newActorName);
 
 		// Add new actor to the graph.
-		graph.getVertices().add(newActor);
+		if(graph.getVertices().add(newActor))
+		{
+			this.hasDoneChanges = true;
+		}
 
 		// do the add to the Diagram
 		addGraphicalRepresentation(context, newActor);
 
 		// return newly created business object(s)
 		return new Object[] { newActor };
+	}
+	
+	@Override
+	public boolean hasDoneChanges() {
+		return this.hasDoneChanges;
 	}
 
 }

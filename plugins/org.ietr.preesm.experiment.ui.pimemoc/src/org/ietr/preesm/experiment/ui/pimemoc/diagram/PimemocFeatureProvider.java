@@ -4,14 +4,18 @@ import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
+import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
+import org.eclipse.graphiti.features.context.IDirectEditingContext;
 import org.eclipse.graphiti.features.context.IRemoveContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
+import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
@@ -19,6 +23,8 @@ import org.ietr.preesm.experiment.model.pimemoc.Actor;
 import org.ietr.preesm.experiment.ui.pimemoc.features.AddActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CreateActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CustomDeleteFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.DirectEditingActorNameFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.RenameActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.UpdateActorFeature;
 
 public class PimemocFeatureProvider extends DefaultFeatureProvider {
@@ -34,6 +40,22 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 			return new AddActorFeature(this);
 		}
 		return super.getAddFeature(context);
+	}
+
+	@Override
+	public IDirectEditingFeature getDirectEditingFeature(
+			IDirectEditingContext context) {
+		PictogramElement pe = context.getPictogramElement();
+		Object bo = getBusinessObjectForPictogramElement(pe);
+		if (bo instanceof Actor) {
+			return new DirectEditingActorNameFeature(this);
+		}
+		return super.getDirectEditingFeature(context);
+	}
+
+	@Override
+	public ICustomFeature[] getCustomFeatures(ICustomContext context) {
+		return new ICustomFeature[] { new RenameActorFeature(this) };
 	}
 
 	@Override
@@ -82,7 +104,7 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 	 * 
 	 * @see PimemocFeatureProviderWithRemove
 	 * @see CustomDeleteFeature
-	 * @see http
+	 * @see http 
 	 *      ://www.eclipse.org/forums/index.php/mv/msg/234410/720417/#msg_720417
 	 * @param context
 	 *            the context

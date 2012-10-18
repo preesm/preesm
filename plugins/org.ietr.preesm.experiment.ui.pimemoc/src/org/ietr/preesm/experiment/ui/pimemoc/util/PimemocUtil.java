@@ -29,7 +29,7 @@ public class PimemocUtil {
 	 *            (equivalent to the empty string)
 	 * @param validator
 	 *            an input validator, or <code>null</code> if none
-	 * @return the string
+	 * @return the string, or <code>null</code> if user cancels
 	 */
 	public static String askString(String dialogTitle, String dialogMessage,
 			String initialValue, IInputValidator validator) {

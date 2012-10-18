@@ -68,7 +68,7 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 
 	@Override
 	public Set<String> getVerticesNames() {
-		Set<String> names = new HashSet<String>(vertices.size());
+		Set<String> names = new HashSet<String>(getVertices().size());
 		for (AbstractVertex vertex : vertices) {
 			names.add(vertex.getName());
 		}

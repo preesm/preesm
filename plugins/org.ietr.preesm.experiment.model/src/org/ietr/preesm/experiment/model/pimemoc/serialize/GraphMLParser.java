@@ -105,7 +105,8 @@ public class GraphMLParser {
 			switch (eltName) {
 			case "data":
 				// Properties of the Graph.
-				// TODO transfer this code in a separate function parseGraphProperties()
+				// TODO transfer this code in a separate function
+				// parseGraphProperties()
 				String keyName = elt.getAttributes().getNamedItem("key")
 						.getNodeValue();
 				String keyValue = elt.getTextContent();
@@ -153,7 +154,7 @@ public class GraphMLParser {
 	 */
 	protected void parseNode(Element nodeElt, Graph graph) {
 		// Identify if the node is an actor or a parameter
-		String nodeKind = getProperty(nodeElt, "kind");
+		String nodeKind = nodeElt.getAttribute("kind");
 
 		switch (nodeKind) {
 		case "actor":
@@ -176,6 +177,14 @@ public class GraphMLParser {
 
 	}
 
+	/**
+	 * Parse a node {@link Element} with kind "actor".
+	 * 
+	 * @param nodeElt
+	 *            the {@link Element} to parse
+	 * @param graph
+	 *            the deserialized {@link Graph}
+	 */
 	protected void parseActor(Element nodeElt, Graph graph) {
 		// Instantiate the new actor
 		Actor actor = PIMeMoCFactory.eINSTANCE.createActor();
