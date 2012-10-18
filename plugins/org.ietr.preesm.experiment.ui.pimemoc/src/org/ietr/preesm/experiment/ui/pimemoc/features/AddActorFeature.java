@@ -20,12 +20,12 @@ import org.ietr.preesm.experiment.model.pimemoc.Graph;
 
 public class AddActorFeature extends AbstractAddFeature {
 	
-	private static final IColorConstant ACTOR_TEXT_FOREGROUND = IColorConstant.BLACK;
+	public static final IColorConstant ACTOR_TEXT_FOREGROUND = IColorConstant.BLACK;
 
-	private static final IColorConstant ACTOR_FOREGROUND = new ColorConstant(
+	public static final IColorConstant ACTOR_FOREGROUND = new ColorConstant(
 			98, 131, 167);
 
-	private static final IColorConstant ACTOR_BACKGROUND = new ColorConstant(
+	public static final IColorConstant ACTOR_BACKGROUND = new ColorConstant(
 			187, 218, 247);
 
 	public AddActorFeature(IFeatureProvider fp) {

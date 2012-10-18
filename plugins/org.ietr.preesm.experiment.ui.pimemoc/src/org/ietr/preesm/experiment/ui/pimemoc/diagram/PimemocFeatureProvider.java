@@ -23,6 +23,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
 import org.ietr.preesm.experiment.ui.pimemoc.features.AddActorFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.AddOutputPortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CreateActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CustomDeleteFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.DirectEditingActorNameFeature;
@@ -58,7 +59,8 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 
 	@Override
 	public ICustomFeature[] getCustomFeatures(ICustomContext context) {
-		return new ICustomFeature[] { new RenameActorFeature(this) };
+		return new ICustomFeature[] { new RenameActorFeature(this),
+				new AddOutputPortFeature(this) };
 	}
 
 	@Override
@@ -80,16 +82,16 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 	public ICreateFeature[] getCreateFeatures() {
 		return new ICreateFeature[] { new CreateActorFeature(this) };
 	}
-	
+
 	@Override
 	public ILayoutFeature getLayoutFeature(ILayoutContext context) {
 		PictogramElement pictogramElement = context.getPictogramElement();
-	    Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-	    if (bo instanceof Actor) {
-	        return new LayoutActorFeature(this);
-	    }
-	    return super.getLayoutFeature(context);
-	} 
+		Object bo = getBusinessObjectForPictogramElement(pictogramElement);
+		if (bo instanceof Actor) {
+			return new LayoutActorFeature(this);
+		}
+		return super.getLayoutFeature(context);
+	}
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IUpdateContext context) {
