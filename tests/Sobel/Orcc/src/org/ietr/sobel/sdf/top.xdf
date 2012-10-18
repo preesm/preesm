@@ -14,7 +14,7 @@
                 <Expr kind="Literal" literal-kind="Integer" value="32"/>
             </Entry>
         </Type>
-        <Expr kind="Literal" literal-kind="Integer" value="12"/>
+        <Expr kind="Literal" literal-kind="Integer" value="16"/>
     </Decl>
     <Decl kind="Variable" name="WIDTH">
         <Type name="int">

@@ -32,7 +32,7 @@
 
 package org.ietr.sobel.sdf;
 
-actor SobelFilter (int NB_SLICES = 12, int WIDTH= 640, int HEIGHT = 480)
+actor SobelFilter (int NB_SLICES = 16, int WIDTH= 640, int HEIGHT = 480)
 	uint(size=8) slice_in ==> uint(size=8) slice_out :
 	
 	// Constant definition - Removed because of strange behavior :

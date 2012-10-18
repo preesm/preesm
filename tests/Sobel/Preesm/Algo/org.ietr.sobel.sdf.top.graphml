@@ -20,59 +20,96 @@
     </key>
     <graph edgedefault="directed">
     	<data key="name">top</data>
-    	<data key="parameters">
-    		<parameter name="param"/>
-    	</data>
+    	<data key="parameters"/>
     	<data key="variables">
-    		<variable name="VAR" value="51"/>
+    		<variable name="HEIGHT" value="480"/><variable name="NB_SLICES" value="16"/><variable name="WIDTH" value="640"/>
     	</data>
-    	<node id="genData" kind="vertex">
-    		<data key="graph_desc">../Code/IDL/Generator.idl</data>
-    		<data key="name">Generator</data>
+    	<node id="SeparateY" kind="vertex">
+    		<data key="graph_desc">../Code/IDL/SeparateY.idl</data>
+    		<data key="name">SeparateY</data>
     		<data key="arguments">
-    		<argument name="param" value="1"/>
+    		<argument name="HEIGHT" value="HEIGHT"/>
+    		</data><data key="arguments">
+    		<argument name="WIDTH" value="WIDTH"/>
     		</data>
     	</node>
-    	<node id="transformData1" kind="vertex">
-    		<data key="graph_desc">../Code/IDL/Transformer.idl</data>
-    		<data key="name">Transformer</data>
+    	<node id="SplitImage" kind="vertex">
+    		<data key="graph_desc">../Code/IDL/SplitImage.idl</data>
+    		<data key="name">SplitImage</data>
     		<data key="arguments">
-    		<argument name="OFFSET" value="2"/>
+    		<argument name="HEIGHT" value="HEIGHT"/>
+    		</data><data key="arguments">
+    		<argument name="NB_SLICES" value="NB_SLICES"/>
+    		</data><data key="arguments">
+    		<argument name="WIDTH" value="WIDTH"/>
     		</data>
     	</node>
-    	<node id="displayData" kind="vertex">
-    		<data key="graph_desc">../Code/IDL/Displayer.idl</data>
-    		<data key="name">Displayer</data>
-    		<data key="arguments"/>
-    	</node>
-    	<node id="transformData2" kind="vertex">
-    		<data key="graph_desc">../Code/IDL/Transformer.idl</data>
-    		<data key="name">Transformer</data>
+    	<node id="SobelFilter" kind="vertex">
+    		<data key="graph_desc">../Code/IDL/SobelFilter.idl</data>
+    		<data key="name">SobelFilter</data>
     		<data key="arguments">
-    		<argument name="OFFSET" value="1"/>
+    		<argument name="HEIGHT" value="HEIGHT"/>
+    		</data><data key="arguments">
+    		<argument name="NB_SLICES" value="NB_SLICES"/>
+    		</data><data key="arguments">
+    		<argument name="WIDTH" value="WIDTH"/>
+    		</data>
+    	</node>
+    	<node id="MergeImage" kind="vertex">
+    		<data key="graph_desc">../Code/IDL/MergeImage.idl</data>
+    		<data key="name">MergeImage</data>
+    		<data key="arguments">
+    		<argument name="HEIGHT" value="HEIGHT"/>
+    		</data><data key="arguments">
+    		<argument name="NB_SLICES" value="NB_SLICES"/>
+    		</data><data key="arguments">
+    		<argument name="WIDTH" value="WIDTH"/>
+    		</data>
+    	</node>
+    	<node id="Camera" kind="vertex">
+    		<data key="graph_desc">../Code/IDL/Camera.idl</data>
+    		<data key="name">Camera</data>
+    		<data key="arguments">
+    		<argument name="HEIGHT" value="HEIGHT"/>
+    		</data><data key="arguments">
+    		<argument name="WIDTH" value="WIDTH"/>
+    		</data>
+    	</node>
+    	<node id="Display" kind="vertex">
+    		<data key="graph_desc">../Code/IDL/Display.idl</data>
+    		<data key="name">Display</data>
+    		<data key="arguments">
+    		<argument name="HEIGHT" value="HEIGHT"/>
+    		</data><data key="arguments">
+    		<argument name="WIDTH" value="WIDTH"/>
     		</data>
     	</node>
     	
-    	<edge source="genData" sourceport="data" target="transformData1" targetport="data_in">
-    	    <data key="edge_prod">128</data>
-    	    <data key="edge_delay">64</data>
-    	    <data key="edge_cons">64</data>
-    	    <data key="data_type">i32</data>
-    	</edge><edge source="transformData1" sourceport="data_out" target="displayData" targetport="data1">
-    	    <data key="edge_prod">64</data>
+    	<edge source="SeparateY" sourceport="Y" target="SplitImage" targetport="frame">
+    	    <data key="edge_prod">307200</data>
     	    <data key="edge_delay">0</data>
-    	    <data key="edge_cons">128</data>
-    	    <data key="data_type">i32</data>
-    	</edge><edge source="genData" sourceport="data" target="transformData2" targetport="data_in">
-    	    <data key="edge_prod">128</data>
-    	    <data key="edge_delay">64</data>
-    	    <data key="edge_cons">64</data>
-    	    <data key="data_type">i32</data>
-    	</edge><edge source="transformData2" sourceport="data_out" target="displayData" targetport="data2">
-    	    <data key="edge_prod">64</data>
+    	    <data key="edge_cons">307200</data>
+    	    <data key="data_type">u8</data>
+    	</edge><edge source="SplitImage" sourceport="slices_out" target="SobelFilter" targetport="slice_in">
+    	    <data key="edge_prod">327680</data>
     	    <data key="edge_delay">0</data>
-    	    <data key="edge_cons">128</data>
-    	    <data key="data_type">i32</data>
+    	    <data key="edge_cons">20480</data>
+    	    <data key="data_type">u8</data>
+    	</edge><edge source="SobelFilter" sourceport="slice_out" target="MergeImage" targetport="slices_in">
+    	    <data key="edge_prod">20480</data>
+    	    <data key="edge_delay">0</data>
+    	    <data key="edge_cons">327680</data>
+    	    <data key="data_type">u8</data>
+    	</edge><edge source="Camera" sourceport="frame" target="SeparateY" targetport="frame">
+    	    <data key="edge_prod">614400</data>
+    	    <data key="edge_delay">0</data>
+    	    <data key="edge_cons">614400</data>
+    	    <data key="data_type">u8</data>
+    	</edge><edge source="MergeImage" sourceport="frame" target="Display" targetport="frame">
+    	    <data key="edge_prod">307200</data>
+    	    <data key="edge_delay">0</data>
+    	    <data key="edge_cons">307200</data>
+    	    <data key="data_type">u8</data>
     	</edge>
     </graph>
 </graphml>

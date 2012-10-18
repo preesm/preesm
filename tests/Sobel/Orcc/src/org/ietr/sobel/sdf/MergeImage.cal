@@ -32,7 +32,7 @@
 
 package org.ietr.sobel.sdf;
 
-actor MergeImage (int NB_SLICES = 12, int WIDTH= 640, int HEIGHT = 480) uint(size=8) slices_in ==> uint(size=8) frame :
+actor MergeImage (int NB_SLICES = 16, int WIDTH= 640, int HEIGHT = 480) uint(size=8) slices_in ==> uint(size=8) frame :
 	
     // Constant definition - Removed because of strange behavior :
 	// Value cannot be different from default in C backend

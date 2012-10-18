@@ -25,25 +25,13 @@
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>SysM3</spirit:instanceName>
-            <spirit:componentRef spirit:library="" spirit:name="SysM3"
+            <spirit:componentRef spirit:library="" spirit:name="M3"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
             <spirit:instanceName>AppM3</spirit:instanceName>
-            <spirit:componentRef spirit:library="" spirit:name="AppM3"
-                spirit:vendor="" spirit:version=""/>
-            <spirit:configurableElementValues/>
-        </spirit:componentInstance>
-        <spirit:componentInstance>
-            <spirit:instanceName>Syslink_1</spirit:instanceName>
-            <spirit:componentRef spirit:library="" spirit:name="syslink"
-                spirit:vendor="" spirit:version=""/>
-            <spirit:configurableElementValues/>
-        </spirit:componentInstance>
-        <spirit:componentInstance>
-            <spirit:instanceName>Syslink_3</spirit:instanceName>
-            <spirit:componentRef spirit:library="" spirit:name="syslink"
+            <spirit:componentRef spirit:library="" spirit:name="M3"
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
@@ -53,42 +41,59 @@
                 spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>Syslink_0</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="syslink"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>Syslink_1</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="syslink"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
     </spirit:componentInstances>
     <spirit:interconnections>
         <spirit:interconnection>
             <spirit:name>w1aab2a</spirit:name>
             <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="CortexA9_1"/>
-            <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="Syslink_3"/>
+            <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="Syslink_2"/>
         </spirit:interconnection>
         <spirit:interconnection>
             <spirit:name>w1aab2b1</spirit:name>
             <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="CortexA9_1"/>
-            <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="Syslink_2"/>
-        </spirit:interconnection>
-        <spirit:interconnection>
-            <spirit:name>w1aab2b2</spirit:name>
-            <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="Syslink_2"/>
-            <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="AppM3"/>
+            <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="Syslink_0"/>
         </spirit:interconnection>
         <spirit:interconnection>
             <spirit:name>w1aab2b3</spirit:name>
-            <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="Syslink_2"/>
+            <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="Syslink_0"/>
             <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="SysM3"/>
         </spirit:interconnection>
         <spirit:interconnection>
             <spirit:name>w1aab2b4</spirit:name>
-            <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="Syslink_3"/>
+            <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="Syslink_2"/>
             <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="Tesla"/>
         </spirit:interconnection>
         <spirit:interconnection>
+            <spirit:name>w1aab2b4</spirit:name>
+            <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="CortexA9_2"/>
+            <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="Syslink_0"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
             <spirit:name>w1aab2b5</spirit:name>
-            <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="Syslink_1"/>
-            <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="CortexA9_1"/>
+            <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="CortexA9_2"/>
+            <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="Syslink_2"/>
         </spirit:interconnection>
         <spirit:interconnection>
             <spirit:name>w1aab2b6</spirit:name>
-            <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="CortexA9_2"/>
+            <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="SysM3"/>
             <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="Syslink_1"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b7</spirit:name>
+            <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="Syslink_1"/>
+            <spirit:activeInterface spirit:busRef="syslink" spirit:componentRef="AppM3"/>
         </spirit:interconnection>
     </spirit:interconnections>
     <spirit:hierConnections/>
@@ -98,13 +103,11 @@
                 slam:componentType="Operator" slam:refinement=""/>
             <slam:componentDescription slam:componentRef="Tesla"
                 slam:componentType="Operator" slam:refinement=""/>
-            <slam:componentDescription slam:componentRef="SysM3"
-                slam:componentType="Operator" slam:refinement=""/>
-            <slam:componentDescription slam:componentRef="AppM3"
+            <slam:componentDescription slam:componentRef="M3"
                 slam:componentType="Operator" slam:refinement=""/>
             <slam:componentDescription slam:componentRef="syslink"
                 slam:componentType="contentionComNode"
-                slam:refinement="" slam:speed="10000"/>
+                slam:refinement="" slam:speed="100"/>
         </slam:componentDescriptions>
         <slam:linkDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
             <slam:linkDescription slam:directedLink="undirected"
@@ -112,15 +115,17 @@
             <slam:linkDescription slam:directedLink="undirected"
                 slam:linkType="DataLink" slam:referenceId="w1aab2b1"/>
             <slam:linkDescription slam:directedLink="undirected"
-                slam:linkType="DataLink" slam:referenceId="w1aab2b2"/>
-            <slam:linkDescription slam:directedLink="undirected"
                 slam:linkType="DataLink" slam:referenceId="w1aab2b3"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2b4"/>
             <slam:linkDescription slam:directedLink="undirected"
                 slam:linkType="DataLink" slam:referenceId="w1aab2b4"/>
             <slam:linkDescription slam:directedLink="undirected"
                 slam:linkType="DataLink" slam:referenceId="w1aab2b5"/>
             <slam:linkDescription slam:directedLink="undirected"
                 slam:linkType="DataLink" slam:referenceId="w1aab2b6"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2b7"/>
         </slam:linkDescriptions>
         <slam:designDescription xmlns:slam="http://sourceforge.net/projects/dftools/slam">
             <slam:parameters/>

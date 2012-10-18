@@ -35,12 +35,12 @@ package org.ietr.sobel.sdf;
 
 actor Camera (int WIDTH= 640, int HEIGHT = 480) ==> uint(size=8) frame:
 	
-	@native procedure camera(uint(size=8) output[ WIDTH*HEIGHT ], int width, int height)
+	@native procedure camera(uint(size=8) output[ WIDTH*HEIGHT*2 ], int width, int height)
 	end
 	
-	camera: action ==> frame:[ frm_out ] repeat WIDTH*HEIGHT // FRAME_SIZE
+	camera: action ==> frame:[ frm_out ] repeat WIDTH*HEIGHT*2 // FRAME_SIZE
 	var
-		uint(size=8) frm_out [ WIDTH*HEIGHT ]
+		uint(size=8) frm_out [ WIDTH*HEIGHT*2 ]
 	do
 		camera(frm_out,WIDTH,HEIGHT);
 	end

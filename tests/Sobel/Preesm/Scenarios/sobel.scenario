@@ -8,6 +8,7 @@
     <constraints excelUrl="">
         <constraintGroup>
             <operator name="AppM3"/>
+            <task name="SobelFilter"/>
         </constraintGroup>
         <constraintGroup/>
         <constraintGroup>
@@ -25,6 +26,7 @@
         </constraintGroup>
         <constraintGroup>
             <operator name="SysM3"/>
+            <task name="SobelFilter"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="CortexA9_2"/>
