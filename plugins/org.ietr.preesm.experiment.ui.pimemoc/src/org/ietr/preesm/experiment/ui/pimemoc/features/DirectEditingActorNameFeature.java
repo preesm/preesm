@@ -78,6 +78,9 @@ public class DirectEditingActorNameFeature extends AbstractDirectEditingFeature 
 		// we know, that pe is the Shape of the Text, so its container is the
 		// main shape of the Actor
 		updatePictogramElement(((Shape) pe).getContainer());
+		
+		// Call the layout feature
+        layoutPictogramElement(((Shape) pe).getContainer());
 	}
 
 }

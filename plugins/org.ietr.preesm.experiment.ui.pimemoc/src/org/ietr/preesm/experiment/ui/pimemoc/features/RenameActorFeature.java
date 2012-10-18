@@ -77,7 +77,12 @@ public class RenameActorFeature extends AbstractCustomFeature {
 				if (newActorName != null && !newActorName.equals(currentName)) {
 					this.hasDoneChanges = true;
 					actor.setName(newActorName);
+			        
+					// Update the Pictogram element
 					updatePictogramElement(pes[0]);
+					
+					// Call the layout feature
+					layoutPictogramElement(pes[0]);
 				}
 			}
 		}

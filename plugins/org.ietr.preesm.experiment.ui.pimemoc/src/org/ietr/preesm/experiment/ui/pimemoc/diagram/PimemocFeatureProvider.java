@@ -5,6 +5,7 @@ import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IDirectEditingFeature;
+import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
@@ -12,6 +13,7 @@ import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IDirectEditingContext;
+import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.features.context.IRemoveContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
@@ -24,6 +26,7 @@ import org.ietr.preesm.experiment.ui.pimemoc.features.AddActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CreateActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CustomDeleteFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.DirectEditingActorNameFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.RenameActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.UpdateActorFeature;
 
@@ -77,6 +80,16 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 	public ICreateFeature[] getCreateFeatures() {
 		return new ICreateFeature[] { new CreateActorFeature(this) };
 	}
+	
+	@Override
+	public ILayoutFeature getLayoutFeature(ILayoutContext context) {
+		PictogramElement pictogramElement = context.getPictogramElement();
+	    Object bo = getBusinessObjectForPictogramElement(pictogramElement);
+	    if (bo instanceof Actor) {
+	        return new LayoutActorFeature(this);
+	    }
+	    return super.getLayoutFeature(context);
+	} 
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IUpdateContext context) {

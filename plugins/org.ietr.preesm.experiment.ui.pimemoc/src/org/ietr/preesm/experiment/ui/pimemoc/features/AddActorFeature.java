@@ -93,6 +93,9 @@ public class AddActorFeature extends AbstractAddFeature {
             // create link and wire it
             link(shape, addedActor);
         }
+        
+        // Call the layout feature
+        layoutPictogramElement(containerShape);
  
         return containerShape;
     }
