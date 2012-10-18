@@ -2,6 +2,8 @@
  */
 package org.ietr.preesm.experiment.model.pimemoc;
 
+import java.util.Set;
+
 import org.eclipse.emf.common.util.EList;
 
 /**
@@ -36,5 +38,12 @@ public interface Graph extends AbstractVertex {
 	 * @generated
 	 */
 	EList<AbstractVertex> getVertices();
+
+	/**
+	 * Return the list of the names of all vertices of the Graph.
+	 * 
+	 * @return the list of names
+	 */
+	public Set<String> getVerticesNames();
 
 } // Graph

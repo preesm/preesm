@@ -5,10 +5,12 @@ import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IRemoveFeature;
+import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IRemoveContext;
+import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -32,6 +34,21 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 			return new AddActorFeature(this);
 		}
 		return super.getAddFeature(context);
+	}
+
+	@Override
+	public IResizeShapeFeature getResizeShapeFeature(IResizeShapeContext context) {
+		PictogramElement pictogramElement = context.getPictogramElement();
+		if (pictogramElement instanceof ContainerShape) {
+			Object bo = getBusinessObjectForPictogramElement(pictogramElement);
+			if (bo instanceof Actor) {
+				// We do not allow manual resize of Actor's pictogram elements.
+				// The size of these elements will be computed automatically
+				// to fit the content of the shape
+				return null;
+			}
+		}
+		return super.getResizeShapeFeature(context);
 	}
 
 	@Override
@@ -65,7 +82,8 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 	 * 
 	 * @see PimemocFeatureProviderWithRemove
 	 * @see CustomDeleteFeature
-	 * @see http://www.eclipse.org/forums/index.php/mv/msg/234410/720417/#msg_720417
+	 * @see http
+	 *      ://www.eclipse.org/forums/index.php/mv/msg/234410/720417/#msg_720417
 	 * @param context
 	 *            the context
 	 * @return remove feature according to the given context

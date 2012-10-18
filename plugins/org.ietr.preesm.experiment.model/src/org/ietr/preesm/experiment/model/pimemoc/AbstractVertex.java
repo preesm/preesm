@@ -32,7 +32,7 @@ public interface AbstractVertex extends EObject {
 	 * @return the value of the '<em>Name</em>' attribute.
 	 * @see #setName(String)
 	 * @see org.ietr.preesm.experiment.model.pimemoc.PIMeMoCPackage#getAbstractVertex_Name()
-	 * @model
+	 * @model required="true"
 	 * @generated
 	 */
 	String getName();

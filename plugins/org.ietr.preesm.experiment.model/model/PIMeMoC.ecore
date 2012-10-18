@@ -3,7 +3,7 @@
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="pimemoc" nsURI="http://org.ietr.preesm/experiment/model/pimemoc"
     nsPrefix="org.ietr.preesm.experiment.pimemoc">
   <eClassifiers xsi:type="ecore:EClass" name="AbstractVertex" abstract="true">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Graph" eSuperTypes="#//AbstractVertex">
     <eStructuralFeatures xsi:type="ecore:EReference" name="vertices" upperBound="-1"

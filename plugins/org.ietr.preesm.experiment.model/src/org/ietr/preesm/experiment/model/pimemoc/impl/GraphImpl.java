@@ -3,25 +3,22 @@
 package org.ietr.preesm.experiment.model.pimemoc.impl;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-
 import org.ietr.preesm.experiment.model.pimemoc.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimemoc.Graph;
 import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCPackage;
 
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Graph</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '
+ * <em><b>Graph</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
@@ -34,8 +31,7 @@ import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCPackage;
 public class GraphImpl extends AbstractVertexImpl implements Graph {
 	/**
 	 * The cached value of the '{@link #getVertices() <em>Vertices</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getVertices()
 	 * @generated
 	 * @ordered
@@ -43,8 +39,7 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 	protected EList<AbstractVertex> vertices;
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	protected GraphImpl() {
@@ -52,8 +47,7 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -62,8 +56,7 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public EList<AbstractVertex> getVertices() {
@@ -73,13 +66,22 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 		return vertices;
 	}
 
+	@Override
+	public Set<String> getVerticesNames() {
+		Set<String> names = new HashSet<String>(vertices.size());
+		for (AbstractVertex vertex : vertices) {
+			names.add(vertex.getName());
+		}
+		return names;
+	}
+
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseRemove(InternalEObject otherEnd,
+			int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case PIMeMoCPackage.GRAPH__VERTICES:
 				return ((InternalEList<?>)getVertices()).basicRemove(otherEnd, msgs);
@@ -88,8 +90,7 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -102,8 +103,7 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
@@ -119,8 +119,7 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -134,8 +133,7 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -147,4 +145,4 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 		return super.eIsSet(featureID);
 	}
 
-} //GraphImpl
+} // GraphImpl

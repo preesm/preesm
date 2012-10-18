@@ -1,6 +1,5 @@
 package org.ietr.preesm.experiment.ui.pimemoc.features;
 
-import org.eclipse.graphiti.examples.common.ExampleUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
@@ -8,6 +7,8 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
 import org.ietr.preesm.experiment.model.pimemoc.Graph;
 import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCFactory;
+import org.ietr.preesm.experiment.model.pimemoc.util.NewGraphVertexNameValidator;
+import org.ietr.preesm.experiment.ui.pimemoc.util.PimemocUtil;
 
 public class CreateActorFeature extends AbstractCreateFeature {
 
@@ -27,19 +28,24 @@ public class CreateActorFeature extends AbstractCreateFeature {
 
 	@Override
 	public Object[] create(ICreateContext context) {
-		// ask user for EClass name
-		String newClassName = ExampleUtil.askString("Create Actor",
-				"Enter new actor name", "ActorName");
-		if (newClassName == null || newClassName.trim().length() == 0) {
+		// Retrieve the graph
+		Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
+
+		// Ask user for Actor name until a valid name is entered.
+		String question = "Enter new actor name";
+		String newActorName = "ActorName";
+
+		newActorName = PimemocUtil.askString("Create Actor",
+				question, newActorName, new NewGraphVertexNameValidator(graph));
+		if (newActorName == null || newActorName.trim().length() == 0) {
 			return EMPTY;
 		}
 
 		// create EClass
 		Actor newActor = PIMeMoCFactory.eINSTANCE.createActor();
-		newActor.setName(newClassName);
+		newActor.setName(newActorName);
 
 		// Add new actor to the graph.
-		Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
 		graph.getVertices().add(newActor);
 
 		// do the add to the Diagram
