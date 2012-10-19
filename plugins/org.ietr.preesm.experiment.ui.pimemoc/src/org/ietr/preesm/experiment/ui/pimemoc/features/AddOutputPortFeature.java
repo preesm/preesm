@@ -21,6 +21,7 @@ public class AddOutputPortFeature extends AbstractAddActorPortFeature {
 	public static final IColorConstant OUTPUT_PORT_BACKGROUND = new ColorConstant(
 			234, 153, 153);
 	public static final PortPosition OUTPUT_PORT_POSITION = PortPosition.RIGHT;
+	public static final String OUTPUT_PORT_KIND = "output";
 
 	/**
 	 * Default constructor
@@ -95,5 +96,10 @@ public class AddOutputPortFeature extends AbstractAddActorPortFeature {
 		newPort.setName(portName);
 		actor.getOutputPorts().add(newPort);
 		return newPort;
+	}
+
+	@Override
+	public String getPortKind() {
+		return OUTPUT_PORT_KIND;
 	}
 }

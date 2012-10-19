@@ -21,6 +21,7 @@ public class AddInputPortFeature extends AbstractAddActorPortFeature {
 	public static final IColorConstant INPUT_PORT_BACKGROUND = new ColorConstant(
 			182, 215, 122);
 	public static final PortPosition INPUT_PORT_POSITION = PortPosition.LEFT;
+	public static final String INPUT_PORT_KIND = "input";
 
 	/**
 	 * Default constructor
@@ -94,6 +95,11 @@ public class AddInputPortFeature extends AbstractAddActorPortFeature {
 		newPort.setName(portName);
 		actor.getInputPorts().add(newPort);
 		return newPort;
+	}
+
+	@Override
+	public String getPortKind() {
+		return INPUT_PORT_KIND;
 	}
 
 }

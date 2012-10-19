@@ -52,9 +52,23 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 	}
 	
 	@Override
-	public IMoveAnchorFeature getMoveAnchorFeature(IMoveAnchorContext context) {
-		// We forbid the user from moving anchors
-		return null;
+	public ICreateFeature[] getCreateFeatures() {
+		return new ICreateFeature[] { new CreateActorFeature(this) };
+	}
+
+	@Override
+	public ICustomFeature[] getCustomFeatures(ICustomContext context) {
+		return new ICustomFeature[] { new RenameActorFeature(this),
+				new AddOutputPortFeature(this),
+				new AddInputPortFeature(this)};
+	}
+
+	@Override
+	public IDeleteFeature getDeleteFeature(IDeleteContext context) {
+		if(context.getPictogramElement() instanceof Anchor){
+			return new DeletePortFeature(this);
+		}
+		return new CustomDeleteFeature(this);
 	}
 
 	@Override
@@ -69,33 +83,6 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 	}
 
 	@Override
-	public ICustomFeature[] getCustomFeatures(ICustomContext context) {
-		return new ICustomFeature[] { new RenameActorFeature(this),
-				new AddOutputPortFeature(this),
-				new AddInputPortFeature(this)};
-	}
-
-	@Override
-	public IResizeShapeFeature getResizeShapeFeature(IResizeShapeContext context) {
-		PictogramElement pictogramElement = context.getPictogramElement();
-		if (pictogramElement instanceof ContainerShape) {
-			Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-			if (bo instanceof Actor) {
-				// We do not allow manual resize of Actor's pictogram elements.
-				// The size of these elements will be computed automatically
-				// to fit the content of the shape
-				return null;
-			}
-		}
-		return super.getResizeShapeFeature(context);
-	}
-
-	@Override
-	public ICreateFeature[] getCreateFeatures() {
-		return new ICreateFeature[] { new CreateActorFeature(this) };
-	}
-
-	@Override
 	public ILayoutFeature getLayoutFeature(ILayoutContext context) {
 		PictogramElement pictogramElement = context.getPictogramElement();
 		Object bo = getBusinessObjectForPictogramElement(pictogramElement);
@@ -106,15 +93,9 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 	}
 
 	@Override
-	public IUpdateFeature getUpdateFeature(IUpdateContext context) {
-		PictogramElement pictogramElement = context.getPictogramElement();
-		if (pictogramElement instanceof ContainerShape) {
-			Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-			if (bo instanceof Actor) {
-				return new UpdateActorFeature(this);
-			}
-		}
-		return super.getUpdateFeature(context);
+	public IMoveAnchorFeature getMoveAnchorFeature(IMoveAnchorContext context) {
+		// We forbid the user from moving anchors
+		return null;
 	}
 
 	@Override
@@ -143,11 +124,30 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 	}
 
 	@Override
-	public IDeleteFeature getDeleteFeature(IDeleteContext context) {
-		if(context.getPictogramElement() instanceof Anchor){
-			return new DeletePortFeature(this);
+	public IResizeShapeFeature getResizeShapeFeature(IResizeShapeContext context) {
+		PictogramElement pictogramElement = context.getPictogramElement();
+		if (pictogramElement instanceof ContainerShape) {
+			Object bo = getBusinessObjectForPictogramElement(pictogramElement);
+			if (bo instanceof Actor) {
+				// We do not allow manual resize of Actor's pictogram elements.
+				// The size of these elements will be computed automatically
+				// to fit the content of the shape
+				return null;
+			}
 		}
-		return new CustomDeleteFeature(this);
+		return super.getResizeShapeFeature(context);
+	}
+
+	@Override
+	public IUpdateFeature getUpdateFeature(IUpdateContext context) {
+		PictogramElement pictogramElement = context.getPictogramElement();
+		if (pictogramElement instanceof ContainerShape) {
+			Object bo = getBusinessObjectForPictogramElement(pictogramElement);
+			if (bo instanceof Actor) {
+				return new UpdateActorFeature(this);
+			}
+		}
+		return super.getUpdateFeature(context);
 	}
 
 }

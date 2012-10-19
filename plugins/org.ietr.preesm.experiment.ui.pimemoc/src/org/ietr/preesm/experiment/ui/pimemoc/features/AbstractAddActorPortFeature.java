@@ -17,6 +17,7 @@ import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
 import org.ietr.preesm.experiment.model.pimemoc.Port;
+import org.ietr.preesm.experiment.model.pimemoc.util.PortNameValidator;
 import org.ietr.preesm.experiment.ui.pimemoc.util.PimemocUtil;
 
 /**
@@ -90,6 +91,19 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 			IPeCreateService peCreateService = Graphiti.getPeCreateService();
 			// Get the GaService
 			IGaService gaService = Graphiti.getGaService();
+			// Get the actor
+			Actor actor = (Actor) getBusinessObjectForPictogramElement(containerShape);
+
+			// Ask the name of the new port
+			String portName = "newPort";
+
+			portName = PimemocUtil.askString(this.getName(), this
+					.getDescription(), portName, new PortNameValidator(actor,
+					null, this.getPortKind()));
+			if (portName == null) {
+				this.hasDoneChanges = false;
+				return;
+			}
 
 			// create an box relative anchor
 			final BoxRelativeAnchor boxAnchor = peCreateService
@@ -103,16 +117,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 												// layout feature
 			boxAnchor.setReferencedGraphicsAlgorithm(gaRectangle);
 
-			// Ask the name of the new port
-			String portName = PimemocUtil.askString(this.getName(),
-					this.getDescription(), "NewPort", null);
-			if (portName == null) {
-				this.hasDoneChanges = false;
-				return;
-			}
-
 			// Get the new Port and add it to the Graph
-			Actor actor = (Actor) getBusinessObjectForPictogramElement(containerShape);
 			Port newPort = this.getNewPort(portName, actor);
 
 			// Retrieve the size of the text
@@ -154,6 +159,13 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 			this.hasDoneChanges = true;
 		}
 	}
+
+	/**
+	 * Get the port of the created port
+	 * 
+	 * @return the kind of the port
+	 */
+	public abstract String getPortKind();
 
 	/**
 	 * Retrieve the {@link PortPosition} of the port
