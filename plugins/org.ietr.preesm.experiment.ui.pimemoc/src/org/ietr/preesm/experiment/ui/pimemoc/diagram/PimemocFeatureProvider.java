@@ -18,14 +18,17 @@ import org.eclipse.graphiti.features.context.IRemoveContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
+import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
 import org.ietr.preesm.experiment.ui.pimemoc.features.AddActorFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.AddInputPortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.AddOutputPortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CreateActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CustomDeleteFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.DeletePortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.DirectEditingActorNameFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.RenameActorFeature;
@@ -60,7 +63,8 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 	@Override
 	public ICustomFeature[] getCustomFeatures(ICustomContext context) {
 		return new ICustomFeature[] { new RenameActorFeature(this),
-				new AddOutputPortFeature(this) };
+				new AddOutputPortFeature(this),
+				new AddInputPortFeature(this)};
 	}
 
 	@Override
@@ -132,6 +136,9 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 
 	@Override
 	public IDeleteFeature getDeleteFeature(IDeleteContext context) {
+		if(context.getPictogramElement() instanceof Anchor){
+			return new DeletePortFeature(this);
+		}
 		return new CustomDeleteFeature(this);
 	}
 

@@ -11,12 +11,12 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 
-public class AddOutputPortFeature extends AbstractAddActorPortFeature {
+public class AddInputPortFeature extends AbstractAddActorPortFeature {
 
-	public static final IColorConstant OUTPUT_PORT_FOREGROUND = AddActorFeature.ACTOR_FOREGROUND;
-	public static final IColorConstant OUTPUT_PORT_BACKGROUND = new ColorConstant(
-			234, 153, 153);
-	public static final PortPosition OUTPUT_PORT_POSITION = PortPosition.RIGHT;
+	public static final IColorConstant INPUT_PORT_FOREGROUND = AddActorFeature.ACTOR_FOREGROUND;
+	public static final IColorConstant INPUT_PORT_BACKGROUND = new ColorConstant(
+			182, 215, 122);
+	public static final PortPosition INPUT_PORT_POSITION = PortPosition.LEFT;
 
 	/**
 	 * Default constructor
@@ -24,37 +24,36 @@ public class AddOutputPortFeature extends AbstractAddActorPortFeature {
 	 * @param fp
 	 *            the feature provider
 	 */
-	public AddOutputPortFeature(IFeatureProvider fp) {
+	public AddInputPortFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
 	@Override
 	public String getName() {
-		return "Add Output Port";
+		return "Add Input Port";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Add an output port to the Actor";
+		return "Add an input port to the Actor";
 	}
 
 	@Override
 	public PortPosition getPosition() {
-		return OUTPUT_PORT_POSITION;
+		return INPUT_PORT_POSITION;
 	}
 
 	@Override
 	public GraphicsAlgorithm addPortGA(GraphicsAlgorithm containerShape) {
 		// Get the GaService
 		IGaService gaService = Graphiti.getGaService();
-		// Create the port GraphicAlcorithm
+		// Create the port GraphicAlgorithm
 		Rectangle rectangle = gaService.createPlainRectangle(containerShape);
-		rectangle.setForeground(manageColor(OUTPUT_PORT_FOREGROUND));
-		rectangle.setBackground(manageColor(OUTPUT_PORT_BACKGROUND));
+		rectangle.setForeground(manageColor(INPUT_PORT_FOREGROUND));
+		rectangle.setBackground(manageColor(INPUT_PORT_BACKGROUND));
 		rectangle.setLineWidth(1);
 		gaService.setSize(rectangle, PORT_ANCHOR_GA_SIZE, PORT_ANCHOR_GA_SIZE);
-		gaService.setLocation(rectangle, containerShape.getWidth()
-				- PORT_ANCHOR_GA_SIZE, 1+(16 - PORT_ANCHOR_GA_SIZE)/2);
+		gaService.setLocation(rectangle, 0, 1 + (16 - PORT_ANCHOR_GA_SIZE) / 2);
 		return rectangle;
 	}
 
@@ -71,9 +70,9 @@ public class AddOutputPortFeature extends AbstractAddActorPortFeature {
 		text.setForeground(manageColor(PORT_TEXT_FOREGROUND));
 
 		// Layout the text
-		text.setHorizontalAlignment(Orientation.ALIGNMENT_LEFT);
-		gaService.setLocationAndSize(text, 0, 0, containerShape.getWidth()
-				- PORT_ANCHOR_GA_SIZE, 16);
+		text.setHorizontalAlignment(Orientation.ALIGNMENT_RIGHT);
+		gaService.setLocationAndSize(text, PORT_ANCHOR_GA_SIZE, 0,
+				containerShape.getWidth() - PORT_ANCHOR_GA_SIZE, 16); 
 
 		return text;
 	}
@@ -84,4 +83,5 @@ public class AddOutputPortFeature extends AbstractAddActorPortFeature {
 		IGaService gaService = Graphiti.getGaService();
 		return gaService.manageDefaultFont(getDiagram(), false, false);
 	}
+
 }

@@ -3,6 +3,7 @@ package org.ietr.preesm.experiment.ui.pimemoc.diagram;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.context.IRemoveContext;
+import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CustomDeleteFeature;
 
 /**
