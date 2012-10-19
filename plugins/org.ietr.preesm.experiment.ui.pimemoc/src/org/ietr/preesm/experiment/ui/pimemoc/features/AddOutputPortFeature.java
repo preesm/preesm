@@ -10,6 +10,10 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
+import org.ietr.preesm.experiment.model.pimemoc.Actor;
+import org.ietr.preesm.experiment.model.pimemoc.OutputPort;
+import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCFactory;
+import org.ietr.preesm.experiment.model.pimemoc.Port;
 
 public class AddOutputPortFeature extends AbstractAddActorPortFeature {
 
@@ -54,7 +58,7 @@ public class AddOutputPortFeature extends AbstractAddActorPortFeature {
 		rectangle.setLineWidth(1);
 		gaService.setSize(rectangle, PORT_ANCHOR_GA_SIZE, PORT_ANCHOR_GA_SIZE);
 		gaService.setLocation(rectangle, containerShape.getWidth()
-				- PORT_ANCHOR_GA_SIZE, 1+(16 - PORT_ANCHOR_GA_SIZE)/2);
+				- PORT_ANCHOR_GA_SIZE, 1 + (16 - PORT_ANCHOR_GA_SIZE) / 2);
 		return rectangle;
 	}
 
@@ -83,5 +87,13 @@ public class AddOutputPortFeature extends AbstractAddActorPortFeature {
 		// Get the GaService
 		IGaService gaService = Graphiti.getGaService();
 		return gaService.manageDefaultFont(getDiagram(), false, false);
+	}
+
+	@Override
+	public Port getNewPort(String portName, Actor actor) {
+		OutputPort newPort = PIMeMoCFactory.eINSTANCE.createOutputPort();
+		newPort.setName(portName);
+		actor.getOutputPorts().add(newPort);
+		return newPort;
 	}
 }

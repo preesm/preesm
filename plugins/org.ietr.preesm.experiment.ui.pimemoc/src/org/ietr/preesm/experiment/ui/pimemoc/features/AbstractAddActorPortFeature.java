@@ -16,6 +16,7 @@ import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
+import org.ietr.preesm.experiment.model.pimemoc.Port;
 import org.ietr.preesm.experiment.ui.pimemoc.util.PimemocUtil;
 
 /**
@@ -46,7 +47,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 	public static final IColorConstant PORT_BACKGROUND = IColorConstant.BLACK;
 
 	public static final IColorConstant PORT_TEXT_FOREGROUND = IColorConstant.BLACK;
-	
+
 	/**
 	 * Size of the space between the label of a port and the GA
 	 */
@@ -81,7 +82,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 		// Re-check if only one element is selected
 		PictogramElement[] pes = context.getPictogramElements();
 		if (pes != null && pes.length == 1) {
-			// Retrieve the container shape
+			// Retrieve the container shape (corresponding to the actor)
 			ContainerShape containerShape = (ContainerShape) pes[0];
 			// Retrieve the rectangle graphic algorithm
 			GraphicsAlgorithm gaRectangle = pes[0].getGraphicsAlgorithm();
@@ -110,6 +111,10 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 				return;
 			}
 
+			// Get the new Port and add it to the Graph
+			Actor actor = (Actor) getBusinessObjectForPictogramElement(containerShape);
+			Port newPort = this.getNewPort(portName, actor);
+
 			// Retrieve the size of the text
 			IDimension size = GraphitiUi.getUiLayoutService()
 					.calculateTextSize(portName, this.getPortFont());
@@ -121,12 +126,13 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 			// Layout the invisible rectangle
 			if (this.getPosition() == PortPosition.LEFT) {
 				gaService.setLocationAndSize(invisibleRectangle, 0, 0,
-						size.getWidth() + PORT_ANCHOR_GA_SIZE + PORT_LABEL_GA_SPACE,
-						size.getHeight());
+						size.getWidth() + PORT_ANCHOR_GA_SIZE
+								+ PORT_LABEL_GA_SPACE, size.getHeight());
 			} else {
 				gaService.setLocationAndSize(invisibleRectangle,
-						-size.getWidth() - PORT_ANCHOR_GA_SIZE - PORT_LABEL_GA_SPACE, 0,
-						size.getWidth() + PORT_ANCHOR_GA_SIZE + PORT_LABEL_GA_SPACE,
+						-size.getWidth() - PORT_ANCHOR_GA_SIZE
+								- PORT_LABEL_GA_SPACE, 0, size.getWidth()
+								+ PORT_ANCHOR_GA_SIZE + PORT_LABEL_GA_SPACE,
 						size.getHeight());
 			}
 
@@ -135,6 +141,9 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 
 			// add a graphics algorithm for the box relative anchor
 			this.addPortGA(invisibleRectangle);
+
+			// link the Pictogram element to the port in the business model
+			link(boxAnchor, newPort);
 
 			// Call the layout feature
 			layoutPictogramElement(containerShape);
@@ -181,5 +190,16 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 	 * @return the font
 	 */
 	public abstract Font getPortFont();
+
+	/**
+	 * Create a new port for the given actor
+	 * 
+	 * @param portName
+	 *            the name of the new port to create
+	 * @param actor
+	 *            the actor to which we add a port
+	 * @return the new port, or <code>null</code> if something went wrong
+	 */
+	public abstract Port getNewPort(String portName, Actor actor);
 
 }

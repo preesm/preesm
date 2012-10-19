@@ -10,6 +10,10 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
+import org.ietr.preesm.experiment.model.pimemoc.Actor;
+import org.ietr.preesm.experiment.model.pimemoc.InputPort;
+import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCFactory;
+import org.ietr.preesm.experiment.model.pimemoc.Port;
 
 public class AddInputPortFeature extends AbstractAddActorPortFeature {
 
@@ -82,6 +86,14 @@ public class AddInputPortFeature extends AbstractAddActorPortFeature {
 		// Get the GaService
 		IGaService gaService = Graphiti.getGaService();
 		return gaService.manageDefaultFont(getDiagram(), false, false);
+	}
+
+	@Override
+	public Port getNewPort(String portName, Actor actor) {
+		InputPort newPort = PIMeMoCFactory.eINSTANCE.createInputPort();
+		newPort.setName(portName);
+		actor.getInputPorts().add(newPort);
+		return newPort;
 	}
 
 }

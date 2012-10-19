@@ -51,7 +51,7 @@ public class CreateActorFeature extends AbstractCreateFeature {
 			return EMPTY;
 		}
 
-		// create EClass
+		// create Actor
 		Actor newActor = PIMeMoCFactory.eINSTANCE.createActor();
 		newActor.setName(newActorName);
 

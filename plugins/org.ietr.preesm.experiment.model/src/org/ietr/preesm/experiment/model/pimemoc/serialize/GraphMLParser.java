@@ -5,8 +5,11 @@ import java.io.InputStream;
 import net.sf.dftools.architecture.utils.DomUtil;
 
 import org.eclipse.emf.common.util.URI;
+import org.ietr.preesm.experiment.model.pimemoc.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
 import org.ietr.preesm.experiment.model.pimemoc.Graph;
+import org.ietr.preesm.experiment.model.pimemoc.InputPort;
+import org.ietr.preesm.experiment.model.pimemoc.OutputPort;
 import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -14,6 +17,34 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class GraphMLParser {
+
+	/**
+	 * Retrieve the value of a property of the given {@link Element}. A property
+	 * is a data element child of the given element.<br>
+	 * <br>
+	 * 
+	 * This method will iterate over the properties of the element so it might
+	 * not be a good idea to use it in a method that would successively retrieve
+	 * all properties of the element.
+	 * 
+	 * @param elt
+	 *            The element containing the property
+	 * @param propertyName
+	 *            The name of the property
+	 * @return The property value or null if the property was not found
+	 * @author Jonathan Piat
+	 */
+	protected static String getProperty(Element elt, String propertyName) {
+		NodeList childList = elt.getChildNodes();
+		for (int i = 0; i < childList.getLength(); i++) {
+			if (childList.item(i).getNodeName().equals("data")
+					&& ((Element) childList.item(i)).getAttribute("key")
+							.equals(propertyName)) {
+				return childList.item(i).getTextContent();
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * The URI of the parsed file
@@ -54,20 +85,40 @@ public class GraphMLParser {
 	}
 
 	/**
-	 * Parse the root element of the GraphML description
+	 * Parse a node {@link Element} with kind "actor".
 	 * 
-	 * @param parentElt
-	 *            The Element to fill (could be removed later if it is always
-	 *            rootElt)
+	 * @param nodeElt
+	 *            the {@link Element} to parse
 	 * @param graph
-	 *            The deserialized {@link Graph}
+	 *            the deserialized {@link Graph}
+	 * @return the created actor
 	 */
-	protected void parseGraphML(Element rootElt, Graph graph) {
-		// TODO parseKeys() (Not sure if it is really necessary to do that)
+	protected AbstractVertex parseActor(Element nodeElt, Graph graph) {
+		// Instantiate the new actor
+		Actor actor = PIMeMoCFactory.eINSTANCE.createActor();
 
-		// Parse the graph element
-		parseGraph(rootElt, graph);
+		// Get the actor properties
+		actor.setName(nodeElt.getAttribute("id"));
 
+		// Add the actor to the parsed graph
+		graph.getVertices().add(actor);
+
+		return actor;
+	}
+
+	/**
+	 * Parse an edge {@link Element} of the GraphML description. An edge
+	 * {@link Element} can be a parameter dependency or a FIFO of the parsed
+	 * graph.
+	 * 
+	 * @param edgeElt
+	 *            The edge {@link Element} to parse
+	 * @param graph
+	 *            The deserialized graph
+	 */
+	protected void parseEdge(Element edgeElt, Graph graph) {
+		// TODO parseDependencies()
+		// TODO parseFIFOs()
 	}
 
 	/**
@@ -129,18 +180,20 @@ public class GraphMLParser {
 	}
 
 	/**
-	 * Parse an edge {@link Element} of the GraphML description. An edge
-	 * {@link Element} can be a parameter dependency or a FIFO of the parsed
-	 * graph.
+	 * Parse the root element of the GraphML description
 	 * 
-	 * @param edgeElt
-	 *            The edge {@link Element} to parse
+	 * @param parentElt
+	 *            The Element to fill (could be removed later if it is always
+	 *            rootElt)
 	 * @param graph
-	 *            The deserialized graph
+	 *            The deserialized {@link Graph}
 	 */
-	protected void parseEdge(Element edgeElt, Graph graph) {
-		// TODO parseDependencies()
-		// TODO parseFIFOs()
+	protected void parseGraphML(Element rootElt, Graph graph) {
+		// TODO parseKeys() (Not sure if it is really necessary to do that)
+
+		// Parse the graph element
+		parseGraph(rootElt, graph);
+
 	}
 
 	/**
@@ -155,10 +208,11 @@ public class GraphMLParser {
 	protected void parseNode(Element nodeElt, Graph graph) {
 		// Identify if the node is an actor or a parameter
 		String nodeKind = nodeElt.getAttribute("kind");
+		AbstractVertex vertex;
 
 		switch (nodeKind) {
 		case "actor":
-			parseActor(nodeElt, graph);
+			vertex = parseActor(nodeElt, graph);
 			break;
 		// TODO Parse all types of nodes
 		// case "implode":
@@ -173,55 +227,43 @@ public class GraphMLParser {
 					+ "has an unknown kind: " + nodeKind);
 		}
 
+		// Parse the elements of the node
+		NodeList childList = nodeElt.getChildNodes();
+		for (int i = 0; i < childList.getLength(); i++) {
+			Node elt = childList.item(i);
+			String eltName = elt.getNodeName();
+
+			switch (eltName) {
+			case "port":
+				parsePort((Element) elt, vertex);
+				break;
+			default:
+				// ignore #text and unknown children
+			}
+		}
 		// TODO parsePorts() of the vertex
 
 	}
 
-	/**
-	 * Parse a node {@link Element} with kind "actor".
-	 * 
-	 * @param nodeElt
-	 *            the {@link Element} to parse
-	 * @param graph
-	 *            the deserialized {@link Graph}
-	 */
-	protected void parseActor(Element nodeElt, Graph graph) {
-		// Instantiate the new actor
-		Actor actor = PIMeMoCFactory.eINSTANCE.createActor();
+	protected void parsePort(Element elt, AbstractVertex vertex) {
+		String portName = elt.getAttribute("name");
+		String portKind = elt.getAttribute("kind");
 
-		// Get the actor properties
-		actor.setName(nodeElt.getAttribute("id"));
-
-		// Add the actor to the parsed graph
-		graph.getVertices().add(actor);
-	}
-
-	/**
-	 * Retrieve the value of a property of the given {@link Element}. A property
-	 * is a data element child of the given element.<br>
-	 * <br>
-	 * 
-	 * This method will iterate over the properties of the element so it might
-	 * not be a good idea to use it in a method that would successively retrieve
-	 * all properties of the element.
-	 * 
-	 * @param elt
-	 *            The element containing the property
-	 * @param propertyName
-	 *            The name of the property
-	 * @return The property value or null if the property was not found
-	 * @author Jonathan Piat
-	 */
-	protected static String getProperty(Element elt, String propertyName) {
-		NodeList childList = elt.getChildNodes();
-		for (int i = 0; i < childList.getLength(); i++) {
-			if (childList.item(i).getNodeName().equals("data")
-					&& ((Element) childList.item(i)).getAttribute("key")
-							.equals(propertyName)) {
-				return childList.item(i).getTextContent();
-			}
+		switch (portKind) {
+		case "input":
+			InputPort iPort = PIMeMoCFactory.eINSTANCE.createInputPort();
+			iPort.setName(portName);
+			vertex.getInputPorts().add(iPort);
+			break;
+		case "output":
+			OutputPort oPort = PIMeMoCFactory.eINSTANCE.createOutputPort();
+			oPort.setName(portName);
+			vertex.getOutputPorts().add(oPort);
+			break;
+		default:
+			throw new RuntimeException("Parsed port " + portName
+					+ "has children of unknown kind: " + portKind);
 		}
-		return null;
 	}
 
 }

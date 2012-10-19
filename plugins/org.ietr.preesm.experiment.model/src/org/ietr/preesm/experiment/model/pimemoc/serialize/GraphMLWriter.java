@@ -9,9 +9,11 @@ import java.util.List;
 import net.sf.dftools.algorithm.exporter.Key;
 import net.sf.dftools.architecture.utils.DomUtil;
 
+import org.eclipse.emf.common.util.EList;
 import org.ietr.preesm.experiment.model.pimemoc.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
 import org.ietr.preesm.experiment.model.pimemoc.Graph;
+import org.ietr.preesm.experiment.model.pimemoc.Port;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -71,7 +73,7 @@ public class GraphMLWriter {
 		Element newElt = appendChild(parentElement, "graph");
 		graphElement = newElt;
 		newElt.setAttribute("edgedefault", "directed");
-		
+
 		return newElt;
 	}
 
@@ -224,8 +226,10 @@ public class GraphMLWriter {
 		// TODO change this method when severa kinds will exist
 		// Set the kind of the Actor
 		vertexElt.setAttribute("kind", "actor");
-		//writeDataElt(vertexElt, "kind", "actor");
-
+		// writeDataElt(vertexElt, "kind", "actor");
+		// Write ports of the actor
+		writeDataPorts(vertexElt, actor.getInputPorts(), "input");
+		writeDataPorts(vertexElt, actor.getOutputPorts(), "output");
 	}
 
 	/**
@@ -249,6 +253,25 @@ public class GraphMLWriter {
 	}
 
 	/**
+	 * Write the {@link Actor#inputPorts} in the given {@link Element}
+	 * 
+	 * @param vertexElt
+	 *            the {@link Element} to write
+	 * @param actor
+	 *            the {@link Actor} to serialize
+	 * @param kind
+	 *            the kind of ports contained in the list (input,output)
+	 */
+	protected void writeDataPorts(Element vertexElt, EList<?> ports, String kind) {
+		for (Object portObj : ports) {
+			Port port = (Port) portObj;
+			Element portElt = appendChild(vertexElt, "port");
+			portElt.setAttribute("name", port.getName());
+			portElt.setAttribute("kind", kind);
+		}
+	}
+
+	/**
 	 * Create the Graph Element of the document and fill it
 	 * 
 	 * @param rootElt
@@ -261,7 +284,7 @@ public class GraphMLWriter {
 		// Create and add the graphElt to the Document
 		Element graphElt = addGraphElt(rootElt);
 		writeDataElt(graphElt, "name", graph.getName());
-		
+
 		// TODO addProperties() of the graph
 		// TODO writeParameters()
 
@@ -311,7 +334,7 @@ public class GraphMLWriter {
 		vertexElt.setAttribute("id", vertex.getName());
 
 		// Add the name in the data of the node
-		//writeDataElt(vertexElt, "name", vertex.getName());
+		// writeDataElt(vertexElt, "name", vertex.getName());
 
 		if (vertex instanceof Actor) {
 			writeActor(vertexElt, (Actor) vertex);
