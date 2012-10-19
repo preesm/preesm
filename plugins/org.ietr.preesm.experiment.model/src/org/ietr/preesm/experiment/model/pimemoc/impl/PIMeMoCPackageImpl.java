@@ -10,8 +10,11 @@ import org.eclipse.emf.ecore.impl.EPackageImpl;
 import org.ietr.preesm.experiment.model.pimemoc.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
 import org.ietr.preesm.experiment.model.pimemoc.Graph;
+import org.ietr.preesm.experiment.model.pimemoc.InputPort;
+import org.ietr.preesm.experiment.model.pimemoc.OutputPort;
 import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCFactory;
 import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCPackage;
+import org.ietr.preesm.experiment.model.pimemoc.Port;
 
 /**
  * <!-- begin-user-doc -->
@@ -40,6 +43,27 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 	 * @generated
 	 */
 	private EClass actorEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass portEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass inputPortEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass outputPortEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -125,6 +149,24 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getAbstractVertex_InputPorts() {
+		return (EReference)abstractVertexEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getAbstractVertex_OutputPorts() {
+		return (EReference)abstractVertexEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getGraph() {
 		return graphEClass;
 	}
@@ -145,6 +187,42 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 	 */
 	public EClass getActor() {
 		return actorEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getPort() {
+		return portEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getPort_Name() {
+		return (EAttribute)portEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getInputPort() {
+		return inputPortEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getOutputPort() {
+		return outputPortEClass;
 	}
 
 	/**
@@ -177,11 +255,20 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 		// Create classes and their features
 		abstractVertexEClass = createEClass(ABSTRACT_VERTEX);
 		createEAttribute(abstractVertexEClass, ABSTRACT_VERTEX__NAME);
+		createEReference(abstractVertexEClass, ABSTRACT_VERTEX__INPUT_PORTS);
+		createEReference(abstractVertexEClass, ABSTRACT_VERTEX__OUTPUT_PORTS);
 
 		graphEClass = createEClass(GRAPH);
 		createEReference(graphEClass, GRAPH__VERTICES);
 
 		actorEClass = createEClass(ACTOR);
+
+		portEClass = createEClass(PORT);
+		createEAttribute(portEClass, PORT__NAME);
+
+		inputPortEClass = createEClass(INPUT_PORT);
+
+		outputPortEClass = createEClass(OUTPUT_PORT);
 	}
 
 	/**
@@ -214,15 +301,26 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 		// Add supertypes to classes
 		graphEClass.getESuperTypes().add(this.getAbstractVertex());
 		actorEClass.getESuperTypes().add(this.getAbstractVertex());
+		inputPortEClass.getESuperTypes().add(this.getPort());
+		outputPortEClass.getESuperTypes().add(this.getPort());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(abstractVertexEClass, AbstractVertex.class, "AbstractVertex", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getAbstractVertex_Name(), ecorePackage.getEString(), "name", null, 1, 1, AbstractVertex.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getAbstractVertex_InputPorts(), this.getInputPort(), null, "inputPorts", null, 0, -1, AbstractVertex.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getAbstractVertex_OutputPorts(), this.getOutputPort(), null, "outputPorts", null, 0, -1, AbstractVertex.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(graphEClass, Graph.class, "Graph", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getGraph_Vertices(), this.getAbstractVertex(), null, "vertices", null, 0, -1, Graph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(actorEClass, Actor.class, "Actor", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(portEClass, Port.class, "Port", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getPort_Name(), ecorePackage.getEString(), "name", null, 1, 1, Port.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(inputPortEClass, InputPort.class, "InputPort", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(outputPortEClass, OutputPort.class, "OutputPort", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		// Create resource
 		createResource(eNS_URI);

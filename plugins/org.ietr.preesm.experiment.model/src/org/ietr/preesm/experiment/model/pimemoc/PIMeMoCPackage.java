@@ -75,13 +75,31 @@ public interface PIMeMoCPackage extends EPackage {
 	int ABSTRACT_VERTEX__NAME = 0;
 
 	/**
+	 * The feature id for the '<em><b>Input Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ABSTRACT_VERTEX__INPUT_PORTS = 1;
+
+	/**
+	 * The feature id for the '<em><b>Output Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ABSTRACT_VERTEX__OUTPUT_PORTS = 2;
+
+	/**
 	 * The number of structural features of the '<em>Abstract Vertex</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int ABSTRACT_VERTEX_FEATURE_COUNT = 1;
+	int ABSTRACT_VERTEX_FEATURE_COUNT = 3;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.GraphImpl <em>Graph</em>}' class.
@@ -101,6 +119,24 @@ public interface PIMeMoCPackage extends EPackage {
 	 * @ordered
 	 */
 	int GRAPH__NAME = ABSTRACT_VERTEX__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Input Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GRAPH__INPUT_PORTS = ABSTRACT_VERTEX__INPUT_PORTS;
+
+	/**
+	 * The feature id for the '<em><b>Output Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GRAPH__OUTPUT_PORTS = ABSTRACT_VERTEX__OUTPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Vertices</b></em>' containment reference list.
@@ -140,6 +176,24 @@ public interface PIMeMoCPackage extends EPackage {
 	int ACTOR__NAME = ABSTRACT_VERTEX__NAME;
 
 	/**
+	 * The feature id for the '<em><b>Input Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ACTOR__INPUT_PORTS = ABSTRACT_VERTEX__INPUT_PORTS;
+
+	/**
+	 * The feature id for the '<em><b>Output Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ACTOR__OUTPUT_PORTS = ABSTRACT_VERTEX__OUTPUT_PORTS;
+
+	/**
 	 * The number of structural features of the '<em>Actor</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -147,6 +201,91 @@ public interface PIMeMoCPackage extends EPackage {
 	 * @ordered
 	 */
 	int ACTOR_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 0;
+
+
+	/**
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.PortImpl <em>Port</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.ietr.preesm.experiment.model.pimemoc.impl.PortImpl
+	 * @see org.ietr.preesm.experiment.model.pimemoc.impl.PIMeMoCPackageImpl#getPort()
+	 * @generated
+	 */
+	int PORT = 3;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PORT__NAME = 0;
+
+	/**
+	 * The number of structural features of the '<em>Port</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PORT_FEATURE_COUNT = 1;
+
+	/**
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.InputPortImpl <em>Input Port</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.ietr.preesm.experiment.model.pimemoc.impl.InputPortImpl
+	 * @see org.ietr.preesm.experiment.model.pimemoc.impl.PIMeMoCPackageImpl#getInputPort()
+	 * @generated
+	 */
+	int INPUT_PORT = 4;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INPUT_PORT__NAME = PORT__NAME;
+
+	/**
+	 * The number of structural features of the '<em>Input Port</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INPUT_PORT_FEATURE_COUNT = PORT_FEATURE_COUNT + 0;
+
+	/**
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.OutputPortImpl <em>Output Port</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.ietr.preesm.experiment.model.pimemoc.impl.OutputPortImpl
+	 * @see org.ietr.preesm.experiment.model.pimemoc.impl.PIMeMoCPackageImpl#getOutputPort()
+	 * @generated
+	 */
+	int OUTPUT_PORT = 5;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OUTPUT_PORT__NAME = PORT__NAME;
+
+	/**
+	 * The number of structural features of the '<em>Output Port</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OUTPUT_PORT_FEATURE_COUNT = PORT_FEATURE_COUNT + 0;
 
 
 	/**
@@ -169,6 +308,28 @@ public interface PIMeMoCPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getAbstractVertex_Name();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.ietr.preesm.experiment.model.pimemoc.AbstractVertex#getInputPorts <em>Input Ports</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Input Ports</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.AbstractVertex#getInputPorts()
+	 * @see #getAbstractVertex()
+	 * @generated
+	 */
+	EReference getAbstractVertex_InputPorts();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.ietr.preesm.experiment.model.pimemoc.AbstractVertex#getOutputPorts <em>Output Ports</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Output Ports</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.AbstractVertex#getOutputPorts()
+	 * @see #getAbstractVertex()
+	 * @generated
+	 */
+	EReference getAbstractVertex_OutputPorts();
 
 	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimemoc.Graph <em>Graph</em>}'.
@@ -200,6 +361,47 @@ public interface PIMeMoCPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getActor();
+
+	/**
+	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimemoc.Port <em>Port</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Port</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.Port
+	 * @generated
+	 */
+	EClass getPort();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimemoc.Port#getName <em>Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Name</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.Port#getName()
+	 * @see #getPort()
+	 * @generated
+	 */
+	EAttribute getPort_Name();
+
+	/**
+	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimemoc.InputPort <em>Input Port</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Input Port</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.InputPort
+	 * @generated
+	 */
+	EClass getInputPort();
+
+	/**
+	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimemoc.OutputPort <em>Output Port</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Output Port</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.OutputPort
+	 * @generated
+	 */
+	EClass getOutputPort();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -242,6 +444,22 @@ public interface PIMeMoCPackage extends EPackage {
 		EAttribute ABSTRACT_VERTEX__NAME = eINSTANCE.getAbstractVertex_Name();
 
 		/**
+		 * The meta object literal for the '<em><b>Input Ports</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference ABSTRACT_VERTEX__INPUT_PORTS = eINSTANCE.getAbstractVertex_InputPorts();
+
+		/**
+		 * The meta object literal for the '<em><b>Output Ports</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference ABSTRACT_VERTEX__OUTPUT_PORTS = eINSTANCE.getAbstractVertex_OutputPorts();
+
+		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.GraphImpl <em>Graph</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -268,6 +486,44 @@ public interface PIMeMoCPackage extends EPackage {
 		 * @generated
 		 */
 		EClass ACTOR = eINSTANCE.getActor();
+
+		/**
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.PortImpl <em>Port</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.ietr.preesm.experiment.model.pimemoc.impl.PortImpl
+		 * @see org.ietr.preesm.experiment.model.pimemoc.impl.PIMeMoCPackageImpl#getPort()
+		 * @generated
+		 */
+		EClass PORT = eINSTANCE.getPort();
+
+		/**
+		 * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute PORT__NAME = eINSTANCE.getPort_Name();
+
+		/**
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.InputPortImpl <em>Input Port</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.ietr.preesm.experiment.model.pimemoc.impl.InputPortImpl
+		 * @see org.ietr.preesm.experiment.model.pimemoc.impl.PIMeMoCPackageImpl#getInputPort()
+		 * @generated
+		 */
+		EClass INPUT_PORT = eINSTANCE.getInputPort();
+
+		/**
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.OutputPortImpl <em>Output Port</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.ietr.preesm.experiment.model.pimemoc.impl.OutputPortImpl
+		 * @see org.ietr.preesm.experiment.model.pimemoc.impl.PIMeMoCPackageImpl#getOutputPort()
+		 * @generated
+		 */
+		EClass OUTPUT_PORT = eINSTANCE.getOutputPort();
 
 	}
 

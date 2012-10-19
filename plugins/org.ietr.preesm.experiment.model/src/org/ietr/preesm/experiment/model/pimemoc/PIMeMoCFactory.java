@@ -40,6 +40,24 @@ public interface PIMeMoCFactory extends EFactory {
 	Actor createActor();
 
 	/**
+	 * Returns a new object of class '<em>Input Port</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Input Port</em>'.
+	 * @generated
+	 */
+	InputPort createInputPort();
+
+	/**
+	 * Returns a new object of class '<em>Output Port</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Output Port</em>'.
+	 * @generated
+	 */
+	OutputPort createOutputPort();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

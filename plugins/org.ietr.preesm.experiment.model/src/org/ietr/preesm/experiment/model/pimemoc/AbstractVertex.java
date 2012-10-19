@@ -2,6 +2,7 @@
  */
 package org.ietr.preesm.experiment.model.pimemoc;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 
 /**
@@ -13,6 +14,8 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimemoc.AbstractVertex#getName <em>Name</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimemoc.AbstractVertex#getInputPorts <em>Input Ports</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimemoc.AbstractVertex#getOutputPorts <em>Output Ports</em>}</li>
  * </ul>
  * </p>
  *
@@ -46,5 +49,37 @@ public interface AbstractVertex extends EObject {
 	 * @generated
 	 */
 	void setName(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Input Ports</b></em>' containment reference list.
+	 * The list contents are of type {@link org.ietr.preesm.experiment.model.pimemoc.InputPort}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Input Ports</em>' containment reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Input Ports</em>' containment reference list.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.PIMeMoCPackage#getAbstractVertex_InputPorts()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<InputPort> getInputPorts();
+
+	/**
+	 * Returns the value of the '<em><b>Output Ports</b></em>' containment reference list.
+	 * The list contents are of type {@link org.ietr.preesm.experiment.model.pimemoc.OutputPort}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Output Ports</em>' containment reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Output Ports</em>' containment reference list.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.PIMeMoCPackage#getAbstractVertex_OutputPorts()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<OutputPort> getOutputPorts();
 
 } // AbstractVertex

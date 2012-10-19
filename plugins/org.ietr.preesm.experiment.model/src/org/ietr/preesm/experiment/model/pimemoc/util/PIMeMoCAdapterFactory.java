@@ -80,6 +80,18 @@ public class PIMeMoCAdapterFactory extends AdapterFactoryImpl {
 				return createActorAdapter();
 			}
 			@Override
+			public Adapter casePort(Port object) {
+				return createPortAdapter();
+			}
+			@Override
+			public Adapter caseInputPort(InputPort object) {
+				return createInputPortAdapter();
+			}
+			@Override
+			public Adapter caseOutputPort(OutputPort object) {
+				return createOutputPortAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -138,6 +150,48 @@ public class PIMeMoCAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createActorAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimemoc.Port <em>Port</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.Port
+	 * @generated
+	 */
+	public Adapter createPortAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimemoc.InputPort <em>Input Port</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.InputPort
+	 * @generated
+	 */
+	public Adapter createInputPortAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimemoc.OutputPort <em>Output Port</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.OutputPort
+	 * @generated
+	 */
+	public Adapter createOutputPortAdapter() {
 		return null;
 	}
 

@@ -58,6 +58,8 @@ public class PIMeMoCFactoryImpl extends EFactoryImpl implements PIMeMoCFactory {
 		switch (eClass.getClassifierID()) {
 			case PIMeMoCPackage.GRAPH: return createGraph();
 			case PIMeMoCPackage.ACTOR: return createActor();
+			case PIMeMoCPackage.INPUT_PORT: return createInputPort();
+			case PIMeMoCPackage.OUTPUT_PORT: return createOutputPort();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -81,6 +83,26 @@ public class PIMeMoCFactoryImpl extends EFactoryImpl implements PIMeMoCFactory {
 	public Actor createActor() {
 		ActorImpl actor = new ActorImpl();
 		return actor;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public InputPort createInputPort() {
+		InputPortImpl inputPort = new InputPortImpl();
+		return inputPort;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public OutputPort createOutputPort() {
+		OutputPortImpl outputPort = new OutputPortImpl();
+		return outputPort;
 	}
 
 	/**
