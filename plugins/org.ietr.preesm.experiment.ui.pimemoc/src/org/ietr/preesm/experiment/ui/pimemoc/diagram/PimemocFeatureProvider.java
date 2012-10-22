@@ -2,6 +2,7 @@ package org.ietr.preesm.experiment.ui.pimemoc.diagram;
 
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IAddFeature;
+import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IDirectEditingFeature;
@@ -26,11 +27,14 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
+import org.ietr.preesm.experiment.model.pimemoc.Fifo;
 import org.ietr.preesm.experiment.model.pimemoc.Port;
 import org.ietr.preesm.experiment.ui.pimemoc.features.AddActorFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.AddFifoFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.AddInputPortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.AddOutputPortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CreateActorFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.CreateFifoFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CustomDeleteFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.DeletePortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.DirectEditingActorNameFeature;
@@ -48,10 +52,19 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 	}
 
 	@Override
+	public ICreateConnectionFeature[] getCreateConnectionFeatures() {
+		return new ICreateConnectionFeature[] { new CreateFifoFeature(this) };
+	}
+
+	@Override
 	public IAddFeature getAddFeature(IAddContext context) {
 		// is object for add request an Actor?
 		if (context.getNewObject() instanceof Actor) {
 			return new AddActorFeature(this);
+		}
+
+		if (context.getNewObject() instanceof Fifo) {
+			return new AddFifoFeature(this);
 		}
 		return super.getAddFeature(context);
 	}
