@@ -7,6 +7,7 @@ import net.sf.dftools.architecture.utils.DomUtil;
 import org.eclipse.emf.common.util.URI;
 import org.ietr.preesm.experiment.model.pimemoc.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
+import org.ietr.preesm.experiment.model.pimemoc.Fifo;
 import org.ietr.preesm.experiment.model.pimemoc.Graph;
 import org.ietr.preesm.experiment.model.pimemoc.InputPort;
 import org.ietr.preesm.experiment.model.pimemoc.OutputPort;
@@ -117,8 +118,71 @@ public class GraphMLParser {
 	 *            The deserialized graph
 	 */
 	protected void parseEdge(Element edgeElt, Graph graph) {
-		// TODO parseDependencies()
-		// TODO parseFIFOs()
+		// Identify if the node is an actor or a parameter
+		String edgeKind = edgeElt.getAttribute("kind");
+
+		switch (edgeKind) {
+		case "fifo":
+			parseFifo(edgeElt, graph);
+			break;
+		// TODO Parse all types of edges
+		// case "paramDependency":
+		// parseDependencies()
+		// break;
+		default:
+			throw new RuntimeException("Parsed edge has an unknown kind: "
+					+ edgeKind);
+		}
+	}
+
+	/**
+	 * Parse a node {@link Element} with kind "fifo".
+	 * 
+	 * @param nodeElt
+	 *            the {@link Element} to parse
+	 * @param graph
+	 *            the deserialized {@link Graph}
+	 */
+	protected void parseFifo(Element edgeElt, Graph graph) {
+		// Instantiate the new actor
+		Fifo fifo = PIMeMoCFactory.eINSTANCE.createFifo();
+
+		// Find the source and target of the fifo
+		String sourceName = edgeElt.getAttribute("source");
+		String targetName = edgeElt.getAttribute("target");
+		AbstractVertex source = graph.getVertexNamed(sourceName);
+		AbstractVertex target = graph.getVertexNamed(targetName);
+		if (source == null) {
+			throw new RuntimeException("Edge source vertex " + sourceName
+					+ " does not exist.");
+		}
+		if (target == null) {
+			throw new RuntimeException("Edge target vertex " + sourceName
+					+ " does not exist.");
+		}
+
+		// Get the sourcePort and targetPort
+		String sourcePortName = edgeElt.getAttribute("sourceport");
+		String targetPortName = edgeElt.getAttribute("targetport");
+		OutputPort oPort = (OutputPort) source.getPortNamed(sourcePortName,
+				"output");
+		InputPort iPort = (InputPort) target.getPortNamed(targetPortName,
+				"input");
+
+		if (iPort == null) {
+			throw new RuntimeException("Edge source port " + sourcePortName
+					+ " does not exist for vertex " + sourceName);
+		}
+		if (oPort == null) {
+			throw new RuntimeException("Edge target port " + targetPortName
+					+ " does not exist for vertex " + targetName);
+		}
+
+		fifo.setSourcePort(oPort);
+		fifo.setTargetPort(iPort);
+
+		// Add the new Fifo to the graph
+		graph.getFifos().add(fifo);
 	}
 
 	/**

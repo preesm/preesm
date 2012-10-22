@@ -12,6 +12,7 @@ import net.sf.dftools.architecture.utils.DomUtil;
 import org.eclipse.emf.common.util.EList;
 import org.ietr.preesm.experiment.model.pimemoc.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
+import org.ietr.preesm.experiment.model.pimemoc.Fifo;
 import org.ietr.preesm.experiment.model.pimemoc.Graph;
 import org.ietr.preesm.experiment.model.pimemoc.Port;
 import org.w3c.dom.Document;
@@ -294,7 +295,37 @@ public class GraphMLWriter {
 		}
 
 		// TODO writeDependencies()
-		// TODO writeFIFOs()
+		for (Fifo fifo : graph.getFifos()) {
+			writeFifos(graphElt, fifo);
+		}
+	}
+
+	/**
+	 * Create and add a node {@link Element} to the given parent {@link Element}
+	 * for the given fifo and write its informations.
+	 * 
+	 * @param graphElt
+	 *            The parent element of the node element (i.e. the graph of the
+	 *            document)
+	 * @param fifo
+	 *            The {@link Fifo} to write in the {@link Document}
+	 */
+	protected void writeFifos(Element graphElt, Fifo fifo) {
+		// Add the node to the document
+		Element fifoElt = appendChild(graphElt, "edge");
+
+		// Set the source and target attributes
+		AbstractVertex source = (AbstractVertex) fifo.getSourcePort()
+				.eContainer();
+		AbstractVertex target = (AbstractVertex) fifo.getTargetPort()
+				.eContainer();
+		fifoElt.setAttribute("kind", "fifo");
+		fifoElt.setAttribute("source", source.getName());
+		fifoElt.setAttribute("target", target.getName());
+		fifoElt.setAttribute("sourceport", fifo.getSourcePort().getName());
+		fifoElt.setAttribute("targetport", fifo.getTargetPort().getName());
+		
+		// TODO  write Delays and other Fifo properties
 	}
 
 	/**
