@@ -34,7 +34,6 @@ import org.ietr.preesm.experiment.ui.pimemoc.features.CreateActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CustomDeleteFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.DeletePortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.DirectEditingActorNameFeature;
-import org.ietr.preesm.experiment.ui.pimemoc.features.DirectEditingPortNameFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutPortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.RenameActorFeature;
@@ -95,7 +94,7 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 		if (bo instanceof Actor) {
 			return new LayoutActorFeature(this);
 		}
-		if (bo instanceof Port){
+		if (bo instanceof Port) {
 			return new LayoutPortFeature(this);
 		}
 		return super.getLayoutFeature(context);

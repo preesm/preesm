@@ -58,6 +58,15 @@ public interface PIMeMoCFactory extends EFactory {
 	OutputPort createOutputPort();
 
 	/**
+	 * Returns a new object of class '<em>Fifo</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Fifo</em>'.
+	 * @generated
+	 */
+	Fifo createFifo();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

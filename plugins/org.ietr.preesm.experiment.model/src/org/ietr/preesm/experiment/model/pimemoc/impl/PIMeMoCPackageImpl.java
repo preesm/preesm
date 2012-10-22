@@ -9,6 +9,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 import org.ietr.preesm.experiment.model.pimemoc.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
+import org.ietr.preesm.experiment.model.pimemoc.Fifo;
 import org.ietr.preesm.experiment.model.pimemoc.Graph;
 import org.ietr.preesm.experiment.model.pimemoc.InputPort;
 import org.ietr.preesm.experiment.model.pimemoc.OutputPort;
@@ -64,6 +65,13 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 	 * @generated
 	 */
 	private EClass outputPortEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass fifoEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -185,6 +193,15 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getGraph_Fifos() {
+		return (EReference)graphEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getActor() {
 		return actorEClass;
 	}
@@ -230,8 +247,53 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getInputPort_IncomingFifo() {
+		return (EReference)inputPortEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getOutputPort() {
 		return outputPortEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getOutputPort_OutgoingFifo() {
+		return (EReference)outputPortEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getFifo() {
+		return fifoEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getFifo_SourcePort() {
+		return (EReference)fifoEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getFifo_TargetPort() {
+		return (EReference)fifoEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -269,6 +331,7 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 
 		graphEClass = createEClass(GRAPH);
 		createEReference(graphEClass, GRAPH__VERTICES);
+		createEReference(graphEClass, GRAPH__FIFOS);
 
 		actorEClass = createEClass(ACTOR);
 
@@ -277,8 +340,14 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 		createEAttribute(portEClass, PORT__KIND);
 
 		inputPortEClass = createEClass(INPUT_PORT);
+		createEReference(inputPortEClass, INPUT_PORT__INCOMING_FIFO);
 
 		outputPortEClass = createEClass(OUTPUT_PORT);
+		createEReference(outputPortEClass, OUTPUT_PORT__OUTGOING_FIFO);
+
+		fifoEClass = createEClass(FIFO);
+		createEReference(fifoEClass, FIFO__SOURCE_PORT);
+		createEReference(fifoEClass, FIFO__TARGET_PORT);
 	}
 
 	/**
@@ -322,6 +391,7 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 
 		initEClass(graphEClass, Graph.class, "Graph", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getGraph_Vertices(), this.getAbstractVertex(), null, "vertices", null, 0, -1, Graph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getGraph_Fifos(), this.getFifo(), null, "fifos", null, 0, -1, Graph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(actorEClass, Actor.class, "Actor", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
@@ -330,8 +400,14 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 		initEAttribute(getPort_Kind(), ecorePackage.getEString(), "kind", null, 1, 1, Port.class, !IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(inputPortEClass, InputPort.class, "InputPort", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getInputPort_IncomingFifo(), this.getFifo(), this.getFifo_TargetPort(), "incomingFifo", null, 0, 1, InputPort.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(outputPortEClass, OutputPort.class, "OutputPort", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getOutputPort_OutgoingFifo(), this.getFifo(), this.getFifo_SourcePort(), "outgoingFifo", null, 0, 1, OutputPort.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(fifoEClass, Fifo.class, "Fifo", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getFifo_SourcePort(), this.getOutputPort(), this.getOutputPort_OutgoingFifo(), "sourcePort", null, 1, 1, Fifo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getFifo_TargetPort(), this.getInputPort(), this.getInputPort_IncomingFifo(), "targetPort", null, 1, 1, Fifo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

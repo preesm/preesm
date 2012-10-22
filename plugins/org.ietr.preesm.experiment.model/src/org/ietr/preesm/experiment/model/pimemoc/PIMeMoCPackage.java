@@ -148,13 +148,22 @@ public interface PIMeMoCPackage extends EPackage {
 	int GRAPH__VERTICES = ABSTRACT_VERTEX_FEATURE_COUNT + 0;
 
 	/**
+	 * The feature id for the '<em><b>Fifos</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GRAPH__FIFOS = ABSTRACT_VERTEX_FEATURE_COUNT + 1;
+
+	/**
 	 * The number of structural features of the '<em>Graph</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GRAPH_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 1;
+	int GRAPH_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 2;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.ActorImpl <em>Actor</em>}' class.
@@ -269,13 +278,22 @@ public interface PIMeMoCPackage extends EPackage {
 	int INPUT_PORT__KIND = PORT__KIND;
 
 	/**
+	 * The feature id for the '<em><b>Incoming Fifo</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INPUT_PORT__INCOMING_FIFO = PORT_FEATURE_COUNT + 0;
+
+	/**
 	 * The number of structural features of the '<em>Input Port</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int INPUT_PORT_FEATURE_COUNT = PORT_FEATURE_COUNT + 0;
+	int INPUT_PORT_FEATURE_COUNT = PORT_FEATURE_COUNT + 1;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.OutputPortImpl <em>Output Port</em>}' class.
@@ -306,13 +324,60 @@ public interface PIMeMoCPackage extends EPackage {
 	int OUTPUT_PORT__KIND = PORT__KIND;
 
 	/**
+	 * The feature id for the '<em><b>Outgoing Fifo</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OUTPUT_PORT__OUTGOING_FIFO = PORT_FEATURE_COUNT + 0;
+
+	/**
 	 * The number of structural features of the '<em>Output Port</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int OUTPUT_PORT_FEATURE_COUNT = PORT_FEATURE_COUNT + 0;
+	int OUTPUT_PORT_FEATURE_COUNT = PORT_FEATURE_COUNT + 1;
+
+
+	/**
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.FifoImpl <em>Fifo</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.ietr.preesm.experiment.model.pimemoc.impl.FifoImpl
+	 * @see org.ietr.preesm.experiment.model.pimemoc.impl.PIMeMoCPackageImpl#getFifo()
+	 * @generated
+	 */
+	int FIFO = 6;
+
+	/**
+	 * The feature id for the '<em><b>Source Port</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FIFO__SOURCE_PORT = 0;
+
+	/**
+	 * The feature id for the '<em><b>Target Port</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FIFO__TARGET_PORT = 1;
+
+	/**
+	 * The number of structural features of the '<em>Fifo</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FIFO_FEATURE_COUNT = 2;
 
 
 	/**
@@ -380,6 +445,17 @@ public interface PIMeMoCPackage extends EPackage {
 	EReference getGraph_Vertices();
 
 	/**
+	 * Returns the meta object for the containment reference list '{@link org.ietr.preesm.experiment.model.pimemoc.Graph#getFifos <em>Fifos</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Fifos</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.Graph#getFifos()
+	 * @see #getGraph()
+	 * @generated
+	 */
+	EReference getGraph_Fifos();
+
+	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimemoc.Actor <em>Actor</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -432,6 +508,17 @@ public interface PIMeMoCPackage extends EPackage {
 	EClass getInputPort();
 
 	/**
+	 * Returns the meta object for the reference '{@link org.ietr.preesm.experiment.model.pimemoc.InputPort#getIncomingFifo <em>Incoming Fifo</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Incoming Fifo</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.InputPort#getIncomingFifo()
+	 * @see #getInputPort()
+	 * @generated
+	 */
+	EReference getInputPort_IncomingFifo();
+
+	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimemoc.OutputPort <em>Output Port</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -440,6 +527,49 @@ public interface PIMeMoCPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getOutputPort();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.ietr.preesm.experiment.model.pimemoc.OutputPort#getOutgoingFifo <em>Outgoing Fifo</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Outgoing Fifo</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.OutputPort#getOutgoingFifo()
+	 * @see #getOutputPort()
+	 * @generated
+	 */
+	EReference getOutputPort_OutgoingFifo();
+
+	/**
+	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimemoc.Fifo <em>Fifo</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Fifo</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.Fifo
+	 * @generated
+	 */
+	EClass getFifo();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.ietr.preesm.experiment.model.pimemoc.Fifo#getSourcePort <em>Source Port</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Source Port</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.Fifo#getSourcePort()
+	 * @see #getFifo()
+	 * @generated
+	 */
+	EReference getFifo_SourcePort();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.ietr.preesm.experiment.model.pimemoc.Fifo#getTargetPort <em>Target Port</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Target Port</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.Fifo#getTargetPort()
+	 * @see #getFifo()
+	 * @generated
+	 */
+	EReference getFifo_TargetPort();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -516,6 +646,14 @@ public interface PIMeMoCPackage extends EPackage {
 		EReference GRAPH__VERTICES = eINSTANCE.getGraph_Vertices();
 
 		/**
+		 * The meta object literal for the '<em><b>Fifos</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference GRAPH__FIFOS = eINSTANCE.getGraph_Fifos();
+
+		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.ActorImpl <em>Actor</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -562,6 +700,14 @@ public interface PIMeMoCPackage extends EPackage {
 		EClass INPUT_PORT = eINSTANCE.getInputPort();
 
 		/**
+		 * The meta object literal for the '<em><b>Incoming Fifo</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference INPUT_PORT__INCOMING_FIFO = eINSTANCE.getInputPort_IncomingFifo();
+
+		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.OutputPortImpl <em>Output Port</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -570,6 +716,40 @@ public interface PIMeMoCPackage extends EPackage {
 		 * @generated
 		 */
 		EClass OUTPUT_PORT = eINSTANCE.getOutputPort();
+
+		/**
+		 * The meta object literal for the '<em><b>Outgoing Fifo</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference OUTPUT_PORT__OUTGOING_FIFO = eINSTANCE.getOutputPort_OutgoingFifo();
+
+		/**
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.FifoImpl <em>Fifo</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.ietr.preesm.experiment.model.pimemoc.impl.FifoImpl
+		 * @see org.ietr.preesm.experiment.model.pimemoc.impl.PIMeMoCPackageImpl#getFifo()
+		 * @generated
+		 */
+		EClass FIFO = eINSTANCE.getFifo();
+
+		/**
+		 * The meta object literal for the '<em><b>Source Port</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference FIFO__SOURCE_PORT = eINSTANCE.getFifo_SourcePort();
+
+		/**
+		 * The meta object literal for the '<em><b>Target Port</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference FIFO__TARGET_PORT = eINSTANCE.getFifo_TargetPort();
 
 	}
 

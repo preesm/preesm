@@ -106,6 +106,12 @@ public class PIMeMoCSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case PIMeMoCPackage.FIFO: {
+				Fifo fifo = (Fifo)theEObject;
+				T result = caseFifo(fifo);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -197,6 +203,21 @@ public class PIMeMoCSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseOutputPort(OutputPort object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Fifo</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Fifo</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseFifo(Fifo object) {
 		return null;
 	}
 

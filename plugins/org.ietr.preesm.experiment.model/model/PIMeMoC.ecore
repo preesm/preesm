@@ -12,6 +12,8 @@
   <eClassifiers xsi:type="ecore:EClass" name="Graph" eSuperTypes="#//AbstractVertex">
     <eStructuralFeatures xsi:type="ecore:EReference" name="vertices" upperBound="-1"
         eType="#//AbstractVertex" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="fifos" upperBound="-1"
+        eType="#//Fifo" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Actor" eSuperTypes="#//AbstractVertex"/>
   <eClassifiers xsi:type="ecore:EClass" name="Port" abstract="true">
@@ -19,6 +21,18 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         changeable="false"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="InputPort" eSuperTypes="#//Port"/>
-  <eClassifiers xsi:type="ecore:EClass" name="OutputPort" eSuperTypes="#//Port"/>
+  <eClassifiers xsi:type="ecore:EClass" name="InputPort" eSuperTypes="#//Port">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="incomingFifo" eType="#//Fifo"
+        eOpposite="#//Fifo/targetPort"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="OutputPort" eSuperTypes="#//Port">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingFifo" eType="#//Fifo"
+        eOpposite="#//Fifo/sourcePort"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Fifo">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sourcePort" lowerBound="1"
+        eType="#//OutputPort" eOpposite="#//OutputPort/outgoingFifo"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetPort" lowerBound="1"
+        eType="#//InputPort" eOpposite="#//InputPort/incomingFifo"/>
+  </eClassifiers>
 </ecore:EPackage>

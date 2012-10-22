@@ -15,6 +15,7 @@ import org.eclipse.emf.common.util.EList;
  * The following features are supported:
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimemoc.Graph#getVertices <em>Vertices</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimemoc.Graph#getFifos <em>Fifos</em>}</li>
  * </ul>
  * </p>
  *
@@ -38,6 +39,22 @@ public interface Graph extends AbstractVertex {
 	 * @generated
 	 */
 	EList<AbstractVertex> getVertices();
+
+	/**
+	 * Returns the value of the '<em><b>Fifos</b></em>' containment reference list.
+	 * The list contents are of type {@link org.ietr.preesm.experiment.model.pimemoc.Fifo}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Fifos</em>' containment reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Fifos</em>' containment reference list.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.PIMeMoCPackage#getGraph_Fifos()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<Fifo> getFifos();
 
 	/**
 	 * Return the list of the names of all vertices of the Graph.
