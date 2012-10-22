@@ -20,10 +20,11 @@ public class OutputPortImpl extends PortImpl implements OutputPort {
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * 
 	 */
 	protected OutputPortImpl() {
 		super();
+		kind = "output";
 	}
 
 	/**

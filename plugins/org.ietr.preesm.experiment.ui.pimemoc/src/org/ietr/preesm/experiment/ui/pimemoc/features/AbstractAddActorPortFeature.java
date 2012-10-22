@@ -1,6 +1,5 @@
 package org.ietr.preesm.experiment.ui.pimemoc.features;
 
-import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
@@ -13,7 +12,6 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
-import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
 import org.ietr.preesm.experiment.model.pimemoc.Port;
@@ -120,26 +118,9 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 			// Get the new Port and add it to the Graph
 			Port newPort = this.getNewPort(portName, actor);
 
-			// Retrieve the size of the text
-			IDimension size = GraphitiUi.getUiLayoutService()
-					.calculateTextSize(portName, this.getPortFont());
-
 			// create invisible rectangle
 			Rectangle invisibleRectangle = gaService
 					.createInvisibleRectangle(boxAnchor);
-
-			// Layout the invisible rectangle
-			if (this.getPosition() == PortPosition.LEFT) {
-				gaService.setLocationAndSize(invisibleRectangle, 0, 0,
-						size.getWidth() + PORT_ANCHOR_GA_SIZE
-								+ PORT_LABEL_GA_SPACE, size.getHeight());
-			} else {
-				gaService.setLocationAndSize(invisibleRectangle,
-						-size.getWidth() - PORT_ANCHOR_GA_SIZE
-								- PORT_LABEL_GA_SPACE, 0, size.getWidth()
-								+ PORT_ANCHOR_GA_SIZE + PORT_LABEL_GA_SPACE,
-						size.getHeight());
-			}
 
 			// Add a text label for the box relative anchor
 			this.addPortLabel(invisibleRectangle, portName);
@@ -150,10 +131,11 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 			// link the Pictogram element to the port in the business model
 			link(boxAnchor, newPort);
 
-			// Call the layout feature
-			layoutPictogramElement(containerShape);
+			// Layout the port
+			layoutPictogramElement(boxAnchor);
 
-			// Update the Pictogram element
+			// Layout the actor
+			layoutPictogramElement(containerShape);
 			updatePictogramElement(containerShape);
 
 			this.hasDoneChanges = true;

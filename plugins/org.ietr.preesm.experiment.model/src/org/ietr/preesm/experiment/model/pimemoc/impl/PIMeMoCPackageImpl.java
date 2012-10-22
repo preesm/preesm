@@ -212,6 +212,15 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getPort_Kind() {
+		return (EAttribute)portEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getInputPort() {
 		return inputPortEClass;
 	}
@@ -265,6 +274,7 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 
 		portEClass = createEClass(PORT);
 		createEAttribute(portEClass, PORT__NAME);
+		createEAttribute(portEClass, PORT__KIND);
 
 		inputPortEClass = createEClass(INPUT_PORT);
 
@@ -317,6 +327,7 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 
 		initEClass(portEClass, Port.class, "Port", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getPort_Name(), ecorePackage.getEString(), "name", null, 1, 1, Port.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getPort_Kind(), ecorePackage.getEString(), "kind", null, 1, 1, Port.class, !IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(inputPortEClass, InputPort.class, "InputPort", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 

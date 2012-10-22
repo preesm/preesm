@@ -20,6 +20,7 @@ import org.ietr.preesm.experiment.model.pimemoc.Port;
  * The following features are implemented:
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimemoc.impl.PortImpl#getName <em>Name</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimemoc.impl.PortImpl#getKind <em>Kind</em>}</li>
  * </ul>
  * </p>
  *
@@ -45,6 +46,26 @@ public abstract class PortImpl extends EObjectImpl implements Port {
 	 * @ordered
 	 */
 	protected String name = NAME_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getKind() <em>Kind</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getKind()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String KIND_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getKind() <em>Kind</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getKind()
+	 * @generated
+	 * @ordered
+	 */
+	protected String kind = KIND_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -91,11 +112,22 @@ public abstract class PortImpl extends EObjectImpl implements Port {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public String getKind() {
+		return kind;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 			case PIMeMoCPackage.PORT__NAME:
 				return getName();
+			case PIMeMoCPackage.PORT__KIND:
+				return getKind();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -140,6 +172,8 @@ public abstract class PortImpl extends EObjectImpl implements Port {
 		switch (featureID) {
 			case PIMeMoCPackage.PORT__NAME:
 				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
+			case PIMeMoCPackage.PORT__KIND:
+				return KIND_EDEFAULT == null ? kind != null : !KIND_EDEFAULT.equals(kind);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -156,6 +190,8 @@ public abstract class PortImpl extends EObjectImpl implements Port {
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (name: ");
 		result.append(name);
+		result.append(", kind: ");
+		result.append(kind);
 		result.append(')');
 		return result.toString();
 	}

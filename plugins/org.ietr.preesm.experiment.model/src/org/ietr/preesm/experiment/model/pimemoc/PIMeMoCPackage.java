@@ -223,13 +223,22 @@ public interface PIMeMoCPackage extends EPackage {
 	int PORT__NAME = 0;
 
 	/**
+	 * The feature id for the '<em><b>Kind</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PORT__KIND = 1;
+
+	/**
 	 * The number of structural features of the '<em>Port</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PORT_FEATURE_COUNT = 1;
+	int PORT_FEATURE_COUNT = 2;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.InputPortImpl <em>Input Port</em>}' class.
@@ -249,6 +258,15 @@ public interface PIMeMoCPackage extends EPackage {
 	 * @ordered
 	 */
 	int INPUT_PORT__NAME = PORT__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Kind</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INPUT_PORT__KIND = PORT__KIND;
 
 	/**
 	 * The number of structural features of the '<em>Input Port</em>' class.
@@ -277,6 +295,15 @@ public interface PIMeMoCPackage extends EPackage {
 	 * @ordered
 	 */
 	int OUTPUT_PORT__NAME = PORT__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Kind</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OUTPUT_PORT__KIND = PORT__KIND;
 
 	/**
 	 * The number of structural features of the '<em>Output Port</em>' class.
@@ -382,6 +409,17 @@ public interface PIMeMoCPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getPort_Name();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimemoc.Port#getKind <em>Kind</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Kind</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.Port#getKind()
+	 * @see #getPort()
+	 * @generated
+	 */
+	EAttribute getPort_Kind();
 
 	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimemoc.InputPort <em>Input Port</em>}'.
@@ -504,6 +542,14 @@ public interface PIMeMoCPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute PORT__NAME = eINSTANCE.getPort_Name();
+
+		/**
+		 * The meta object literal for the '<em><b>Kind</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute PORT__KIND = eINSTANCE.getPort_Kind();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.InputPortImpl <em>Input Port</em>}' class.

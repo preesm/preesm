@@ -5,20 +5,26 @@ import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
 import org.eclipse.graphiti.features.impl.Reason;
+import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Text;
-import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.ietr.preesm.experiment.model.pimemoc.Actor;
+import org.ietr.preesm.experiment.model.pimemoc.Port;
 
-public class UpdateActorFeature extends AbstractUpdateFeature {
+/**
+ * Feature to update a port
+ * 
+ * @author kdesnos
+ * 
+ */
+public class UpdatePortFeature extends AbstractUpdateFeature {
 
 	/**
-	 * Default constructor of the {@link UpdateActorFeature}
+	 * Default constructor of the {@link UpdatePortFeature}
 	 * 
 	 * @param fp
 	 */
-	public UpdateActorFeature(IFeatureProvider fp) {
+	public UpdatePortFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
@@ -26,7 +32,7 @@ public class UpdateActorFeature extends AbstractUpdateFeature {
 	public boolean canUpdate(IUpdateContext context) {
 		Object bo = getBusinessObjectForPictogramElement(context
 				.getPictogramElement());
-		return (bo instanceof Actor);
+		return (bo instanceof Port);
 	}
 
 	@Override
@@ -34,12 +40,13 @@ public class UpdateActorFeature extends AbstractUpdateFeature {
 		// retrieve name from pictogram model
 		String pictogramName = null;
 		PictogramElement pictogramElement = context.getPictogramElement();
-		if (pictogramElement instanceof ContainerShape) {
-			ContainerShape cs = (ContainerShape) pictogramElement;
-			for (Shape shape : cs.getChildren()) {
-				if (shape.getGraphicsAlgorithm() instanceof Text) {
-					Text text = (Text) shape.getGraphicsAlgorithm();
-					pictogramName = text.getValue();
+		if (pictogramElement instanceof BoxRelativeAnchor) {
+			BoxRelativeAnchor bra = (BoxRelativeAnchor) pictogramElement;
+			// The label of the port is the only child with type Text
+			for (GraphicsAlgorithm ga : bra.getGraphicsAlgorithm()
+					.getGraphicsAlgorithmChildren()) {
+				if (ga instanceof Text) {
+					pictogramName = ((Text) ga).getValue();
 				}
 			}
 		}
@@ -47,9 +54,9 @@ public class UpdateActorFeature extends AbstractUpdateFeature {
 		// retrieve Actor name from business model (from the graph)
 		String businessName = null;
 		Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-		if (bo instanceof Actor) {
-			Actor actor = (Actor) bo;
-			businessName = actor.getName();
+		if (bo instanceof Port) {
+			Port port = (Port) bo;
+			businessName = port.getName();
 		}
 
 		// update needed, if names are different
@@ -58,9 +65,9 @@ public class UpdateActorFeature extends AbstractUpdateFeature {
 		if (updateNameNeeded) {
 			return Reason.createTrueReason("Name is out of date\nNew name: "
 					+ businessName);
+		} else {
+			return Reason.createFalseReason();
 		}
-
-		return Reason.createFalseReason();
 	}
 
 	@Override
@@ -69,23 +76,33 @@ public class UpdateActorFeature extends AbstractUpdateFeature {
 		String businessName = null;
 		PictogramElement pictogramElement = context.getPictogramElement();
 		Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-		if (bo instanceof Actor) {
-			Actor actor = (Actor) bo;
-			businessName = actor.getName();
+		if (bo instanceof Port) {
+			Port port = (Port) bo;
+			businessName = port.getName();
 		}
 
 		// Set name in pictogram model
-		if (pictogramElement instanceof ContainerShape) {
-			ContainerShape cs = (ContainerShape) pictogramElement;
-			for (Shape shape : cs.getChildren()) {
-				if (shape.getGraphicsAlgorithm() instanceof Text) {
-					Text text = (Text) shape.getGraphicsAlgorithm();
-					text.setValue(businessName);
-					return true;
+		if (pictogramElement instanceof BoxRelativeAnchor) {
+			BoxRelativeAnchor bra = (BoxRelativeAnchor) pictogramElement;
+			// The label of the port is the only child with type Text
+			for (GraphicsAlgorithm ga : bra.getGraphicsAlgorithm()
+					.getGraphicsAlgorithmChildren()) {
+				if (ga instanceof Text) {
+					((Text) ga).setValue(businessName);
 				}
 			}
 		}
+		
+		layoutPictogramElement(pictogramElement);		
+		
+		// Call the layout feature
+		GraphicsAlgorithm bra = ((BoxRelativeAnchor) pictogramElement)
+				.getReferencedGraphicsAlgorithm();
+		layoutPictogramElement(bra.getPictogramElement());
+		
+		
 		// Update not completed
-		return false;
+		return true;
 	}
+
 }

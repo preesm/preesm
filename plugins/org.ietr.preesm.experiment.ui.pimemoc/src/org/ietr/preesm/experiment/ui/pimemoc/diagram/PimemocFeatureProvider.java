@@ -21,10 +21,12 @@ import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
+import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
+import org.ietr.preesm.experiment.model.pimemoc.Port;
 import org.ietr.preesm.experiment.ui.pimemoc.features.AddActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.AddInputPortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.AddOutputPortFeature;
@@ -32,9 +34,13 @@ import org.ietr.preesm.experiment.ui.pimemoc.features.CreateActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CustomDeleteFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.DeletePortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.DirectEditingActorNameFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.DirectEditingPortNameFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutActorFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutPortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.RenameActorFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.RenamePortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.UpdateActorFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.UpdatePortFeature;
 
 public class PimemocFeatureProvider extends DefaultFeatureProvider {
 
@@ -50,7 +56,7 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 		}
 		return super.getAddFeature(context);
 	}
-	
+
 	@Override
 	public ICreateFeature[] getCreateFeatures() {
 		return new ICreateFeature[] { new CreateActorFeature(this) };
@@ -59,13 +65,13 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 	@Override
 	public ICustomFeature[] getCustomFeatures(ICustomContext context) {
 		return new ICustomFeature[] { new RenameActorFeature(this),
-				new AddOutputPortFeature(this),
-				new AddInputPortFeature(this)};
+				new AddOutputPortFeature(this), new AddInputPortFeature(this),
+				new RenamePortFeature(this) };
 	}
 
 	@Override
 	public IDeleteFeature getDeleteFeature(IDeleteContext context) {
-		if(context.getPictogramElement() instanceof Anchor){
+		if (context.getPictogramElement() instanceof Anchor) {
 			return new DeletePortFeature(this);
 		}
 		return new CustomDeleteFeature(this);
@@ -88,6 +94,9 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 		Object bo = getBusinessObjectForPictogramElement(pictogramElement);
 		if (bo instanceof Actor) {
 			return new LayoutActorFeature(this);
+		}
+		if (bo instanceof Port){
+			return new LayoutPortFeature(this);
 		}
 		return super.getLayoutFeature(context);
 	}
@@ -145,6 +154,12 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 			Object bo = getBusinessObjectForPictogramElement(pictogramElement);
 			if (bo instanceof Actor) {
 				return new UpdateActorFeature(this);
+			}
+		}
+		if (pictogramElement instanceof BoxRelativeAnchor) {
+			Object bo = getBusinessObjectForPictogramElement(pictogramElement);
+			if (bo instanceof Port) {
+				return new UpdatePortFeature(this);
 			}
 		}
 		return super.getUpdateFeature(context);

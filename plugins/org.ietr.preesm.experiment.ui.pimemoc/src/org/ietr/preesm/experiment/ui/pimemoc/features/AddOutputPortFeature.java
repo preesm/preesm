@@ -58,8 +58,6 @@ public class AddOutputPortFeature extends AbstractAddActorPortFeature {
 		rectangle.setBackground(manageColor(OUTPUT_PORT_BACKGROUND));
 		rectangle.setLineWidth(1);
 		gaService.setSize(rectangle, PORT_ANCHOR_GA_SIZE, PORT_ANCHOR_GA_SIZE);
-		gaService.setLocation(rectangle, containerShape.getWidth()
-				- PORT_ANCHOR_GA_SIZE, 1 + (16 - PORT_ANCHOR_GA_SIZE) / 2);
 		return rectangle;
 	}
 
@@ -77,8 +75,7 @@ public class AddOutputPortFeature extends AbstractAddActorPortFeature {
 
 		// Layout the text
 		text.setHorizontalAlignment(Orientation.ALIGNMENT_LEFT);
-		gaService.setLocationAndSize(text, 0, 0, containerShape.getWidth()
-				- PORT_ANCHOR_GA_SIZE, 16);
+		gaService.setHeight(text, 16);
 
 		return text;
 	}

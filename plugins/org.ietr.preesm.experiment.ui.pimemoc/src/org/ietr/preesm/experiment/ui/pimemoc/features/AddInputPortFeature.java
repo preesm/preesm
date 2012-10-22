@@ -76,8 +76,7 @@ public class AddInputPortFeature extends AbstractAddActorPortFeature {
 
 		// Layout the text
 		text.setHorizontalAlignment(Orientation.ALIGNMENT_RIGHT);
-		gaService.setLocationAndSize(text, PORT_ANCHOR_GA_SIZE, 0,
-				containerShape.getWidth() - PORT_ANCHOR_GA_SIZE, 16); 
+		gaService.setHeight(text, 16);
 
 		return text;
 	}

@@ -16,6 +16,8 @@
   <eClassifiers xsi:type="ecore:EClass" name="Actor" eSuperTypes="#//AbstractVertex"/>
   <eClassifiers xsi:type="ecore:EClass" name="Port" abstract="true">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        changeable="false"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="InputPort" eSuperTypes="#//Port"/>
   <eClassifiers xsi:type="ecore:EClass" name="OutputPort" eSuperTypes="#//Port"/>
