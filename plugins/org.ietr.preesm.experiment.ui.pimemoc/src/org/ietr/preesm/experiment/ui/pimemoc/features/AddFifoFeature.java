@@ -4,8 +4,11 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddConnectionContext;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.impl.AbstractAddFeature;
+import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
+import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
@@ -37,17 +40,6 @@ public class AddFifoFeature extends AbstractAddFeature {
 	}
 
 	@Override
-	public boolean canAdd(IAddContext context) {
-		// Return true if the given Business object is a Fifo and the context is
-		// an instance of IAddConnectionContext
-		if (context instanceof IAddConnectionContext
-				&& context.getNewObject() instanceof Fifo) {
-			return true;
-		}
-		return false;
-	}
-
-	@Override
 	public PictogramElement add(IAddContext context) {
 		IAddConnectionContext addConContext = (IAddConnectionContext) context;
 		Fifo addedFifo = (Fifo) context.getNewObject();
@@ -72,10 +64,43 @@ public class AddFifoFeature extends AbstractAddFeature {
 		polyline.setLineWidth(2);
 		polyline.setForeground(manageColor(FIFO_FOREGROUND));
 
+		// Add the arrow
+		ConnectionDecorator cd;
+		cd = peCreateService.createConnectionDecorator(connection, false, 1.0,
+				true);
+		createArrow(cd);
+
 		// create link and wire it
 		link(connection, addedFifo);
 
 		return connection;
 	}
 
+	@Override
+	public boolean canAdd(IAddContext context) {
+		// Return true if the given Business object is a Fifo and the context is
+		// an instance of IAddConnectionContext
+		if (context instanceof IAddConnectionContext
+				&& context.getNewObject() instanceof Fifo) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Create the arrow {@link Polygon} that will decorate the {@link Fifo}
+	 * 
+	 * @param gaContainer
+	 *            the {@link GraphicsAlgorithmContainer}
+	 * @return
+	 */
+	protected Polygon createArrow(GraphicsAlgorithmContainer gaContainer) {
+		IGaService gaService = Graphiti.getGaService();
+		Polygon polygon = gaService.createPlainPolygon(gaContainer, new int[] {
+				-10, 5, 0, 0, -10, -5 });
+		polygon.setForeground(manageColor(FIFO_FOREGROUND));
+		polygon.setBackground(manageColor(FIFO_FOREGROUND));
+		polygon.setLineWidth(2);
+		return polygon;
+	}
 }
