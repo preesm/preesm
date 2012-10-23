@@ -20,6 +20,8 @@ import org.ietr.preesm.experiment.model.pimemoc.Port;
  */
 public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
 
+	protected boolean hasDoneChanges = false;
+
 	/**
 	 * Default constructor for the {@link ReconnectionFifoFeature}
 	 * 
@@ -28,108 +30,6 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
 	 */
 	public ReconnectionFifoFeature(IFeatureProvider fp) {
 		super(fp);
-	}
-
-	@Override
-	public boolean canReconnect(IReconnectionContext context) {
-
-		if (context.getOldAnchor().equals(context.getNewAnchor())) {
-			return true;
-		}
-
-		Port newPort = getPort(context.getNewAnchor());
-		Port oldPort = getPort(context.getOldAnchor());
-		if (newPort != null && newPort.getClass().equals(oldPort.getClass())) {
-			// Check that no Fifo is connected to the ports
-			if (newPort instanceof OutputPort) {
-				if (((OutputPort) newPort).getOutgoingFifo() == null) {
-					return true;
-				}
-			}
-
-			if (newPort instanceof InputPort) {
-				if (((InputPort) newPort).getIncomingFifo() == null) {
-					return true;
-				}
-			}
-		}
-
-		// Also true if the TargetPictogramElement is a vertex that can create
-		// ports
-		if (canCreatePort(context.getTargetPictogramElement(),
-				oldPort.getKind()) != null) {
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public void preReconnect(IReconnectionContext context) {
-		// If we reconnect to the same anchor: nothing to do
-		if (context.getOldAnchor().equals(context.getNewAnchor())) {
-			return;
-		}
-
-		// Get the Ports
-		Port newPort = getPort(context.getNewAnchor());
-		Port oldPort = getPort(context.getOldAnchor());
-
-		// If the reconnection involve the creation of a new port
-		// Create it
-		if (newPort == null) {
-			PictogramElement pe = context.getTargetPictogramElement();
-			AbstractAddActorPortFeature addPortFeature = canCreatePort(pe,
-					oldPort.getKind());
-			if (addPortFeature != null) {
-				CustomContext sourceContext = new CustomContext(
-						new PictogramElement[] { pe });
-				addPortFeature.execute(sourceContext);
-				((ReconnectionContext) context).setNewAnchor(addPortFeature
-						.getCreatedAnchor());
-				newPort = addPortFeature.getCreatedPort();
-			}
-		}
-		return;
-	}
-
-	@Override
-	public void postReconnect(IReconnectionContext context) {
-		// Apply changes to the BusinessModel
-		// If we reconnect to the same anchor: nothing to do
-		if (context.getOldAnchor().equals(context.getNewAnchor())) {
-			return;
-		}
-
-		// Get the Ports
-		Port newPort = getPort(context.getNewAnchor());
-		Port oldPort = getPort(context.getOldAnchor());
-
-		if (oldPort instanceof OutputPort) {
-			Fifo fifo = ((OutputPort) oldPort).getOutgoingFifo();
-			fifo.setSourcePort((OutputPort) newPort);
-		}
-		if (oldPort instanceof InputPort) {
-			Fifo fifo = ((InputPort) oldPort).getIncomingFifo();
-			fifo.setTargetPort((InputPort) newPort);
-		}
-	}
-
-	/**
-	 * Method to retrieve the {@link Port} corresponding to an {@link Anchor}
-	 * 
-	 * @param anchor
-	 *            the anchor to treat
-	 * @return the found {@link Port}, or <code>null</code> if no port
-	 *         corresponds to this {@link Anchor}
-	 */
-	protected Port getPort(Anchor anchor) {
-		if (anchor != null) {
-			Object obj = getBusinessObjectForPictogramElement(anchor);
-			if (obj instanceof Port) {
-				return (Port) obj;
-			}
-		}
-		return null;
 	}
 
 	/**
@@ -168,6 +68,122 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	public boolean canReconnect(IReconnectionContext context) {
+
+		if (context.getOldAnchor().equals(context.getNewAnchor())) {
+			return true;
+		}
+
+		Port newPort = getPort(context.getNewAnchor());
+		Port oldPort = getPort(context.getOldAnchor());
+		if (newPort != null && newPort.getClass().equals(oldPort.getClass())) {
+			// Check that no Fifo is connected to the ports
+			if (newPort instanceof OutputPort) {
+				if (((OutputPort) newPort).getOutgoingFifo() == null) {
+					return true;
+				}
+			}
+
+			if (newPort instanceof InputPort) {
+				if (((InputPort) newPort).getIncomingFifo() == null) {
+					return true;
+				}
+			}
+		}
+
+		// Also true if the TargetPictogramElement is a vertex that can create
+		// ports
+		if (canCreatePort(context.getTargetPictogramElement(),
+				oldPort.getKind()) != null) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Method to retrieve the {@link Port} corresponding to an {@link Anchor}
+	 * 
+	 * @param anchor
+	 *            the anchor to treat
+	 * @return the found {@link Port}, or <code>null</code> if no port
+	 *         corresponds to this {@link Anchor}
+	 */
+	protected Port getPort(Anchor anchor) {
+		if (anchor != null) {
+			Object obj = getBusinessObjectForPictogramElement(anchor);
+			if (obj instanceof Port) {
+				return (Port) obj;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public boolean hasDoneChanges() {
+		return this.hasDoneChanges;
+	}
+
+	@Override
+	public void postReconnect(IReconnectionContext context) {
+		// Apply changes to the BusinessModel
+		// If we reconnect to the same anchor: nothing to do
+		if (context.getOldAnchor().equals(context.getNewAnchor())) {
+			return;
+		}
+
+		// Get the Ports
+		Port newPort = getPort(context.getNewAnchor());
+		Port oldPort = getPort(context.getOldAnchor());
+
+		if (oldPort instanceof OutputPort) {
+			Fifo fifo = ((OutputPort) oldPort).getOutgoingFifo();
+			fifo.setSourcePort((OutputPort) newPort);
+		}
+		if (oldPort instanceof InputPort) {
+			Fifo fifo = ((InputPort) oldPort).getIncomingFifo();
+			fifo.setTargetPort((InputPort) newPort);
+		}
+
+		hasDoneChanges = true;
+	}
+
+	@Override
+	public void preReconnect(IReconnectionContext context) {
+		// If we reconnect to the same anchor: nothing to do
+		if (context.getOldAnchor().equals(context.getNewAnchor())) {
+			return;
+		}
+
+		// Get the Ports
+		Port newPort = getPort(context.getNewAnchor());
+		Port oldPort = getPort(context.getOldAnchor());
+
+		// If the reconnection involve the creation of a new port
+		// Create it
+		if (newPort == null) {
+			PictogramElement pe = context.getTargetPictogramElement();
+			AbstractAddActorPortFeature addPortFeature = canCreatePort(pe,
+					oldPort.getKind());
+			if (addPortFeature != null) {
+				CustomContext sourceContext = new CustomContext(
+						new PictogramElement[] { pe });
+				addPortFeature.execute(sourceContext);
+				((ReconnectionContext) context).setNewAnchor(addPortFeature
+						.getCreatedAnchor());
+				newPort = addPortFeature.getCreatedPort();
+			}
+		}
+
+		// If the user canceled the creation of the new port, cancel the
+		// reconnection
+		if (newPort == null) {
+			((ReconnectionContext) context)
+					.setNewAnchor(context.getOldAnchor());
+		}
+		return;
 	}
 
 }
