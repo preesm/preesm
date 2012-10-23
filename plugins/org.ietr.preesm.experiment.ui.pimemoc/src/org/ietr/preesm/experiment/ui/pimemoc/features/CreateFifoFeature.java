@@ -15,6 +15,7 @@ import org.ietr.preesm.experiment.model.pimemoc.InputPort;
 import org.ietr.preesm.experiment.model.pimemoc.OutputPort;
 import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCFactory;
 import org.ietr.preesm.experiment.model.pimemoc.Port;
+import org.ietr.preesm.experiment.ui.pimemoc.util.PimemocUtil;
 
 /**
  * Create feature to create a new Fifo in the Diagram
@@ -40,32 +41,45 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 
 	@Override
 	public boolean canCreate(ICreateConnectionContext context) {
+		// This function is called when selecting the end of a created
+		// connection.
+		// We assume that the canStartConnection is already true
+
+		// Refresh to remove all remaining tooltip;
+		getDiagramEditor().refresh();
+
 		// True if the connection is created between an input and an output port
-		Port source = getPort(context.getSourceAnchor());
 		Port target = getPort(context.getTargetAnchor());
-		boolean sourceOK = (source != null && source instanceof OutputPort);
 		boolean targetOK = (target != null && target instanceof InputPort);
-		if (sourceOK && targetOK) {
+		if (targetOK) {
 			// Check that no Fifo is connected to the ports
-			if (((OutputPort) source).getOutgoingFifo() == null
-					&& ((InputPort) target).getIncomingFifo() == null) {
+			if (((InputPort) target).getIncomingFifo() == null) {
 				return true;
 			} else {
+				// Create tooltip message
+				PimemocUtil.setToolTip(getFeatureProvider(), context
+						.getTargetAnchor().getGraphicsAlgorithm(),
+						getDiagramEditor(),
+						"A port cannot be connected to several FIFOs");
 				return false;
 			}
 		}
 
-		// Check if the source can create a port
-		boolean sourceCanCreate = (canCreatePort(
-				context.getSourcePictogramElement(), "output") != null);
+		if (target != null && target instanceof OutputPort) {
+			// Create tooltip message
+			PimemocUtil.setToolTip(getFeatureProvider(), context
+					.getTargetAnchor().getGraphicsAlgorithm(),
+					getDiagramEditor(), "A FIFO cannot end at an output port");
+			return false;
+		}
 
 		// Check if the target can create a port
 		boolean targetCanCreatePort = (canCreatePort(
 				context.getTargetPictogramElement(), "input") != null);
 
-		// The method also returns true if the sourceActor and/or the target can
+		// The method also returns true if the the target can
 		// create a new port.
-		if ((sourceCanCreate || sourceOK) && (targetCanCreatePort || targetOK)) {
+		if ((targetCanCreatePort || targetOK)) {
 			return true;
 		}
 
@@ -183,6 +197,13 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 	}
 
 	@Override
+	public void endConnecting() {
+		// Refresh to remove all remaining tooltip;
+		getDiagramEditor().refresh();
+		super.endConnecting();
+	}
+
+	@Override
 	public boolean canStartConnection(ICreateConnectionContext context) {
 		// Return true if the connection starts at an output port
 		Port source = getPort(context.getSourceAnchor());
@@ -190,7 +211,22 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 			// Check that no Fifo is connected to the ports
 			if (((OutputPort) source).getOutgoingFifo() == null) {
 				return true;
+			} else {
+				// Create tooltip message
+				PimemocUtil.setToolTip(getFeatureProvider(), context
+						.getSourceAnchor().getGraphicsAlgorithm(),
+						getDiagramEditor(),
+						"A port cannot be connected to several FIFOs");
+				return false;
 			}
+		}
+
+		if (source != null && source instanceof InputPort) {
+			// Create tooltip message
+			PimemocUtil.setToolTip(getFeatureProvider(), context
+					.getSourceAnchor().getGraphicsAlgorithm(),
+					getDiagramEditor(), "A FIFO cannot start at an input port");
+			return false;
 		}
 
 		// Also true if the source is a vertex that can create ports
@@ -211,6 +247,10 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 	 * @return the created {@link Fifo}
 	 */
 	protected Fifo createFifo(OutputPort source, InputPort target) {
+
+		// Refresh to remove all remaining tooltip;
+		getDiagramEditor().refresh();
+
 		// Retrieve the graph
 		Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
 

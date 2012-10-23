@@ -84,12 +84,16 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
 			if (newPort instanceof OutputPort) {
 				if (((OutputPort) newPort).getOutgoingFifo() == null) {
 					return true;
+				} else {
+					return false;
 				}
 			}
 
 			if (newPort instanceof InputPort) {
 				if (((InputPort) newPort).getIncomingFifo() == null) {
 					return true;
+				} else {
+					return false;
 				}
 			}
 		}

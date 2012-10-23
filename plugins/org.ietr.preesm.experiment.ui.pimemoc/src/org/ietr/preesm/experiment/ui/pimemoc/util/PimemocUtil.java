@@ -1,10 +1,15 @@
 package org.ietr.preesm.experiment.ui.pimemoc.util;
 
+import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
+import org.eclipse.graphiti.platform.IDiagramEditor;
+import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+import org.ietr.preesm.experiment.ui.pimemoc.diagram.PimemocToolBehaviorProvider;
 
 public class PimemocUtil {
 	/**
@@ -15,6 +20,8 @@ public class PimemocUtil {
 	private static Shell getShell() {
 		return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 	}
+	
+	
 
 	/**
 	 * Opens an simple input dialog with OK and Cancel buttons.
@@ -42,6 +49,22 @@ public class PimemocUtil {
 			ret = inputDialog.getValue();
 		}
 		return ret;
+	}
+
+
+
+	/**
+	 * @param context
+	 */
+	public static void setToolTip(IFeatureProvider fp, GraphicsAlgorithm ga,
+			IDiagramEditor iDiagramEditor, String message) {
+		IToolBehaviorProvider behaviorProvider = fp.getDiagramTypeProvider()
+				.getCurrentToolBehaviorProvider();
+		((PimemocToolBehaviorProvider) behaviorProvider)
+				.setToolTip(ga, message);
+	
+		iDiagramEditor.refresh();
+		((PimemocToolBehaviorProvider) behaviorProvider).setToolTip(ga, null);
 	}
 
 }
