@@ -8,6 +8,7 @@ import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IMoveAnchorFeature;
+import org.eclipse.graphiti.features.IReconnectionFeature;
 import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
@@ -17,6 +18,7 @@ import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IDirectEditingContext;
 import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.features.context.IMoveAnchorContext;
+import org.eclipse.graphiti.features.context.IReconnectionContext;
 import org.eclipse.graphiti.features.context.IRemoveContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
@@ -40,6 +42,7 @@ import org.ietr.preesm.experiment.ui.pimemoc.features.DeletePortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.DirectEditingActorNameFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutPortFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.ReconnectionFifoFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.RenameActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.RenamePortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.UpdateActorFeature;
@@ -54,6 +57,12 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 	@Override
 	public ICreateConnectionFeature[] getCreateConnectionFeatures() {
 		return new ICreateConnectionFeature[] { new CreateFifoFeature(this) };
+	}
+	
+	@Override
+	public IReconnectionFeature getReconnectionFeature(
+			IReconnectionContext context) {
+		return new ReconnectionFifoFeature(this);
 	}
 
 	@Override

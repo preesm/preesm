@@ -3,10 +3,12 @@ package org.ietr.preesm.experiment.ui.pimemoc.features;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateConnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
+import org.eclipse.graphiti.features.context.impl.CustomContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateConnectionFeature;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimemoc.Fifo;
 import org.ietr.preesm.experiment.model.pimemoc.Graph;
 import org.ietr.preesm.experiment.model.pimemoc.InputPort;
@@ -41,11 +43,71 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 		// True if the connection is created between an input and an output port
 		Port source = getPort(context.getSourceAnchor());
 		Port target = getPort(context.getTargetAnchor());
-		if (source != null && target != null && source instanceof OutputPort
-				&& target instanceof InputPort) {
+		boolean sourceOK = (source != null && source instanceof OutputPort);
+		boolean targetOK = (target != null && target instanceof InputPort);
+		if (sourceOK && targetOK) {
+			// Check that no Fifo is connected to the ports
+			if (((OutputPort) source).getOutgoingFifo() == null
+					&& ((InputPort) target).getIncomingFifo() == null) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		// Check if the source can create a port
+		boolean sourceCanCreate = (canCreatePort(
+				context.getSourcePictogramElement(), "output") != null);
+
+		// Check if the target can create a port
+		boolean targetCanCreatePort = (canCreatePort(
+				context.getTargetPictogramElement(), "input") != null);
+
+		// The method also returns true if the sourceActor and/or the target can
+		// create a new port.
+		if ((sourceCanCreate || sourceOK) && (targetCanCreatePort || targetOK)) {
 			return true;
 		}
+
 		return false;
+	}
+
+	/**
+	 * Method to check whether it is possible to create a {@link Port} for the
+	 * given source/target {@link PictogramElement}
+	 * 
+	 * @param pe
+	 *            the {@link PictogramElement} tested
+	 * @param direction
+	 *            the direction of the port we want to create ("input" or
+	 *            "output")
+	 * @return an {@link AbstractAddActorPortFeature} if the given
+	 *         {@link PictogramElement} can create a {@link Port} with the given
+	 *         direction. Return <code>null</code> else.
+	 */
+	protected AbstractAddActorPortFeature canCreatePort(PictogramElement pe,
+			String direction) {
+		boolean canCreatePort = false;
+		PictogramElement peSource = pe;
+
+		// Create the FeatureProvider
+		CustomContext sourceContext = new CustomContext(
+				new PictogramElement[] { peSource });
+		AbstractAddActorPortFeature addPortFeature = null;
+		if (direction.equals("input")) {
+			addPortFeature = new AddInputPortFeature(getFeatureProvider());
+		}
+		if (direction.equals("output")) {
+			addPortFeature = new AddOutputPortFeature(getFeatureProvider());
+		}
+		if (addPortFeature != null) {
+			canCreatePort = addPortFeature.canExecute(sourceContext);
+		}
+		if (canCreatePort) {
+			return addPortFeature;
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -70,9 +132,39 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 	public Connection create(ICreateConnectionContext context) {
 		Connection newConnection = null;
 
-		// get EClasses which should be connected
-		Port source = getPort(context.getSourceAnchor());
-		Port target = getPort(context.getTargetAnchor());
+		// get Ports which should be connected
+		Anchor sourceAnchor = context.getSourceAnchor();
+		Anchor targetAnchor = context.getTargetAnchor();
+		Port source = getPort(sourceAnchor);
+		Port target = getPort(targetAnchor);
+
+		// Create the sourcePort if needed
+		if (source == null) {
+			PictogramElement sourcePe = context.getSourcePictogramElement();
+			AbstractAddActorPortFeature addPortFeature = canCreatePort(
+					sourcePe, "output");
+			if (addPortFeature != null) {
+				CustomContext sourceContext = new CustomContext(
+						new PictogramElement[] { sourcePe });
+				addPortFeature.execute(sourceContext);
+				sourceAnchor = addPortFeature.getCreatedAnchor();
+				source = addPortFeature.getCreatedPort();
+			}
+		}
+
+		// Create the targetPort if needed
+		if (target == null) {
+			PictogramElement targetPe = context.getTargetPictogramElement();
+			AbstractAddActorPortFeature addPortFeature = canCreatePort(
+					targetPe, "input");
+			if (addPortFeature != null) {
+				CustomContext targetContext = new CustomContext(
+						new PictogramElement[] { targetPe });
+				addPortFeature.execute(targetContext);
+				targetAnchor = addPortFeature.getCreatedAnchor();
+				target = addPortFeature.getCreatedPort();
+			}
+		}
 
 		if (source != null && target != null && source instanceof OutputPort
 				&& target instanceof InputPort) {
@@ -81,7 +173,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 
 			// add connection for business object
 			AddConnectionContext addContext = new AddConnectionContext(
-					context.getSourceAnchor(), context.getTargetAnchor());
+					sourceAnchor, targetAnchor);
 			addContext.setNewObject(fifo);
 			newConnection = (Connection) getFeatureProvider().addIfPossible(
 					addContext);
@@ -95,6 +187,14 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 		// Return true if the connection starts at an output port
 		Port source = getPort(context.getSourceAnchor());
 		if (source != null && source instanceof OutputPort) {
+			// Check that no Fifo is connected to the ports
+			if (((OutputPort) source).getOutgoingFifo() == null) {
+				return true;
+			}
+		}
+
+		// Also true if the source is a vertex that can create ports
+		if (canCreatePort(context.getSourcePictogramElement(), "output") != null) {
 			return true;
 		}
 		return false;

@@ -6,6 +6,7 @@ import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.styles.Font;
+import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -36,30 +37,54 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 		LEFT, RIGHT
 	}
 
-	boolean hasDoneChanges = false;
-
-	@Override
-	public boolean hasDoneChanges() {
-		return this.hasDoneChanges;
-	}
+	/**
+	 * Size of the GA of the anchor
+	 */
+	public static final int PORT_ANCHOR_GA_SIZE = 8;
 
 	public static final IColorConstant PORT_BACKGROUND = IColorConstant.BLACK;
-
-	public static final IColorConstant PORT_TEXT_FOREGROUND = IColorConstant.BLACK;
 
 	/**
 	 * Size of the space between the label of a port and the GA
 	 */
 	public static final int PORT_LABEL_GA_SPACE = 2;
 
+	public static final IColorConstant PORT_TEXT_FOREGROUND = IColorConstant.BLACK;
+
 	/**
-	 * Size of the GA of the anchor
+	 * Store the created port
 	 */
-	public static final int PORT_ANCHOR_GA_SIZE = 8;
+	protected Port createdPort = null;
+
+	protected Anchor createdAnchor = null;
+
+	protected boolean hasDoneChanges = false;
 
 	public AbstractAddActorPortFeature(IFeatureProvider fp) {
 		super(fp);
 	}
+
+	/**
+	 * Add a GraphicAlgorithm of the port.
+	 * 
+	 * @param containerShape
+	 *            the shape containing the port {@link GraphicsAlgorithm}.
+	 * 
+	 * @return the graphic algorithm
+	 */
+	public abstract GraphicsAlgorithm addPortGA(GraphicsAlgorithm containerShape);
+
+	/**
+	 * Add a label to the port
+	 * 
+	 * @param containerShape
+	 *            the shape containing the port
+	 * @param label
+	 *            the name of the port
+	 * @return
+	 */
+	public abstract GraphicsAlgorithm addPortLabel(
+			GraphicsAlgorithm containerShape, String portName);
 
 	@Override
 	public boolean canExecute(ICustomContext context) {
@@ -106,6 +131,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 			// create an box relative anchor
 			final BoxRelativeAnchor boxAnchor = peCreateService
 					.createBoxRelativeAnchor(containerShape);
+			createdAnchor = boxAnchor;
 			if (this.getPosition() == PortPosition.LEFT) {
 				boxAnchor.setRelativeWidth(0.0);
 			} else {
@@ -117,6 +143,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 
 			// Get the new Port and add it to the Graph
 			Port newPort = this.getNewPort(portName, actor);
+			createdPort = newPort;
 
 			// create invisible rectangle
 			Rectangle invisibleRectangle = gaService
@@ -143,6 +170,42 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 	}
 
 	/**
+	 * Get the {@link Port} created by the feature
+	 * 
+	 * @return the {@link Port}, or <code>null</code> if not port was created.
+	 */
+	public Port getCreatedPort() {
+		return createdPort;
+	}
+
+	/**
+	 * Get the {@link Anchor} created by the feature
+	 * 
+	 * @return the {@link Anchor}, or <code>null</code> if not port was created.
+	 */
+	public Anchor getCreatedAnchor() {
+		return createdAnchor;
+	}
+
+	/**
+	 * Create a new port for the given actor
+	 * 
+	 * @param portName
+	 *            the name of the new port to create
+	 * @param actor
+	 *            the actor to which we add a port
+	 * @return the new port, or <code>null</code> if something went wrong
+	 */
+	public abstract Port getNewPort(String portName, Actor actor);
+
+	/**
+	 * Get the font of the port
+	 * 
+	 * @return the font
+	 */
+	public abstract Font getPortFont();
+
+	/**
 	 * Get the port of the created port
 	 * 
 	 * @return the kind of the port
@@ -156,44 +219,9 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 	 */
 	public abstract PortPosition getPosition();
 
-	/**
-	 * Add a GraphicAlgorithm of the port.
-	 * 
-	 * @param containerShape
-	 *            the shape containing the port {@link GraphicsAlgorithm}.
-	 * 
-	 * @return the graphic algorithm
-	 */
-	public abstract GraphicsAlgorithm addPortGA(GraphicsAlgorithm containerShape);
-
-	/**
-	 * Add a label to the port
-	 * 
-	 * @param containerShape
-	 *            the shape containing the port
-	 * @param label
-	 *            the name of the port
-	 * @return
-	 */
-	public abstract GraphicsAlgorithm addPortLabel(
-			GraphicsAlgorithm containerShape, String portName);
-
-	/**
-	 * Get the font of the port
-	 * 
-	 * @return the font
-	 */
-	public abstract Font getPortFont();
-
-	/**
-	 * Create a new port for the given actor
-	 * 
-	 * @param portName
-	 *            the name of the new port to create
-	 * @param actor
-	 *            the actor to which we add a port
-	 * @return the new port, or <code>null</code> if something went wrong
-	 */
-	public abstract Port getNewPort(String portName, Actor actor);
+	@Override
+	public boolean hasDoneChanges() {
+		return this.hasDoneChanges;
+	}
 
 }
