@@ -14,6 +14,7 @@ import org.ietr.preesm.experiment.model.pimemoc.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
 import org.ietr.preesm.experiment.model.pimemoc.Fifo;
 import org.ietr.preesm.experiment.model.pimemoc.Graph;
+import org.ietr.preesm.experiment.model.pimemoc.InterfaceVertex;
 import org.ietr.preesm.experiment.model.pimemoc.Port;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -324,8 +325,8 @@ public class GraphMLWriter {
 		fifoElt.setAttribute("target", target.getName());
 		fifoElt.setAttribute("sourceport", fifo.getSourcePort().getName());
 		fifoElt.setAttribute("targetport", fifo.getTargetPort().getName());
-		
-		// TODO  write Delays and other Fifo properties
+
+		// TODO write Delays and other Fifo properties
 	}
 
 	/**
@@ -369,14 +370,35 @@ public class GraphMLWriter {
 
 		if (vertex instanceof Actor) {
 			writeActor(vertexElt, (Actor) vertex);
-		} /*
-		 * else if(vertex instanceof InterfaceVertex) {
-		 * 
-		 * }
-		 */
+		} else if (vertex instanceof InterfaceVertex) {
+			writeInterfaceVertex(vertexElt, (InterfaceVertex) vertex);
+		}
 
 		// TODO writePorts()
 		// TODO addProperties() of the vertex
 	}
 
+	/**
+	 * Write information of the {@link InterfaceVertex} in the given
+	 * {@link Element}.
+	 * 
+	 * @param vertexElt
+	 *            The {@link Element} to write
+	 * @param vertex
+	 *            The {@link InterfaceVertex} to serialize
+	 */
+	protected void writeInterfaceVertex(Element vertexElt,
+			InterfaceVertex vertex) {
+		// Set the kind of the Actor
+		vertexElt.setAttribute("kind", vertex.getKind());
+		// writeDataElt(vertexElt, "kind", "actor");
+		// Write ports of the actor
+		switch (vertex.getKind()) {
+		case "src":
+			writeDataPorts(vertexElt, vertex.getOutputPorts(), "output");
+			break;
+		default:
+		}
+
+	}
 }

@@ -10,6 +10,12 @@
         eType="#//OutputPort" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Graph" eSuperTypes="#//AbstractVertex">
+    <eOperations name="addInterfaceVertex" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eParameters name="interfaceVertex" eType="#//InterfaceVertex"/>
+    </eOperations>
+    <eOperations name="removeInterfaceVertex" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eParameters name="interfaceVertex" eType="#//InterfaceVertex"/>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="vertices" upperBound="-1"
         eType="#//AbstractVertex" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="fifos" upperBound="-1"
@@ -37,12 +43,9 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="InterfaceVertex" eSuperTypes="#//AbstractVertex">
     <eStructuralFeatures xsi:type="ecore:EReference" name="graphPort" lowerBound="1"
-        eType="#//Port">
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="This {@link Port} is the corresponding {@link Port} of the {@link Graph} containing this {@link Interface} instance."/>
-      </eAnnotations>
-    </eStructuralFeatures>
+        eType="#//Port"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         changeable="false"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SourceInterface" eSuperTypes="#//InterfaceVertex"/>
 </ecore:EPackage>

@@ -71,12 +71,13 @@ public class MoveAbstractVertexFeature extends DefaultMoveShapeFeature {
 				IPeLayoutService peLayoutService = Graphiti
 						.getPeLayoutService();
 				IGaCreateService createService = Graphiti.getGaCreateService();
+				int midHeight = anchor.getGraphicsAlgorithm().getHeight()/2 -1;
 
 				if (isSrcMove || index < 1) {
 					ILocation srcLoc = peLayoutService
 							.getLocationRelativeToDiagram(connection.getStart());
 					Point pSrc = createService.createPoint(srcLoc.getX() + 20,
-							srcLoc.getY() + 7);
+							srcLoc.getY() + midHeight);
 					connection.getBendpoints().add(0, pSrc);
 				}
 				if (!isSrcMove || index < 1) {
@@ -84,7 +85,7 @@ public class MoveAbstractVertexFeature extends DefaultMoveShapeFeature {
 					ILocation trgtLoc = peLayoutService
 							.getLocationRelativeToDiagram(connection.getEnd());
 					Point pTrgt = createService.createPoint(
-							trgtLoc.getX() - 20, trgtLoc.getY() + 7);
+							trgtLoc.getX() - 20, trgtLoc.getY() + midHeight);
 					connection.getBendpoints().add(pTrgt);
 				}
 			}

@@ -23,14 +23,14 @@ import org.ietr.preesm.experiment.ui.pimemoc.diagram.PimemocFeatureProviderWithR
  * @author kdesnos
  * 
  */
-public class DeletePortFeature extends DefaultDeleteFeature {
+public class DeleteActorPortFeature extends DefaultDeleteFeature {
 
 	/**
 	 * Default constructor
 	 * 
 	 * @param fp
 	 */
-	public DeletePortFeature(IFeatureProvider fp) {
+	public DeleteActorPortFeature(IFeatureProvider fp) {
 		super(new PimemocFeatureProviderWithRemove(fp.getDiagramTypeProvider()));
 	}
 

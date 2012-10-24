@@ -119,6 +119,14 @@ public class PIMeMoCSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case PIMeMoCPackage.SOURCE_INTERFACE: {
+				SourceInterface sourceInterface = (SourceInterface)theEObject;
+				T result = caseSourceInterface(sourceInterface);
+				if (result == null) result = caseInterfaceVertex(sourceInterface);
+				if (result == null) result = caseAbstractVertex(sourceInterface);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -240,6 +248,21 @@ public class PIMeMoCSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseInterfaceVertex(InterfaceVertex object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Source Interface</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Source Interface</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseSourceInterface(SourceInterface object) {
 		return null;
 	}
 

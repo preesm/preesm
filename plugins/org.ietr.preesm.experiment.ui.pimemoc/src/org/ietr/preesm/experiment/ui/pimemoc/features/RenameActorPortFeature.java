@@ -7,6 +7,7 @@ import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimemoc.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimemoc.Actor;
 import org.ietr.preesm.experiment.model.pimemoc.Port;
 import org.ietr.preesm.experiment.model.pimemoc.util.PortNameValidator;
 import org.ietr.preesm.experiment.ui.pimemoc.util.PimemocUtil;
@@ -17,7 +18,7 @@ import org.ietr.preesm.experiment.ui.pimemoc.util.PimemocUtil;
  * @author kdesnos
  * 
  */
-public class RenamePortFeature extends AbstractCustomFeature {
+public class RenameActorPortFeature extends AbstractCustomFeature {
 
 	protected boolean hasDoneChanges = false;
 
@@ -27,7 +28,7 @@ public class RenamePortFeature extends AbstractCustomFeature {
 	 * @param fp
 	 *            the feature provider
 	 */
-	public RenamePortFeature(IFeatureProvider fp) {
+	public RenameActorPortFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
@@ -50,7 +51,9 @@ public class RenamePortFeature extends AbstractCustomFeature {
 		if (pes != null && pes.length == 1) {
 			Object bo = getBusinessObjectForPictogramElement(pes[0]);
 			if (bo instanceof Port) {
-				ret = true;
+				if (((Port) bo).eContainer() instanceof Actor) {
+					ret = true;
+				}
 			}
 		}
 		return ret;

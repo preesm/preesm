@@ -60,6 +60,22 @@ public interface Graph extends AbstractVertex {
 	EList<Fifo> getFifos();
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model
+	 * @generated
+	 */
+	boolean addInterfaceVertex(InterfaceVertex interfaceVertex);
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model
+	 * @generated
+	 */
+	boolean removeInterfaceVertex(InterfaceVertex interfaceVertex);
+
+	/**
 	 * Return the list of the names of all vertices of the Graph.
 	 * 
 	 * @return the list of names

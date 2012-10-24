@@ -41,7 +41,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 
 	@Override
 	public boolean canLayout(ILayoutContext context) {
-		// return true, if pictogram element is linked to an EClass
+		// return true, if pictogram element is linked to an Actor
 		PictogramElement pe = context.getPictogramElement();
 		if (!(pe instanceof ContainerShape)) {
 			return false;

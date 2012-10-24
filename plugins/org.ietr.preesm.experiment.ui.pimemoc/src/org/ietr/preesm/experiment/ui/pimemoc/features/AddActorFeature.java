@@ -49,7 +49,6 @@ public class AddActorFeature extends AbstractAddFeature {
              peCreateService.createContainerShape(targetDiagram, true);
  
         // define a default size for the shape
-        //TODO: Automatic size as a function of the content
         int width = 100;
         int height = 50;
         IGaService gaService = Graphiti.getGaService();

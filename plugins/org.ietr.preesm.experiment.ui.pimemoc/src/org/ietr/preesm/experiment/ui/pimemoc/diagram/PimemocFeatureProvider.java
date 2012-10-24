@@ -25,7 +25,6 @@ import org.eclipse.graphiti.features.context.IRemoveContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
-import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -33,22 +32,28 @@ import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
 import org.ietr.preesm.experiment.model.pimemoc.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
 import org.ietr.preesm.experiment.model.pimemoc.Fifo;
+import org.ietr.preesm.experiment.model.pimemoc.InterfaceVertex;
 import org.ietr.preesm.experiment.model.pimemoc.Port;
+import org.ietr.preesm.experiment.model.pimemoc.SourceInterface;
 import org.ietr.preesm.experiment.ui.pimemoc.features.AddActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.AddFifoFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.AddInputPortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.AddOutputPortFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.AddSourceInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CreateActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CreateFifoFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.CreateSourceInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CustomDeleteFeature;
-import org.ietr.preesm.experiment.ui.pimemoc.features.DeletePortFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.DeleteInterfaceVertexFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.DeleteActorPortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.DirectEditingActorNameFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutActorFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutInterfaceVerterFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutPortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.MoveAbstractVertexFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.ReconnectionFifoFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.RenameActorFeature;
-import org.ietr.preesm.experiment.ui.pimemoc.features.RenamePortFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.RenameActorPortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.UpdateActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.UpdatePortFeature;
 
@@ -59,31 +64,14 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 	}
 
 	@Override
-	public ICreateConnectionFeature[] getCreateConnectionFeatures() {
-		return new ICreateConnectionFeature[] { new CreateFifoFeature(this) };
-	}
-
-	@Override
-	public IMoveShapeFeature getMoveShapeFeature(IMoveShapeContext context) {
-		PictogramElement pe = context.getPictogramElement();
-		Object bo = getBusinessObjectForPictogramElement(pe);
-		if(bo instanceof AbstractVertex){
-			return new MoveAbstractVertexFeature(this);
-		}
-		return super.getMoveShapeFeature(context);
-	}
-
-	@Override
-	public IReconnectionFeature getReconnectionFeature(
-			IReconnectionContext context) {
-		return new ReconnectionFifoFeature(this);
-	}
-
-	@Override
 	public IAddFeature getAddFeature(IAddContext context) {
 		// is object for add request an Actor?
 		if (context.getNewObject() instanceof Actor) {
 			return new AddActorFeature(this);
+		}
+
+		if (context.getNewObject() instanceof SourceInterface) {
+			return new AddSourceInterfaceFeature(this);
 		}
 
 		if (context.getNewObject() instanceof Fifo) {
@@ -93,21 +81,37 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 	}
 
 	@Override
+	public ICreateConnectionFeature[] getCreateConnectionFeatures() {
+		return new ICreateConnectionFeature[] { new CreateFifoFeature(this) };
+	}
+
+	@Override
 	public ICreateFeature[] getCreateFeatures() {
-		return new ICreateFeature[] { new CreateActorFeature(this) };
+		return new ICreateFeature[] { new CreateActorFeature(this),
+				new CreateSourceInterfaceFeature(this) };
 	}
 
 	@Override
 	public ICustomFeature[] getCustomFeatures(ICustomContext context) {
 		return new ICustomFeature[] { new RenameActorFeature(this),
 				new AddOutputPortFeature(this), new AddInputPortFeature(this),
-				new RenamePortFeature(this) };
+				new RenameActorPortFeature(this) };
 	}
 
 	@Override
 	public IDeleteFeature getDeleteFeature(IDeleteContext context) {
-		if (context.getPictogramElement() instanceof Anchor) {
-			return new DeletePortFeature(this);
+		PictogramElement pe = context.getPictogramElement();
+		Object bo = getBusinessObjectForPictogramElement(pe);
+
+		if (bo instanceof Port) {
+			if (((Port) bo).eContainer() instanceof Actor) {
+				return new DeleteActorPortFeature(this);
+			} else {
+				return null;
+			}
+		}
+		if (bo instanceof InterfaceVertex) {
+			return new DeleteInterfaceVertexFeature(this);
 		}
 		return new CustomDeleteFeature(this);
 	}
@@ -133,6 +137,9 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 		if (bo instanceof Port) {
 			return new LayoutPortFeature(this);
 		}
+		if (bo instanceof InterfaceVertex) {
+			return new LayoutInterfaceVerterFeature(this);
+		}
 		return super.getLayoutFeature(context);
 	}
 
@@ -140,6 +147,22 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 	public IMoveAnchorFeature getMoveAnchorFeature(IMoveAnchorContext context) {
 		// We forbid the user from moving anchors
 		return null;
+	}
+
+	@Override
+	public IMoveShapeFeature getMoveShapeFeature(IMoveShapeContext context) {
+		PictogramElement pe = context.getPictogramElement();
+		Object bo = getBusinessObjectForPictogramElement(pe);
+		if (bo instanceof AbstractVertex) {
+			return new MoveAbstractVertexFeature(this);
+		}
+		return super.getMoveShapeFeature(context);
+	}
+
+	@Override
+	public IReconnectionFeature getReconnectionFeature(
+			IReconnectionContext context) {
+		return new ReconnectionFifoFeature(this);
 	}
 
 	@Override

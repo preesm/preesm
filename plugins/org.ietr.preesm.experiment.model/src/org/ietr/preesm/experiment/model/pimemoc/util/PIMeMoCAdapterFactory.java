@@ -100,6 +100,10 @@ public class PIMeMoCAdapterFactory extends AdapterFactoryImpl {
 				return createInterfaceVertexAdapter();
 			}
 			@Override
+			public Adapter caseSourceInterface(SourceInterface object) {
+				return createSourceInterfaceAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -228,6 +232,20 @@ public class PIMeMoCAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createInterfaceVertexAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimemoc.SourceInterface <em>Source Interface</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.SourceInterface
+	 * @generated
+	 */
+	public Adapter createSourceInterfaceAdapter() {
 		return null;
 	}
 

@@ -25,9 +25,6 @@ public interface InterfaceVertex extends AbstractVertex {
 	 * Returns the value of the '<em><b>Graph Port</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * <!-- begin-model-doc -->
-	 * This {@link Port} is the corresponding {@link Port} of the {@link Graph} containing this {@link Interface} instance.
-	 * <!-- end-model-doc -->
 	 * @return the value of the '<em>Graph Port</em>' reference.
 	 * @see #setGraphPort(Port)
 	 * @see org.ietr.preesm.experiment.model.pimemoc.PIMeMoCPackage#getInterfaceVertex_GraphPort()

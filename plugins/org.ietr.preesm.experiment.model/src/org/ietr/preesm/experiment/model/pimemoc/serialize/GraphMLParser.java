@@ -12,6 +12,7 @@ import org.ietr.preesm.experiment.model.pimemoc.Graph;
 import org.ietr.preesm.experiment.model.pimemoc.InputPort;
 import org.ietr.preesm.experiment.model.pimemoc.OutputPort;
 import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCFactory;
+import org.ietr.preesm.experiment.model.pimemoc.SourceInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -278,6 +279,9 @@ public class GraphMLParser {
 		case "actor":
 			vertex = parseActor(nodeElt, graph);
 			break;
+		case "src":
+			vertex = parseSourceInterface(nodeElt, graph);
+			break;
 		// TODO Parse all types of nodes
 		// case "implode":
 		// break;
@@ -288,7 +292,7 @@ public class GraphMLParser {
 
 		default:
 			throw new RuntimeException("Parsed node " + nodeElt.getNodeName()
-					+ "has an unknown kind: " + nodeKind);
+					+ " has an unknown kind: " + nodeKind);
 		}
 
 		// Parse the elements of the node
@@ -307,6 +311,33 @@ public class GraphMLParser {
 		}
 		// TODO parsePorts() of the vertex
 
+	}
+
+	/**
+	 * Parse a node {@link Element} with kind "src".
+	 * 
+	 * @param nodeElt
+	 *            the {@link Element} to parse
+	 * @param graph
+	 *            the deserialized {@link Graph}
+	 * @return the created {@link SourceInterface}
+	 */
+	protected AbstractVertex parseSourceInterface(Element nodeElt, Graph graph) {
+		// Instantiate the new Interface and its corresponding port
+		SourceInterface srcInterface = PIMeMoCFactory.eINSTANCE
+				.createSourceInterface();
+		InputPort port = PIMeMoCFactory.eINSTANCE.createInputPort();
+
+		// Set the sourceInterface properties
+		srcInterface.setName(nodeElt.getAttribute("id"));
+		port.setName(srcInterface.getName());
+		srcInterface.setGraphPort(port);
+
+		// Add the actor to the parsed graph
+		graph.getVertices().add(srcInterface);
+		graph.getInputPorts().add(port);
+
+		return srcInterface;
 	}
 
 	protected void parsePort(Element elt, AbstractVertex vertex) {

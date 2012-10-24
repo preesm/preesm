@@ -62,6 +62,7 @@ public class PIMeMoCFactoryImpl extends EFactoryImpl implements PIMeMoCFactory {
 			case PIMeMoCPackage.OUTPUT_PORT: return createOutputPort();
 			case PIMeMoCPackage.FIFO: return createFifo();
 			case PIMeMoCPackage.INTERFACE_VERTEX: return createInterfaceVertex();
+			case PIMeMoCPackage.SOURCE_INTERFACE: return createSourceInterface();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -125,6 +126,16 @@ public class PIMeMoCFactoryImpl extends EFactoryImpl implements PIMeMoCFactory {
 	public InterfaceVertex createInterfaceVertex() {
 		InterfaceVertexImpl interfaceVertex = new InterfaceVertexImpl();
 		return interfaceVertex;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public SourceInterface createSourceInterface() {
+		SourceInterfaceImpl sourceInterface = new SourceInterfaceImpl();
+		return sourceInterface;
 	}
 
 	/**
