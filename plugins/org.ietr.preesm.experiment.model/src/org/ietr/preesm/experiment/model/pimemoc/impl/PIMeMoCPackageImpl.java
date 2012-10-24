@@ -12,6 +12,7 @@ import org.ietr.preesm.experiment.model.pimemoc.Actor;
 import org.ietr.preesm.experiment.model.pimemoc.Fifo;
 import org.ietr.preesm.experiment.model.pimemoc.Graph;
 import org.ietr.preesm.experiment.model.pimemoc.InputPort;
+import org.ietr.preesm.experiment.model.pimemoc.InterfaceVertex;
 import org.ietr.preesm.experiment.model.pimemoc.OutputPort;
 import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCFactory;
 import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCPackage;
@@ -72,6 +73,13 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 	 * @generated
 	 */
 	private EClass fifoEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass interfaceVertexEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -301,6 +309,33 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getInterfaceVertex() {
+		return interfaceVertexEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getInterfaceVertex_GraphPort() {
+		return (EReference)interfaceVertexEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getInterfaceVertex_Kind() {
+		return (EAttribute)interfaceVertexEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public PIMeMoCFactory getPIMeMoCFactory() {
 		return (PIMeMoCFactory)getEFactoryInstance();
 	}
@@ -348,6 +383,10 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 		fifoEClass = createEClass(FIFO);
 		createEReference(fifoEClass, FIFO__SOURCE_PORT);
 		createEReference(fifoEClass, FIFO__TARGET_PORT);
+
+		interfaceVertexEClass = createEClass(INTERFACE_VERTEX);
+		createEReference(interfaceVertexEClass, INTERFACE_VERTEX__GRAPH_PORT);
+		createEAttribute(interfaceVertexEClass, INTERFACE_VERTEX__KIND);
 	}
 
 	/**
@@ -382,6 +421,7 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 		actorEClass.getESuperTypes().add(this.getAbstractVertex());
 		inputPortEClass.getESuperTypes().add(this.getPort());
 		outputPortEClass.getESuperTypes().add(this.getPort());
+		interfaceVertexEClass.getESuperTypes().add(this.getAbstractVertex());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(abstractVertexEClass, AbstractVertex.class, "AbstractVertex", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -408,6 +448,10 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 		initEClass(fifoEClass, Fifo.class, "Fifo", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getFifo_SourcePort(), this.getOutputPort(), this.getOutputPort_OutgoingFifo(), "sourcePort", null, 1, 1, Fifo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getFifo_TargetPort(), this.getInputPort(), this.getInputPort_IncomingFifo(), "targetPort", null, 1, 1, Fifo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(interfaceVertexEClass, InterfaceVertex.class, "InterfaceVertex", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getInterfaceVertex_GraphPort(), this.getPort(), null, "graphPort", null, 1, 1, InterfaceVertex.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getInterfaceVertex_Kind(), ecorePackage.getEString(), "kind", null, 1, 1, InterfaceVertex.class, !IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

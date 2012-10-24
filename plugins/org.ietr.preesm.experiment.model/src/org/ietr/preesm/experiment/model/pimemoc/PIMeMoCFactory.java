@@ -67,6 +67,15 @@ public interface PIMeMoCFactory extends EFactory {
 	Fifo createFifo();
 
 	/**
+	 * Returns a new object of class '<em>Interface Vertex</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Interface Vertex</em>'.
+	 * @generated
+	 */
+	InterfaceVertex createInterfaceVertex();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

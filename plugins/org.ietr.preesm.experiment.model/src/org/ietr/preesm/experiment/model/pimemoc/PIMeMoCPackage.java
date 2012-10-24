@@ -381,6 +381,71 @@ public interface PIMeMoCPackage extends EPackage {
 
 
 	/**
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.InterfaceVertexImpl <em>Interface Vertex</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.ietr.preesm.experiment.model.pimemoc.impl.InterfaceVertexImpl
+	 * @see org.ietr.preesm.experiment.model.pimemoc.impl.PIMeMoCPackageImpl#getInterfaceVertex()
+	 * @generated
+	 */
+	int INTERFACE_VERTEX = 7;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERFACE_VERTEX__NAME = ABSTRACT_VERTEX__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Input Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERFACE_VERTEX__INPUT_PORTS = ABSTRACT_VERTEX__INPUT_PORTS;
+
+	/**
+	 * The feature id for the '<em><b>Output Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERFACE_VERTEX__OUTPUT_PORTS = ABSTRACT_VERTEX__OUTPUT_PORTS;
+
+	/**
+	 * The feature id for the '<em><b>Graph Port</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERFACE_VERTEX__GRAPH_PORT = ABSTRACT_VERTEX_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Kind</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERFACE_VERTEX__KIND = ABSTRACT_VERTEX_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of structural features of the '<em>Interface Vertex</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERFACE_VERTEX_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 2;
+
+
+	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimemoc.AbstractVertex <em>Abstract Vertex</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -572,6 +637,38 @@ public interface PIMeMoCPackage extends EPackage {
 	EReference getFifo_TargetPort();
 
 	/**
+	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimemoc.InterfaceVertex <em>Interface Vertex</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Interface Vertex</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.InterfaceVertex
+	 * @generated
+	 */
+	EClass getInterfaceVertex();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.ietr.preesm.experiment.model.pimemoc.InterfaceVertex#getGraphPort <em>Graph Port</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Graph Port</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.InterfaceVertex#getGraphPort()
+	 * @see #getInterfaceVertex()
+	 * @generated
+	 */
+	EReference getInterfaceVertex_GraphPort();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimemoc.InterfaceVertex#getKind <em>Kind</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Kind</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.InterfaceVertex#getKind()
+	 * @see #getInterfaceVertex()
+	 * @generated
+	 */
+	EAttribute getInterfaceVertex_Kind();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -750,6 +847,32 @@ public interface PIMeMoCPackage extends EPackage {
 		 * @generated
 		 */
 		EReference FIFO__TARGET_PORT = eINSTANCE.getFifo_TargetPort();
+
+		/**
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.InterfaceVertexImpl <em>Interface Vertex</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.ietr.preesm.experiment.model.pimemoc.impl.InterfaceVertexImpl
+		 * @see org.ietr.preesm.experiment.model.pimemoc.impl.PIMeMoCPackageImpl#getInterfaceVertex()
+		 * @generated
+		 */
+		EClass INTERFACE_VERTEX = eINSTANCE.getInterfaceVertex();
+
+		/**
+		 * The meta object literal for the '<em><b>Graph Port</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference INTERFACE_VERTEX__GRAPH_PORT = eINSTANCE.getInterfaceVertex_GraphPort();
+
+		/**
+		 * The meta object literal for the '<em><b>Kind</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute INTERFACE_VERTEX__KIND = eINSTANCE.getInterfaceVertex_Kind();
 
 	}
 

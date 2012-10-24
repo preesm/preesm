@@ -9,17 +9,15 @@ import org.eclipse.emf.common.util.EList;
 /**
  * <!-- begin-user-doc --> A representation of the model object '
  * <em><b>Graph</b></em>'. <!-- end-user-doc -->
- * 
+ *
  * <p>
  * The following features are supported:
  * <ul>
- * <li>{@link org.ietr.preesm.experiment.model.pimemoc.Graph#getVertices <em>
- * Vertices</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimemoc.Graph#getFifos <em>Fifos
- * </em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimemoc.Graph#getVertices <em>Vertices</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimemoc.Graph#getFifos <em>Fifos</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @see org.ietr.preesm.experiment.model.pimemoc.PIMeMoCPackage#getGraph()
  * @model
  * @generated

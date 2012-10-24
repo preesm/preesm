@@ -8,21 +8,16 @@ import org.eclipse.emf.ecore.EObject;
 /**
  * <!-- begin-user-doc --> A representation of the model object '
  * <em><b>Abstract Vertex</b></em>'. <!-- end-user-doc -->
- * 
+ *
  * <p>
  * The following features are supported:
  * <ul>
- * <li>{@link org.ietr.preesm.experiment.model.pimemoc.AbstractVertex#getName
- * <em>Name</em>}</li>
- * <li>
- * {@link org.ietr.preesm.experiment.model.pimemoc.AbstractVertex#getInputPorts
- * <em>Input Ports</em>}</li>
- * <li>
- * {@link org.ietr.preesm.experiment.model.pimemoc.AbstractVertex#getOutputPorts
- * <em>Output Ports</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimemoc.AbstractVertex#getName <em>Name</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimemoc.AbstractVertex#getInputPorts <em>Input Ports</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimemoc.AbstractVertex#getOutputPorts <em>Output Ports</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @see org.ietr.preesm.experiment.model.pimemoc.PIMeMoCPackage#getAbstractVertex()
  * @model abstract="true"
  * @generated
@@ -46,12 +41,9 @@ public interface AbstractVertex extends EObject {
 	String getName();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.experiment.model.pimemoc.AbstractVertex#getName
-	 * <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Name</em>' attribute.
+	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimemoc.AbstractVertex#getName <em>Name</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Name</em>' attribute.
 	 * @see #getName()
 	 * @generated
 	 */
