@@ -10,6 +10,7 @@ import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.ietr.preesm.experiment.model.pimemoc.InterfaceVertex;
@@ -55,7 +56,8 @@ public class LayoutInterfaceVerterFeature extends AbstractLayoutFeature {
 
 		// Retrieve the size of the text
 		IDimension size = null;
-		for (GraphicsAlgorithm ga : containerGa.getGraphicsAlgorithmChildren()) {
+		for (Shape shape : containerShape.getChildren()) {
+			GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
 			if (ga instanceof Text) {
 				size = GraphitiUi.getUiLayoutService().calculateTextSize(
 						iVertex.getName(), ((Text) ga).getFont());
@@ -65,7 +67,8 @@ public class LayoutInterfaceVerterFeature extends AbstractLayoutFeature {
 		// Layout the invisible rectangle
 		containerGa.setWidth(size.getWidth() + 16 + 3);
 		// Layout the label
-		for (GraphicsAlgorithm ga : containerGa.getGraphicsAlgorithmChildren()) {
+		for (Shape shape : containerShape.getChildren()) {
+			GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
 			if (ga instanceof Text) {
 				if (iVertex.getKind().equals("src")) {
 					ga.setWidth(size.getWidth());
@@ -74,7 +77,7 @@ public class LayoutInterfaceVerterFeature extends AbstractLayoutFeature {
 			}
 		}
 
-		return false;
+		return true;
 	}
 
 }

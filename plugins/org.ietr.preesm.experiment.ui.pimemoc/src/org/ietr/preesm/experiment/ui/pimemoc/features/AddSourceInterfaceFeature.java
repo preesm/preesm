@@ -11,6 +11,7 @@ import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
@@ -63,7 +64,7 @@ public class AddSourceInterfaceFeature extends AbstractAddFeature {
 		Rectangle invisibleRectangle = gaService
 				.createInvisibleRectangle(containerShape);
 		gaService.setLocationAndSize(invisibleRectangle, context.getX(),
-				context.getY(), 0, invisibRectHeight);
+				context.getY(), 200, invisibRectHeight);
 
 		RoundedRectangle roundedRectangle; // need to access it later
 		{
@@ -96,13 +97,15 @@ public class AddSourceInterfaceFeature extends AbstractAddFeature {
 		// Name of the SrcInterface - SHAPE WITH TEXT
 		{
 			// create and set text graphics algorithm
-			Text text = gaService.createText(invisibleRectangle,
-					srcInterface.getName());
+			// create shape for text
+			Shape shape = peCreateService.createShape(containerShape, false);
+			Text text = gaService.createText(shape, srcInterface.getName());
 			text.setForeground(manageColor(SRC_TEXT_FOREGROUND));
 			text.setHorizontalAlignment(Orientation.ALIGNMENT_RIGHT);
 			// vertical alignment has as default value "center"
 			text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
 			text.setHeight(20);
+			text.setWidth(200);
 		}
 		// create link and wire it
 		link(containerShape, srcInterface);
