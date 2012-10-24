@@ -9,16 +9,16 @@ import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.ietr.preesm.experiment.model.pimemoc.Actor;
+import org.ietr.preesm.experiment.model.pimemoc.AbstractVertex;
 
-public class UpdateActorFeature extends AbstractUpdateFeature {
+public class UpdateAbstractVertexFeature extends AbstractUpdateFeature {
 
 	/**
-	 * Default constructor of the {@link UpdateActorFeature}
+	 * Default constructor of the {@link UpdateAbstractVertexFeature}
 	 * 
 	 * @param fp
 	 */
-	public UpdateActorFeature(IFeatureProvider fp) {
+	public UpdateAbstractVertexFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
@@ -26,7 +26,7 @@ public class UpdateActorFeature extends AbstractUpdateFeature {
 	public boolean canUpdate(IUpdateContext context) {
 		Object bo = getBusinessObjectForPictogramElement(context
 				.getPictogramElement());
-		return (bo instanceof Actor);
+		return (bo instanceof AbstractVertex);
 	}
 
 	@Override
@@ -44,12 +44,12 @@ public class UpdateActorFeature extends AbstractUpdateFeature {
 			}
 		}
 
-		// retrieve Actor name from business model (from the graph)
+		// retrieve AbstractVertex name from business model (from the graph)
 		String businessName = null;
 		Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-		if (bo instanceof Actor) {
-			Actor actor = (Actor) bo;
-			businessName = actor.getName();
+		if (bo instanceof AbstractVertex) {
+			AbstractVertex vertex = (AbstractVertex) bo;
+			businessName = vertex.getName();
 		}
 
 		// update needed, if names are different
@@ -69,9 +69,9 @@ public class UpdateActorFeature extends AbstractUpdateFeature {
 		String businessName = null;
 		PictogramElement pictogramElement = context.getPictogramElement();
 		Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-		if (bo instanceof Actor) {
-			Actor actor = (Actor) bo;
-			businessName = actor.getName();
+		if (bo instanceof AbstractVertex) {
+			AbstractVertex vertex = (AbstractVertex) bo;
+			businessName = vertex.getName();
 		}
 
 		// Set name in pictogram model

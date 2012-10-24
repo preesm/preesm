@@ -65,6 +65,8 @@ public class AddSourceInterfaceFeature extends AbstractAddFeature {
 				.createInvisibleRectangle(containerShape);
 		gaService.setLocationAndSize(invisibleRectangle, context.getX(),
 				context.getY(), 200, invisibRectHeight);
+		// create link and wire it
+		link(containerShape, srcInterface);
 
 		RoundedRectangle roundedRectangle; // need to access it later
 		{
@@ -106,9 +108,8 @@ public class AddSourceInterfaceFeature extends AbstractAddFeature {
 			text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
 			text.setHeight(20);
 			text.setWidth(200);
+			link(shape, srcInterface);
 		}
-		// create link and wire it
-		link(containerShape, srcInterface);
 
 		// Call the layout feature
 		layoutPictogramElement(containerShape);

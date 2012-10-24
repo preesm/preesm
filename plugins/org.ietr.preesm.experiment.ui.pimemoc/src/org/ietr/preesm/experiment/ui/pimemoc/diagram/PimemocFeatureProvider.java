@@ -46,7 +46,7 @@ import org.ietr.preesm.experiment.ui.pimemoc.features.CreateSourceInterfaceFeatu
 import org.ietr.preesm.experiment.ui.pimemoc.features.CustomDeleteFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.DeleteInterfaceVertexFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.DeleteActorPortFeature;
-import org.ietr.preesm.experiment.ui.pimemoc.features.DirectEditingActorNameFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.DirectEditingAbstractVertexNameFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutInterfaceVertexFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutPortFeature;
@@ -54,7 +54,7 @@ import org.ietr.preesm.experiment.ui.pimemoc.features.MoveAbstractVertexFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.ReconnectionFifoFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.RenameActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.RenameActorPortFeature;
-import org.ietr.preesm.experiment.ui.pimemoc.features.UpdateActorFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.UpdateAbstractVertexFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.UpdatePortFeature;
 
 public class PimemocFeatureProvider extends DefaultFeatureProvider {
@@ -121,8 +121,8 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 			IDirectEditingContext context) {
 		PictogramElement pe = context.getPictogramElement();
 		Object bo = getBusinessObjectForPictogramElement(pe);
-		if (bo instanceof Actor) {
-			return new DirectEditingActorNameFeature(this);
+		if (bo instanceof AbstractVertex) {
+			return new DirectEditingAbstractVertexNameFeature(this);
 		}
 		return super.getDirectEditingFeature(context);
 	}
@@ -210,8 +210,8 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 		PictogramElement pictogramElement = context.getPictogramElement();
 		if (pictogramElement instanceof ContainerShape) {
 			Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-			if (bo instanceof Actor) {
-				return new UpdateActorFeature(this);
+			if (bo instanceof AbstractVertex) {
+				return new UpdateAbstractVertexFeature(this);
 			}
 		}
 		if (pictogramElement instanceof BoxRelativeAnchor) {

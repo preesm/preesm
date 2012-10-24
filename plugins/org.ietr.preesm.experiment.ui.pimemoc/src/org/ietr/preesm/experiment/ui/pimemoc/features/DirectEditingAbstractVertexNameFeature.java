@@ -7,26 +7,26 @@ import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.ietr.preesm.experiment.model.pimemoc.Actor;
+import org.ietr.preesm.experiment.model.pimemoc.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimemoc.Graph;
 import org.ietr.preesm.experiment.model.pimemoc.util.VertexNameValidator;
 
 /**
  * This class provide the feature that allows the direct edition of an
- * {@link Actor} name.
+ * {@link AbstractVertex} name.
  * 
  * @author kdesnos
  * 
  */
-public class DirectEditingActorNameFeature extends AbstractDirectEditingFeature {
+public class DirectEditingAbstractVertexNameFeature extends AbstractDirectEditingFeature {
 
 	/**
-	 * Default constructor of the {@link DirectEditingActorNameFeature}
+	 * Default constructor of the {@link DirectEditingAbstractVertexNameFeature}
 	 * 
 	 * @param fp
 	 *            the feature provider
 	 */
-	public DirectEditingActorNameFeature(IFeatureProvider fp) {
+	public DirectEditingAbstractVertexNameFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
@@ -40,9 +40,9 @@ public class DirectEditingActorNameFeature extends AbstractDirectEditingFeature 
 		PictogramElement pe = context.getPictogramElement();
 		Object bo = getBusinessObjectForPictogramElement(pe);
 		GraphicsAlgorithm ga = context.getGraphicsAlgorithm();
-		// support direct editing, if it is a Actor, and the user clicked
+		// support direct editing, if it is a AbstractVertex, and the user clicked
 		// directly on the text and not somewhere else in the rectangle
-		if (bo instanceof Actor && ga instanceof Text) {
+		if (bo instanceof AbstractVertex && ga instanceof Text) {
 			return true;
 		}
 		// direct editing not supported in all other cases
@@ -51,32 +51,32 @@ public class DirectEditingActorNameFeature extends AbstractDirectEditingFeature 
 
 	@Override
 	public String getInitialValue(IDirectEditingContext context) {
-		// return the current name of the EClass
+		// return the current name of the AbstractVertex
 		PictogramElement pe = context.getPictogramElement();
-		Actor actor = (Actor) getBusinessObjectForPictogramElement(pe);
-		return actor.getName();
+		AbstractVertex vertex = (AbstractVertex) getBusinessObjectForPictogramElement(pe);
+		return vertex.getName();
 	}
 
 	@Override
 	public String checkValueValid(String value, IDirectEditingContext context) {
 		Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
 		PictogramElement pe = context.getPictogramElement();
-		Actor renamedActor = (Actor) getBusinessObjectForPictogramElement(pe);
+		AbstractVertex renamedVertex = (AbstractVertex) getBusinessObjectForPictogramElement(pe);
 		VertexNameValidator validator = new VertexNameValidator(graph,
-				renamedActor);
+				renamedVertex);
 		
 		return validator.isValid(value);
 	}
 
 	@Override
 	public void setValue(String value, IDirectEditingContext context) {
-		// set the new name for the Actor
+		// set the new name for the AbstractVertex
 		PictogramElement pe = context.getPictogramElement();
-		Actor actor = (Actor) getBusinessObjectForPictogramElement(pe);
-		actor.setName(value);
+		AbstractVertex vertex = (AbstractVertex) getBusinessObjectForPictogramElement(pe);
+		vertex.setName(value);
 
 		// we know, that pe is the Shape of the Text, so its container is the
-		// main shape of the Actor
+		// main shape of the AbstractVertex
 		updatePictogramElement(((Shape) pe).getContainer());
 		
 		// Call the layout feature
