@@ -69,6 +69,9 @@ public interface Graph extends AbstractVertex {
 
 	/**
 	 * <!-- begin-user-doc -->
+	 * This method will remove the
+	 * {@link InterfaceVertex} and the corresponding {@link Port} from the
+	 * {@link Graph}.
 	 * <!-- end-user-doc -->
 	 * @model
 	 * @generated

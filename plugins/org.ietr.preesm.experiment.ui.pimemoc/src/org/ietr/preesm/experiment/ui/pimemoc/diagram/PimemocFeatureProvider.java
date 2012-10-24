@@ -44,6 +44,7 @@ import org.ietr.preesm.experiment.ui.pimemoc.features.CreateActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CreateFifoFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CreateSourceInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CustomDeleteFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.DeleteAbstractVertexFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.DeleteInterfaceVertexFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.DeleteActorPortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.DirectEditingAbstractVertexNameFeature;
@@ -106,12 +107,17 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 		if (bo instanceof Port) {
 			if (((Port) bo).eContainer() instanceof Actor) {
 				return new DeleteActorPortFeature(this);
-			} else {
+			}
+			if (((Port) bo).eContainer() instanceof InterfaceVertex) {
+				// We do not allow deletion of the port of an InterfaceVertex
+				// through the GUI
 				return null;
 			}
 		}
 		if (bo instanceof InterfaceVertex) {
 			return new DeleteInterfaceVertexFeature(this);
+		} else if (bo instanceof AbstractVertex) {
+			return new DeleteAbstractVertexFeature(this);
 		}
 		return new CustomDeleteFeature(this);
 	}

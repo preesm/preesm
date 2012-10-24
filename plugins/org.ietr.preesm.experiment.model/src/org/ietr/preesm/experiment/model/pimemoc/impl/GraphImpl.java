@@ -27,31 +27,17 @@ import org.ietr.preesm.experiment.model.pimemoc.Port;
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>
- * {@link org.ietr.preesm.experiment.model.pimemoc.impl.GraphImpl#getVertices
- * <em>Vertices</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimemoc.impl.GraphImpl#getFifos
- * <em>Fifos</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimemoc.impl.GraphImpl#getVertices <em>Vertices</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimemoc.impl.GraphImpl#getFifos <em>Fifos</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @generated
  */
 public class GraphImpl extends AbstractVertexImpl implements Graph {
 	/**
-	 * The cached value of the '{@link #getFifos() <em>Fifos</em>}' containment
-	 * reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getFifos()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<Fifo> fifos;
-
-	/**
-	 * The cached value of the '{@link #getVertices() <em>Vertices</em>}'
-	 * containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getVertices() <em>Vertices</em>}' containment reference list.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getVertices()
 	 * @generated
 	 * @ordered
@@ -59,8 +45,16 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 	protected EList<AbstractVertex> vertices;
 
 	/**
+	 * The cached value of the '{@link #getFifos() <em>Fifos</em>}' containment reference list.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * @see #getFifos()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<Fifo> fifos;
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	protected GraphImpl() {
@@ -94,79 +88,72 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case PIMeMoCPackage.GRAPH__VERTICES:
-			return getVertices();
-		case PIMeMoCPackage.GRAPH__FIFOS:
-			return getFifos();
+			case PIMeMoCPackage.GRAPH__VERTICES:
+				return getVertices();
+			case PIMeMoCPackage.GRAPH__FIFOS:
+				return getFifos();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd,
 			int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case PIMeMoCPackage.GRAPH__VERTICES:
-			return ((InternalEList<?>) getVertices()).basicRemove(otherEnd,
-					msgs);
-		case PIMeMoCPackage.GRAPH__FIFOS:
-			return ((InternalEList<?>) getFifos()).basicRemove(otherEnd, msgs);
+			case PIMeMoCPackage.GRAPH__VERTICES:
+				return ((InternalEList<?>)getVertices()).basicRemove(otherEnd, msgs);
+			case PIMeMoCPackage.GRAPH__FIFOS:
+				return ((InternalEList<?>)getFifos()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case PIMeMoCPackage.GRAPH__VERTICES:
-			return vertices != null && !vertices.isEmpty();
-		case PIMeMoCPackage.GRAPH__FIFOS:
-			return fifos != null && !fifos.isEmpty();
+			case PIMeMoCPackage.GRAPH__VERTICES:
+				return vertices != null && !vertices.isEmpty();
+			case PIMeMoCPackage.GRAPH__FIFOS:
+				return fifos != null && !fifos.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case PIMeMoCPackage.GRAPH__VERTICES:
-			getVertices().clear();
-			getVertices().addAll(
-					(Collection<? extends AbstractVertex>) newValue);
-			return;
-		case PIMeMoCPackage.GRAPH__FIFOS:
-			getFifos().clear();
-			getFifos().addAll((Collection<? extends Fifo>) newValue);
-			return;
+			case PIMeMoCPackage.GRAPH__VERTICES:
+				getVertices().clear();
+				getVertices().addAll((Collection<? extends AbstractVertex>)newValue);
+				return;
+			case PIMeMoCPackage.GRAPH__FIFOS:
+				getFifos().clear();
+				getFifos().addAll((Collection<? extends Fifo>)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -176,31 +163,28 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case PIMeMoCPackage.GRAPH__VERTICES:
-			getVertices().clear();
-			return;
-		case PIMeMoCPackage.GRAPH__FIFOS:
-			getFifos().clear();
-			return;
+			case PIMeMoCPackage.GRAPH__VERTICES:
+				getVertices().clear();
+				return;
+			case PIMeMoCPackage.GRAPH__FIFOS:
+				getFifos().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public EList<Fifo> getFifos() {
 		if (fifos == null) {
-			fifos = new EObjectContainmentEList<Fifo>(Fifo.class, this,
-					PIMeMoCPackage.GRAPH__FIFOS);
+			fifos = new EObjectContainmentEList<Fifo>(Fifo.class, this, PIMeMoCPackage.GRAPH__FIFOS);
 		}
 		return fifos;
 	}
@@ -218,13 +202,11 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public EList<AbstractVertex> getVertices() {
 		if (vertices == null) {
-			vertices = new EObjectContainmentEList<AbstractVertex>(
-					AbstractVertex.class, this, PIMeMoCPackage.GRAPH__VERTICES);
+			vertices = new EObjectContainmentEList<AbstractVertex>(AbstractVertex.class, this, PIMeMoCPackage.GRAPH__VERTICES);
 		}
 		return vertices;
 	}
@@ -239,9 +221,7 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 	}
 
 	/**
-	 * <!-- begin-user-doc --> This method will remove the
-	 * {@link InterfaceVertex} and the corresponding {@link Port} from the
-	 * {@link Graph}.<!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * 
 	 */
