@@ -1,12 +1,16 @@
 package org.ietr.preesm.experiment.ui.pimemoc.features;
 
+import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IReconnectionContext;
 import org.eclipse.graphiti.features.context.impl.CustomContext;
+import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.context.impl.ReconnectionContext;
 import org.eclipse.graphiti.features.impl.DefaultReconnectionFeature;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
 import org.ietr.preesm.experiment.model.pimemoc.Fifo;
 import org.ietr.preesm.experiment.model.pimemoc.InputPort;
 import org.ietr.preesm.experiment.model.pimemoc.OutputPort;
@@ -150,6 +154,19 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
 			Fifo fifo = ((InputPort) oldPort).getIncomingFifo();
 			fifo.setTargetPort((InputPort) newPort);
 		}
+
+		// Call the move feature of the anchor owner to layout the connection
+		MoveAbstractVertexFeature moveFeature = new MoveAbstractVertexFeature(
+				getFeatureProvider());
+		ContainerShape cs = (ContainerShape) context.getNewAnchor()
+				.getReferencedGraphicsAlgorithm().getPictogramElement();
+		MoveShapeContext moveCtxt = new MoveShapeContext(cs);
+		moveCtxt.setDeltaX(0);
+		moveCtxt.setDeltaY(0);
+		ILocation csLoc = Graphiti.getPeLayoutService()
+				.getLocationRelativeToDiagram(cs);
+		moveCtxt.setLocation(csLoc.getX(), csLoc.getY());
+		moveFeature.moveShape(moveCtxt);
 
 		hasDoneChanges = true;
 	}

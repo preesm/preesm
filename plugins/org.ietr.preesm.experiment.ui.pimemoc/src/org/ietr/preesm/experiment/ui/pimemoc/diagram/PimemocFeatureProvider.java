@@ -8,6 +8,7 @@ import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IMoveAnchorFeature;
+import org.eclipse.graphiti.features.IMoveShapeFeature;
 import org.eclipse.graphiti.features.IReconnectionFeature;
 import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
@@ -18,6 +19,7 @@ import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IDirectEditingContext;
 import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.features.context.IMoveAnchorContext;
+import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.features.context.IReconnectionContext;
 import org.eclipse.graphiti.features.context.IRemoveContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
@@ -28,6 +30,7 @@ import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
+import org.ietr.preesm.experiment.model.pimemoc.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
 import org.ietr.preesm.experiment.model.pimemoc.Fifo;
 import org.ietr.preesm.experiment.model.pimemoc.Port;
@@ -42,6 +45,7 @@ import org.ietr.preesm.experiment.ui.pimemoc.features.DeletePortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.DirectEditingActorNameFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutPortFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.MoveAbstractVertexFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.ReconnectionFifoFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.RenameActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.RenamePortFeature;
@@ -58,7 +62,17 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 	public ICreateConnectionFeature[] getCreateConnectionFeatures() {
 		return new ICreateConnectionFeature[] { new CreateFifoFeature(this) };
 	}
-	
+
+	@Override
+	public IMoveShapeFeature getMoveShapeFeature(IMoveShapeContext context) {
+		PictogramElement pe = context.getPictogramElement();
+		Object bo = getBusinessObjectForPictogramElement(pe);
+		if(bo instanceof AbstractVertex){
+			return new MoveAbstractVertexFeature(this);
+		}
+		return super.getMoveShapeFeature(context);
+	}
+
 	@Override
 	public IReconnectionFeature getReconnectionFeature(
 			IReconnectionContext context) {

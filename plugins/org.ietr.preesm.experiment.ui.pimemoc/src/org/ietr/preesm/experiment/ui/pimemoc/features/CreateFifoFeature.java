@@ -64,7 +64,8 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 				return false;
 			}
 		}
-
+		
+		// False if the target is an outputPort
 		if (target != null && target instanceof OutputPort) {
 			// Create tooltip message
 			PimemocUtil.setToolTip(getFeatureProvider(), context

@@ -20,8 +20,6 @@ public class PimemocUtil {
 	private static Shell getShell() {
 		return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 	}
-	
-	
 
 	/**
 	 * Opens an simple input dialog with OK and Cancel buttons.
@@ -51,10 +49,18 @@ public class PimemocUtil {
 		return ret;
 	}
 
-
-
 	/**
-	 * @param context
+	 * Utility method used to set a temporary tooltip message for a given
+	 * {@link GraphicsAlgorithm}
+	 * 
+	 * @param fp
+	 *            the {@link IFeatureProvider}
+	 * @param ga
+	 *            the {@link GraphicsAlgorithm}
+	 * @param iDiagramEditor
+	 *            the {@link IDiagramEditor}
+	 * @param message
+	 *            the message to put in the tooltip
 	 */
 	public static void setToolTip(IFeatureProvider fp, GraphicsAlgorithm ga,
 			IDiagramEditor iDiagramEditor, String message) {
@@ -62,7 +68,7 @@ public class PimemocUtil {
 				.getCurrentToolBehaviorProvider();
 		((PimemocToolBehaviorProvider) behaviorProvider)
 				.setToolTip(ga, message);
-	
+
 		iDiagramEditor.refresh();
 		((PimemocToolBehaviorProvider) behaviorProvider).setToolTip(ga, null);
 	}
