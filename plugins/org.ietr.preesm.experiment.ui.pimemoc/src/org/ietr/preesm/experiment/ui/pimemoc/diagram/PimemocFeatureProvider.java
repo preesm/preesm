@@ -48,7 +48,7 @@ import org.ietr.preesm.experiment.ui.pimemoc.features.DeleteInterfaceVertexFeatu
 import org.ietr.preesm.experiment.ui.pimemoc.features.DeleteActorPortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.DirectEditingActorNameFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutActorFeature;
-import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutInterfaceVerterFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutInterfaceVertexFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutPortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.MoveAbstractVertexFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.ReconnectionFifoFeature;
@@ -138,7 +138,7 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 			return new LayoutPortFeature(this);
 		}
 		if (bo instanceof InterfaceVertex) {
-			return new LayoutInterfaceVerterFeature(this);
+			return new LayoutInterfaceVertexFeature(this);
 		}
 		return super.getLayoutFeature(context);
 	}

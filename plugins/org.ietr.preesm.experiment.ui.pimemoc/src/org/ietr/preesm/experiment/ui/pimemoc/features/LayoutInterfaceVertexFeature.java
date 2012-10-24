@@ -21,15 +21,15 @@ import org.ietr.preesm.experiment.model.pimemoc.InterfaceVertex;
  * @author kdesnos
  * 
  */
-public class LayoutInterfaceVerterFeature extends AbstractLayoutFeature {
+public class LayoutInterfaceVertexFeature extends AbstractLayoutFeature {
 
 	/**
-	 * Default constructor of the {@link LayoutInterfaceVerterFeature}
+	 * Default constructor of the {@link LayoutInterfaceVertexFeature}
 	 * 
 	 * @param fp
 	 *            the feature provider
 	 */
-	public LayoutInterfaceVerterFeature(IFeatureProvider fp) {
+	public LayoutInterfaceVertexFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
