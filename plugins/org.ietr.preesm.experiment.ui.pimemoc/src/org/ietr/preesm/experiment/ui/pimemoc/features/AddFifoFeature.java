@@ -4,19 +4,18 @@ import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddConnectionContext;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.impl.AbstractAddFeature;
 import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
 import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
-import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.ICreateService;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
-import org.eclipse.graphiti.services.IPeLayoutService;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.ietr.preesm.experiment.model.pimemoc.Fifo;
@@ -113,23 +112,21 @@ public class AddFifoFeature extends AbstractAddFeature {
 		connection.setEnd(addContext.getTargetAnchor());
 
 		// Layout the edge
-		IGaService gaService = Graphiti.getGaService();
-		ICreateService createService = Graphiti.getCreateService();
-		IPeLayoutService peLayoutService = Graphiti.getPeLayoutService();
-
-		ILocation srcLoc = peLayoutService
-				.getLocationRelativeToDiagram(addContext.getSourceAnchor());
-		Point pSrc = createService.createPoint(srcLoc.getX() + 20,
-				srcLoc.getY() + 7);
-		connection.getBendpoints().add(pSrc);
-
-		ILocation trgtLoc = peLayoutService
-				.getLocationRelativeToDiagram(addContext.getTargetAnchor());
-		Point pTrgt = createService.createPoint(trgtLoc.getX() - 20,
-				trgtLoc.getY() + 7);
-		connection.getBendpoints().add(pTrgt);
+		// Call the move feature of the anchor owner to layout the connection
+		MoveAbstractVertexFeature moveFeature = new MoveAbstractVertexFeature(
+				getFeatureProvider());
+		ContainerShape cs = (ContainerShape) connection.getStart()
+				.getReferencedGraphicsAlgorithm().getPictogramElement();
+		MoveShapeContext moveCtxt = new MoveShapeContext(cs);
+		moveCtxt.setDeltaX(0);
+		moveCtxt.setDeltaY(0);
+		ILocation csLoc = Graphiti.getPeLayoutService()
+				.getLocationRelativeToDiagram(cs);
+		moveCtxt.setLocation(csLoc.getX(), csLoc.getY());
+		moveFeature.moveShape(moveCtxt);
 
 		// Create the associated Polyline
+		IGaService gaService = Graphiti.getGaService();
 		Polyline polyline = gaService.createPolyline(connection);
 		polyline.setLineWidth(2);
 		polyline.setForeground(manageColor(FIFO_FOREGROUND));
