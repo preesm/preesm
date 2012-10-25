@@ -511,6 +511,71 @@ public interface PIMeMoCPackage extends EPackage {
 
 
 	/**
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.SinkInterfaceImpl <em>Sink Interface</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.ietr.preesm.experiment.model.pimemoc.impl.SinkInterfaceImpl
+	 * @see org.ietr.preesm.experiment.model.pimemoc.impl.PIMeMoCPackageImpl#getSinkInterface()
+	 * @generated
+	 */
+	int SINK_INTERFACE = 9;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SINK_INTERFACE__NAME = INTERFACE_VERTEX__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Input Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SINK_INTERFACE__INPUT_PORTS = INTERFACE_VERTEX__INPUT_PORTS;
+
+	/**
+	 * The feature id for the '<em><b>Output Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SINK_INTERFACE__OUTPUT_PORTS = INTERFACE_VERTEX__OUTPUT_PORTS;
+
+	/**
+	 * The feature id for the '<em><b>Graph Port</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SINK_INTERFACE__GRAPH_PORT = INTERFACE_VERTEX__GRAPH_PORT;
+
+	/**
+	 * The feature id for the '<em><b>Kind</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SINK_INTERFACE__KIND = INTERFACE_VERTEX__KIND;
+
+	/**
+	 * The number of structural features of the '<em>Sink Interface</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SINK_INTERFACE_FEATURE_COUNT = INTERFACE_VERTEX_FEATURE_COUNT + 0;
+
+
+	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimemoc.AbstractVertex <em>Abstract Vertex</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -744,6 +809,16 @@ public interface PIMeMoCPackage extends EPackage {
 	EClass getSourceInterface();
 
 	/**
+	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimemoc.SinkInterface <em>Sink Interface</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Sink Interface</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.SinkInterface
+	 * @generated
+	 */
+	EClass getSinkInterface();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -958,6 +1033,16 @@ public interface PIMeMoCPackage extends EPackage {
 		 * @generated
 		 */
 		EClass SOURCE_INTERFACE = eINSTANCE.getSourceInterface();
+
+		/**
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.SinkInterfaceImpl <em>Sink Interface</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.ietr.preesm.experiment.model.pimemoc.impl.SinkInterfaceImpl
+		 * @see org.ietr.preesm.experiment.model.pimemoc.impl.PIMeMoCPackageImpl#getSinkInterface()
+		 * @generated
+		 */
+		EClass SINK_INTERFACE = eINSTANCE.getSinkInterface();
 
 	}
 

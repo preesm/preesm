@@ -104,6 +104,10 @@ public class PIMeMoCAdapterFactory extends AdapterFactoryImpl {
 				return createSourceInterfaceAdapter();
 			}
 			@Override
+			public Adapter caseSinkInterface(SinkInterface object) {
+				return createSinkInterfaceAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -246,6 +250,20 @@ public class PIMeMoCAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createSourceInterfaceAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimemoc.SinkInterface <em>Sink Interface</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.SinkInterface
+	 * @generated
+	 */
+	public Adapter createSinkInterfaceAdapter() {
 		return null;
 	}
 

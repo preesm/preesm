@@ -48,4 +48,5 @@
         changeable="false"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="SourceInterface" eSuperTypes="#//InterfaceVertex"/>
+  <eClassifiers xsi:type="ecore:EClass" name="SinkInterface" eSuperTypes="#//InterfaceVertex"/>
 </ecore:EPackage>

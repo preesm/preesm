@@ -18,6 +18,7 @@ import org.ietr.preesm.experiment.model.pimemoc.OutputPort;
 import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCFactory;
 import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCPackage;
 import org.ietr.preesm.experiment.model.pimemoc.Port;
+import org.ietr.preesm.experiment.model.pimemoc.SinkInterface;
 import org.ietr.preesm.experiment.model.pimemoc.SourceInterface;
 
 /**
@@ -89,6 +90,13 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 	 * @generated
 	 */
 	private EClass sourceInterfaceEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass sinkInterfaceEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -354,6 +362,15 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getSinkInterface() {
+		return sinkInterfaceEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public PIMeMoCFactory getPIMeMoCFactory() {
 		return (PIMeMoCFactory)getEFactoryInstance();
 	}
@@ -407,6 +424,8 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 		createEAttribute(interfaceVertexEClass, INTERFACE_VERTEX__KIND);
 
 		sourceInterfaceEClass = createEClass(SOURCE_INTERFACE);
+
+		sinkInterfaceEClass = createEClass(SINK_INTERFACE);
 	}
 
 	/**
@@ -443,6 +462,7 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 		outputPortEClass.getESuperTypes().add(this.getPort());
 		interfaceVertexEClass.getESuperTypes().add(this.getAbstractVertex());
 		sourceInterfaceEClass.getESuperTypes().add(this.getInterfaceVertex());
+		sinkInterfaceEClass.getESuperTypes().add(this.getInterfaceVertex());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(abstractVertexEClass, AbstractVertex.class, "AbstractVertex", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -481,6 +501,8 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 		initEAttribute(getInterfaceVertex_Kind(), ecorePackage.getEString(), "kind", null, 1, 1, InterfaceVertex.class, !IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(sourceInterfaceEClass, SourceInterface.class, "SourceInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(sinkInterfaceEClass, SinkInterface.class, "SinkInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		// Create resource
 		createResource(eNS_URI);

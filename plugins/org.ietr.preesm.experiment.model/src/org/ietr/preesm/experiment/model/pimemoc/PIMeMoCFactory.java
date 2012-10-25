@@ -85,6 +85,15 @@ public interface PIMeMoCFactory extends EFactory {
 	SourceInterface createSourceInterface();
 
 	/**
+	 * Returns a new object of class '<em>Sink Interface</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Sink Interface</em>'.
+	 * @generated
+	 */
+	SinkInterface createSinkInterface();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

@@ -127,6 +127,14 @@ public class PIMeMoCSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case PIMeMoCPackage.SINK_INTERFACE: {
+				SinkInterface sinkInterface = (SinkInterface)theEObject;
+				T result = caseSinkInterface(sinkInterface);
+				if (result == null) result = caseInterfaceVertex(sinkInterface);
+				if (result == null) result = caseAbstractVertex(sinkInterface);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -263,6 +271,21 @@ public class PIMeMoCSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseSourceInterface(SourceInterface object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Sink Interface</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Sink Interface</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseSinkInterface(SinkInterface object) {
 		return null;
 	}
 
