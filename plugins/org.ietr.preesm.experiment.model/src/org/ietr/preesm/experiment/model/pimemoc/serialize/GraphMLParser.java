@@ -107,6 +107,9 @@ public class GraphMLParser {
 		// Add the actor to the parsed graph
 		graph.getVertices().add(actor);
 
+		String refinement = getProperty(nodeElt, "graph_desc");
+		actor.getRefinement().setFileName(refinement);
+
 		return actor;
 	}
 

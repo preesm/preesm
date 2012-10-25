@@ -16,6 +16,7 @@ import org.ietr.preesm.experiment.model.pimemoc.Fifo;
 import org.ietr.preesm.experiment.model.pimemoc.Graph;
 import org.ietr.preesm.experiment.model.pimemoc.InterfaceVertex;
 import org.ietr.preesm.experiment.model.pimemoc.Port;
+import org.ietr.preesm.experiment.model.pimemoc.Refinement;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -228,10 +229,26 @@ public class GraphMLWriter {
 		// TODO change this method when severa kinds will exist
 		// Set the kind of the Actor
 		vertexElt.setAttribute("kind", "actor");
+		writeRefinement(vertexElt, actor.getRefinement());
 		// writeDataElt(vertexElt, "kind", "actor");
 		// Write ports of the actor
 		writeDataPorts(vertexElt, actor.getInputPorts(), "input");
 		writeDataPorts(vertexElt, actor.getOutputPorts(), "output");
+
+	}
+
+	/**
+	 * Write information of the {@link Refinement} in the given {@link Element}.
+	 * 
+	 * @param vertexElt
+	 *            The {@link Element} to write
+	 * @param refinement
+	 *            The {@link Refinement} to serialize
+	 */
+	protected void writeRefinement(Element vertexElt, Refinement refinement) {
+		if (refinement.getFileName() != null) {
+			writeDataElt(vertexElt, "graph_desc", refinement.getFileName());
+		}
 	}
 
 	/**
