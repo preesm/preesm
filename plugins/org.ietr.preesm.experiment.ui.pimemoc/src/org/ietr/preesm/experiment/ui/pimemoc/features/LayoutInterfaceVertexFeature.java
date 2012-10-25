@@ -74,6 +74,10 @@ public class LayoutInterfaceVertexFeature extends AbstractLayoutFeature {
 					ga.setWidth(size.getWidth());
 					Graphiti.getGaService().setLocation(ga, 0, 0);
 				}
+				if (iVertex.getKind().equals("snk")) {
+					ga.setWidth(size.getWidth());
+					Graphiti.getGaService().setLocation(ga, 16+3, 0);
+				}
 			}
 		}
 

@@ -17,6 +17,7 @@ import org.ietr.preesm.experiment.model.pimemoc.Fifo;
 import org.ietr.preesm.experiment.model.pimemoc.Graph;
 import org.ietr.preesm.experiment.model.pimemoc.InputPort;
 import org.ietr.preesm.experiment.model.pimemoc.InterfaceVertex;
+import org.ietr.preesm.experiment.model.pimemoc.OutputPort;
 import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCFactory;
 import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCPackage;
 import org.ietr.preesm.experiment.model.pimemoc.Port;
@@ -62,8 +63,7 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 	}
 
 	/**
-	 * <!-- begin-user-doc --> This method will add the {@link InterfaceVertex}
-	 * and create the corresponding {@link Port}. <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 */
 	public boolean addInterfaceVertex(InterfaceVertex interfaceVertex) {
@@ -72,6 +72,10 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 		case "src":
 			port = PIMeMoCFactory.eINSTANCE.createInputPort();
 			this.getInputPorts().add((InputPort) port);
+			break;
+		case "snk":
+			port = PIMeMoCFactory.eINSTANCE.createOutputPort();
+			this.getOutputPorts().add((OutputPort) port);
 			break;
 		default:
 			return false;

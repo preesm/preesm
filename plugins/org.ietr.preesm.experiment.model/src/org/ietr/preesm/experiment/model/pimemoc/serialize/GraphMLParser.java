@@ -10,8 +10,10 @@ import org.ietr.preesm.experiment.model.pimemoc.Actor;
 import org.ietr.preesm.experiment.model.pimemoc.Fifo;
 import org.ietr.preesm.experiment.model.pimemoc.Graph;
 import org.ietr.preesm.experiment.model.pimemoc.InputPort;
+import org.ietr.preesm.experiment.model.pimemoc.InterfaceVertex;
 import org.ietr.preesm.experiment.model.pimemoc.OutputPort;
 import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCFactory;
+import org.ietr.preesm.experiment.model.pimemoc.SinkInterface;
 import org.ietr.preesm.experiment.model.pimemoc.SourceInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -164,19 +166,21 @@ public class GraphMLParser {
 
 		// Get the sourcePort and targetPort
 		String sourcePortName = edgeElt.getAttribute("sourceport");
+		sourcePortName = (sourcePortName == "") ? null : sourcePortName;
 		String targetPortName = edgeElt.getAttribute("targetport");
+		targetPortName = (targetPortName == "") ? null : targetPortName;
 		OutputPort oPort = (OutputPort) source.getPortNamed(sourcePortName,
 				"output");
 		InputPort iPort = (InputPort) target.getPortNamed(targetPortName,
 				"input");
 
 		if (iPort == null) {
-			throw new RuntimeException("Edge source port " + sourcePortName
-					+ " does not exist for vertex " + sourceName);
-		}
-		if (oPort == null) {
 			throw new RuntimeException("Edge target port " + targetPortName
 					+ " does not exist for vertex " + targetName);
+		}
+		if (oPort == null) {
+			throw new RuntimeException("Edge source port " + sourcePortName
+					+ " does not exist for vertex " + sourceName);
 		}
 
 		fifo.setSourcePort(oPort);
@@ -282,6 +286,9 @@ public class GraphMLParser {
 		case "src":
 			vertex = parseSourceInterface(nodeElt, graph);
 			break;
+		case "snk":
+			vertex = parseSinkInterface(nodeElt, graph);
+			break;
 		// TODO Parse all types of nodes
 		// case "implode":
 		// break;
@@ -303,7 +310,9 @@ public class GraphMLParser {
 
 			switch (eltName) {
 			case "port":
+
 				parsePort((Element) elt, vertex);
+
 				break;
 			default:
 				// ignore #text and unknown children
@@ -311,6 +320,58 @@ public class GraphMLParser {
 		}
 		// TODO parsePorts() of the vertex
 
+	}
+
+	protected void parsePort(Element elt, AbstractVertex vertex) {
+		String portName = elt.getAttribute("name");
+		String portKind = elt.getAttribute("kind");
+
+		switch (portKind) {
+		case "input":
+			InputPort iPort = PIMeMoCFactory.eINSTANCE.createInputPort();
+			iPort.setName(portName);
+			// Do not parse data ports for InterfaceVertex since the unique port
+			// is automatically created when the vertex is instantiated
+			if (!(vertex instanceof InterfaceVertex)) {
+				vertex.getInputPorts().add(iPort);
+			}
+			break;
+		case "output":
+			OutputPort oPort = PIMeMoCFactory.eINSTANCE.createOutputPort();
+			oPort.setName(portName);
+			// Do not parse data ports for InterfaceVertex since the unique port
+			// is automatically created when the vertex is instantiated
+			if (!(vertex instanceof InterfaceVertex)) {
+				vertex.getOutputPorts().add(oPort);
+			}
+			break;
+		default:
+			throw new RuntimeException("Parsed port " + portName
+					+ "has children of unknown kind: " + portKind);
+		}
+	}
+
+	/**
+	 * Parse a node {@link Element} with kind "snk".
+	 * 
+	 * @param nodeElt
+	 *            the {@link Element} to parse
+	 * @param graph
+	 *            the deserialized {@link Graph}
+	 * @return the created {@link SinkInterface}
+	 */
+	protected AbstractVertex parseSinkInterface(Element nodeElt, Graph graph) {
+		// Instantiate the new Interface and its corresponding port
+		SinkInterface snkInterface = PIMeMoCFactory.eINSTANCE
+				.createSinkInterface();
+
+		// Set the sourceInterface properties
+		snkInterface.setName(nodeElt.getAttribute("id"));
+
+		// Add the actor to the parsed graph
+		graph.addInterfaceVertex(snkInterface);
+
+		return snkInterface;
 	}
 
 	/**
@@ -326,39 +387,14 @@ public class GraphMLParser {
 		// Instantiate the new Interface and its corresponding port
 		SourceInterface srcInterface = PIMeMoCFactory.eINSTANCE
 				.createSourceInterface();
-		InputPort port = PIMeMoCFactory.eINSTANCE.createInputPort();
 
 		// Set the sourceInterface properties
 		srcInterface.setName(nodeElt.getAttribute("id"));
-		port.setName(srcInterface.getName());
-		srcInterface.setGraphPort(port);
 
 		// Add the actor to the parsed graph
-		graph.getVertices().add(srcInterface);
-		graph.getInputPorts().add(port);
+		graph.addInterfaceVertex(srcInterface);
 
 		return srcInterface;
-	}
-
-	protected void parsePort(Element elt, AbstractVertex vertex) {
-		String portName = elt.getAttribute("name");
-		String portKind = elt.getAttribute("kind");
-
-		switch (portKind) {
-		case "input":
-			InputPort iPort = PIMeMoCFactory.eINSTANCE.createInputPort();
-			iPort.setName(portName);
-			vertex.getInputPorts().add(iPort);
-			break;
-		case "output":
-			OutputPort oPort = PIMeMoCFactory.eINSTANCE.createOutputPort();
-			oPort.setName(portName);
-			vertex.getOutputPorts().add(oPort);
-			break;
-		default:
-			throw new RuntimeException("Parsed port " + portName
-					+ "has children of unknown kind: " + portKind);
-		}
 	}
 
 }

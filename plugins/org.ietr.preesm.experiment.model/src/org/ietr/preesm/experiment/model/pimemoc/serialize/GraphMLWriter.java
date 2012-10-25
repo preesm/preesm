@@ -397,6 +397,9 @@ public class GraphMLWriter {
 		case "src":
 			writeDataPorts(vertexElt, vertex.getOutputPorts(), "output");
 			break;
+		case "snk":
+			writeDataPorts(vertexElt, vertex.getInputPorts(), "input");
+			break;
 		default:
 		}
 

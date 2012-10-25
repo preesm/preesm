@@ -29,6 +29,7 @@ public class SourceInterfaceImpl extends InterfaceVertexImpl implements
 		// Add the unique output port of the Source Interface
 		// The port intentionally has no name 
 		OutputPort port = PIMeMoCFactory.eINSTANCE.createOutputPort();
+		port.setName(null);
 		this.getOutputPorts().add(port);
 	}
 

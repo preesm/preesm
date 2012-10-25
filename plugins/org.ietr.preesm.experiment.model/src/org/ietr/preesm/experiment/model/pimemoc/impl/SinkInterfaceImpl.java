@@ -13,7 +13,7 @@ import org.ietr.preesm.experiment.model.pimemoc.SinkInterface;
  * <em><b>Sink Interface</b></em>'. <!-- end-user-doc -->
  * <p>
  * </p>
- * 
+ *
  * @generated
  */
 public class SinkInterfaceImpl extends InterfaceVertexImpl implements
@@ -30,12 +30,12 @@ public class SinkInterfaceImpl extends InterfaceVertexImpl implements
 		// Add the unique input port of the Sink Interface
 		// The port intentionally has no name
 		InputPort port = PIMeMoCFactory.eINSTANCE.createInputPort();
+		port.setName(null);
 		this.getInputPorts().add(port);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override

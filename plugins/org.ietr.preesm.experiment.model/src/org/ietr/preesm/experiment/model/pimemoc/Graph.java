@@ -60,19 +60,17 @@ public interface Graph extends AbstractVertex {
 	EList<Fifo> getFifos();
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> This method will add the {@link InterfaceVertex}
+	 * and create the corresponding {@link Port}. <!-- end-user-doc -->
 	 * @model
 	 * @generated
 	 */
 	boolean addInterfaceVertex(InterfaceVertex interfaceVertex);
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * This method will remove the
+	 * <!-- begin-user-doc --> This method will remove the
 	 * {@link InterfaceVertex} and the corresponding {@link Port} from the
-	 * {@link Graph}.
-	 * <!-- end-user-doc -->
+	 * {@link Graph}. <!-- end-user-doc -->
 	 * @model
 	 * @generated
 	 */

@@ -34,14 +34,17 @@ import org.ietr.preesm.experiment.model.pimemoc.Actor;
 import org.ietr.preesm.experiment.model.pimemoc.Fifo;
 import org.ietr.preesm.experiment.model.pimemoc.InterfaceVertex;
 import org.ietr.preesm.experiment.model.pimemoc.Port;
+import org.ietr.preesm.experiment.model.pimemoc.SinkInterface;
 import org.ietr.preesm.experiment.model.pimemoc.SourceInterface;
 import org.ietr.preesm.experiment.ui.pimemoc.features.AddActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.AddFifoFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.AddInputPortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.AddOutputPortFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.AddSinkInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.AddSourceInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CreateActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CreateFifoFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.CreateSinkInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CreateSourceInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.CustomDeleteFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.DeleteAbstractVertexFeature;
@@ -75,6 +78,10 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 			return new AddSourceInterfaceFeature(this);
 		}
 
+		if (context.getNewObject() instanceof SinkInterface) {
+			return new AddSinkInterfaceFeature(this);
+		}
+
 		if (context.getNewObject() instanceof Fifo) {
 			return new AddFifoFeature(this);
 		}
@@ -89,7 +96,8 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 	@Override
 	public ICreateFeature[] getCreateFeatures() {
 		return new ICreateFeature[] { new CreateActorFeature(this),
-				new CreateSourceInterfaceFeature(this) };
+				new CreateSourceInterfaceFeature(this),
+				new CreateSinkInterfaceFeature(this) };
 	}
 
 	@Override

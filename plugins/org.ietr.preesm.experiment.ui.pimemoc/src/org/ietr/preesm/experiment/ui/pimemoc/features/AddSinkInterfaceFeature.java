@@ -17,37 +17,37 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.ietr.preesm.experiment.model.pimemoc.Graph;
-import org.ietr.preesm.experiment.model.pimemoc.OutputPort;
-import org.ietr.preesm.experiment.model.pimemoc.SourceInterface;
+import org.ietr.preesm.experiment.model.pimemoc.InputPort;
+import org.ietr.preesm.experiment.model.pimemoc.SinkInterface;
 
 /**
- * Add feature to add a new {@link SourceInterface} to the {@link Graph}
+ * Add feature to add a new {@link SinkInterface} to the {@link Graph}
  * 
  * @author kdesnos
  * 
  */
-public class AddSourceInterfaceFeature extends AbstractAddFeature {
+public class AddSinkInterfaceFeature extends AbstractAddFeature {
 
-	public static final IColorConstant SRC_TEXT_FOREGROUND = IColorConstant.BLACK;
+	public static final IColorConstant SNK_TEXT_FOREGROUND = IColorConstant.BLACK;
 
-	public static final IColorConstant SRC_FOREGROUND = AddInputPortFeature.INPUT_PORT_FOREGROUND;
+	public static final IColorConstant SNK_FOREGROUND = AddOutputPortFeature.OUTPUT_PORT_FOREGROUND;
 
-	public static final IColorConstant SRC_BACKGROUND = AddInputPortFeature.INPUT_PORT_BACKGROUND;
+	public static final IColorConstant SNK_BACKGROUND = AddOutputPortFeature.OUTPUT_PORT_BACKGROUND;
 
 	/**
-	 * The default constructor of {@link AddSourceInterfaceFeature}
+	 * The default constructor of {@link AddSinkInterfaceFeature}
 	 * 
 	 * @param fp
 	 *            the feature provider
 	 */
-	public AddSourceInterfaceFeature(IFeatureProvider fp) {
+	public AddSinkInterfaceFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
 	@Override
 	public PictogramElement add(IAddContext context) {
-		SourceInterface srcInterface = (SourceInterface) context.getNewObject();
-		OutputPort port = srcInterface.getOutputPorts().get(0);
+		SinkInterface snkInterface = (SinkInterface) context.getNewObject();
+		InputPort port = snkInterface.getInputPorts().get(0);
 		Diagram targetDiagram = (Diagram) context.getTargetContainer();
 
 		// CONTAINER SHAPE WITH ROUNDED RECTANGLE
@@ -66,11 +66,12 @@ public class AddSourceInterfaceFeature extends AbstractAddFeature {
 		gaService.setLocationAndSize(invisibleRectangle, context.getX(),
 				context.getY(), 200, invisibRectHeight);
 
+
 		RoundedRectangle roundedRectangle; // need to access it later
 		{
 			final BoxRelativeAnchor boxAnchor = peCreateService
 					.createBoxRelativeAnchor(containerShape);
-			boxAnchor.setRelativeWidth(1.0);
+			boxAnchor.setRelativeWidth(0.0);
 			boxAnchor
 					.setRelativeHeight((((double) invisibRectHeight - (double) height))
 							/ 2.0 / (double) invisibRectHeight);
@@ -79,39 +80,38 @@ public class AddSourceInterfaceFeature extends AbstractAddFeature {
 			// create and set graphics algorithm for the anchor
 			roundedRectangle = gaService
 					.createRoundedRectangle(boxAnchor, 5, 5);
-			roundedRectangle.setForeground(manageColor(SRC_FOREGROUND));
-			roundedRectangle.setBackground(manageColor(SRC_BACKGROUND));
+			roundedRectangle.setForeground(manageColor(SNK_FOREGROUND));
+			roundedRectangle.setBackground(manageColor(SNK_BACKGROUND));
 			roundedRectangle.setLineWidth(2);
-			gaService.setLocationAndSize(roundedRectangle, -width, 0, width,
-					height);
+			gaService.setLocationAndSize(roundedRectangle, 0, 0, width, height);
 
-			// if added SourceInterface has no resource we add it to the
+			// if added SinkInterface has no resource we add it to the
 			// resource of the graph
-			if (srcInterface.eResource() == null) {
+			if (snkInterface.eResource() == null) {
 				Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
-				graph.addInterfaceVertex(srcInterface);
+				graph.addInterfaceVertex(snkInterface);
 			}
 			link(boxAnchor, port);
 		}
 
-		// Name of the SrcInterface - SHAPE WITH TEXT
+		// Name of the SinkInterface - SHAPE WITH TEXT
 		{
 			// create and set text graphics algorithm
 			// create shape for text
 			Shape shape = peCreateService.createShape(containerShape, false);
-			Text text = gaService.createText(shape, srcInterface.getName());
-			text.setForeground(manageColor(SRC_TEXT_FOREGROUND));
+			Text text = gaService.createText(shape, snkInterface.getName());
+			text.setForeground(manageColor(SNK_TEXT_FOREGROUND));
 			text.setHorizontalAlignment(Orientation.ALIGNMENT_RIGHT);
 			// vertical alignment has as default value "center"
 			text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
 			text.setHeight(20);
 			text.setWidth(200);
-			link(shape, srcInterface);
+			link(shape, snkInterface);
 		}
-
+		
 		// create link and wire it
-		link(containerShape, srcInterface);
-
+		link(containerShape, snkInterface);
+		
 		// Call the layout feature
 		layoutPictogramElement(containerShape);
 
@@ -120,8 +120,8 @@ public class AddSourceInterfaceFeature extends AbstractAddFeature {
 
 	@Override
 	public boolean canAdd(IAddContext context) {
-		// Check that the user wants to add an Actor to the Diagram
-		return context.getNewObject() instanceof SourceInterface
+		// Check that the user wants to add an SinkInterface to the Diagram
+		return context.getNewObject() instanceof SinkInterface
 				&& context.getTargetContainer() instanceof Diagram;
 	}
 
