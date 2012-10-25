@@ -18,6 +18,7 @@ import org.ietr.preesm.experiment.model.pimemoc.OutputPort;
 import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCFactory;
 import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCPackage;
 import org.ietr.preesm.experiment.model.pimemoc.Port;
+import org.ietr.preesm.experiment.model.pimemoc.Refinement;
 import org.ietr.preesm.experiment.model.pimemoc.SinkInterface;
 import org.ietr.preesm.experiment.model.pimemoc.SourceInterface;
 
@@ -97,6 +98,13 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 	 * @generated
 	 */
 	private EClass sinkInterfaceEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass refinementEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -229,6 +237,15 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 	 */
 	public EClass getActor() {
 		return actorEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getActor_Refinement() {
+		return (EReference)actorEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -371,6 +388,24 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getRefinement() {
+		return refinementEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getRefinement_FileName() {
+		return (EAttribute)refinementEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public PIMeMoCFactory getPIMeMoCFactory() {
 		return (PIMeMoCFactory)getEFactoryInstance();
 	}
@@ -404,6 +439,7 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 		createEReference(graphEClass, GRAPH__FIFOS);
 
 		actorEClass = createEClass(ACTOR);
+		createEReference(actorEClass, ACTOR__REFINEMENT);
 
 		portEClass = createEClass(PORT);
 		createEAttribute(portEClass, PORT__NAME);
@@ -426,6 +462,9 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 		sourceInterfaceEClass = createEClass(SOURCE_INTERFACE);
 
 		sinkInterfaceEClass = createEClass(SINK_INTERFACE);
+
+		refinementEClass = createEClass(REFINEMENT);
+		createEAttribute(refinementEClass, REFINEMENT__FILE_NAME);
 	}
 
 	/**
@@ -481,6 +520,7 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 		addEParameter(op, this.getInterfaceVertex(), "interfaceVertex", 0, 1, IS_UNIQUE, IS_ORDERED);
 
 		initEClass(actorEClass, Actor.class, "Actor", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getActor_Refinement(), this.getRefinement(), null, "refinement", null, 1, 1, Actor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(portEClass, Port.class, "Port", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getPort_Name(), ecorePackage.getEString(), "name", null, 1, 1, Port.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -503,6 +543,11 @@ public class PIMeMoCPackageImpl extends EPackageImpl implements PIMeMoCPackage {
 		initEClass(sourceInterfaceEClass, SourceInterface.class, "SourceInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(sinkInterfaceEClass, SinkInterface.class, "SinkInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(refinementEClass, Refinement.class, "Refinement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getRefinement_FileName(), ecorePackage.getEString(), "fileName", null, 0, 1, Refinement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		addEOperation(refinementEClass, this.getAbstractVertex(), "getAbstractVertex", 0, 1, IS_UNIQUE, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

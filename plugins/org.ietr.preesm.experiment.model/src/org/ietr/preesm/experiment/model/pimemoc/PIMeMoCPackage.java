@@ -203,13 +203,22 @@ public interface PIMeMoCPackage extends EPackage {
 	int ACTOR__OUTPUT_PORTS = ABSTRACT_VERTEX__OUTPUT_PORTS;
 
 	/**
+	 * The feature id for the '<em><b>Refinement</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ACTOR__REFINEMENT = ABSTRACT_VERTEX_FEATURE_COUNT + 0;
+
+	/**
 	 * The number of structural features of the '<em>Actor</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int ACTOR_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 0;
+	int ACTOR_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 1;
 
 
 	/**
@@ -576,6 +585,35 @@ public interface PIMeMoCPackage extends EPackage {
 
 
 	/**
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.RefinementImpl <em>Refinement</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.ietr.preesm.experiment.model.pimemoc.impl.RefinementImpl
+	 * @see org.ietr.preesm.experiment.model.pimemoc.impl.PIMeMoCPackageImpl#getRefinement()
+	 * @generated
+	 */
+	int REFINEMENT = 10;
+
+	/**
+	 * The feature id for the '<em><b>File Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REFINEMENT__FILE_NAME = 0;
+
+	/**
+	 * The number of structural features of the '<em>Refinement</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REFINEMENT_FEATURE_COUNT = 1;
+
+
+	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimemoc.AbstractVertex <em>Abstract Vertex</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -659,6 +697,17 @@ public interface PIMeMoCPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getActor();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.ietr.preesm.experiment.model.pimemoc.Actor#getRefinement <em>Refinement</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Refinement</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.Actor#getRefinement()
+	 * @see #getActor()
+	 * @generated
+	 */
+	EReference getActor_Refinement();
 
 	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimemoc.Port <em>Port</em>}'.
@@ -819,6 +868,27 @@ public interface PIMeMoCPackage extends EPackage {
 	EClass getSinkInterface();
 
 	/**
+	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimemoc.Refinement <em>Refinement</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Refinement</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.Refinement
+	 * @generated
+	 */
+	EClass getRefinement();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimemoc.Refinement#getFileName <em>File Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>File Name</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimemoc.Refinement#getFileName()
+	 * @see #getRefinement()
+	 * @generated
+	 */
+	EAttribute getRefinement_FileName();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -909,6 +979,14 @@ public interface PIMeMoCPackage extends EPackage {
 		 * @generated
 		 */
 		EClass ACTOR = eINSTANCE.getActor();
+
+		/**
+		 * The meta object literal for the '<em><b>Refinement</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference ACTOR__REFINEMENT = eINSTANCE.getActor_Refinement();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.PortImpl <em>Port</em>}' class.
@@ -1043,6 +1121,24 @@ public interface PIMeMoCPackage extends EPackage {
 		 * @generated
 		 */
 		EClass SINK_INTERFACE = eINSTANCE.getSinkInterface();
+
+		/**
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimemoc.impl.RefinementImpl <em>Refinement</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.ietr.preesm.experiment.model.pimemoc.impl.RefinementImpl
+		 * @see org.ietr.preesm.experiment.model.pimemoc.impl.PIMeMoCPackageImpl#getRefinement()
+		 * @generated
+		 */
+		EClass REFINEMENT = eINSTANCE.getRefinement();
+
+		/**
+		 * The meta object literal for the '<em><b>File Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute REFINEMENT__FILE_NAME = eINSTANCE.getRefinement_FileName();
 
 	}
 

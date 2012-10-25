@@ -21,7 +21,10 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="fifos" upperBound="-1"
         eType="#//Fifo" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Actor" eSuperTypes="#//AbstractVertex"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Actor" eSuperTypes="#//AbstractVertex">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="refinement" lowerBound="1"
+        eType="#//Refinement" containment="true"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Port" abstract="true">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
@@ -49,4 +52,8 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="SourceInterface" eSuperTypes="#//InterfaceVertex"/>
   <eClassifiers xsi:type="ecore:EClass" name="SinkInterface" eSuperTypes="#//InterfaceVertex"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Refinement">
+    <eOperations name="getAbstractVertex" eType="#//AbstractVertex"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="fileName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
 </ecore:EPackage>

@@ -135,6 +135,12 @@ public class PIMeMoCSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case PIMeMoCPackage.REFINEMENT: {
+				Refinement refinement = (Refinement)theEObject;
+				T result = caseRefinement(refinement);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -286,6 +292,21 @@ public class PIMeMoCSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseSinkInterface(SinkInterface object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Refinement</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Refinement</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseRefinement(Refinement object) {
 		return null;
 	}
 
