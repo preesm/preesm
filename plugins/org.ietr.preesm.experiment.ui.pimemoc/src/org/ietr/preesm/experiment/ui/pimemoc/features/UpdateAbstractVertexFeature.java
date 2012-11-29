@@ -10,6 +10,7 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.ietr.preesm.experiment.model.pimemoc.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimemoc.Actor;
 
 public class UpdateAbstractVertexFeature extends AbstractUpdateFeature {
 
@@ -31,6 +32,42 @@ public class UpdateAbstractVertexFeature extends AbstractUpdateFeature {
 
 	@Override
 	public IReason updateNeeded(IUpdateContext context) {
+		Object bo = getBusinessObjectForPictogramElement(context
+				.getPictogramElement());
+
+		IReason ret = nameUpdateNeeded(context);
+		if (!ret.toBoolean()) {
+			if (bo instanceof Actor) {
+				ret = portsUpdateNeeded(context, (Actor) bo);
+			}
+		}
+		return ret;
+	}
+
+	/**
+	 * This method will check whether the ports of the actor refinement are
+	 * different from the current
+	 * 
+	 * @param context
+	 *            the context of the feature
+	 * @param actor
+	 *            the tested {@link Actor}
+	 * @return a reason stating if an update of the ports is needed
+	 */
+	protected IReason portsUpdateNeeded(IUpdateContext context, Actor actor) {
+		AbstractVertex vertex = actor.getRefinement().getAbstractVertex();
+		if (vertex != null) {
+			throw new RuntimeException(
+					"This code has been reached ! This is a TODO reminder !");
+		}
+		return Reason.createFalseReason();
+	}
+
+	/**
+	 * @param context
+	 * @return
+	 */
+	protected IReason nameUpdateNeeded(IUpdateContext context) {
 		// retrieve name from pictogram model
 		String pictogramName = null;
 		PictogramElement pictogramElement = context.getPictogramElement();
@@ -65,6 +102,14 @@ public class UpdateAbstractVertexFeature extends AbstractUpdateFeature {
 
 	@Override
 	public boolean update(IUpdateContext context) {
+		return updateName(context);
+	}
+
+	/**
+	 * @param context
+	 * @return
+	 */
+	protected boolean updateName(IUpdateContext context) {
 		// retrieve name from business model
 		String businessName = null;
 		PictogramElement pictogramElement = context.getPictogramElement();

@@ -43,7 +43,7 @@ public class ActorImpl extends AbstractVertexImpl implements Actor {
 	 */
 	protected ActorImpl() {
 		super();
-		refinement = PIMeMoCFactory.eINSTANCE.createRefinement();
+		this.setRefinement(PIMeMoCFactory.eINSTANCE.createRefinement());
 	}
 
 	/**
