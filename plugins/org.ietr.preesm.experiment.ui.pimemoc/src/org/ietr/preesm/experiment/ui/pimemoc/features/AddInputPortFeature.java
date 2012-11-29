@@ -4,7 +4,6 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
-import org.eclipse.graphiti.mm.algorithms.styles.Font;
 import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
@@ -57,8 +56,9 @@ public class AddInputPortFeature extends AbstractAddActorPortFeature {
 		rectangle.setForeground(manageColor(INPUT_PORT_FOREGROUND));
 		rectangle.setBackground(manageColor(INPUT_PORT_BACKGROUND));
 		rectangle.setLineWidth(1);
+		int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
 		gaService.setSize(rectangle, PORT_ANCHOR_GA_SIZE, PORT_ANCHOR_GA_SIZE);
-		gaService.setLocation(rectangle, 0, 1 + (16 - PORT_ANCHOR_GA_SIZE) / 2);
+		gaService.setLocation(rectangle, 0, 1 + (portFontHeight - PORT_ANCHOR_GA_SIZE) / 2);
 		return rectangle;
 	}
 
@@ -75,17 +75,11 @@ public class AddInputPortFeature extends AbstractAddActorPortFeature {
 		text.setForeground(manageColor(PORT_TEXT_FOREGROUND));
 
 		// Layout the text
+		int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
 		text.setHorizontalAlignment(Orientation.ALIGNMENT_RIGHT);
-		gaService.setHeight(text, 16);
+		gaService.setHeight(text, portFontHeight);
 
 		return text;
-	}
-
-	@Override
-	public Font getPortFont() {
-		// Get the GaService
-		IGaService gaService = Graphiti.getGaService();
-		return gaService.manageDefaultFont(getDiagram(), false, false);
 	}
 
 	@Override

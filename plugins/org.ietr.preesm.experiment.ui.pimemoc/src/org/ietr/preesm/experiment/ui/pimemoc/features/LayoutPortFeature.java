@@ -96,16 +96,18 @@ public class LayoutPortFeature extends AbstractLayoutFeature {
 					gaService.setLocation(ga, 0, 0);
 				}
 			}
+			
+			int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
 
 			if (ga instanceof Rectangle) {
 				if (bra.getRelativeWidth() == 0.0) {
 					// input port
-					gaService.setLocation(ga, 0, 1 + (16 - anchorGaSize) / 2);
+					gaService.setLocation(ga, 0, 1 + (portFontHeight - anchorGaSize) / 2);
 				} else {
 					// output port
 					gaService.setLocation(ga, bra.getGraphicsAlgorithm()
 							.getWidth() - anchorGaSize,
-							1 + (16 - anchorGaSize) / 2);
+							1 + (portFontHeight - anchorGaSize) / 2);
 				}
 			}
 		}

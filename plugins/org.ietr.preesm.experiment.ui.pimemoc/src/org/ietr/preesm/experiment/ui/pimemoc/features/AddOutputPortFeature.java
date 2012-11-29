@@ -4,7 +4,6 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
-import org.eclipse.graphiti.mm.algorithms.styles.Font;
 import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
@@ -78,13 +77,6 @@ public class AddOutputPortFeature extends AbstractAddActorPortFeature {
 		gaService.setHeight(text, 16);
 
 		return text;
-	}
-
-	@Override
-	public Font getPortFont() {
-		// Get the GaService
-		IGaService gaService = Graphiti.getGaService();
-		return gaService.manageDefaultFont(getDiagram(), false, false);
 	}
 
 	@Override

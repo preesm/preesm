@@ -13,6 +13,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
+import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
 import org.ietr.preesm.experiment.model.pimemoc.Port;
@@ -43,6 +44,8 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 	public static final int PORT_ANCHOR_GA_SIZE = 8;
 
 	public static final IColorConstant PORT_BACKGROUND = IColorConstant.BLACK;
+
+	public static int PORT_FONT_HEIGHT;
 
 	/**
 	 * Size of the space between the label of a port and the GA
@@ -170,21 +173,21 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 	}
 
 	/**
-	 * Get the {@link Port} created by the feature
-	 * 
-	 * @return the {@link Port}, or <code>null</code> if not port was created.
-	 */
-	public Port getCreatedPort() {
-		return createdPort;
-	}
-
-	/**
 	 * Get the {@link Anchor} created by the feature
 	 * 
 	 * @return the {@link Anchor}, or <code>null</code> if not port was created.
 	 */
 	public Anchor getCreatedAnchor() {
 		return createdAnchor;
+	}
+
+	/**
+	 * Get the {@link Port} created by the feature
+	 * 
+	 * @return the {@link Port}, or <code>null</code> if not port was created.
+	 */
+	public Port getCreatedPort() {
+		return createdPort;
 	}
 
 	/**
@@ -203,7 +206,16 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 	 * 
 	 * @return the font
 	 */
-	public abstract Font getPortFont();
+	public Font getPortFont() {
+		// Get the GaService
+		IGaService gaService = Graphiti.getGaService();
+		Font font = gaService.manageDefaultFont(getDiagram(), false, false);
+
+		PORT_FONT_HEIGHT = GraphitiUi.getUiLayoutService()
+				.calculateTextSize("Abcq", font).getHeight();
+
+		return font;
+	}
 
 	/**
 	 * Get the port of the created port
