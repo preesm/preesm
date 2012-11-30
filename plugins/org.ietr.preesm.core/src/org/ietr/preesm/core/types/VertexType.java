@@ -51,17 +51,17 @@ public class VertexType {
 	/**
 	 * VertexType representing a receive operation
 	 */
-	public static final VertexType receive = new VertexType("receive");
+	public static final VertexType RECEIVE = new VertexType("receive");
 
 	/**
 	 * VertexType representing a send operation
 	 */
-	public static final VertexType send = new VertexType("send");
+	public static final VertexType SEND = new VertexType("send");
 
 	/**
 	 * VertexType representing a task
 	 */
-	public static final VertexType task = new VertexType("task");
+	public static final VertexType TASK = new VertexType("task");
 
 	/**
 	 * Returns true if this receive operation leads to a send operation
@@ -133,15 +133,15 @@ public class VertexType {
 	}
 
 	public boolean isReceive() {
-		return (this == receive);
+		return (this == RECEIVE);
 	}
 
 	public boolean isSend() {
-		return (this == send);
+		return (this == SEND);
 	}
 
 	public boolean isTask() {
-		return (this == task);
+		return (this == TASK);
 	}
 
 	@Override

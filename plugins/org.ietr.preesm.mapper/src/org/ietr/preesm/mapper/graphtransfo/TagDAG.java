@@ -155,7 +155,7 @@ public class TagDAG {
 
 				// Setting the vertex type
 				bean.setValue(ImplementationPropertyNames.Vertex_vertexType,
-						VertexType.send);
+						VertexType.SEND);
 
 				// Setting the operator on which vertex is executed
 				bean.setValue(ImplementationPropertyNames.Vertex_Operator,
@@ -196,7 +196,7 @@ public class TagDAG {
 
 				// Setting the vertex type
 				bean.setValue(ImplementationPropertyNames.Vertex_vertexType,
-						VertexType.receive);
+						VertexType.RECEIVE);
 
 				// Setting the operator on which vertex is executed
 				bean.setValue(ImplementationPropertyNames.Vertex_Operator,
@@ -239,7 +239,7 @@ public class TagDAG {
 
 				// Setting the vertex type
 				bean.setValue(ImplementationPropertyNames.Vertex_vertexType,
-						VertexType.task);
+						VertexType.TASK);
 
 				bean.setValue(
 						ImplementationPropertyNames.Vertex_originalVertexId,
