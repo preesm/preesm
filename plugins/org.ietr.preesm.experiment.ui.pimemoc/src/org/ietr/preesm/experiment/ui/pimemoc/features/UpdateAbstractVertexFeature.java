@@ -1,5 +1,9 @@
 package org.ietr.preesm.experiment.ui.pimemoc.features;
 
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.context.IUpdateContext;
@@ -11,6 +15,8 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.ietr.preesm.experiment.model.pimemoc.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimemoc.Actor;
+import org.ietr.preesm.experiment.model.pimemoc.Port;
+import org.ietr.preesm.experiment.ui.pimemoc.util.PortEqualityHelper;
 
 public class UpdateAbstractVertexFeature extends AbstractUpdateFeature {
 
@@ -41,6 +47,7 @@ public class UpdateAbstractVertexFeature extends AbstractUpdateFeature {
 				ret = portsUpdateNeeded(context, (Actor) bo);
 			}
 		}
+
 		return ret;
 	}
 
@@ -57,8 +64,34 @@ public class UpdateAbstractVertexFeature extends AbstractUpdateFeature {
 	protected IReason portsUpdateNeeded(IUpdateContext context, Actor actor) {
 		AbstractVertex vertex = actor.getRefinement().getAbstractVertex();
 		if (vertex != null) {
-			throw new RuntimeException(
-					"This code has been reached ! This is a TODO reminder !");
+			Map<SimpleEntry<Port, Port>, IReason> m = PortEqualityHelper
+					.buildEquivalentPortsMap(actor, vertex);
+
+			// throw new RuntimeException(
+			// "This code has been reached ! This is a TODO reminder !");
+			// return
+			String reasons = "";
+			for (Entry<SimpleEntry<Port, Port>, IReason> e : m.entrySet()) {
+				if (!e.getValue().toBoolean()) {
+					if (e.getValue().getText().equals(PortEqualityHelper.NULL_PORT)) {
+						Port actorPort = e.getKey().getKey();
+						Port refinePort = e.getKey().getValue();
+						if (actorPort != null) {
+							reasons += "Port \"" + actorPort.getName()
+									+ "\" not present in refinement.\n";
+						} else {
+							reasons += "Refinement has an extra "
+									+ refinePort.getKind() + " port \""
+									+ refinePort.getName() + "\".\n";
+						}
+					}
+				}
+			}
+			if (!reasons.equals("")) {
+				return Reason
+						.createTrueReason("Ports are out of sync with the refinement graph.\n"
+								+ reasons);
+			}
 		}
 		return Reason.createFalseReason();
 	}

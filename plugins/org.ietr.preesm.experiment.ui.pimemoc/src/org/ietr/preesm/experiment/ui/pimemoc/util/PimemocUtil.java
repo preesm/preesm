@@ -72,5 +72,4 @@ public class PimemocUtil {
 		iDiagramEditor.refresh();
 		((PimemocToolBehaviorProvider) behaviorProvider).setToolTip(ga, null);
 	}
-
 }

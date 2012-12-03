@@ -8,15 +8,21 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.common.util.WrappedException;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 
 import org.ietr.preesm.experiment.model.pimemoc.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimemoc.Graph;
 import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCPackage;
 import org.ietr.preesm.experiment.model.pimemoc.Refinement;
 
@@ -102,30 +108,44 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 	 */
 	public AbstractVertex getAbstractVertex() {
 		// If the fileName is null, return nothing
-		if(this.fileName == null ){
+		if (this.fileName == null) {
 			return null;
 		}
 		Resource resource = this.eResource();
 		URI uri = resource.getURI();
 		URI uriTrimmed = uri.trimFragment();
 		if (uriTrimmed.isPlatformResource()) {
-			String platformString = uriTrimmed.toPlatformString(true);
+
 			// Removing the file name from the URI
 			URI folder = uriTrimmed.trimSegments(1);
 			URI refinementFile = folder.appendSegment(this.fileName);
-			
-			//int idx = platformString.indexOf(uriTrimmed.lastSegment());
-			//String folder = platformString.substring(0, idx); 
-			IResource fileResource = ResourcesPlugin.getWorkspace()
-		             .getRoot().findMember(refinementFile.toPlatformString(true));
-			
-			if (fileResource != null){
-	               IProject project = fileResource.getProject();
-	               
-	               //result = TutorialUtil.getDiagrams(project);
-	               int i = 3;
-	           }
-			
+
+			IResource fileResource = ResourcesPlugin.getWorkspace().getRoot()
+					.findMember(refinementFile.toPlatformString(true));
+
+			// Check if the file exists
+			if (fileResource != null) {
+				final ResourceSet rSet = new ResourceSetImpl();
+				Resource resourceRefinement;
+				try {
+					resourceRefinement = rSet.getResource(refinementFile, true);
+					if (resourceRefinement != null) {
+						// does resource contain a graph as root object?
+						final EList<EObject> contents = resourceRefinement.getContents();
+						for (final EObject object : contents) {
+							if (object instanceof Graph) {
+								return (AbstractVertex) object;								
+							}
+						}
+					}
+				} catch (final WrappedException e) {
+					e.printStackTrace();
+				}
+
+	
+				int i = 3;
+			}
+
 		}
 		return null;
 	}
