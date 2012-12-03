@@ -77,7 +77,7 @@ public class RenameActorPortFeature extends AbstractCustomFeature {
 
 				newPortName = PimemocUtil.askString(this.getName(), question,
 						newPortName, new PortNameValidator(vertex, port,
-								newPortName));
+								port.getKind()));
 
 				if (newPortName != null && !newPortName.equals(currentName)) {
 					this.hasDoneChanges = true;

@@ -54,6 +54,10 @@ public class PortNameValidator implements IInputValidator {
 		default:
 			this.portsNames = new HashSet<String>(0);
 		}
+		
+		if(this.renamedPort != null){
+			this.portsNames.remove(renamedPort.getName());
+		}
 	}
 
 	@Override
