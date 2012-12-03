@@ -73,8 +73,9 @@ public class AddOutputPortFeature extends AbstractAddActorPortFeature {
 		text.setForeground(manageColor(PORT_TEXT_FOREGROUND));
 
 		// Layout the text
+		int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
 		text.setHorizontalAlignment(Orientation.ALIGNMENT_LEFT);
-		gaService.setHeight(text, 16);
+		gaService.setHeight(text, portFontHeight);
 
 		return text;
 	}
