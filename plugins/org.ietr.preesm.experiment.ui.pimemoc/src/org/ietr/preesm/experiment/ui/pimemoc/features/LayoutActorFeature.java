@@ -114,6 +114,13 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 						Font font = ((Text) child).getFont();
 						IDimension size = GraphitiUi.getUiLayoutService()
 								.calculateTextSize(text, font);
+						// Write the port font height in
+						// AbstractAddActorPortFeature. This is needed when
+						// opening a saved graph because in such case
+						// PORT_FONT_HEIGHT will remain equal to 0 until a port
+						// is added to the graph
+						AbstractAddActorPortFeature.PORT_FONT_HEIGHT = size
+								.getHeight();
 
 						if (((BoxRelativeAnchor) anchor).getRelativeWidth() == 0.0) {
 							// This is an input port

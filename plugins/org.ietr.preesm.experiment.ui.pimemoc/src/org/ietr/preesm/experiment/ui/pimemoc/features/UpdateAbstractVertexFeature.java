@@ -77,19 +77,19 @@ public class UpdateAbstractVertexFeature extends AbstractUpdateFeature {
 						Port actorPort = e.getKey().getKey();
 						Port refinePort = e.getKey().getValue();
 						if (actorPort != null) {
-							reasons += "Port \"" + actorPort.getName()
-									+ "\" not present in refinement.\n";
+							reasons += "\nPort \"" + actorPort.getName()
+									+ "\" not present in refinement.";
 						} else {
-							reasons += "Refinement has an extra "
+							reasons += "\nRefinement has an extra "
 									+ refinePort.getKind() + " port \""
-									+ refinePort.getName() + "\".\n";
+									+ refinePort.getName() + "\".";
 						}
 					}
 				}
 			}
 			if (!reasons.equals("")) {
 				return Reason
-						.createTrueReason("Ports are out of sync with the refinement graph.\n"
+						.createTrueReason("Ports are out of sync with the refinement graph."
 								+ reasons);
 			}
 		}

@@ -69,6 +69,7 @@ public class LayoutPortFeature extends AbstractLayoutFeature {
 		// define a few constant
 		int anchorGaSize = AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE;
 		int labelGaSpace = AbstractAddActorPortFeature.PORT_LABEL_GA_SPACE;
+		int portFontHeight = size.getHeight();
 
 		// Layout the invisible rectangle
 		if (bra.getRelativeWidth() == 0.0) {
@@ -95,9 +96,7 @@ public class LayoutPortFeature extends AbstractLayoutFeature {
 					// output port
 					gaService.setLocation(ga, 0, 0);
 				}
-			}
-			
-			int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
+			}			
 
 			if (ga instanceof Rectangle) {
 				if (bra.getRelativeWidth() == 0.0) {
