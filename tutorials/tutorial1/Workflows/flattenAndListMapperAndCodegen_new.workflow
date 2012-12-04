@@ -35,7 +35,7 @@
     <dftools:task
         pluginId="org.ietr.preesm.plugin.transforms.flathierarchy" taskId="HierarchyFlattening">
         <dftools:data key="variables">
-            <dftools:variable name="depth" value="0"/>
+            <dftools:variable name="depth" value="5"/>
         </dftools:data>
     </dftools:task>
     <dftools:task pluginId="org.ietr.preesm.plugin.exportXml.sdf4jgml" taskId="Exporter">

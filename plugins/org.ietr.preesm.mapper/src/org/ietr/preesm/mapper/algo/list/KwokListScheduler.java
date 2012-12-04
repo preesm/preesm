@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -40,8 +40,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.sf.dftools.algorithm.model.dag.DAGEdge;
-import net.sf.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
@@ -150,9 +148,10 @@ public class KwokListScheduler {
 				// ------------------25/06/2012 - Ugly temp fix, remove it soon ----------
 				// -----------------This fix will ensure that broadcast (and roundbuffers) are mapped
 				// ------------------on the same component as their immediate predecessor (and successor)
+				// 04/12/2012 - commented out until semantics of special vertices is precise
 				
 				// If the currentVertex is a broadcast
-				if (currentvertex.getKind().equals("dag_broadcast_vertex") 
+/*				if (currentvertex.getKind().equals("dag_broadcast_vertex") 
 						&& !(currentvertex.getCorrespondingSDFVertex() instanceof SDFRoundBufferVertex)) {
 					if (currentvertex.incomingEdges().size() > 1) {
 						WorkflowLogger
@@ -179,7 +178,7 @@ public class KwokListScheduler {
 				}
 				
 				// do not map Roundbuffers yet. They will be mapped with their successors
-				if (!(currentvertex.getCorrespondingSDFVertex() instanceof SDFRoundBufferVertex)) {
+				if (!(currentvertex.getCorrespondingSDFVertex() instanceof SDFRoundBufferVertex)) {*/
 				// -----------------End of the temp fix first half-----------------------------------
 
 				// Map on the chosen operator
@@ -196,7 +195,7 @@ public class KwokListScheduler {
 				
 				// ------------------Second half of temp fix----------
 
-				}else{ // Curent vertex is a RoundBuffer
+/*				}else{ // Curent vertex is a RoundBuffer
 					// Do not map round buffer until their immediate sucessor is mapped	
 					if(currentvertex.outgoingEdges().size()>1){
 						WorkflowLogger
@@ -204,7 +203,7 @@ public class KwokListScheduler {
 						.log(Level.SEVERE,
 								"RoundBuffer with several outputs: activate \"SuppressImplodeExplode\" in HSDF to solve this issue \n or it will be mapped with only one of its sucessors");
 					}
-				}
+				}*/
 				// ------------------end of Second half of temp fix----------
 
 			}

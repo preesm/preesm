@@ -34,7 +34,7 @@
 #define Core7 	7
 
 // Number of different point to point media
-#define MEDIA_NR 	10
+#define MEDIA_NR 	8
 
 // Initializing several semaphores
 int sems_init(sem_t *sem, int number);

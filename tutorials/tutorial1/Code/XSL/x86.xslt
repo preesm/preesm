@@ -69,10 +69,15 @@
     
     <xsl:template match="sourceCode:linearCodeContainer">
         <xsl:param name="curIndent"/>
-        <xsl:if test="sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:semaphoreInit | sourceCode:sendMsg | sourceCode:receiveMsg | sourceCode:launchThread | sourceCode:sendInit | sourceCode:receiveInit">
+        <!-- Managing communication initialization -->
+        <xsl:if test="@comment='COMINIT'">
+        	<xsl:value-of select="concat($curIndent,'comInits(',$coreName)"/>       
+            <xsl:value-of select="concat(');',$new_line,$new_line)"/>
+        </xsl:if>
+        <xsl:if test="sourceCode:userFunctionCall | sourceCode:sendMsg | sourceCode:receiveMsg | sourceCode:launchThread">
             <xsl:value-of select="concat($curIndent,'{',$new_line)"/>
             
-            <xsl:apply-templates select="sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:semaphoreInit | sourceCode:sendMsg | sourceCode:receiveMsg | sourceCode:launchThread | sourceCode:sendInit | sourceCode:receiveInit">
+            <xsl:apply-templates select="sourceCode:userFunctionCall | sourceCode:sendMsg | sourceCode:receiveMsg | sourceCode:launchThread">
                 <xsl:with-param name="curIndent" select="concat($curIndent,$sglIndent)"/>
             </xsl:apply-templates>
             
@@ -83,10 +88,10 @@
     
     <xsl:template match="sourceCode:forLoop">
         <xsl:param name="curIndent"/>
-        <xsl:if test="sourceCode:subBufferAllocation | sourceCode:variableAllocation | sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost |  sourceCode:sendMsg | sourceCode:receiveMsg | sourceCode:specialBehavior">
+        <xsl:if test="sourceCode:subBufferAllocation | sourceCode:variableAllocation | sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:sendMsg | sourceCode:receiveMsg | sourceCode:specialBehavior">
             <xsl:value-of select="concat($curIndent,'for(;;){',$new_line)"/>
             
-            <xsl:apply-templates select="sourceCode:subBufferAllocation | sourceCode:variableAllocation | sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:sendMsg | sourceCode:receiveMsg | sourceCode:specialBehavior">
+            <xsl:apply-templates select="sourceCode:subBufferAllocation | sourceCode:variableAllocation | sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:sendMsg | sourceCode:receiveMsg | sourceCode:specialBehavior">
                 <xsl:with-param name="curIndent" select="concat($curIndent,$sglIndent)"/>
             </xsl:apply-templates>
             
@@ -98,9 +103,9 @@
     <!-- finite for loops -->
     <xsl:template match="sourceCode:finiteForLoop">
         <xsl:param name="curIndent"/>
-        <xsl:if test="sourceCode:CompoundCode | sourceCode:finiteForLoop |sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
+        <xsl:if test="sourceCode:CompoundCode | sourceCode:finiteForLoop |sourceCode:userFunctionCall | sourceCode:send | sourceCode:receive">
             <xsl:value-of select="concat($curIndent,'for(',@index,' = 0; ',@index,'&lt;',@domain,' ; ',@index,' ++)',$new_line)"/>
-            <xsl:apply-templates select="sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
+            <xsl:apply-templates select="sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:send | sourceCode:receive">
                 <xsl:with-param name="curIndent" select="$curIndent"/>
             </xsl:apply-templates>
         </xsl:if>
@@ -109,9 +114,9 @@
     <!-- compound code -->
     <xsl:template match="sourceCode:CompoundCode">
         <xsl:param name="curIndent"/>
-        <xsl:if test="sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:Assignment | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
+        <xsl:if test="sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:Assignment | sourceCode:send | sourceCode:receive">
             <xsl:value-of select="concat($curIndent,'{','//',@name,$new_line)"/>
-            <xsl:apply-templates select="sourceCode:subBufferAllocation | sourceCode:variableAllocation | sourceCode:bufferAllocation | sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:Assignment | sourceCode:semaphorePend | sourceCode:semaphorePost | sourceCode:send | sourceCode:receive">
+            <xsl:apply-templates select="sourceCode:subBufferAllocation | sourceCode:variableAllocation | sourceCode:bufferAllocation | sourceCode:CompoundCode | sourceCode:finiteForLoop | sourceCode:userFunctionCall | sourceCode:Assignment | sourceCode:send | sourceCode:receive">
                 <xsl:with-param name="curIndent" select="concat($curIndent,$sglIndent)"/>
             </xsl:apply-templates>
             <xsl:value-of select="concat($curIndent,'}',$new_line)"/>
@@ -180,38 +185,6 @@
 	        <!-- adding buffer -->
 	        <xsl:value-of select="concat(sourceCode:buffer/@name,',',sourceCode:buffer/@size,'*sizeof(',sourceCode:buffer/@type,')','); // ',@comment,$new_line)"/>
         </xsl:if>
-    </xsl:template>
-    
-    <xsl:template match="sourceCode:sendInit">
-        <xsl:param name="curIndent"/>
-        <xsl:choose>
-            <xsl:when test="sourceCode:routeStep/@type='med' and sourceCode:routeStep/@mediumDef='tcp_c64'">
-                <xsl:value-of select="concat($curIndent,'initC64TcpServer(7')"/>  
-                <xsl:value-of select="concat(');',$new_line)"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="concat($curIndent,'comInit(MEDIUM_SEND,')"/>
-                <xsl:apply-templates select="sourceCode:routeStep"/>
-                <xsl:value-of select="concat(',',$coreName,',',@connectedCoreId)"/>       
-                <xsl:value-of select="concat(');',$new_line)"/>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>
-    
-    <xsl:template match="sourceCode:receiveInit">
-        <xsl:param name="curIndent"/>
-        <xsl:choose>
-            <xsl:when test="sourceCode:routeStep/@type='med' and sourceCode:routeStep/@mediumDef='tcp_c64'">
-                <xsl:value-of select="concat($curIndent,'initC64TcpServer(7')"/>  
-                <xsl:value-of select="concat(');',$new_line)"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="concat($curIndent,'comInit(MEDIUM_RCV,')"/>
-                <xsl:apply-templates select="sourceCode:routeStep"/>
-                <xsl:value-of select="concat(',',@connectedCoreId,',',$coreName)"/> 
-                <xsl:value-of select="concat(');',$new_line)"/>
-            </xsl:otherwise>
-        </xsl:choose>
     </xsl:template>
     
     <xsl:template match="sourceCode:launchThread">

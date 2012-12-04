@@ -18,6 +18,9 @@
 
 Medium Media[MEDIA_NR][MEDIA_NR];
 
+void comInits(short myId){
+
+}
 
 void comInit (int direction, int I_media_type, short SenderId, short ReceiverId){
 	switch(direction){
