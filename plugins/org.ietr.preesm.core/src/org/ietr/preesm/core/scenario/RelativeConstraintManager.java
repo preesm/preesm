@@ -48,10 +48,14 @@ import java.util.Set;
  */
 public class RelativeConstraintManager {
 
+	/**
+	 * Integer representing no relative constraint
+	 */
 	public static final int NONE = -1;
 	
 	/**
-	 * List of all timings
+	 * List of all relative constraints as groups represented by integers and linked to 
+	 * vertices represented by their ID
 	 */
 	private Map<String, Integer> relativeConstraints;
 
@@ -64,12 +68,18 @@ public class RelativeConstraintManager {
 		relativeConstraints = new HashMap<String, Integer>();
 	}
 
+	/**
+	 * Set the group of a given vertex represented by its ID.
+	 */
 	public void addConstraint(String sdfVertexId, int groupId) {
 		if(groupId != NONE){
 			relativeConstraints.put(sdfVertexId, groupId);
 		}
 	}
-
+	
+	/**
+	 * Gets the group if any, associated with the vertex ID, or NONE otherwise.
+	 */
 	public int getConstraintOrDefault(String sdfVertexId){
 		if(relativeConstraints.keySet().contains(sdfVertexId)){
 			return relativeConstraints.get(sdfVertexId);
@@ -79,10 +89,16 @@ public class RelativeConstraintManager {
 		}
 	}
 	
+	/**
+	 * Checks if the vertex is associated to a group.
+	 */
 	public boolean hasRelativeConstraint(String sdfVertexId){
 		return relativeConstraints.keySet().contains(sdfVertexId);
 	}
 	
+	/**
+	 * Get the IDs of all vertices having a group.
+	 */
 	public Set<String> getExplicitConstraintIds() {
 		return relativeConstraints.keySet();
 	}

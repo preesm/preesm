@@ -5,6 +5,7 @@ package org.ietr.preesm.mapper.model.property;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -28,6 +29,9 @@ abstract public class GroupProperty implements Cloneable {
 		vertexIDs = new HashSet<String>();
 	}
 
+	/**
+	 * Duplicating the group property
+	 */
 	@Override
 	protected Object clone() {
 		GroupProperty newProp = null;
@@ -41,6 +45,9 @@ abstract public class GroupProperty implements Cloneable {
 		return newProp;
 	}
 	
+	/**
+	 * Adding a new member to the group
+	 */
 	public void addVertexID(String id){
 		for(String i:vertexIDs){
 			if(i.equals(id)){
@@ -50,10 +57,26 @@ abstract public class GroupProperty implements Cloneable {
 		vertexIDs.add(id);
 	}
 	
+	/**
+	 * Removing a member from the group
+	 */
+	public void removeVertexID(String id){
+		Iterator<String> it = vertexIDs.iterator();
+		while(it.hasNext()){
+			String i = it.next();
+			if(i.equals(id)){
+				it.remove();
+			}
+		}
+	}
+	
 	public int getNumberOfVertices(){
 		return vertexIDs.size();
 	}
 	
+	/**
+	 * Gets the vertices corresponding to the group
+	 */
 	public List<MapperDAGVertex> getVertices(MapperDAG dag){
 		List<MapperDAGVertex> vertices = new ArrayList<MapperDAGVertex>();
 		

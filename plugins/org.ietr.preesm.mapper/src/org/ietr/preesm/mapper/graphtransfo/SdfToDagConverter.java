@@ -169,22 +169,35 @@ public class SdfToDagConverter {
 	 */
 	public static void addInitialRelativeConstraintsProperties(MapperDAG dag,
 			Design architecture, PreesmScenario scenario) {
+		
+		// Initial relative constraints are stored in the scenario
 		RelativeConstraintManager manager =  scenario.getRelativeconstraintManager();
 		Map<Integer,Set<MapperDAGVertex>> relativeConstraints = new HashMap<Integer,Set<MapperDAGVertex>>();
+		
+		// We iterate the dag to add to each vertex its relative constraints (if any)
 		for(DAGVertex dv : dag.vertexSet()){
 			String sdfVName = dv.getCorrespondingSDFVertex().getId();
+			
+			// If a group was found, the actor is associated to a group with other actors
 			if(manager.hasRelativeConstraint(sdfVName)){
+				
+				// We get the group ID if any was set in the scenario
 				int group = manager.getConstraintOrDefault(sdfVName);
+				
 				if(!relativeConstraints.containsKey(group)){
 					relativeConstraints.put(group, new HashSet<MapperDAGVertex>());
 				}
 				relativeConstraints.get(group).add((MapperDAGVertex)dv);
 			}
+			// otherwise, the actor has no relative constraint
 			else{
 				dag.getMappings().dedicate((MapperDAGVertex)dv);
 			}
 		}
 		
+		// A DAGMappings object is stored in a DAG. It stores relative constraints
+		// between vertices of the DAG.
+		// We associate here vertices that will share mapping constraints
 		for(int group : relativeConstraints.keySet()){
 			dag.getMappings().associate(relativeConstraints.get(group));
 		}

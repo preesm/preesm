@@ -9,12 +9,16 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 /**
  * MapperDAG stores mapping properties shared by several of its vertices that
- * have relative constraints
+ * have relative constraints. If the mapping of a vertex in the group is modified,
+ * all mappings of the vertices in the group are modified.
  * 
  * @author mpelcat
  */
 public class DAGMappings {
 	
+	/**
+	 * A mapping is associated to IDs of the vertices belonging to it (for fast access).
+	 */
 	Map<String,VertexMapping> mappings = null;
 	
 	
@@ -46,12 +50,19 @@ public class DAGMappings {
 		put(vertex.getName(),newMapping);
 	}
 	
+	/**
+	 * Associating a vertex to an existing mapping
+	 */
 	private void put(String vertexId, VertexMapping m){
 		mappings.put(vertexId,m);
 		m.addVertexID(vertexId);
 	}
-	
+
+	/**
+	 * Associating a vertex to an existing mapping
+	 */
 	public void remove(MapperDAGVertex vertex){
+		mappings.get(vertex.getName()).removeVertexID(vertex.getName());
 		mappings.remove(vertex.getName());
 	}
 

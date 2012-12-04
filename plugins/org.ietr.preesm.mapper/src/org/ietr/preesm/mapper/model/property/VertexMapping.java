@@ -116,6 +116,8 @@ public class VertexMapping extends GroupProperty {
 
 		List<ComponentInstance> operators = new ArrayList<ComponentInstance>();
 		MapperDAG dag = (MapperDAG) vertex.getBase();
+		
+		// Gets all vertices corresponding to the relative constraint group
 		List<MapperDAGVertex> relatedVertices = getVertices(dag);
 
 		if (relatedVertices.size() < 1) {
@@ -127,25 +129,17 @@ public class VertexMapping extends GroupProperty {
 
 		MapperDAGVertex firstVertex = relatedVertices.get(0);
 		ComponentInstance op = firstVertex.getMapping().getEffectiveComponent();
+		// If the group has an effective component (shared)
 		if (op != null) {
 			// Forcing the mapper to put together related vertices
 			operators.add(op);
 		} else {
-			// Adding all candidate components of the first vertex
+			// Adding to the list all candidate components of the first vertex
 			operators.addAll(firstVertex.getInit().getInitialOperatorList());
-		}
-
-		for (int i = 1; i < relatedVertices.size(); i++) {
-			MapperDAGVertex locVertex = relatedVertices.get(i);
-			op = locVertex.getMapping().getEffectiveOperator();
-			if (op != null) {
-				if (DesignTools.contains(operators, op)) {
-					operators.clear();
-					operators.add(op);
-				} else {
-					operators.clear();
-				}
-			} else {
+			
+			// computing intersection with other initial operator lists
+			for (int i = 1; i < relatedVertices.size(); i++) {
+				MapperDAGVertex locVertex = relatedVertices.get(i);
 				DesignTools.retainAll(operators, locVertex.getInit()
 						.getInitialOperatorList());
 			}
