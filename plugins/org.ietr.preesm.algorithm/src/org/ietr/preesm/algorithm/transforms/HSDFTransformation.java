@@ -49,6 +49,9 @@ import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import net.sf.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor;
 import net.sf.dftools.algorithm.model.visitors.SDF4JException;
 import net.sf.dftools.algorithm.model.visitors.VisitorOutput;
@@ -83,7 +86,13 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 			return;
 		} // Iterator on DAG vertices
 		
+		// Keep track of the initial number of edge to check if the right number
+		// of edges were removed
 		int nbEdgeBefore = hsdf.edgeSet().size();
+		
+		// Count the number of edges added because of broadcasts and round buffers
+		int nbEdgeAdded = 0;
+		
 		// Be careful, DAGiterator does not seem to work well if dag is
 		// modified throughout the iteration.
 		// That's why we use first copy the ordered dag vertex set.
@@ -97,8 +106,10 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 		// Remove dag vertex of type implode explode
 		// And identify source vertices (vertices without predecessors)
 		HashSet<SDFAbstractVertex> nonTaskVertices = new HashSet<SDFAbstractVertex>(); // Set of
-																		// non-task
-																		// vertices
+																		    // non-task vertices
+		
+		HashSet<SDFAbstractVertex> broadcastVertices = new HashSet<SDFAbstractVertex>(); // Set of
+		// broadcast vertices
 
 		for (SDFAbstractVertex vert : sdfVertices) {
 			//boolean isTask = vert.getPropertyBean().getValue("vertexType")
@@ -173,11 +184,115 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 				}
 				nonTaskVertices.add(vert);
 			}
+			else if(vert instanceof SDFBroadcastVertex && !(vert instanceof SDFRoundBufferVertex)) {
+				//WorkflowLogger.getLogger().log(Level.SEVERE, "BROADCAST");
+				
+				// If the broadcast follows an implosion duplicate the broadcast
+				Set<SDFEdge> incomingEdges = vert.getBase().incomingEdgesOf(vert);
+				if(incomingEdges.size()>1){
+					
+					Set<SDFEdge> outgoingEdges = vert.getBase().outgoingEdgesOf(vert);
+					// Create a broadcast for each incoming edge instead of one for 
+					// all of them
+					for(SDFEdge inEdge : incomingEdges){
+						// ignore the edge coming from implode vertex
+						if(inEdge.getSource() instanceof SDFJoinVertex){
+							continue;
+						}
+						
+						// Create new vertex
+						SDFBroadcastVertex newVert = (SDFBroadcastVertex)vert.clone();
+						hsdf.addVertex(newVert);
+						
+						// Link it to its input
+						SDFEdge newInEdge = hsdf.addEdge(
+								inEdge.getSource(),
+								newVert);
+						newInEdge.copyProperties(inEdge);
+						newInEdge.setSourceLabel(inEdge
+								.getSourceLabel());
+						newInEdge.setTargetLabel(inEdge
+								.getTargetLabel());
+						newInEdge.setTargetInterface(inEdge.getTargetInterface());
+						newInEdge.setSourceInterface(inEdge.getSourceInterface());
+						
+						// Link it to its outputs
+						for(SDFEdge outEdge : outgoingEdges){
+							// Create the new edge from broadcast to all
+							// sink
+							SDFEdge newOutEdge = hsdf.addEdge(
+									newVert,
+									outEdge.getTarget());
 
+							newOutEdge.copyProperties(inEdge);
+							newOutEdge.setSourceLabel(outEdge
+									.getSourceLabel());
+							newOutEdge.setTargetLabel(outEdge
+									.getTargetLabel());
+							newOutEdge.setTargetInterface(outEdge.getTargetInterface());
+							newOutEdge.setSourceInterface(outEdge.getSourceInterface());
+						}
+					}
+					// Update the number of edge added
+					// the first -1 is to ignore the edge coming from the 
+					// remaining "implode" vertex
+					// The second -1 is because outgoing edges of broadcast 
+					// were already present once.
+					nbEdgeAdded += (outgoingEdges.size())*(incomingEdges.size()-1-1);
+					broadcastVertices.add(vert);
+				}
+			} 	else if(vert instanceof SDFRoundBufferVertex) {
+				//WorkflowLogger.getLogger().log(Level.SEVERE, "RoundBuffer");
+				
+				// Check if the roundbuffer precedes an explosion
+				// It seems that in this case, no "explode" vertex was added :s
+				Set<SDFEdge> outgoingEdges = vert.getBase().outgoingEdgesOf(vert);
+				if(outgoingEdges.size()>1){
+					Set<SDFEdge> incomingEdges = vert.getBase().incomingEdgesOf(vert);
+					
+					// Duplicate the roundbuffer for each outgoing edge
+					for(SDFEdge outEdge : outgoingEdges){
+						// Create new vertex
+						SDFRoundBufferVertex newVert = (SDFRoundBufferVertex)vert.clone();
+						hsdf.addVertex(newVert);
+						
+						// link it to its output.
+						SDFEdge newOutEdge = hsdf.addEdge(
+								newVert,
+								outEdge.getTarget());
+
+						newOutEdge.copyProperties(outEdge);
+						newOutEdge.setSourceLabel(outEdge
+								.getSourceLabel());
+						newOutEdge.setTargetLabel(outEdge
+								.getTargetLabel());
+						newOutEdge.setTargetInterface(outEdge.getTargetInterface());
+						newOutEdge.setSourceInterface(outEdge.getSourceInterface());
+						
+						// Link it to its inputs
+						for(SDFEdge inEdge : incomingEdges){
+							SDFEdge newInEdge = hsdf.addEdge(
+									inEdge.getSource(),
+									newVert);
+							newInEdge.copyProperties(outEdge);
+							newInEdge.setSourceLabel(inEdge
+									.getSourceLabel());
+							newInEdge.setTargetLabel(inEdge
+									.getTargetLabel());
+							newInEdge.setTargetInterface(inEdge.getTargetInterface());
+							newInEdge.setSourceInterface(inEdge.getSourceInterface());
+						}
+					}
+					// Update the number of edge added
+					nbEdgeAdded += (outgoingEdges.size()-1)*(incomingEdges.size());
+					broadcastVertices.add(vert);
+				}	
+			}
 		}
 		hsdf.removeAllVertices(nonTaskVertices);
-		if( nonTaskVertices.size() != (nbEdgeBefore - hsdf.edgeSet().size())){
-			WorkflowLogger.getLogger().log(Level.SEVERE, "Expecting " + nonTaskVertices.size() + "edges removed but got "+ (nbEdgeBefore - hsdf.edgeSet().size()) +" edges removed instead");
+		hsdf.removeAllVertices(broadcastVertices);
+		if( nonTaskVertices.size() != (nbEdgeBefore + nbEdgeAdded - hsdf.edgeSet().size())){
+			WorkflowLogger.getLogger().log(Level.SEVERE, "Expecting " + nonTaskVertices.size() + " edges removed but got "+ (nbEdgeBefore + nbEdgeAdded - hsdf.edgeSet().size()) +" edges removed instead");
 			WorkflowLogger.getLogger().log(Level.SEVERE, "Consider deactivating Implode/Explode suprression in HSDF workflow element parameters");
 		}else {
 			WorkflowLogger.getLogger().log(Level.INFO, ""+ nonTaskVertices.size() + " implode/explode vertices removed (and as many edges)");

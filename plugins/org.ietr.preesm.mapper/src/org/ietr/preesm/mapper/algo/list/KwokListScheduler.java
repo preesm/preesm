@@ -40,6 +40,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
@@ -144,6 +146,41 @@ public class KwokListScheduler {
 
 					}
 				}
+				
+				// ------------------25/06/2012 - Ugly temp fix, remove it soon ----------
+				// -----------------This fix will ensure that broadcast (and roundbuffers) are mapped
+				// ------------------on the same component as their immediate predecessor (and successor)
+				
+				// If the currentVertex is a broadcast
+				if (currentvertex.getKind().equals("dag_broadcast_vertex") 
+						&& !(currentvertex.getCorrespondingSDFVertex() instanceof SDFRoundBufferVertex)) {
+					if (currentvertex.incomingEdges().size() > 1) {
+						WorkflowLogger
+								.getLogger()
+								.log(Level.SEVERE,
+										"Broadcast with several inputs: activate \"SuppressImplodeExplode\" in HSDF to solve this issue.");
+					} else {
+						// Get the unique incoming edge of broadcast
+						DAGEdge inEdge = currentvertex.incomingEdges().iterator()
+								.next();
+						chosenoperator = archisimu
+								.getEffectiveComponent((MapperDAGVertex) inEdge
+										.getSource());
+
+					}
+				}
+				
+				// If current vertex has a (or several) roundbuffer(s) as predecessor(s),
+				// map the round buffer on the same component
+				for(DAGEdge inEdge: currentvertex.incomingEdges()){
+					if(inEdge.getSource().getCorrespondingSDFVertex() instanceof SDFRoundBufferVertex){
+						archisimu.map((MapperDAGVertex)inEdge.getSource(), chosenoperator, true);
+					}
+				}
+				
+				// do not map Roundbuffers yet. They will be mapped with their successors
+				if (!(currentvertex.getCorrespondingSDFVertex() instanceof SDFRoundBufferVertex)) {
+				// -----------------End of the temp fix first half-----------------------------------
 
 				// Map on the chosen operator
 				archisimu.map(currentvertex, chosenoperator, true);
@@ -156,6 +193,19 @@ public class KwokListScheduler {
 				}
 
 				chosenoperator = null;
+				
+				// ------------------Second half of temp fix----------
+
+				}else{ // Curent vertex is a RoundBuffer
+					// Do not map round buffer until their immediate sucessor is mapped	
+					if(currentvertex.outgoingEdges().size()>1){
+						WorkflowLogger
+						.getLogger()
+						.log(Level.SEVERE,
+								"RoundBuffer with several outputs: activate \"SuppressImplodeExplode\" in HSDF to solve this issue \n or it will be mapped with only one of its sucessors");
+					}
+				}
+				// ------------------end of Second half of temp fix----------
 
 			}
 		}
