@@ -55,6 +55,7 @@ import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutInterfaceVertexFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.LayoutPortFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.MoveAbstractVertexFeature;
+import org.ietr.preesm.experiment.ui.pimemoc.features.OpenRefinementFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.ReconnectionFifoFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.RenameActorFeature;
 import org.ietr.preesm.experiment.ui.pimemoc.features.RenameActorPortFeature;
@@ -106,7 +107,8 @@ public class PimemocFeatureProvider extends DefaultFeatureProvider {
 		return new ICustomFeature[] { new RenameActorFeature(this),
 				new AddOutputPortFeature(this), new AddInputPortFeature(this),
 				new RenameActorPortFeature(this),
-				new SetActorRefinementFeature(this) };
+				new SetActorRefinementFeature(this),
+				new OpenRefinementFeature(this)};
 	}
 
 	@Override
