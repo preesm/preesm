@@ -11,12 +11,6 @@
 
 extern void * computationThread_Core0( void *arg );
 extern void * computationThread_Core1( void *arg );
-extern void * computationThread_Core2( void *arg );
-extern void * computationThread_Core3( void *arg );
-extern void * computationThread_Core4( void *arg );
-extern void * computationThread_Core5( void *arg );
-extern void * computationThread_Core6( void *arg );
-extern void * computationThread_Core7( void *arg );
 
 int main(void)
 {
@@ -26,12 +20,6 @@ int main(void)
 
 	routine[0] = computationThread_Core0;
 	routine[1] = computationThread_Core1;
-	routine[2] = computationThread_Core2;
-	routine[3] = computationThread_Core3;
-	routine[4] = computationThread_Core4;
-	routine[5] = computationThread_Core5;
-	routine[6] = computationThread_Core6;
-	routine[7] = computationThread_Core7;
 
 	for(i=0;i<CORE_NUMBER;i++){
 		pthread_t thread; 

@@ -23,7 +23,7 @@ typedef struct {
 
 int sendData(int I_param, short I_senderID, short I_receiverID, void *PV_buffer, int I_size_of_data);
 int receiveData(int I_param, short I_senderID, short I_receiverID, void *PV_buffer, int I_size_of_data);
-void comInit (int direction, int I_media_type, short SenderId, short ReceiverId);
+void comInit (int direction, short SenderId, short ReceiverId);
 void comInits(short myId);
 
 #endif

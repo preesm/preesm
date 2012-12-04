@@ -16,13 +16,29 @@
 #include "tcp.h"
 #include "x86.h"
 
-Medium Media[MEDIA_NR][MEDIA_NR];
+Medium Media[CORE_NUMBER][CORE_NUMBER];
 
 void comInits(short myId){
+	int i;
 
+	for(i=0; i<CORE_NUMBER; i++){
+		if(i < myId){
+			comInit (MEDIUM_RCV, i, myId);
+			comInit (MEDIUM_SEND, myId, i);
+		}
+		else if(i > myId){
+			comInit (MEDIUM_SEND, myId, i);
+			comInit (MEDIUM_RCV, i, myId);
+		}
+	}
+
+	for(i=0; i<CORE_NUMBER; i++){
+		if(i > myId){
+		}
+	}
 }
 
-void comInit (int direction, int I_media_type, short SenderId, short ReceiverId){
+void comInit (int direction, short SenderId, short ReceiverId){
 	switch(direction){
 		case MEDIUM_SEND:
 			if(Media[SenderId][ReceiverId].medium == NULL){

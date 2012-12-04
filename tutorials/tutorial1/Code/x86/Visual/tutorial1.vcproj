@@ -186,30 +186,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\generatedSrc\Core2.c"
-				>
-			</File>
-			<File
-				RelativePath="..\generatedSrc\Core3.c"
-				>
-			</File>
-			<File
-				RelativePath="..\generatedSrc\Core4.c"
-				>
-			</File>
-			<File
-				RelativePath="..\generatedSrc\Core5.c"
-				>
-			</File>
-			<File
-				RelativePath="..\generatedSrc\Core6.c"
-				>
-			</File>
-			<File
-				RelativePath="..\generatedSrc\Core7.c"
-				>
-			</File>
-			<File
 				RelativePath="..\src\tcp.c"
 				>
 			</File>
