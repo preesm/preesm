@@ -9,10 +9,10 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.ietr.preesm.experiment.model.pimemoc.Actor;
-import org.ietr.preesm.experiment.model.pimemoc.OutputPort;
-import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCFactory;
-import org.ietr.preesm.experiment.model.pimemoc.Port;
+import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
+import org.ietr.preesm.experiment.model.pimm.Port;
 
 public class AddOutputPortFeature extends AbstractAddActorPortFeature {
 
@@ -82,7 +82,7 @@ public class AddOutputPortFeature extends AbstractAddActorPortFeature {
 
 	@Override
 	public Port getNewPort(String portName, Actor actor) {
-		OutputPort newPort = PIMeMoCFactory.eINSTANCE.createOutputPort();
+		OutputPort newPort = PiMMFactory.eINSTANCE.createOutputPort();
 		newPort.setName(portName);
 		actor.getOutputPorts().add(newPort);
 		return newPort;

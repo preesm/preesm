@@ -13,7 +13,7 @@ import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaCreateService;
 import org.eclipse.graphiti.services.IPeLayoutService;
-import org.ietr.preesm.experiment.model.pimemoc.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 
 /**
  * The Move Feature for {@link AbstractVertex}

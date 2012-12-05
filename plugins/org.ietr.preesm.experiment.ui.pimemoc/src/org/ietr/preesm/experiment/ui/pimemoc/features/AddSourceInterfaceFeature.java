@@ -16,9 +16,9 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.ietr.preesm.experiment.model.pimemoc.Graph;
-import org.ietr.preesm.experiment.model.pimemoc.OutputPort;
-import org.ietr.preesm.experiment.model.pimemoc.SourceInterface;
+import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.SourceInterface;
 
 /**
  * Add feature to add a new {@link SourceInterface} to the {@link Graph}

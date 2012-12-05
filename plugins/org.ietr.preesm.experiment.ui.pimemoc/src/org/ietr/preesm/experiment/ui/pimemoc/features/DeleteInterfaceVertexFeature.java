@@ -2,8 +2,8 @@ package org.ietr.preesm.experiment.ui.pimemoc.features;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IDeleteContext;
-import org.ietr.preesm.experiment.model.pimemoc.Graph;
-import org.ietr.preesm.experiment.model.pimemoc.InterfaceVertex;
+import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.InterfaceVertex;
 import org.ietr.preesm.experiment.ui.pimemoc.diagram.PimemocFeatureProviderWithRemove;
 
 /**

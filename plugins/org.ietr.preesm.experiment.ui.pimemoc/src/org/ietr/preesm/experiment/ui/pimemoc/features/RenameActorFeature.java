@@ -4,9 +4,9 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.ietr.preesm.experiment.model.pimemoc.Actor;
-import org.ietr.preesm.experiment.model.pimemoc.Graph;
-import org.ietr.preesm.experiment.model.pimemoc.util.VertexNameValidator;
+import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.experiment.ui.pimemoc.util.PimemocUtil;
 
 /**

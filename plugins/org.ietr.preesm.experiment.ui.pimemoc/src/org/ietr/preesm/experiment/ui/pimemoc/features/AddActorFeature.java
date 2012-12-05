@@ -15,8 +15,8 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.ietr.preesm.experiment.model.pimemoc.Actor;
-import org.ietr.preesm.experiment.model.pimemoc.Graph;
+import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.Graph;
 
 public class AddActorFeature extends AbstractAddFeature {
 	

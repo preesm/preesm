@@ -16,9 +16,9 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.ietr.preesm.experiment.model.pimemoc.Graph;
-import org.ietr.preesm.experiment.model.pimemoc.InputPort;
-import org.ietr.preesm.experiment.model.pimemoc.SinkInterface;
+import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.InputPort;
+import org.ietr.preesm.experiment.model.pimm.SinkInterface;
 
 /**
  * Add feature to add a new {@link SinkInterface} to the {@link Graph}

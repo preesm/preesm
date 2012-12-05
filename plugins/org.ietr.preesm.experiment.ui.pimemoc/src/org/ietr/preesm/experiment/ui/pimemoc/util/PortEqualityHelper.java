@@ -9,9 +9,9 @@ import java.util.Map;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.impl.Reason;
-import org.ietr.preesm.experiment.model.pimemoc.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimemoc.Fifo;
-import org.ietr.preesm.experiment.model.pimemoc.Port;
+import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
  * This class is used to test the equality of ports a return the reason why they

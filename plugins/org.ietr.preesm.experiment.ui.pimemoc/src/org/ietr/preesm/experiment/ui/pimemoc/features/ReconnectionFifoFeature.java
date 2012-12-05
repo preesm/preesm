@@ -11,10 +11,10 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
-import org.ietr.preesm.experiment.model.pimemoc.Fifo;
-import org.ietr.preesm.experiment.model.pimemoc.InputPort;
-import org.ietr.preesm.experiment.model.pimemoc.OutputPort;
-import org.ietr.preesm.experiment.model.pimemoc.Port;
+import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.InputPort;
+import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
  * Reconnection feature for the {@link Fifo}.

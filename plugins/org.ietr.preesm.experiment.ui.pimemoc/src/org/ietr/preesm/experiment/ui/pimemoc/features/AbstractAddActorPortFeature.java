@@ -15,9 +15,9 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.ietr.preesm.experiment.model.pimemoc.Actor;
-import org.ietr.preesm.experiment.model.pimemoc.Port;
-import org.ietr.preesm.experiment.model.pimemoc.util.PortNameValidator;
+import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.util.PortNameValidator;
 import org.ietr.preesm.experiment.ui.pimemoc.util.PimemocUtil;
 
 /**

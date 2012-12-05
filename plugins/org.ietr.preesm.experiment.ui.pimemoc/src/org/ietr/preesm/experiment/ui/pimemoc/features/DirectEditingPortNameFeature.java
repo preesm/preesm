@@ -7,9 +7,9 @@ import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.ietr.preesm.experiment.model.pimemoc.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimemoc.Port;
-import org.ietr.preesm.experiment.model.pimemoc.util.PortNameValidator;
+import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.util.PortNameValidator;
 
 /**
  * Feature to change the name of a port directly in the editor.

@@ -4,10 +4,10 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.ietr.preesm.experiment.model.pimemoc.Graph;
-import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCFactory;
-import org.ietr.preesm.experiment.model.pimemoc.SourceInterface;
-import org.ietr.preesm.experiment.model.pimemoc.util.VertexNameValidator;
+import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
+import org.ietr.preesm.experiment.model.pimm.SourceInterface;
+import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.experiment.ui.pimemoc.util.PimemocUtil;
 
 /**
@@ -57,7 +57,7 @@ public class CreateSourceInterfaceFeature extends AbstractCreateFeature {
 		}
 
 		// create SourceInterface
-		SourceInterface newSrcInterface = PIMeMoCFactory.eINSTANCE
+		SourceInterface newSrcInterface = PiMMFactory.eINSTANCE
 				.createSourceInterface();
 		newSrcInterface.setName(newSrcName);
 

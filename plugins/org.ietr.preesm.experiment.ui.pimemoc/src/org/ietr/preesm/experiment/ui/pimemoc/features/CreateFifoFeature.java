@@ -9,12 +9,12 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.ietr.preesm.experiment.model.pimemoc.Fifo;
-import org.ietr.preesm.experiment.model.pimemoc.Graph;
-import org.ietr.preesm.experiment.model.pimemoc.InputPort;
-import org.ietr.preesm.experiment.model.pimemoc.OutputPort;
-import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCFactory;
-import org.ietr.preesm.experiment.model.pimemoc.Port;
+import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.InputPort;
+import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
+import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.ui.pimemoc.util.PimemocUtil;
 
 /**
@@ -256,7 +256,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 		Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
 
 		// Create the Fifo
-		Fifo fifo = PIMeMoCFactory.eINSTANCE.createFifo();
+		Fifo fifo = PiMMFactory.eINSTANCE.createFifo();
 		fifo.setSourcePort(source);
 		fifo.setTargetPort(target);
 

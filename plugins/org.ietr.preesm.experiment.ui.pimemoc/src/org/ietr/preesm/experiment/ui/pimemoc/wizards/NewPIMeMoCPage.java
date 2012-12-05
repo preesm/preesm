@@ -17,8 +17,8 @@ import org.eclipse.graphiti.mm.pictograms.PictogramsFactory;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
-import org.ietr.preesm.experiment.model.pimemoc.Graph;
-import org.ietr.preesm.experiment.model.pimemoc.PIMeMoCFactory;
+import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 
 public class NewPIMeMoCPage extends WizardNewFileCreationPage {
 
@@ -60,7 +60,7 @@ public class NewPIMeMoCPage extends WizardNewFileCreationPage {
 			graphName = graphName.substring(0, idx - 1);
 		}
 
-		Graph graph = PIMeMoCFactory.eINSTANCE.createGraph();
+		Graph graph = PiMMFactory.eINSTANCE.createGraph();
 		graph.setName(graphName);
 
 		return graph;

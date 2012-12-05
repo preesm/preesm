@@ -12,14 +12,14 @@
 
    <extension point="org.eclipse.emf.ecore.generated_package">
       <package
-            uri="http://org.ietr.preesm/experiment/model/pimemoc"
-            class="org.ietr.preesm.experiment.model.pimemoc.PIMeMoCPackage"
-            genModel="model/PIMeMoC.genmodel"/>
+            uri="http://org.ietr.preesm/experiment/model/pimm"
+            class="org.ietr.preesm.experiment.model.pimm.PiMMPackage"
+            genModel="model/PiMM.genmodel"/>
    </extension>
    <extension
          point="org.eclipse.emf.ecore.extension_parser">
       <parser
-            class="org.ietr.preesm.experiment.model.pimemoc.serialize.GraphMLResourceFactoryImpl"
+            class="org.ietr.preesm.experiment.model.pimm.serialize.GraphMLResourceFactoryImpl"
             type="graphml">
       </parser>
    </extension>
