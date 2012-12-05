@@ -5,19 +5,19 @@
    <extension
          point="org.eclipse.graphiti.ui.diagramTypes">
       <diagramType
-            name="PIMeMoC Diagram Type"
-            type="PIMeMoC"
-            id="org.ietr.preesm.experiment.ui.pimemoc.pimemocDiagramType">
+            name="PiMM Diagram Type"
+            type="PiMM"
+            id="org.ietr.preesm.experiment.ui.pimm.pimmDiagramType">
       </diagramType>
    </extension>
    <extension
          point="org.eclipse.graphiti.ui.diagramTypeProviders">
       <diagramTypeProvider
-            name="PIMeMoC Diagram Type Provider"
-            class="org.ietr.preesm.experiment.ui.pimemoc.diagram.PimemocDiagramTypeProvider"
-            id="org.ietr.preesm.experiment.ui.pimemoc.pimemocDiagramTypeProvider">
+            name="PiMM Diagram Type Provider"
+            class="org.ietr.preesm.experiment.ui.pimm.diagram.PiMMDiagramTypeProvider"
+            id="org.ietr.preesm.experiment.ui.pimm.pimmDiagramTypeProvider">
          <diagramType
-               id="org.ietr.preesm.experiment.ui.pimemoc.pimemocDiagramType">
+               id="org.ietr.preesm.experiment.ui.pimm.pimmDiagramType">
          </diagramType>
       </diagramTypeProvider>
    </extension>
@@ -26,10 +26,10 @@
       <wizard
             canFinishEarly="false"
             category="net.sf.dftools.architecture.ui.ArchitectureCategory"
-            class="org.ietr.preesm.experiment.ui.pimemoc.wizards.NewPIMeMoCWizard"
+            class="org.ietr.preesm.experiment.ui.pimm.wizards.NewPiMMWizard"
             hasPages="true"
-            id="org.ietr.preesm.experiment.ui.pimemoc.wizards.NewPIMeMoCWizard"
-            name="Algorithm Description (PIMeMoC)"
+            id="org.ietr.preesm.experiment.ui.pimm.wizards.NewPiMMWizard"
+            name="Algorithm Description (PiMM)"
             project="true">
       </wizard>
    </extension>
