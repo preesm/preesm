@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm core plug-in
 Bundle-SymbolicName: org.ietr.preesm.core;singleton:=true
-Bundle-Version: 0.6.3.v20120706
+Bundle-Version: 0.6.3.v20121206
 Bundle-Activator: org.ietr.preesm.core.Activator
 Bundle-Vendor: IETR/INSA of Rennes
 Require-Bundle: org.eclipse.core.expressions,

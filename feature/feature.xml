@@ -2,7 +2,7 @@
 <feature
       id="org.ietr.preesm.feature"
       label="Preesm Feature"
-      version="0.6.3.v20120706"
+      version="0.6.3.v20121206"
       provider-name="IETR/INSA">
 
    <description url="http://preesm.sf.net">
@@ -14,9 +14,9 @@ code from graph descriptions of algorithm and architecture.
 
    <copyright>
       Copyright or © or Copr. 
-IETR/INSA: Matthieu Wipliez, Jonathan Piat, Maxime Pelcat,
-Jean-François Nezan, Mickaël Raulet
-[mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
+IETR/INSA: Maxime Pelcat, Karol Desnos, Julien Heulot,
+Jean-François Nezan, Jonathan Piat, Mickaël Raulet, Matthieu Wipliez
+[mpelcat,kdesnos,jheulot,jnezan,jpiat,mraulet,mwipliez]@insa-rennes.fr
    </copyright>
 
    <license>
