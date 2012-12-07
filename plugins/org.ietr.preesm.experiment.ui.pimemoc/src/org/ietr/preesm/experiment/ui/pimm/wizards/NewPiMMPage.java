@@ -100,13 +100,13 @@ public class NewPiMMPage extends WizardNewFileCreationPage {
 		IPath path = getContainerFullPath();
 
 		// create graph
-		IPath graphmlPath = path.append(getFileName()).removeFileExtension()
-				.addFileExtension("graphml");
-		Graph graph = createGraph(graphmlPath);
+		IPath piPath = path.append(getFileName()).removeFileExtension()
+				.addFileExtension("pi");
+		Graph graph = createGraph(piPath);
 
 		// save graph
 		ResourceSet set = new ResourceSetImpl();
-		saveGraph(set, graphmlPath, graph);
+		saveGraph(set, piPath, graph);
 
 		// create diagram
 		Diagram diagram = Graphiti.getPeCreateService().createDiagram(

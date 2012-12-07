@@ -20,7 +20,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class GraphMLParser {
+public class PiParser {
 
 	/**
 	 * Retrieve the value of a property of the given {@link Element}. A property
@@ -55,13 +55,13 @@ public class GraphMLParser {
 	 */
 	private URI uri;
 
-	public GraphMLParser(URI uri) {
+	public PiParser(URI uri) {
 		this.uri = uri;
 	}
 
 	/**
 	 * Parse the PiMM {@link Graph} from the given {@link InputStream} using
-	 * the GraphML format.
+	 * the Pi format.
 	 * 
 	 * @param inputStream
 	 *            The Parsed input stream
@@ -79,7 +79,7 @@ public class GraphMLParser {
 
 		try {
 			// Fill the graph with parsed information
-			parseGraphML(rootElt, graph);
+			parsePi(rootElt, graph);
 		} catch (RuntimeException e) {
 			e.printStackTrace();
 			return null;
@@ -114,7 +114,7 @@ public class GraphMLParser {
 	}
 
 	/**
-	 * Parse an edge {@link Element} of the GraphML description. An edge
+	 * Parse an edge {@link Element} of the Pi description. An edge
 	 * {@link Element} can be a parameter dependency or a FIFO of the parsed
 	 * graph.
 	 * 
@@ -194,7 +194,7 @@ public class GraphMLParser {
 	}
 
 	/**
-	 * Retrieve and parse the graph element of the GraphML description
+	 * Retrieve and parse the graph element of the Pi description
 	 * 
 	 * @param rootElt
 	 *            The root element (that must have a graph child)
@@ -252,7 +252,7 @@ public class GraphMLParser {
 	}
 
 	/**
-	 * Parse the root element of the GraphML description
+	 * Parse the root element of the Pi description
 	 * 
 	 * @param parentElt
 	 *            The Element to fill (could be removed later if it is always
@@ -260,7 +260,7 @@ public class GraphMLParser {
 	 * @param graph
 	 *            The deserialized {@link Graph}
 	 */
-	protected void parseGraphML(Element rootElt, Graph graph) {
+	protected void parsePi(Element rootElt, Graph graph) {
 		// TODO parseKeys() (Not sure if it is really necessary to do that)
 
 		// Parse the graph element
@@ -269,7 +269,7 @@ public class GraphMLParser {
 	}
 
 	/**
-	 * Parse a node {@link Element} of the GraphML description. A node
+	 * Parse a node {@link Element} of the Pi description. A node
 	 * {@link Element} can be a parameter or an vertex of the parsed graph.
 	 * 
 	 * @param nodeElt

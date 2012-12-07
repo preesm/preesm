@@ -11,28 +11,28 @@ import org.ietr.preesm.experiment.model.pimm.Graph;
 
 /**
  * This class defines a resource implementation for the PiMM model which is
- * used to serialize/deserialize from GraphML.
+ * used to serialize/deserialize from Pi.
  * 
  * @author Karol Desnos
  * 
  */
-public class GraphMLResourceImpl extends ResourceImpl {
+public class PiResourceImpl extends ResourceImpl {
 
 	/**
-	 * Default constructor of the GraphMLResourceImpl
+	 * Default constructor of the {@link PiResourceImpl}
 	 * 
 	 * This constructor is protected and should not be used.
 	 */
-	protected GraphMLResourceImpl() {
+	protected PiResourceImpl() {
 	}
 
 	/**
-	 * Constructor of the GraphMLResourceImpl
+	 * Constructor of the {@link PiResourceImpl}
 	 * 
 	 * @param uri
 	 *            The URI of the resource
 	 */
-	public GraphMLResourceImpl(URI uri) {
+	public PiResourceImpl(URI uri) {
 		super(uri);
 	}
 
@@ -42,15 +42,15 @@ public class GraphMLResourceImpl extends ResourceImpl {
 		// Get the unique graph of the resource
 		Graph graph = (Graph) this.getContents().get(0);
 
-		// Write the Graph to the OutputStream using the GraphML format
-		new GraphMLWriter().write(graph, outputStream);
+		// Write the Graph to the OutputStream using the Pi format
+		new PiWriter().write(graph, outputStream);
 	}
 
 	@Override
 	protected void doLoad(InputStream inputStream, Map<?, ?> options)
 			throws IOException {
-		// Parse the Graph from the InputStream using the GraphML format
-		Graph graph = new GraphMLParser(uri).parse(inputStream);
+		// Parse the Graph from the InputStream using the Pi format
+		Graph graph = new PiParser(uri).parse(inputStream);
 
 		// If the graph was correctly parsed, add it to the Resource
 		if (graph != null) {

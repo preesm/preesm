@@ -4,15 +4,15 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 
-public class GraphMLResourceFactoryImpl extends ResourceFactoryImpl {
+public class PiResourceFactoryImpl extends ResourceFactoryImpl {
 
-	public GraphMLResourceFactoryImpl() {
+	public PiResourceFactoryImpl() {
 		super();
 	}
 	
 	@Override
 	public Resource createResource(URI uri) {
-		Resource result = new GraphMLResourceImpl();
+		Resource result = new PiResourceImpl();
 		result.setURI(uri);
 		return result;
 	}

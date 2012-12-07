@@ -19,7 +19,7 @@ import org.ietr.preesm.experiment.model.pimm.Actor;
 /**
  * Custom feature in charge of opening an editor for the refinement of an actor.
  * 
- * If the refinement is a graphml file, the associated diagram will be opened.
+ * If the refinement is a Pi file, the associated diagram will be opened.
  * Otherwise, the workbench default editor will be opened.
  * 
  * @author kdesnos
@@ -71,9 +71,9 @@ public class OpenRefinementFeature extends AbstractCustomFeature {
 							.getRoot()
 							.findMember(refinementFile.toPlatformString(true));
 
-					// If the refinement is a graphml file, open a diagram
+					// If the refinement is a Pi file, open a diagram
 					// instead (if it exists)
-					if (refResource.getFileExtension().equals("graphml")) {
+					if (refResource.getFileExtension().equals("pi")) {
 						URI diagramFile = refinementFile.trimFileExtension()
 								.appendFileExtension("diagram");
 						IResource diagResource = ResourcesPlugin.getWorkspace()

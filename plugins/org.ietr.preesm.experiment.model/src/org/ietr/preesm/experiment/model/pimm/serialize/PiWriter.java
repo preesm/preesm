@@ -22,12 +22,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * Writer for the PiMM Model in the GraphML format
+ * Writer for the PiMM Model in the Pi format
  * 
  * @author kdesnos
  * 
  */
-public class GraphMLWriter {
+public class PiWriter {
 
 	/**
 	 * The document created by this writer
@@ -36,7 +36,7 @@ public class GraphMLWriter {
 
 	/**
 	 * This HashMap associates a List to each <b>element</b> (graph, node, edge,
-	 * port) of a GraphML description. For each <b>element</b>, a list of
+	 * port) of a Pi description. For each <b>element</b>, a list of
 	 * {@link Key}s is associated. A {@link Key} can be seen as an attribute of
 	 * this element.
 	 */
@@ -53,9 +53,9 @@ public class GraphMLWriter {
 	protected Element rootElement;
 
 	/**
-	 * Default constructor of the GraphMLWriter
+	 * Default constructor of the {@link PiWriter}
 	 */
-	public GraphMLWriter() {
+	public PiWriter() {
 		// Instantiate an empty elementKeys Map
 		elementKeys = new HashMap<>();
 
@@ -188,7 +188,7 @@ public class GraphMLWriter {
 
 	/**
 	 * Write the PiMM {@link Graph} to the given {@link OutputStream} using
-	 * the GraphML format.
+	 * the Pi format.
 	 * 
 	 * @param graph
 	 *            The Graph to write
@@ -204,7 +204,7 @@ public class GraphMLWriter {
 		rootElement = domDocument.getDocumentElement();
 
 		// Fill the root Element with the Graph
-		writeGraphML(rootElement, graph);
+		writePi(rootElement, graph);
 
 		// Produce the output file
 		DomUtil.writeDocument(outputStream, domDocument);
@@ -355,7 +355,7 @@ public class GraphMLWriter {
 	 * @param graph
 	 *            The serialized Graph
 	 */
-	protected void writeGraphML(Element parentElt, Graph graph) {
+	protected void writePi(Element parentElt, Graph graph) {
 		// Add IBSDF Keys - Might not be needed.
 		addKey("parameters", "parameters", "graph", null, null);
 		addKey("variables", "variables", "graph", null, null);
