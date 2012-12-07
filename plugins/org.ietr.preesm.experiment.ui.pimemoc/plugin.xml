@@ -25,13 +25,25 @@
          point="org.eclipse.ui.newWizards">
       <wizard
             canFinishEarly="false"
-            category="net.sf.dftools.architecture.ui.ArchitectureCategory"
+            category="org.ietr.preesm.category"
             class="org.ietr.preesm.experiment.ui.pimm.wizards.NewPiMMWizard"
             hasPages="true"
+            icon="icons/pi.gif"
             id="org.ietr.preesm.experiment.ui.pimm.wizards.NewPiMMWizard"
             name="Algorithm Description (PiMM)"
             project="true">
       </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.eclipse.ui.editors.text.TextEditor"
+            default="false"
+            extensions="pi"
+            icon="icons/pi.gif"
+            id="org.ietr.preesm.experiment.ui.pimm.editor"
+            name="PiMM Editor">
+      </editor>
    </extension>
 
 </plugin>
