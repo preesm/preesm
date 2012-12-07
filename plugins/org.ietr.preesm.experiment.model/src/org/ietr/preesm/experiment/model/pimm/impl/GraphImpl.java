@@ -17,6 +17,7 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceVertex;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
@@ -30,6 +31,7 @@ import org.ietr.preesm.experiment.model.pimm.Port;
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.GraphImpl#getVertices <em>Vertices</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.GraphImpl#getFifos <em>Fifos</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.GraphImpl#getParameters <em>Parameters</em>}</li>
  * </ul>
  * </p>
  *
@@ -53,6 +55,16 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 	 * @ordered
 	 */
 	protected EList<Fifo> fifos;
+
+	/**
+	 * The cached value of the '{@link #getParameters() <em>Parameters</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getParameters()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<Parameter> parameters;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -101,6 +113,8 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 				return getVertices();
 			case PiMMPackage.GRAPH__FIFOS:
 				return getFifos();
+			case PiMMPackage.GRAPH__PARAMETERS:
+				return getParameters();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -117,6 +131,8 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 				return ((InternalEList<?>)getVertices()).basicRemove(otherEnd, msgs);
 			case PiMMPackage.GRAPH__FIFOS:
 				return ((InternalEList<?>)getFifos()).basicRemove(otherEnd, msgs);
+			case PiMMPackage.GRAPH__PARAMETERS:
+				return ((InternalEList<?>)getParameters()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -132,6 +148,8 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 				return vertices != null && !vertices.isEmpty();
 			case PiMMPackage.GRAPH__FIFOS:
 				return fifos != null && !fifos.isEmpty();
+			case PiMMPackage.GRAPH__PARAMETERS:
+				return parameters != null && !parameters.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
@@ -151,6 +169,10 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 			case PiMMPackage.GRAPH__FIFOS:
 				getFifos().clear();
 				getFifos().addAll((Collection<? extends Fifo>)newValue);
+				return;
+			case PiMMPackage.GRAPH__PARAMETERS:
+				getParameters().clear();
+				getParameters().addAll((Collection<? extends Parameter>)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -178,6 +200,9 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 			case PiMMPackage.GRAPH__FIFOS:
 				getFifos().clear();
 				return;
+			case PiMMPackage.GRAPH__PARAMETERS:
+				getParameters().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -191,6 +216,18 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 			fifos = new EObjectContainmentEList<Fifo>(Fifo.class, this, PiMMPackage.GRAPH__FIFOS);
 		}
 		return fifos;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EList<Parameter> getParameters() {
+		if (parameters == null) {
+			parameters = new EObjectContainmentEList<Parameter>(Parameter.class, this, PiMMPackage.GRAPH__PARAMETERS);
+		}
+		return parameters;
 	}
 
 	@Override

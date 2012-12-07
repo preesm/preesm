@@ -15,6 +15,7 @@ import org.eclipse.emf.common.util.EList;
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Graph#getVertices <em>Vertices</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Graph#getFifos <em>Fifos</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.Graph#getParameters <em>Parameters</em>}</li>
  * </ul>
  * </p>
  *
@@ -58,6 +59,22 @@ public interface Graph extends AbstractVertex {
 	 * @generated
 	 */
 	EList<Fifo> getFifos();
+
+	/**
+	 * Returns the value of the '<em><b>Parameters</b></em>' containment reference list.
+	 * The list contents are of type {@link org.ietr.preesm.experiment.model.pimm.Parameter}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Parameters</em>' containment reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Parameters</em>' containment reference list.
+	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getGraph_Parameters()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<Parameter> getParameters();
 
 	/**
 	 * <!-- begin-user-doc --> This method will add the {@link InterfaceVertex}

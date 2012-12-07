@@ -19,6 +19,8 @@
         eType="#//AbstractVertex" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="fifos" upperBound="-1"
         eType="#//Fifo" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
+        eType="#//Parameter" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Actor" eSuperTypes="#//AbstractVertex">
     <eStructuralFeatures xsi:type="ecore:EReference" name="refinement" lowerBound="1"
@@ -54,5 +56,12 @@
   <eClassifiers xsi:type="ecore:EClass" name="Refinement">
     <eOperations name="getAbstractVertex" eType="#//AbstractVertex"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="fileName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Parameter">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="locallyStatic" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="configurationInterface"
+        lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
   </eClassifiers>
 </ecore:EPackage>
