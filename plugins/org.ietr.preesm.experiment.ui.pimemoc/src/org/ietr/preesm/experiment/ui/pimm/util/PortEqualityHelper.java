@@ -9,7 +9,7 @@ import java.util.Map;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.impl.Reason;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
@@ -74,14 +74,14 @@ public class PortEqualityHelper {
 	 * 
 	 * 
 	 * @param vertex1
-	 *            First {@link AbstractVertex} whose {@link Port}s are compared.
+	 *            First {@link AbstractActor} whose {@link Port}s are compared.
 	 * @param vertex2
-	 *            Second {@link AbstractVertex} whose {@link Port}s are
+	 *            Second {@link AbstractActor} whose {@link Port}s are
 	 *            compared.
 	 * @return the {@link Map} of equivalent {@link Port}s
 	 */
 	public static Map<SimpleEntry<Port, Port>, IReason> buildEquivalentPortsMap(
-			AbstractVertex vertex1, AbstractVertex vertex2) {
+			AbstractActor vertex1, AbstractActor vertex2) {
 		Map<SimpleEntry<Port, Port>, IReason> result = new HashMap<SimpleEntry<Port, Port>, IReason>();
 
 		// Maintain a list of input port of vertex2 whose equivalent has not

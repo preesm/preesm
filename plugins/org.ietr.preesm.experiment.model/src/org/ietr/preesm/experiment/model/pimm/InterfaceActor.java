@@ -11,30 +11,30 @@ package org.ietr.preesm.experiment.model.pimm;
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.InterfaceVertex#getGraphPort <em>Graph Port</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.InterfaceVertex#getKind <em>Kind</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.InterfaceActor#getGraphPort <em>Graph Port</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.InterfaceActor#getKind <em>Kind</em>}</li>
  * </ul>
  * </p>
  *
- * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getInterfaceVertex()
+ * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getInterfaceActor()
  * @model
  * @generated
  */
-public interface InterfaceVertex extends AbstractVertex {
+public interface InterfaceActor extends AbstractActor {
 	/**
 	 * Returns the value of the '<em><b>Graph Port</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Graph Port</em>' reference.
 	 * @see #setGraphPort(Port)
-	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getInterfaceVertex_GraphPort()
+	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getInterfaceActor_GraphPort()
 	 * @model required="true"
 	 * @generated
 	 */
 	Port getGraphPort();
 
 	/**
-	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.InterfaceVertex#getGraphPort <em>Graph Port</em>}' reference.
+	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.InterfaceActor#getGraphPort <em>Graph Port</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Graph Port</em>' reference.
@@ -52,7 +52,7 @@ public interface InterfaceVertex extends AbstractVertex {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Kind</em>' attribute.
-	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getInterfaceVertex_Kind()
+	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getInterfaceActor_Kind()
 	 * @model required="true" changeable="false"
 	 * @generated
 	 */

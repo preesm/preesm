@@ -5,12 +5,12 @@ import java.io.InputStream;
 import net.sf.dftools.architecture.utils.DomUtil;
 
 import org.eclipse.emf.common.util.URI;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
-import org.ietr.preesm.experiment.model.pimm.InterfaceVertex;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.SinkInterface;
@@ -97,7 +97,7 @@ public class PiParser {
 	 *            the deserialized {@link Graph}
 	 * @return the created actor
 	 */
-	protected AbstractVertex parseActor(Element nodeElt, Graph graph) {
+	protected AbstractActor parseActor(Element nodeElt, Graph graph) {
 		// Instantiate the new actor
 		Actor actor = PiMMFactory.eINSTANCE.createActor();
 
@@ -156,8 +156,8 @@ public class PiParser {
 		// Find the source and target of the fifo
 		String sourceName = edgeElt.getAttribute("source");
 		String targetName = edgeElt.getAttribute("target");
-		AbstractVertex source = graph.getVertexNamed(sourceName);
-		AbstractVertex target = graph.getVertexNamed(targetName);
+		AbstractActor source = graph.getVertexNamed(sourceName);
+		AbstractActor target = graph.getVertexNamed(targetName);
 		if (source == null) {
 			throw new RuntimeException("Edge source vertex " + sourceName
 					+ " does not exist.");
@@ -280,7 +280,7 @@ public class PiParser {
 	protected void parseNode(Element nodeElt, Graph graph) {
 		// Identify if the node is an actor or a parameter
 		String nodeKind = nodeElt.getAttribute("kind");
-		AbstractVertex vertex;
+		AbstractActor vertex;
 
 		switch (nodeKind) {
 		case "actor":
@@ -325,7 +325,7 @@ public class PiParser {
 
 	}
 
-	protected void parsePort(Element elt, AbstractVertex vertex) {
+	protected void parsePort(Element elt, AbstractActor vertex) {
 		String portName = elt.getAttribute("name");
 		String portKind = elt.getAttribute("kind");
 
@@ -335,7 +335,7 @@ public class PiParser {
 			iPort.setName(portName);
 			// Do not parse data ports for InterfaceVertex since the unique port
 			// is automatically created when the vertex is instantiated
-			if (!(vertex instanceof InterfaceVertex)) {
+			if (!(vertex instanceof InterfaceActor)) {
 				vertex.getInputPorts().add(iPort);
 			}
 			break;
@@ -344,7 +344,7 @@ public class PiParser {
 			oPort.setName(portName);
 			// Do not parse data ports for InterfaceVertex since the unique port
 			// is automatically created when the vertex is instantiated
-			if (!(vertex instanceof InterfaceVertex)) {
+			if (!(vertex instanceof InterfaceActor)) {
 				vertex.getOutputPorts().add(oPort);
 			}
 			break;
@@ -363,7 +363,7 @@ public class PiParser {
 	 *            the deserialized {@link Graph}
 	 * @return the created {@link SinkInterface}
 	 */
-	protected AbstractVertex parseSinkInterface(Element nodeElt, Graph graph) {
+	protected AbstractActor parseSinkInterface(Element nodeElt, Graph graph) {
 		// Instantiate the new Interface and its corresponding port
 		SinkInterface snkInterface = PiMMFactory.eINSTANCE
 				.createSinkInterface();
@@ -386,7 +386,7 @@ public class PiParser {
 	 *            the deserialized {@link Graph}
 	 * @return the created {@link SourceInterface}
 	 */
-	protected AbstractVertex parseSourceInterface(Element nodeElt, Graph graph) {
+	protected AbstractActor parseSourceInterface(Element nodeElt, Graph graph) {
 		// Instantiate the new Interface and its corresponding port
 		SourceInterface srcInterface = PiMMFactory.eINSTANCE
 				.createSourceInterface();

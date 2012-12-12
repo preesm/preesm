@@ -3,7 +3,7 @@ package org.ietr.preesm.experiment.model.pimm.util;
 import java.util.Set;
 
 import org.eclipse.jface.dialogs.IInputValidator;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 
 /**
@@ -16,7 +16,7 @@ import org.ietr.preesm.experiment.model.pimm.Graph;
 public class VertexNameValidator implements IInputValidator {
 
 	protected Graph graph;
-	protected Set<String> verticesNames;
+	protected Set<String> existingNames;
 
 	/**
 	 * Constructor of the {@link VertexNameValidator}
@@ -27,34 +27,35 @@ public class VertexNameValidator implements IInputValidator {
 	 *            vertex currently renamed, or <code>null</code> if creating a
 	 *            new vertex.
 	 */
-	public VertexNameValidator(Graph graph, AbstractVertex renamedVertex) {
+	public VertexNameValidator(Graph graph, AbstractActor renamedVertex) {
 		this.graph = graph;
-		// Retrieve a list of all the actor names in the graph
-		verticesNames = graph.getVerticesNames();
-		if(renamedVertex != null)
-		{
-			verticesNames.remove(renamedVertex.getName());
+		// Retrieve a list of all the actor and parameter names in the graph
+		existingNames = graph.getVerticesNames();
+		existingNames.addAll(graph.getParametersNames());
+
+		if (renamedVertex != null) {
+			existingNames.remove(renamedVertex.getName());
 		}
 	}
 
 	@Override
-	public String isValid(String newActorName) {
+	public String isValid(String newVertexName) {
 		String message = null;
 		// Check if the name is not empty
-		if (newActorName.length() < 1) {
+		if (newVertexName.length() < 1) {
 			message = "/!\\ Actor name cannot be empty /!\\";
 			return message;
 		}
 
 		// Check if the name contains a space
-		if (newActorName.contains(" ")) {
+		if (newVertexName.contains(" ")) {
 			message = "/!\\ Actor name must not contain spaces /!\\";
 			return message;
 		}
 
 		// Check if the name already exists
-		if (verticesNames.contains(newActorName)) {
-			message = "/!\\ An actor with name " + newActorName
+		if (existingNames.contains(newVertexName)) {
+			message = "/!\\ An actor or a parameter with name " + newVertexName
 					+ " already exists /!\\";
 			return message;
 		}

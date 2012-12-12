@@ -17,7 +17,7 @@ import org.ietr.preesm.experiment.model.pimm.SourceInterface;
  *
  * @generated
  */
-public class SourceInterfaceImpl extends InterfaceVertexImpl implements
+public class SourceInterfaceImpl extends InterfaceActorImpl implements
 		SourceInterface {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->

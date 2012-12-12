@@ -16,7 +16,7 @@ import org.ietr.preesm.experiment.model.pimm.SinkInterface;
  *
  * @generated
  */
-public class SinkInterfaceImpl extends InterfaceVertexImpl implements
+public class SinkInterfaceImpl extends InterfaceActorImpl implements
 		SinkInterface {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->

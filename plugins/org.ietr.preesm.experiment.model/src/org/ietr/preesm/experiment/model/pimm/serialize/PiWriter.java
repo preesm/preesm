@@ -10,11 +10,12 @@ import net.sf.dftools.algorithm.exporter.Key;
 import net.sf.dftools.architecture.utils.DomUtil;
 
 import org.eclipse.emf.common.util.EList;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
-import org.ietr.preesm.experiment.model.pimm.InterfaceVertex;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.w3c.dom.Document;
@@ -36,9 +37,9 @@ public class PiWriter {
 
 	/**
 	 * This HashMap associates a List to each <b>element</b> (graph, node, edge,
-	 * port) of a Pi description. For each <b>element</b>, a list of
-	 * {@link Key}s is associated. A {@link Key} can be seen as an attribute of
-	 * this element.
+	 * port) of a Pi description. For each <b>element</b>, a list of {@link Key}
+	 * s is associated. A {@link Key} can be seen as an attribute of this
+	 * element.
 	 */
 	protected HashMap<String, List<Key>> elementKeys;
 
@@ -187,8 +188,8 @@ public class PiWriter {
 	}
 
 	/**
-	 * Write the PiMM {@link Graph} to the given {@link OutputStream} using
-	 * the Pi format.
+	 * Write the PiMM {@link Graph} to the given {@link OutputStream} using the
+	 * Pi format.
 	 * 
 	 * @param graph
 	 *            The Graph to write
@@ -306,9 +307,12 @@ public class PiWriter {
 
 		// TODO addProperties() of the graph
 		// TODO writeParameters()
+		for (Parameter param : graph.getParameters()) {
+			writeParameter(graphElt, param);
+		}
 
 		// Write the vertices of the graph
-		for (AbstractVertex vertex : graph.getVertices()) {
+		for (AbstractActor vertex : graph.getVertices()) {
 			writeVertex(graphElt, vertex);
 		}
 
@@ -316,6 +320,27 @@ public class PiWriter {
 		for (Fifo fifo : graph.getFifos()) {
 			writeFifos(graphElt, fifo);
 		}
+	}
+
+	/**
+	 * Create and add a node {@link Element} to the given parent {@link Element}
+	 * for the given parameter and write its informations.
+	 * 
+	 * @param graphElt
+	 *            The parent element of the node element (i.e. the graph of the
+	 *            document)
+	 * @param param
+	 *            The {@link Parameter} to write in the {@link Document}
+	 */
+	protected void writeParameter(Element graphElt, Parameter param) {
+		// Add the node to the document
+		Element paramElt = appendChild(graphElt, "node");
+
+		// Set the unique ID of the node (equal to the param name)
+		paramElt.setAttribute("id", param.getName());
+		
+		// Set the kind of the node
+		paramElt.setAttribute("kind", "param");
 	}
 
 	/**
@@ -333,9 +358,9 @@ public class PiWriter {
 		Element fifoElt = appendChild(graphElt, "edge");
 
 		// Set the source and target attributes
-		AbstractVertex source = (AbstractVertex) fifo.getSourcePort()
+		AbstractActor source = (AbstractActor) fifo.getSourcePort()
 				.eContainer();
-		AbstractVertex target = (AbstractVertex) fifo.getTargetPort()
+		AbstractActor target = (AbstractActor) fifo.getTargetPort()
 				.eContainer();
 		fifoElt.setAttribute("kind", "fifo");
 		fifoElt.setAttribute("source", source.getName());
@@ -375,7 +400,7 @@ public class PiWriter {
 	 * @param vertex
 	 *            The vertex to write in the {@link Document}
 	 */
-	protected void writeVertex(Element graphElt, AbstractVertex vertex) {
+	protected void writeVertex(Element graphElt, AbstractActor vertex) {
 		// Add the node to the document
 		Element vertexElt = appendChild(graphElt, "node");
 
@@ -387,8 +412,8 @@ public class PiWriter {
 
 		if (vertex instanceof Actor) {
 			writeActor(vertexElt, (Actor) vertex);
-		} else if (vertex instanceof InterfaceVertex) {
-			writeInterfaceVertex(vertexElt, (InterfaceVertex) vertex);
+		} else if (vertex instanceof InterfaceActor) {
+			writeInterfaceVertex(vertexElt, (InterfaceActor) vertex);
 		}
 
 		// TODO writePorts()
@@ -396,16 +421,16 @@ public class PiWriter {
 	}
 
 	/**
-	 * Write information of the {@link InterfaceVertex} in the given
+	 * Write information of the {@link InterfaceActor} in the given
 	 * {@link Element}.
 	 * 
 	 * @param vertexElt
 	 *            The {@link Element} to write
 	 * @param vertex
-	 *            The {@link InterfaceVertex} to serialize
+	 *            The {@link InterfaceActor} to serialize
 	 */
 	protected void writeInterfaceVertex(Element vertexElt,
-			InterfaceVertex vertex) {
+			InterfaceActor vertex) {
 		// Set the kind of the Actor
 		vertexElt.setAttribute("kind", vertex.getKind());
 		// writeDataElt(vertexElt, "kind", "actor");

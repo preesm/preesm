@@ -19,7 +19,7 @@ package org.ietr.preesm.experiment.model.pimm;
  * @model
  * @generated
  */
-public interface Actor extends AbstractVertex {
+public interface Actor extends AbstractActor {
 
 	/**
 	 * Returns the value of the '<em><b>Refinement</b></em>' containment reference.

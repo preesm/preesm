@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jface.dialogs.IInputValidator;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
@@ -16,7 +16,7 @@ import org.ietr.preesm.experiment.model.pimm.Port;
  */
 public class PortNameValidator implements IInputValidator {
 
-	protected AbstractVertex vertex;
+	protected AbstractActor vertex;
 	protected Port renamedPort;
 	protected Set<String> portsNames;
 
@@ -31,7 +31,7 @@ public class PortNameValidator implements IInputValidator {
 	 * @param kind
 	 *            the kind of the port
 	 */
-	public PortNameValidator(AbstractVertex vertex, Port renamedPort) {
+	public PortNameValidator(AbstractActor vertex, Port renamedPort) {
 		this.vertex = vertex;
 		this.renamedPort = renamedPort;
 

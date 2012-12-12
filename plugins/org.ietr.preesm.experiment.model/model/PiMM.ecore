@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="pimm" nsURI="http://org.ietr.preesm/experiment/model/pimm" nsPrefix="org.ietr.preesm.experiment.pimm">
-  <eClassifiers xsi:type="ecore:EClass" name="AbstractVertex" abstract="true">
+  <eClassifiers xsi:type="ecore:EClass" name="AbstractActor" abstract="true">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="inputPorts" upperBound="-1"
         eType="#//InputPort" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="outputPorts" upperBound="-1"
         eType="#//OutputPort" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Graph" eSuperTypes="#//AbstractVertex">
+  <eClassifiers xsi:type="ecore:EClass" name="Graph" eSuperTypes="#//AbstractActor">
     <eOperations name="addInterfaceVertex" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
-      <eParameters name="interfaceVertex" eType="#//InterfaceVertex"/>
+      <eParameters name="interfaceVertex" eType="#//InterfaceActor"/>
     </eOperations>
     <eOperations name="removeInterfaceVertex" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
-      <eParameters name="interfaceVertex" eType="#//InterfaceVertex"/>
+      <eParameters name="interfaceVertex" eType="#//InterfaceActor"/>
     </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="vertices" upperBound="-1"
-        eType="#//AbstractVertex" containment="true"/>
+        eType="#//AbstractActor" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="fifos" upperBound="-1"
         eType="#//Fifo" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
         eType="#//Parameter" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Actor" eSuperTypes="#//AbstractVertex">
+  <eClassifiers xsi:type="ecore:EClass" name="Actor" eSuperTypes="#//AbstractActor">
     <eStructuralFeatures xsi:type="ecore:EReference" name="refinement" lowerBound="1"
         eType="#//Refinement" containment="true"/>
   </eClassifiers>
@@ -45,16 +45,16 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetPort" lowerBound="1"
         eType="#//InputPort" eOpposite="#//InputPort/incomingFifo"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="InterfaceVertex" eSuperTypes="#//AbstractVertex">
+  <eClassifiers xsi:type="ecore:EClass" name="InterfaceActor" eSuperTypes="#//AbstractActor">
     <eStructuralFeatures xsi:type="ecore:EReference" name="graphPort" lowerBound="1"
         eType="#//Port"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         changeable="false"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="SourceInterface" eSuperTypes="#//InterfaceVertex"/>
-  <eClassifiers xsi:type="ecore:EClass" name="SinkInterface" eSuperTypes="#//InterfaceVertex"/>
+  <eClassifiers xsi:type="ecore:EClass" name="SourceInterface" eSuperTypes="#//InterfaceActor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="SinkInterface" eSuperTypes="#//InterfaceActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="Refinement">
-    <eOperations name="getAbstractVertex" eType="#//AbstractVertex"/>
+    <eOperations name="getAbstractVertex" eType="#//AbstractActor"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="fileName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Parameter">

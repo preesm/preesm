@@ -25,7 +25,7 @@ import org.ietr.preesm.experiment.model.pimm.Refinement;
  *
  * @generated
  */
-public class ActorImpl extends AbstractVertexImpl implements Actor {
+public class ActorImpl extends AbstractActorImpl implements Actor {
 	/**
 	 * The cached value of the '{@link #getRefinement() <em>Refinement</em>}' containment reference.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->

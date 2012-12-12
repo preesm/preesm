@@ -56,14 +56,14 @@ public interface PiMMPackage extends EPackage {
 	PiMMPackage eINSTANCE = org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl.init();
 
 	/**
-	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl <em>Abstract Vertex</em>}' class.
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl <em>Abstract Actor</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl
-	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getAbstractVertex()
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getAbstractActor()
 	 * @generated
 	 */
-	int ABSTRACT_VERTEX = 0;
+	int ABSTRACT_ACTOR = 0;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -72,7 +72,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ABSTRACT_VERTEX__NAME = 0;
+	int ABSTRACT_ACTOR__NAME = 0;
 
 	/**
 	 * The feature id for the '<em><b>Input Ports</b></em>' containment reference list.
@@ -81,7 +81,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ABSTRACT_VERTEX__INPUT_PORTS = 1;
+	int ABSTRACT_ACTOR__INPUT_PORTS = 1;
 
 	/**
 	 * The feature id for the '<em><b>Output Ports</b></em>' containment reference list.
@@ -90,16 +90,16 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ABSTRACT_VERTEX__OUTPUT_PORTS = 2;
+	int ABSTRACT_ACTOR__OUTPUT_PORTS = 2;
 
 	/**
-	 * The number of structural features of the '<em>Abstract Vertex</em>' class.
+	 * The number of structural features of the '<em>Abstract Actor</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int ABSTRACT_VERTEX_FEATURE_COUNT = 3;
+	int ABSTRACT_ACTOR_FEATURE_COUNT = 3;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.GraphImpl <em>Graph</em>}' class.
@@ -118,7 +118,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GRAPH__NAME = ABSTRACT_VERTEX__NAME;
+	int GRAPH__NAME = ABSTRACT_ACTOR__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Input Ports</b></em>' containment reference list.
@@ -127,7 +127,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GRAPH__INPUT_PORTS = ABSTRACT_VERTEX__INPUT_PORTS;
+	int GRAPH__INPUT_PORTS = ABSTRACT_ACTOR__INPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Output Ports</b></em>' containment reference list.
@@ -136,7 +136,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GRAPH__OUTPUT_PORTS = ABSTRACT_VERTEX__OUTPUT_PORTS;
+	int GRAPH__OUTPUT_PORTS = ABSTRACT_ACTOR__OUTPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Vertices</b></em>' containment reference list.
@@ -145,7 +145,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GRAPH__VERTICES = ABSTRACT_VERTEX_FEATURE_COUNT + 0;
+	int GRAPH__VERTICES = ABSTRACT_ACTOR_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Fifos</b></em>' containment reference list.
@@ -154,7 +154,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GRAPH__FIFOS = ABSTRACT_VERTEX_FEATURE_COUNT + 1;
+	int GRAPH__FIFOS = ABSTRACT_ACTOR_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Parameters</b></em>' containment reference list.
@@ -163,7 +163,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GRAPH__PARAMETERS = ABSTRACT_VERTEX_FEATURE_COUNT + 2;
+	int GRAPH__PARAMETERS = ABSTRACT_ACTOR_FEATURE_COUNT + 2;
 
 	/**
 	 * The number of structural features of the '<em>Graph</em>' class.
@@ -172,7 +172,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GRAPH_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 3;
+	int GRAPH_FEATURE_COUNT = ABSTRACT_ACTOR_FEATURE_COUNT + 3;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl <em>Actor</em>}' class.
@@ -191,7 +191,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ACTOR__NAME = ABSTRACT_VERTEX__NAME;
+	int ACTOR__NAME = ABSTRACT_ACTOR__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Input Ports</b></em>' containment reference list.
@@ -200,7 +200,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ACTOR__INPUT_PORTS = ABSTRACT_VERTEX__INPUT_PORTS;
+	int ACTOR__INPUT_PORTS = ABSTRACT_ACTOR__INPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Output Ports</b></em>' containment reference list.
@@ -209,7 +209,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ACTOR__OUTPUT_PORTS = ABSTRACT_VERTEX__OUTPUT_PORTS;
+	int ACTOR__OUTPUT_PORTS = ABSTRACT_ACTOR__OUTPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Refinement</b></em>' containment reference.
@@ -218,7 +218,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ACTOR__REFINEMENT = ABSTRACT_VERTEX_FEATURE_COUNT + 0;
+	int ACTOR__REFINEMENT = ABSTRACT_ACTOR_FEATURE_COUNT + 0;
 
 	/**
 	 * The number of structural features of the '<em>Actor</em>' class.
@@ -227,7 +227,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ACTOR_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 1;
+	int ACTOR_FEATURE_COUNT = ABSTRACT_ACTOR_FEATURE_COUNT + 1;
 
 
 	/**
@@ -399,14 +399,14 @@ public interface PiMMPackage extends EPackage {
 
 
 	/**
-	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceVertexImpl <em>Interface Vertex</em>}' class.
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl <em>Interface Actor</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.ietr.preesm.experiment.model.pimm.impl.InterfaceVertexImpl
-	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getInterfaceVertex()
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getInterfaceActor()
 	 * @generated
 	 */
-	int INTERFACE_VERTEX = 7;
+	int INTERFACE_ACTOR = 7;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -415,7 +415,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int INTERFACE_VERTEX__NAME = ABSTRACT_VERTEX__NAME;
+	int INTERFACE_ACTOR__NAME = ABSTRACT_ACTOR__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Input Ports</b></em>' containment reference list.
@@ -424,7 +424,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int INTERFACE_VERTEX__INPUT_PORTS = ABSTRACT_VERTEX__INPUT_PORTS;
+	int INTERFACE_ACTOR__INPUT_PORTS = ABSTRACT_ACTOR__INPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Output Ports</b></em>' containment reference list.
@@ -433,7 +433,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int INTERFACE_VERTEX__OUTPUT_PORTS = ABSTRACT_VERTEX__OUTPUT_PORTS;
+	int INTERFACE_ACTOR__OUTPUT_PORTS = ABSTRACT_ACTOR__OUTPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Graph Port</b></em>' reference.
@@ -442,7 +442,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int INTERFACE_VERTEX__GRAPH_PORT = ABSTRACT_VERTEX_FEATURE_COUNT + 0;
+	int INTERFACE_ACTOR__GRAPH_PORT = ABSTRACT_ACTOR_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Kind</b></em>' attribute.
@@ -451,17 +451,16 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int INTERFACE_VERTEX__KIND = ABSTRACT_VERTEX_FEATURE_COUNT + 1;
+	int INTERFACE_ACTOR__KIND = ABSTRACT_ACTOR_FEATURE_COUNT + 1;
 
 	/**
-	 * The number of structural features of the '<em>Interface Vertex</em>' class.
+	 * The number of structural features of the '<em>Interface Actor</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int INTERFACE_VERTEX_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 2;
-
+	int INTERFACE_ACTOR_FEATURE_COUNT = ABSTRACT_ACTOR_FEATURE_COUNT + 2;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.SourceInterfaceImpl <em>Source Interface</em>}' class.
@@ -480,7 +479,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SOURCE_INTERFACE__NAME = INTERFACE_VERTEX__NAME;
+	int SOURCE_INTERFACE__NAME = INTERFACE_ACTOR__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Input Ports</b></em>' containment reference list.
@@ -489,7 +488,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SOURCE_INTERFACE__INPUT_PORTS = INTERFACE_VERTEX__INPUT_PORTS;
+	int SOURCE_INTERFACE__INPUT_PORTS = INTERFACE_ACTOR__INPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Output Ports</b></em>' containment reference list.
@@ -498,7 +497,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SOURCE_INTERFACE__OUTPUT_PORTS = INTERFACE_VERTEX__OUTPUT_PORTS;
+	int SOURCE_INTERFACE__OUTPUT_PORTS = INTERFACE_ACTOR__OUTPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Graph Port</b></em>' reference.
@@ -507,7 +506,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SOURCE_INTERFACE__GRAPH_PORT = INTERFACE_VERTEX__GRAPH_PORT;
+	int SOURCE_INTERFACE__GRAPH_PORT = INTERFACE_ACTOR__GRAPH_PORT;
 
 	/**
 	 * The feature id for the '<em><b>Kind</b></em>' attribute.
@@ -516,7 +515,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SOURCE_INTERFACE__KIND = INTERFACE_VERTEX__KIND;
+	int SOURCE_INTERFACE__KIND = INTERFACE_ACTOR__KIND;
 
 	/**
 	 * The number of structural features of the '<em>Source Interface</em>' class.
@@ -525,7 +524,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SOURCE_INTERFACE_FEATURE_COUNT = INTERFACE_VERTEX_FEATURE_COUNT + 0;
+	int SOURCE_INTERFACE_FEATURE_COUNT = INTERFACE_ACTOR_FEATURE_COUNT + 0;
 
 
 	/**
@@ -545,7 +544,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SINK_INTERFACE__NAME = INTERFACE_VERTEX__NAME;
+	int SINK_INTERFACE__NAME = INTERFACE_ACTOR__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Input Ports</b></em>' containment reference list.
@@ -554,7 +553,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SINK_INTERFACE__INPUT_PORTS = INTERFACE_VERTEX__INPUT_PORTS;
+	int SINK_INTERFACE__INPUT_PORTS = INTERFACE_ACTOR__INPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Output Ports</b></em>' containment reference list.
@@ -563,7 +562,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SINK_INTERFACE__OUTPUT_PORTS = INTERFACE_VERTEX__OUTPUT_PORTS;
+	int SINK_INTERFACE__OUTPUT_PORTS = INTERFACE_ACTOR__OUTPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Graph Port</b></em>' reference.
@@ -572,7 +571,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SINK_INTERFACE__GRAPH_PORT = INTERFACE_VERTEX__GRAPH_PORT;
+	int SINK_INTERFACE__GRAPH_PORT = INTERFACE_ACTOR__GRAPH_PORT;
 
 	/**
 	 * The feature id for the '<em><b>Kind</b></em>' attribute.
@@ -581,7 +580,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SINK_INTERFACE__KIND = INTERFACE_VERTEX__KIND;
+	int SINK_INTERFACE__KIND = INTERFACE_ACTOR__KIND;
 
 	/**
 	 * The number of structural features of the '<em>Sink Interface</em>' class.
@@ -590,7 +589,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SINK_INTERFACE_FEATURE_COUNT = INTERFACE_VERTEX_FEATURE_COUNT + 0;
+	int SINK_INTERFACE_FEATURE_COUNT = INTERFACE_ACTOR_FEATURE_COUNT + 0;
 
 
 	/**
@@ -670,47 +669,47 @@ public interface PiMMPackage extends EPackage {
 
 
 	/**
-	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.AbstractVertex <em>Abstract Vertex</em>}'.
+	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.AbstractActor <em>Abstract Actor</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>Abstract Vertex</em>'.
-	 * @see org.ietr.preesm.experiment.model.pimm.AbstractVertex
+	 * @return the meta object for class '<em>Abstract Actor</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.AbstractActor
 	 * @generated
 	 */
-	EClass getAbstractVertex();
+	EClass getAbstractActor();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.AbstractVertex#getName <em>Name</em>}'.
+	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getName <em>Name</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Name</em>'.
-	 * @see org.ietr.preesm.experiment.model.pimm.AbstractVertex#getName()
-	 * @see #getAbstractVertex()
+	 * @see org.ietr.preesm.experiment.model.pimm.AbstractActor#getName()
+	 * @see #getAbstractActor()
 	 * @generated
 	 */
-	EAttribute getAbstractVertex_Name();
+	EAttribute getAbstractActor_Name();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.ietr.preesm.experiment.model.pimm.AbstractVertex#getInputPorts <em>Input Ports</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getInputPorts <em>Input Ports</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the containment reference list '<em>Input Ports</em>'.
-	 * @see org.ietr.preesm.experiment.model.pimm.AbstractVertex#getInputPorts()
-	 * @see #getAbstractVertex()
+	 * @see org.ietr.preesm.experiment.model.pimm.AbstractActor#getInputPorts()
+	 * @see #getAbstractActor()
 	 * @generated
 	 */
-	EReference getAbstractVertex_InputPorts();
+	EReference getAbstractActor_InputPorts();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.ietr.preesm.experiment.model.pimm.AbstractVertex#getOutputPorts <em>Output Ports</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getOutputPorts <em>Output Ports</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the containment reference list '<em>Output Ports</em>'.
-	 * @see org.ietr.preesm.experiment.model.pimm.AbstractVertex#getOutputPorts()
-	 * @see #getAbstractVertex()
+	 * @see org.ietr.preesm.experiment.model.pimm.AbstractActor#getOutputPorts()
+	 * @see #getAbstractActor()
 	 * @generated
 	 */
-	EReference getAbstractVertex_OutputPorts();
+	EReference getAbstractActor_OutputPorts();
 
 	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Graph <em>Graph</em>}'.
@@ -883,36 +882,36 @@ public interface PiMMPackage extends EPackage {
 	EReference getFifo_TargetPort();
 
 	/**
-	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.InterfaceVertex <em>Interface Vertex</em>}'.
+	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.InterfaceActor <em>Interface Actor</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>Interface Vertex</em>'.
-	 * @see org.ietr.preesm.experiment.model.pimm.InterfaceVertex
+	 * @return the meta object for class '<em>Interface Actor</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.InterfaceActor
 	 * @generated
 	 */
-	EClass getInterfaceVertex();
+	EClass getInterfaceActor();
 
 	/**
-	 * Returns the meta object for the reference '{@link org.ietr.preesm.experiment.model.pimm.InterfaceVertex#getGraphPort <em>Graph Port</em>}'.
+	 * Returns the meta object for the reference '{@link org.ietr.preesm.experiment.model.pimm.InterfaceActor#getGraphPort <em>Graph Port</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the reference '<em>Graph Port</em>'.
-	 * @see org.ietr.preesm.experiment.model.pimm.InterfaceVertex#getGraphPort()
-	 * @see #getInterfaceVertex()
+	 * @see org.ietr.preesm.experiment.model.pimm.InterfaceActor#getGraphPort()
+	 * @see #getInterfaceActor()
 	 * @generated
 	 */
-	EReference getInterfaceVertex_GraphPort();
+	EReference getInterfaceActor_GraphPort();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.InterfaceVertex#getKind <em>Kind</em>}'.
+	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.InterfaceActor#getKind <em>Kind</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Kind</em>'.
-	 * @see org.ietr.preesm.experiment.model.pimm.InterfaceVertex#getKind()
-	 * @see #getInterfaceVertex()
+	 * @see org.ietr.preesm.experiment.model.pimm.InterfaceActor#getKind()
+	 * @see #getInterfaceActor()
 	 * @generated
 	 */
-	EAttribute getInterfaceVertex_Kind();
+	EAttribute getInterfaceActor_Kind();
 
 	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.SourceInterface <em>Source Interface</em>}'.
@@ -1021,14 +1020,14 @@ public interface PiMMPackage extends EPackage {
 	 */
 	interface Literals {
 		/**
-		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl <em>Abstract Vertex</em>}' class.
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl <em>Abstract Actor</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl
-		 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getAbstractVertex()
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getAbstractActor()
 		 * @generated
 		 */
-		EClass ABSTRACT_VERTEX = eINSTANCE.getAbstractVertex();
+		EClass ABSTRACT_ACTOR = eINSTANCE.getAbstractActor();
 
 		/**
 		 * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
@@ -1036,7 +1035,7 @@ public interface PiMMPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute ABSTRACT_VERTEX__NAME = eINSTANCE.getAbstractVertex_Name();
+		EAttribute ABSTRACT_ACTOR__NAME = eINSTANCE.getAbstractActor_Name();
 
 		/**
 		 * The meta object literal for the '<em><b>Input Ports</b></em>' containment reference list feature.
@@ -1044,7 +1043,7 @@ public interface PiMMPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference ABSTRACT_VERTEX__INPUT_PORTS = eINSTANCE.getAbstractVertex_InputPorts();
+		EReference ABSTRACT_ACTOR__INPUT_PORTS = eINSTANCE.getAbstractActor_InputPorts();
 
 		/**
 		 * The meta object literal for the '<em><b>Output Ports</b></em>' containment reference list feature.
@@ -1052,7 +1051,7 @@ public interface PiMMPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference ABSTRACT_VERTEX__OUTPUT_PORTS = eINSTANCE.getAbstractVertex_OutputPorts();
+		EReference ABSTRACT_ACTOR__OUTPUT_PORTS = eINSTANCE.getAbstractActor_OutputPorts();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.GraphImpl <em>Graph</em>}' class.
@@ -1195,14 +1194,14 @@ public interface PiMMPackage extends EPackage {
 		EReference FIFO__TARGET_PORT = eINSTANCE.getFifo_TargetPort();
 
 		/**
-		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceVertexImpl <em>Interface Vertex</em>}' class.
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl <em>Interface Actor</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.ietr.preesm.experiment.model.pimm.impl.InterfaceVertexImpl
-		 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getInterfaceVertex()
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getInterfaceActor()
 		 * @generated
 		 */
-		EClass INTERFACE_VERTEX = eINSTANCE.getInterfaceVertex();
+		EClass INTERFACE_ACTOR = eINSTANCE.getInterfaceActor();
 
 		/**
 		 * The meta object literal for the '<em><b>Graph Port</b></em>' reference feature.
@@ -1210,7 +1209,7 @@ public interface PiMMPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference INTERFACE_VERTEX__GRAPH_PORT = eINSTANCE.getInterfaceVertex_GraphPort();
+		EReference INTERFACE_ACTOR__GRAPH_PORT = eINSTANCE.getInterfaceActor_GraphPort();
 
 		/**
 		 * The meta object literal for the '<em><b>Kind</b></em>' attribute feature.
@@ -1218,7 +1217,7 @@ public interface PiMMPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute INTERFACE_VERTEX__KIND = eINSTANCE.getInterfaceVertex_Kind();
+		EAttribute INTERFACE_ACTOR__KIND = eINSTANCE.getInterfaceActor_Kind();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.SourceInterfaceImpl <em>Source Interface</em>}' class.

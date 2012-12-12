@@ -13,5 +13,5 @@ package org.ietr.preesm.experiment.model.pimm;
  * @model
  * @generated
  */
-public interface SourceInterface extends InterfaceVertex {
+public interface SourceInterface extends InterfaceActor {
 } // SourceInterface

@@ -29,10 +29,10 @@ import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.InterfaceVertex;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.SinkInterface;
@@ -50,20 +50,20 @@ import org.ietr.preesm.experiment.ui.pimm.features.CreateParameterFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateSinkInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateSourceInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CustomDeleteFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.DeleteAbstractVertexFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.DeleteAbstractActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteActorPortFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.DeleteInterfaceVertexFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.DirectEditingAbstractVertexNameFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.DeleteInterfaceActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.DirectEditingAbstractActorNameFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.LayoutActorFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.LayoutInterfaceVertexFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.LayoutInterfaceActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.LayoutPortFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.MoveAbstractVertexFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.MoveAbstractActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.OpenRefinementFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.ReconnectionFifoFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.RenameActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.RenameActorPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.SetActorRefinementFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.UpdateAbstractVertexFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.UpdateAbstractActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.UpdatePortFeature;
 
 public class PiMMFeatureProvider extends DefaultFeatureProvider {
@@ -128,16 +128,16 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 			if (((Port) bo).eContainer() instanceof Actor) {
 				return new DeleteActorPortFeature(this);
 			}
-			if (((Port) bo).eContainer() instanceof InterfaceVertex) {
+			if (((Port) bo).eContainer() instanceof InterfaceActor) {
 				// We do not allow deletion of the port of an InterfaceVertex
 				// through the GUI
 				return null;
 			}
 		}
-		if (bo instanceof InterfaceVertex) {
-			return new DeleteInterfaceVertexFeature(this);
-		} else if (bo instanceof AbstractVertex) {
-			return new DeleteAbstractVertexFeature(this);
+		if (bo instanceof InterfaceActor) {
+			return new DeleteInterfaceActorFeature(this);
+		} else if (bo instanceof AbstractActor) {
+			return new DeleteAbstractActorFeature(this);
 		}
 		return new CustomDeleteFeature(this);
 	}
@@ -147,8 +147,8 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 			IDirectEditingContext context) {
 		PictogramElement pe = context.getPictogramElement();
 		Object bo = getBusinessObjectForPictogramElement(pe);
-		if (bo instanceof AbstractVertex) {
-			return new DirectEditingAbstractVertexNameFeature(this);
+		if (bo instanceof AbstractActor) {
+			return new DirectEditingAbstractActorNameFeature(this);
 		}
 		return super.getDirectEditingFeature(context);
 	}
@@ -163,8 +163,8 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		if (bo instanceof Port) {
 			return new LayoutPortFeature(this);
 		}
-		if (bo instanceof InterfaceVertex) {
-			return new LayoutInterfaceVertexFeature(this);
+		if (bo instanceof InterfaceActor) {
+			return new LayoutInterfaceActorFeature(this);
 		}
 		return super.getLayoutFeature(context);
 	}
@@ -179,8 +179,8 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 	public IMoveShapeFeature getMoveShapeFeature(IMoveShapeContext context) {
 		PictogramElement pe = context.getPictogramElement();
 		Object bo = getBusinessObjectForPictogramElement(pe);
-		if (bo instanceof AbstractVertex) {
-			return new MoveAbstractVertexFeature(this);
+		if (bo instanceof AbstractActor) {
+			return new MoveAbstractActorFeature(this);
 		}
 		return super.getMoveShapeFeature(context);
 	}
@@ -236,8 +236,8 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		PictogramElement pictogramElement = context.getPictogramElement();
 		if (pictogramElement instanceof ContainerShape) {
 			Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-			if (bo instanceof AbstractVertex) {
-				return new UpdateAbstractVertexFeature(this);
+			if (bo instanceof AbstractActor) {
+				return new UpdateAbstractActorFeature(this);
 			}
 		}
 		if (pictogramElement instanceof BoxRelativeAnchor) {

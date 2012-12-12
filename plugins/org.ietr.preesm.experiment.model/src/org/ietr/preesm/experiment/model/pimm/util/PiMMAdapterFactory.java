@@ -68,8 +68,8 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 	protected PiMMSwitch<Adapter> modelSwitch =
 		new PiMMSwitch<Adapter>() {
 			@Override
-			public Adapter caseAbstractVertex(AbstractVertex object) {
-				return createAbstractVertexAdapter();
+			public Adapter caseAbstractActor(AbstractActor object) {
+				return createAbstractActorAdapter();
 			}
 			@Override
 			public Adapter caseGraph(Graph object) {
@@ -96,8 +96,8 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 				return createFifoAdapter();
 			}
 			@Override
-			public Adapter caseInterfaceVertex(InterfaceVertex object) {
-				return createInterfaceVertexAdapter();
+			public Adapter caseInterfaceActor(InterfaceActor object) {
+				return createInterfaceActorAdapter();
 			}
 			@Override
 			public Adapter caseSourceInterface(SourceInterface object) {
@@ -136,16 +136,16 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.AbstractVertex <em>Abstract Vertex</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.AbstractActor <em>Abstract Actor</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.ietr.preesm.experiment.model.pimm.AbstractVertex
+	 * @see org.ietr.preesm.experiment.model.pimm.AbstractActor
 	 * @generated
 	 */
-	public Adapter createAbstractVertexAdapter() {
+	public Adapter createAbstractActorAdapter() {
 		return null;
 	}
 
@@ -234,16 +234,16 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.InterfaceVertex <em>Interface Vertex</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.InterfaceActor <em>Interface Actor</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.ietr.preesm.experiment.model.pimm.InterfaceVertex
+	 * @see org.ietr.preesm.experiment.model.pimm.InterfaceActor
 	 * @generated
 	 */
-	public Adapter createInterfaceVertexAdapter() {
+	public Adapter createInterfaceActorAdapter() {
 		return null;
 	}
 

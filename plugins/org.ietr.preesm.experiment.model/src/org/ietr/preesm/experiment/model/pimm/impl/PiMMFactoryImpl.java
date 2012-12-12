@@ -61,7 +61,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 			case PiMMPackage.INPUT_PORT: return createInputPort();
 			case PiMMPackage.OUTPUT_PORT: return createOutputPort();
 			case PiMMPackage.FIFO: return createFifo();
-			case PiMMPackage.INTERFACE_VERTEX: return createInterfaceVertex();
+			case PiMMPackage.INTERFACE_ACTOR: return createInterfaceActor();
 			case PiMMPackage.SOURCE_INTERFACE: return createSourceInterface();
 			case PiMMPackage.SINK_INTERFACE: return createSinkInterface();
 			case PiMMPackage.REFINEMENT: return createRefinement();
@@ -126,9 +126,9 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public InterfaceVertex createInterfaceVertex() {
-		InterfaceVertexImpl interfaceVertex = new InterfaceVertexImpl();
-		return interfaceVertex;
+	public InterfaceActor createInterfaceActor() {
+		InterfaceActorImpl interfaceActor = new InterfaceActorImpl();
+		return interfaceActor;
 	}
 
 	/**

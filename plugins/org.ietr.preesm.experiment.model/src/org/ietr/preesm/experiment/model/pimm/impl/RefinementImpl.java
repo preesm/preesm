@@ -15,7 +15,7 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
@@ -126,7 +126,7 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 */
-	public AbstractVertex getAbstractVertex() {
+	public AbstractActor getAbstractVertex() {
 
 		URI refinementURI = getFileURI();
 
@@ -142,7 +142,7 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 							.getContents();
 					for (final EObject object : contents) {
 						if (object instanceof Graph) {
-							return (AbstractVertex) object;
+							return (AbstractActor) object;
 						}
 					}
 				}

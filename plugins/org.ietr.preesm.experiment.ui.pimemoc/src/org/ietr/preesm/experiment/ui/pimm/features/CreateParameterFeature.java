@@ -45,6 +45,7 @@ public class CreateParameterFeature extends AbstractCreateFeature {
 		String question = "Enter new parameter name";
 		String newParameterName = "ParameterName";
 
+		// TODO create a parameter name validator
 		newParameterName = PiMMUtil.askString("Create Parameter", question,
 				newParameterName, null);
 		if (newParameterName == null || newParameterName.trim().length() == 0) {

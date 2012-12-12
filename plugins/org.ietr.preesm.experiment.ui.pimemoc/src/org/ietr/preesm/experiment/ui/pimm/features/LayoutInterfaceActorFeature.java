@@ -13,23 +13,23 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
-import org.ietr.preesm.experiment.model.pimm.InterfaceVertex;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 
 /**
- * Layout Feature for {@link InterfaceVertex}
+ * Layout Feature for {@link InterfaceActor}
  * 
  * @author kdesnos
  * 
  */
-public class LayoutInterfaceVertexFeature extends AbstractLayoutFeature {
+public class LayoutInterfaceActorFeature extends AbstractLayoutFeature {
 
 	/**
-	 * Default constructor of the {@link LayoutInterfaceVertexFeature}
+	 * Default constructor of the {@link LayoutInterfaceActorFeature}
 	 * 
 	 * @param fp
 	 *            the feature provider
 	 */
-	public LayoutInterfaceVertexFeature(IFeatureProvider fp) {
+	public LayoutInterfaceActorFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
@@ -43,7 +43,7 @@ public class LayoutInterfaceVertexFeature extends AbstractLayoutFeature {
 
 		EList<EObject> businessObjects = pe.getLink().getBusinessObjects();
 		return businessObjects.size() == 1
-				&& businessObjects.get(0) instanceof InterfaceVertex;
+				&& businessObjects.get(0) instanceof InterfaceActor;
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class LayoutInterfaceVertexFeature extends AbstractLayoutFeature {
 		ContainerShape containerShape = (ContainerShape) context
 				.getPictogramElement();
 		GraphicsAlgorithm containerGa = containerShape.getGraphicsAlgorithm();
-		InterfaceVertex iVertex = (InterfaceVertex) getBusinessObjectForPictogramElement(containerShape);
+		InterfaceActor iVertex = (InterfaceActor) getBusinessObjectForPictogramElement(containerShape);
 
 		// Retrieve the size of the text
 		IDimension size = null;

@@ -3,26 +3,26 @@ package org.ietr.preesm.experiment.ui.pimm.features;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.ietr.preesm.experiment.model.pimm.Graph;
-import org.ietr.preesm.experiment.model.pimm.InterfaceVertex;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.ui.pimm.diagram.PiMMFeatureProviderWithRemove;
 
 /**
- * Delete Feature for {@link InterfaceVertex}
+ * Delete Feature for {@link InterfaceActor}
  * 
  * @author kdesnos
  * 
  */
-public class DeleteInterfaceVertexFeature extends DeleteAbstractVertexFeature {
+public class DeleteInterfaceActorFeature extends DeleteAbstractActorFeature {
 
-	protected InterfaceVertex removedVertex;
+	protected InterfaceActor removedVertex;
 
 	/**
-	 * default Constructor of {@link DeleteInterfaceVertexFeature}
+	 * default Constructor of {@link DeleteInterfaceActorFeature}
 	 * 
 	 * @param fp
 	 *            the feature procider
 	 */
-	public DeleteInterfaceVertexFeature(IFeatureProvider fp) {
+	public DeleteInterfaceActorFeature(IFeatureProvider fp) {
 		super(new PiMMFeatureProviderWithRemove(fp.getDiagramTypeProvider()));
 	}
 
@@ -46,7 +46,7 @@ public class DeleteInterfaceVertexFeature extends DeleteAbstractVertexFeature {
 
 		// Backup the removed InterfaceVertex to remove its Port from the Graph
 		// attributes
-		removedVertex = (InterfaceVertex) getBusinessObjectForPictogramElement(context
+		removedVertex = (InterfaceActor) getBusinessObjectForPictogramElement(context
 				.getPictogramElement());
 	}
 }

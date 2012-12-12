@@ -13,23 +13,23 @@ import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaCreateService;
 import org.eclipse.graphiti.services.IPeLayoutService;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 
 /**
- * The Move Feature for {@link AbstractVertex}
+ * The Move Feature for {@link AbstractActor}
  * 
  * @author kdesnos
  * 
  */
-public class MoveAbstractVertexFeature extends DefaultMoveShapeFeature {
+public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 
 	/**
-	 * Default constructor for {@link MoveAbstractVertexFeature}
+	 * Default constructor for {@link MoveAbstractActorFeature}
 	 * 
 	 * @param fp
 	 *            the feature provider
 	 */
-	public MoveAbstractVertexFeature(IFeatureProvider fp) {
+	public MoveAbstractActorFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 

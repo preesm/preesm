@@ -13,5 +13,5 @@ package org.ietr.preesm.experiment.model.pimm;
  * @model
  * @generated
  */
-public interface SinkInterface extends InterfaceVertex {
+public interface SinkInterface extends InterfaceActor {
 } // SinkInterface

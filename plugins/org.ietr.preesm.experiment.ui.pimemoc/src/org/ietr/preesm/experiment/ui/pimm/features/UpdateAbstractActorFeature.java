@@ -13,19 +13,19 @@ import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.ui.pimm.util.PortEqualityHelper;
 
-public class UpdateAbstractVertexFeature extends AbstractUpdateFeature {
+public class UpdateAbstractActorFeature extends AbstractUpdateFeature {
 
 	/**
-	 * Default constructor of the {@link UpdateAbstractVertexFeature}
+	 * Default constructor of the {@link UpdateAbstractActorFeature}
 	 * 
 	 * @param fp
 	 */
-	public UpdateAbstractVertexFeature(IFeatureProvider fp) {
+	public UpdateAbstractActorFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
@@ -33,7 +33,7 @@ public class UpdateAbstractVertexFeature extends AbstractUpdateFeature {
 	public boolean canUpdate(IUpdateContext context) {
 		Object bo = getBusinessObjectForPictogramElement(context
 				.getPictogramElement());
-		return (bo instanceof AbstractVertex);
+		return (bo instanceof AbstractActor);
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class UpdateAbstractVertexFeature extends AbstractUpdateFeature {
 	 * @return a reason stating if an update of the ports is needed
 	 */
 	protected IReason portsUpdateNeeded(IUpdateContext context, Actor actor) {
-		AbstractVertex vertex = actor.getRefinement().getAbstractVertex();
+		AbstractActor vertex = actor.getRefinement().getAbstractVertex();
 		if (vertex != null) {
 			Map<SimpleEntry<Port, Port>, IReason> m = PortEqualityHelper
 					.buildEquivalentPortsMap(actor, vertex);
@@ -117,8 +117,8 @@ public class UpdateAbstractVertexFeature extends AbstractUpdateFeature {
 		// retrieve AbstractVertex name from business model (from the graph)
 		String businessName = null;
 		Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-		if (bo instanceof AbstractVertex) {
-			AbstractVertex vertex = (AbstractVertex) bo;
+		if (bo instanceof AbstractActor) {
+			AbstractActor vertex = (AbstractActor) bo;
 			businessName = vertex.getName();
 		}
 
@@ -147,8 +147,8 @@ public class UpdateAbstractVertexFeature extends AbstractUpdateFeature {
 		String businessName = null;
 		PictogramElement pictogramElement = context.getPictogramElement();
 		Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-		if (bo instanceof AbstractVertex) {
-			AbstractVertex vertex = (AbstractVertex) bo;
+		if (bo instanceof AbstractActor) {
+			AbstractActor vertex = (AbstractActor) bo;
 			businessName = vertex.getName();
 		}
 

@@ -11,24 +11,24 @@ import org.eclipse.graphiti.features.context.impl.MultiDeleteInfo;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.ui.pimm.diagram.PiMMFeatureProviderWithRemove;
 
 /**
- * Delete Feature for {@link AbstractVertex}
+ * Delete Feature for {@link AbstractActor}
  * 
  * @author kdesnos
  * 
  */
-public class DeleteAbstractVertexFeature extends DefaultDeleteFeature {
+public class DeleteAbstractActorFeature extends DefaultDeleteFeature {
 
 	/**
-	 * Default constructor of {@link DeleteAbstractVertexFeature}
+	 * Default constructor of {@link DeleteAbstractActorFeature}
 	 * 
 	 * @param fp
 	 *            the feature provider
 	 */
-	public DeleteAbstractVertexFeature(IFeatureProvider fp) {
+	public DeleteAbstractActorFeature(IFeatureProvider fp) {
 		super(new PiMMFeatureProviderWithRemove(fp.getDiagramTypeProvider()));
 	}
 

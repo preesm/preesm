@@ -12,11 +12,11 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
-import org.ietr.preesm.experiment.model.pimm.InterfaceVertex;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
@@ -37,7 +37,7 @@ import org.ietr.preesm.experiment.model.pimm.Port;
  *
  * @generated
  */
-public class GraphImpl extends AbstractVertexImpl implements Graph {
+public class GraphImpl extends AbstractActorImpl implements Graph {
 	/**
 	 * The cached value of the '{@link #getVertices() <em>Vertices</em>}' containment reference list.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -45,7 +45,7 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<AbstractVertex> vertices;
+	protected EList<AbstractActor> vertices;
 
 	/**
 	 * The cached value of the '{@link #getFifos() <em>Fifos</em>}' containment reference list.
@@ -58,8 +58,7 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 
 	/**
 	 * The cached value of the '{@link #getParameters() <em>Parameters</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getParameters()
 	 * @generated
 	 * @ordered
@@ -78,7 +77,7 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 */
-	public boolean addInterfaceVertex(InterfaceVertex interfaceVertex) {
+	public boolean addInterfaceVertex(InterfaceActor interfaceVertex) {
 		Port port;
 		switch (interfaceVertex.getKind()) {
 		case "src":
@@ -164,7 +163,7 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 		switch (featureID) {
 			case PiMMPackage.GRAPH__VERTICES:
 				getVertices().clear();
-				getVertices().addAll((Collection<? extends AbstractVertex>)newValue);
+				getVertices().addAll((Collection<? extends AbstractActor>)newValue);
 				return;
 			case PiMMPackage.GRAPH__FIFOS:
 				getFifos().clear();
@@ -219,8 +218,7 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public EList<Parameter> getParameters() {
@@ -231,8 +229,8 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 	}
 
 	@Override
-	public AbstractVertex getVertexNamed(String name) {
-		for (AbstractVertex vert : vertices) {
+	public AbstractActor getVertexNamed(String name) {
+		for (AbstractActor vert : vertices) {
 			if (vert.getName().equals(name)) {
 				return vert;
 			}
@@ -245,9 +243,9 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<AbstractVertex> getVertices() {
+	public EList<AbstractActor> getVertices() {
 		if (vertices == null) {
-			vertices = new EObjectContainmentEList<AbstractVertex>(AbstractVertex.class, this, PiMMPackage.GRAPH__VERTICES);
+			vertices = new EObjectContainmentEList<AbstractActor>(AbstractActor.class, this, PiMMPackage.GRAPH__VERTICES);
 		}
 		return vertices;
 	}
@@ -255,8 +253,17 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 	@Override
 	public Set<String> getVerticesNames() {
 		Set<String> names = new HashSet<String>(getVertices().size());
-		for (AbstractVertex vertex : vertices) {
+		for (AbstractActor vertex : vertices) {
 			names.add(vertex.getName());
+		}
+		return names;
+	}
+
+	@Override
+	public Set<String> getParametersNames() {
+		Set<String> names = new HashSet<String>(getVertices().size());
+		for (Parameter param : parameters) {
+			names.add(param.getName());
 		}
 		return names;
 	}
@@ -266,7 +273,7 @@ public class GraphImpl extends AbstractVertexImpl implements Graph {
 	 * 
 	 * 
 	 */
-	public boolean removeInterfaceVertex(InterfaceVertex interfaceVertex) {
+	public boolean removeInterfaceVertex(InterfaceActor interfaceVertex) {
 		this.getVertices().remove(interfaceVertex);
 		this.getInputPorts().remove(interfaceVertex.getGraphPort());
 		this.getOutputPorts().remove(interfaceVertex.getGraphPort());

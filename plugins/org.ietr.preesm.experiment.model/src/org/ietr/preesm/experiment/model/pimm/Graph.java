@@ -23,11 +23,11 @@ import org.eclipse.emf.common.util.EList;
  * @model
  * @generated
  */
-public interface Graph extends AbstractVertex {
+public interface Graph extends AbstractActor {
 	/**
 	 * Returns the value of the '<em><b>Vertices</b></em>' containment reference
 	 * list. The list contents are of type
-	 * {@link org.ietr.preesm.experiment.model.pimm.AbstractVertex}. <!--
+	 * {@link org.ietr.preesm.experiment.model.pimm.AbstractActor}. <!--
 	 * begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Vertices</em>' containment reference list
@@ -40,7 +40,7 @@ public interface Graph extends AbstractVertex {
 	 * @model containment="true"
 	 * @generated
 	 */
-	EList<AbstractVertex> getVertices();
+	EList<AbstractActor> getVertices();
 
 	/**
 	 * Returns the value of the '<em><b>Fifos</b></em>' containment reference
@@ -77,21 +77,21 @@ public interface Graph extends AbstractVertex {
 	EList<Parameter> getParameters();
 
 	/**
-	 * <!-- begin-user-doc --> This method will add the {@link InterfaceVertex}
+	 * <!-- begin-user-doc --> This method will add the {@link InterfaceActor}
 	 * and create the corresponding {@link Port}. <!-- end-user-doc -->
 	 * @model
 	 * @generated
 	 */
-	boolean addInterfaceVertex(InterfaceVertex interfaceVertex);
+	boolean addInterfaceVertex(InterfaceActor interfaceVertex);
 
 	/**
 	 * <!-- begin-user-doc --> This method will remove the
-	 * {@link InterfaceVertex} and the corresponding {@link Port} from the
+	 * {@link InterfaceActor} and the corresponding {@link Port} from the
 	 * {@link Graph}. <!-- end-user-doc -->
 	 * @model
 	 * @generated
 	 */
-	boolean removeInterfaceVertex(InterfaceVertex interfaceVertex);
+	boolean removeInterfaceVertex(InterfaceActor interfaceVertex);
 
 	/**
 	 * Return the list of the names of all vertices of the Graph.
@@ -99,6 +99,13 @@ public interface Graph extends AbstractVertex {
 	 * @return the list of names
 	 */
 	public Set<String> getVerticesNames();
+	
+	/**
+	 * Return the list of the names of all parameters of the Graph.
+	 * 
+	 * @return the list of names
+	 */
+	public Set<String> getParametersNames();
 
 	/**
 	 * Return the vertex whose name is given as a parameter.
@@ -108,5 +115,5 @@ public interface Graph extends AbstractVertex {
 	 *            requested name.
 	 * @return
 	 */
-	public AbstractVertex getVertexNamed(String name);
+	public AbstractActor getVertexNamed(String name);
 } // Graph

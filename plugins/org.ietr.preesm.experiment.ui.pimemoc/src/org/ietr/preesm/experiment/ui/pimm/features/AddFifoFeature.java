@@ -113,7 +113,7 @@ public class AddFifoFeature extends AbstractAddFeature {
 
 		// Layout the edge
 		// Call the move feature of the anchor owner to layout the connection
-		MoveAbstractVertexFeature moveFeature = new MoveAbstractVertexFeature(
+		MoveAbstractActorFeature moveFeature = new MoveAbstractActorFeature(
 				getFeatureProvider());
 		ContainerShape cs = (ContainerShape) connection.getStart()
 				.getReferencedGraphicsAlgorithm().getPictogramElement();

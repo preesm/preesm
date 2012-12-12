@@ -8,12 +8,12 @@ import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
-import org.ietr.preesm.experiment.model.pimm.InterfaceVertex;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
@@ -35,7 +35,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass abstractVertexEClass = null;
+	private EClass abstractActorEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -84,7 +84,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass interfaceVertexEClass = null;
+	private EClass interfaceActorEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -180,8 +180,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getAbstractVertex() {
-		return abstractVertexEClass;
+	public EClass getAbstractActor() {
+		return abstractActorEClass;
 	}
 
 	/**
@@ -189,8 +189,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getAbstractVertex_Name() {
-		return (EAttribute)abstractVertexEClass.getEStructuralFeatures().get(0);
+	public EAttribute getAbstractActor_Name() {
+		return (EAttribute)abstractActorEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -198,8 +198,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getAbstractVertex_InputPorts() {
-		return (EReference)abstractVertexEClass.getEStructuralFeatures().get(1);
+	public EReference getAbstractActor_InputPorts() {
+		return (EReference)abstractActorEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -207,8 +207,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getAbstractVertex_OutputPorts() {
-		return (EReference)abstractVertexEClass.getEStructuralFeatures().get(2);
+	public EReference getAbstractActor_OutputPorts() {
+		return (EReference)abstractActorEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -360,8 +360,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getInterfaceVertex() {
-		return interfaceVertexEClass;
+	public EClass getInterfaceActor() {
+		return interfaceActorEClass;
 	}
 
 	/**
@@ -369,8 +369,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getInterfaceVertex_GraphPort() {
-		return (EReference)interfaceVertexEClass.getEStructuralFeatures().get(0);
+	public EReference getInterfaceActor_GraphPort() {
+		return (EReference)interfaceActorEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -378,8 +378,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getInterfaceVertex_Kind() {
-		return (EAttribute)interfaceVertexEClass.getEStructuralFeatures().get(1);
+	public EAttribute getInterfaceActor_Kind() {
+		return (EAttribute)interfaceActorEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -482,10 +482,10 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		isCreated = true;
 
 		// Create classes and their features
-		abstractVertexEClass = createEClass(ABSTRACT_VERTEX);
-		createEAttribute(abstractVertexEClass, ABSTRACT_VERTEX__NAME);
-		createEReference(abstractVertexEClass, ABSTRACT_VERTEX__INPUT_PORTS);
-		createEReference(abstractVertexEClass, ABSTRACT_VERTEX__OUTPUT_PORTS);
+		abstractActorEClass = createEClass(ABSTRACT_ACTOR);
+		createEAttribute(abstractActorEClass, ABSTRACT_ACTOR__NAME);
+		createEReference(abstractActorEClass, ABSTRACT_ACTOR__INPUT_PORTS);
+		createEReference(abstractActorEClass, ABSTRACT_ACTOR__OUTPUT_PORTS);
 
 		graphEClass = createEClass(GRAPH);
 		createEReference(graphEClass, GRAPH__VERTICES);
@@ -509,9 +509,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		createEReference(fifoEClass, FIFO__SOURCE_PORT);
 		createEReference(fifoEClass, FIFO__TARGET_PORT);
 
-		interfaceVertexEClass = createEClass(INTERFACE_VERTEX);
-		createEReference(interfaceVertexEClass, INTERFACE_VERTEX__GRAPH_PORT);
-		createEAttribute(interfaceVertexEClass, INTERFACE_VERTEX__KIND);
+		interfaceActorEClass = createEClass(INTERFACE_ACTOR);
+		createEReference(interfaceActorEClass, INTERFACE_ACTOR__GRAPH_PORT);
+		createEAttribute(interfaceActorEClass, INTERFACE_ACTOR__KIND);
 
 		sourceInterfaceEClass = createEClass(SOURCE_INTERFACE);
 
@@ -554,30 +554,30 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		// Set bounds for type parameters
 
 		// Add supertypes to classes
-		graphEClass.getESuperTypes().add(this.getAbstractVertex());
-		actorEClass.getESuperTypes().add(this.getAbstractVertex());
+		graphEClass.getESuperTypes().add(this.getAbstractActor());
+		actorEClass.getESuperTypes().add(this.getAbstractActor());
 		inputPortEClass.getESuperTypes().add(this.getPort());
 		outputPortEClass.getESuperTypes().add(this.getPort());
-		interfaceVertexEClass.getESuperTypes().add(this.getAbstractVertex());
-		sourceInterfaceEClass.getESuperTypes().add(this.getInterfaceVertex());
-		sinkInterfaceEClass.getESuperTypes().add(this.getInterfaceVertex());
+		interfaceActorEClass.getESuperTypes().add(this.getAbstractActor());
+		sourceInterfaceEClass.getESuperTypes().add(this.getInterfaceActor());
+		sinkInterfaceEClass.getESuperTypes().add(this.getInterfaceActor());
 
 		// Initialize classes and features; add operations and parameters
-		initEClass(abstractVertexEClass, AbstractVertex.class, "AbstractVertex", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getAbstractVertex_Name(), ecorePackage.getEString(), "name", null, 1, 1, AbstractVertex.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getAbstractVertex_InputPorts(), this.getInputPort(), null, "inputPorts", null, 0, -1, AbstractVertex.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getAbstractVertex_OutputPorts(), this.getOutputPort(), null, "outputPorts", null, 0, -1, AbstractVertex.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(abstractActorEClass, AbstractActor.class, "AbstractActor", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getAbstractActor_Name(), ecorePackage.getEString(), "name", null, 1, 1, AbstractActor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getAbstractActor_InputPorts(), this.getInputPort(), null, "inputPorts", null, 0, -1, AbstractActor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getAbstractActor_OutputPorts(), this.getOutputPort(), null, "outputPorts", null, 0, -1, AbstractActor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(graphEClass, Graph.class, "Graph", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getGraph_Vertices(), this.getAbstractVertex(), null, "vertices", null, 0, -1, Graph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getGraph_Vertices(), this.getAbstractActor(), null, "vertices", null, 0, -1, Graph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getGraph_Fifos(), this.getFifo(), null, "fifos", null, 0, -1, Graph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getGraph_Parameters(), this.getParameter(), null, "parameters", null, 0, -1, Graph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		EOperation op = addEOperation(graphEClass, ecorePackage.getEBoolean(), "addInterfaceVertex", 0, 1, IS_UNIQUE, IS_ORDERED);
-		addEParameter(op, this.getInterfaceVertex(), "interfaceVertex", 0, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, this.getInterfaceActor(), "interfaceVertex", 0, 1, IS_UNIQUE, IS_ORDERED);
 
 		op = addEOperation(graphEClass, ecorePackage.getEBoolean(), "removeInterfaceVertex", 0, 1, IS_UNIQUE, IS_ORDERED);
-		addEParameter(op, this.getInterfaceVertex(), "interfaceVertex", 0, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, this.getInterfaceActor(), "interfaceVertex", 0, 1, IS_UNIQUE, IS_ORDERED);
 
 		initEClass(actorEClass, Actor.class, "Actor", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getActor_Refinement(), this.getRefinement(), null, "refinement", null, 1, 1, Actor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -596,9 +596,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEReference(getFifo_SourcePort(), this.getOutputPort(), this.getOutputPort_OutgoingFifo(), "sourcePort", null, 1, 1, Fifo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getFifo_TargetPort(), this.getInputPort(), this.getInputPort_IncomingFifo(), "targetPort", null, 1, 1, Fifo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(interfaceVertexEClass, InterfaceVertex.class, "InterfaceVertex", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getInterfaceVertex_GraphPort(), this.getPort(), null, "graphPort", null, 1, 1, InterfaceVertex.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getInterfaceVertex_Kind(), ecorePackage.getEString(), "kind", null, 1, 1, InterfaceVertex.class, !IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(interfaceActorEClass, InterfaceActor.class, "InterfaceActor", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getInterfaceActor_GraphPort(), this.getPort(), null, "graphPort", null, 1, 1, InterfaceActor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getInterfaceActor_Kind(), ecorePackage.getEString(), "kind", null, 1, 1, InterfaceActor.class, !IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(sourceInterfaceEClass, SourceInterface.class, "SourceInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
@@ -607,7 +607,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEClass(refinementEClass, Refinement.class, "Refinement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getRefinement_FileName(), ecorePackage.getEString(), "fileName", null, 0, 1, Refinement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		addEOperation(refinementEClass, this.getAbstractVertex(), "getAbstractVertex", 0, 1, IS_UNIQUE, IS_ORDERED);
+		addEOperation(refinementEClass, this.getAbstractActor(), "getAbstractVertex", 0, 1, IS_UNIQUE, IS_ORDERED);
 
 		initEClass(parameterEClass, Parameter.class, "Parameter", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getParameter_Name(), ecorePackage.getEString(), "name", null, 1, 1, Parameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

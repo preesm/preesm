@@ -66,23 +66,23 @@ public class PiMMSwitch<T> extends Switch<T> {
 	@Override
 	protected T doSwitch(int classifierID, EObject theEObject) {
 		switch (classifierID) {
-			case PiMMPackage.ABSTRACT_VERTEX: {
-				AbstractVertex abstractVertex = (AbstractVertex)theEObject;
-				T result = caseAbstractVertex(abstractVertex);
+			case PiMMPackage.ABSTRACT_ACTOR: {
+				AbstractActor abstractActor = (AbstractActor)theEObject;
+				T result = caseAbstractActor(abstractActor);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
 			case PiMMPackage.GRAPH: {
 				Graph graph = (Graph)theEObject;
 				T result = caseGraph(graph);
-				if (result == null) result = caseAbstractVertex(graph);
+				if (result == null) result = caseAbstractActor(graph);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
 			case PiMMPackage.ACTOR: {
 				Actor actor = (Actor)theEObject;
 				T result = caseActor(actor);
-				if (result == null) result = caseAbstractVertex(actor);
+				if (result == null) result = caseAbstractActor(actor);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -112,26 +112,26 @@ public class PiMMSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case PiMMPackage.INTERFACE_VERTEX: {
-				InterfaceVertex interfaceVertex = (InterfaceVertex)theEObject;
-				T result = caseInterfaceVertex(interfaceVertex);
-				if (result == null) result = caseAbstractVertex(interfaceVertex);
+			case PiMMPackage.INTERFACE_ACTOR: {
+				InterfaceActor interfaceActor = (InterfaceActor)theEObject;
+				T result = caseInterfaceActor(interfaceActor);
+				if (result == null) result = caseAbstractActor(interfaceActor);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
 			case PiMMPackage.SOURCE_INTERFACE: {
 				SourceInterface sourceInterface = (SourceInterface)theEObject;
 				T result = caseSourceInterface(sourceInterface);
-				if (result == null) result = caseInterfaceVertex(sourceInterface);
-				if (result == null) result = caseAbstractVertex(sourceInterface);
+				if (result == null) result = caseInterfaceActor(sourceInterface);
+				if (result == null) result = caseAbstractActor(sourceInterface);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
 			case PiMMPackage.SINK_INTERFACE: {
 				SinkInterface sinkInterface = (SinkInterface)theEObject;
 				T result = caseSinkInterface(sinkInterface);
-				if (result == null) result = caseInterfaceVertex(sinkInterface);
-				if (result == null) result = caseAbstractVertex(sinkInterface);
+				if (result == null) result = caseInterfaceActor(sinkInterface);
+				if (result == null) result = caseAbstractActor(sinkInterface);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -152,17 +152,17 @@ public class PiMMSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Abstract Vertex</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Abstract Actor</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Abstract Vertex</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Abstract Actor</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseAbstractVertex(AbstractVertex object) {
+	public T caseAbstractActor(AbstractActor object) {
 		return null;
 	}
 
@@ -257,17 +257,17 @@ public class PiMMSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Interface Vertex</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Interface Actor</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Interface Vertex</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Interface Actor</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseInterfaceVertex(InterfaceVertex object) {
+	public T caseInterfaceActor(InterfaceActor object) {
 		return null;
 	}
 

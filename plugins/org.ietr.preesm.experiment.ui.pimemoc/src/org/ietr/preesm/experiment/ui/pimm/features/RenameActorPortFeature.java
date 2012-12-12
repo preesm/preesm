@@ -6,7 +6,7 @@ import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.PortNameValidator;
@@ -68,7 +68,7 @@ public class RenameActorPortFeature extends AbstractCustomFeature {
 			Object bo = getBusinessObjectForPictogramElement(pes[0]);
 			if (bo instanceof Port) {
 				Port port = (Port) bo;
-				AbstractVertex vertex = (AbstractVertex) port.eContainer();
+				AbstractActor vertex = (AbstractActor) port.eContainer();
 				String currentName = port.getName();
 
 				// Ask user for Port name until a valid name is entered.

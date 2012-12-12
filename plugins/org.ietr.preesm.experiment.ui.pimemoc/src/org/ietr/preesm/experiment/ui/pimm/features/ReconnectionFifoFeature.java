@@ -156,7 +156,7 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
 		}
 
 		// Call the move feature of the anchor owner to layout the connection
-		MoveAbstractVertexFeature moveFeature = new MoveAbstractVertexFeature(
+		MoveAbstractActorFeature moveFeature = new MoveAbstractActorFeature(
 				getFeatureProvider());
 		ContainerShape cs = (ContainerShape) context.getNewAnchor()
 				.getReferencedGraphicsAlgorithm().getPictogramElement();

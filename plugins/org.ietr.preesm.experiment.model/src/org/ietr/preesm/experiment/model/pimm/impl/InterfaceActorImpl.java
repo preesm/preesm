@@ -7,7 +7,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.Graph;
-import org.ietr.preesm.experiment.model.pimm.InterfaceVertex;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
@@ -17,15 +17,15 @@ import org.ietr.preesm.experiment.model.pimm.Port;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceVertexImpl#getGraphPort <em>Graph Port</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceVertexImpl#getKind <em>Kind</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#getGraphPort <em>Graph Port</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#getKind <em>Kind</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class InterfaceVertexImpl extends AbstractVertexImpl implements
-		InterfaceVertex {
+public class InterfaceActorImpl extends AbstractActorImpl implements
+		InterfaceActor {
 	/**
 	 * The cached value of the '{@link #getGraphPort() <em>Graph Port</em>}' reference.
 	 * <!-- begin-user-doc --> This {@link Port} is the corresponding
@@ -59,7 +59,7 @@ public class InterfaceVertexImpl extends AbstractVertexImpl implements
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected InterfaceVertexImpl() {
+	protected InterfaceActorImpl() {
 		super();
 	}
 
@@ -78,10 +78,10 @@ public class InterfaceVertexImpl extends AbstractVertexImpl implements
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case PiMMPackage.INTERFACE_VERTEX__GRAPH_PORT:
+			case PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT:
 				if (resolve) return getGraphPort();
 				return basicGetGraphPort();
-			case PiMMPackage.INTERFACE_VERTEX__KIND:
+			case PiMMPackage.INTERFACE_ACTOR__KIND:
 				return getKind();
 		}
 		return super.eGet(featureID, resolve, coreType);
@@ -94,9 +94,9 @@ public class InterfaceVertexImpl extends AbstractVertexImpl implements
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case PiMMPackage.INTERFACE_VERTEX__GRAPH_PORT:
+			case PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT:
 				return graphPort != null;
-			case PiMMPackage.INTERFACE_VERTEX__KIND:
+			case PiMMPackage.INTERFACE_ACTOR__KIND:
 				return KIND_EDEFAULT == null ? kind != null : !KIND_EDEFAULT.equals(kind);
 		}
 		return super.eIsSet(featureID);
@@ -109,7 +109,7 @@ public class InterfaceVertexImpl extends AbstractVertexImpl implements
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case PiMMPackage.INTERFACE_VERTEX__GRAPH_PORT:
+			case PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT:
 				setGraphPort((Port)newValue);
 				return;
 		}
@@ -122,7 +122,7 @@ public class InterfaceVertexImpl extends AbstractVertexImpl implements
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return PiMMPackage.Literals.INTERFACE_VERTEX;
+		return PiMMPackage.Literals.INTERFACE_ACTOR;
 	}
 
 	/**
@@ -132,7 +132,7 @@ public class InterfaceVertexImpl extends AbstractVertexImpl implements
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case PiMMPackage.INTERFACE_VERTEX__GRAPH_PORT:
+			case PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT:
 				setGraphPort((Port)null);
 				return;
 		}
@@ -149,7 +149,7 @@ public class InterfaceVertexImpl extends AbstractVertexImpl implements
 			graphPort = (Port)eResolveProxy(oldGraphPort);
 			if (graphPort != oldGraphPort) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.INTERFACE_VERTEX__GRAPH_PORT, oldGraphPort, graphPort));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT, oldGraphPort, graphPort));
 			}
 		}
 		return graphPort;
@@ -171,7 +171,7 @@ public class InterfaceVertexImpl extends AbstractVertexImpl implements
 		Port oldGraphPort = graphPort;
 		graphPort = newGraphPort;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.INTERFACE_VERTEX__GRAPH_PORT, oldGraphPort, graphPort));
+			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT, oldGraphPort, graphPort));
 	}
 
 	@Override

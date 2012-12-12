@@ -7,7 +7,7 @@ import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.PortNameValidator;
 
@@ -60,7 +60,7 @@ public class DirectEditingPortNameFeature extends AbstractDirectEditingFeature {
 	public String checkValueValid(String value, IDirectEditingContext context) {
 		PictogramElement pe = context.getPictogramElement();
 		Port port = (Port) getBusinessObjectForPictogramElement(pe);
-		AbstractVertex vertex = (AbstractVertex) port.eContainer();
+		AbstractActor vertex = (AbstractActor) port.eContainer();
 		PortNameValidator validator = new PortNameValidator(vertex, port);
 		return validator.isValid(value);
 	}
