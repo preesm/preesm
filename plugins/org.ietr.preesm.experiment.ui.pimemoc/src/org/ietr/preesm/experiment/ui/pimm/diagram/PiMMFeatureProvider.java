@@ -33,6 +33,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.InterfaceVertex;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.SinkInterface;
 import org.ietr.preesm.experiment.model.pimm.SourceInterface;
@@ -40,10 +41,12 @@ import org.ietr.preesm.experiment.ui.pimm.features.AddActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddFifoFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddInputPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddOutputPortFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddParameterFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddSinkInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddSourceInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateFifoFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.CreateParameterFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateSinkInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateSourceInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CustomDeleteFeature;
@@ -76,6 +79,10 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 			return new AddActorFeature(this);
 		}
 
+		if (context.getNewObject() instanceof Parameter) {
+			return new AddParameterFeature(this);
+		}
+
 		if (context.getNewObject() instanceof SourceInterface) {
 			return new AddSourceInterfaceFeature(this);
 		}
@@ -98,6 +105,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 	@Override
 	public ICreateFeature[] getCreateFeatures() {
 		return new ICreateFeature[] { new CreateActorFeature(this),
+				new CreateParameterFeature(this),
 				new CreateSourceInterfaceFeature(this),
 				new CreateSinkInterfaceFeature(this) };
 	}
@@ -108,7 +116,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 				new AddOutputPortFeature(this), new AddInputPortFeature(this),
 				new RenameActorPortFeature(this),
 				new SetActorRefinementFeature(this),
-				new OpenRefinementFeature(this)};
+				new OpenRefinementFeature(this) };
 	}
 
 	@Override
