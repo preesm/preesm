@@ -62,7 +62,7 @@ public class CreateSinkInterfaceFeature extends AbstractCreateFeature {
 		newSinkInterface.setName(newSnkName);
 
 		// Add new SinkInterface to the graph.
-		if (graph.addInterfaceVertex(newSinkInterface)) {
+		if (graph.addInterfaceActor(newSinkInterface)) {
 			this.hasDoneChanges = true;
 		}
 

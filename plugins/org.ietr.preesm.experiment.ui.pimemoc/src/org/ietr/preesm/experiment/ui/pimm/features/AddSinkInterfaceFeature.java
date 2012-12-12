@@ -89,7 +89,7 @@ public class AddSinkInterfaceFeature extends AbstractAddFeature {
 			// resource of the graph
 			if (snkInterface.eResource() == null) {
 				Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
-				graph.addInterfaceVertex(snkInterface);
+				graph.addInterfaceActor(snkInterface);
 			}
 			link(boxAnchor, port);
 		}

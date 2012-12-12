@@ -312,8 +312,8 @@ public class PiWriter {
 		}
 
 		// Write the vertices of the graph
-		for (AbstractActor vertex : graph.getVertices()) {
-			writeVertex(graphElt, vertex);
+		for (AbstractActor actor : graph.getVertices()) {
+			writeAbstractActor(graphElt, actor);
 		}
 
 		// TODO writeDependencies()
@@ -338,7 +338,7 @@ public class PiWriter {
 
 		// Set the unique ID of the node (equal to the param name)
 		paramElt.setAttribute("id", param.getName());
-		
+
 		// Set the kind of the node
 		paramElt.setAttribute("kind", "param");
 	}
@@ -392,28 +392,28 @@ public class PiWriter {
 
 	/**
 	 * Create and add a node {@link Element} to the given parent {@link Element}
-	 * for the given vertex and write its informations.
+	 * for the given {@link AbstractActor} and write its informations.
 	 * 
 	 * @param graphElt
 	 *            The parent element of the node element (i.e. the graph of the
 	 *            document)
-	 * @param vertex
-	 *            The vertex to write in the {@link Document}
+	 * @param abstractActor
+	 *            The {@link AbstractActor} to write in the {@link Document}
 	 */
-	protected void writeVertex(Element graphElt, AbstractActor vertex) {
+	protected void writeAbstractActor(Element graphElt, AbstractActor abstractActor) {
 		// Add the node to the document
 		Element vertexElt = appendChild(graphElt, "node");
 
 		// Set the unique ID of the node (equal to the vertex name)
-		vertexElt.setAttribute("id", vertex.getName());
+		vertexElt.setAttribute("id", abstractActor.getName());
 
 		// Add the name in the data of the node
 		// writeDataElt(vertexElt, "name", vertex.getName());
 
-		if (vertex instanceof Actor) {
-			writeActor(vertexElt, (Actor) vertex);
-		} else if (vertex instanceof InterfaceActor) {
-			writeInterfaceVertex(vertexElt, (InterfaceActor) vertex);
+		if (abstractActor instanceof Actor) {
+			writeActor(vertexElt, (Actor) abstractActor);
+		} else if (abstractActor instanceof InterfaceActor) {
+			writeInterfaceVertex(vertexElt, (InterfaceActor) abstractActor);
 		}
 
 		// TODO writePorts()
@@ -429,8 +429,7 @@ public class PiWriter {
 	 * @param vertex
 	 *            The {@link InterfaceActor} to serialize
 	 */
-	protected void writeInterfaceVertex(Element vertexElt,
-			InterfaceActor vertex) {
+	protected void writeInterfaceVertex(Element vertexElt, InterfaceActor vertex) {
 		// Set the kind of the Actor
 		vertexElt.setAttribute("kind", vertex.getKind());
 		// writeDataElt(vertexElt, "kind", "actor");

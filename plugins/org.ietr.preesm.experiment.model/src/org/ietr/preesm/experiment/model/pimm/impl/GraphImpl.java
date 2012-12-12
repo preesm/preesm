@@ -77,7 +77,7 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 */
-	public boolean addInterfaceVertex(InterfaceActor interfaceVertex) {
+	public boolean addInterfaceActor(InterfaceActor interfaceVertex) {
 		Port port;
 		switch (interfaceVertex.getKind()) {
 		case "src":
@@ -273,7 +273,7 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 	 * 
 	 * 
 	 */
-	public boolean removeInterfaceVertex(InterfaceActor interfaceVertex) {
+	public boolean removeInterfaceActor(InterfaceActor interfaceVertex) {
 		this.getVertices().remove(interfaceVertex);
 		this.getInputPorts().remove(interfaceVertex.getGraphPort());
 		this.getOutputPorts().remove(interfaceVertex.getGraphPort());

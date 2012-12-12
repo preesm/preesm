@@ -19,7 +19,6 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#getName <em>Name</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#isLocallyStatic <em>Locally Static</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#isConfigurationInterface <em>Configuration Interface</em>}</li>
  * </ul>
@@ -27,27 +26,7 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
  *
  * @generated
  */
-public class ParameterImpl extends EObjectImpl implements Parameter {
-	/**
-	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getName()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String NAME_EDEFAULT = null;
-
-	/**
-	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getName()
-	 * @generated
-	 * @ordered
-	 */
-	protected String name = NAME_EDEFAULT;
-
+public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 	/**
 	 * The default value of the '{@link #isLocallyStatic() <em>Locally Static</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -112,27 +91,6 @@ public class ParameterImpl extends EObjectImpl implements Parameter {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setName(String newName) {
-		String oldName = name;
-		name = newName;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.PARAMETER__NAME, oldName, name));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public boolean isLocallyStatic() {
 		return locallyStatic;
 	}
@@ -178,8 +136,6 @@ public class ParameterImpl extends EObjectImpl implements Parameter {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case PiMMPackage.PARAMETER__NAME:
-				return getName();
 			case PiMMPackage.PARAMETER__LOCALLY_STATIC:
 				return isLocallyStatic();
 			case PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE:
@@ -196,9 +152,6 @@ public class ParameterImpl extends EObjectImpl implements Parameter {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case PiMMPackage.PARAMETER__NAME:
-				setName((String)newValue);
-				return;
 			case PiMMPackage.PARAMETER__LOCALLY_STATIC:
 				setLocallyStatic((Boolean)newValue);
 				return;
@@ -217,9 +170,6 @@ public class ParameterImpl extends EObjectImpl implements Parameter {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case PiMMPackage.PARAMETER__NAME:
-				setName(NAME_EDEFAULT);
-				return;
 			case PiMMPackage.PARAMETER__LOCALLY_STATIC:
 				setLocallyStatic(LOCALLY_STATIC_EDEFAULT);
 				return;
@@ -238,8 +188,6 @@ public class ParameterImpl extends EObjectImpl implements Parameter {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case PiMMPackage.PARAMETER__NAME:
-				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
 			case PiMMPackage.PARAMETER__LOCALLY_STATIC:
 				return locallyStatic != LOCALLY_STATIC_EDEFAULT;
 			case PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE:
@@ -258,9 +206,7 @@ public class ParameterImpl extends EObjectImpl implements Parameter {
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (name: ");
-		result.append(name);
-		result.append(", locallyStatic: ");
+		result.append(" (locallyStatic: ");
 		result.append(locallyStatic);
 		result.append(", configurationInterface: ");
 		result.append(configurationInterface);

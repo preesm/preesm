@@ -82,7 +82,7 @@ public interface Graph extends AbstractActor {
 	 * @model
 	 * @generated
 	 */
-	boolean addInterfaceVertex(InterfaceActor interfaceVertex);
+	boolean addInterfaceActor(InterfaceActor interfaceVertex);
 
 	/**
 	 * <!-- begin-user-doc --> This method will remove the
@@ -91,7 +91,7 @@ public interface Graph extends AbstractActor {
 	 * @model
 	 * @generated
 	 */
-	boolean removeInterfaceVertex(InterfaceActor interfaceVertex);
+	boolean removeInterfaceActor(InterfaceActor interfaceVertex);
 
 	/**
 	 * Return the list of the names of all vertices of the Graph.

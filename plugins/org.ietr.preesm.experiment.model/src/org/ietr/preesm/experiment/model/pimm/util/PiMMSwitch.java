@@ -66,9 +66,16 @@ public class PiMMSwitch<T> extends Switch<T> {
 	@Override
 	protected T doSwitch(int classifierID, EObject theEObject) {
 		switch (classifierID) {
+			case PiMMPackage.ABSTRACT_VERTEX: {
+				AbstractVertex abstractVertex = (AbstractVertex)theEObject;
+				T result = caseAbstractVertex(abstractVertex);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			case PiMMPackage.ABSTRACT_ACTOR: {
 				AbstractActor abstractActor = (AbstractActor)theEObject;
 				T result = caseAbstractActor(abstractActor);
+				if (result == null) result = caseAbstractVertex(abstractActor);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -76,6 +83,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 				Graph graph = (Graph)theEObject;
 				T result = caseGraph(graph);
 				if (result == null) result = caseAbstractActor(graph);
+				if (result == null) result = caseAbstractVertex(graph);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -83,6 +91,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 				Actor actor = (Actor)theEObject;
 				T result = caseActor(actor);
 				if (result == null) result = caseAbstractActor(actor);
+				if (result == null) result = caseAbstractVertex(actor);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -116,6 +125,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 				InterfaceActor interfaceActor = (InterfaceActor)theEObject;
 				T result = caseInterfaceActor(interfaceActor);
 				if (result == null) result = caseAbstractActor(interfaceActor);
+				if (result == null) result = caseAbstractVertex(interfaceActor);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -124,6 +134,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 				T result = caseSourceInterface(sourceInterface);
 				if (result == null) result = caseInterfaceActor(sourceInterface);
 				if (result == null) result = caseAbstractActor(sourceInterface);
+				if (result == null) result = caseAbstractVertex(sourceInterface);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -132,6 +143,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 				T result = caseSinkInterface(sinkInterface);
 				if (result == null) result = caseInterfaceActor(sinkInterface);
 				if (result == null) result = caseAbstractActor(sinkInterface);
+				if (result == null) result = caseAbstractVertex(sinkInterface);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -144,11 +156,27 @@ public class PiMMSwitch<T> extends Switch<T> {
 			case PiMMPackage.PARAMETER: {
 				Parameter parameter = (Parameter)theEObject;
 				T result = caseParameter(parameter);
+				if (result == null) result = caseAbstractVertex(parameter);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
 			default: return defaultCase(theEObject);
 		}
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Abstract Vertex</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Abstract Vertex</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseAbstractVertex(AbstractVertex object) {
+		return null;
 	}
 
 	/**

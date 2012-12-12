@@ -68,6 +68,10 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 	protected PiMMSwitch<Adapter> modelSwitch =
 		new PiMMSwitch<Adapter>() {
 			@Override
+			public Adapter caseAbstractVertex(AbstractVertex object) {
+				return createAbstractVertexAdapter();
+			}
+			@Override
 			public Adapter caseAbstractActor(AbstractActor object) {
 				return createAbstractActorAdapter();
 			}
@@ -134,6 +138,20 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 		return modelSwitch.doSwitch((EObject)target);
 	}
 
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.AbstractVertex <em>Abstract Vertex</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.ietr.preesm.experiment.model.pimm.AbstractVertex
+	 * @generated
+	 */
+	public Adapter createAbstractVertexAdapter() {
+		return null;
+	}
 
 	/**
 	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.AbstractActor <em>Abstract Actor</em>}'.

@@ -56,14 +56,14 @@ public interface PiMMPackage extends EPackage {
 	PiMMPackage eINSTANCE = org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl.init();
 
 	/**
-	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl <em>Abstract Actor</em>}' class.
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl <em>Abstract Vertex</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl
-	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getAbstractActor()
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getAbstractVertex()
 	 * @generated
 	 */
-	int ABSTRACT_ACTOR = 0;
+	int ABSTRACT_VERTEX = 0;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -72,7 +72,35 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ABSTRACT_ACTOR__NAME = 0;
+	int ABSTRACT_VERTEX__NAME = 0;
+
+	/**
+	 * The number of structural features of the '<em>Abstract Vertex</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ABSTRACT_VERTEX_FEATURE_COUNT = 1;
+
+	/**
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl <em>Abstract Actor</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getAbstractActor()
+	 * @generated
+	 */
+	int ABSTRACT_ACTOR = 1;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ABSTRACT_ACTOR__NAME = ABSTRACT_VERTEX__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Input Ports</b></em>' containment reference list.
@@ -81,7 +109,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ABSTRACT_ACTOR__INPUT_PORTS = 1;
+	int ABSTRACT_ACTOR__INPUT_PORTS = ABSTRACT_VERTEX_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Output Ports</b></em>' containment reference list.
@@ -90,7 +118,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ABSTRACT_ACTOR__OUTPUT_PORTS = 2;
+	int ABSTRACT_ACTOR__OUTPUT_PORTS = ABSTRACT_VERTEX_FEATURE_COUNT + 1;
 
 	/**
 	 * The number of structural features of the '<em>Abstract Actor</em>' class.
@@ -99,7 +127,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ABSTRACT_ACTOR_FEATURE_COUNT = 3;
+	int ABSTRACT_ACTOR_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 2;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.GraphImpl <em>Graph</em>}' class.
@@ -109,7 +137,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getGraph()
 	 * @generated
 	 */
-	int GRAPH = 1;
+	int GRAPH = 2;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -182,7 +210,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getActor()
 	 * @generated
 	 */
-	int ACTOR = 2;
+	int ACTOR = 3;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -238,7 +266,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getPort()
 	 * @generated
 	 */
-	int PORT = 3;
+	int PORT = 4;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -275,7 +303,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getInputPort()
 	 * @generated
 	 */
-	int INPUT_PORT = 4;
+	int INPUT_PORT = 5;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -321,7 +349,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getOutputPort()
 	 * @generated
 	 */
-	int OUTPUT_PORT = 5;
+	int OUTPUT_PORT = 6;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -368,7 +396,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getFifo()
 	 * @generated
 	 */
-	int FIFO = 6;
+	int FIFO = 7;
 
 	/**
 	 * The feature id for the '<em><b>Source Port</b></em>' reference.
@@ -406,7 +434,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getInterfaceActor()
 	 * @generated
 	 */
-	int INTERFACE_ACTOR = 7;
+	int INTERFACE_ACTOR = 8;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -470,7 +498,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getSourceInterface()
 	 * @generated
 	 */
-	int SOURCE_INTERFACE = 8;
+	int SOURCE_INTERFACE = 9;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -535,7 +563,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getSinkInterface()
 	 * @generated
 	 */
-	int SINK_INTERFACE = 9;
+	int SINK_INTERFACE = 10;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -600,7 +628,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getRefinement()
 	 * @generated
 	 */
-	int REFINEMENT = 10;
+	int REFINEMENT = 11;
 
 	/**
 	 * The feature id for the '<em><b>File Name</b></em>' attribute.
@@ -629,7 +657,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getParameter()
 	 * @generated
 	 */
-	int PARAMETER = 11;
+	int PARAMETER = 12;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -638,7 +666,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int PARAMETER__NAME = 0;
+	int PARAMETER__NAME = ABSTRACT_VERTEX__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Locally Static</b></em>' attribute.
@@ -647,7 +675,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int PARAMETER__LOCALLY_STATIC = 1;
+	int PARAMETER__LOCALLY_STATIC = ABSTRACT_VERTEX_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Configuration Interface</b></em>' attribute.
@@ -656,7 +684,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int PARAMETER__CONFIGURATION_INTERFACE = 2;
+	int PARAMETER__CONFIGURATION_INTERFACE = ABSTRACT_VERTEX_FEATURE_COUNT + 1;
 
 	/**
 	 * The number of structural features of the '<em>Parameter</em>' class.
@@ -665,8 +693,29 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int PARAMETER_FEATURE_COUNT = 3;
+	int PARAMETER_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 2;
 
+
+	/**
+	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.AbstractVertex <em>Abstract Vertex</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Abstract Vertex</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.AbstractVertex
+	 * @generated
+	 */
+	EClass getAbstractVertex();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.AbstractVertex#getName <em>Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Name</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.AbstractVertex#getName()
+	 * @see #getAbstractVertex()
+	 * @generated
+	 */
+	EAttribute getAbstractVertex_Name();
 
 	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.AbstractActor <em>Abstract Actor</em>}'.
@@ -677,17 +726,6 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getAbstractActor();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getName <em>Name</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Name</em>'.
-	 * @see org.ietr.preesm.experiment.model.pimm.AbstractActor#getName()
-	 * @see #getAbstractActor()
-	 * @generated
-	 */
-	EAttribute getAbstractActor_Name();
 
 	/**
 	 * Returns the meta object for the containment reference list '{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getInputPorts <em>Input Ports</em>}'.
@@ -965,17 +1003,6 @@ public interface PiMMPackage extends EPackage {
 	EClass getParameter();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Parameter#getName <em>Name</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Name</em>'.
-	 * @see org.ietr.preesm.experiment.model.pimm.Parameter#getName()
-	 * @see #getParameter()
-	 * @generated
-	 */
-	EAttribute getParameter_Name();
-
-	/**
 	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Parameter#isLocallyStatic <em>Locally Static</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1020,6 +1047,24 @@ public interface PiMMPackage extends EPackage {
 	 */
 	interface Literals {
 		/**
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl <em>Abstract Vertex</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getAbstractVertex()
+		 * @generated
+		 */
+		EClass ABSTRACT_VERTEX = eINSTANCE.getAbstractVertex();
+
+		/**
+		 * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute ABSTRACT_VERTEX__NAME = eINSTANCE.getAbstractVertex_Name();
+
+		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl <em>Abstract Actor</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -1028,14 +1073,6 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EClass ABSTRACT_ACTOR = eINSTANCE.getAbstractActor();
-
-		/**
-		 * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute ABSTRACT_ACTOR__NAME = eINSTANCE.getAbstractActor_Name();
 
 		/**
 		 * The meta object literal for the '<em><b>Input Ports</b></em>' containment reference list feature.
@@ -1266,14 +1303,6 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EClass PARAMETER = eINSTANCE.getParameter();
-
-		/**
-		 * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute PARAMETER__NAME = eINSTANCE.getParameter_Name();
 
 		/**
 		 * The meta object literal for the '<em><b>Locally Static</b></em>' attribute feature.

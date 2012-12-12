@@ -34,7 +34,7 @@ public class DeleteInterfaceActorFeature extends DeleteAbstractActorFeature {
 
 		// Remove the corresponding port from the graph
 		if (this.hasDoneChanges()) {
-			graph.removeInterfaceVertex(removedVertex);
+			graph.removeInterfaceActor(removedVertex);
 		}
 	}
 

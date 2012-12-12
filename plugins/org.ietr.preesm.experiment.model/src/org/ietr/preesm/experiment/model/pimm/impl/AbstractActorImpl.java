@@ -25,7 +25,6 @@ import org.ietr.preesm.experiment.model.pimm.Port;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#getName <em>Name</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#getInputPorts <em>Input Ports</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#getOutputPorts <em>Output Ports</em>}</li>
  * </ul>
@@ -33,28 +32,8 @@ import org.ietr.preesm.experiment.model.pimm.Port;
  *
  * @generated
  */
-public abstract class AbstractActorImpl extends EObjectImpl implements
+public abstract class AbstractActorImpl extends AbstractVertexImpl implements
 		AbstractActor {
-	/**
-	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getName()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String NAME_EDEFAULT = null;
-
-	/**
-	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getName()
-	 * @generated
-	 * @ordered
-	 */
-	protected String name = NAME_EDEFAULT;
-
 	/**
 	 * The cached value of the '{@link #getInputPorts() <em>Input Ports</em>}' containment reference list.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -88,8 +67,6 @@ public abstract class AbstractActorImpl extends EObjectImpl implements
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case PiMMPackage.ABSTRACT_ACTOR__NAME:
-				return getName();
 			case PiMMPackage.ABSTRACT_ACTOR__INPUT_PORTS:
 				return getInputPorts();
 			case PiMMPackage.ABSTRACT_ACTOR__OUTPUT_PORTS:
@@ -121,30 +98,12 @@ public abstract class AbstractActorImpl extends EObjectImpl implements
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case PiMMPackage.ABSTRACT_ACTOR__NAME:
-				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
 			case PiMMPackage.ABSTRACT_ACTOR__INPUT_PORTS:
 				return inputPorts != null && !inputPorts.isEmpty();
 			case PiMMPackage.ABSTRACT_ACTOR__OUTPUT_PORTS:
 				return outputPorts != null && !outputPorts.isEmpty();
 		}
 		return super.eIsSet(featureID);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public String toString() {
-		if (eIsProxy()) return super.toString();
-
-		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (name: ");
-		result.append(name);
-		result.append(')');
-		return result.toString();
 	}
 
 	/**
@@ -155,9 +114,6 @@ public abstract class AbstractActorImpl extends EObjectImpl implements
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case PiMMPackage.ABSTRACT_ACTOR__NAME:
-				setName((String)newValue);
-				return;
 			case PiMMPackage.ABSTRACT_ACTOR__INPUT_PORTS:
 				getInputPorts().clear();
 				getInputPorts().addAll((Collection<? extends InputPort>)newValue);
@@ -180,36 +136,12 @@ public abstract class AbstractActorImpl extends EObjectImpl implements
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setName(String newName) {
-		String oldName = name;
-		name = newName;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.ABSTRACT_ACTOR__NAME, oldName, name));
-	}
-
-	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case PiMMPackage.ABSTRACT_ACTOR__NAME:
-				setName(NAME_EDEFAULT);
-				return;
 			case PiMMPackage.ABSTRACT_ACTOR__INPUT_PORTS:
 				getInputPorts().clear();
 				return;

@@ -6,13 +6,16 @@ import net.sf.dftools.architecture.utils.DomUtil;
 
 import org.eclipse.emf.common.util.URI;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
+import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.SinkInterface;
 import org.ietr.preesm.experiment.model.pimm.SourceInterface;
 import org.w3c.dom.Document;
@@ -60,8 +63,8 @@ public class PiParser {
 	}
 
 	/**
-	 * Parse the PiMM {@link Graph} from the given {@link InputStream} using
-	 * the Pi format.
+	 * Parse the PiMM {@link Graph} from the given {@link InputStream} using the
+	 * Pi format.
 	 * 
 	 * @param inputStream
 	 *            The Parsed input stream
@@ -280,7 +283,7 @@ public class PiParser {
 	protected void parseNode(Element nodeElt, Graph graph) {
 		// Identify if the node is an actor or a parameter
 		String nodeKind = nodeElt.getAttribute("kind");
-		AbstractActor vertex;
+		AbstractVertex vertex;
 
 		switch (nodeKind) {
 		case "actor":
@@ -291,6 +294,9 @@ public class PiParser {
 			break;
 		case "snk":
 			vertex = parseSinkInterface(nodeElt, graph);
+			break;
+		case "param":
+			vertex = parseParameter(nodeElt, graph);
 			break;
 		// TODO Parse all types of nodes
 		// case "implode":
@@ -325,27 +331,72 @@ public class PiParser {
 
 	}
 
-	protected void parsePort(Element elt, AbstractActor vertex) {
+	/**
+	 * Parse a {@link Parameter} of the Pi File.
+	 * 
+	 * @param nodeElt
+	 *            The node {@link Element} holding the {@link Parameter}
+	 *            properties.
+	 * @param graph
+	 *            the deserialized {@link Graph}.
+	 * @return the {@link AbstractVertex} of the {@link Parameter}.
+	 */
+	protected AbstractVertex parseParameter(Element nodeElt, Graph graph) {
+		// Instantiate the new Parameter
+		Parameter param = PiMMFactory.eINSTANCE.createParameter();
+
+		// Get the actor properties
+		param.setName(nodeElt.getAttribute("id"));
+
+		// Add the actor to the parsed graph
+		graph.getParameters().add(param);
+
+		return param;
+	}
+
+	/**
+	 * Parse a {@link Port} of the Pi file.
+	 * 
+	 * @param elt
+	 *            the {@link Element} holding the {@link Port} properties.
+	 * @param vertex
+	 *            the {@link AbstractVertex} owning this {@link Port}
+	 */
+	protected void parsePort(Element elt, AbstractVertex vertex) {
 		String portName = elt.getAttribute("name");
 		String portKind = elt.getAttribute("kind");
 
 		switch (portKind) {
 		case "input":
+			// Throw an error if the parsed vertex is not an actor
+			if (!(vertex instanceof AbstractActor)) {
+				throw new RuntimeException("Parsed data port " + portName
+						+ "cannot belong to the non-actor vertex "
+						+ vertex.getName());
+			}
+
 			InputPort iPort = PiMMFactory.eINSTANCE.createInputPort();
 			iPort.setName(portName);
-			// Do not parse data ports for InterfaceVertex since the unique port
+			// Do not parse data ports for InterfaceActor since the unique port
 			// is automatically created when the vertex is instantiated
 			if (!(vertex instanceof InterfaceActor)) {
-				vertex.getInputPorts().add(iPort);
+				((AbstractActor) vertex).getInputPorts().add(iPort);
 			}
+
 			break;
 		case "output":
+			// Throw an error if the parsed vertex is not an actor
+			if (!(vertex instanceof AbstractActor)) {
+				throw new RuntimeException("Parsed data port " + portName
+						+ "cannot belong to the non-actor vertex "
+						+ vertex.getName());
+			}
 			OutputPort oPort = PiMMFactory.eINSTANCE.createOutputPort();
 			oPort.setName(portName);
-			// Do not parse data ports for InterfaceVertex since the unique port
+			// Do not parse data ports for InterfaceActor since the unique port
 			// is automatically created when the vertex is instantiated
 			if (!(vertex instanceof InterfaceActor)) {
-				vertex.getOutputPorts().add(oPort);
+				((AbstractActor) vertex).getOutputPorts().add(oPort);
 			}
 			break;
 		default:
@@ -372,7 +423,7 @@ public class PiParser {
 		snkInterface.setName(nodeElt.getAttribute("id"));
 
 		// Add the actor to the parsed graph
-		graph.addInterfaceVertex(snkInterface);
+		graph.addInterfaceActor(snkInterface);
 
 		return snkInterface;
 	}
@@ -395,7 +446,7 @@ public class PiParser {
 		srcInterface.setName(nodeElt.getAttribute("id"));
 
 		// Add the actor to the parsed graph
-		graph.addInterfaceVertex(srcInterface);
+		graph.addInterfaceActor(srcInterface);
 
 		return srcInterface;
 	}
