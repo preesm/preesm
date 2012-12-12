@@ -61,8 +61,7 @@ public class DirectEditingPortNameFeature extends AbstractDirectEditingFeature {
 		PictogramElement pe = context.getPictogramElement();
 		Port port = (Port) getBusinessObjectForPictogramElement(pe);
 		AbstractVertex vertex = (AbstractVertex) port.eContainer();
-		PortNameValidator validator = new PortNameValidator(vertex, port,
-				port.getKind());
+		PortNameValidator validator = new PortNameValidator(vertex, port);
 		return validator.isValid(value);
 	}
 

@@ -76,8 +76,7 @@ public class RenameActorPortFeature extends AbstractCustomFeature {
 				String newPortName = port.getName();
 
 				newPortName = PiMMUtil.askString(this.getName(), question,
-						newPortName, new PortNameValidator(vertex, port,
-								port.getKind()));
+						newPortName, new PortNameValidator(vertex, port));
 
 				if (newPortName != null && !newPortName.equals(currentName)) {
 					this.hasDoneChanges = true;

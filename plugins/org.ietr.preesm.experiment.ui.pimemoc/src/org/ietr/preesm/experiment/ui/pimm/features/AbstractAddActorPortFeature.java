@@ -123,9 +123,9 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 			// Ask the name of the new port
 			String portName = "newPort";
 
-			portName = PiMMUtil.askString(this.getName(), this
-					.getDescription(), portName, new PortNameValidator(actor,
-					null, this.getPortKind()));
+			portName = PiMMUtil.askString(this.getName(),
+					this.getDescription(), portName, new PortNameValidator(
+							actor, null));
 			if (portName == null) {
 				this.hasDoneChanges = false;
 				return;

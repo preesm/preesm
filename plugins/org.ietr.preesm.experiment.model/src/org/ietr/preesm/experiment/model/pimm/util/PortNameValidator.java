@@ -18,7 +18,6 @@ public class PortNameValidator implements IInputValidator {
 
 	protected AbstractVertex vertex;
 	protected Port renamedPort;
-	protected String kind;
 	protected Set<String> portsNames;
 
 	/**
@@ -32,30 +31,21 @@ public class PortNameValidator implements IInputValidator {
 	 * @param kind
 	 *            the kind of the port
 	 */
-	public PortNameValidator(AbstractVertex vertex, Port renamedPort,
-			String kind) {
+	public PortNameValidator(AbstractVertex vertex, Port renamedPort) {
 		this.vertex = vertex;
 		this.renamedPort = renamedPort;
-		this.kind = kind;
 
-		switch (kind) {
-		case "input":
-			this.portsNames = new HashSet<>(vertex.getInputPorts().size());
-			for (Port port : vertex.getInputPorts()) {
-				this.portsNames.add(port.getName());
-			}
-			break;
-		case "output":
-			this.portsNames = new HashSet<>(vertex.getOutputPorts().size());
-			for (Port port : vertex.getOutputPorts()) {
-				this.portsNames.add(port.getName());
-			}
-			break;
-		default:
-			this.portsNames = new HashSet<String>(0);
+		// Create the list of already existing names
+		this.portsNames = new HashSet<>(vertex.getInputPorts().size());
+		for (Port port : vertex.getInputPorts()) {
+			this.portsNames.add(port.getName());
 		}
-		
-		if(this.renamedPort != null){
+
+		for (Port port : vertex.getOutputPorts()) {
+			this.portsNames.add(port.getName());
+		}
+
+		if (this.renamedPort != null) {
 			this.portsNames.remove(renamedPort.getName());
 		}
 	}
@@ -77,7 +67,7 @@ public class PortNameValidator implements IInputValidator {
 
 		// Check if no other port has the same name
 		if (portsNames.contains(newPortName)) {
-			message = "/!\\ An "+kind+" port with name " + newPortName
+			message = "/!\\ A port with name " + newPortName
 					+ " already exists /!\\";
 			return message;
 		}
