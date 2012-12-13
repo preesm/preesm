@@ -106,6 +106,7 @@ public class AddParameterFeature extends AbstractAddFeature {
 			link(shape, addedParameter);
 		}
 
+		layoutPictogramElement(containerShape);
 		return containerShape;
 	}
 

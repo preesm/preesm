@@ -56,6 +56,7 @@ import org.ietr.preesm.experiment.ui.pimm.features.DeleteInterfaceActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DirectEditingAbstractActorNameFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.LayoutActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.LayoutInterfaceActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.LayoutParameterFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.LayoutPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.MoveAbstractActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.OpenRefinementFeature;
@@ -166,6 +167,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		if (bo instanceof InterfaceActor) {
 			return new LayoutInterfaceActorFeature(this);
 		}
+		if (bo instanceof Parameter) {
+			return new LayoutParameterFeature(this);
+		}
 		return super.getLayoutFeature(context);
 	}
 
@@ -227,8 +231,15 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 				// to fit the content of the shape
 				return null;
 			}
-			
+
 			if (bo instanceof InterfaceActor) {
+				// We do not allow manual resize of Actor's pictogram elements.
+				// The size of these elements will be computed automatically
+				// to fit the content of the shape
+				return null;
+			}
+
+			if (bo instanceof Parameter) {
 				// We do not allow manual resize of Actor's pictogram elements.
 				// The size of these elements will be computed automatically
 				// to fit the content of the shape
