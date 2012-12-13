@@ -7,6 +7,7 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
+import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.experiment.ui.pimm.util.PiMMUtil;
 
 public class CreateParameterFeature extends AbstractCreateFeature {
@@ -47,7 +48,7 @@ public class CreateParameterFeature extends AbstractCreateFeature {
 
 		// TODO create a parameter name validator
 		newParameterName = PiMMUtil.askString("Create Parameter", question,
-				newParameterName, null);
+				newParameterName, new VertexNameValidator(graph, null));
 		if (newParameterName == null || newParameterName.trim().length() == 0) {
 			this.hasDoneChanges = false; // If this is not done, the graph is
 											// considered modified.
@@ -57,6 +58,8 @@ public class CreateParameterFeature extends AbstractCreateFeature {
 		// create Parameter
 		Parameter newParameter = PiMMFactory.eINSTANCE.createParameter();
 		newParameter.setName(newParameterName);
+		newParameter.setConfigurationInterface(false);
+		newParameter.setLocallyStatic(true);
 
 		// Add new parameter to the graph.
 		if (graph.getParameters().add(newParameter)) {

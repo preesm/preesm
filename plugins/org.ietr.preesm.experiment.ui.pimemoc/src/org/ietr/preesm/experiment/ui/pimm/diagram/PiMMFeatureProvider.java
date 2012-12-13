@@ -227,6 +227,13 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 				// to fit the content of the shape
 				return null;
 			}
+			
+			if (bo instanceof InterfaceActor) {
+				// We do not allow manual resize of Actor's pictogram elements.
+				// The size of these elements will be computed automatically
+				// to fit the content of the shape
+				return null;
+			}
 		}
 		return super.getResizeShapeFeature(context);
 	}

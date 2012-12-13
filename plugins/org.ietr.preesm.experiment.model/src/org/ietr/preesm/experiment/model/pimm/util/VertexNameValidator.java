@@ -3,7 +3,7 @@ package org.ietr.preesm.experiment.model.pimm.util;
 import java.util.Set;
 
 import org.eclipse.jface.dialogs.IInputValidator;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 
 /**
@@ -27,7 +27,7 @@ public class VertexNameValidator implements IInputValidator {
 	 *            vertex currently renamed, or <code>null</code> if creating a
 	 *            new vertex.
 	 */
-	public VertexNameValidator(Graph graph, AbstractActor renamedVertex) {
+	public VertexNameValidator(Graph graph, AbstractVertex renamedVertex) {
 		this.graph = graph;
 		// Retrieve a list of all the actor and parameter names in the graph
 		existingNames = graph.getVerticesNames();
@@ -43,13 +43,13 @@ public class VertexNameValidator implements IInputValidator {
 		String message = null;
 		// Check if the name is not empty
 		if (newVertexName.length() < 1) {
-			message = "/!\\ Actor name cannot be empty /!\\";
+			message = "/!\\ Name cannot be empty /!\\";
 			return message;
 		}
 
 		// Check if the name contains a space
 		if (newVertexName.contains(" ")) {
-			message = "/!\\ Actor name must not contain spaces /!\\";
+			message = "/!\\ Name must not contain spaces /!\\";
 			return message;
 		}
 

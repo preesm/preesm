@@ -26,7 +26,8 @@ public class AddActorFeature extends AbstractAddFeature {
 			98, 131, 167);
 
 	public static final IColorConstant ACTOR_BACKGROUND = new ColorConstant(
-			187, 218, 247);
+			237, 237, 237);
+			//187, 218, 247);
 
 	public AddActorFeature(IFeatureProvider fp) {
 		super(fp);
