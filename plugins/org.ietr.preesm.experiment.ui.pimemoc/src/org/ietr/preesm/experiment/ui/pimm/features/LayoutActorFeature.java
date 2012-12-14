@@ -317,7 +317,6 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 		}
 
 		// Place the inputs
-
 		int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
 		// The first port is placed below the name
 		int y = portFontHeight + 5; // font.height + a space of 5
@@ -334,7 +333,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 		// Place the outputs
 		y = portFontHeight + 5; // font.height + a space of 5
 		for (int i = 0; i < outputs.size(); i++) {
-			double relativeHeight = (y + i * portFontHeight)
+			double relativeHeight = (y + (i+nbConfigInput) * portFontHeight)
 					/ (double) newHeigt;
 			if (outputs.get(i).getRelativeHeight() != relativeHeight) {
 				anythingChanged = true;
