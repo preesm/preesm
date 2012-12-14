@@ -11,10 +11,10 @@
         eType="#//OutputPort" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Graph" eSuperTypes="#//AbstractActor">
-    <eOperations name="addInterfaceVertex" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+    <eOperations name="addInterfaceActor" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
       <eParameters name="interfaceVertex" eType="#//InterfaceActor"/>
     </eOperations>
-    <eOperations name="removeInterfaceVertex" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+    <eOperations name="removeInterfaceActor" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
       <eParameters name="interfaceVertex" eType="#//InterfaceActor"/>
     </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="vertices" upperBound="-1"
@@ -56,7 +56,7 @@
   <eClassifiers xsi:type="ecore:EClass" name="SourceInterface" eSuperTypes="#//InterfaceActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="SinkInterface" eSuperTypes="#//InterfaceActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="Refinement">
-    <eOperations name="getAbstractVertex" eType="#//AbstractActor"/>
+    <eOperations name="getAbstractActor" eType="#//AbstractActor"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="fileName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Parameter" eSuperTypes="#//AbstractVertex">

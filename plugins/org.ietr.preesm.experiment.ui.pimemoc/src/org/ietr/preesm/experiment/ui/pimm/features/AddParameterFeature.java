@@ -17,8 +17,6 @@ import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.ui.pimm.shapes.House;
-import org.ietr.preesm.experiment.ui.pimm.shapes.Triangle;
 
 /**
  * Add feature to add a {@link Parameter} to the Diagram
@@ -68,14 +66,17 @@ public class AddParameterFeature extends AbstractAddFeature {
 		int height = 40;
 		IGaService gaService = Graphiti.getGaService();
 
-		Polygon triangle;
+		Polygon house;
 		{
-			triangle = new House(containerShape);
-			triangle.setBackground(manageColor(PARAMETER_BACKGROUND));
-			triangle.setForeground(manageColor(PARAMETER_FOREGROUND));
-			triangle.setLineWidth(2);
-			gaService.setLocationAndSize(triangle, context.getX(),
-					context.getY(), width, height);
+			// Create a house shaped polygon
+			int xy[] = new int[] { 12, 0, 24, 26, 24, 40, 0, 40, 0, 26 };
+			house = gaService.createPolygon(containerShape, xy);
+			
+			house.setBackground(manageColor(PARAMETER_BACKGROUND));
+			house.setForeground(manageColor(PARAMETER_FOREGROUND));
+			house.setLineWidth(2);
+			gaService.setLocationAndSize(house, context.getX(), context.getY(),
+					width, height);
 
 			// if added Class has no resource we add it to the resource
 			// of the graph
@@ -97,11 +98,11 @@ public class AddParameterFeature extends AbstractAddFeature {
 			Text text = gaService.createText(shape, addedParameter.getName());
 			text.setForeground(manageColor(PARAMETER_TEXT_FOREGROUND));
 			text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
-			
+
 			// vertical alignment has as default value "center"
 			text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
 			text.getWidth();
-			gaService.setLocationAndSize(text, 0, height-18, width, 20);
+			gaService.setLocationAndSize(text, 0, height - 18, width, 20);
 
 			// create link and wire it
 			link(shape, addedParameter);

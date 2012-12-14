@@ -2,7 +2,6 @@
  */
 package org.ietr.preesm.experiment.model.pimm;
 
-import org.eclipse.emf.ecore.EObject;
 
 /**
  * <!-- begin-user-doc -->

@@ -1,5 +1,7 @@
 package org.ietr.preesm.experiment.ui.pimm.features;
 
+import java.util.List;
+
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
@@ -7,9 +9,11 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.features.impl.AbstractLayoutFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
+import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.Font;
 import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
+import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -23,12 +27,6 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
  * 
  */
 public class LayoutParameterFeature extends AbstractLayoutFeature {
-
-	/**
-	 * The Height of the parameter triangle is not modified when layouting the
-	 * {@link Parameter}.
-	 */
-	protected int height;
 
 	/**
 	 * Default constructor of the {@link LayoutParameterFeature}
@@ -95,7 +93,6 @@ public class LayoutParameterFeature extends AbstractLayoutFeature {
 		ContainerShape containerShape = (ContainerShape) context
 				.getPictogramElement();
 		GraphicsAlgorithm containerGa = containerShape.getGraphicsAlgorithm();
-		height = containerGa.getHeight(); // The height is constant
 
 		// Retrieve all contained shapes
 		EList<Shape> childrenShapes = containerShape.getChildren();
@@ -103,8 +100,8 @@ public class LayoutParameterFeature extends AbstractLayoutFeature {
 		int newWidth = getNewWidth(childrenShapes);
 
 		if (newWidth != containerGa.getWidth()) {
-			setNewWidth(newWidth, childrenShapes);
-			containerGa.setWidth(newWidth);
+			setNewWidth(newWidth, containerGa, childrenShapes);
+
 			return true;
 		}
 
@@ -119,7 +116,8 @@ public class LayoutParameterFeature extends AbstractLayoutFeature {
 	 * @param childrenShapes
 	 *            the children shapes
 	 */
-	protected void setNewWidth(int newWidth, EList<Shape> childrenShapes) {
+	protected void setNewWidth(int newWidth, GraphicsAlgorithm containerGa,
+			EList<Shape> childrenShapes) {
 		// Scan the children shapes
 		for (Shape shape : childrenShapes) {
 			GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
@@ -132,6 +130,22 @@ public class LayoutParameterFeature extends AbstractLayoutFeature {
 					// rounded rectangle
 					child.setWidth(newWidth);
 				}
+			}
+		}
+
+		// Treat the container GA
+		// Resize the house-shaped polygon
+		{
+			int height = containerGa.getHeight(); // The height is constant
+			int coord[] = new int[] { newWidth / 2, 0, newWidth, height - 14,
+					newWidth, height, 0, height, 0, height - 14 };
+
+			List<Point> points = ((Polygon) containerGa).getPoints();
+			int i = 0;
+			for (Point p : points) {
+				p.setX(coord[i]);
+				p.setY(coord[i + 1]);
+				i += 2;
 			}
 		}
 	}

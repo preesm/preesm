@@ -3,7 +3,6 @@
 package org.ietr.preesm.experiment.model.pimm;
 
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.EObject;
 
 /**
  * <!-- begin-user-doc --> A representation of the model object '

@@ -30,6 +30,7 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
@@ -64,7 +65,8 @@ import org.ietr.preesm.experiment.ui.pimm.features.ReconnectionFifoFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.RenameActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.RenameActorPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.SetActorRefinementFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.UpdateAbstractActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.UpdateAbstractVertexFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.UpdateActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.UpdatePortFeature;
 
 public class PiMMFeatureProvider extends DefaultFeatureProvider {
@@ -148,7 +150,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 			IDirectEditingContext context) {
 		PictogramElement pe = context.getPictogramElement();
 		Object bo = getBusinessObjectForPictogramElement(pe);
-		if (bo instanceof AbstractActor) {
+		if (bo instanceof AbstractVertex) {
 			return new DirectEditingAbstractActorNameFeature(this);
 		}
 		return super.getDirectEditingFeature(context);
@@ -254,9 +256,12 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		PictogramElement pictogramElement = context.getPictogramElement();
 		if (pictogramElement instanceof ContainerShape) {
 			Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-			if (bo instanceof AbstractActor) {
-				return new UpdateAbstractActorFeature(this);
+			if (bo instanceof Actor) {
+				return new UpdateActorFeature(this);
+			} else if (bo instanceof AbstractVertex) {
+				return new UpdateAbstractVertexFeature(this);
 			}
+			
 		}
 		if (pictogramElement instanceof BoxRelativeAnchor) {
 			Object bo = getBusinessObjectForPictogramElement(pictogramElement);

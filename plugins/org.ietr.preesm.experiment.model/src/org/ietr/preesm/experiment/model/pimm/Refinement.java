@@ -64,6 +64,6 @@ public interface Refinement extends EObject {
 	 * @model kind="operation"
 	 * @generated
 	 */
-	AbstractActor getAbstractVertex();
+	AbstractActor getAbstractActor();
 
 } // Refinement

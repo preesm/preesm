@@ -126,7 +126,7 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 */
-	public AbstractActor getAbstractVertex() {
+	public AbstractActor getAbstractActor() {
 
 		URI refinementURI = getFileURI();
 
