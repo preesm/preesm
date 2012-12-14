@@ -3,12 +3,8 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.common.notify.Notification;
-
 import org.eclipse.emf.ecore.EClass;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-import org.eclipse.emf.ecore.impl.EObjectImpl;
-
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 
@@ -25,7 +21,7 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
  *
  * @generated
  */
-public abstract class AbstractVertexImpl extends EObjectImpl implements AbstractVertex {
+public abstract class AbstractVertexImpl extends ParameterizableImpl implements AbstractVertex {
 	/**
 	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
 	 * <!-- begin-user-doc -->

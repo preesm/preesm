@@ -60,6 +60,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 			case PiMMPackage.ACTOR: return createActor();
 			case PiMMPackage.INPUT_PORT: return createInputPort();
 			case PiMMPackage.OUTPUT_PORT: return createOutputPort();
+			case PiMMPackage.CONFIG_INPUT_PORT: return createConfigInputPort();
 			case PiMMPackage.FIFO: return createFifo();
 			case PiMMPackage.INTERFACE_ACTOR: return createInterfaceActor();
 			case PiMMPackage.SOURCE_INTERFACE: return createSourceInterface();
@@ -109,6 +110,16 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	public OutputPort createOutputPort() {
 		OutputPortImpl outputPort = new OutputPortImpl();
 		return outputPort;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public ConfigInputPort createConfigInputPort() {
+		ConfigInputPortImpl configInputPort = new ConfigInputPortImpl();
+		return configInputPort;
 	}
 
 	/**

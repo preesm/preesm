@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="pimm" nsURI="http://org.ietr.preesm/experiment/model/pimm" nsPrefix="org.ietr.preesm.experiment.pimm">
-  <eClassifiers xsi:type="ecore:EClass" name="AbstractVertex" abstract="true">
+  <eClassifiers xsi:type="ecore:EClass" name="Parameterizable" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="configInputPorts" upperBound="-1"
+        eType="#//ConfigInputPort" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AbstractVertex" abstract="true" eSuperTypes="#//Parameterizable">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="AbstractActor" abstract="true" eSuperTypes="#//AbstractVertex">
@@ -41,6 +45,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingFifo" eType="#//Fifo"
         eOpposite="#//Fifo/sourcePort"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConfigInputPort" eSuperTypes="#//Port"/>
   <eClassifiers xsi:type="ecore:EClass" name="Fifo">
     <eStructuralFeatures xsi:type="ecore:EReference" name="sourcePort" lowerBound="1"
         eType="#//OutputPort" eOpposite="#//OutputPort/outgoingFifo"/>

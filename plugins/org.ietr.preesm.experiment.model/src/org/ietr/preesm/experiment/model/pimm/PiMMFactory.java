@@ -58,6 +58,15 @@ public interface PiMMFactory extends EFactory {
 	OutputPort createOutputPort();
 
 	/**
+	 * Returns a new object of class '<em>Config Input Port</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Config Input Port</em>'.
+	 * @generated
+	 */
+	ConfigInputPort createConfigInputPort();
+
+	/**
 	 * Returns a new object of class '<em>Fifo</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

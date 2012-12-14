@@ -11,12 +11,14 @@ import org.eclipse.emf.ecore.impl.EPackageImpl;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -31,6 +33,13 @@ import org.ietr.preesm.experiment.model.pimm.SourceInterface;
  * @generated
  */
 public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass parameterizableEClass = null;
+
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -79,6 +88,13 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * @generated
 	 */
 	private EClass outputPortEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass configInputPortEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -181,6 +197,24 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		// Update the registry and return the package
 		EPackage.Registry.INSTANCE.put(PiMMPackage.eNS_URI, thePiMMPackage);
 		return thePiMMPackage;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getParameterizable() {
+		return parameterizableEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getParameterizable_ConfigInputPorts() {
+		return (EReference)parameterizableEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -350,6 +384,15 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getConfigInputPort() {
+		return configInputPortEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getFifo() {
 		return fifoEClass;
 	}
@@ -490,6 +533,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		isCreated = true;
 
 		// Create classes and their features
+		parameterizableEClass = createEClass(PARAMETERIZABLE);
+		createEReference(parameterizableEClass, PARAMETERIZABLE__CONFIG_INPUT_PORTS);
+
 		abstractVertexEClass = createEClass(ABSTRACT_VERTEX);
 		createEAttribute(abstractVertexEClass, ABSTRACT_VERTEX__NAME);
 
@@ -514,6 +560,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
 		outputPortEClass = createEClass(OUTPUT_PORT);
 		createEReference(outputPortEClass, OUTPUT_PORT__OUTGOING_FIFO);
+
+		configInputPortEClass = createEClass(CONFIG_INPUT_PORT);
 
 		fifoEClass = createEClass(FIFO);
 		createEReference(fifoEClass, FIFO__SOURCE_PORT);
@@ -563,17 +611,22 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		// Set bounds for type parameters
 
 		// Add supertypes to classes
+		abstractVertexEClass.getESuperTypes().add(this.getParameterizable());
 		abstractActorEClass.getESuperTypes().add(this.getAbstractVertex());
 		graphEClass.getESuperTypes().add(this.getAbstractActor());
 		actorEClass.getESuperTypes().add(this.getAbstractActor());
 		inputPortEClass.getESuperTypes().add(this.getPort());
 		outputPortEClass.getESuperTypes().add(this.getPort());
+		configInputPortEClass.getESuperTypes().add(this.getPort());
 		interfaceActorEClass.getESuperTypes().add(this.getAbstractActor());
 		sourceInterfaceEClass.getESuperTypes().add(this.getInterfaceActor());
 		sinkInterfaceEClass.getESuperTypes().add(this.getInterfaceActor());
 		parameterEClass.getESuperTypes().add(this.getAbstractVertex());
 
 		// Initialize classes and features; add operations and parameters
+		initEClass(parameterizableEClass, Parameterizable.class, "Parameterizable", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getParameterizable_ConfigInputPorts(), this.getConfigInputPort(), null, "configInputPorts", null, 0, -1, Parameterizable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
 		initEClass(abstractVertexEClass, AbstractVertex.class, "AbstractVertex", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getAbstractVertex_Name(), ecorePackage.getEString(), "name", null, 1, 1, AbstractVertex.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
@@ -604,6 +657,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
 		initEClass(outputPortEClass, OutputPort.class, "OutputPort", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getOutputPort_OutgoingFifo(), this.getFifo(), this.getFifo_SourcePort(), "outgoingFifo", null, 0, 1, OutputPort.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(configInputPortEClass, ConfigInputPort.class, "ConfigInputPort", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(fifoEClass, Fifo.class, "Fifo", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getFifo_SourcePort(), this.getOutputPort(), this.getOutputPort_OutgoingFifo(), "sourcePort", null, 1, 1, Fifo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

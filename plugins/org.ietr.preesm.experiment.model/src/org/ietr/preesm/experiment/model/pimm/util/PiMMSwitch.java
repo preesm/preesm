@@ -66,9 +66,16 @@ public class PiMMSwitch<T> extends Switch<T> {
 	@Override
 	protected T doSwitch(int classifierID, EObject theEObject) {
 		switch (classifierID) {
+			case PiMMPackage.PARAMETERIZABLE: {
+				Parameterizable parameterizable = (Parameterizable)theEObject;
+				T result = caseParameterizable(parameterizable);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			case PiMMPackage.ABSTRACT_VERTEX: {
 				AbstractVertex abstractVertex = (AbstractVertex)theEObject;
 				T result = caseAbstractVertex(abstractVertex);
+				if (result == null) result = caseParameterizable(abstractVertex);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -76,6 +83,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 				AbstractActor abstractActor = (AbstractActor)theEObject;
 				T result = caseAbstractActor(abstractActor);
 				if (result == null) result = caseAbstractVertex(abstractActor);
+				if (result == null) result = caseParameterizable(abstractActor);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -84,6 +92,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 				T result = caseGraph(graph);
 				if (result == null) result = caseAbstractActor(graph);
 				if (result == null) result = caseAbstractVertex(graph);
+				if (result == null) result = caseParameterizable(graph);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -92,6 +101,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 				T result = caseActor(actor);
 				if (result == null) result = caseAbstractActor(actor);
 				if (result == null) result = caseAbstractVertex(actor);
+				if (result == null) result = caseParameterizable(actor);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -115,6 +125,13 @@ public class PiMMSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case PiMMPackage.CONFIG_INPUT_PORT: {
+				ConfigInputPort configInputPort = (ConfigInputPort)theEObject;
+				T result = caseConfigInputPort(configInputPort);
+				if (result == null) result = casePort(configInputPort);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			case PiMMPackage.FIFO: {
 				Fifo fifo = (Fifo)theEObject;
 				T result = caseFifo(fifo);
@@ -126,6 +143,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 				T result = caseInterfaceActor(interfaceActor);
 				if (result == null) result = caseAbstractActor(interfaceActor);
 				if (result == null) result = caseAbstractVertex(interfaceActor);
+				if (result == null) result = caseParameterizable(interfaceActor);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -135,6 +153,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 				if (result == null) result = caseInterfaceActor(sourceInterface);
 				if (result == null) result = caseAbstractActor(sourceInterface);
 				if (result == null) result = caseAbstractVertex(sourceInterface);
+				if (result == null) result = caseParameterizable(sourceInterface);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -144,6 +163,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 				if (result == null) result = caseInterfaceActor(sinkInterface);
 				if (result == null) result = caseAbstractActor(sinkInterface);
 				if (result == null) result = caseAbstractVertex(sinkInterface);
+				if (result == null) result = caseParameterizable(sinkInterface);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -157,11 +177,27 @@ public class PiMMSwitch<T> extends Switch<T> {
 				Parameter parameter = (Parameter)theEObject;
 				T result = caseParameter(parameter);
 				if (result == null) result = caseAbstractVertex(parameter);
+				if (result == null) result = caseParameterizable(parameter);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
 			default: return defaultCase(theEObject);
 		}
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Parameterizable</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Parameterizable</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseParameterizable(Parameterizable object) {
+		return null;
 	}
 
 	/**
@@ -266,6 +302,21 @@ public class PiMMSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseOutputPort(OutputPort object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Config Input Port</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Config Input Port</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseConfigInputPort(ConfigInputPort object) {
 		return null;
 	}
 
