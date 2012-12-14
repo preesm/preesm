@@ -12,6 +12,7 @@ import net.sf.dftools.architecture.utils.DomUtil;
 import org.eclipse.emf.common.util.EList;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
@@ -233,8 +234,15 @@ public class PiWriter {
 		writeRefinement(vertexElt, actor.getRefinement());
 		// writeDataElt(vertexElt, "kind", "actor");
 		// Write ports of the actor
-		writeDataPorts(vertexElt, actor.getInputPorts(), "input");
-		writeDataPorts(vertexElt, actor.getOutputPorts(), "output");
+		writePorts(vertexElt, actor.getConfigInputPorts());
+		writePorts(vertexElt, actor.getInputPorts());
+		writePorts(vertexElt, actor.getOutputPorts());
+
+	}
+
+	protected void writeConfigPorts(Element vertexElt,
+			EList<ConfigInputPort> configInputPorts, String string) {
+		// TODO Auto-generated method stub
 
 	}
 
@@ -273,21 +281,19 @@ public class PiWriter {
 	}
 
 	/**
-	 * Write the {@link Actor#inputPorts} in the given {@link Element}
+	 * Write the {@link Port} in the given {@link Element}
 	 * 
 	 * @param vertexElt
 	 *            the {@link Element} to write
 	 * @param actor
 	 *            the {@link Actor} to serialize
-	 * @param kind
-	 *            the kind of ports contained in the list (input,output)
 	 */
-	protected void writeDataPorts(Element vertexElt, EList<?> ports, String kind) {
+	protected void writePorts(Element vertexElt, EList<?> ports) {
 		for (Object portObj : ports) {
 			Port port = (Port) portObj;
 			Element portElt = appendChild(vertexElt, "port");
 			portElt.setAttribute("name", port.getName());
-			portElt.setAttribute("kind", kind);
+			portElt.setAttribute("kind", port.getKind());
 		}
 	}
 
@@ -400,7 +406,8 @@ public class PiWriter {
 	 * @param abstractActor
 	 *            The {@link AbstractActor} to write in the {@link Document}
 	 */
-	protected void writeAbstractActor(Element graphElt, AbstractActor abstractActor) {
+	protected void writeAbstractActor(Element graphElt,
+			AbstractActor abstractActor) {
 		// Add the node to the document
 		Element vertexElt = appendChild(graphElt, "node");
 
@@ -436,10 +443,10 @@ public class PiWriter {
 		// Write ports of the actor
 		switch (vertex.getKind()) {
 		case "src":
-			writeDataPorts(vertexElt, vertex.getOutputPorts(), "output");
+			writePorts(vertexElt, vertex.getOutputPorts());
 			break;
 		case "snk":
-			writeDataPorts(vertexElt, vertex.getInputPorts(), "input");
+			writePorts(vertexElt, vertex.getInputPorts());
 			break;
 		default:
 		}

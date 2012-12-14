@@ -8,6 +8,7 @@ import org.eclipse.emf.common.util.URI;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
@@ -398,6 +399,12 @@ public class PiParser {
 			if (!(vertex instanceof InterfaceActor)) {
 				((AbstractActor) vertex).getOutputPorts().add(oPort);
 			}
+			break;
+		case "cfg_input":
+			ConfigInputPort iCfgPort = PiMMFactory.eINSTANCE
+					.createConfigInputPort();
+			iCfgPort.setName(portName);
+			vertex.getConfigInputPorts().add(iCfgPort);
 			break;
 		default:
 			throw new RuntimeException("Parsed port " + portName

@@ -20,10 +20,11 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * 
 	 */
 	protected ConfigInputPortImpl() {
 		super();
+		kind = "cfg_input";
 	}
 
 	/**
