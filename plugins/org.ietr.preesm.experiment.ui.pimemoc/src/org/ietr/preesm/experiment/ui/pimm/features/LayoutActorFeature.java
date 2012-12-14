@@ -20,6 +20,9 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.InputPort;
+import org.ietr.preesm.experiment.model.pimm.OutputPort;
 
 /**
  * Layout Feature for Actors
@@ -282,10 +285,17 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 		// Retrieve and separate the inputs and outputs ports
 		List<BoxRelativeAnchor> inputs = new ArrayList<>();
 		List<BoxRelativeAnchor> outputs = new ArrayList<>();
+		int nbConfigInput = 0;
 		for (Anchor anchor : anchorShapes) {
-			if (((BoxRelativeAnchor) anchor).getRelativeWidth() == 0.0) {
+
+			if (getBusinessObjectForPictogramElement(anchor) instanceof InputPort) {
 				inputs.add((BoxRelativeAnchor) anchor);
-			} else {
+			}
+			if (getBusinessObjectForPictogramElement(anchor) instanceof ConfigInputPort) {
+				inputs.add(nbConfigInput, (BoxRelativeAnchor) anchor);
+				nbConfigInput++;
+			}
+			if (getBusinessObjectForPictogramElement(anchor) instanceof OutputPort) {
 				outputs.add((BoxRelativeAnchor) anchor);
 			}
 		}
