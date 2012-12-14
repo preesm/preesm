@@ -33,7 +33,9 @@ public class UpdateAbstractVertexFeature extends AbstractUpdateFeature {
 
 	@Override
 	public boolean update(IUpdateContext context) {
-		return updateName(context);
+		boolean res = updateName(context);
+		layoutPictogramElement(context.getPictogramElement());
+		return res;
 	}
 
 	/**
