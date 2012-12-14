@@ -17,7 +17,8 @@ import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.ui.pimm.util.Triangle;
+import org.ietr.preesm.experiment.ui.pimm.shapes.House;
+import org.ietr.preesm.experiment.ui.pimm.shapes.Triangle;
 
 /**
  * Add feature to add a {@link Parameter} to the Diagram
@@ -69,7 +70,7 @@ public class AddParameterFeature extends AbstractAddFeature {
 
 		Polygon triangle;
 		{
-			triangle = new Triangle(containerShape);
+			triangle = new House(containerShape);
 			triangle.setBackground(manageColor(PARAMETER_BACKGROUND));
 			triangle.setForeground(manageColor(PARAMETER_FOREGROUND));
 			triangle.setLineWidth(2);

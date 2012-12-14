@@ -86,23 +86,7 @@ public class LayoutParameterFeature extends AbstractLayoutFeature {
 			}
 		}
 
-		// COMPUTE THE NEW WIDTH
-		//
-		// The new width is equal to:
-		// L := H*l/(H-h)
-		//
-		// where
-		// L is the width of the triangle
-		// H is the height of the triangle
-		// l is the width of the text
-		// h is the height of the top of the text
-		int newWidth = height * nameSize.getWidth()
-				/ (height - nameSize.getHeight() - 2); // -2 because the text is
-														// 2pt
-														// above the bottom of
-														// the
-														// triangle
-		return newWidth;
+		return nameSize.getWidth() + 6;
 	}
 
 	@Override

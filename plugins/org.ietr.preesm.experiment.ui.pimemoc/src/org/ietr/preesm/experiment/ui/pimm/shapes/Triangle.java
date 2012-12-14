@@ -1,4 +1,4 @@
-package org.ietr.preesm.experiment.ui.pimm.util;
+package org.ietr.preesm.experiment.ui.pimm.shapes;
 
 import java.util.List;
 
