@@ -73,7 +73,8 @@ public class OpenRefinementFeature extends AbstractCustomFeature {
 
 					// If the refinement is a Pi file, open a diagram
 					// instead (if it exists)
-					if (refResource.getFileExtension().equals("pi")) {
+					String extension = refResource.getFileExtension();
+					if (extension != null && extension.equals("pi")) {
 						URI diagramFile = refinementFile.trimFileExtension()
 								.appendFileExtension("diagram");
 						IResource diagResource = ResourcesPlugin.getWorkspace()
