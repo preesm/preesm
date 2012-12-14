@@ -16,6 +16,7 @@ import org.eclipse.emf.common.util.EList;
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Graph#getVertices <em>Vertices</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Graph#getFifos <em>Fifos</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Graph#getParameters <em>Parameters</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.Graph#getDependencies <em>Dependencies</em>}</li>
  * </ul>
  * </p>
  *
@@ -75,6 +76,22 @@ public interface Graph extends AbstractActor {
 	 * @generated
 	 */
 	EList<Parameter> getParameters();
+
+	/**
+	 * Returns the value of the '<em><b>Dependencies</b></em>' containment reference list.
+	 * The list contents are of type {@link org.ietr.preesm.experiment.model.pimm.Dependency}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Dependencies</em>' containment reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Dependencies</em>' containment reference list.
+	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getGraph_Dependencies()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<Dependency> getDependencies();
 
 	/**
 	 * <!-- begin-user-doc --> This method will add the {@link InterfaceActor}

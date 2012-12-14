@@ -249,13 +249,22 @@ public interface PiMMPackage extends EPackage {
 	int GRAPH__PARAMETERS = ABSTRACT_ACTOR_FEATURE_COUNT + 2;
 
 	/**
+	 * The feature id for the '<em><b>Dependencies</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GRAPH__DEPENDENCIES = ABSTRACT_ACTOR_FEATURE_COUNT + 3;
+
+	/**
 	 * The number of structural features of the '<em>Graph</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GRAPH_FEATURE_COUNT = ABSTRACT_ACTOR_FEATURE_COUNT + 3;
+	int GRAPH_FEATURE_COUNT = ABSTRACT_ACTOR_FEATURE_COUNT + 4;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl <em>Actor</em>}' class.
@@ -834,6 +843,63 @@ public interface PiMMPackage extends EPackage {
 
 
 	/**
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DependencyImpl <em>Dependency</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.DependencyImpl
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDependency()
+	 * @generated
+	 */
+	int DEPENDENCY = 15;
+
+	/**
+	 * The feature id for the '<em><b>Setter</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DEPENDENCY__SETTER = 0;
+
+	/**
+	 * The feature id for the '<em><b>Getter</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DEPENDENCY__GETTER = 1;
+
+	/**
+	 * The number of structural features of the '<em>Dependency</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DEPENDENCY_FEATURE_COUNT = 2;
+
+	/**
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.ISetter <em>ISetter</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.ietr.preesm.experiment.model.pimm.ISetter
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getISetter()
+	 * @generated
+	 */
+	int ISETTER = 16;
+
+	/**
+	 * The number of structural features of the '<em>ISetter</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ISETTER_FEATURE_COUNT = 0;
+
+
+	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Parameterizable <em>Parameterizable</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -949,6 +1015,17 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getGraph_Parameters();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.ietr.preesm.experiment.model.pimm.Graph#getDependencies <em>Dependencies</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Dependencies</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.Graph#getDependencies()
+	 * @see #getGraph()
+	 * @generated
+	 */
+	EReference getGraph_Dependencies();
 
 	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Actor <em>Actor</em>}'.
@@ -1193,6 +1270,48 @@ public interface PiMMPackage extends EPackage {
 	EAttribute getParameter_ConfigurationInterface();
 
 	/**
+	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Dependency <em>Dependency</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Dependency</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.Dependency
+	 * @generated
+	 */
+	EClass getDependency();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.ietr.preesm.experiment.model.pimm.Dependency#getSetter <em>Setter</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Setter</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.Dependency#getSetter()
+	 * @see #getDependency()
+	 * @generated
+	 */
+	EReference getDependency_Setter();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.ietr.preesm.experiment.model.pimm.Dependency#getGetter <em>Getter</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Getter</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.Dependency#getGetter()
+	 * @see #getDependency()
+	 * @generated
+	 */
+	EReference getDependency_Getter();
+
+	/**
+	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.ISetter <em>ISetter</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>ISetter</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.ISetter
+	 * @generated
+	 */
+	EClass getISetter();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1309,6 +1428,14 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EReference GRAPH__PARAMETERS = eINSTANCE.getGraph_Parameters();
+
+		/**
+		 * The meta object literal for the '<em><b>Dependencies</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference GRAPH__DEPENDENCIES = eINSTANCE.getGraph_Dependencies();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl <em>Actor</em>}' class.
@@ -1515,6 +1642,42 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute PARAMETER__CONFIGURATION_INTERFACE = eINSTANCE.getParameter_ConfigurationInterface();
+
+		/**
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DependencyImpl <em>Dependency</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.DependencyImpl
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDependency()
+		 * @generated
+		 */
+		EClass DEPENDENCY = eINSTANCE.getDependency();
+
+		/**
+		 * The meta object literal for the '<em><b>Setter</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference DEPENDENCY__SETTER = eINSTANCE.getDependency_Setter();
+
+		/**
+		 * The meta object literal for the '<em><b>Getter</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference DEPENDENCY__GETTER = eINSTANCE.getDependency_Getter();
+
+		/**
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.ISetter <em>ISetter</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.ietr.preesm.experiment.model.pimm.ISetter
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getISetter()
+		 * @generated
+		 */
+		EClass ISETTER = eINSTANCE.getISetter();
 
 	}
 

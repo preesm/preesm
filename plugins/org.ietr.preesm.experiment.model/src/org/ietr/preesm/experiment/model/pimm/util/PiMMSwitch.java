@@ -177,7 +177,20 @@ public class PiMMSwitch<T> extends Switch<T> {
 				Parameter parameter = (Parameter)theEObject;
 				T result = caseParameter(parameter);
 				if (result == null) result = caseAbstractVertex(parameter);
+				if (result == null) result = caseISetter(parameter);
 				if (result == null) result = caseParameterizable(parameter);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case PiMMPackage.DEPENDENCY: {
+				Dependency dependency = (Dependency)theEObject;
+				T result = caseDependency(dependency);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case PiMMPackage.ISETTER: {
+				ISetter iSetter = (ISetter)theEObject;
+				T result = caseISetter(iSetter);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -407,6 +420,36 @@ public class PiMMSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseParameter(Parameter object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Dependency</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Dependency</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseDependency(Dependency object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>ISetter</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>ISetter</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseISetter(ISetter object) {
 		return null;
 	}
 

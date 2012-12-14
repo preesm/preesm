@@ -37,6 +37,11 @@ public class PortNameValidator implements IInputValidator {
 
 		// Create the list of already existing names
 		this.portsNames = new HashSet<>(vertex.getInputPorts().size());
+
+		for (Port port : vertex.getConfigInputPorts()) {
+			this.portsNames.add(port.getName());
+		}
+
 		for (Port port : vertex.getInputPorts()) {
 			this.portsNames.add(port.getName());
 		}

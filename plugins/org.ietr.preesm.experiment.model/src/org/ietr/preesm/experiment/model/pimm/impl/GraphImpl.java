@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
@@ -32,6 +33,7 @@ import org.ietr.preesm.experiment.model.pimm.Port;
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.GraphImpl#getVertices <em>Vertices</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.GraphImpl#getFifos <em>Fifos</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.GraphImpl#getParameters <em>Parameters</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.GraphImpl#getDependencies <em>Dependencies</em>}</li>
  * </ul>
  * </p>
  *
@@ -64,6 +66,16 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 	 * @ordered
 	 */
 	protected EList<Parameter> parameters;
+
+	/**
+	 * The cached value of the '{@link #getDependencies() <em>Dependencies</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getDependencies()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<Dependency> dependencies;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -114,6 +126,8 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 				return getFifos();
 			case PiMMPackage.GRAPH__PARAMETERS:
 				return getParameters();
+			case PiMMPackage.GRAPH__DEPENDENCIES:
+				return getDependencies();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -132,6 +146,8 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 				return ((InternalEList<?>)getFifos()).basicRemove(otherEnd, msgs);
 			case PiMMPackage.GRAPH__PARAMETERS:
 				return ((InternalEList<?>)getParameters()).basicRemove(otherEnd, msgs);
+			case PiMMPackage.GRAPH__DEPENDENCIES:
+				return ((InternalEList<?>)getDependencies()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -149,6 +165,8 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 				return fifos != null && !fifos.isEmpty();
 			case PiMMPackage.GRAPH__PARAMETERS:
 				return parameters != null && !parameters.isEmpty();
+			case PiMMPackage.GRAPH__DEPENDENCIES:
+				return dependencies != null && !dependencies.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
@@ -172,6 +190,10 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 			case PiMMPackage.GRAPH__PARAMETERS:
 				getParameters().clear();
 				getParameters().addAll((Collection<? extends Parameter>)newValue);
+				return;
+			case PiMMPackage.GRAPH__DEPENDENCIES:
+				getDependencies().clear();
+				getDependencies().addAll((Collection<? extends Dependency>)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -202,6 +224,9 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 			case PiMMPackage.GRAPH__PARAMETERS:
 				getParameters().clear();
 				return;
+			case PiMMPackage.GRAPH__DEPENDENCIES:
+				getDependencies().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -226,6 +251,18 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 			parameters = new EObjectContainmentEList<Parameter>(Parameter.class, this, PiMMPackage.GRAPH__PARAMETERS);
 		}
 		return parameters;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EList<Dependency> getDependencies() {
+		if (dependencies == null) {
+			dependencies = new EObjectContainmentEList<Dependency>(Dependency.class, this, PiMMPackage.GRAPH__DEPENDENCIES);
+		}
+		return dependencies;
 	}
 
 	@Override

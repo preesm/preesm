@@ -20,7 +20,7 @@ package org.ietr.preesm.experiment.model.pimm;
  * @model
  * @generated
  */
-public interface Parameter extends AbstractVertex {
+public interface Parameter extends AbstractVertex, ISetter {
 	/**
 	 * Returns the value of the '<em><b>Locally Static</b></em>' attribute.
 	 * <!-- begin-user-doc -->

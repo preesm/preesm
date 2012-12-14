@@ -12,8 +12,10 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
@@ -137,6 +139,20 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * @generated
 	 */
 	private EClass parameterEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass dependencyEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass iSetterEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -296,6 +312,15 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 */
 	public EReference getGraph_Parameters() {
 		return (EReference)graphEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getGraph_Dependencies() {
+		return (EReference)graphEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
@@ -510,6 +535,42 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getDependency() {
+		return dependencyEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getDependency_Setter() {
+		return (EReference)dependencyEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getDependency_Getter() {
+		return (EReference)dependencyEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getISetter() {
+		return iSetterEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public PiMMFactory getPiMMFactory() {
 		return (PiMMFactory)getEFactoryInstance();
 	}
@@ -547,6 +608,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		createEReference(graphEClass, GRAPH__VERTICES);
 		createEReference(graphEClass, GRAPH__FIFOS);
 		createEReference(graphEClass, GRAPH__PARAMETERS);
+		createEReference(graphEClass, GRAPH__DEPENDENCIES);
 
 		actorEClass = createEClass(ACTOR);
 		createEReference(actorEClass, ACTOR__REFINEMENT);
@@ -581,6 +643,12 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		parameterEClass = createEClass(PARAMETER);
 		createEAttribute(parameterEClass, PARAMETER__LOCALLY_STATIC);
 		createEAttribute(parameterEClass, PARAMETER__CONFIGURATION_INTERFACE);
+
+		dependencyEClass = createEClass(DEPENDENCY);
+		createEReference(dependencyEClass, DEPENDENCY__SETTER);
+		createEReference(dependencyEClass, DEPENDENCY__GETTER);
+
+		iSetterEClass = createEClass(ISETTER);
 	}
 
 	/**
@@ -622,6 +690,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		sourceInterfaceEClass.getESuperTypes().add(this.getInterfaceActor());
 		sinkInterfaceEClass.getESuperTypes().add(this.getInterfaceActor());
 		parameterEClass.getESuperTypes().add(this.getAbstractVertex());
+		parameterEClass.getESuperTypes().add(this.getISetter());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(parameterizableEClass, Parameterizable.class, "Parameterizable", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -638,6 +707,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEReference(getGraph_Vertices(), this.getAbstractActor(), null, "vertices", null, 0, -1, Graph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getGraph_Fifos(), this.getFifo(), null, "fifos", null, 0, -1, Graph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getGraph_Parameters(), this.getParameter(), null, "parameters", null, 0, -1, Graph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getGraph_Dependencies(), this.getDependency(), null, "dependencies", null, 0, -1, Graph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		EOperation op = addEOperation(graphEClass, ecorePackage.getEBoolean(), "addInterfaceActor", 0, 1, IS_UNIQUE, IS_ORDERED);
 		addEParameter(op, this.getInterfaceActor(), "interfaceVertex", 0, 1, IS_UNIQUE, IS_ORDERED);
@@ -680,6 +750,12 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEClass(parameterEClass, Parameter.class, "Parameter", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getParameter_LocallyStatic(), ecorePackage.getEBoolean(), "locallyStatic", null, 1, 1, Parameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getParameter_ConfigurationInterface(), ecorePackage.getEBoolean(), "configurationInterface", null, 1, 1, Parameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(dependencyEClass, Dependency.class, "Dependency", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getDependency_Setter(), this.getISetter(), null, "setter", null, 1, 1, Dependency.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getDependency_Getter(), this.getConfigInputPort(), null, "getter", null, 1, 1, Dependency.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(iSetterEClass, ISetter.class, "ISetter", IS_ABSTRACT, IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		// Create resource
 		createResource(eNS_URI);

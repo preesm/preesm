@@ -67,6 +67,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 			case PiMMPackage.SINK_INTERFACE: return createSinkInterface();
 			case PiMMPackage.REFINEMENT: return createRefinement();
 			case PiMMPackage.PARAMETER: return createParameter();
+			case PiMMPackage.DEPENDENCY: return createDependency();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -180,6 +181,16 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	public Parameter createParameter() {
 		ParameterImpl parameter = new ParameterImpl();
 		return parameter;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Dependency createDependency() {
+		DependencyImpl dependency = new DependencyImpl();
+		return dependency;
 	}
 
 	/**

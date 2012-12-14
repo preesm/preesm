@@ -121,6 +121,15 @@ public interface PiMMFactory extends EFactory {
 	Parameter createParameter();
 
 	/**
+	 * Returns a new object of class '<em>Dependency</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Dependency</em>'.
+	 * @generated
+	 */
+	Dependency createDependency();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
