@@ -39,6 +39,7 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.SinkInterface;
 import org.ietr.preesm.experiment.model.pimm.SourceInterface;
 import org.ietr.preesm.experiment.ui.pimm.features.AddActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddConfigInputPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddFifoFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddInputPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddOutputPortFeature;
@@ -117,6 +118,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 	public ICustomFeature[] getCustomFeatures(ICustomContext context) {
 		return new ICustomFeature[] { new RenameActorFeature(this),
 				new AddOutputPortFeature(this), new AddInputPortFeature(this),
+				new AddConfigInputPortFeature(this),
 				new RenameActorPortFeature(this),
 				new SetActorRefinementFeature(this),
 				new OpenRefinementFeature(this) };
@@ -261,7 +263,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 			} else if (bo instanceof AbstractVertex) {
 				return new UpdateAbstractVertexFeature(this);
 			}
-			
+
 		}
 		if (pictogramElement instanceof BoxRelativeAnchor) {
 			Object bo = getBusinessObjectForPictogramElement(pictogramElement);
