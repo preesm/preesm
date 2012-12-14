@@ -2,7 +2,7 @@ package org.ietr.preesm.experiment.ui.pimm.features;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
-import org.eclipse.graphiti.mm.algorithms.Rectangle;
+import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.services.Graphiti;
@@ -47,17 +47,21 @@ public class AddConfigInputPortFeature extends AbstractAddActorPortFeature {
 
 	@Override
 	public GraphicsAlgorithm addPortGA(GraphicsAlgorithm containerShape) {
+
 		// Get the GaService
 		IGaService gaService = Graphiti.getGaService();
 		// Create the port GraphicAlgorithm
-		Rectangle rectangle = gaService.createPlainRectangle(containerShape);
-		rectangle.setForeground(manageColor(CFG_INPUT_PORT_FOREGROUND));
-		rectangle.setBackground(manageColor(CFG_INPUT_PORT_BACKGROUND));
-		rectangle.setLineWidth(1);
+		int xy[] = { 0, 0, PORT_ANCHOR_GA_SIZE, (PORT_ANCHOR_GA_SIZE + 2) / 2,
+				0, PORT_ANCHOR_GA_SIZE + 2};
+		Polygon triangle = gaService.createPolygon(containerShape, xy);
+
+		triangle.setForeground(manageColor(CFG_INPUT_PORT_FOREGROUND));
+		triangle.setBackground(manageColor(CFG_INPUT_PORT_BACKGROUND));
+		triangle.setLineWidth(0);
 		int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
-		gaService.setSize(rectangle, PORT_ANCHOR_GA_SIZE, PORT_ANCHOR_GA_SIZE);
-		gaService.setLocation(rectangle, 0, 1 + (portFontHeight - PORT_ANCHOR_GA_SIZE) / 2);
-		return rectangle;
+		gaService.setLocation(triangle, 0,
+				 (portFontHeight - PORT_ANCHOR_GA_SIZE - 2) / 2);
+		return triangle;
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
@@ -64,13 +65,22 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 				return false;
 			}
 		}
-		
+
 		// False if the target is an outputPort
 		if (target != null && target instanceof OutputPort) {
 			// Create tooltip message
-			PiMMUtil.setToolTip(getFeatureProvider(), context
-					.getTargetAnchor().getGraphicsAlgorithm(),
-					getDiagramEditor(), "A FIFO cannot end at an output port");
+			PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor()
+					.getGraphicsAlgorithm(), getDiagramEditor(),
+					"A FIFO cannot end at an output port");
+			return false;
+		}
+
+		// False if the target is an outputPort
+		if (target != null && target instanceof ConfigInputPort) {
+			// Create tooltip message
+			PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor()
+					.getGraphicsAlgorithm(), getDiagramEditor(),
+					"A FIFO cannot end at an config. input port");
 			return false;
 		}
 
@@ -222,11 +232,12 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 			}
 		}
 
-		if (source != null && source instanceof InputPort) {
+		if (source != null
+				&& (source instanceof InputPort || source instanceof ConfigInputPort)) {
 			// Create tooltip message
-			PiMMUtil.setToolTip(getFeatureProvider(), context
-					.getSourceAnchor().getGraphicsAlgorithm(),
-					getDiagramEditor(), "A FIFO cannot start at an input port");
+			PiMMUtil.setToolTip(getFeatureProvider(), context.getSourceAnchor()
+					.getGraphicsAlgorithm(), getDiagramEditor(),
+					"A FIFO cannot start at an input port");
 			return false;
 		}
 

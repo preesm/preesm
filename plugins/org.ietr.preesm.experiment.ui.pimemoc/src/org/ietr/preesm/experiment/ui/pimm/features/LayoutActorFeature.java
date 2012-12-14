@@ -6,8 +6,10 @@ import java.util.List;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
+import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ILayoutContext;
+import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.impl.AbstractLayoutFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Text;
@@ -18,6 +20,7 @@ import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
+import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
@@ -261,6 +264,19 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 		// height did not change)
 		setNewHeight(newHeight, childrenShapes, anchorShapes);
 		containerGa.setHeight(newHeight);
+
+		// If Anything changed, call the move feature to layout connections
+		{
+			MoveAbstractActorFeature moveFeature = new MoveAbstractActorFeature(
+					getFeatureProvider());
+			MoveShapeContext moveCtxt = new MoveShapeContext(containerShape);
+			moveCtxt.setDeltaX(0);
+			moveCtxt.setDeltaY(0);
+			ILocation csLoc = Graphiti.getPeLayoutService()
+					.getLocationRelativeToDiagram(containerShape);
+			moveCtxt.setLocation(csLoc.getX(), csLoc.getY());
+			moveFeature.moveShape(moveCtxt);
+		}
 
 		return anythingChanged;
 	}
