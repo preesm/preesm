@@ -26,6 +26,7 @@ import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
+import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
@@ -57,6 +58,7 @@ import org.ietr.preesm.experiment.ui.pimm.features.CreateSourceInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CustomDeleteFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteAbstractActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteActorPortFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.DeleteDependencyFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteInterfaceActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteParameterFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DirectEditingAbstractActorNameFeature;
@@ -157,7 +159,11 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		if (bo instanceof Parameter) {
 			return new DeleteParameterFeature(this);
 		}
-		
+
+		if (bo instanceof Dependency) {
+			return new DeleteDependencyFeature(this);
+		}
+
 		return new CustomDeleteFeature(this);
 	}
 
@@ -210,7 +216,15 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 	@Override
 	public IReconnectionFeature getReconnectionFeature(
 			IReconnectionContext context) {
-		return new ReconnectionFifoFeature(this);
+
+		Connection connection = context.getConnection();
+		Object obj = getBusinessObjectForPictogramElement(connection);
+
+		if (obj instanceof Fifo) {
+			return new ReconnectionFifoFeature(this);
+		}
+
+		return null;
 	}
 
 	@Override
