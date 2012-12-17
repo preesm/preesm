@@ -15,6 +15,7 @@ import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
@@ -163,6 +164,8 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 			if (tgtObj instanceof Parameterizable) {
 				// The target can be: A Parameter, A Fifo, An Actor, An
 				// interface.
+
+				// If the getter is an actor
 				if (tgtObj instanceof Actor) {
 					// Create a ConfigInputPort
 					PictogramElement targetPe = context
@@ -178,11 +181,12 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 					}
 				}
 
-				// The getter is a Parameter
-				if (tgtObj instanceof Parameter) {
+				// If the getter is a Parameter or an InterfaceActor
+				if (tgtObj instanceof Parameter
+						|| tgtObj instanceof InterfaceActor) {
 					// Create a ConfigInputPort
 					getter = PiMMFactory.eINSTANCE.createConfigInputPort();
-					((Parameter) tgtObj).getConfigInputPorts().add(
+					((Parameterizable) tgtObj).getConfigInputPorts().add(
 							(ConfigInputPort) getter);
 				}
 

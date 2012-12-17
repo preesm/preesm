@@ -8,6 +8,7 @@ import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
+import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -107,10 +108,13 @@ public class AddSinkInterfaceFeature extends AbstractAddFeature {
 			text.setHeight(20);
 			text.setWidth(200);
 			link(shape, snkInterface);
-		}
-		
+		}		
 		// create link and wire it
 		link(containerShape, snkInterface);
+		
+		// Add a ChopBoxAnchor for dependencies
+		ChopboxAnchor cba = peCreateService.createChopboxAnchor(containerShape);
+		link(cba, snkInterface);
 		
 		// Call the layout feature
 		layoutPictogramElement(containerShape);

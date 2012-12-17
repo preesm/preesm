@@ -174,9 +174,10 @@ public class PiParser {
 			}
 			dependency.setGetter(iPort);
 		}
-		
-		if(target instanceof Parameter){
-			ConfigInputPort iCfgPort = PiMMFactory.eINSTANCE.createConfigInputPort();
+
+		if (target instanceof Parameter || target instanceof InterfaceActor) {
+			ConfigInputPort iCfgPort = PiMMFactory.eINSTANCE
+					.createConfigInputPort();
 			target.getConfigInputPorts().add(iCfgPort);
 			dependency.setGetter(iCfgPort);
 		}

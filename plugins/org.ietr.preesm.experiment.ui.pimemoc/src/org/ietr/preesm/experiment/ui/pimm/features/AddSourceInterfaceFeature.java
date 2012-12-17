@@ -8,6 +8,7 @@ import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
+import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -108,9 +109,12 @@ public class AddSourceInterfaceFeature extends AbstractAddFeature {
 			text.setWidth(200);
 			link(shape, srcInterface);
 		}
-
 		// create link and wire it
 		link(containerShape, srcInterface);
+
+		// Add a ChopBoxAnchor for dependencies
+		ChopboxAnchor cba = peCreateService.createChopboxAnchor(containerShape);
+		link(cba, srcInterface);
 
 		// Call the layout feature
 		layoutPictogramElement(containerShape);

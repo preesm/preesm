@@ -14,6 +14,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaCreateService;
 import org.eclipse.graphiti.services.IPeLayoutService;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
  * The Move Feature for {@link AbstractActor}
@@ -41,6 +42,12 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 		EList<Anchor> anchors = cs.getAnchors();
 
 		for (Anchor anchor : anchors) {
+			// If the anchor does not correspond to a port, skip the loop
+			// (e.g. ChopBoxAnchors are used as connection points for
+			// dependencies)
+			if (!(getBusinessObjectForPictogramElement(anchor) instanceof Port)) {
+				continue;
+			}
 			// Retrieve the connection of the anchor. Note that there should
 			// never be more than one connection per anchor
 			EList<Connection> iConnections = anchor.getIncomingConnections();
@@ -71,7 +78,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 				IPeLayoutService peLayoutService = Graphiti
 						.getPeLayoutService();
 				IGaCreateService createService = Graphiti.getGaCreateService();
-				int midHeight = anchor.getGraphicsAlgorithm().getHeight()/2 -1;
+				int midHeight = anchor.getGraphicsAlgorithm().getHeight() / 2 - 1;
 
 				if (isSrcMove || index < 1) {
 					ILocation srcLoc = peLayoutService
