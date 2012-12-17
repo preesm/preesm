@@ -11,8 +11,10 @@ import net.sf.dftools.architecture.utils.DomUtil;
 
 import org.eclipse.emf.common.util.EList;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
@@ -220,183 +222,6 @@ public class PiWriter {
 	}
 
 	/**
-	 * Write information of the {@link Actor} in the given {@link Element}.
-	 * 
-	 * @param vertexElt
-	 *            The {@link Element} to write
-	 * @param actor
-	 *            The {@link Actor} to serialize
-	 */
-	protected void writeActor(Element vertexElt, Actor actor) {
-		// TODO change this method when severa kinds will exist
-		// Set the kind of the Actor
-		vertexElt.setAttribute("kind", "actor");
-		writeRefinement(vertexElt, actor.getRefinement());
-		// writeDataElt(vertexElt, "kind", "actor");
-		// Write ports of the actor
-		writePorts(vertexElt, actor.getConfigInputPorts());
-		writePorts(vertexElt, actor.getInputPorts());
-		writePorts(vertexElt, actor.getOutputPorts());
-
-	}
-
-	protected void writeConfigPorts(Element vertexElt,
-			EList<ConfigInputPort> configInputPorts, String string) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/**
-	 * Write information of the {@link Refinement} in the given {@link Element}.
-	 * 
-	 * @param vertexElt
-	 *            The {@link Element} to write
-	 * @param refinement
-	 *            The {@link Refinement} to serialize
-	 */
-	protected void writeRefinement(Element vertexElt, Refinement refinement) {
-		if (refinement.getFileName() != null) {
-			writeDataElt(vertexElt, "graph_desc", refinement.getFileName());
-		}
-	}
-
-	/**
-	 * Add a data child {@link Element} to the parent {@link Element} whit the
-	 * given key name and the given content. If the {@link Key} does not exist
-	 * yet, it will be created automatically.
-	 * 
-	 * @param parentElt
-	 *            The element to which the data is added
-	 * @param keyName
-	 *            The name of the key for the added data
-	 * @param textContent
-	 *            The text content of the data element
-	 */
-	protected void writeDataElt(Element parentElt, String keyName,
-			String textContent) {
-		addKey(null, keyName, parentElt.getTagName(), "string", null);
-		Element nameElt = appendChild(parentElt, "data");
-		nameElt.setAttribute("key", keyName);
-		nameElt.setTextContent(textContent);
-	}
-
-	/**
-	 * Write the {@link Port} in the given {@link Element}
-	 * 
-	 * @param vertexElt
-	 *            the {@link Element} to write
-	 * @param actor
-	 *            the {@link Actor} to serialize
-	 */
-	protected void writePorts(Element vertexElt, EList<?> ports) {
-		for (Object portObj : ports) {
-			Port port = (Port) portObj;
-			Element portElt = appendChild(vertexElt, "port");
-			portElt.setAttribute("name", port.getName());
-			portElt.setAttribute("kind", port.getKind());
-		}
-	}
-
-	/**
-	 * Create the Graph Element of the document and fill it
-	 * 
-	 * @param rootElt
-	 *            The parent element of the Graph element (i.e. the root of the
-	 *            document)
-	 * @param graph
-	 *            The serialized Graph
-	 */
-	protected void writeGraph(Element rootElt, Graph graph) {
-		// Create and add the graphElt to the Document
-		Element graphElt = addGraphElt(rootElt);
-		writeDataElt(graphElt, "name", graph.getName());
-
-		// TODO addProperties() of the graph
-		// TODO writeParameters()
-		for (Parameter param : graph.getParameters()) {
-			writeParameter(graphElt, param);
-		}
-
-		// Write the vertices of the graph
-		for (AbstractActor actor : graph.getVertices()) {
-			writeAbstractActor(graphElt, actor);
-		}
-
-		// TODO writeDependencies()
-		for (Fifo fifo : graph.getFifos()) {
-			writeFifos(graphElt, fifo);
-		}
-	}
-
-	/**
-	 * Create and add a node {@link Element} to the given parent {@link Element}
-	 * for the given parameter and write its informations.
-	 * 
-	 * @param graphElt
-	 *            The parent element of the node element (i.e. the graph of the
-	 *            document)
-	 * @param param
-	 *            The {@link Parameter} to write in the {@link Document}
-	 */
-	protected void writeParameter(Element graphElt, Parameter param) {
-		// Add the node to the document
-		Element paramElt = appendChild(graphElt, "node");
-
-		// Set the unique ID of the node (equal to the param name)
-		paramElt.setAttribute("id", param.getName());
-
-		// Set the kind of the node
-		paramElt.setAttribute("kind", "param");
-	}
-
-	/**
-	 * Create and add a node {@link Element} to the given parent {@link Element}
-	 * for the given fifo and write its informations.
-	 * 
-	 * @param graphElt
-	 *            The parent element of the node element (i.e. the graph of the
-	 *            document)
-	 * @param fifo
-	 *            The {@link Fifo} to write in the {@link Document}
-	 */
-	protected void writeFifos(Element graphElt, Fifo fifo) {
-		// Add the node to the document
-		Element fifoElt = appendChild(graphElt, "edge");
-
-		// Set the source and target attributes
-		AbstractActor source = (AbstractActor) fifo.getSourcePort()
-				.eContainer();
-		AbstractActor target = (AbstractActor) fifo.getTargetPort()
-				.eContainer();
-		fifoElt.setAttribute("kind", "fifo");
-		fifoElt.setAttribute("source", source.getName());
-		fifoElt.setAttribute("target", target.getName());
-		fifoElt.setAttribute("sourceport", fifo.getSourcePort().getName());
-		fifoElt.setAttribute("targetport", fifo.getTargetPort().getName());
-
-		// TODO write Delays and other Fifo properties
-	}
-
-	/**
-	 * Fill the {@link Element} with a description of the input {@link Graph}
-	 * 
-	 * @param parentElt
-	 *            The Element to fill (could be removed later if it is always
-	 *            rootElt)
-	 * @param graph
-	 *            The serialized Graph
-	 */
-	protected void writePi(Element parentElt, Graph graph) {
-		// Add IBSDF Keys - Might not be needed.
-		addKey("parameters", "parameters", "graph", null, null);
-		addKey("variables", "variables", "graph", null, null);
-		addKey("arguments", "arguments", "node", null, null);
-
-		// Write the Graph
-		writeGraph(parentElt, graph);
-	}
-
-	/**
 	 * Create and add a node {@link Element} to the given parent {@link Element}
 	 * for the given {@link AbstractActor} and write its informations.
 	 * 
@@ -428,6 +253,153 @@ public class PiWriter {
 	}
 
 	/**
+	 * Write information of the {@link Actor} in the given {@link Element}.
+	 * 
+	 * @param vertexElt
+	 *            The {@link Element} to write
+	 * @param actor
+	 *            The {@link Actor} to serialize
+	 */
+	protected void writeActor(Element vertexElt, Actor actor) {
+		// TODO change this method when severa kinds will exist
+		// Set the kind of the Actor
+		vertexElt.setAttribute("kind", "actor");
+		writeRefinement(vertexElt, actor.getRefinement());
+		// writeDataElt(vertexElt, "kind", "actor");
+		// Write ports of the actor
+		writePorts(vertexElt, actor.getConfigInputPorts());
+		writePorts(vertexElt, actor.getInputPorts());
+		writePorts(vertexElt, actor.getOutputPorts());
+
+	}
+
+	protected void writeConfigPorts(Element vertexElt,
+			EList<ConfigInputPort> configInputPorts, String string) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/**
+	 * Add a data child {@link Element} to the parent {@link Element} whit the
+	 * given key name and the given content. If the {@link Key} does not exist
+	 * yet, it will be created automatically.
+	 * 
+	 * @param parentElt
+	 *            The element to which the data is added
+	 * @param keyName
+	 *            The name of the key for the added data
+	 * @param textContent
+	 *            The text content of the data element
+	 */
+	protected void writeDataElt(Element parentElt, String keyName,
+			String textContent) {
+		addKey(null, keyName, parentElt.getTagName(), "string", null);
+		Element nameElt = appendChild(parentElt, "data");
+		nameElt.setAttribute("key", keyName);
+		nameElt.setTextContent(textContent);
+	}
+
+	/**
+	 * Create and add a node {@link Element} to the given parent {@link Element}
+	 * for the given {@link Dependency} and write its informations.
+	 * 
+	 * @param graphElt
+	 *            The parent element of the node element (i.e. the graph of the
+	 *            document)
+	 * @param dependency
+	 *            The {@link Dependency} to write in the {@link Document}
+	 */
+	protected void writeDependency(Element graphElt, Dependency dependency) {
+		// Add the node to the document
+		Element dependencyElt = appendChild(graphElt, "edge");
+
+		// Set the source and target attributes
+		AbstractVertex source = (AbstractVertex) dependency.getSetter();
+		if(source instanceof Actor){
+			source = (AbstractVertex) source.eContainer();
+		}
+		AbstractVertex target = (AbstractVertex) dependency.getGetter()
+				.eContainer();
+		dependencyElt.setAttribute("kind", "dependency");
+		dependencyElt.setAttribute("source", source.getName());
+		dependencyElt.setAttribute("target", target.getName());
+
+		// ISetter setter = dependency.getSetter();
+		//
+		// if(setter instanceof ConfigOutputPort)
+		// {
+		// dependencyElt.setAttribute("sourceport", setter.getName());
+		// }
+
+		if (target instanceof Actor) {
+			dependencyElt.setAttribute("targetport", dependency.getGetter()
+					.getName());
+		}
+	}
+
+	/**
+	 * Create and add a node {@link Element} to the given parent {@link Element}
+	 * for the given fifo and write its informations.
+	 * 
+	 * @param graphElt
+	 *            The parent element of the node element (i.e. the graph of the
+	 *            document)
+	 * @param fifo
+	 *            The {@link Fifo} to write in the {@link Document}
+	 */
+	protected void writeFifos(Element graphElt, Fifo fifo) {
+		// Add the node to the document
+		Element fifoElt = appendChild(graphElt, "edge");
+
+		// Set the source and target attributes
+		AbstractActor source = (AbstractActor) fifo.getSourcePort()
+				.eContainer();
+		AbstractActor target = (AbstractActor) fifo.getTargetPort()
+				.eContainer();
+		fifoElt.setAttribute("kind", "fifo");
+		fifoElt.setAttribute("source", source.getName());
+		fifoElt.setAttribute("target", target.getName());
+		fifoElt.setAttribute("sourceport", fifo.getSourcePort().getName());
+		fifoElt.setAttribute("targetport", fifo.getTargetPort().getName());
+
+		// TODO write Delays and other Fifo properties
+	}
+
+	/**
+	 * Create the Graph Element of the document and fill it
+	 * 
+	 * @param rootElt
+	 *            The parent element of the Graph element (i.e. the root of the
+	 *            document)
+	 * @param graph
+	 *            The serialized Graph
+	 */
+	protected void writeGraph(Element rootElt, Graph graph) {
+		// Create and add the graphElt to the Document
+		Element graphElt = addGraphElt(rootElt);
+		writeDataElt(graphElt, "name", graph.getName());
+
+		// TODO addProperties() of the graph
+		// TODO writeParameters()
+		for (Parameter param : graph.getParameters()) {
+			writeParameter(graphElt, param);
+		}
+
+		// Write the vertices of the graph
+		for (AbstractActor actor : graph.getVertices()) {
+			writeAbstractActor(graphElt, actor);
+		}
+
+		for (Fifo fifo : graph.getFifos()) {
+			writeFifos(graphElt, fifo);
+		}
+
+		for (Dependency dependency : graph.getDependencies()) {
+			writeDependency(graphElt, dependency);
+		}
+	}
+
+	/**
 	 * Write information of the {@link InterfaceActor} in the given
 	 * {@link Element}.
 	 * 
@@ -451,5 +423,76 @@ public class PiWriter {
 		default:
 		}
 
+	}
+
+	/**
+	 * Create and add a node {@link Element} to the given parent {@link Element}
+	 * for the given parameter and write its informations.
+	 * 
+	 * @param graphElt
+	 *            The parent element of the node element (i.e. the graph of the
+	 *            document)
+	 * @param param
+	 *            The {@link Parameter} to write in the {@link Document}
+	 */
+	protected void writeParameter(Element graphElt, Parameter param) {
+		// Add the node to the document
+		Element paramElt = appendChild(graphElt, "node");
+
+		// Set the unique ID of the node (equal to the param name)
+		paramElt.setAttribute("id", param.getName());
+
+		// Set the kind of the node
+		paramElt.setAttribute("kind", "param");
+	}
+
+	/**
+	 * Fill the {@link Element} with a description of the input {@link Graph}
+	 * 
+	 * @param parentElt
+	 *            The Element to fill (could be removed later if it is always
+	 *            rootElt)
+	 * @param graph
+	 *            The serialized Graph
+	 */
+	protected void writePi(Element parentElt, Graph graph) {
+		// Add IBSDF Keys - Might not be needed.
+		addKey("parameters", "parameters", "graph", null, null);
+		addKey("variables", "variables", "graph", null, null);
+		addKey("arguments", "arguments", "node", null, null);
+
+		// Write the Graph
+		writeGraph(parentElt, graph);
+	}
+
+	/**
+	 * Write the {@link Port} in the given {@link Element}
+	 * 
+	 * @param vertexElt
+	 *            the {@link Element} to write
+	 * @param actor
+	 *            the {@link Actor} to serialize
+	 */
+	protected void writePorts(Element vertexElt, EList<?> ports) {
+		for (Object portObj : ports) {
+			Port port = (Port) portObj;
+			Element portElt = appendChild(vertexElt, "port");
+			portElt.setAttribute("name", port.getName());
+			portElt.setAttribute("kind", port.getKind());
+		}
+	}
+
+	/**
+	 * Write information of the {@link Refinement} in the given {@link Element}.
+	 * 
+	 * @param vertexElt
+	 *            The {@link Element} to write
+	 * @param refinement
+	 *            The {@link Refinement} to serialize
+	 */
+	protected void writeRefinement(Element vertexElt, Refinement refinement) {
+		if (refinement.getFileName() != null) {
+			writeDataElt(vertexElt, "graph_desc", refinement.getFileName());
+		}
 	}
 }

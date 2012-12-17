@@ -59,17 +59,4 @@ public interface AbstractActor extends AbstractVertex {
 	 */
 	EList<OutputPort> getOutputPorts();
 
-	/**
-	 * Get the {@link Port} with a given name from the {@link AbstractActor}
-	 * ports lists.
-	 * 
-	 * @param portName
-	 *            the name of the desired {@link Port}
-	 * @param direction
-	 *            the direction of the desired {@link Port}:
-	 *            <code>"input" or "output"</code>
-	 * @return the requested port, or <code>null</code> if no such port exists.s
-	 */
-	public Port getPortNamed(String portName, String direction);
-
-} // AbstractVertex
+} // AbstractActor

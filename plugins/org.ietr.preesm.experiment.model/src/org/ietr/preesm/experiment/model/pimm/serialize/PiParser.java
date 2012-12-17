@@ -9,8 +9,10 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
@@ -118,6 +120,73 @@ public class PiParser {
 	}
 
 	/**
+	 * Parse a node {@link Element} with kind "dependency".
+	 * 
+	 * @param edgeElt
+	 *            the {@link Element} to parse
+	 * @param graph
+	 *            the deserialized {@link Graph}
+	 */
+	protected void parseDependencies(Element edgeElt, Graph graph) {
+		// Instantiate the new Dependency
+		Dependency dependency = PiMMFactory.eINSTANCE.createDependency();
+
+		// Find the source and target of the fifo
+		String setterName = edgeElt.getAttribute("source");
+		String getterName = edgeElt.getAttribute("target");
+		AbstractVertex source = graph.getVertexNamed(setterName);
+		AbstractVertex target = graph.getVertexNamed(getterName);
+		if (source == null) {
+			throw new RuntimeException("Dependency source vertex " + setterName
+					+ " does not exist.");
+		}
+		if (target == null) {
+			throw new RuntimeException("Dependency target vertex " + setterName
+					+ " does not exist.");
+		}
+
+		// Get the sourcePort and targetPort
+		if (source instanceof Actor) {
+			//
+			// String sourcePortName = edgeElt.getAttribute("sourceport");
+			// sourcePortName = (sourcePortName == "") ? null : sourcePortName;
+			// ConfigOutputPort oPort = (ConfigOutputPort)
+			// ((Actor)source).getPortNamed(sourcePortName,
+			// "output");
+			// if (oPort == null) {
+			// throw new RuntimeException("Edge source port " + sourcePortName
+			// + " does not exist for vertex " + setterName);
+			// }
+		}
+		if (source instanceof Parameter) {
+			dependency.setSetter((ISetter) source);
+		}
+
+		if (target instanceof Actor) {
+			String targetPortName = edgeElt.getAttribute("targetport");
+			targetPortName = (targetPortName == "") ? null : targetPortName;
+			ConfigInputPort iPort = (ConfigInputPort) target
+					.getPortNamed(targetPortName);
+			if (iPort == null) {
+				throw new RuntimeException("Dependency target port "
+						+ targetPortName + " does not exist for vertex "
+						+ getterName);
+			}
+			dependency.setGetter(iPort);
+		}
+		// TODO target instance of Parameter, Fifo, Interface
+
+		if (dependency.getGetter() == null || dependency.getSetter() == null) {
+			throw new RuntimeException(
+					"There was a problem parsing the following dependency: "
+							+ setterName + "=>" + getterName);
+		}
+
+		// Add the new dependency to the graph
+		graph.getDependencies().add(dependency);
+	}
+
+	/**
 	 * Parse an edge {@link Element} of the Pi description. An edge
 	 * {@link Element} can be a parameter dependency or a FIFO of the parsed
 	 * graph.
@@ -135,10 +204,9 @@ public class PiParser {
 		case "fifo":
 			parseFifo(edgeElt, graph);
 			break;
-		// TODO Parse all types of edges
-		// case "paramDependency":
-		// parseDependencies()
-		// break;
+		case "dependency":
+			parseDependencies(edgeElt, graph);
+			break;
 		default:
 			throw new RuntimeException("Parsed edge has an unknown kind: "
 					+ edgeKind);
@@ -154,14 +222,14 @@ public class PiParser {
 	 *            the deserialized {@link Graph}
 	 */
 	protected void parseFifo(Element edgeElt, Graph graph) {
-		// Instantiate the new actor
+		// Instantiate the new Fifo
 		Fifo fifo = PiMMFactory.eINSTANCE.createFifo();
 
 		// Find the source and target of the fifo
 		String sourceName = edgeElt.getAttribute("source");
 		String targetName = edgeElt.getAttribute("target");
-		AbstractActor source = graph.getVertexNamed(sourceName);
-		AbstractActor target = graph.getVertexNamed(targetName);
+		AbstractActor source = (AbstractActor) graph.getVertexNamed(sourceName);
+		AbstractActor target = (AbstractActor) graph.getVertexNamed(targetName);
 		if (source == null) {
 			throw new RuntimeException("Edge source vertex " + sourceName
 					+ " does not exist.");
@@ -176,10 +244,8 @@ public class PiParser {
 		sourcePortName = (sourcePortName == "") ? null : sourcePortName;
 		String targetPortName = edgeElt.getAttribute("targetport");
 		targetPortName = (targetPortName == "") ? null : targetPortName;
-		OutputPort oPort = (OutputPort) source.getPortNamed(sourcePortName,
-				"output");
-		InputPort iPort = (InputPort) target.getPortNamed(targetPortName,
-				"input");
+		OutputPort oPort = (OutputPort) source.getPortNamed(sourcePortName);
+		InputPort iPort = (InputPort) target.getPortNamed(targetPortName);
 
 		if (iPort == null) {
 			throw new RuntimeException("Edge target port " + targetPortName
@@ -253,23 +319,6 @@ public class PiParser {
 
 			}
 		}
-	}
-
-	/**
-	 * Parse the root element of the Pi description
-	 * 
-	 * @param parentElt
-	 *            The Element to fill (could be removed later if it is always
-	 *            rootElt)
-	 * @param graph
-	 *            The deserialized {@link Graph}
-	 */
-	protected void parsePi(Element rootElt, Graph graph) {
-		// TODO parseKeys() (Not sure if it is really necessary to do that)
-
-		// Parse the graph element
-		parseGraph(rootElt, graph);
-
 	}
 
 	/**
@@ -353,6 +402,23 @@ public class PiParser {
 		graph.getParameters().add(param);
 
 		return param;
+	}
+
+	/**
+	 * Parse the root element of the Pi description
+	 * 
+	 * @param parentElt
+	 *            The Element to fill (could be removed later if it is always
+	 *            rootElt)
+	 * @param graph
+	 *            The deserialized {@link Graph}
+	 */
+	protected void parsePi(Element rootElt, Graph graph) {
+		// TODO parseKeys() (Not sure if it is really necessary to do that)
+
+		// Parse the graph element
+		parseGraph(rootElt, graph);
+
 	}
 
 	/**
