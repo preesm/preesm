@@ -32,6 +32,7 @@ import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
@@ -40,6 +41,7 @@ import org.ietr.preesm.experiment.model.pimm.SinkInterface;
 import org.ietr.preesm.experiment.model.pimm.SourceInterface;
 import org.ietr.preesm.experiment.ui.pimm.features.AddActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddConfigInputPortFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddDependencyFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddFifoFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddInputPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddOutputPortFeature;
@@ -47,6 +49,7 @@ import org.ietr.preesm.experiment.ui.pimm.features.AddParameterFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddSinkInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddSourceInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.CreateDependencyFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateFifoFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateParameterFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateSinkInterfaceFeature;
@@ -98,12 +101,17 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		if (context.getNewObject() instanceof Fifo) {
 			return new AddFifoFeature(this);
 		}
+
+		if (context.getNewObject() instanceof Dependency) {
+			return new AddDependencyFeature(this);
+		}
 		return super.getAddFeature(context);
 	}
 
 	@Override
 	public ICreateConnectionFeature[] getCreateConnectionFeatures() {
-		return new ICreateConnectionFeature[] { new CreateFifoFeature(this) };
+		return new ICreateConnectionFeature[] { new CreateFifoFeature(this),
+				new CreateDependencyFeature(this) };
 	}
 
 	@Override

@@ -19,7 +19,7 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.ui.pimm.util.PiMMUtil;
 
 /**
- * Create feature to create a new Fifo in the Diagram
+ * Create feature to create a new {@link Fifo} in the Diagram
  * 
  * @author kdesnos
  * 

@@ -50,6 +50,7 @@ public interface Dependency extends EObject {
 
 	/**
 	 * Returns the value of the '<em><b>Getter</b></em>' reference.
+	 * It is bidirectional and its opposite is '{@link org.ietr.preesm.experiment.model.pimm.ConfigInputPort#getIncomingDependency <em>Incoming Dependency</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Getter</em>' reference isn't clear,
@@ -59,7 +60,8 @@ public interface Dependency extends EObject {
 	 * @return the value of the '<em>Getter</em>' reference.
 	 * @see #setGetter(ConfigInputPort)
 	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDependency_Getter()
-	 * @model required="true"
+	 * @see org.ietr.preesm.experiment.model.pimm.ConfigInputPort#getIncomingDependency
+	 * @model opposite="incomingDependency" required="true"
 	 * @generated
 	 */
 	ConfigInputPort getGetter();

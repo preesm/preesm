@@ -4,6 +4,7 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 
+import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
@@ -138,11 +139,63 @@ public class DependencyImpl extends EObjectImpl implements Dependency {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setGetter(ConfigInputPort newGetter) {
+	public NotificationChain basicSetGetter(ConfigInputPort newGetter, NotificationChain msgs) {
 		ConfigInputPort oldGetter = getter;
 		getter = newGetter;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DEPENDENCY__GETTER, oldGetter, getter));
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.DEPENDENCY__GETTER, oldGetter, newGetter);
+			if (msgs == null) msgs = notification; else msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setGetter(ConfigInputPort newGetter) {
+		if (newGetter != getter) {
+			NotificationChain msgs = null;
+			if (getter != null)
+				msgs = ((InternalEObject)getter).eInverseRemove(this, PiMMPackage.CONFIG_INPUT_PORT__INCOMING_DEPENDENCY, ConfigInputPort.class, msgs);
+			if (newGetter != null)
+				msgs = ((InternalEObject)newGetter).eInverseAdd(this, PiMMPackage.CONFIG_INPUT_PORT__INCOMING_DEPENDENCY, ConfigInputPort.class, msgs);
+			msgs = basicSetGetter(newGetter, msgs);
+			if (msgs != null) msgs.dispatch();
+		}
+		else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DEPENDENCY__GETTER, newGetter, newGetter));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+		switch (featureID) {
+			case PiMMPackage.DEPENDENCY__GETTER:
+				if (getter != null)
+					msgs = ((InternalEObject)getter).eInverseRemove(this, PiMMPackage.CONFIG_INPUT_PORT__INCOMING_DEPENDENCY, ConfigInputPort.class, msgs);
+				return basicSetGetter((ConfigInputPort)otherEnd, msgs);
+		}
+		return super.eInverseAdd(otherEnd, featureID, msgs);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+		switch (featureID) {
+			case PiMMPackage.DEPENDENCY__GETTER:
+				return basicSetGetter(null, msgs);
+		}
+		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
 
 	/**

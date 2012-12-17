@@ -490,13 +490,22 @@ public interface PiMMPackage extends EPackage {
 	int CONFIG_INPUT_PORT__KIND = PORT__KIND;
 
 	/**
+	 * The feature id for the '<em><b>Incoming Dependency</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIG_INPUT_PORT__INCOMING_DEPENDENCY = PORT_FEATURE_COUNT + 0;
+
+	/**
 	 * The number of structural features of the '<em>Config Input Port</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CONFIG_INPUT_PORT_FEATURE_COUNT = PORT_FEATURE_COUNT + 0;
+	int CONFIG_INPUT_PORT_FEATURE_COUNT = PORT_FEATURE_COUNT + 1;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl <em>Fifo</em>}' class.
@@ -1133,6 +1142,17 @@ public interface PiMMPackage extends EPackage {
 	EClass getConfigInputPort();
 
 	/**
+	 * Returns the meta object for the reference '{@link org.ietr.preesm.experiment.model.pimm.ConfigInputPort#getIncomingDependency <em>Incoming Dependency</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Incoming Dependency</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.ConfigInputPort#getIncomingDependency()
+	 * @see #getConfigInputPort()
+	 * @generated
+	 */
+	EReference getConfigInputPort_IncomingDependency();
+
+	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Fifo <em>Fifo</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1526,6 +1546,14 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EClass CONFIG_INPUT_PORT = eINSTANCE.getConfigInputPort();
+
+		/**
+		 * The meta object literal for the '<em><b>Incoming Dependency</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference CONFIG_INPUT_PORT__INCOMING_DEPENDENCY = eINSTANCE.getConfigInputPort_IncomingDependency();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl <em>Fifo</em>}' class.

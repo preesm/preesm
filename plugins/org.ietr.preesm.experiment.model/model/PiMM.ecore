@@ -47,7 +47,10 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingFifo" eType="#//Fifo"
         eOpposite="#//Fifo/sourcePort"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ConfigInputPort" eSuperTypes="#//Port"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ConfigInputPort" eSuperTypes="#//Port">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="incomingDependency" eType="#//Dependency"
+        eOpposite="#//Dependency/getter"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Fifo">
     <eStructuralFeatures xsi:type="ecore:EReference" name="sourcePort" lowerBound="1"
         eType="#//OutputPort" eOpposite="#//OutputPort/outgoingFifo"/>
@@ -76,7 +79,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="setter" lowerBound="1"
         eType="#//ISetter"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="getter" lowerBound="1"
-        eType="#//ConfigInputPort"/>
+        eType="#//ConfigInputPort" eOpposite="#//ConfigInputPort/incomingDependency"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ISetter" abstract="true" interface="true"/>
 </ecore:EPackage>

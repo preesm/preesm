@@ -6,6 +6,7 @@ import org.eclipse.graphiti.features.impl.AbstractAddFeature;
 import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
+import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -107,6 +108,10 @@ public class AddParameterFeature extends AbstractAddFeature {
 			// create link and wire it
 			link(shape, addedParameter);
 		}
+		
+		// Add a ChopBoxAnchor for the parameter
+		ChopboxAnchor cba = peCreateService.createChopboxAnchor(containerShape);
+		link(cba, addedParameter);
 
 		layoutPictogramElement(containerShape);
 		return containerShape;
