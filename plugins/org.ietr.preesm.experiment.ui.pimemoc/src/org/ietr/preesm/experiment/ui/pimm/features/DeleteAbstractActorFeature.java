@@ -36,7 +36,7 @@ public class DeleteAbstractActorFeature extends DefaultDeleteFeature {
 	public void preDelete(IDeleteContext context) {
 		super.preDelete(context);
 
-		// Delete all the Fifo linked to this actor
+		// Delete all the Fifo and dependencies linked to this actor
 		ContainerShape cs = (ContainerShape) context.getPictogramElement();
 
 		// First create all the deleteFeatures and their context and store them

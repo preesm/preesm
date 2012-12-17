@@ -58,6 +58,7 @@ import org.ietr.preesm.experiment.ui.pimm.features.CustomDeleteFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteAbstractActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteActorPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteInterfaceActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.DeleteParameterFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DirectEditingAbstractActorNameFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.LayoutActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.LayoutInterfaceActorFeature;
@@ -152,6 +153,11 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		} else if (bo instanceof AbstractActor) {
 			return new DeleteAbstractActorFeature(this);
 		}
+
+		if (bo instanceof Parameter) {
+			return new DeleteParameterFeature(this);
+		}
+		
 		return new CustomDeleteFeature(this);
 	}
 

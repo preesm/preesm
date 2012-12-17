@@ -9,62 +9,48 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.MultiDeleteInfo;
-import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
-import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
+import org.eclipse.graphiti.mm.pictograms.Anchor;
+import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.ui.pimm.diagram.PiMMFeatureProviderWithRemove;
 
 /**
- * Delete feature for the ports
+ * Delete feature for {@link Parameter}s.
  * 
  * @author kdesnos
  * 
  */
-public class DeleteActorPortFeature extends DefaultDeleteFeature {
+public class DeleteParameterFeature extends DefaultDeleteFeature {
 
 	/**
-	 * Default constructor
+	 * Default constructor for the {@link DeleteParameterFeature}
 	 * 
 	 * @param fp
+	 *            the feature provider
 	 */
-	public DeleteActorPortFeature(IFeatureProvider fp) {
+	public DeleteParameterFeature(IFeatureProvider fp) {
 		super(new PiMMFeatureProviderWithRemove(fp.getDiagramTypeProvider()));
 	}
 
-	@Override
-	public void delete(IDeleteContext context) {
-		// Retrieve the graphic algorithm of the enclosing actor
-		BoxRelativeAnchor bra = (BoxRelativeAnchor) context
-				.getPictogramElement();
-		GraphicsAlgorithm actorGA = bra.getReferencedGraphicsAlgorithm();
-
-		// Begin by deleting the Fifos or dependencies linked to this port
-		deleteConnectedConnection(bra);
-
-		// Delete the port
-		super.delete(context);
-		// Force the layout computation
-		layoutPictogramElement(actorGA.getPictogramElement());
-	}
-
 	/**
-	 * Method to delete the {@link Fifo} or {@link Dependency} connected to the
-	 * deleted {@link Port}.
+	 * Method to delete the {@link Dependency} connected to the deleted
+	 * {@link Parameter}.
 	 * 
-	 * @param bra
-	 *            the {@link BoxRelativeAnchor} of the deleted {@link Port}
+	 * @param cba
+	 *            the {@link ChopboxAnchor} of the deleted {@link Port}
 	 */
-	protected void deleteConnectedConnection(BoxRelativeAnchor bra) {
+	protected void deleteConnectedConnection(ChopboxAnchor cba) {
 		// First, the list of connections is scanned in order to fill a map with
 		// the deleteFeatures and their context.
 		Map<IDeleteFeature, IDeleteContext> delFeatures;
 		delFeatures = new HashMap<IDeleteFeature, IDeleteContext>();
-		EList<Connection> connections = bra.getIncomingConnections();
-		connections.addAll(bra.getOutgoingConnections());
+		EList<Connection> connections = cba.getIncomingConnections();
+		connections.addAll(cba.getOutgoingConnections());
 		for (Connection connect : connections) {
 			DeleteContext delCtxt = new DeleteContext(connect);
 			delCtxt.setMultiDeleteInfo(null);
@@ -84,4 +70,18 @@ public class DeleteActorPortFeature extends DefaultDeleteFeature {
 		}
 	}
 
+	@Override
+	public void preDelete(IDeleteContext context) {
+		super.preDelete(context);
+
+		// Delete all the dependencies linked to this parameter
+		ContainerShape cs = (ContainerShape) context.getPictogramElement();
+
+		// Scan the anchors (altough there should be only one)
+		for (Anchor anchor : cs.getAnchors()) {
+			if (anchor instanceof ChopboxAnchor) {
+				deleteConnectedConnection((ChopboxAnchor) anchor);
+			}
+		}
+	}
 }

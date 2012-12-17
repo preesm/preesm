@@ -3,11 +3,13 @@ package org.ietr.preesm.experiment.ui.pimm.features;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateConnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
+import org.eclipse.graphiti.features.context.impl.CustomContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateConnectionFeature;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Graph;
@@ -150,23 +152,45 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 			PictogramElement tgtPE = context.getTargetPictogramElement();
 			Object tgtObj = getBusinessObjectForPictogramElement(tgtPE);
 			if (tgtObj instanceof Parameterizable) {
+				// The target can be: A Parameter, A Fifo, An Actor, An
+				// interface.
+				if (tgtObj instanceof Actor) {
+					// Create a ConfigInputPort
+					PictogramElement targetPe = context
+							.getTargetPictogramElement();
+					AbstractAddActorPortFeature addPortFeature = canCreateConfigPort(
+							targetPe, "config_input");
+					if (addPortFeature != null) {
+						CustomContext targetContext = new CustomContext(
+								new PictogramElement[] { targetPe });
+						addPortFeature.execute(targetContext);
+						getterAnchor = addPortFeature.getCreatedAnchor();
+						getter = addPortFeature.getCreatedPort();
+					}
+				}
+
 				// TODO implement the creation of configInputPort
 			}
-			return null;
 		}
 
-		// Create new business object
-		Dependency dependendy = createDependency(setter,
-				(ConfigInputPort) getter);
-		// add connection for business object
-		AddConnectionContext addContext = new AddConnectionContext(
-				setterAnchor, getterAnchor);
-		addContext.setNewObject(dependendy);
-		newConnection = (Connection) getFeatureProvider().addIfPossible(
-				addContext);
-		hasDoneChanges = true;
+		// Re-check if getter and setter are non-null (in case a port creation
+		// failed or was aborted)
+		if (getter != null && setter != null) {
+			// Create new business object
+			Dependency dependendy = createDependency(setter,
+					(ConfigInputPort) getter);
+			// add connection for business object
+			AddConnectionContext addContext = new AddConnectionContext(
+					setterAnchor, getterAnchor);
+			addContext.setNewObject(dependendy);
+			newConnection = (Connection) getFeatureProvider().addIfPossible(
+					addContext);
+			hasDoneChanges = true;
 
-		return newConnection;
+			return newConnection;
+		}
+
+		return null;
 	}
 
 	/**
@@ -240,4 +264,41 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 		return dependency;
 	}
 
+	/**
+	 * Method to check whether it is possible to create a Configuration
+	 * {@link Port} for the given source/target {@link PictogramElement}
+	 * 
+	 * @param pe
+	 *            the {@link PictogramElement} tested
+	 * @param direction
+	 *            the direction of the port we want to create ("config_input" or
+	 *            "config_output")
+	 * @return an {@link AbstractAddActorPortFeature} if the given
+	 *         {@link PictogramElement} can create a {@link Port} with the given
+	 *         direction. Return <code>null</code> else.
+	 */
+	protected AbstractAddActorPortFeature canCreateConfigPort(
+			PictogramElement pe, String direction) {
+		boolean canCreatePort = false;
+		PictogramElement peSource = pe;
+
+		// Create the FeatureProvider
+		CustomContext sourceContext = new CustomContext(
+				new PictogramElement[] { peSource });
+		AbstractAddActorPortFeature addPortFeature = null;
+		if (direction.equals("config_input")) {
+			addPortFeature = new AddConfigInputPortFeature(getFeatureProvider());
+		}
+		// if (direction.equals("config_output")) {
+		// addPortFeature = new AddOutputPortFeature(getFeatureProvider());
+		// }
+		if (addPortFeature != null) {
+			canCreatePort = addPortFeature.canExecute(sourceContext);
+		}
+		if (canCreatePort) {
+			return addPortFeature;
+		} else {
+			return null;
+		}
+	}
 }
