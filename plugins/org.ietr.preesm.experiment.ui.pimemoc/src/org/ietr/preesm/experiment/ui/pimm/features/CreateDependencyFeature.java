@@ -16,6 +16,7 @@ import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -68,6 +69,14 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 						"A config port cannot be connected to several Dependencies");
 				return false;
 			}
+		}
+
+		// False if the target is the setter
+		if (context.getTargetAnchor() == context.getSourceAnchor()) {
+			PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor()
+					.getGraphicsAlgorithm(), getDiagramEditor(),
+					"A self dependency is strictly forbidden (as well as cyclic dependencies)");
+			return false;
 		}
 
 		// True if the target is "Parameterizable"
@@ -167,6 +176,14 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 						getterAnchor = addPortFeature.getCreatedAnchor();
 						getter = addPortFeature.getCreatedPort();
 					}
+				}
+
+				// The getter is a Parameter
+				if (tgtObj instanceof Parameter) {
+					// Create a ConfigInputPort
+					getter = PiMMFactory.eINSTANCE.createConfigInputPort();
+					((Parameter) tgtObj).getConfigInputPorts().add(
+							(ConfigInputPort) getter);
 				}
 
 				// TODO implement the creation of configInputPort

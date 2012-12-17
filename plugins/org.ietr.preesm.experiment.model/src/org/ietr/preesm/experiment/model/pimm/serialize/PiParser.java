@@ -174,7 +174,13 @@ public class PiParser {
 			}
 			dependency.setGetter(iPort);
 		}
-		// TODO target instance of Parameter, Fifo, Interface
+		
+		if(target instanceof Parameter){
+			ConfigInputPort iCfgPort = PiMMFactory.eINSTANCE.createConfigInputPort();
+			target.getConfigInputPorts().add(iCfgPort);
+			dependency.setGetter(iCfgPort);
+		}
+		// TODO target instance of Fifo, Interface
 
 		if (dependency.getGetter() == null || dependency.getSetter() == null) {
 			throw new RuntimeException(
