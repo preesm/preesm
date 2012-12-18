@@ -80,9 +80,20 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 			return false;
 		}
 
-		// True if the target is "Parameterizable"
+		// False if target is a config input/output interface
 		PictogramElement targetPE = context.getTargetPictogramElement();
 		Object targetObj = getBusinessObjectForPictogramElement(targetPE);
+		if (targetObj instanceof Parameter
+				&& ((Parameter) targetObj).isConfigurationInterface()) {
+			PiMMUtil.setToolTip(getFeatureProvider(), context
+					.getTargetPictogramElement().getGraphicsAlgorithm(),
+					getDiagramEditor(),
+					"Configuration Input Interfaces cannot be the getter of a dependency");
+			return false;
+		}
+
+		// True if the target is "Parameterizable" (except
+		// ConfigInput/OutputInterfaces)
 		if (targetObj instanceof Parameterizable) {
 			return true;
 		}

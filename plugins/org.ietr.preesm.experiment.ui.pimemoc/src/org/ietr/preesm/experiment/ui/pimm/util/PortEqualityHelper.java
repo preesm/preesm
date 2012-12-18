@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.impl.Reason;
@@ -76,22 +77,29 @@ public class PortEqualityHelper {
 	 * @param vertex1
 	 *            First {@link AbstractActor} whose {@link Port}s are compared.
 	 * @param vertex2
-	 *            Second {@link AbstractActor} whose {@link Port}s are
-	 *            compared.
+	 *            Second {@link AbstractActor} whose {@link Port}s are compared.
 	 * @return the {@link Map} of equivalent {@link Port}s
 	 */
 	public static Map<SimpleEntry<Port, Port>, IReason> buildEquivalentPortsMap(
 			AbstractActor vertex1, AbstractActor vertex2) {
 		Map<SimpleEntry<Port, Port>, IReason> result = new HashMap<SimpleEntry<Port, Port>, IReason>();
 
+		comparePortLists(vertex1.getConfigInputPorts(), vertex2.getConfigInputPorts(), result);
+		comparePortLists(vertex1.getInputPorts(), vertex2.getInputPorts(), result);
+		comparePortLists(vertex1.getOutputPorts(), vertex2.getOutputPorts(), result);
+
+		return result;
+	}
+
+	protected static <T extends Port> void comparePortLists(EList<T> ports1,
+			EList<T> ports2, Map<SimpleEntry<Port, Port>, IReason> result) {
 		// Maintain a list of input port of vertex2 whose equivalent has not
 		// been
 		// found yet
-		List<Port> noEquivalentFound = new ArrayList<Port>(
-				vertex2.getInputPorts());
+		List<Port> noEquivalentFound = new ArrayList<Port>(ports2);
 
-		// Scan input ports of vertex1 looking for an equivalent
-		for (Port p1 : vertex1.getInputPorts()) {
+		// Scan ports of vertex1 looking for an equivalent
+		for (Port p1 : ports1) {
 			Port equivalent = null;
 			for (Port p2 : noEquivalentFound) {
 				if (comparePorts(p1, p2).toBoolean()) {
@@ -104,37 +112,11 @@ public class PortEqualityHelper {
 					comparePorts(p1, equivalent));
 		}
 
-		// Add inputPorts of vertex2 that have no equivalents
+		// Add of vertex2 that have no equivalents
 		for (Port p2 : noEquivalentFound) {
 			result.put(new SimpleEntry<>((Port) null, p2),
 					comparePorts((Port) null, p2));
 		}
-
-		// Maintain a list of output port of vertex2 whose equivalent has not
-		// been found yet
-		noEquivalentFound = new ArrayList<Port>(vertex2.getOutputPorts());
-
-		// Scan output ports of vertex1 looking for an equivalent
-		for (Port p1 : vertex1.getOutputPorts()) {
-			Port equivalent = null;
-			for (Port p2 : noEquivalentFound) {
-				if (comparePorts(p1, p2).toBoolean()) {
-					equivalent = p2;
-					break;
-				}
-			}
-			noEquivalentFound.remove(equivalent);
-			result.put(new SimpleEntry<>(p1, equivalent),
-					comparePorts(p1, equivalent));
-		}
-
-		// Add outputPorts of vertex2 that have no equivalents
-		for (Port p2 : noEquivalentFound) {
-			result.put(new SimpleEntry<>((Port) null, p2),
-					comparePorts((Port) null, p2));
-		}
-
-		return result;
 	}
 
 	/**

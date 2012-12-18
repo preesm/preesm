@@ -120,6 +120,7 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 			Parameter param = (Parameter) interfaceVertex;
 			ConfigInputPort port = PiMMFactory.eINSTANCE
 					.createConfigInputPort();
+			port.setName(param.getName());
 			this.getConfigInputPorts().add((ConfigInputPort) port);
 
 			// Set the parameter Property

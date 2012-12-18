@@ -91,7 +91,7 @@ public class AddConfigInputInterfaceFeature extends AbstractAddFeature {
 				Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
 				graph.addInterface(addedParam);
 			}
-			// link(boxAnchor, port);
+			link(boxAnchor, addedParam);
 		}
 
 		// Name of the ConfigInIf - SHAPE WITH TEXT
