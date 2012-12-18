@@ -23,7 +23,8 @@ public class AddActorFeature extends AbstractAddFeature {
 	public static final IColorConstant ACTOR_TEXT_FOREGROUND = IColorConstant.BLACK;
 
 	public static final IColorConstant ACTOR_FOREGROUND = new ColorConstant(
-			98, 131, 167);
+			100, 100, 100); // Grey
+			//98, 131, 167); // Blue
 
 	public static final IColorConstant ACTOR_BACKGROUND = new ColorConstant(
 			237, 237, 237);

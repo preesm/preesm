@@ -9,8 +9,8 @@ import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.MultiDeleteInfo;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
+import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.ui.pimm.diagram.PiMMFeatureProviderWithRemove;
 
@@ -20,7 +20,7 @@ import org.ietr.preesm.experiment.ui.pimm.diagram.PiMMFeatureProviderWithRemove;
  * @author kdesnos
  * 
  */
-public class DeleteAbstractActorFeature extends DefaultDeleteFeature {
+public class DeleteAbstractActorFeature extends DeleteAbstractVertexFeature {
 
 	/**
 	 * Default constructor of {@link DeleteAbstractActorFeature}
@@ -45,6 +45,13 @@ public class DeleteAbstractActorFeature extends DefaultDeleteFeature {
 		Map<IDeleteFeature, IDeleteContext> delFeatures;
 		delFeatures = new HashMap<IDeleteFeature, IDeleteContext>();
 		for (Anchor anchor : cs.getAnchors()) {
+			// Skip the current iteration if the anchor is not a
+			// BoxRelativeAnchor
+			// The anchor can be a ChopBox anchor (for dependencies)
+			if (!(anchor instanceof BoxRelativeAnchor)) {
+				continue;
+			}
+
 			DeleteActorPortFeature delPortFeature = new DeleteActorPortFeature(
 					getFeatureProvider());
 			DeleteContext delCtxt = new DeleteContext(anchor);

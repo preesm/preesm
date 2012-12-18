@@ -60,7 +60,7 @@ import org.ietr.preesm.experiment.ui.pimm.features.DeleteAbstractActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteActorPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteDependencyFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteInterfaceActorFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.DeleteParameterFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.DeleteAbstractVertexFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DirectEditingAbstractActorNameFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.LayoutActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.LayoutInterfaceActorFeature;
@@ -157,7 +157,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		}
 
 		if (bo instanceof Parameter) {
-			return new DeleteParameterFeature(this);
+			return new DeleteAbstractVertexFeature(this);
 		}
 
 		if (bo instanceof Dependency) {

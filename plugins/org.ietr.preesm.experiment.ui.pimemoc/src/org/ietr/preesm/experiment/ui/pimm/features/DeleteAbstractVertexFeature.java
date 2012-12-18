@@ -14,6 +14,7 @@ import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
+import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -25,21 +26,21 @@ import org.ietr.preesm.experiment.ui.pimm.diagram.PiMMFeatureProviderWithRemove;
  * @author kdesnos
  * 
  */
-public class DeleteParameterFeature extends DefaultDeleteFeature {
+public class DeleteAbstractVertexFeature extends DefaultDeleteFeature {
 
 	/**
-	 * Default constructor for the {@link DeleteParameterFeature}
+	 * Default constructor for the {@link DeleteAbstractVertexFeature}
 	 * 
 	 * @param fp
 	 *            the feature provider
 	 */
-	public DeleteParameterFeature(IFeatureProvider fp) {
+	public DeleteAbstractVertexFeature(IFeatureProvider fp) {
 		super(new PiMMFeatureProviderWithRemove(fp.getDiagramTypeProvider()));
 	}
 
 	/**
 	 * Method to delete the {@link Dependency} connected to the deleted
-	 * {@link Parameter}.
+	 * {@link AbstractVertex}.
 	 * 
 	 * @param cba
 	 *            the {@link ChopboxAnchor} of the deleted {@link Port}
@@ -77,7 +78,7 @@ public class DeleteParameterFeature extends DefaultDeleteFeature {
 		// Delete all the dependencies linked to this parameter
 		ContainerShape cs = (ContainerShape) context.getPictogramElement();
 
-		// Scan the anchors (altough there should be only one)
+		// Scan the anchors (There should be only one ChopBoxAnchor)
 		for (Anchor anchor : cs.getAnchors()) {
 			if (anchor instanceof ChopboxAnchor) {
 				deleteConnectedConnection((ChopboxAnchor) anchor);
