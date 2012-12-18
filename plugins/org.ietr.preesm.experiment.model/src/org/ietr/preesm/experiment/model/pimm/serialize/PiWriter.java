@@ -315,7 +315,7 @@ public class PiWriter {
 
 		// Set the source and target attributes
 		AbstractVertex source = (AbstractVertex) dependency.getSetter();
-		if(source instanceof Actor){
+		if (source instanceof Actor) {
 			source = (AbstractVertex) source.eContainer();
 		}
 		AbstractVertex target = (AbstractVertex) dependency.getGetter()
@@ -443,7 +443,11 @@ public class PiWriter {
 		paramElt.setAttribute("id", param.getName());
 
 		// Set the kind of the node
-		paramElt.setAttribute("kind", "param");
+		if (!param.isConfigurationInterface()) {
+			paramElt.setAttribute("kind", "param");
+		} else {
+			paramElt.setAttribute("kind", "cfg_in_iface");
+		}
 	}
 
 	/**

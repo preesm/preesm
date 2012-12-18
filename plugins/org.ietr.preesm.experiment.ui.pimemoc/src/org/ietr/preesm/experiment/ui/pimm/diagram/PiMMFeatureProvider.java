@@ -41,6 +41,7 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.SinkInterface;
 import org.ietr.preesm.experiment.model.pimm.SourceInterface;
 import org.ietr.preesm.experiment.ui.pimm.features.AddActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddConfigInputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddConfigInputPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddDependencyFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddFifoFeature;
@@ -50,6 +51,7 @@ import org.ietr.preesm.experiment.ui.pimm.features.AddParameterFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddSinkInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddSourceInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.CreateConfigInputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateDependencyFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateFifoFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateParameterFeature;
@@ -63,7 +65,7 @@ import org.ietr.preesm.experiment.ui.pimm.features.DeleteInterfaceActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteAbstractVertexFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DirectEditingAbstractActorNameFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.LayoutActorFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.LayoutInterfaceActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.LayoutInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.LayoutParameterFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.LayoutPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.MoveAbstractActorFeature;
@@ -90,7 +92,11 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		}
 
 		if (context.getNewObject() instanceof Parameter) {
-			return new AddParameterFeature(this);
+			if (((Parameter) context.getNewObject()).isConfigurationInterface()) {
+				return new AddConfigInputInterfaceFeature(this);
+			} else {
+				return new AddParameterFeature(this);
+			}
 		}
 
 		if (context.getNewObject() instanceof SourceInterface) {
@@ -121,6 +127,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 	public ICreateFeature[] getCreateFeatures() {
 		return new ICreateFeature[] { new CreateActorFeature(this),
 				new CreateParameterFeature(this),
+				new CreateConfigInputInterfaceFeature(this),
 				new CreateSourceInterfaceFeature(this),
 				new CreateSinkInterfaceFeature(this) };
 	}
@@ -189,10 +196,14 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 			return new LayoutPortFeature(this);
 		}
 		if (bo instanceof InterfaceActor) {
-			return new LayoutInterfaceActorFeature(this);
+			return new LayoutInterfaceFeature(this);
 		}
 		if (bo instanceof Parameter) {
-			return new LayoutParameterFeature(this);
+			if (((Parameter) bo).isConfigurationInterface()) {
+				return new LayoutInterfaceFeature(this);
+			} else {
+				return new LayoutParameterFeature(this);
+			}
 		}
 		return super.getLayoutFeature(context);
 	}

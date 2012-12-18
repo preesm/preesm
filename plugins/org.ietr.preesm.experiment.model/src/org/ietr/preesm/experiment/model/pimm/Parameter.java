@@ -13,6 +13,7 @@ package org.ietr.preesm.experiment.model.pimm;
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Parameter#isLocallyStatic <em>Locally Static</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Parameter#isConfigurationInterface <em>Configuration Interface</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.Parameter#getGraphPort <em>Graph Port</em>}</li>
  * </ul>
  * </p>
  *
@@ -72,5 +73,31 @@ public interface Parameter extends AbstractVertex, ISetter {
 	 * @generated
 	 */
 	void setConfigurationInterface(boolean value);
+
+	/**
+	 * Returns the value of the '<em><b>Graph Port</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Graph Port</em>' reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Graph Port</em>' reference.
+	 * @see #setGraphPort(ConfigInputPort)
+	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameter_GraphPort()
+	 * @model required="true"
+	 * @generated
+	 */
+	ConfigInputPort getGraphPort();
+
+	/**
+	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Parameter#getGraphPort <em>Graph Port</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Graph Port</em>' reference.
+	 * @see #getGraphPort()
+	 * @generated
+	 */
+	void setGraphPort(ConfigInputPort value);
 
 } // Parameter

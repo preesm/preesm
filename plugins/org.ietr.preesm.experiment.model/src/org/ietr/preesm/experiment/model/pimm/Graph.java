@@ -9,21 +9,17 @@ import org.eclipse.emf.common.util.EList;
 /**
  * <!-- begin-user-doc --> A representation of the model object '
  * <em><b>Graph</b></em>'. <!-- end-user-doc -->
- * 
+ *
  * <p>
  * The following features are supported:
  * <ul>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.Graph#getVertices <em>
- * Vertices</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.Graph#getFifos <em>Fifos
- * </em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.Graph#getParameters <em>
- * Parameters</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.Graph#getDependencies <em>
- * Dependencies</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.Graph#getVertices <em>Vertices</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.Graph#getFifos <em>Fifos</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.Graph#getParameters <em>Parameters</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.Graph#getDependencies <em>Dependencies</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getGraph()
  * @model
  * @generated
@@ -34,6 +30,12 @@ public interface Graph extends AbstractActor {
 	 * list. The list contents are of type
 	 * {@link org.ietr.preesm.experiment.model.pimm.AbstractActor}. <!--
 	 * begin-user-doc -->
+	 * <p>
+	 * <b>Do not use this method when adding an Interface to the graph</b> (i.e.
+	 * a {@link InterfaceActor} or an interface {@link Parameter}) <br>
+	 * Use {@link Graph#addInterface(AbstractVertex) and
+	 * Graph#removeInterfaceActor(InterfaceActor)} instead.
+	 * </p>
 	 * <p>
 	 * If the meaning of the '<em>Vertices</em>' containment reference list
 	 * isn't clear, there really should be more of a description here...
@@ -48,16 +50,15 @@ public interface Graph extends AbstractActor {
 	EList<AbstractActor> getVertices();
 
 	/**
-	 * Returns the value of the '<em><b>Fifos</b></em>' containment reference
-	 * list. The list contents are of type
-	 * {@link org.ietr.preesm.experiment.model.pimm.Fifo}. <!-- begin-user-doc
+	 * Returns the value of the '<em><b>Fifos</b></em>' containment reference list.
+	 * The list contents are of type {@link org.ietr.preesm.experiment.model.pimm.Fifo}.
+	 * <!-- begin-user-doc
 	 * -->
 	 * <p>
 	 * If the meaning of the '<em>Fifos</em>' containment reference list isn't
 	 * clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the value of the '<em>Fifos</em>' containment reference list.
 	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getGraph_Fifos()
 	 * @model containment="true"
@@ -106,31 +107,31 @@ public interface Graph extends AbstractActor {
 	/**
 	 * <!-- begin-user-doc --> This method will add the {@link InterfaceActor}
 	 * and create the corresponding {@link Port}. <!-- end-user-doc -->
-	 * 
 	 * @model
 	 * @generated
 	 */
-	boolean addInterfaceActor(InterfaceActor interfaceVertex);
+	boolean addInterface(AbstractVertex interfaceVertex);
 
 	/**
 	 * <!-- begin-user-doc --> This method will remove the
 	 * {@link InterfaceActor} and the corresponding {@link Port} from the
 	 * {@link Graph}. <!-- end-user-doc -->
-	 * 
 	 * @model
 	 * @generated
 	 */
-	boolean removeInterfaceActor(InterfaceActor interfaceVertex);
+	boolean removeInterface(AbstractVertex interfaceVertex);
 
 	/**
-	 * Return the list of the names of all {@link Graph#getVertices()} of the Graph.
+	 * Return the list of the names of all {@link Graph#getVertices()} of the
+	 * Graph.
 	 * 
 	 * @return the list of names
 	 */
 	public Set<String> getVerticesNames();
 
 	/**
-	 * Return the list of the names of all {@link Graph#getParameters()} of the Graph.
+	 * Return the list of the names of all {@link Graph#getParameters()} of the
+	 * Graph.
 	 * 
 	 * @return the list of names
 	 */

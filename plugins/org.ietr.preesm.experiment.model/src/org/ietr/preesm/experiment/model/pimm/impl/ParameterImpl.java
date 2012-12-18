@@ -4,7 +4,9 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 
@@ -17,6 +19,7 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#isLocallyStatic <em>Locally Static</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#isConfigurationInterface <em>Configuration Interface</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#getGraphPort <em>Graph Port</em>}</li>
  * </ul>
  * </p>
  *
@@ -62,6 +65,16 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 	 * @ordered
 	 */
 	protected boolean configurationInterface = CONFIGURATION_INTERFACE_EDEFAULT;
+
+	/**
+	 * The cached value of the '{@link #getGraphPort() <em>Graph Port</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getGraphPort()
+	 * @generated
+	 * @ordered
+	 */
+	protected ConfigInputPort graphPort;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -129,6 +142,44 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public ConfigInputPort getGraphPort() {
+		if (graphPort != null && graphPort.eIsProxy()) {
+			InternalEObject oldGraphPort = (InternalEObject)graphPort;
+			graphPort = (ConfigInputPort)eResolveProxy(oldGraphPort);
+			if (graphPort != oldGraphPort) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.PARAMETER__GRAPH_PORT, oldGraphPort, graphPort));
+			}
+		}
+		return graphPort;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public ConfigInputPort basicGetGraphPort() {
+		return graphPort;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setGraphPort(ConfigInputPort newGraphPort) {
+		ConfigInputPort oldGraphPort = graphPort;
+		graphPort = newGraphPort;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.PARAMETER__GRAPH_PORT, oldGraphPort, graphPort));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
@@ -136,6 +187,9 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 				return isLocallyStatic();
 			case PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE:
 				return isConfigurationInterface();
+			case PiMMPackage.PARAMETER__GRAPH_PORT:
+				if (resolve) return getGraphPort();
+				return basicGetGraphPort();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -153,6 +207,9 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 				return;
 			case PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE:
 				setConfigurationInterface((Boolean)newValue);
+				return;
+			case PiMMPackage.PARAMETER__GRAPH_PORT:
+				setGraphPort((ConfigInputPort)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -172,6 +229,9 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 			case PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE:
 				setConfigurationInterface(CONFIGURATION_INTERFACE_EDEFAULT);
 				return;
+			case PiMMPackage.PARAMETER__GRAPH_PORT:
+				setGraphPort((ConfigInputPort)null);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -188,6 +248,8 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 				return locallyStatic != LOCALLY_STATIC_EDEFAULT;
 			case PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE:
 				return configurationInterface != CONFIGURATION_INTERFACE_EDEFAULT;
+			case PiMMPackage.PARAMETER__GRAPH_PORT:
+				return graphPort != null;
 		}
 		return super.eIsSet(featureID);
 	}

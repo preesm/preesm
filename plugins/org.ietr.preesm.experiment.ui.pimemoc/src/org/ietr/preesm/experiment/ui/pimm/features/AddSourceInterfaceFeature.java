@@ -90,7 +90,7 @@ public class AddSourceInterfaceFeature extends AbstractAddFeature {
 			// resource of the graph
 			if (srcInterface.eResource() == null) {
 				Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
-				graph.addInterfaceActor(srcInterface);
+				graph.addInterface(srcInterface);
 			}
 			link(boxAnchor, port);
 		}

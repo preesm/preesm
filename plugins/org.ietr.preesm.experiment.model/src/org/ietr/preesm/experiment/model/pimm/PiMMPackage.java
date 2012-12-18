@@ -842,13 +842,22 @@ public interface PiMMPackage extends EPackage {
 	int PARAMETER__CONFIGURATION_INTERFACE = ABSTRACT_VERTEX_FEATURE_COUNT + 1;
 
 	/**
+	 * The feature id for the '<em><b>Graph Port</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PARAMETER__GRAPH_PORT = ABSTRACT_VERTEX_FEATURE_COUNT + 2;
+
+	/**
 	 * The number of structural features of the '<em>Parameter</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PARAMETER_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 2;
+	int PARAMETER_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 3;
 
 
 	/**
@@ -1290,6 +1299,17 @@ public interface PiMMPackage extends EPackage {
 	EAttribute getParameter_ConfigurationInterface();
 
 	/**
+	 * Returns the meta object for the reference '{@link org.ietr.preesm.experiment.model.pimm.Parameter#getGraphPort <em>Graph Port</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Graph Port</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.Parameter#getGraphPort()
+	 * @see #getParameter()
+	 * @generated
+	 */
+	EReference getParameter_GraphPort();
+
+	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Dependency <em>Dependency</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1670,6 +1690,14 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute PARAMETER__CONFIGURATION_INTERFACE = eINSTANCE.getParameter_ConfigurationInterface();
+
+		/**
+		 * The meta object literal for the '<em><b>Graph Port</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference PARAMETER__GRAPH_PORT = eINSTANCE.getParameter_GraphPort();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DependencyImpl <em>Dependency</em>}' class.

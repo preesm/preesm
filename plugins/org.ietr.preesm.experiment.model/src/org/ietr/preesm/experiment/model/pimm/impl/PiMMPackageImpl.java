@@ -544,6 +544,15 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getParameter_GraphPort() {
+		return (EReference)parameterEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getDependency() {
 		return dependencyEClass;
 	}
@@ -653,6 +662,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		parameterEClass = createEClass(PARAMETER);
 		createEAttribute(parameterEClass, PARAMETER__LOCALLY_STATIC);
 		createEAttribute(parameterEClass, PARAMETER__CONFIGURATION_INTERFACE);
+		createEReference(parameterEClass, PARAMETER__GRAPH_PORT);
 
 		dependencyEClass = createEClass(DEPENDENCY);
 		createEReference(dependencyEClass, DEPENDENCY__SETTER);
@@ -719,11 +729,11 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEReference(getGraph_Parameters(), this.getParameter(), null, "parameters", null, 0, -1, Graph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getGraph_Dependencies(), this.getDependency(), null, "dependencies", null, 0, -1, Graph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		EOperation op = addEOperation(graphEClass, ecorePackage.getEBoolean(), "addInterfaceActor", 0, 1, IS_UNIQUE, IS_ORDERED);
-		addEParameter(op, this.getInterfaceActor(), "interfaceVertex", 0, 1, IS_UNIQUE, IS_ORDERED);
+		EOperation op = addEOperation(graphEClass, ecorePackage.getEBoolean(), "addInterface", 0, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, this.getAbstractVertex(), "interfaceVertex", 0, 1, IS_UNIQUE, IS_ORDERED);
 
-		op = addEOperation(graphEClass, ecorePackage.getEBoolean(), "removeInterfaceActor", 0, 1, IS_UNIQUE, IS_ORDERED);
-		addEParameter(op, this.getInterfaceActor(), "interfaceVertex", 0, 1, IS_UNIQUE, IS_ORDERED);
+		op = addEOperation(graphEClass, ecorePackage.getEBoolean(), "removeInterface", 0, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, this.getAbstractVertex(), "interfaceVertex", 0, 1, IS_UNIQUE, IS_ORDERED);
 
 		initEClass(actorEClass, Actor.class, "Actor", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getActor_Refinement(), this.getRefinement(), null, "refinement", null, 1, 1, Actor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -749,6 +759,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEReference(getInterfaceActor_GraphPort(), this.getPort(), null, "graphPort", null, 1, 1, InterfaceActor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getInterfaceActor_Kind(), ecorePackage.getEString(), "kind", null, 1, 1, InterfaceActor.class, !IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
+		op = addEOperation(interfaceActorEClass, null, "setName", 0, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, ecorePackage.getEString(), "newName", 0, 1, IS_UNIQUE, IS_ORDERED);
+
 		initEClass(sourceInterfaceEClass, SourceInterface.class, "SourceInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(sinkInterfaceEClass, SinkInterface.class, "SinkInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -761,6 +774,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEClass(parameterEClass, Parameter.class, "Parameter", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getParameter_LocallyStatic(), ecorePackage.getEBoolean(), "locallyStatic", null, 1, 1, Parameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getParameter_ConfigurationInterface(), ecorePackage.getEBoolean(), "configurationInterface", null, 1, 1, Parameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getParameter_GraphPort(), this.getConfigInputPort(), null, "graphPort", null, 1, 1, Parameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(dependencyEClass, Dependency.class, "Dependency", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getDependency_Setter(), this.getISetter(), null, "setter", null, 1, 1, Dependency.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

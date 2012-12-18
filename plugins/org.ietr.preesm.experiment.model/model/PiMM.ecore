@@ -15,11 +15,11 @@
         eType="#//OutputPort" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Graph" eSuperTypes="#//AbstractActor">
-    <eOperations name="addInterfaceActor" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
-      <eParameters name="interfaceVertex" eType="#//InterfaceActor"/>
+    <eOperations name="addInterface" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eParameters name="interfaceVertex" eType="#//AbstractVertex"/>
     </eOperations>
-    <eOperations name="removeInterfaceActor" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
-      <eParameters name="interfaceVertex" eType="#//InterfaceActor"/>
+    <eOperations name="removeInterface" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eParameters name="interfaceVertex" eType="#//AbstractVertex"/>
     </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="vertices" upperBound="-1"
         eType="#//AbstractActor" containment="true"/>
@@ -58,6 +58,9 @@
         eType="#//InputPort" eOpposite="#//InputPort/incomingFifo"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="InterfaceActor" eSuperTypes="#//AbstractActor">
+    <eOperations name="setName">
+      <eParameters name="newName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="graphPort" lowerBound="1"
         eType="#//Port"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
@@ -74,6 +77,8 @@
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="configurationInterface"
         lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="graphPort" lowerBound="1"
+        eType="#//ConfigInputPort"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Dependency">
     <eStructuralFeatures xsi:type="ecore:EReference" name="setter" lowerBound="1"

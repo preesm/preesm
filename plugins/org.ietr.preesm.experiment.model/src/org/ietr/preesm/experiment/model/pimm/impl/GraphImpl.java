@@ -14,13 +14,14 @@ import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -31,26 +32,19 @@ import org.ietr.preesm.experiment.model.pimm.Port;
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.GraphImpl#getVertices
- * <em>Vertices</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.GraphImpl#getFifos <em>
- * Fifos</em>}</li>
- * <li>
- * {@link org.ietr.preesm.experiment.model.pimm.impl.GraphImpl#getParameters
- * <em>Parameters</em>}</li>
- * <li>
- * {@link org.ietr.preesm.experiment.model.pimm.impl.GraphImpl#getDependencies
- * <em>Dependencies</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.GraphImpl#getVertices <em>Vertices</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.GraphImpl#getFifos <em>Fifos</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.GraphImpl#getParameters <em>Parameters</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.GraphImpl#getDependencies <em>Dependencies</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @generated
  */
 public class GraphImpl extends AbstractActorImpl implements Graph {
 	/**
-	 * The cached value of the '{@link #getVertices() <em>Vertices</em>}'
-	 * containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getVertices() <em>Vertices</em>}' containment reference list.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getVertices()
 	 * @generated
 	 * @ordered
@@ -58,9 +52,8 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 	protected EList<AbstractActor> vertices;
 
 	/**
-	 * The cached value of the '{@link #getFifos() <em>Fifos</em>}' containment
-	 * reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getFifos() <em>Fifos</em>}' containment reference list.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getFifos()
 	 * @generated
 	 * @ordered
@@ -68,9 +61,8 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 	protected EList<Fifo> fifos;
 
 	/**
-	 * The cached value of the '{@link #getParameters() <em>Parameters</em>}'
-	 * containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getParameters() <em>Parameters</em>}' containment reference list.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getParameters()
 	 * @generated
 	 * @ordered
@@ -90,7 +82,6 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected GraphImpl() {
@@ -98,131 +89,139 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc --> <!-- end-user-doc --> TODO Move it to an Observec
 	 */
-	public boolean addInterfaceActor(InterfaceActor interfaceVertex) {
-		Port port;
-		switch (interfaceVertex.getKind()) {
-		case "src":
-			port = PiMMFactory.eINSTANCE.createInputPort();
-			this.getInputPorts().add((InputPort) port);
-			break;
-		case "snk":
-			port = PiMMFactory.eINSTANCE.createOutputPort();
-			this.getOutputPorts().add((OutputPort) port);
-			break;
-		default:
-			return false;
+	public boolean addInterface(AbstractVertex interfaceVertex) {
+
+		if (interfaceVertex instanceof InterfaceActor) {
+			InterfaceActor iActor = (InterfaceActor) interfaceVertex;
+			Port port;
+			switch (iActor.getKind()) {
+			case "src":
+				port = PiMMFactory.eINSTANCE.createInputPort();
+				this.getInputPorts().add((InputPort) port);
+				break;
+			case "snk":
+				port = PiMMFactory.eINSTANCE.createOutputPort();
+				this.getOutputPorts().add((OutputPort) port);
+				break;
+			default:
+				return false;
+			}
+
+			// Set the interface properties
+			port.setName(iActor.getName());
+			iActor.setGraphPort(port);
+
+			// Add the actor to the parsed graph
+			this.getVertices().add(iActor);
+			return true;
+		} else if (interfaceVertex instanceof Parameter) {
+			Parameter param = (Parameter) interfaceVertex;
+			ConfigInputPort port = PiMMFactory.eINSTANCE
+					.createConfigInputPort();
+			this.getConfigInputPorts().add((ConfigInputPort) port);
+
+			// Set the parameter Property
+			param.setConfigurationInterface(true);
+			param.setGraphPort(port);
+
+			this.getParameters().add(param);
+
+			return true;
 		}
 
-		// Set the sourceInterface properties
-		port.setName(interfaceVertex.getName());
-		interfaceVertex.setGraphPort(port);
-
-		// Add the actor to the parsed graph
-		this.getVertices().add(interfaceVertex);
-		return true;
+		return false;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case PiMMPackage.GRAPH__VERTICES:
-			return getVertices();
-		case PiMMPackage.GRAPH__FIFOS:
-			return getFifos();
-		case PiMMPackage.GRAPH__PARAMETERS:
-			return getParameters();
-		case PiMMPackage.GRAPH__DEPENDENCIES:
-			return getDependencies();
+			case PiMMPackage.GRAPH__VERTICES:
+				return getVertices();
+			case PiMMPackage.GRAPH__FIFOS:
+				return getFifos();
+			case PiMMPackage.GRAPH__PARAMETERS:
+				return getParameters();
+			case PiMMPackage.GRAPH__DEPENDENCIES:
+				return getDependencies();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd,
 			int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case PiMMPackage.GRAPH__VERTICES:
-			return ((InternalEList<?>) getVertices()).basicRemove(otherEnd,
-					msgs);
-		case PiMMPackage.GRAPH__FIFOS:
-			return ((InternalEList<?>) getFifos()).basicRemove(otherEnd, msgs);
-		case PiMMPackage.GRAPH__PARAMETERS:
-			return ((InternalEList<?>) getParameters()).basicRemove(otherEnd,
-					msgs);
-		case PiMMPackage.GRAPH__DEPENDENCIES:
-			return ((InternalEList<?>) getDependencies()).basicRemove(otherEnd,
-					msgs);
+			case PiMMPackage.GRAPH__VERTICES:
+				return ((InternalEList<?>)getVertices()).basicRemove(otherEnd, msgs);
+			case PiMMPackage.GRAPH__FIFOS:
+				return ((InternalEList<?>)getFifos()).basicRemove(otherEnd, msgs);
+			case PiMMPackage.GRAPH__PARAMETERS:
+				return ((InternalEList<?>)getParameters()).basicRemove(otherEnd, msgs);
+			case PiMMPackage.GRAPH__DEPENDENCIES:
+				return ((InternalEList<?>)getDependencies()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case PiMMPackage.GRAPH__VERTICES:
-			return vertices != null && !vertices.isEmpty();
-		case PiMMPackage.GRAPH__FIFOS:
-			return fifos != null && !fifos.isEmpty();
-		case PiMMPackage.GRAPH__PARAMETERS:
-			return parameters != null && !parameters.isEmpty();
-		case PiMMPackage.GRAPH__DEPENDENCIES:
-			return dependencies != null && !dependencies.isEmpty();
+			case PiMMPackage.GRAPH__VERTICES:
+				return vertices != null && !vertices.isEmpty();
+			case PiMMPackage.GRAPH__FIFOS:
+				return fifos != null && !fifos.isEmpty();
+			case PiMMPackage.GRAPH__PARAMETERS:
+				return parameters != null && !parameters.isEmpty();
+			case PiMMPackage.GRAPH__DEPENDENCIES:
+				return dependencies != null && !dependencies.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case PiMMPackage.GRAPH__VERTICES:
-			getVertices().clear();
-			getVertices()
-					.addAll((Collection<? extends AbstractActor>) newValue);
-			return;
-		case PiMMPackage.GRAPH__FIFOS:
-			getFifos().clear();
-			getFifos().addAll((Collection<? extends Fifo>) newValue);
-			return;
-		case PiMMPackage.GRAPH__PARAMETERS:
-			getParameters().clear();
-			getParameters().addAll((Collection<? extends Parameter>) newValue);
-			return;
-		case PiMMPackage.GRAPH__DEPENDENCIES:
-			getDependencies().clear();
-			getDependencies().addAll(
-					(Collection<? extends Dependency>) newValue);
-			return;
+			case PiMMPackage.GRAPH__VERTICES:
+				getVertices().clear();
+				getVertices().addAll((Collection<? extends AbstractActor>)newValue);
+				return;
+			case PiMMPackage.GRAPH__FIFOS:
+				getFifos().clear();
+				getFifos().addAll((Collection<? extends Fifo>)newValue);
+				return;
+			case PiMMPackage.GRAPH__PARAMETERS:
+				getParameters().clear();
+				getParameters().addAll((Collection<? extends Parameter>)newValue);
+				return;
+			case PiMMPackage.GRAPH__DEPENDENCIES:
+				getDependencies().clear();
+				getDependencies().addAll((Collection<? extends Dependency>)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -232,63 +231,56 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case PiMMPackage.GRAPH__VERTICES:
-			getVertices().clear();
-			return;
-		case PiMMPackage.GRAPH__FIFOS:
-			getFifos().clear();
-			return;
-		case PiMMPackage.GRAPH__PARAMETERS:
-			getParameters().clear();
-			return;
-		case PiMMPackage.GRAPH__DEPENDENCIES:
-			getDependencies().clear();
-			return;
+			case PiMMPackage.GRAPH__VERTICES:
+				getVertices().clear();
+				return;
+			case PiMMPackage.GRAPH__FIFOS:
+				getFifos().clear();
+				return;
+			case PiMMPackage.GRAPH__PARAMETERS:
+				getParameters().clear();
+				return;
+			case PiMMPackage.GRAPH__DEPENDENCIES:
+				getDependencies().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public EList<Fifo> getFifos() {
 		if (fifos == null) {
-			fifos = new EObjectContainmentEList<Fifo>(Fifo.class, this,
-					PiMMPackage.GRAPH__FIFOS);
+			fifos = new EObjectContainmentEList<Fifo>(Fifo.class, this, PiMMPackage.GRAPH__FIFOS);
 		}
 		return fifos;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public EList<Parameter> getParameters() {
 		if (parameters == null) {
-			parameters = new EObjectContainmentEList<Parameter>(
-					Parameter.class, this, PiMMPackage.GRAPH__PARAMETERS);
+			parameters = new EObjectContainmentEList<Parameter>(Parameter.class, this, PiMMPackage.GRAPH__PARAMETERS);
 		}
 		return parameters;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public EList<Dependency> getDependencies() {
 		if (dependencies == null) {
-			dependencies = new EObjectContainmentEList<Dependency>(
-					Dependency.class, this, PiMMPackage.GRAPH__DEPENDENCIES);
+			dependencies = new EObjectContainmentEList<Dependency>(Dependency.class, this, PiMMPackage.GRAPH__DEPENDENCIES);
 		}
 		return dependencies;
 	}
@@ -312,13 +304,11 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public EList<AbstractActor> getVertices() {
 		if (vertices == null) {
-			vertices = new EObjectContainmentEList<AbstractActor>(
-					AbstractActor.class, this, PiMMPackage.GRAPH__VERTICES);
+			vertices = new EObjectContainmentEList<AbstractActor>(AbstractActor.class, this, PiMMPackage.GRAPH__VERTICES);
 		}
 		return vertices;
 	}
@@ -346,11 +336,24 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 	 * 
 	 * 
 	 */
-	public boolean removeInterfaceActor(InterfaceActor interfaceVertex) {
-		this.getVertices().remove(interfaceVertex);
-		this.getInputPorts().remove(interfaceVertex.getGraphPort());
-		this.getOutputPorts().remove(interfaceVertex.getGraphPort());
-		return true;
+	public boolean removeInterface(AbstractVertex interfaceVertex) {
+		// TODO Move it to an Observer
+
+		if (interfaceVertex instanceof InterfaceActor) {
+			this.getVertices().remove(interfaceVertex);
+			this.getInputPorts().remove(
+					((InterfaceActor) interfaceVertex).getGraphPort());
+			this.getOutputPorts().remove(
+					((InterfaceActor) interfaceVertex).getGraphPort());
+			return true;
+		} else if (interfaceVertex instanceof Parameter) {
+			this.getParameters().remove(interfaceVertex);
+			this.getConfigInputPorts().remove(
+					((Parameter) interfaceVertex).getGraphPort());
+			return true;
+		}
+
+		return false;
 
 	}
 

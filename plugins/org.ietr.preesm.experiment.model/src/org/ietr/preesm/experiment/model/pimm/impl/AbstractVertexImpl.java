@@ -18,12 +18,10 @@ import org.ietr.preesm.experiment.model.pimm.Port;
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>
- * {@link org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#getName
- * <em>Name</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#getName <em>Name</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @generated
  */
 public abstract class AbstractVertexImpl extends ParameterizableImpl implements
@@ -31,7 +29,6 @@ public abstract class AbstractVertexImpl extends ParameterizableImpl implements
 	/**
 	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -41,7 +38,6 @@ public abstract class AbstractVertexImpl extends ParameterizableImpl implements
 	/**
 	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -50,7 +46,6 @@ public abstract class AbstractVertexImpl extends ParameterizableImpl implements
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected AbstractVertexImpl() {
@@ -59,7 +54,6 @@ public abstract class AbstractVertexImpl extends ParameterizableImpl implements
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -69,7 +63,6 @@ public abstract class AbstractVertexImpl extends ParameterizableImpl implements
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public String getName() {
@@ -78,85 +71,76 @@ public abstract class AbstractVertexImpl extends ParameterizableImpl implements
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public void setName(String newName) {
 		String oldName = name;
 		name = newName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					PiMMPackage.ABSTRACT_VERTEX__NAME, oldName, name));
+			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.ABSTRACT_VERTEX__NAME, oldName, name));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case PiMMPackage.ABSTRACT_VERTEX__NAME:
-			return getName();
+			case PiMMPackage.ABSTRACT_VERTEX__NAME:
+				return getName();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case PiMMPackage.ABSTRACT_VERTEX__NAME:
-			setName((String) newValue);
-			return;
+			case PiMMPackage.ABSTRACT_VERTEX__NAME:
+				setName((String)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case PiMMPackage.ABSTRACT_VERTEX__NAME:
-			setName(NAME_EDEFAULT);
-			return;
+			case PiMMPackage.ABSTRACT_VERTEX__NAME:
+				setName(NAME_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case PiMMPackage.ABSTRACT_VERTEX__NAME:
-			return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT
-					.equals(name);
+			case PiMMPackage.ABSTRACT_VERTEX__NAME:
+				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy())
-			return super.toString();
+		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (name: ");

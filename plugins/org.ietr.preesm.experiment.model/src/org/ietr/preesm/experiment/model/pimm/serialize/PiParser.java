@@ -355,6 +355,9 @@ public class PiParser {
 		case "param":
 			vertex = parseParameter(nodeElt, graph);
 			break;
+		case "cfg_in_iface":
+			vertex = parseConfigInputInterface(nodeElt, graph);
+			break;
 		// TODO Parse all types of nodes
 		// case "implode":
 		// break;
@@ -401,12 +404,42 @@ public class PiParser {
 	protected AbstractVertex parseParameter(Element nodeElt, Graph graph) {
 		// Instantiate the new Parameter
 		Parameter param = PiMMFactory.eINSTANCE.createParameter();
+		param.setConfigurationInterface(false);
+		param.setLocallyStatic(true);
+		param.setGraphPort(null); // No port of the graph corresponds to this
+									// parameter
 
 		// Get the actor properties
 		param.setName(nodeElt.getAttribute("id"));
 
 		// Add the actor to the parsed graph
 		graph.getParameters().add(param);
+
+		return param;
+	}
+
+	/**
+	 * Parse a ConfigInputInterface (i.e. a {@link Parameter}) of the Pi File.
+	 * 
+	 * @param nodeElt
+	 *            The node {@link Element} holding the {@link Parameter}
+	 *            properties.
+	 * @param graph
+	 *            the deserialized {@link Graph}.
+	 * @return the {@link AbstractVertex} of the {@link Parameter}.
+	 */
+	protected AbstractVertex parseConfigInputInterface(Element nodeElt,
+			Graph graph) {
+		// Instantiate the new Config Input Interface
+		Parameter param = PiMMFactory.eINSTANCE.createParameter();
+		param.setConfigurationInterface(true);
+		param.setLocallyStatic(true);
+
+		// Get the actor properties
+		param.setName(nodeElt.getAttribute("id"));
+
+		// Add the actor to the parsed graph
+		graph.addInterface(param);
 
 		return param;
 	}
@@ -503,7 +536,7 @@ public class PiParser {
 		snkInterface.setName(nodeElt.getAttribute("id"));
 
 		// Add the actor to the parsed graph
-		graph.addInterfaceActor(snkInterface);
+		graph.addInterface(snkInterface);
 
 		return snkInterface;
 	}
@@ -526,7 +559,7 @@ public class PiParser {
 		srcInterface.setName(nodeElt.getAttribute("id"));
 
 		// Add the actor to the parsed graph
-		graph.addInterfaceActor(srcInterface);
+		graph.addInterface(srcInterface);
 
 		return srcInterface;
 	}
