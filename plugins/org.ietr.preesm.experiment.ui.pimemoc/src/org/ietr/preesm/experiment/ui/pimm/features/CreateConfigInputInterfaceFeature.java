@@ -68,7 +68,7 @@ public class CreateConfigInputInterfaceFeature extends AbstractCreateFeature {
 		newParameter.setLocallyStatic(true);
 
 		// Add new parameter to the graph.
-		if (graph.addInterface(newParameter)) {
+		if (graph.getParameters().add(newParameter)) {
 			this.hasDoneChanges = true;
 		}
 

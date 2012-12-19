@@ -140,7 +140,7 @@ public class PiParser {
 		param.setName(nodeElt.getAttribute("id"));
 
 		// Add the actor to the parsed graph
-		graph.addInterface(param);
+		graph.getParameters().add(param);
 
 		return param;
 	}
@@ -536,7 +536,7 @@ public class PiParser {
 		snkInterface.setName(nodeElt.getAttribute("id"));
 
 		// Add the actor to the parsed graph
-		graph.addInterface(snkInterface);
+		graph.getVertices().add(snkInterface);
 
 		return snkInterface;
 	}
@@ -559,7 +559,7 @@ public class PiParser {
 		srcInterface.setName(nodeElt.getAttribute("id"));
 
 		// Add the actor to the parsed graph
-		graph.addInterface(srcInterface);
+		graph.getVertices().add(srcInterface);
 
 		return srcInterface;
 	}

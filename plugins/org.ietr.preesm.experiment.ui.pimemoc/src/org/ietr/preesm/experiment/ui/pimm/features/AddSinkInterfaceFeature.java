@@ -67,7 +67,6 @@ public class AddSinkInterfaceFeature extends AbstractAddFeature {
 		gaService.setLocationAndSize(invisibleRectangle, context.getX(),
 				context.getY(), 200, invisibRectHeight);
 
-
 		RoundedRectangle roundedRectangle; // need to access it later
 		{
 			final BoxRelativeAnchor boxAnchor = peCreateService
@@ -90,7 +89,7 @@ public class AddSinkInterfaceFeature extends AbstractAddFeature {
 			// resource of the graph
 			if (snkInterface.eResource() == null) {
 				Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
-				graph.addInterface(snkInterface);
+				graph.getVertices().add(snkInterface);
 			}
 			link(boxAnchor, port);
 		}
@@ -108,14 +107,14 @@ public class AddSinkInterfaceFeature extends AbstractAddFeature {
 			text.setHeight(20);
 			text.setWidth(200);
 			link(shape, snkInterface);
-		}		
+		}
 		// create link and wire it
 		link(containerShape, snkInterface);
-		
+
 		// Add a ChopBoxAnchor for dependencies
 		ChopboxAnchor cba = peCreateService.createChopboxAnchor(containerShape);
 		link(cba, snkInterface);
-		
+
 		// Call the layout feature
 		layoutPictogramElement(containerShape);
 

@@ -14,17 +14,12 @@ import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
-import org.ietr.preesm.experiment.model.pimm.InputPort;
-import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.OutputPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.adapter.InterfaceObserver;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -82,57 +77,11 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
+	 * 
 	 */
 	protected GraphImpl() {
 		super();
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc --> TODO Move it to an Observec
-	 */
-	public boolean addInterface(AbstractVertex interfaceVertex) {
-
-		if (interfaceVertex instanceof InterfaceActor) {
-			InterfaceActor iActor = (InterfaceActor) interfaceVertex;
-			Port port;
-			switch (iActor.getKind()) {
-			case "src":
-				port = PiMMFactory.eINSTANCE.createInputPort();
-				this.getInputPorts().add((InputPort) port);
-				break;
-			case "snk":
-				port = PiMMFactory.eINSTANCE.createOutputPort();
-				this.getOutputPorts().add((OutputPort) port);
-				break;
-			default:
-				return false;
-			}
-
-			// Set the interface properties
-			port.setName(iActor.getName());
-			iActor.setGraphPort(port);
-
-			// Add the actor to the parsed graph
-			this.getVertices().add(iActor);
-			return true;
-		} else if (interfaceVertex instanceof Parameter) {
-			Parameter param = (Parameter) interfaceVertex;
-			ConfigInputPort port = PiMMFactory.eINSTANCE
-					.createConfigInputPort();
-			port.setName(param.getName());
-			this.getConfigInputPorts().add((ConfigInputPort) port);
-
-			// Set the parameter Property
-			param.setConfigurationInterface(true);
-			param.setGraphPort(port);
-
-			this.getParameters().add(param);
-
-			return true;
-		}
-
-		return false;
+		this.eAdapters().add(new InterfaceObserver());
 	}
 
 	/**
@@ -330,32 +279,6 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 			names.add(param.getName());
 		}
 		return names;
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * 
-	 */
-	public boolean removeInterface(AbstractVertex interfaceVertex) {
-		// TODO Move it to an Observer
-
-		if (interfaceVertex instanceof InterfaceActor) {
-			this.getVertices().remove(interfaceVertex);
-			this.getInputPorts().remove(
-					((InterfaceActor) interfaceVertex).getGraphPort());
-			this.getOutputPorts().remove(
-					((InterfaceActor) interfaceVertex).getGraphPort());
-			return true;
-		} else if (interfaceVertex instanceof Parameter) {
-			this.getParameters().remove(interfaceVertex);
-			this.getConfigInputPorts().remove(
-					((Parameter) interfaceVertex).getGraphPort());
-			return true;
-		}
-
-		return false;
-
 	}
 
 } // GraphImpl

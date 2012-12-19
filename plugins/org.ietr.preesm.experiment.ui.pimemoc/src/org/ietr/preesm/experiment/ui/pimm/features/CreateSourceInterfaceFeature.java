@@ -62,7 +62,7 @@ public class CreateSourceInterfaceFeature extends AbstractCreateFeature {
 		newSrcInterface.setName(newSrcName);
 
 		// Add new sourceInterface to the graph.
-		if (graph.addInterface(newSrcInterface)) {
+		if (graph.getVertices().add(newSrcInterface)) {
 			this.hasDoneChanges = true;
 		}
 

@@ -59,10 +59,9 @@ import org.ietr.preesm.experiment.ui.pimm.features.CreateSinkInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateSourceInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CustomDeleteFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteAbstractActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.DeleteAbstractVertexFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteActorPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteDependencyFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.DeleteInterfaceActorFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.DeleteAbstractVertexFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DirectEditingAbstractActorNameFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.LayoutActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.LayoutInterfaceFeature;
@@ -157,9 +156,8 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 				return null;
 			}
 		}
-		if (bo instanceof InterfaceActor) {
-			return new DeleteInterfaceActorFeature(this);
-		} else if (bo instanceof AbstractActor) {
+
+		if (bo instanceof AbstractActor) {
 			return new DeleteAbstractActorFeature(this);
 		}
 

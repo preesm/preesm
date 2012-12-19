@@ -105,23 +105,6 @@ public interface Graph extends AbstractActor {
 	EList<Dependency> getDependencies();
 
 	/**
-	 * <!-- begin-user-doc --> This method will add the {@link InterfaceActor}
-	 * and create the corresponding {@link Port}. <!-- end-user-doc -->
-	 * @model
-	 * @generated
-	 */
-	boolean addInterface(AbstractVertex interfaceVertex);
-
-	/**
-	 * <!-- begin-user-doc --> This method will remove the
-	 * {@link InterfaceActor} and the corresponding {@link Port} from the
-	 * {@link Graph}. <!-- end-user-doc -->
-	 * @model
-	 * @generated
-	 */
-	boolean removeInterface(AbstractVertex interfaceVertex);
-
-	/**
 	 * Return the list of the names of all {@link Graph#getVertices()} of the
 	 * Graph.
 	 * 

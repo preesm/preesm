@@ -26,14 +26,6 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
  * @generated
  */
 public class ParameterImpl extends AbstractVertexImpl implements Parameter {
-	/**
-	 * The default value of the '{@link #isLocallyStatic() <em>Locally Static</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #isLocallyStatic()
-	 * @generated
-	 * @ordered
-	 */
 	protected static final boolean LOCALLY_STATIC_EDEFAULT = false;
 
 	/**
