@@ -175,6 +175,16 @@ public class PiMMSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case PiMMPackage.CONFIG_OUTPUT_INTERFACE: {
+				ConfigOutputInterface configOutputInterface = (ConfigOutputInterface)theEObject;
+				T result = caseConfigOutputInterface(configOutputInterface);
+				if (result == null) result = caseInterfaceActor(configOutputInterface);
+				if (result == null) result = caseAbstractActor(configOutputInterface);
+				if (result == null) result = caseAbstractVertex(configOutputInterface);
+				if (result == null) result = caseParameterizable(configOutputInterface);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			case PiMMPackage.REFINEMENT: {
 				Refinement refinement = (Refinement)theEObject;
 				T result = caseRefinement(refinement);
@@ -413,6 +423,21 @@ public class PiMMSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseSinkInterface(SinkInterface object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Config Output Interface</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Config Output Interface</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseConfigOutputInterface(ConfigOutputInterface object) {
 		return null;
 	}
 

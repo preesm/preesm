@@ -66,6 +66,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 			case PiMMPackage.INTERFACE_ACTOR: return createInterfaceActor();
 			case PiMMPackage.SOURCE_INTERFACE: return createSourceInterface();
 			case PiMMPackage.SINK_INTERFACE: return createSinkInterface();
+			case PiMMPackage.CONFIG_OUTPUT_INTERFACE: return createConfigOutputInterface();
 			case PiMMPackage.REFINEMENT: return createRefinement();
 			case PiMMPackage.PARAMETER: return createParameter();
 			case PiMMPackage.DEPENDENCY: return createDependency();
@@ -172,6 +173,16 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	public SinkInterface createSinkInterface() {
 		SinkInterfaceImpl sinkInterface = new SinkInterfaceImpl();
 		return sinkInterface;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public ConfigOutputInterface createConfigOutputInterface() {
+		ConfigOutputInterfaceImpl configOutputInterface = new ConfigOutputInterfaceImpl();
+		return configOutputInterface;
 	}
 
 	/**

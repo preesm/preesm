@@ -46,7 +46,7 @@ public class ConfigOutputPortImpl extends PortImpl implements ConfigOutputPort {
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
+	 * 
 	 */
 	protected ConfigOutputPortImpl() {
 		super();

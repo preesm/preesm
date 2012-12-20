@@ -112,6 +112,15 @@ public interface PiMMFactory extends EFactory {
 	SinkInterface createSinkInterface();
 
 	/**
+	 * Returns a new object of class '<em>Config Output Interface</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Config Output Interface</em>'.
+	 * @generated
+	 */
+	ConfigOutputInterface createConfigOutputInterface();
+
+	/**
 	 * Returns a new object of class '<em>Refinement</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

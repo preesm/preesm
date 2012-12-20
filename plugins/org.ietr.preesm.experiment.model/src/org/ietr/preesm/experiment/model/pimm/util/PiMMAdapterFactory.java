@@ -124,6 +124,10 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 				return createSinkInterfaceAdapter();
 			}
 			@Override
+			public Adapter caseConfigOutputInterface(ConfigOutputInterface object) {
+				return createConfigOutputInterfaceAdapter();
+			}
+			@Override
 			public Adapter caseRefinement(Refinement object) {
 				return createRefinementAdapter();
 			}
@@ -352,6 +356,20 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createSinkInterfaceAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface <em>Config Output Interface</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface
+	 * @generated
+	 */
+	public Adapter createConfigOutputInterfaceAdapter() {
 		return null;
 	}
 

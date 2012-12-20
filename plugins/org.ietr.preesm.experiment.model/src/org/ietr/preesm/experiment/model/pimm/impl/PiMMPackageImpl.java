@@ -11,6 +11,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
@@ -132,6 +133,13 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * @generated
 	 */
 	private EClass sinkInterfaceEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass configOutputInterfaceEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -524,6 +532,15 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getConfigOutputInterface() {
+		return configOutputInterfaceEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getRefinement() {
 		return refinementEClass;
 	}
@@ -693,6 +710,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
 		sinkInterfaceEClass = createEClass(SINK_INTERFACE);
 
+		configOutputInterfaceEClass = createEClass(CONFIG_OUTPUT_INTERFACE);
+
 		refinementEClass = createEClass(REFINEMENT);
 		createEAttribute(refinementEClass, REFINEMENT__FILE_NAME);
 
@@ -749,6 +768,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		interfaceActorEClass.getESuperTypes().add(this.getAbstractActor());
 		sourceInterfaceEClass.getESuperTypes().add(this.getInterfaceActor());
 		sinkInterfaceEClass.getESuperTypes().add(this.getInterfaceActor());
+		configOutputInterfaceEClass.getESuperTypes().add(this.getInterfaceActor());
 		parameterEClass.getESuperTypes().add(this.getAbstractVertex());
 		parameterEClass.getESuperTypes().add(this.getISetter());
 
@@ -799,6 +819,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEClass(sourceInterfaceEClass, SourceInterface.class, "SourceInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(sinkInterfaceEClass, SinkInterface.class, "SinkInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(configOutputInterfaceEClass, ConfigOutputInterface.class, "ConfigOutputInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(refinementEClass, Refinement.class, "Refinement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getRefinement_FileName(), ecorePackage.getEString(), "fileName", null, 0, 1, Refinement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
