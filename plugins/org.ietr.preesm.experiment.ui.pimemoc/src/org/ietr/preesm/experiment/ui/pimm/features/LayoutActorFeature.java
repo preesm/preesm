@@ -24,6 +24,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
 
@@ -302,6 +303,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 		List<BoxRelativeAnchor> inputs = new ArrayList<>();
 		List<BoxRelativeAnchor> outputs = new ArrayList<>();
 		int nbConfigInput = 0;
+		int nbConfigOutput = 0;
 		for (Anchor anchor : anchorShapes) {
 
 			if (getBusinessObjectForPictogramElement(anchor) instanceof InputPort) {
@@ -311,17 +313,24 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 				inputs.add(nbConfigInput, (BoxRelativeAnchor) anchor);
 				nbConfigInput++;
 			}
+			if (getBusinessObjectForPictogramElement(anchor) instanceof ConfigOutputPort) {
+				outputs.add(nbConfigOutput, (BoxRelativeAnchor) anchor);
+				nbConfigOutput++;
+			}
 			if (getBusinessObjectForPictogramElement(anchor) instanceof OutputPort) {
 				outputs.add((BoxRelativeAnchor) anchor);
 			}
 		}
+		int maxNbConfigPort = Math.max(nbConfigInput, nbConfigOutput);
 
 		// Place the inputs
 		int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
 		// The first port is placed below the name
 		int y = portFontHeight + 5; // font.height + a space of 5
 		for (int i = 0; i < inputs.size(); i++) {
-			double relativeHeight = (y + i * portFontHeight)
+			int configSpace = (i < nbConfigInput) ? 0 : maxNbConfigPort
+					- nbConfigInput;
+			double relativeHeight = (y + (i + configSpace) * portFontHeight)
 					/ (double) newHeigt;
 			if (inputs.get(i).getRelativeHeight() != relativeHeight) {
 				anythingChanged = true;
@@ -333,7 +342,9 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 		// Place the outputs
 		y = portFontHeight + 5; // font.height + a space of 5
 		for (int i = 0; i < outputs.size(); i++) {
-			double relativeHeight = (y + (i+nbConfigInput) * portFontHeight)
+			int configSpace = (i < nbConfigOutput) ? 0 : maxNbConfigPort
+					- nbConfigOutput;
+			double relativeHeight = (y + (i + configSpace) * portFontHeight)
 					/ (double) newHeigt;
 			if (outputs.get(i).getRelativeHeight() != relativeHeight) {
 				anythingChanged = true;

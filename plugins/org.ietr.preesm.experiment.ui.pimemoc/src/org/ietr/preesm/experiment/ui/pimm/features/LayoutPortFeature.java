@@ -7,6 +7,7 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.features.impl.AbstractLayoutFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
+import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
@@ -96,17 +97,34 @@ public class LayoutPortFeature extends AbstractLayoutFeature {
 					// output port
 					gaService.setLocation(ga, 0, 0);
 				}
-			}			
+			}
 
+			// Position the port anchor for data ports
 			if (ga instanceof Rectangle) {
 				if (bra.getRelativeWidth() == 0.0) {
 					// input port
-					gaService.setLocation(ga, 0, 1 + (portFontHeight - anchorGaSize) / 2);
+					gaService.setLocation(ga, 0,
+							1 + (portFontHeight - anchorGaSize) / 2);
 				} else {
 					// output port
 					gaService.setLocation(ga, bra.getGraphicsAlgorithm()
 							.getWidth() - anchorGaSize,
 							1 + (portFontHeight - anchorGaSize) / 2);
+				}
+			}
+
+			// Position the port anchor for configuration ports
+			if (ga instanceof Polygon) {
+				if (bra.getRelativeWidth() == 0.0) {
+					// input port
+					gaService.setLocation(ga, 0,
+							(portFontHeight - anchorGaSize) / 2);
+					// portFontHeight - PORT_ANCHOR_GA_SIZE - 2) / 2
+				} else {
+					// output port
+					gaService.setLocation(ga, bra.getGraphicsAlgorithm()
+							.getWidth() - anchorGaSize - 1,
+							(portFontHeight - anchorGaSize) / 2);
 				}
 			}
 		}

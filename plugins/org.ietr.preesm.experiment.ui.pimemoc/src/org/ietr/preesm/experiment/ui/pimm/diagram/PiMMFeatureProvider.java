@@ -43,6 +43,7 @@ import org.ietr.preesm.experiment.model.pimm.SourceInterface;
 import org.ietr.preesm.experiment.ui.pimm.features.AddActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddConfigInputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddConfigInputPortFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddConfigOutputPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddDependencyFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddFifoFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddInputPortFeature;
@@ -136,6 +137,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		return new ICustomFeature[] { new RenameActorFeature(this),
 				new AddOutputPortFeature(this), new AddInputPortFeature(this),
 				new AddConfigInputPortFeature(this),
+				new AddConfigOutputPortFeature(this),
 				new RenameActorPortFeature(this),
 				new SetActorRefinementFeature(this),
 				new OpenRefinementFeature(this) };

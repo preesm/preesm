@@ -140,7 +140,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 			} else {
 				boxAnchor.setRelativeWidth(1.0);
 			}
-			boxAnchor.setRelativeHeight(1.0); // The height will be fixed by the
+			boxAnchor.setRelativeHeight(0.5); // The height will be fixed by the
 												// layout feature
 			boxAnchor.setReferencedGraphicsAlgorithm(gaRectangle);
 

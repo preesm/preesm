@@ -7,18 +7,20 @@ import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
+import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
-public class AddConfigInputPortFeature extends AbstractAddActorPortFeature {
+public class AddConfigOutputPortFeature extends AbstractAddActorPortFeature {
 
-	public static final IColorConstant CFG_INPUT_PORT_FOREGROUND = AddActorFeature.ACTOR_FOREGROUND;
-	public static final IColorConstant CFG_INPUT_PORT_BACKGROUND = AddParameterFeature.PARAMETER_BACKGROUND;
-	public static final PortPosition CFG_INPUT_PORT_POSITION = PortPosition.LEFT;
-	public static final String CFG_INPUT_PORT_KIND = "cfg_in";
+	public static final IColorConstant CFG_OUTPUT_PORT_FOREGROUND = AddActorFeature.ACTOR_FOREGROUND;
+	public static final IColorConstant CFG_OUTPUT_PORT_BACKGROUND =  new ColorConstant(
+			255, 229, 153);
+	public static final PortPosition CFG_OUTPUT_PORT_POSITION = PortPosition.RIGHT;
+	public static final String CFG_OUTPUT_PORT_KIND = "cfg_out";
 
 	/**
 	 * Default constructor
@@ -26,23 +28,23 @@ public class AddConfigInputPortFeature extends AbstractAddActorPortFeature {
 	 * @param fp
 	 *            the feature provider
 	 */
-	public AddConfigInputPortFeature(IFeatureProvider fp) {
+	public AddConfigOutputPortFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
 	@Override
 	public String getName() {
-		return "Add Config. Input Port";
+		return "Add Config. Output Port";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Add a configuration input port to the Actor";
+		return "Add a configuration output port to the Actor";
 	}
 
 	@Override
 	public PortPosition getPosition() {
-		return CFG_INPUT_PORT_POSITION;
+		return CFG_OUTPUT_PORT_POSITION;
 	}
 
 	@Override
@@ -51,12 +53,12 @@ public class AddConfigInputPortFeature extends AbstractAddActorPortFeature {
 		// Get the GaService
 		IGaService gaService = Graphiti.getGaService();
 		// Create the port GraphicAlgorithm
-		int xy[] = { 0, 0, PORT_ANCHOR_GA_SIZE, (PORT_ANCHOR_GA_SIZE + 2) / 2,
-				0, PORT_ANCHOR_GA_SIZE + 2 };
+		int xy[] = { 0, (PORT_ANCHOR_GA_SIZE + 2) / 2, PORT_ANCHOR_GA_SIZE, 0,
+				PORT_ANCHOR_GA_SIZE, PORT_ANCHOR_GA_SIZE + 2 };
 		Polygon triangle = gaService.createPolygon(containerShape, xy);
 
-		triangle.setForeground(manageColor(CFG_INPUT_PORT_FOREGROUND));
-		triangle.setBackground(manageColor(CFG_INPUT_PORT_BACKGROUND));
+		triangle.setForeground(manageColor(CFG_OUTPUT_PORT_FOREGROUND));
+		triangle.setBackground(manageColor(CFG_OUTPUT_PORT_BACKGROUND));
 		triangle.setLineWidth(0);
 		return triangle;
 	}
@@ -75,7 +77,7 @@ public class AddConfigInputPortFeature extends AbstractAddActorPortFeature {
 
 		// Layout the text
 		int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
-		text.setHorizontalAlignment(Orientation.ALIGNMENT_RIGHT);
+		text.setHorizontalAlignment(Orientation.ALIGNMENT_LEFT);
 		gaService.setHeight(text, portFontHeight);
 
 		return text;
@@ -83,15 +85,16 @@ public class AddConfigInputPortFeature extends AbstractAddActorPortFeature {
 
 	@Override
 	public Port getNewPort(String portName, Actor actor) {
-		ConfigInputPort newPort = PiMMFactory.eINSTANCE.createConfigInputPort();
+		ConfigOutputPort newPort = PiMMFactory.eINSTANCE
+				.createConfigOutputPort();
 		newPort.setName(portName);
-		actor.getConfigInputPorts().add(newPort);
+		actor.getConfigOutputPorts().add(newPort);
 		return newPort;
 	}
 
 	@Override
 	public String getPortKind() {
-		return CFG_INPUT_PORT_KIND;
+		return CFG_OUTPUT_PORT_KIND;
 	}
 
 }
