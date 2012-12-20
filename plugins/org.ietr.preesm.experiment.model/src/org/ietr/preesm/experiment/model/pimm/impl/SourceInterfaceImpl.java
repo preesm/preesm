@@ -19,12 +19,13 @@ import org.ietr.preesm.experiment.model.pimm.SourceInterface;
  */
 public class SourceInterfaceImpl extends InterfaceActorImpl implements
 		SourceInterface {
+
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 */
 	protected SourceInterfaceImpl() {
 		super();
-		kind = "src";
+		kind = KIND;
 
 		// Add the unique output port of the Source Interface
 		// The port intentionally has no name 

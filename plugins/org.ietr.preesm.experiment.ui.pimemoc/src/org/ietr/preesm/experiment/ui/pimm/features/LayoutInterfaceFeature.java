@@ -14,8 +14,11 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.SinkInterface;
+import org.ietr.preesm.experiment.model.pimm.SourceInterface;
 
 /**
  * Layout Feature for {@link InterfaceActor} and Config Input Interface (i.e.
@@ -77,14 +80,21 @@ public class LayoutInterfaceFeature extends AbstractLayoutFeature {
 			for (Shape shape : containerShape.getChildren()) {
 				GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
 				if (ga instanceof Text) {
-					if (((InterfaceActor) vertex).getKind().equals("src")) {
+					switch (((InterfaceActor) vertex).getKind()) {
+					case SourceInterface.KIND:
 						ga.setWidth(size.getWidth());
 						Graphiti.getGaService().setLocation(ga, 0, 0);
-					}
-					if (((InterfaceActor) vertex).getKind().equals("snk")) {
+						break;
+					case SinkInterface.KIND:
 						ga.setWidth(size.getWidth());
 						Graphiti.getGaService().setLocation(ga, 16 + 3, 0);
+						break;
+					case ConfigOutputInterface.KIND:
+						ga.setWidth(size.getWidth());
+						Graphiti.getGaService().setLocation(ga, 16 + 3, 0);
+						break;
 					}
+
 				}
 			}
 		}

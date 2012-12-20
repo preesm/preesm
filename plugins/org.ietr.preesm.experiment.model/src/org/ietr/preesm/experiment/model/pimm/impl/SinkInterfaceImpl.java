@@ -18,6 +18,7 @@ import org.ietr.preesm.experiment.model.pimm.SinkInterface;
  */
 public class SinkInterfaceImpl extends InterfaceActorImpl implements
 		SinkInterface {
+	
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -25,7 +26,7 @@ public class SinkInterfaceImpl extends InterfaceActorImpl implements
 	protected SinkInterfaceImpl() {
 		super();
 
-		kind = "snk";
+		kind = KIND;
 
 		// Add the unique input port of the Sink Interface
 		// The port intentionally has no name

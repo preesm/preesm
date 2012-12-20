@@ -14,4 +14,5 @@ package org.ietr.preesm.experiment.model.pimm;
  * @generated
  */
 public interface SinkInterface extends InterfaceActor {
+	public static final String KIND = "snk";
 } // SinkInterface

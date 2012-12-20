@@ -19,6 +19,7 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
  * @generated
  */
 public class ConfigOutputInterfaceImpl extends InterfaceActorImpl implements ConfigOutputInterface {
+	
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -27,7 +28,7 @@ public class ConfigOutputInterfaceImpl extends InterfaceActorImpl implements Con
 	protected ConfigOutputInterfaceImpl() {
 		super();
 		
-		kind = "cfg_out";
+		kind = KIND;
 
 		// Add the unique input port of the ConfigOutputInterface
 		// The port intentionally has no name

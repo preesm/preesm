@@ -9,6 +9,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
@@ -385,6 +386,9 @@ public class PiParser {
 		case "cfg_in_iface":
 			vertex = parseConfigInputInterface(nodeElt, graph);
 			break;
+		case "cfg_out_iface":
+			vertex = parseConfigOutputInterface(nodeElt, graph);
+			break;
 		// TODO Parse all types of nodes
 		// case "implode":
 		// break;
@@ -530,6 +534,30 @@ public class PiParser {
 			throw new RuntimeException("Parsed port " + portName
 					+ " has children of unknown kind: " + portKind);
 		}
+	}
+
+	/**
+	 * Parse a node {@link Element} with kind "cfg_out_iface".
+	 * 
+	 * @param nodeElt
+	 *            the {@link Element} to parse
+	 * @param graph
+	 *            the deserialized {@link Graph}
+	 * @return the created {@link ConfigOutputInterface}
+	 */
+	protected AbstractActor parseConfigOutputInterface(Element nodeElt,
+			Graph graph) {
+		// Instantiate the new Interface and its corresponding port
+		ConfigOutputInterface cfgOutIf = PiMMFactory.eINSTANCE
+				.createConfigOutputInterface();
+
+		// Set the Interface properties
+		cfgOutIf.setName(nodeElt.getAttribute("id"));
+
+		// Add the actor to the parsed graph
+		graph.getVertices().add(cfgOutIf);
+
+		return cfgOutIf;
 	}
 
 	/**

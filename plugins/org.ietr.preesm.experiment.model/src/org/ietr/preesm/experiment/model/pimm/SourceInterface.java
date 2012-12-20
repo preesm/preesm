@@ -14,4 +14,5 @@ package org.ietr.preesm.experiment.model.pimm;
  * @generated
  */
 public interface SourceInterface extends InterfaceActor {
+	public static final String KIND = "src";
 } // SourceInterface

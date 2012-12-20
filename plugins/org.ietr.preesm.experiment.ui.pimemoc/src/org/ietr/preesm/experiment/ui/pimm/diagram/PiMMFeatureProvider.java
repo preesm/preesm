@@ -33,6 +33,7 @@ import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
@@ -43,6 +44,7 @@ import org.ietr.preesm.experiment.model.pimm.SourceInterface;
 import org.ietr.preesm.experiment.ui.pimm.features.AddActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddConfigInputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddConfigInputPortFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddConfigOutputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddConfigOutputPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddDependencyFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddFifoFeature;
@@ -53,6 +55,7 @@ import org.ietr.preesm.experiment.ui.pimm.features.AddSinkInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddSourceInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateConfigInputInterfaceFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.CreateConfigOutputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateDependencyFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateFifoFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateParameterFeature;
@@ -107,6 +110,10 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 			return new AddSinkInterfaceFeature(this);
 		}
 
+		if (context.getNewObject() instanceof ConfigOutputInterface) {
+			return new AddConfigOutputInterfaceFeature(this);
+		}
+
 		if (context.getNewObject() instanceof Fifo) {
 			return new AddFifoFeature(this);
 		}
@@ -128,6 +135,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		return new ICreateFeature[] { new CreateActorFeature(this),
 				new CreateParameterFeature(this),
 				new CreateConfigInputInterfaceFeature(this),
+				new CreateConfigOutputInterfaceFeature(this),
 				new CreateSourceInterfaceFeature(this),
 				new CreateSinkInterfaceFeature(this) };
 	}
