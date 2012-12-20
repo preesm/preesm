@@ -84,9 +84,14 @@ public class PortEqualityHelper {
 			AbstractActor vertex1, AbstractActor vertex2) {
 		Map<SimpleEntry<Port, Port>, IReason> result = new HashMap<SimpleEntry<Port, Port>, IReason>();
 
-		comparePortLists(vertex1.getConfigInputPorts(), vertex2.getConfigInputPorts(), result);
-		comparePortLists(vertex1.getInputPorts(), vertex2.getInputPorts(), result);
-		comparePortLists(vertex1.getOutputPorts(), vertex2.getOutputPorts(), result);
+		comparePortLists(vertex1.getConfigInputPorts(),
+				vertex2.getConfigInputPorts(), result);
+		comparePortLists(vertex1.getConfigOutputPorts(),
+				vertex2.getConfigOutputPorts(), result);
+		comparePortLists(vertex1.getInputPorts(), vertex2.getInputPorts(),
+				result);
+		comparePortLists(vertex1.getOutputPorts(), vertex2.getOutputPorts(),
+				result);
 
 		return result;
 	}

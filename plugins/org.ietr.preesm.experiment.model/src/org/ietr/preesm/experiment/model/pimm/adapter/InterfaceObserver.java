@@ -7,6 +7,8 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
@@ -15,6 +17,8 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.SinkInterface;
+import org.ietr.preesm.experiment.model.pimm.SourceInterface;
 
 /**
  * The purpose of this {@link Adapter} is to observe the
@@ -79,13 +83,17 @@ public class InterfaceObserver extends AdapterImpl {
 		// Create the Associated port and store it in the appropriate List
 		Port port;
 		switch (iActor.getKind()) {
-		case "src":
+		case SourceInterface.KIND:
 			port = PiMMFactory.eINSTANCE.createInputPort();
 			graph.getInputPorts().add((InputPort) port);
 			break;
-		case "snk":
+		case SinkInterface.KIND:
 			port = PiMMFactory.eINSTANCE.createOutputPort();
 			graph.getOutputPorts().add((OutputPort) port);
+			break;
+		case ConfigOutputInterface.KIND:
+			port = PiMMFactory.eINSTANCE.createConfigOutputPort();
+			graph.getConfigOutputPorts().add((ConfigOutputPort) port);
 			break;
 		default:
 			return;
