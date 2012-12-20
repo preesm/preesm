@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
@@ -26,6 +27,7 @@ import org.ietr.preesm.experiment.model.pimm.Port;
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#getInputPorts <em>Input Ports</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#getOutputPorts <em>Output Ports</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#getConfigOutputPorts <em>Config Output Ports</em>}</li>
  * </ul>
  * </p>
  *
@@ -52,6 +54,16 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements
 	protected EList<OutputPort> outputPorts;
 
 	/**
+	 * The cached value of the '{@link #getConfigOutputPorts() <em>Config Output Ports</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getConfigOutputPorts()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<ConfigOutputPort> configOutputPorts;
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
@@ -70,6 +82,8 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements
 				return getInputPorts();
 			case PiMMPackage.ABSTRACT_ACTOR__OUTPUT_PORTS:
 				return getOutputPorts();
+			case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
+				return getConfigOutputPorts();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -86,6 +100,8 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements
 				return ((InternalEList<?>)getInputPorts()).basicRemove(otherEnd, msgs);
 			case PiMMPackage.ABSTRACT_ACTOR__OUTPUT_PORTS:
 				return ((InternalEList<?>)getOutputPorts()).basicRemove(otherEnd, msgs);
+			case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
+				return ((InternalEList<?>)getConfigOutputPorts()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -101,6 +117,8 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements
 				return inputPorts != null && !inputPorts.isEmpty();
 			case PiMMPackage.ABSTRACT_ACTOR__OUTPUT_PORTS:
 				return outputPorts != null && !outputPorts.isEmpty();
+			case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
+				return configOutputPorts != null && !configOutputPorts.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
@@ -120,6 +138,10 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements
 			case PiMMPackage.ABSTRACT_ACTOR__OUTPUT_PORTS:
 				getOutputPorts().clear();
 				getOutputPorts().addAll((Collection<? extends OutputPort>)newValue);
+				return;
+			case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
+				getConfigOutputPorts().clear();
+				getConfigOutputPorts().addAll((Collection<? extends ConfigOutputPort>)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -147,6 +169,9 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements
 			case PiMMPackage.ABSTRACT_ACTOR__OUTPUT_PORTS:
 				getOutputPorts().clear();
 				return;
+			case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
+				getConfigOutputPorts().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -171,6 +196,18 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements
 			outputPorts = new EObjectContainmentEList<OutputPort>(OutputPort.class, this, PiMMPackage.ABSTRACT_ACTOR__OUTPUT_PORTS);
 		}
 		return outputPorts;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EList<ConfigOutputPort> getConfigOutputPorts() {
+		if (configOutputPorts == null) {
+			configOutputPorts = new EObjectContainmentEList<ConfigOutputPort>(ConfigOutputPort.class, this, PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS);
+		}
+		return configOutputPorts;
 	}
 
 	@Override

@@ -167,13 +167,22 @@ public interface PiMMPackage extends EPackage {
 	int ABSTRACT_ACTOR__OUTPUT_PORTS = ABSTRACT_VERTEX_FEATURE_COUNT + 1;
 
 	/**
+	 * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS = ABSTRACT_VERTEX_FEATURE_COUNT + 2;
+
+	/**
 	 * The number of structural features of the '<em>Abstract Actor</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int ABSTRACT_ACTOR_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 2;
+	int ABSTRACT_ACTOR_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 3;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.GraphImpl <em>Graph</em>}' class.
@@ -220,6 +229,15 @@ public interface PiMMPackage extends EPackage {
 	 * @ordered
 	 */
 	int GRAPH__OUTPUT_PORTS = ABSTRACT_ACTOR__OUTPUT_PORTS;
+
+	/**
+	 * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GRAPH__CONFIG_OUTPUT_PORTS = ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Vertices</b></em>' containment reference list.
@@ -311,6 +329,15 @@ public interface PiMMPackage extends EPackage {
 	 * @ordered
 	 */
 	int ACTOR__OUTPUT_PORTS = ABSTRACT_ACTOR__OUTPUT_PORTS;
+
+	/**
+	 * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ACTOR__CONFIG_OUTPUT_PORTS = ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Refinement</b></em>' containment reference.
@@ -508,6 +535,52 @@ public interface PiMMPackage extends EPackage {
 	int CONFIG_INPUT_PORT_FEATURE_COUNT = PORT_FEATURE_COUNT + 1;
 
 	/**
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigOutputPortImpl <em>Config Output Port</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.ConfigOutputPortImpl
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getConfigOutputPort()
+	 * @generated
+	 */
+	int CONFIG_OUTPUT_PORT = 9;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIG_OUTPUT_PORT__NAME = PORT__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Kind</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIG_OUTPUT_PORT__KIND = PORT__KIND;
+
+	/**
+	 * The feature id for the '<em><b>Outgoing Dependencies</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIG_OUTPUT_PORT__OUTGOING_DEPENDENCIES = PORT_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>Config Output Port</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIG_OUTPUT_PORT_FEATURE_COUNT = PORT_FEATURE_COUNT + 1;
+
+	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl <em>Fifo</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -515,7 +588,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getFifo()
 	 * @generated
 	 */
-	int FIFO = 9;
+	int FIFO = 10;
 
 	/**
 	 * The feature id for the '<em><b>Source Port</b></em>' reference.
@@ -553,7 +626,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getInterfaceActor()
 	 * @generated
 	 */
-	int INTERFACE_ACTOR = 10;
+	int INTERFACE_ACTOR = 11;
 
 	/**
 	 * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list.
@@ -592,6 +665,15 @@ public interface PiMMPackage extends EPackage {
 	int INTERFACE_ACTOR__OUTPUT_PORTS = ABSTRACT_ACTOR__OUTPUT_PORTS;
 
 	/**
+	 * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INTERFACE_ACTOR__CONFIG_OUTPUT_PORTS = ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS;
+
+	/**
 	 * The feature id for the '<em><b>Graph Port</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -626,7 +708,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getSourceInterface()
 	 * @generated
 	 */
-	int SOURCE_INTERFACE = 11;
+	int SOURCE_INTERFACE = 12;
 
 	/**
 	 * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list.
@@ -665,6 +747,15 @@ public interface PiMMPackage extends EPackage {
 	int SOURCE_INTERFACE__OUTPUT_PORTS = INTERFACE_ACTOR__OUTPUT_PORTS;
 
 	/**
+	 * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SOURCE_INTERFACE__CONFIG_OUTPUT_PORTS = INTERFACE_ACTOR__CONFIG_OUTPUT_PORTS;
+
+	/**
 	 * The feature id for the '<em><b>Graph Port</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -700,7 +791,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getSinkInterface()
 	 * @generated
 	 */
-	int SINK_INTERFACE = 12;
+	int SINK_INTERFACE = 13;
 
 	/**
 	 * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list.
@@ -739,6 +830,15 @@ public interface PiMMPackage extends EPackage {
 	int SINK_INTERFACE__OUTPUT_PORTS = INTERFACE_ACTOR__OUTPUT_PORTS;
 
 	/**
+	 * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SINK_INTERFACE__CONFIG_OUTPUT_PORTS = INTERFACE_ACTOR__CONFIG_OUTPUT_PORTS;
+
+	/**
 	 * The feature id for the '<em><b>Graph Port</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -774,7 +874,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getRefinement()
 	 * @generated
 	 */
-	int REFINEMENT = 13;
+	int REFINEMENT = 14;
 
 	/**
 	 * The feature id for the '<em><b>File Name</b></em>' attribute.
@@ -803,7 +903,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getParameter()
 	 * @generated
 	 */
-	int PARAMETER = 14;
+	int PARAMETER = 15;
 
 	/**
 	 * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list.
@@ -824,13 +924,22 @@ public interface PiMMPackage extends EPackage {
 	int PARAMETER__NAME = ABSTRACT_VERTEX__NAME;
 
 	/**
+	 * The feature id for the '<em><b>Outgoing Dependencies</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PARAMETER__OUTGOING_DEPENDENCIES = ABSTRACT_VERTEX_FEATURE_COUNT + 0;
+
+	/**
 	 * The feature id for the '<em><b>Locally Static</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PARAMETER__LOCALLY_STATIC = ABSTRACT_VERTEX_FEATURE_COUNT + 0;
+	int PARAMETER__LOCALLY_STATIC = ABSTRACT_VERTEX_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Configuration Interface</b></em>' attribute.
@@ -839,7 +948,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int PARAMETER__CONFIGURATION_INTERFACE = ABSTRACT_VERTEX_FEATURE_COUNT + 1;
+	int PARAMETER__CONFIGURATION_INTERFACE = ABSTRACT_VERTEX_FEATURE_COUNT + 2;
 
 	/**
 	 * The feature id for the '<em><b>Graph Port</b></em>' reference.
@@ -848,7 +957,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int PARAMETER__GRAPH_PORT = ABSTRACT_VERTEX_FEATURE_COUNT + 2;
+	int PARAMETER__GRAPH_PORT = ABSTRACT_VERTEX_FEATURE_COUNT + 3;
 
 	/**
 	 * The number of structural features of the '<em>Parameter</em>' class.
@@ -857,7 +966,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int PARAMETER_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 3;
+	int PARAMETER_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 4;
 
 
 	/**
@@ -868,7 +977,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDependency()
 	 * @generated
 	 */
-	int DEPENDENCY = 15;
+	int DEPENDENCY = 16;
 
 	/**
 	 * The feature id for the '<em><b>Setter</b></em>' reference.
@@ -905,7 +1014,16 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getISetter()
 	 * @generated
 	 */
-	int ISETTER = 16;
+	int ISETTER = 17;
+
+	/**
+	 * The feature id for the '<em><b>Outgoing Dependencies</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ISETTER__OUTGOING_DEPENDENCIES = 0;
 
 	/**
 	 * The number of structural features of the '<em>ISetter</em>' class.
@@ -914,7 +1032,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ISETTER_FEATURE_COUNT = 0;
+	int ISETTER_FEATURE_COUNT = 1;
 
 
 	/**
@@ -990,6 +1108,17 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getAbstractActor_OutputPorts();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getConfigOutputPorts <em>Config Output Ports</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Config Output Ports</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.AbstractActor#getConfigOutputPorts()
+	 * @see #getAbstractActor()
+	 * @generated
+	 */
+	EReference getAbstractActor_ConfigOutputPorts();
 
 	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Graph <em>Graph</em>}'.
@@ -1160,6 +1289,16 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getConfigInputPort_IncomingDependency();
+
+	/**
+	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.ConfigOutputPort <em>Config Output Port</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Config Output Port</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.ConfigOutputPort
+	 * @generated
+	 */
+	EClass getConfigOutputPort();
 
 	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Fifo <em>Fifo</em>}'.
@@ -1352,6 +1491,17 @@ public interface PiMMPackage extends EPackage {
 	EClass getISetter();
 
 	/**
+	 * Returns the meta object for the reference list '{@link org.ietr.preesm.experiment.model.pimm.ISetter#getOutgoingDependencies <em>Outgoing Dependencies</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Outgoing Dependencies</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.ISetter#getOutgoingDependencies()
+	 * @see #getISetter()
+	 * @generated
+	 */
+	EReference getISetter_OutgoingDependencies();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1434,6 +1584,14 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EReference ABSTRACT_ACTOR__OUTPUT_PORTS = eINSTANCE.getAbstractActor_OutputPorts();
+
+		/**
+		 * The meta object literal for the '<em><b>Config Output Ports</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS = eINSTANCE.getAbstractActor_ConfigOutputPorts();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.GraphImpl <em>Graph</em>}' class.
@@ -1574,6 +1732,16 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EReference CONFIG_INPUT_PORT__INCOMING_DEPENDENCY = eINSTANCE.getConfigInputPort_IncomingDependency();
+
+		/**
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigOutputPortImpl <em>Config Output Port</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.ConfigOutputPortImpl
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getConfigOutputPort()
+		 * @generated
+		 */
+		EClass CONFIG_OUTPUT_PORT = eINSTANCE.getConfigOutputPort();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl <em>Fifo</em>}' class.
@@ -1734,6 +1902,14 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EClass ISETTER = eINSTANCE.getISetter();
+
+		/**
+		 * The meta object literal for the '<em><b>Outgoing Dependencies</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference ISETTER__OUTGOING_DEPENDENCIES = eINSTANCE.getISetter_OutgoingDependencies();
 
 	}
 

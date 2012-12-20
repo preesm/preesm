@@ -132,6 +132,14 @@ public class PiMMSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case PiMMPackage.CONFIG_OUTPUT_PORT: {
+				ConfigOutputPort configOutputPort = (ConfigOutputPort)theEObject;
+				T result = caseConfigOutputPort(configOutputPort);
+				if (result == null) result = casePort(configOutputPort);
+				if (result == null) result = caseISetter(configOutputPort);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			case PiMMPackage.FIFO: {
 				Fifo fifo = (Fifo)theEObject;
 				T result = caseFifo(fifo);
@@ -330,6 +338,21 @@ public class PiMMSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseConfigInputPort(ConfigInputPort object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Config Output Port</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Config Output Port</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseConfigOutputPort(ConfigOutputPort object) {
 		return null;
 	}
 

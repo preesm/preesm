@@ -24,6 +24,7 @@ import org.eclipse.emf.ecore.EObject;
 public interface Dependency extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Setter</b></em>' reference.
+	 * It is bidirectional and its opposite is '{@link org.ietr.preesm.experiment.model.pimm.ISetter#getOutgoingDependencies <em>Outgoing Dependencies</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Setter</em>' reference isn't clear,
@@ -33,7 +34,8 @@ public interface Dependency extends EObject {
 	 * @return the value of the '<em>Setter</em>' reference.
 	 * @see #setSetter(ISetter)
 	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDependency_Setter()
-	 * @model required="true"
+	 * @see org.ietr.preesm.experiment.model.pimm.ISetter#getOutgoingDependencies
+	 * @model opposite="outgoingDependencies" required="true"
 	 * @generated
 	 */
 	ISetter getSetter();

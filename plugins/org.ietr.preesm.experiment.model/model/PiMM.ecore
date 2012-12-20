@@ -13,6 +13,8 @@
         eType="#//InputPort" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="outputPorts" upperBound="-1"
         eType="#//OutputPort" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="configOutputPorts" upperBound="-1"
+        eType="#//ConfigOutputPort" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Graph" eSuperTypes="#//AbstractActor">
     <eStructuralFeatures xsi:type="ecore:EReference" name="vertices" upperBound="-1"
@@ -45,6 +47,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="incomingDependency" eType="#//Dependency"
         eOpposite="#//Dependency/getter"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConfigOutputPort" eSuperTypes="#//Port #//ISetter"/>
   <eClassifiers xsi:type="ecore:EClass" name="Fifo">
     <eStructuralFeatures xsi:type="ecore:EReference" name="sourcePort" lowerBound="1"
         eType="#//OutputPort" eOpposite="#//OutputPort/outgoingFifo"/>
@@ -52,9 +55,6 @@
         eType="#//InputPort" eOpposite="#//InputPort/incomingFifo"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="InterfaceActor" eSuperTypes="#//AbstractActor">
-    <eOperations name="setName">
-      <eParameters name="newName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="graphPort" lowerBound="1"
         eType="#//Port"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
@@ -76,9 +76,12 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Dependency">
     <eStructuralFeatures xsi:type="ecore:EReference" name="setter" lowerBound="1"
-        eType="#//ISetter"/>
+        eType="#//ISetter" eOpposite="#//ISetter/outgoingDependencies"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="getter" lowerBound="1"
         eType="#//ConfigInputPort" eOpposite="#//ConfigInputPort/incomingDependency"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ISetter" abstract="true" interface="true"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ISetter" abstract="true" interface="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingDependencies" upperBound="-1"
+        eType="#//Dependency" eOpposite="#//Dependency/setter"/>
+  </eClassifiers>
 </ecore:EPackage>

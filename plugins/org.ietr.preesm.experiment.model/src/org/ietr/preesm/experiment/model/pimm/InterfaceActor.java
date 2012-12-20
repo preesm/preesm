@@ -58,12 +58,4 @@ public interface InterfaceActor extends AbstractActor {
 	 */
 	String getKind();
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @model
-	 * @generated
-	 */
-	void setName(String newName);
-
 } // InterfaceVertex

@@ -13,6 +13,7 @@ import org.eclipse.emf.common.util.EList;
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getInputPorts <em>Input Ports</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getOutputPorts <em>Output Ports</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getConfigOutputPorts <em>Config Output Ports</em>}</li>
  * </ul>
  * </p>
  *
@@ -58,5 +59,21 @@ public interface AbstractActor extends AbstractVertex {
 	 * @generated
 	 */
 	EList<OutputPort> getOutputPorts();
+
+	/**
+	 * Returns the value of the '<em><b>Config Output Ports</b></em>' containment reference list.
+	 * The list contents are of type {@link org.ietr.preesm.experiment.model.pimm.ConfigOutputPort}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Config Output Ports</em>' containment reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Config Output Ports</em>' containment reference list.
+	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getAbstractActor_ConfigOutputPorts()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<ConfigOutputPort> getConfigOutputPorts();
 
 } // AbstractActor

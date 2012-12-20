@@ -101,11 +101,33 @@ public class DependencyImpl extends EObjectImpl implements Dependency {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setSetter(ISetter newSetter) {
+	public NotificationChain basicSetSetter(ISetter newSetter, NotificationChain msgs) {
 		ISetter oldSetter = setter;
 		setter = newSetter;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DEPENDENCY__SETTER, oldSetter, setter));
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.DEPENDENCY__SETTER, oldSetter, newSetter);
+			if (msgs == null) msgs = notification; else msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setSetter(ISetter newSetter) {
+		if (newSetter != setter) {
+			NotificationChain msgs = null;
+			if (setter != null)
+				msgs = ((InternalEObject)setter).eInverseRemove(this, PiMMPackage.ISETTER__OUTGOING_DEPENDENCIES, ISetter.class, msgs);
+			if (newSetter != null)
+				msgs = ((InternalEObject)newSetter).eInverseAdd(this, PiMMPackage.ISETTER__OUTGOING_DEPENDENCIES, ISetter.class, msgs);
+			msgs = basicSetSetter(newSetter, msgs);
+			if (msgs != null) msgs.dispatch();
+		}
+		else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DEPENDENCY__SETTER, newSetter, newSetter));
 	}
 
 	/**
@@ -176,6 +198,10 @@ public class DependencyImpl extends EObjectImpl implements Dependency {
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
+			case PiMMPackage.DEPENDENCY__SETTER:
+				if (setter != null)
+					msgs = ((InternalEObject)setter).eInverseRemove(this, PiMMPackage.ISETTER__OUTGOING_DEPENDENCIES, ISetter.class, msgs);
+				return basicSetSetter((ISetter)otherEnd, msgs);
 			case PiMMPackage.DEPENDENCY__GETTER:
 				if (getter != null)
 					msgs = ((InternalEObject)getter).eInverseRemove(this, PiMMPackage.CONFIG_INPUT_PORT__INCOMING_DEPENDENCY, ConfigInputPort.class, msgs);
@@ -192,6 +218,8 @@ public class DependencyImpl extends EObjectImpl implements Dependency {
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
+			case PiMMPackage.DEPENDENCY__SETTER:
+				return basicSetSetter(null, msgs);
 			case PiMMPackage.DEPENDENCY__GETTER:
 				return basicSetGetter(null, msgs);
 		}
