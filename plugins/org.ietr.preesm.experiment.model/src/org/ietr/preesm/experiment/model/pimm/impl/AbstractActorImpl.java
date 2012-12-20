@@ -221,6 +221,7 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements
 		List<Port> ports = new ArrayList<Port>(getInputPorts());
 
 		ports.addAll(getOutputPorts());
+		ports.addAll(getConfigOutputPorts());
 
 		for (Object port : ports) {
 			String name = ((Port) port).getName();

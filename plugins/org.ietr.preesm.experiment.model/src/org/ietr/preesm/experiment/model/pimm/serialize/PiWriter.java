@@ -14,9 +14,11 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -314,22 +316,31 @@ public class PiWriter {
 		Element dependencyElt = appendChild(graphElt, "edge");
 
 		// Set the source and target attributes
-		AbstractVertex source = (AbstractVertex) dependency.getSetter();
-		if (source instanceof Actor) {
-			source = (AbstractVertex) source.eContainer();
+		ISetter setter = dependency.getSetter();
+		AbstractVertex source = null;
+		if (setter instanceof ConfigOutputPort) {
+			source = (AbstractVertex) setter.eContainer();
 		}
+
+		if (setter instanceof Parameter) {
+			source = (AbstractVertex) setter;
+		}
+
+		if (source == null) {
+			throw new RuntimeException(
+					"Setter of the dependency has a type not supported by the writer: "
+							+ setter.getClass());
+		}
+
 		AbstractVertex target = (AbstractVertex) dependency.getGetter()
 				.eContainer();
 		dependencyElt.setAttribute("kind", "dependency");
 		dependencyElt.setAttribute("source", source.getName());
 		dependencyElt.setAttribute("target", target.getName());
 
-		// ISetter setter = dependency.getSetter();
-		//
-		// if(setter instanceof ConfigOutputPort)
-		// {
-		// dependencyElt.setAttribute("sourceport", setter.getName());
-		// }
+		if (setter instanceof ConfigOutputPort) {
+			dependencyElt.setAttribute("sourceport", ((Port) setter).getName());
+		}
 
 		if (target instanceof Actor) {
 			dependencyElt.setAttribute("targetport", dependency.getGetter()

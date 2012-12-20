@@ -174,16 +174,16 @@ public class PiParser {
 
 		// Get the sourcePort and targetPort
 		if (source instanceof Actor) {
-			//
-			// String sourcePortName = edgeElt.getAttribute("sourceport");
-			// sourcePortName = (sourcePortName == "") ? null : sourcePortName;
-			// ConfigOutputPort oPort = (ConfigOutputPort)
-			// ((Actor)source).getPortNamed(sourcePortName,
-			// "output");
-			// if (oPort == null) {
-			// throw new RuntimeException("Edge source port " + sourcePortName
-			// + " does not exist for vertex " + setterName);
-			// }
+
+			String sourcePortName = edgeElt.getAttribute("sourceport");
+			sourcePortName = (sourcePortName == "") ? null : sourcePortName;
+			ConfigOutputPort oPort = (ConfigOutputPort) ((Actor) source)
+					.getPortNamed(sourcePortName);
+			if (oPort == null) {
+				throw new RuntimeException("Edge source port " + sourcePortName
+						+ " does not exist for vertex " + setterName);
+			}
+			dependency.setSetter(oPort);
 		}
 		if (source instanceof Parameter) {
 			dependency.setSetter((ISetter) source);
@@ -208,7 +208,7 @@ public class PiParser {
 			target.getConfigInputPorts().add(iCfgPort);
 			dependency.setGetter(iCfgPort);
 		}
-		// TODO target instance of Fifo, Interface
+		// TODO target instance of Fifo
 
 		if (dependency.getGetter() == null || dependency.getSetter() == null) {
 			throw new RuntimeException(
