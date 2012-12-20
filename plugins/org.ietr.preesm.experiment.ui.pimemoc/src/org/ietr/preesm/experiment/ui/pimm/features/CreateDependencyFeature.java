@@ -11,6 +11,7 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
@@ -54,8 +55,27 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 
 		// Refresh to remove all remaining tooltip;
 		getDiagramEditor().refresh();
+		PictogramElement targetPE = context.getTargetPictogramElement();
+		Object targetObj = getBusinessObjectForPictogramElement(targetPE);
 
-		// True if the target is a ConfigInputPort
+		ISetter setter = getSetter(context.getSourceAnchor());
+		// If the setter is a ConfigOutputPort, only a Parameter can receive the
+		// dependency
+
+		if (setter instanceof ConfigOutputPort
+				&& !(targetObj instanceof Parameter)) {
+			if (context.getTargetAnchor() != null) {
+				// Create tooltip message
+				PiMMUtil.setToolTip(getFeatureProvider(), context
+						.getTargetAnchor().getGraphicsAlgorithm(),
+						getDiagramEditor(),
+						"A dependency set by a config. output port can only target a parameter.");
+			}
+			return false;
+		}
+
+		// True if the target is a ConfigInputPort of an actor (and the source
+		// is not a ConfigOutpuPort
 		Port target = getPort(context.getTargetAnchor());
 		boolean targetOK = (target != null && target instanceof ConfigInputPort);
 		if (targetOK) {
@@ -81,8 +101,6 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 		}
 
 		// False if target is a config input/output interface
-		PictogramElement targetPE = context.getTargetPictogramElement();
-		Object targetObj = getBusinessObjectForPictogramElement(targetPE);
 		if (targetObj instanceof Parameter
 				&& ((Parameter) targetObj).isConfigurationInterface()) {
 			PiMMUtil.setToolTip(getFeatureProvider(), context
