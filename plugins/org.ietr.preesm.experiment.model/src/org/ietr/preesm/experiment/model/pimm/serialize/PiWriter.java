@@ -248,7 +248,6 @@ public class PiWriter {
 			writeInterfaceVertex(vertexElt, (InterfaceActor) abstractActor);
 		}
 
-		// TODO writePorts()
 		// TODO addProperties() of the vertex
 	}
 
@@ -268,6 +267,7 @@ public class PiWriter {
 		// writeDataElt(vertexElt, "kind", "actor");
 		// Write ports of the actor
 		writePorts(vertexElt, actor.getConfigInputPorts());
+		writePorts(vertexElt, actor.getConfigOutputPorts());
 		writePorts(vertexElt, actor.getInputPorts());
 		writePorts(vertexElt, actor.getOutputPorts());
 

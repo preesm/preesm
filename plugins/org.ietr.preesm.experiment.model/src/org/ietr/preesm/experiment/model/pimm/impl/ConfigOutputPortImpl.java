@@ -50,6 +50,7 @@ public class ConfigOutputPortImpl extends PortImpl implements ConfigOutputPort {
 	 */
 	protected ConfigOutputPortImpl() {
 		super();
+		kind = "cfg_output";
 	}
 
 	/**

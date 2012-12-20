@@ -9,6 +9,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
@@ -478,7 +479,7 @@ public class PiParser {
 			// Throw an error if the parsed vertex is not an actor
 			if (!(vertex instanceof AbstractActor)) {
 				throw new RuntimeException("Parsed data port " + portName
-						+ "cannot belong to the non-actor vertex "
+						+ " cannot belong to the non-actor vertex "
 						+ vertex.getName());
 			}
 
@@ -495,7 +496,7 @@ public class PiParser {
 			// Throw an error if the parsed vertex is not an actor
 			if (!(vertex instanceof AbstractActor)) {
 				throw new RuntimeException("Parsed data port " + portName
-						+ "cannot belong to the non-actor vertex "
+						+ " cannot belong to the non-actor vertex "
 						+ vertex.getName());
 			}
 			OutputPort oPort = PiMMFactory.eINSTANCE.createOutputPort();
@@ -512,9 +513,22 @@ public class PiParser {
 			iCfgPort.setName(portName);
 			vertex.getConfigInputPorts().add(iCfgPort);
 			break;
+
+		case "cfg_output":
+			// Throw an error if the parsed vertex is not an actor
+			if (!(vertex instanceof AbstractActor)) {
+				throw new RuntimeException("Parsed config. port " + portName
+						+ " cannot belong to the non-actor vertex "
+						+ vertex.getName());
+			}
+			ConfigOutputPort oCfgPort = PiMMFactory.eINSTANCE
+					.createConfigOutputPort();
+			oCfgPort.setName(portName);
+			((AbstractActor) vertex).getConfigOutputPorts().add(oCfgPort);
+			break;
 		default:
 			throw new RuntimeException("Parsed port " + portName
-					+ "has children of unknown kind: " + portKind);
+					+ " has children of unknown kind: " + portKind);
 		}
 	}
 
