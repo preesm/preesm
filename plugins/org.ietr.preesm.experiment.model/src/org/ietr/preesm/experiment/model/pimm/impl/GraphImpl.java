@@ -19,7 +19,7 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.adapter.InterfaceObserver;
+import org.ietr.preesm.experiment.model.pimm.adapter.GraphInterfaceObserver;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -81,7 +81,9 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 	 */
 	protected GraphImpl() {
 		super();
-		this.eAdapters().add(new InterfaceObserver());
+		// Add an observer to apply all the changes required when adding an
+		// interface
+		this.eAdapters().add(new GraphInterfaceObserver());
 	}
 
 	/**

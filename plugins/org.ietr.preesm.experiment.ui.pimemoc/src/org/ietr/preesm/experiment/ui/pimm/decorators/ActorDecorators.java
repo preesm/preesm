@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.impl.Reason;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.platform.IPlatformImageConstants;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
@@ -25,13 +26,16 @@ import org.ietr.preesm.experiment.ui.pimm.util.PortEqualityHelper;
 public class ActorDecorators {
 
 	/**
-	 * Methods that returns all the {@link IDecorator} for a given {@link Actor}.
+	 * Methods that returns all the {@link IDecorator} for a given {@link Actor}
+	 * .
 	 * 
 	 * @param actor
 	 *            the treated {@link Actor}
+	 * @param pe
+	 *            the {@link PictogramElement} to decorate
 	 * @return the {@link IDecorator} table.
 	 */
-	public static IDecorator[] getDecorators(Actor actor) {
+	public static IDecorator[] getDecorators(Actor actor, PictogramElement pe) {
 		IReason reason = ActorDecorators.portsUpdateNeeded(actor);
 		if (reason.toBoolean()) {
 			ImageDecorator imageRenderingDecorator = new ImageDecorator(

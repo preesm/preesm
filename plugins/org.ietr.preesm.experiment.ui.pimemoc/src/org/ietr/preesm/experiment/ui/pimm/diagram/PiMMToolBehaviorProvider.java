@@ -15,7 +15,9 @@ import org.eclipse.graphiti.tb.DefaultToolBehaviorProvider;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.ui.pimm.decorators.ActorDecorators;
+import org.ietr.preesm.experiment.ui.pimm.decorators.ParameterDecorators;
 import org.ietr.preesm.experiment.ui.pimm.features.OpenRefinementFeature;
 
 /**
@@ -49,7 +51,12 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
 		Object bo = featureProvider.getBusinessObjectForPictogramElement(pe);
 
 		if (bo instanceof Actor) {
-			return ActorDecorators.getDecorators((Actor) bo);
+			return ActorDecorators.getDecorators((Actor) bo, pe);
+		}
+
+		if (bo instanceof Parameter
+				&& !((Parameter) bo).isConfigurationInterface()) {
+			return ParameterDecorators.getDecorators((Parameter) bo, pe);
 		}
 
 		return super.getDecorators(pe);

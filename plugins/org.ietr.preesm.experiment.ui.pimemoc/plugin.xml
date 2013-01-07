@@ -19,6 +19,9 @@
          <diagramType
                id="org.ietr.preesm.experiment.ui.pimm.pimmDiagramType">
          </diagramType>
+         <imageProvider
+               id="org.ietr.preesm.experiment.ui.pimm.util.PiMMImageProvider">
+         </imageProvider>
       </diagramTypeProvider>
    </extension>
    <extension
@@ -44,6 +47,13 @@
             id="org.ietr.preesm.experiment.ui.pimm.editor"
             name="PiMM Editor">
       </editor>
+   </extension>
+   <extension
+         point="org.eclipse.graphiti.ui.imageProviders">
+      <imageProvider
+            class="org.ietr.preesm.experiment.ui.pimm.util.PiMMImageProvider"
+            id="org.ietr.preesm.experiment.ui.pimm.util.PiMMImageProvider">
+      </imageProvider>
    </extension>
 
 </plugin>

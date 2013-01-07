@@ -30,12 +30,12 @@ import org.ietr.preesm.experiment.model.pimm.SourceInterface;
  * @author kdesnos
  * 
  */
-public class InterfaceObserver extends AdapterImpl {
+public class GraphInterfaceObserver extends AdapterImpl {
 
 	/**
-	 * Default constructor of the {@link InterfaceObserver}.
+	 * Default constructor of the {@link GraphInterfaceObserver}.
 	 */
-	public InterfaceObserver() {
+	public GraphInterfaceObserver() {
 		// Nothing to do here
 	}
 
