@@ -11,6 +11,7 @@ import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
@@ -19,6 +20,7 @@ import org.ietr.preesm.experiment.model.pimm.InputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.SinkInterface;
@@ -136,7 +138,7 @@ public class PiParser {
 		// Instantiate the new Config Input Interface
 		Parameter param = PiMMFactory.eINSTANCE.createParameter();
 		param.setConfigurationInterface(true);
-		param.setLocallyStatic(true);
+		//param.setLocallyStatic(true);
 
 		// Get the actor properties
 		param.setName(nodeElt.getAttribute("id"));
@@ -163,14 +165,27 @@ public class PiParser {
 		String setterName = edgeElt.getAttribute("source");
 		String getterName = edgeElt.getAttribute("target");
 		AbstractVertex source = graph.getVertexNamed(setterName);
-		AbstractVertex target = graph.getVertexNamed(getterName);
+		Parameterizable target = graph.getVertexNamed(getterName);
 		if (source == null) {
 			throw new RuntimeException("Dependency source vertex " + setterName
 					+ " does not exist.");
 		}
 		if (target == null) {
-			throw new RuntimeException("Dependency target vertex " + setterName
-					+ " does not exist.");
+			// The target can also be a Delay associated to a Fifo
+			Fifo targetFifo = graph.getFifoIded(getterName);
+
+			if (targetFifo == null) {
+				throw new RuntimeException("Dependency target " + getterName
+						+ " does not exist.");
+			}
+
+			if (targetFifo.getDelay() == null) {
+				throw new RuntimeException("Dependency fifo target "
+						+ getterName
+						+ " has no delay to receive the dependency.");
+			} else {
+				target = targetFifo.getDelay();
+			}
 		}
 
 		// Get the sourcePort and targetPort
@@ -193,7 +208,7 @@ public class PiParser {
 		if (target instanceof Actor) {
 			String targetPortName = edgeElt.getAttribute("targetport");
 			targetPortName = (targetPortName == "") ? null : targetPortName;
-			ConfigInputPort iPort = (ConfigInputPort) target
+			ConfigInputPort iPort = (ConfigInputPort) ((AbstractVertex) target)
 					.getPortNamed(targetPortName);
 			if (iPort == null) {
 				throw new RuntimeException("Dependency target port "
@@ -203,13 +218,13 @@ public class PiParser {
 			dependency.setGetter(iPort);
 		}
 
-		if (target instanceof Parameter || target instanceof InterfaceActor) {
+		if (target instanceof Parameter || target instanceof InterfaceActor
+				|| target instanceof Delay) {
 			ConfigInputPort iCfgPort = PiMMFactory.eINSTANCE
 					.createConfigInputPort();
 			target.getConfigInputPorts().add(iCfgPort);
 			dependency.setGetter(iCfgPort);
 		}
-		// TODO target instance of Fifo
 
 		if (dependency.getGetter() == null || dependency.getSetter() == null) {
 			throw new RuntimeException(
@@ -293,6 +308,14 @@ public class PiParser {
 
 		fifo.setSourcePort(oPort);
 		fifo.setTargetPort(iPort);
+
+		// Check if the fifo has a delay
+		if (getProperty(edgeElt, "delay") != null) {
+			// TODO replace with a parse Delay if delay have their own element
+			// in the future
+			Delay delay = PiMMFactory.eINSTANCE.createDelay();
+			fifo.setDelay(delay);
+		}
 
 		// Add the new Fifo to the graph
 		graph.getFifos().add(fifo);
@@ -436,7 +459,7 @@ public class PiParser {
 		// Instantiate the new Parameter
 		Parameter param = PiMMFactory.eINSTANCE.createParameter();
 		param.setConfigurationInterface(false);
-		param.setLocallyStatic(true);
+		//param.setLocallyStatic(true);
 		param.setGraphPort(null); // No port of the graph corresponds to this
 									// parameter
 

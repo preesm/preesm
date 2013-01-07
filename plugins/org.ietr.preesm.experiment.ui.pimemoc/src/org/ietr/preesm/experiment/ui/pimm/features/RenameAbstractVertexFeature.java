@@ -4,19 +4,19 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.experiment.ui.pimm.util.PiMMUtil;
 
 /**
- * Custom feature to rename an actor.
+ * Custom feature to rename an {@link AbstractVertex}.
  * 
  * @author kdesnos
  * 
  */
-public class RenameActorFeature extends AbstractCustomFeature {
-	
+public class RenameAbstractVertexFeature extends AbstractCustomFeature {
+
 	protected boolean hasDoneChanges = false;
 
 	/**
@@ -25,29 +25,29 @@ public class RenameActorFeature extends AbstractCustomFeature {
 	 * @param fp
 	 *            the feature provider
 	 */
-	public RenameActorFeature(IFeatureProvider fp) {
+	public RenameAbstractVertexFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
 	@Override
 	public String getName() {
-		return "Rename Actor";
+		return "Rename";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Change the name of the Actor";
+		return "Change the name";
 	}
 
 	@Override
 	public boolean canExecute(ICustomContext context) {
 		// allow rename if exactly one pictogram element
-		// representing an Actor is selected
+		// representing an AbstractVertex is selected
 		boolean ret = false;
 		PictogramElement[] pes = context.getPictogramElements();
 		if (pes != null && pes.length == 1) {
 			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof Actor) {
+			if (bo instanceof AbstractVertex) {
 				ret = true;
 			}
 		}
@@ -63,31 +63,36 @@ public class RenameActorFeature extends AbstractCustomFeature {
 		PictogramElement[] pes = context.getPictogramElements();
 		if (pes != null && pes.length == 1) {
 			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof Actor) {
-				Actor actor = (Actor) bo;
-				String currentName = actor.getName();
+			if (bo instanceof AbstractVertex) {
+				AbstractVertex vertex = (AbstractVertex) bo;
+				String currentName = vertex.getName();
 
-				// Ask user for Actor name until a valid name is entered.
-				String question = "Enter new actor name";
-				String newActorName = actor.getName();
+				// Ask user for AbstractVertex name until a valid name is
+				// entered.
+				String className = bo.getClass().getSimpleName();
+				className = className.substring(0,
+						className.lastIndexOf("Impl"));
+				String question = "Enter new " + className + " name";
+				String newVertexName = vertex.getName();
 
-				newActorName = PiMMUtil.askString("Create Actor", question,
-						newActorName, new VertexNameValidator(graph, actor));
+				newVertexName = PiMMUtil.askString("Rename " + className,
+						question, newVertexName, new VertexNameValidator(graph,
+								vertex));
 
-				if (newActorName != null && !newActorName.equals(currentName)) {
+				if (newVertexName != null && !newVertexName.equals(currentName)) {
 					this.hasDoneChanges = true;
-					actor.setName(newActorName);
-			        
+					vertex.setName(newVertexName);
+
 					// Update the Pictogram element
 					updatePictogramElement(pes[0]);
-					
+
 					// Call the layout feature
 					layoutPictogramElement(pes[0]);
 				}
 			}
 		}
 	}
-	
+
 	@Override
 	public boolean hasDoneChanges() {
 		return this.hasDoneChanges;

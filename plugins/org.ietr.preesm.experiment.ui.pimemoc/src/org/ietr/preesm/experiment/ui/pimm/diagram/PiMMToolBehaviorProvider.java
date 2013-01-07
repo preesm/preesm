@@ -5,12 +5,17 @@ import java.util.Map;
 
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.examples.common.ui.DiagramTypeWizardPage;
+import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IDoubleClickContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.tb.DefaultToolBehaviorProvider;
+import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
+import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.ui.pimm.decorators.ActorDecorators;
 import org.ietr.preesm.experiment.ui.pimm.features.OpenRefinementFeature;
 
 /**
@@ -39,14 +44,28 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
 	}
 
 	@Override
+	public IDecorator[] getDecorators(PictogramElement pe) {
+		IFeatureProvider featureProvider = getFeatureProvider();
+		Object bo = featureProvider.getBusinessObjectForPictogramElement(pe);
+
+		if (bo instanceof Actor) {
+			return ActorDecorators.getDecorators((Actor) bo);
+		}
+
+		return super.getDecorators(pe);
+	}
+
+	@Override
 	public ICustomFeature getDoubleClickFeature(IDoubleClickContext context) {
-		ICustomFeature customFeature = new OpenRefinementFeature(getFeatureProvider());
-		
-		// canExecute() tests especially if the context contains a Actor with a valid refinement
-		if(customFeature.canExecute(context)){
+		ICustomFeature customFeature = new OpenRefinementFeature(
+				getFeatureProvider());
+
+		// canExecute() tests especially if the context contains a Actor with a
+		// valid refinement
+		if (customFeature.canExecute(context)) {
 			return customFeature;
 		}
-		
+
 		return super.getDoubleClickFeature(context);
 	}
 
@@ -54,7 +73,7 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
 	public String getToolTip(GraphicsAlgorithm ga) {
 		return toolTips.get(ga);
 	}
-	
+
 	/**
 	 * Set the tooltip message for a given {@link GraphicsAlgorithm}
 	 * 

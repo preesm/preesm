@@ -11,9 +11,12 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.HybridInputPort;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
@@ -58,10 +61,14 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 		PictogramElement targetPE = context.getTargetPictogramElement();
 		Object targetObj = getBusinessObjectForPictogramElement(targetPE);
 
+		// False if the target is a Graph (i.e. the diagram)
+		if (targetObj instanceof Graph) {
+			return false;
+		}
+
 		ISetter setter = getSetter(context.getSourceAnchor());
 		// If the setter is a ConfigOutputPort, only a Parameter can receive the
 		// dependency
-
 		if (setter instanceof ConfigOutputPort
 				&& !(targetObj instanceof Parameter)) {
 			if (context.getTargetAnchor() != null) {
@@ -80,9 +87,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 		boolean targetOK = (target != null && target instanceof ConfigInputPort);
 		if (targetOK) {
 			// Check that no dependency is connected to the ports
-			if (((ConfigInputPort) target).getIncomingDependency() == null) {
-				return true;
-			} else {
+			if (((ConfigInputPort) target).getIncomingDependency() != null) {
 				// Create tooltip message
 				PiMMUtil.setToolTip(getFeatureProvider(), context
 						.getTargetAnchor().getGraphicsAlgorithm(),
@@ -90,6 +95,18 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 						"A config port cannot be connected to several Dependencies");
 				return false;
 			}
+
+			if (target instanceof HybridInputPort
+					&& ((HybridInputPort) target).getIncomingFifo() != null) {
+				// Create tooltip message
+				PiMMUtil.setToolTip(getFeatureProvider(), context
+						.getTargetAnchor().getGraphicsAlgorithm(),
+						getDiagramEditor(),
+						"An hybrid port cannot be connected to several Dependencies/Fifos");
+				return false;
+			}
+
+			return true;
 		}
 
 		// False if the target is the setter
@@ -101,12 +118,14 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 		}
 
 		// False if target is a config input/output interface
-		if (targetObj instanceof Parameter
-				&& ((Parameter) targetObj).isConfigurationInterface()) {
-			PiMMUtil.setToolTip(getFeatureProvider(), context
-					.getTargetPictogramElement().getGraphicsAlgorithm(),
+		if ((targetObj instanceof Parameter && ((Parameter) targetObj)
+				.isConfigurationInterface())
+				|| targetObj instanceof ConfigOutputInterface) {
+			PiMMUtil.setToolTip(
+					getFeatureProvider(),
+					context.getTargetPictogramElement().getGraphicsAlgorithm(),
 					getDiagramEditor(),
-					"Configuration Input Interfaces cannot be the getter of a dependency");
+					"Configuration Interfaces cannot be the getter of a dependency.\nCheck the inerface port instead.");
 			return false;
 		}
 
@@ -212,7 +231,8 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 
 				// If the getter is a Parameter or an InterfaceActor
 				if (tgtObj instanceof Parameter
-						|| tgtObj instanceof InterfaceActor) {
+						|| tgtObj instanceof InterfaceActor
+						|| tgtObj instanceof Delay) {
 					// Create a ConfigInputPort
 					getter = PiMMFactory.eINSTANCE.createConfigInputPort();
 					((Parameterizable) tgtObj).getConfigInputPorts().add(

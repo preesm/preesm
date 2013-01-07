@@ -14,36 +14,33 @@ import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
-import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.ui.pimm.diagram.PiMMFeatureProviderWithRemove;
+import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 
 /**
- * Delete feature for {@link Parameter}s.
+ * Delete feature for {@link Parameterizable}s elements.
  * 
  * @author kdesnos
  * 
  */
-public class DeleteAbstractVertexFeature extends DefaultDeleteFeature {
+public class DeleteParameterizableFeature extends DefaultDeleteFeature {
 
 	/**
-	 * Default constructor for the {@link DeleteAbstractVertexFeature}
+	 * Default constructor for the {@link DeleteParameterizableFeature}
 	 * 
 	 * @param fp
 	 *            the feature provider
 	 */
-	public DeleteAbstractVertexFeature(IFeatureProvider fp) {
-		super(new PiMMFeatureProviderWithRemove(fp.getDiagramTypeProvider()));
+	public DeleteParameterizableFeature(IFeatureProvider fp) {
+		super(fp);
 	}
 
 	/**
 	 * Method to delete the {@link Dependency} connected to the deleted
-	 * {@link AbstractVertex}.
+	 * {@link Parameterizable} element.
 	 * 
 	 * @param cba
-	 *            the {@link ChopboxAnchor} of the deleted {@link Port}
+	 *            the {@link ChopboxAnchor} of the deleted element
 	 */
 	protected void deleteConnectedConnection(ChopboxAnchor cba) {
 		// First, the list of connections is scanned in order to fill a map with
@@ -75,7 +72,7 @@ public class DeleteAbstractVertexFeature extends DefaultDeleteFeature {
 	public void preDelete(IDeleteContext context) {
 		super.preDelete(context);
 
-		// Delete all the dependencies linked to this parameter
+		// Delete all the dependencies linked to this parameterizable element
 		ContainerShape cs = (ContainerShape) context.getPictogramElement();
 
 		// Scan the anchors (There should be only one ChopBoxAnchor)

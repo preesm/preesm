@@ -3,7 +3,6 @@ package org.ietr.preesm.experiment.ui.pimm.diagram;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.context.IRemoveContext;
-import org.ietr.preesm.experiment.ui.pimm.features.CustomDeleteFeature;
 
 /**
  * The purpose of this class is to provide the RemoveFeature for use in the

@@ -179,7 +179,8 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 							.calculateTextSize(text, font);
 
 					// Retrieve the space of the name
-					// (+20 to add space and lighten the actor representation)
+					// (+40 to add space and lighten the actor representation)
+					// And allow the addition of a decorator
 					nameWidth = size.getWidth() + 20;
 
 				}

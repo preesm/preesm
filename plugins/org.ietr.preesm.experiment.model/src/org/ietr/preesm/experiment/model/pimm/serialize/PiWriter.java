@@ -13,14 +13,15 @@ import org.eclipse.emf.common.util.EList;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.w3c.dom.Document;
@@ -275,12 +276,6 @@ public class PiWriter {
 
 	}
 
-	protected void writeConfigPorts(Element vertexElt,
-			EList<ConfigInputPort> configInputPorts, String string) {
-		// TODO Auto-generated method stub
-
-	}
-
 	/**
 	 * Add a data child {@link Element} to the parent {@link Element} whit the
 	 * given key name and the given content. If the {@link Key} does not exist
@@ -302,6 +297,22 @@ public class PiWriter {
 	}
 
 	/**
+	 * Write the {@link Delay} information in the given {@link Element}.
+	 * 
+	 * @param fifoElt
+	 *            the {@link Element} to write
+	 * @param delay
+	 *            the {@link Delay} to serialize
+	 */
+	protected void writeDelay(Element fifoElt, Delay delay) {
+		writeDataElt(fifoElt, "delay", null);
+		// TODO when delay class will be updated, modify the writer/parser.
+		// Maybe a specific element will be needed to store the Expression
+		// associated to a delay as well as it .h file storing the default value
+		// of tokens.
+	}
+
+	/**
 	 * Create and add a node {@link Element} to the given parent {@link Element}
 	 * for the given {@link Dependency} and write its informations.
 	 * 
@@ -314,6 +325,7 @@ public class PiWriter {
 	protected void writeDependency(Element graphElt, Dependency dependency) {
 		// Add the node to the document
 		Element dependencyElt = appendChild(graphElt, "edge");
+		dependencyElt.setAttribute("kind", "dependency");
 
 		// Set the source and target attributes
 		ISetter setter = dependency.getSetter();
@@ -331,20 +343,27 @@ public class PiWriter {
 					"Setter of the dependency has a type not supported by the writer: "
 							+ setter.getClass());
 		}
-
-		AbstractVertex target = (AbstractVertex) dependency.getGetter()
-				.eContainer();
-		dependencyElt.setAttribute("kind", "dependency");
 		dependencyElt.setAttribute("source", source.getName());
-		dependencyElt.setAttribute("target", target.getName());
-
 		if (setter instanceof ConfigOutputPort) {
-			dependencyElt.setAttribute("sourceport", ((Port) setter).getName());
+			dependencyElt.setAttribute("sourceport",
+					((Port) setter).getName());
 		}
 
-		if (target instanceof Actor) {
-			dependencyElt.setAttribute("targetport", dependency.getGetter()
-					.getName());
+		Parameterizable target = (Parameterizable) dependency.getGetter()
+				.eContainer();
+		if (target instanceof AbstractVertex) {
+
+			dependencyElt.setAttribute("target",
+					((AbstractVertex) target).getName());
+
+			if (target instanceof Actor) {
+				dependencyElt.setAttribute("targetport", dependency.getGetter()
+						.getName());
+			}
+		}
+		
+		if (target instanceof Delay){
+			dependencyElt.setAttribute("target",((Fifo) target.eContainer()).getId());
 		}
 	}
 
@@ -373,7 +392,10 @@ public class PiWriter {
 		fifoElt.setAttribute("sourceport", fifo.getSourcePort().getName());
 		fifoElt.setAttribute("targetport", fifo.getTargetPort().getName());
 
-		// TODO write Delays and other Fifo properties
+		if (fifo.getDelay() != null) {
+			writeDelay(fifoElt, fifo.getDelay());
+		}
+		// TODO other Fifo properties (if any)
 	}
 
 	/**

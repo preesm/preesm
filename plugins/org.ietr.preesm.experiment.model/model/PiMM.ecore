@@ -53,6 +53,10 @@
         eType="#//OutputPort" eOpposite="#//OutputPort/outgoingFifo"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetPort" lowerBound="1"
         eType="#//InputPort" eOpposite="#//InputPort/incomingFifo"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="delay" eType="#//Delay"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        changeable="false" volatile="true" unsettable="true" derived="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="InterfaceActor" eSuperTypes="#//AbstractActor">
     <eStructuralFeatures xsi:type="ecore:EReference" name="graphPort" lowerBound="1"
@@ -69,7 +73,8 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Parameter" eSuperTypes="#//AbstractVertex #//ISetter">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="locallyStatic" lowerBound="1"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" changeable="false"
+        volatile="true" unsettable="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="configurationInterface"
         lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="graphPort" lowerBound="1"
@@ -85,4 +90,6 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingDependencies" upperBound="-1"
         eType="#//Dependency" eOpposite="#//Dependency/setter"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="HybridInputPort" eSuperTypes="#//ConfigInputPort #//InputPort"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Delay" eSuperTypes="#//Parameterizable"/>
 </ecore:EPackage>

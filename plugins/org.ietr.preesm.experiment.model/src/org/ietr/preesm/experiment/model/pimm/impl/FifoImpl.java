@@ -8,10 +8,13 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -21,6 +24,8 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getSourcePort <em>Source Port</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getTargetPort <em>Target Port</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getDelay <em>Delay</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getId <em>Id</em>}</li>
  * </ul>
  * </p>
  *
@@ -44,6 +49,26 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	 * @ordered
 	 */
 	protected InputPort targetPort;
+
+	/**
+	 * The cached value of the '{@link #getDelay() <em>Delay</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getDelay()
+	 * @generated
+	 * @ordered
+	 */
+	protected Delay delay;
+
+	/**
+	 * The default value of the '{@link #getId() <em>Id</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getId()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String ID_EDEFAULT = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -177,6 +202,94 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	}
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Delay getDelay() {
+		return delay;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetDelay(Delay newDelay, NotificationChain msgs) {
+		Delay oldDelay = delay;
+		delay = newDelay;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.FIFO__DELAY, oldDelay, newDelay);
+			if (msgs == null) msgs = notification; else msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setDelay(Delay newDelay) {
+		if (newDelay != delay) {
+			NotificationChain msgs = null;
+			if (delay != null)
+				msgs = ((InternalEObject)delay).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.FIFO__DELAY, null, msgs);
+			if (newDelay != null)
+				msgs = ((InternalEObject)newDelay).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.FIFO__DELAY, null, msgs);
+			msgs = basicSetDelay(newDelay, msgs);
+			if (msgs != null) msgs.dispatch();
+		}
+		else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.FIFO__DELAY, newDelay, newDelay));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> Return a {@link String} composed as follow:<br>
+	 * "&ltSourceName&gt[.&ltSourcePortName&gt]-&ltTargetName&gt[.&ltTargetPortName&gt]"
+	 * <br>
+	 * <br>
+	 * This ID should be unique since each {@link Port} can only have one
+	 * {@link Fifo} connected to them. Moreover, a {@link Port} with no name is
+	 * always the unique data {@link Port} of its owner. <!-- end-user-doc -->
+	 * 
+	 */
+	public String getId() {
+
+		Port srcPort = this.getSourcePort();
+		Port tgtPort = this.getTargetPort();
+
+		if (srcPort == null || tgtPort == null) {
+			throw new RuntimeException("Fifo has no source or no target port.");
+		}
+
+		AbstractActor src = (AbstractActor) srcPort.eContainer();
+		AbstractActor tgt = (AbstractActor) tgtPort.eContainer();
+
+		String id = src.getName();
+		if (srcPort.getName() != null && !srcPort.getName().isEmpty()) {
+			id += "." + srcPort.getName();
+		}
+		id += "-" + tgt.getName();
+		if (tgtPort.getName() != null && !tgtPort.getName().isEmpty()) {
+			id += "." + tgtPort.getName();
+		}
+
+		return id;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public boolean isSetId() {
+		// TODO: implement this method to return whether the 'Id' attribute is set
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
@@ -208,6 +321,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 				return basicSetSourcePort(null, msgs);
 			case PiMMPackage.FIFO__TARGET_PORT:
 				return basicSetTargetPort(null, msgs);
+			case PiMMPackage.FIFO__DELAY:
+				return basicSetDelay(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -225,6 +340,10 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 			case PiMMPackage.FIFO__TARGET_PORT:
 				if (resolve) return getTargetPort();
 				return basicGetTargetPort();
+			case PiMMPackage.FIFO__DELAY:
+				return getDelay();
+			case PiMMPackage.FIFO__ID:
+				return getId();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -241,6 +360,9 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 				return;
 			case PiMMPackage.FIFO__TARGET_PORT:
 				setTargetPort((InputPort)newValue);
+				return;
+			case PiMMPackage.FIFO__DELAY:
+				setDelay((Delay)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -259,6 +381,9 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 			case PiMMPackage.FIFO__TARGET_PORT:
 				setTargetPort((InputPort)null);
 				return;
+			case PiMMPackage.FIFO__DELAY:
+				setDelay((Delay)null);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -274,6 +399,10 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 				return sourcePort != null;
 			case PiMMPackage.FIFO__TARGET_PORT:
 				return targetPort != null;
+			case PiMMPackage.FIFO__DELAY:
+				return delay != null;
+			case PiMMPackage.FIFO__ID:
+				return isSetId();
 		}
 		return super.eIsSet(featureID);
 	}

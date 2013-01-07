@@ -12,7 +12,6 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.ui.pimm.diagram.PiMMFeatureProviderWithRemove;
 
 /**
  * Delete Feature for {@link AbstractActor}
@@ -20,7 +19,7 @@ import org.ietr.preesm.experiment.ui.pimm.diagram.PiMMFeatureProviderWithRemove;
  * @author kdesnos
  * 
  */
-public class DeleteAbstractActorFeature extends DeleteAbstractVertexFeature {
+public class DeleteAbstractActorFeature extends DeleteParameterizableFeature {
 
 	/**
 	 * Default constructor of {@link DeleteAbstractActorFeature}
@@ -29,7 +28,7 @@ public class DeleteAbstractActorFeature extends DeleteAbstractVertexFeature {
 	 *            the feature provider
 	 */
 	public DeleteAbstractActorFeature(IFeatureProvider fp) {
-		super(new PiMMFeatureProviderWithRemove(fp.getDiagramTypeProvider()));
+		super(fp);
 	}
 
 	@Override

@@ -16,7 +16,6 @@ import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.ui.pimm.diagram.PiMMFeatureProviderWithRemove;
 
 /**
  * Delete feature for the ports
@@ -32,7 +31,7 @@ public class DeleteActorPortFeature extends DefaultDeleteFeature {
 	 * @param fp
 	 */
 	public DeleteActorPortFeature(IFeatureProvider fp) {
-		super(new PiMMFeatureProviderWithRemove(fp.getDiagramTypeProvider()));
+		super(fp);
 	}
 
 	@Override
@@ -71,9 +70,11 @@ public class DeleteActorPortFeature extends DefaultDeleteFeature {
 			IDeleteFeature delFeature = getFeatureProvider().getDeleteFeature(
 					delCtxt);
 			if (delFeature.canDelete(delCtxt)) {
+				// To deactivate dialog box
+				delCtxt.setMultiDeleteInfo(new MultiDeleteInfo(false, false, 0));
+				
 				// Cannot delete directly because this would mean concurrent
 				// modifications of the connections Elist
-				delCtxt.setMultiDeleteInfo(new MultiDeleteInfo(false, false, 0));
 				delFeatures.put(delFeature, delCtxt);
 			}
 		}

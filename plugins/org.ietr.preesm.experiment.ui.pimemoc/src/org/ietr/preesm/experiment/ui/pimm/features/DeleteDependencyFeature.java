@@ -8,7 +8,6 @@ import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
-import org.ietr.preesm.experiment.ui.pimm.diagram.PiMMFeatureProviderWithRemove;
 
 /**
  * Delete Feature for {@link Dependency}.
@@ -25,7 +24,7 @@ public class DeleteDependencyFeature extends DefaultDeleteFeature {
 	 *            the feature provider
 	 */
 	public DeleteDependencyFeature(IFeatureProvider fp) {
-		super(new PiMMFeatureProviderWithRemove(fp.getDiagramTypeProvider()));
+		super(fp);
 	}
 
 	public void preDelete(IDeleteContext context) {

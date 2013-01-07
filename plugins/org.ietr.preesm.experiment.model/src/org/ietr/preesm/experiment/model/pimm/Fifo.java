@@ -14,6 +14,8 @@ import org.eclipse.emf.ecore.EObject;
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Fifo#getSourcePort <em>Source Port</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Fifo#getTargetPort <em>Target Port</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.Fifo#getDelay <em>Delay</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.Fifo#getId <em>Id</em>}</li>
  * </ul>
  * </p>
  *
@@ -77,5 +79,59 @@ public interface Fifo extends EObject {
 	 * @generated
 	 */
 	void setTargetPort(InputPort value);
+
+	/**
+	 * Returns the value of the '<em><b>Delay</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Delay</em>' containment reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Delay</em>' containment reference.
+	 * @see #setDelay(Delay)
+	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getFifo_Delay()
+	 * @model containment="true"
+	 * @generated
+	 */
+	Delay getDelay();
+
+	/**
+	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Fifo#getDelay <em>Delay</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Delay</em>' containment reference.
+	 * @see #getDelay()
+	 * @generated
+	 */
+	void setDelay(Delay value);
+
+	/**
+	 * Returns the value of the '<em><b>Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Id</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Id</em>' attribute.
+	 * @see #isSetId()
+	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getFifo_Id()
+	 * @model unsettable="true" required="true" changeable="false" volatile="true" derived="true"
+	 * @generated
+	 */
+	String getId();
+
+
+
+	/**
+	 * Returns whether the value of the '{@link org.ietr.preesm.experiment.model.pimm.Fifo#getId <em>Id</em>}' attribute is set.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return whether the value of the '<em>Id</em>' attribute is set.
+	 * @see #getId()
+	 * @generated
+	 */
+	boolean isSetId();
 
 } // Fifo

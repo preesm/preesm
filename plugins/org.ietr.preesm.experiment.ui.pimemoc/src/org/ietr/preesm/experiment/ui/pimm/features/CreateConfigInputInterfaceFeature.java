@@ -65,7 +65,7 @@ public class CreateConfigInputInterfaceFeature extends AbstractCreateFeature {
 		Parameter newParameter = PiMMFactory.eINSTANCE.createParameter();
 		newParameter.setName(newCfgInIfName);
 		newParameter.setConfigurationInterface(true);
-		newParameter.setLocallyStatic(true);
+		//newParameter.setLocallyStatic(true); 
 
 		// Add new parameter to the graph.
 		if (graph.getParameters().add(newParameter)) {

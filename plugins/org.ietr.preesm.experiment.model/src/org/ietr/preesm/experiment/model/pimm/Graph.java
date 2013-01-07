@@ -125,9 +125,19 @@ public interface Graph extends AbstractActor {
 	 * {@link Parameter}) whose name is given as a parameter.
 	 * 
 	 * @param name
-	 *            the desired vertex, or <code>null</code> if no vertex has the
-	 *            requested name.
-	 * @return
+	 *            the desired name
+	 * @return the desired vertex, or <code>null</code> if no vertex has the
+	 *         requested name.
 	 */
 	public AbstractVertex getVertexNamed(String name);
+
+	/**
+	 * Return the {@link Fifo} whose ID is given as a parameter.
+	 * 
+	 * @param id
+	 *            the desired id
+	 * @return the desired {@link Fifo}, or <code>null</code> if no vertex has
+	 *         the requested name.
+	 */
+	public Fifo getFifoIded(String id);
 } // Graph

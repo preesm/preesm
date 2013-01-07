@@ -281,4 +281,14 @@ public class GraphImpl extends AbstractActorImpl implements Graph {
 		return names;
 	}
 
+	@Override
+	public Fifo getFifoIded(String id) {
+		for (Fifo fifo : this.getFifos()) {
+			if (fifo.getId().equals(id)) {
+				return fifo;
+			}
+		}
+		return null;
+	}
+
 } // GraphImpl

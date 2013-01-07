@@ -144,6 +144,14 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 				return createISetterAdapter();
 			}
 			@Override
+			public Adapter caseHybridInputPort(HybridInputPort object) {
+				return createHybridInputPortAdapter();
+			}
+			@Override
+			public Adapter caseDelay(Delay object) {
+				return createDelayAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -426,6 +434,34 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createISetterAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.HybridInputPort <em>Hybrid Input Port</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.ietr.preesm.experiment.model.pimm.HybridInputPort
+	 * @generated
+	 */
+	public Adapter createHybridInputPortAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.Delay <em>Delay</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.ietr.preesm.experiment.model.pimm.Delay
+	 * @generated
+	 */
+	public Adapter createDelayAdapter() {
 		return null;
 	}
 

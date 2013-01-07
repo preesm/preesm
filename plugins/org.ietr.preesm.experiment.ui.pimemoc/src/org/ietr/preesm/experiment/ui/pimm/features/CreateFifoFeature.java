@@ -12,6 +12,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.HybridInputPort;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
@@ -54,9 +55,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 		boolean targetOK = (target != null && target instanceof InputPort);
 		if (targetOK) {
 			// Check that no Fifo is connected to the ports
-			if (((InputPort) target).getIncomingFifo() == null) {
-				return true;
-			} else {
+			if (((InputPort) target).getIncomingFifo() != null) {
 				// Create tooltip message
 				PiMMUtil.setToolTip(getFeatureProvider(), context
 						.getTargetAnchor().getGraphicsAlgorithm(),
@@ -64,6 +63,18 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 						"A port cannot be connected to several FIFOs");
 				return false;
 			}
+
+			if (target instanceof HybridInputPort
+					&& ((HybridInputPort) target).getIncomingDependency() != null) {
+				// Create tooltip message
+				PiMMUtil.setToolTip(getFeatureProvider(), context
+						.getTargetAnchor().getGraphicsAlgorithm(),
+						getDiagramEditor(),
+						"An hybrid port cannot be connected to several Dependencies/Fifos");
+				return false;
+			}
+
+			return true;
 		}
 
 		// False if the target is an outputPort

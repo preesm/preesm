@@ -31,22 +31,22 @@ public interface Parameter extends AbstractVertex, ISetter {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Locally Static</em>' attribute.
-	 * @see #setLocallyStatic(boolean)
+	 * @see #isSetLocallyStatic()
 	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameter_LocallyStatic()
-	 * @model required="true"
+	 * @model unsettable="true" required="true" changeable="false" volatile="true"
 	 * @generated
 	 */
 	boolean isLocallyStatic();
 
 	/**
-	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Parameter#isLocallyStatic <em>Locally Static</em>}' attribute.
+	 * Returns whether the value of the '{@link org.ietr.preesm.experiment.model.pimm.Parameter#isLocallyStatic <em>Locally Static</em>}' attribute is set.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Locally Static</em>' attribute.
+	 * @return whether the value of the '<em>Locally Static</em>' attribute is set.
 	 * @see #isLocallyStatic()
 	 * @generated
 	 */
-	void setLocallyStatic(boolean value);
+	boolean isSetLocallyStatic();
 
 	/**
 	 * Returns the value of the '<em><b>Configuration Interface</b></em>' attribute.

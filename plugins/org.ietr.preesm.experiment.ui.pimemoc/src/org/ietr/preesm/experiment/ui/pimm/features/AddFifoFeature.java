@@ -30,7 +30,7 @@ import org.ietr.preesm.experiment.model.pimm.Graph;
  */
 public class AddFifoFeature extends AbstractAddFeature {
 
-	private static final IColorConstant FIFO_FOREGROUND = new ColorConstant(100,
+	public static final IColorConstant FIFO_FOREGROUND = new ColorConstant(100,
 			100, 100);
 
 	/**
