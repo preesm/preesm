@@ -27,6 +27,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 
 /**
  * Layout Feature for Actors
@@ -99,11 +100,13 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 			}
 		}
 
-		// RETRIEVE THE ANCHOR WIDTH
+		// RETRIEVE THE ANCHOR HEIGHT
 		int anchorMaxHeight = 0;
 		{
 			int inputsHeight = 0;
 			int outputsHeight = 0;
+			int cfgInputsHeight = 0;
+			int cfgOutputsHeight = 0;
 			for (Anchor anchor : anchorShapes) {
 				// Retrieve the children of the invisible rectangle of the
 				// anchor
@@ -128,18 +131,28 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 						// is added to the graph
 						AbstractAddActorPortFeature.PORT_FONT_HEIGHT = size
 								.getHeight();
+						EObject obj = (EObject) getBusinessObjectForPictogramElement(anchor);
 
-						if (((BoxRelativeAnchor) anchor).getRelativeWidth() == 0.0) {
-							// This is an input port
+						switch (obj.eClass().getClassifierID()) {
+						case PiMMPackage.CONFIG_INPUT_PORT:
+							cfgInputsHeight += size.getHeight();
+							break;
+						case PiMMPackage.CONFIG_OUTPUT_PORT:
+							cfgOutputsHeight += size.getHeight();
+							break;
+
+						case PiMMPackage.INPUT_PORT:
 							inputsHeight += size.getHeight();
-						} else {
-							// This is an output port
+							break;
+						case PiMMPackage.OUTPUT_PORT:
 							outputsHeight += size.getHeight();
+							break;
 						}
 					}
 				}
 			}
-			anchorMaxHeight = Math.max(inputsHeight, outputsHeight);
+			anchorMaxHeight = Math.max(cfgInputsHeight, cfgOutputsHeight)
+					+ Math.max(inputsHeight, outputsHeight);
 		}
 
 		return anchorMaxHeight + nameHeight;
@@ -307,18 +320,19 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 		int nbConfigOutput = 0;
 		for (Anchor anchor : anchorShapes) {
 
-			if (getBusinessObjectForPictogramElement(anchor) instanceof InputPort) {
-				inputs.add((BoxRelativeAnchor) anchor);
-			}
 			if (getBusinessObjectForPictogramElement(anchor) instanceof ConfigInputPort) {
 				inputs.add(nbConfigInput, (BoxRelativeAnchor) anchor);
 				nbConfigInput++;
+			} else if (getBusinessObjectForPictogramElement(anchor) instanceof InputPort) {
+				inputs.add((BoxRelativeAnchor) anchor);
 			}
+
 			if (getBusinessObjectForPictogramElement(anchor) instanceof ConfigOutputPort) {
 				outputs.add(nbConfigOutput, (BoxRelativeAnchor) anchor);
 				nbConfigOutput++;
-			}
-			if (getBusinessObjectForPictogramElement(anchor) instanceof OutputPort) {
+			} // The else is important because a ConfigOutputPort IS an
+				// OutputPort
+			else if (getBusinessObjectForPictogramElement(anchor) instanceof OutputPort) {
 				outputs.add((BoxRelativeAnchor) anchor);
 			}
 		}

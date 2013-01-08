@@ -70,7 +70,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 			case PiMMPackage.REFINEMENT: return createRefinement();
 			case PiMMPackage.PARAMETER: return createParameter();
 			case PiMMPackage.DEPENDENCY: return createDependency();
-			case PiMMPackage.HYBRID_INPUT_PORT: return createHybridInputPort();
 			case PiMMPackage.DELAY: return createDelay();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
@@ -215,16 +214,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	public Dependency createDependency() {
 		DependencyImpl dependency = new DependencyImpl();
 		return dependency;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public HybridInputPort createHybridInputPort() {
-		HybridInputPortImpl hybridInputPort = new HybridInputPortImpl();
-		return hybridInputPort;
 	}
 
 	/**

@@ -104,12 +104,12 @@ public class LayoutPortFeature extends AbstractLayoutFeature {
 				if (bra.getRelativeWidth() == 0.0) {
 					// input port
 					gaService.setLocation(ga, 0,
-							1 + (portFontHeight - anchorGaSize) / 2);
+							0 + (portFontHeight - anchorGaSize) / 2);
 				} else {
 					// output port
 					gaService.setLocation(ga, bra.getGraphicsAlgorithm()
 							.getWidth() - anchorGaSize,
-							1 + (portFontHeight - anchorGaSize) / 2);
+							0 + (portFontHeight - anchorGaSize) / 2);
 				}
 			}
 
@@ -118,13 +118,13 @@ public class LayoutPortFeature extends AbstractLayoutFeature {
 				if (bra.getRelativeWidth() == 0.0) {
 					// input port
 					gaService.setLocation(ga, 0,
-							(portFontHeight - anchorGaSize) / 2);
+							-1 +(portFontHeight - anchorGaSize) / 2);
 					// portFontHeight - PORT_ANCHOR_GA_SIZE - 2) / 2
 				} else {
 					// output port
 					gaService.setLocation(ga, bra.getGraphicsAlgorithm()
 							.getWidth() - anchorGaSize - 1,
-							(portFontHeight - anchorGaSize) / 2);
+							-1 +(portFontHeight - anchorGaSize) / 2);
 				}
 			}
 		}

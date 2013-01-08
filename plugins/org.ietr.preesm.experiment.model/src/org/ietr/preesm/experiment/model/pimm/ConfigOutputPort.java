@@ -13,5 +13,5 @@ package org.ietr.preesm.experiment.model.pimm;
  * @model
  * @generated
  */
-public interface ConfigOutputPort extends Port, ISetter {
+public interface ConfigOutputPort extends OutputPort, ISetter {
 } // ConfigOutputPort

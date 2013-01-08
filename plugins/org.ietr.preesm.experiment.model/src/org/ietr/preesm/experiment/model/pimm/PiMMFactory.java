@@ -148,15 +148,6 @@ public interface PiMMFactory extends EFactory {
 	Dependency createDependency();
 
 	/**
-	 * Returns a new object of class '<em>Hybrid Input Port</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Hybrid Input Port</em>'.
-	 * @generated
-	 */
-	HybridInputPort createHybridInputPort();
-
-	/**
 	 * Returns a new object of class '<em>Delay</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

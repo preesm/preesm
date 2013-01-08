@@ -560,7 +560,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CONFIG_OUTPUT_PORT__NAME = PORT__NAME;
+	int CONFIG_OUTPUT_PORT__NAME = OUTPUT_PORT__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Kind</b></em>' attribute.
@@ -569,7 +569,16 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CONFIG_OUTPUT_PORT__KIND = PORT__KIND;
+	int CONFIG_OUTPUT_PORT__KIND = OUTPUT_PORT__KIND;
+
+	/**
+	 * The feature id for the '<em><b>Outgoing Fifo</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIG_OUTPUT_PORT__OUTGOING_FIFO = OUTPUT_PORT__OUTGOING_FIFO;
 
 	/**
 	 * The feature id for the '<em><b>Outgoing Dependencies</b></em>' reference list.
@@ -578,7 +587,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CONFIG_OUTPUT_PORT__OUTGOING_DEPENDENCIES = PORT_FEATURE_COUNT + 0;
+	int CONFIG_OUTPUT_PORT__OUTGOING_DEPENDENCIES = OUTPUT_PORT_FEATURE_COUNT + 0;
 
 	/**
 	 * The number of structural features of the '<em>Config Output Port</em>' class.
@@ -587,7 +596,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CONFIG_OUTPUT_PORT_FEATURE_COUNT = PORT_FEATURE_COUNT + 1;
+	int CONFIG_OUTPUT_PORT_FEATURE_COUNT = OUTPUT_PORT_FEATURE_COUNT + 1;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl <em>Fifo</em>}' class.
@@ -1145,62 +1154,6 @@ public interface PiMMPackage extends EPackage {
 
 
 	/**
-	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.HybridInputPortImpl <em>Hybrid Input Port</em>}' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see org.ietr.preesm.experiment.model.pimm.impl.HybridInputPortImpl
-	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getHybridInputPort()
-	 * @generated
-	 */
-	int HYBRID_INPUT_PORT = 19;
-
-	/**
-	 * The feature id for the '<em><b>Name</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int HYBRID_INPUT_PORT__NAME = CONFIG_INPUT_PORT__NAME;
-
-	/**
-	 * The feature id for the '<em><b>Kind</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int HYBRID_INPUT_PORT__KIND = CONFIG_INPUT_PORT__KIND;
-
-	/**
-	 * The feature id for the '<em><b>Incoming Dependency</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int HYBRID_INPUT_PORT__INCOMING_DEPENDENCY = CONFIG_INPUT_PORT__INCOMING_DEPENDENCY;
-
-	/**
-	 * The feature id for the '<em><b>Incoming Fifo</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int HYBRID_INPUT_PORT__INCOMING_FIFO = CONFIG_INPUT_PORT_FEATURE_COUNT + 0;
-
-	/**
-	 * The number of structural features of the '<em>Hybrid Input Port</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int HYBRID_INPUT_PORT_FEATURE_COUNT = CONFIG_INPUT_PORT_FEATURE_COUNT + 1;
-
-
-	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DelayImpl <em>Delay</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1208,7 +1161,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDelay()
 	 * @generated
 	 */
-	int DELAY = 20;
+	int DELAY = 19;
 
 	/**
 	 * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list.
@@ -1739,16 +1692,6 @@ public interface PiMMPackage extends EPackage {
 	EReference getISetter_OutgoingDependencies();
 
 	/**
-	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.HybridInputPort <em>Hybrid Input Port</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>Hybrid Input Port</em>'.
-	 * @see org.ietr.preesm.experiment.model.pimm.HybridInputPort
-	 * @generated
-	 */
-	EClass getHybridInputPort();
-
-	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Delay <em>Delay</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2201,16 +2144,6 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EReference ISETTER__OUTGOING_DEPENDENCIES = eINSTANCE.getISetter_OutgoingDependencies();
-
-		/**
-		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.HybridInputPortImpl <em>Hybrid Input Port</em>}' class.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @see org.ietr.preesm.experiment.model.pimm.impl.HybridInputPortImpl
-		 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getHybridInputPort()
-		 * @generated
-		 */
-		EClass HYBRID_INPUT_PORT = eINSTANCE.getHybridInputPort();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DelayImpl <em>Delay</em>}' class.

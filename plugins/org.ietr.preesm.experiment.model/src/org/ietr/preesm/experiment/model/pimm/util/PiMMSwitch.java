@@ -135,8 +135,9 @@ public class PiMMSwitch<T> extends Switch<T> {
 			case PiMMPackage.CONFIG_OUTPUT_PORT: {
 				ConfigOutputPort configOutputPort = (ConfigOutputPort)theEObject;
 				T result = caseConfigOutputPort(configOutputPort);
-				if (result == null) result = casePort(configOutputPort);
+				if (result == null) result = caseOutputPort(configOutputPort);
 				if (result == null) result = caseISetter(configOutputPort);
+				if (result == null) result = casePort(configOutputPort);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -209,15 +210,6 @@ public class PiMMSwitch<T> extends Switch<T> {
 			case PiMMPackage.ISETTER: {
 				ISetter iSetter = (ISetter)theEObject;
 				T result = caseISetter(iSetter);
-				if (result == null) result = defaultCase(theEObject);
-				return result;
-			}
-			case PiMMPackage.HYBRID_INPUT_PORT: {
-				HybridInputPort hybridInputPort = (HybridInputPort)theEObject;
-				T result = caseHybridInputPort(hybridInputPort);
-				if (result == null) result = caseConfigInputPort(hybridInputPort);
-				if (result == null) result = caseInputPort(hybridInputPort);
-				if (result == null) result = casePort(hybridInputPort);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -514,21 +506,6 @@ public class PiMMSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseISetter(ISetter object) {
-		return null;
-	}
-
-	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Hybrid Input Port</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Hybrid Input Port</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseHybridInputPort(HybridInputPort object) {
 		return null;
 	}
 

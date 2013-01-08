@@ -128,7 +128,8 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 		for (ConfigOutputPort port : ports) {
 			// If the port has an outgoing dependency
 			if (!port.getOutgoingDependencies().isEmpty()) {
-				// Since its a port, only one dependency is allowed
+				// As soon as there is one dependency, the actor is a
+				// configuration actor
 				Dependency dependency = port.getOutgoingDependencies().get(0);
 				Parameterizable parameterizable = (Parameterizable) dependency
 						.getGetter().eContainer();

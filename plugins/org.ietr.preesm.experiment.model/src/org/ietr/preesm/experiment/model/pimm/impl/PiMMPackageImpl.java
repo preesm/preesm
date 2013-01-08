@@ -17,7 +17,6 @@ import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
-import org.ietr.preesm.experiment.model.pimm.HybridInputPort;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
@@ -170,13 +169,6 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * @generated
 	 */
 	private EClass iSetterEClass = null;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	private EClass hybridInputPortEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -683,15 +675,6 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getHybridInputPort() {
-		return hybridInputPortEClass;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EClass getDelay() {
 		return delayEClass;
 	}
@@ -791,8 +774,6 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		iSetterEClass = createEClass(ISETTER);
 		createEReference(iSetterEClass, ISETTER__OUTGOING_DEPENDENCIES);
 
-		hybridInputPortEClass = createEClass(HYBRID_INPUT_PORT);
-
 		delayEClass = createEClass(DELAY);
 	}
 
@@ -831,7 +812,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		inputPortEClass.getESuperTypes().add(this.getPort());
 		outputPortEClass.getESuperTypes().add(this.getPort());
 		configInputPortEClass.getESuperTypes().add(this.getPort());
-		configOutputPortEClass.getESuperTypes().add(this.getPort());
+		configOutputPortEClass.getESuperTypes().add(this.getOutputPort());
 		configOutputPortEClass.getESuperTypes().add(this.getISetter());
 		interfaceActorEClass.getESuperTypes().add(this.getAbstractActor());
 		sourceInterfaceEClass.getESuperTypes().add(this.getInterfaceActor());
@@ -839,8 +820,6 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		configOutputInterfaceEClass.getESuperTypes().add(this.getInterfaceActor());
 		parameterEClass.getESuperTypes().add(this.getAbstractVertex());
 		parameterEClass.getESuperTypes().add(this.getISetter());
-		hybridInputPortEClass.getESuperTypes().add(this.getConfigInputPort());
-		hybridInputPortEClass.getESuperTypes().add(this.getInputPort());
 		delayEClass.getESuperTypes().add(this.getParameterizable());
 
 		// Initialize classes and features; add operations and parameters
@@ -912,8 +891,6 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
 		initEClass(iSetterEClass, ISetter.class, "ISetter", IS_ABSTRACT, IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getISetter_OutgoingDependencies(), this.getDependency(), this.getDependency_Setter(), "outgoingDependencies", null, 0, -1, ISetter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
-		initEClass(hybridInputPortEClass, HybridInputPort.class, "HybridInputPort", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(delayEClass, Delay.class, "Delay", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 

@@ -16,7 +16,6 @@ import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Graph;
-import org.ietr.preesm.experiment.model.pimm.HybridInputPort;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
@@ -93,16 +92,6 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 						.getTargetAnchor().getGraphicsAlgorithm(),
 						getDiagramEditor(),
 						"A config port cannot be connected to several Dependencies");
-				return false;
-			}
-
-			if (target instanceof HybridInputPort
-					&& ((HybridInputPort) target).getIncomingFifo() != null) {
-				// Create tooltip message
-				PiMMUtil.setToolTip(getFeatureProvider(), context
-						.getTargetAnchor().getGraphicsAlgorithm(),
-						getDiagramEditor(),
-						"An hybrid port cannot be connected to several Dependencies/Fifos");
 				return false;
 			}
 

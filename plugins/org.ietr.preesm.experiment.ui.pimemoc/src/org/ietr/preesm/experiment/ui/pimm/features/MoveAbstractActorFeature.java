@@ -80,15 +80,14 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 				IGaCreateService createService = Graphiti.getGaCreateService();
 				int midHeight = anchor.getGraphicsAlgorithm().getHeight() / 2 - 1;
 
-				if (isSrcMove || index < 1) {
+				if (isSrcMove) {
 					ILocation srcLoc = peLayoutService
 							.getLocationRelativeToDiagram(connection.getStart());
 					Point pSrc = createService.createPoint(srcLoc.getX() + 20,
 							srcLoc.getY() + midHeight);
 					connection.getBendpoints().add(0, pSrc);
 				}
-				if (!isSrcMove || index < 1) {
-
+				if (!isSrcMove) {
 					ILocation trgtLoc = peLayoutService
 							.getLocationRelativeToDiagram(connection.getEnd());
 					Point pTrgt = createService.createPoint(

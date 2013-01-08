@@ -10,9 +10,9 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
-import org.ietr.preesm.experiment.model.pimm.HybridInputPort;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
@@ -61,16 +61,6 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 						.getTargetAnchor().getGraphicsAlgorithm(),
 						getDiagramEditor(),
 						"A port cannot be connected to several FIFOs");
-				return false;
-			}
-
-			if (target instanceof HybridInputPort
-					&& ((HybridInputPort) target).getIncomingDependency() != null) {
-				// Create tooltip message
-				PiMMUtil.setToolTip(getFeatureProvider(), context
-						.getTargetAnchor().getGraphicsAlgorithm(),
-						getDiagramEditor(),
-						"An hybrid port cannot be connected to several Dependencies/Fifos");
 				return false;
 			}
 
@@ -227,11 +217,24 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 
 	@Override
 	public boolean canStartConnection(ICreateConnectionContext context) {
-		// Return true if the connection starts at an output port
+		// Return true if the connection starts at an output port (config or
+		// not)
 		Port source = getPort(context.getSourceAnchor());
 		if (source != null && source instanceof OutputPort) {
 			// Check that no Fifo is connected to the ports
 			if (((OutputPort) source).getOutgoingFifo() == null) {
+				// Check if the outputPort is a configurationOutputPort wit no
+				// outgoing dependency
+				if (source instanceof ConfigOutputPort
+						&& !((ConfigOutputPort) source)
+								.getOutgoingDependencies().isEmpty()) {
+					// Karol: I deliberately left the possibility for a
+					// ConfigOutputPort to be connected both with a Fifo and
+					// dependencies.
+					// Indeed, it seems to me that the coexistence of a unique
+					// fifo and one or several dependencies is not a problem
+					// since each connection has a very precise semantics.
+				}
 				return true;
 			} else {
 				// Create tooltip message

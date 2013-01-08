@@ -32,7 +32,7 @@ public class ConfigOutputInterfaceImpl extends InterfaceActorImpl implements Con
 
 		// Add the unique input port of the ConfigOutputInterface
 		// The port intentionally has no name
-		InputPort port = PiMMFactory.eINSTANCE.createHybridInputPort();
+		InputPort port = PiMMFactory.eINSTANCE.createInputPort();
 		port.setName(null);
 		this.getInputPorts().add(port);
 	}
