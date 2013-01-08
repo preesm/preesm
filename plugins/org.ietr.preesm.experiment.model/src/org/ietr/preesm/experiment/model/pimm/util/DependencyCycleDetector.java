@@ -127,9 +127,11 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
 			// Add the parameter to the visited branch
 			branch.add(parameter);
 
-			// Visit all parameters depending on this one.
-			for (Dependency dependency : parameter.getOutgoingDependencies()) {
-				doSwitch(dependency.getGetter());
+			// Visit all parameters influencing the current one.
+			for (ConfigInputPort port : parameter.getConfigInputPorts()) {
+				if (port.getIncomingDependency() != null) {
+					doSwitch(port.getIncomingDependency().getSetter());
+				}
 
 				// If fast detection is activated and a cycle was detected, get
 				// out of here!
