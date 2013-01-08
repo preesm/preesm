@@ -1,5 +1,9 @@
 package org.ietr.preesm.experiment.ui.pimm.features;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -34,6 +38,8 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 		super(fp);
 	}
 
+
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void postMoveShape(IMoveShapeContext context) {
 		// Here, we layout bendpoint of connections incoming/outgoing to this
@@ -48,22 +54,27 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 			if (!(getBusinessObjectForPictogramElement(anchor) instanceof Port)) {
 				continue;
 			}
-			// Retrieve the connection of the anchor. Note that there should
-			// never be more than one connection per anchor
+
+			// Retrieve the connections of the anchor.
+			List<FreeFormConnection> connections = new ArrayList<>();
+
 			EList<Connection> iConnections = anchor.getIncomingConnections();
-			FreeFormConnection connection = null;
+
 			boolean isSrcMove = false;
-			if (iConnections.size() > 0) {
-				connection = (FreeFormConnection) iConnections.get(0);
+			if (!iConnections.isEmpty()) {
+				
+				connections
+						.addAll((Collection<? extends FreeFormConnection>) iConnections);
 				isSrcMove = false;
 			}
 			EList<Connection> oConnections = anchor.getOutgoingConnections();
-			if (oConnections.size() > 0) {
-				connection = (FreeFormConnection) oConnections.get(0);
+			if (!oConnections.isEmpty()) {
+				connections
+						.addAll((Collection<? extends FreeFormConnection>) oConnections);
 				isSrcMove = true;
 			}
 
-			if (connection != null) {
+			for (FreeFormConnection connection : connections) {
 				// Remove the last or first Bendpoint (if any)
 				int index = connection.getBendpoints().size() - 1;
 				if (index > -1 && !isSrcMove) {
