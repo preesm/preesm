@@ -349,13 +349,22 @@ public interface PiMMPackage extends EPackage {
 	int ACTOR__REFINEMENT = ABSTRACT_ACTOR_FEATURE_COUNT + 0;
 
 	/**
+	 * The feature id for the '<em><b>Configuration Actor</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ACTOR__CONFIGURATION_ACTOR = ABSTRACT_ACTOR_FEATURE_COUNT + 1;
+
+	/**
 	 * The number of structural features of the '<em>Actor</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int ACTOR_FEATURE_COUNT = ABSTRACT_ACTOR_FEATURE_COUNT + 1;
+	int ACTOR_FEATURE_COUNT = ABSTRACT_ACTOR_FEATURE_COUNT + 2;
 
 
 	/**
@@ -1381,6 +1390,17 @@ public interface PiMMPackage extends EPackage {
 	EReference getActor_Refinement();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Actor#isConfigurationActor <em>Configuration Actor</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Configuration Actor</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.Actor#isConfigurationActor()
+	 * @see #getActor()
+	 * @generated
+	 */
+	EAttribute getActor_ConfigurationActor();
+
+	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Port <em>Port</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1889,6 +1909,14 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EReference ACTOR__REFINEMENT = eINSTANCE.getActor_Refinement();
+
+		/**
+		 * The meta object literal for the '<em><b>Configuration Actor</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute ACTOR__CONFIGURATION_ACTOR = eINSTANCE.getActor_ConfigurationActor();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.PortImpl <em>Port</em>}' class.

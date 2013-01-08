@@ -29,6 +29,9 @@
   <eClassifiers xsi:type="ecore:EClass" name="Actor" eSuperTypes="#//AbstractActor">
     <eStructuralFeatures xsi:type="ecore:EReference" name="refinement" lowerBound="1"
         eType="#//Refinement" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="configurationActor" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" changeable="false"
+        volatile="true" unsettable="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Port" abstract="true">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>

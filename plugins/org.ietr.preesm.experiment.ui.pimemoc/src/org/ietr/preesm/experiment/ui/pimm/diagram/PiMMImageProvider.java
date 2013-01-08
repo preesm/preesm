@@ -1,4 +1,4 @@
-package org.ietr.preesm.experiment.ui.pimm.util;
+package org.ietr.preesm.experiment.ui.pimm.diagram;
 
 import org.eclipse.graphiti.ui.platform.AbstractImageProvider;
 
@@ -17,6 +17,7 @@ public class PiMMImageProvider extends AbstractImageProvider {
 
     // The image identifier for white dot.
     public static final String IMG_WHITE_DOT_BLUE_LINE= PREFIX + "whitedotblueline";
+    public static final String IMG_WHITE_DOT_GREY_LINE= PREFIX + "whitedotgreyline";
     public static final String IMG_PI= PREFIX + "pi";
 	
 	
@@ -32,7 +33,7 @@ public class PiMMImageProvider extends AbstractImageProvider {
         // register the path for each image identifier
         addImageFilePath(IMG_PI, "icons/pi.gif");
         addImageFilePath(IMG_WHITE_DOT_BLUE_LINE, "icons/whitedotblueline.gif");
-
+        addImageFilePath(IMG_WHITE_DOT_GREY_LINE, "icons/whitedotgreyline.gif");
 	}
 
 }

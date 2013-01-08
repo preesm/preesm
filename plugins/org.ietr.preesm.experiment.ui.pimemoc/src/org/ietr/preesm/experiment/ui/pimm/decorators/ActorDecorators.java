@@ -1,6 +1,8 @@
 package org.ietr.preesm.experiment.ui.pimm.decorators;
 
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -14,6 +16,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.ui.pimm.diagram.PiMMImageProvider;
 import org.ietr.preesm.experiment.ui.pimm.util.PortEqualityHelper;
 
 /**
@@ -26,6 +29,32 @@ import org.ietr.preesm.experiment.ui.pimm.util.PortEqualityHelper;
 public class ActorDecorators {
 
 	/**
+	 * Get the {@link IDecorator} indicating if the
+	 * {@link Actor#isConfigurationActor()}.
+	 * 
+	 * @param actor
+	 *            the {@link Actor} to test
+	 * @param pe
+	 *            the {@link PictogramElement} of the {@link Actor}
+	 * @return the {@link IDecorator} or <code>null</code>.
+	 */
+	protected static IDecorator getConfigurationActorDecorator(Actor actor,
+			PictogramElement pe) {
+		if (actor.isConfigurationActor()) {
+			ImageDecorator imageRenderingDecorator = new ImageDecorator(
+					PiMMImageProvider.IMG_WHITE_DOT_GREY_LINE);
+
+			imageRenderingDecorator.setMessage("Configuration Actor");
+			imageRenderingDecorator
+					.setX((pe.getGraphicsAlgorithm().getWidth()) - 13);
+			imageRenderingDecorator.setY(5);
+
+			return imageRenderingDecorator;
+		}
+		return null;
+	}
+
+	/**
 	 * Methods that returns all the {@link IDecorator} for a given {@link Actor}
 	 * .
 	 * 
@@ -36,6 +65,38 @@ public class ActorDecorators {
 	 * @return the {@link IDecorator} table.
 	 */
 	public static IDecorator[] getDecorators(Actor actor, PictogramElement pe) {
+
+		List<IDecorator> decorators = new ArrayList<IDecorator>();
+
+		// Check if there is a mismatch with refinement ports
+		IDecorator mismatchDecorator = getPortMismatchDecorators(actor);
+		if (mismatchDecorator != null) {
+			decorators.add(mismatchDecorator);
+		}
+
+		// Check if the actor is a configuration actor
+		IDecorator configDecorator = getConfigurationActorDecorator(actor, pe);
+		if (configDecorator != null) {
+			decorators.add(configDecorator);
+		}
+
+		IDecorator[] result = new IDecorator[decorators.size()];
+		decorators.toArray(result);
+
+		return result;
+	}
+
+	/**
+	 * Get the {@link IDecorator}s indicating that the {@link Port}s of the
+	 * {@link Actor} and those of its {@link Refinement} are not coherent.
+	 * 
+	 * @param actor
+	 *            the {@link Actor} to test.
+	 * @param pe
+	 *            the {@link PictogramElement} to decorate
+	 * @return the {@link IDecorator} or <code>null</code> if none.
+	 */
+	protected static IDecorator getPortMismatchDecorators(Actor actor) {
 		IReason reason = ActorDecorators.portsUpdateNeeded(actor);
 		if (reason.toBoolean()) {
 			ImageDecorator imageRenderingDecorator = new ImageDecorator(
@@ -45,9 +106,9 @@ public class ActorDecorators {
 			imageRenderingDecorator.setX(1);
 			imageRenderingDecorator.setY(2);
 
-			return new IDecorator[] { imageRenderingDecorator };
+			return imageRenderingDecorator;
 		}
-		return new IDecorator[0];
+		return null;
 	}
 
 	/**

@@ -9,7 +9,7 @@ import org.eclipse.graphiti.tb.ImageDecorator;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.util.DependencyCycleDetector;
-import org.ietr.preesm.experiment.ui.pimm.util.PiMMImageProvider;
+import org.ietr.preesm.experiment.ui.pimm.diagram.PiMMImageProvider;
 
 /**
  * Class providing methods to retrieve the {@link IDecorator} of an
