@@ -70,7 +70,7 @@ public class ParameterDecorators {
 			imageRenderingDecorator
 					.setMessage("Dynamically Configurable Parameter");
 			imageRenderingDecorator
-					.setX((pe.getGraphicsAlgorithm().getWidth() / 4) - 2);
+					.setX((pe.getGraphicsAlgorithm().getWidth() / 2) - 5);
 			imageRenderingDecorator.setY(8);
 
 			return new IDecorator[] { imageRenderingDecorator };
@@ -107,7 +107,7 @@ public class ParameterDecorators {
 					message += parameter.getName();
 					imageRenderingDecorator.setMessage(message);
 					imageRenderingDecorator.setX((pe.getGraphicsAlgorithm()
-							.getWidth() / 4) - 4);
+							.getWidth() / 2) - 8);
 					imageRenderingDecorator.setY(8);
 
 					return new IDecorator[] { imageRenderingDecorator };
@@ -122,7 +122,7 @@ public class ParameterDecorators {
 				imageRenderingDecorator
 						.setMessage("Parameter depends on parameters contained in a cycle.");
 				imageRenderingDecorator.setX((pe.getGraphicsAlgorithm()
-						.getWidth() / 4) - 4);
+						.getWidth() / 2) - 8);
 				imageRenderingDecorator.setY(8);
 
 				return new IDecorator[] { imageRenderingDecorator };

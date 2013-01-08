@@ -136,6 +136,7 @@ public class LayoutParameterFeature extends AbstractLayoutFeature {
 		// Treat the container GA
 		// Resize the house-shaped polygon
 		{
+			containerGa.setWidth(newWidth);
 			int height = containerGa.getHeight(); // The height is constant
 			int coord[] = new int[] { newWidth / 2, 0, newWidth, height - 14,
 					newWidth, height, 0, height, 0, height - 14 };
