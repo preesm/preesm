@@ -92,6 +92,17 @@
             </output>
          </outputs>
       </task>
+      <task
+            id="org.ietr.preesm.algorithm.importSdf3Xml.Sdf3Importer"
+            name="SDF3 Importer"
+            type="org.ietr.preesm.algorithm.importSdf3Xml.Sdf3Importer">
+         <outputs>
+            <output
+                  id="SDF"
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
+            </output>
+         </outputs>
+      </task>
    </extension>
 
 </plugin>

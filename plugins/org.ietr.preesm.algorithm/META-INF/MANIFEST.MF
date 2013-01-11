@@ -16,5 +16,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: IETR/INSA of Rennes
 Export-Package: org.ietr.preesm.algorithm.exportDif,
  org.ietr.preesm.algorithm.exportXml,
+ org.ietr.preesm.algorithm.importSdf3Xml,
  org.ietr.preesm.algorithm.randomsdf,
  org.ietr.preesm.algorithm.transforms
