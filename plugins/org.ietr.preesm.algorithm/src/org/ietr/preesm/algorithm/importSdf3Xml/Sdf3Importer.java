@@ -6,10 +6,14 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.elements.Workflow;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
@@ -21,6 +25,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.ietr.preesm.core.scenario.ConstraintGroupManager;
+import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.core.tools.PathTools;
 
 /**
@@ -43,6 +50,10 @@ public class Sdf3Importer extends AbstractTaskImplementation {
 		// Rem: Logger is used to display messages in the console
 		Logger logger = WorkflowLogger.getLogger();
 
+		// Retrieve the inputs
+		Design architecture = (Design) inputs.get("architecture");
+		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+
 		// Locate the intput file
 		String sPath = PathTools.getAbsolutePath(parameters.get("path"),
 				workflow.getProjectName());
@@ -64,12 +75,43 @@ public class Sdf3Importer extends AbstractTaskImplementation {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		SDFGraph graph = (new Sdf3XmlParser().parse(iStream));
+
+		// Parse the input SDF3 graph
+		Sdf3XmlParser sdf3Parser = new Sdf3XmlParser();
+		SDFGraph graph = (sdf3Parser.parse(iStream));
 		Map<String, Object> outputs = null;
+
+		// If there was no problem while parsing the graph
 		if (graph != null) {
+			// put it in the outputs
 			outputs = new HashMap<String, Object>();
 			outputs.put("SDF", graph);
+
+			// Update the input scenario so that all task can be scheduled
+			// on all operators, and all have the same runtime.
+			ConstraintGroupManager constraint = scenario
+					.getConstraintGroupManager();
+			// For each operator of the architecture
+			for (ComponentInstance component : architecture
+					.getComponentInstances()) {
+				// for each actor of the graph
+				for (Entry<SDFAbstractVertex, Integer> entry : sdf3Parser
+						.getActorExecTimes().entrySet()) {
+					// Add the operator to the available operator for the
+					// current actor
+					entry.getKey().setInfo(entry.getKey().getName());
+					constraint.addConstraint(component.getInstanceName(),
+							entry.getKey());
+					// Set the timing of the actor
+					Timing t = scenario.getTimingManager().addTiming(
+							entry.getKey().getName(),
+							component.getComponent().getVlnv().getName());
+					t.setTime(entry.getValue());
+				}
+			}
+			outputs.put("scenario", scenario);
 		}
+
 		return outputs;
 	}
 

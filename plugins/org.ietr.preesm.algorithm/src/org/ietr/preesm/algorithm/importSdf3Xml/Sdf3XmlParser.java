@@ -77,6 +77,32 @@ public class Sdf3XmlParser {
 	}
 
 	/**
+	 * Get the execution times of all actors parsed during call to
+	 * {@link #parse(InputStream)}.<br>
+	 * <br>
+	 * The returned {@link Map} associates the {@link SDFVertex} of the parsed
+	 * graph to their execution time.
+	 * 
+	 * @return actorExecTimes the execution time of the parsed graph actors
+	 */
+	public Map<SDFAbstractVertex, Integer> getActorExecTimes() {
+		return actorExecTimes;
+	}
+
+	/**
+	 * Get all the data types encountered while parsing the graph with
+	 * {@link #parse(InputStream)}.<br>
+	 * <br>
+	 * The return {@link Map} associates each data type of the graph
+	 * {@link SDFEdge} to their size.
+	 * 
+	 * @return dataTypes the data types of the parsed SDF3 graph
+	 */
+	public Map<String, Integer> getDataTypes() {
+		return dataTypes;
+	}
+
+	/**
 	 * Parse the {@link SDFGraph} from the given {@link InputStream} using the
 	 * SDF3 XML format.
 	 * 
@@ -130,6 +156,53 @@ public class Sdf3XmlParser {
 		}
 
 		graph.addVertex(actor);
+	}
+
+	/**
+	 * Parse the actor properties of an actor.
+	 * 
+	 * @param actorPtyElt
+	 *            the {@link Element} containing the Actor Properties
+	 * @param graph
+	 *            the parsed graph
+	 */
+	protected void parseActorProperties(Element actorPtyElt, SDFGraph graph) {
+		// Get the actor whose properties are parsed
+		String actorName = actorPtyElt.getAttribute("actor");
+		if (actorName.isEmpty()) {
+			throw new RuntimeException(
+					"Cannot parse properties of an unspecified actor");
+		}
+		SDFAbstractVertex actor = graph.getVertex(actorName);
+		if (actor == null) {
+			throw new RuntimeException(
+					"Parsing properties of a non-existing actor: " + actorName);
+		}
+
+		// Parse the properties
+		try {
+			Element procElement = findElement(actorPtyElt, "processor");
+			Element execTimeElement = findElement(procElement, "executionTime");
+			String time = execTimeElement.getAttribute("time");
+			if (!time.isEmpty()) {
+				Integer execTime = new Integer(time);
+				actorExecTimes.put(actor, execTime);
+			}
+
+			Element memoryElement = findElement(procElement, "memory");
+			Element stateSizeElement = findElement(memoryElement, "stateSize");
+			String stateSize = stateSizeElement.getAttribute("max");
+			if (!stateSize.isEmpty()) {
+				actor.setPropertyValue("working_memory", new Integer(stateSize));
+			}
+		} catch (RuntimeException e) {
+			if (e.getMessage().contains("too many processor")) {
+				throw new RuntimeException(
+						"Multiproc architecture are not supported yet.");
+			} else
+				throw e;
+		}
+
 	}
 
 	/**
@@ -225,6 +298,42 @@ public class Sdf3XmlParser {
 					delay);
 			edge.setDelay(delayProperty);
 		}
+
+	}
+
+	/**
+	 * Parse the ChannelProperties {@link Element} corresponding to an
+	 * {@link SDFEdge} of the parsed {@link SDFGraph}.
+	 * 
+	 * @param channelPtyElt
+	 *            the {@link Element} containing the parsed properties
+	 * @param graph
+	 *            the parsed {@link SDFGraph}
+	 */
+	protected void parseChannelProperties(Element channelPtyElt, SDFGraph graph) {
+		// Get the edge whose properties are parsed
+		String channelName = channelPtyElt.getAttribute("channel");
+		if (channelName.isEmpty()) {
+			throw new RuntimeException(
+					"Cannot parse properties of an unspecified channel");
+		}
+		SDFEdge edge = edges.get(channelName);
+		if (edge == null) {
+			throw new RuntimeException(
+					"Parsing properties of a non-existing edge: " + channelName);
+		}
+
+		// The bufferSIze element exist but is not used (yet)
+		// findElement(channelPtyElt, "bufferSize");
+		Element tokenSize = findElement(channelPtyElt, "tokenSize");
+		String tokenSz = tokenSize.getAttribute("sz");
+		if (tokenSz.isEmpty()) {
+			throw new RuntimeException("Channel " + channelName
+					+ " token size is not set properly.");
+		}
+		String dataType = "t" + tokenSz;
+		edge.setDataType(new SDFStringEdgePropertyType(dataType));
+		dataTypes.put(dataType, new Integer(tokenSz));
 
 	}
 
@@ -358,88 +467,5 @@ public class Sdf3XmlParser {
 		}
 
 		// There are some graphProperties that are not parsed.
-	}
-
-	/**
-	 * Parse the ChannelProperties {@link Element} corresponding to an
-	 * {@link SDFEdge} of the parsed {@link SDFGraph}.
-	 * 
-	 * @param channelPtyElt
-	 *            the {@link Element} containing the parsed properties
-	 * @param graph
-	 *            the parsed {@link SDFGraph}
-	 */
-	protected void parseChannelProperties(Element channelPtyElt, SDFGraph graph) {
-		// Get the edge whose properties are parsed
-		String channelName = channelPtyElt.getAttribute("channel");
-		if (channelName.isEmpty()) {
-			throw new RuntimeException(
-					"Cannot parse properties of an unspecified channel");
-		}
-		SDFEdge edge = edges.get(channelName);
-		if (edge == null) {
-			throw new RuntimeException(
-					"Parsing properties of a non-existing edge: " + channelName);
-		}
-
-		// The bufferSIze element exist but is not used (yet)
-		// findElement(channelPtyElt, "bufferSize");
-		Element tokenSize = findElement(channelPtyElt, "tokenSize");
-		String tokenSz = tokenSize.getAttribute("sz");
-		if (tokenSz.isEmpty()) {
-			throw new RuntimeException("Channel " + channelName
-					+ " token size is not set properly.");
-		}
-		String dataType = "t" + tokenSz;
-		edge.setDataType(new SDFStringEdgePropertyType(dataType));
-		dataTypes.put(dataType, new Integer(tokenSz));
-
-	}
-
-	/**
-	 * Parse the actor properties of an actor.
-	 * 
-	 * @param actorPtyElt
-	 *            the {@link Element} containing the Actor Properties
-	 * @param graph
-	 *            the parsed graph
-	 */
-	protected void parseActorProperties(Element actorPtyElt, SDFGraph graph) {
-		// Get the actor whose properties are parsed
-		String actorName = actorPtyElt.getAttribute("actor");
-		if (actorName.isEmpty()) {
-			throw new RuntimeException(
-					"Cannot parse properties of an unspecified actor");
-		}
-		SDFAbstractVertex actor = graph.getVertex(actorName);
-		if (actor == null) {
-			throw new RuntimeException(
-					"Parsing properties of a non-existing actor: " + actorName);
-		}
-
-		// Parse the properties
-		try {
-			Element procElement = findElement(actorPtyElt, "processor");
-			Element execTimeElement = findElement(procElement, "executionTime");
-			String time = execTimeElement.getAttribute("time");
-			if (!time.isEmpty()) {
-				Integer execTime = new Integer(time);
-				actorExecTimes.put(actor, execTime);
-			}
-
-			Element memoryElement = findElement(procElement, "memory");
-			Element stateSizeElement = findElement(memoryElement, "stateSize");
-			String stateSize = stateSizeElement.getAttribute("max");
-			if (!stateSize.isEmpty()) {
-				actor.setPropertyValue("working_memory", new Integer(stateSize));
-			}
-		} catch (RuntimeException e) {
-			if (e.getMessage().contains("too many processor")) {
-				throw new RuntimeException(
-						"Multiproc architecture are not supported yet.");
-			} else
-				throw e;
-		}
-
 	}
 }
