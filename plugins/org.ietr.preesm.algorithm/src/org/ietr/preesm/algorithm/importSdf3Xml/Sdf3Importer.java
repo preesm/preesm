@@ -29,6 +29,7 @@ import org.ietr.preesm.core.scenario.ConstraintGroupManager;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.core.tools.PathTools;
+import org.ietr.preesm.core.types.DataType;
 
 /**
  * This class is a {@link Workflow} task that parse a SDF in the SDF3 XML format
@@ -108,6 +109,13 @@ public class Sdf3Importer extends AbstractTaskImplementation {
 							component.getComponent().getVlnv().getName());
 					t.setTime(entry.getValue());
 				}
+			}
+			
+			// Add the data types of the SDF3 graph to the scenario
+			for (Entry<String, Integer> entry : sdf3Parser.getDataTypes()
+					.entrySet()) {
+				DataType type = new DataType(entry.getKey(), entry.getValue());
+				scenario.getSimulationManager().putDataType(type);
 			}
 			outputs.put("scenario", scenario);
 		}
