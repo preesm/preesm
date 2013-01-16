@@ -1,4 +1,4 @@
-package org.ietr.preesm.experiment.memory;
+package org.ietr.preesm.experiment.memory.allocation;
 
 import java.util.HashMap;
 import net.sf.dftools.workflow.WorkflowException;

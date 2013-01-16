@@ -1,4 +1,4 @@
-package org.ietr.preesm.experiment.memory;
+package org.ietr.preesm.experiment.memory.allocation;
 
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
