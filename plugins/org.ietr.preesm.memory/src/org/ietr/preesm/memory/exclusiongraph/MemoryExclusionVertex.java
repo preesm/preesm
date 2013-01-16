@@ -98,7 +98,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 * ID of the task producing the memory.
 	 */
 	private String source;
-	
+
 	/**
 	 * ID of the explode/Implode dag vertex the memory belongs to
 	 */
@@ -120,18 +120,19 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	public MemoryExclusionVertex(DAGEdge inputEdge) {
 		source = inputEdge.getSource().getName();
 		sink = inputEdge.getTarget().getName();
-		
-		if(inputEdge.getPropertyBean().getValue("explodeName") != null){
-			explodeImplode = inputEdge.getPropertyBean().getValue("explodeName").toString();
+
+		if (inputEdge.getPropertyBean().getValue("explodeName") != null) {
+			explodeImplode = inputEdge.getPropertyBean()
+					.getValue("explodeName").toString();
 		} else {
-			explodeImplode ="";
+			explodeImplode = "";
 		}
-		
-//		try {
-//			size = inputEdge.getWeight().intValue();
-//		} catch (InvalidExpressionException e) {
-//			e.printStackTrace();
-//		}
+
+		// try {
+		// size = inputEdge.getWeight().intValue();
+		// } catch (InvalidExpressionException e) {
+		// e.printStackTrace();
+		// }
 		// if datatype is defined, correct the vertex weight
 		BufferAggregate buffers = (BufferAggregate) inputEdge.getPropertyBean()
 				.getValue("bufferAggregate");
@@ -149,7 +150,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 				vertexWeight += properties.getSize();
 			}
 		}
-		
+
 		size = vertexWeight;
 
 		if (vertexWeight == 0) {
@@ -203,9 +204,11 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	}
 
 	/**
-	 * Test equality of two vertices.<br>
-	 * Two vertices are considered equals if their source and sink are the same.
-	 * The weight of the vertices is not taken into account.
+	 * Test equality of two {@link MemoryExclusionVertex vertices}.<br>
+	 * Two {@link MemoryExclusionVertex vertices} are considered equals if their
+	 * {@link #getSource() source} and {@link #getSink() sink} are equals.
+	 * Neither the weight nor the explodeImplode attributes of the vertices are
+	 * taken into account to test the equality.
 	 * 
 	 * @param o
 	 *            the object to compare.
@@ -214,8 +217,9 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	public boolean equals(Object o) {
 		if (o instanceof MemoryExclusionVertex) {
 			return (this.source.equals(((MemoryExclusionVertex) o).source) && this.sink
-					.equals(((MemoryExclusionVertex) o).sink) && this.explodeImplode
-					.equals(((MemoryExclusionVertex) o).explodeImplode));
+					.equals(((MemoryExclusionVertex) o).sink)); // &&
+																// this.explodeImplode
+			// .equals(((MemoryExclusionVertex) o).explodeImplode));
 		} else {
 			return false;
 		}
@@ -235,6 +239,13 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 */
 	public DAGEdge getEdge() {
 		return edge;
+	}
+
+	/**
+	 * @return the explodeImplode
+	 */
+	public String getExplodeImplode() {
+		return explodeImplode;
 	}
 
 	@Override
@@ -276,7 +287,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 * Set<MemoryExclusionVertex>
 	 */
 	public int hashCode() {
-		return sink.hashCode() | source.hashCode() | explodeImplode.hashCode();
+		return (new String(sink + "=>" + source)).hashCode();
 	}
 
 	/**

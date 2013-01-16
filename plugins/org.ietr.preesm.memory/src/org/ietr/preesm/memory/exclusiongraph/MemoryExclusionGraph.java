@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import net.sf.dftools.algorithm.iterators.DAGIterator;
@@ -87,19 +88,24 @@ public class MemoryExclusionGraph extends
 	 * DAGVertex will NOT have exclusion with MemoryExclusionVertex in this
 	 * list. This list is built along the build of the MemEx, and used for
 	 * subsequent updates. We use the name of the DAGVertex as a key.. Because
-	 * using the DAG itself seems to be impossible.
+	 * using the DAG itself seems to be impossible.<br>
+	 * If there are {@link MemoryExclusionVertex} corresponding to the working
+	 * memory of {@link DAGVertex}, they will be added to the predecessor list
+	 * of this vertex.
 	 */
 	private HashMap<String, HashSet<MemoryExclusionVertex>> verticesPredecessors;
 
 	/**
-	 * This Map is used to identify and store the list of memory exclusion
-	 * vertices which are involved in an implose or an explode operation in the
-	 * dag. This information is stored to make possible to treat those vertices
-	 * differently depending on applied treatment. For example, when looking for
-	 * the MaximumWeightClique in the graph, each vertex should be considered as
-	 * a distinct memory object. On the contrary, when trying to allocate the
-	 * MemEx Graph in memory, all memory objects of an implode/explode operation
-	 * should be merged into a single memory object to allocate.
+	 * This {@link Map} is used to identify and store the list of
+	 * {@link MemoryExclusionVertex Memory Exclusion Vertices} which are
+	 * involved in an implode or an explode operation in the
+	 * {@link DirectedAcyclicGraph DAG}. This information is stored to make it
+	 * possible to process those vertices differently depending on the context.
+	 * For example, when looking for the MaximumWeightClique in the graph, each
+	 * vertex should be considered as a distinct memory object. On the contrary,
+	 * when trying to allocate the MemEx Graph in memory, all memory objects of
+	 * an implode/explode operation can (and must, for the codegen) be merged
+	 * into a single memory object, in order to maximize the locality.
 	 */
 	private HashMap<String, HashSet<MemoryExclusionVertex>> implodeExplodeMap;
 
@@ -129,7 +135,7 @@ public class MemoryExclusionGraph extends
 
 		// As the non-task vertices are removed at the beginning of the build
 		// function
-		// This if statement could be removed.
+		// This if statement could probably be removed. (I keep it just in case)
 		if (edge.getSource().getPropertyBean().getValue("vertexType")
 				.toString().equals("task")
 				&& edge.getTarget().getPropertyBean().getValue("vertexType")
@@ -137,8 +143,11 @@ public class MemoryExclusionGraph extends
 			newNode = new MemoryExclusionVertex(edge);
 
 			boolean added = this.addVertex(newNode);
+			// If false, this means that an equal node is already in the MemEx..
+			// somehow..
 			if (added == false) {
 				System.out.println("Vertex not added : " + newNode.toString());
+				newNode = null;
 			}
 
 		}
@@ -345,9 +354,6 @@ public class MemoryExclusionGraph extends
 			predecessors.get(vertexID).addAll(incoming.get(vertexID));
 			verticesPredecessors.put(vertexDAG.getName(),
 					predecessors.get(vertexID));
-
-			// Clear useless lists
-			predecessors.set(vertexID, null);
 		}
 	}
 
@@ -508,8 +514,8 @@ public class MemoryExclusionGraph extends
 		}
 
 		/*
-		 * Part 1: Scan of the DAG in order to: - create Exclusion Graph nodes.
-		 * - add exclusion between consecutive Memory Transfer
+		 * Scan of the DAG in order to: - create Exclusion Graph nodes. - add
+		 * exclusion between consecutive Memory Transfer
 		 */
 		for (DAGVertex vertexDAG : dagVertices) // For each vertex of the DAG
 		{
@@ -519,6 +525,32 @@ public class MemoryExclusionGraph extends
 			int vertexID = (Integer) vertexDAG.getPropertyBean().getValue(
 					"schedulingOrder"); // Retrieve the vertex unique ID
 
+			// If the current vertex has some working memory, create the
+			// associated MemoryExclusionGraphVertex
+			Integer wMem = (Integer) vertexDAG.getCorrespondingSDFVertex()
+					.getPropertyBean().getValue("working_memory");
+			if (wMem != null) {
+				MemoryExclusionVertex workingMemoryNode = new MemoryExclusionVertex(
+						vertexDAG.getName(), vertexDAG.getName(), wMem);
+				this.addVertex(workingMemoryNode);
+				// Add Exclusions with all non-predecessors of the current
+				// vertex
+				HashSet<MemoryExclusionVertex> inclusions = predecessors
+						.get(vertexID);
+				HashSet<MemoryExclusionVertex> exclusions = new HashSet<MemoryExclusionVertex>(
+						this.vertexSet());
+				exclusions.remove(workingMemoryNode);
+				exclusions.removeAll(inclusions);
+				for (MemoryExclusionVertex exclusion : exclusions) {
+					this.addEdge(workingMemoryNode, exclusion);
+				}
+
+				// Add the node to the "incoming" list of the DAGVertex.
+				// Like incoming edges, the working memory must have exclusions
+				// with all outgoing edges but not with successors
+				incoming.get(vertexID).add(workingMemoryNode);
+			}
+
 			// For each outgoing edge
 			for (DAGEdge edge : vertexDAG.outgoingEdges()) {
 				// Add the node to the Exclusion Graph
@@ -527,7 +559,7 @@ public class MemoryExclusionGraph extends
 
 					// If a node was added.(It should always be the case)
 
-					// If this edge belong to an explosionSet
+					// If this edge belongs to an explosionSet
 					if (edge.getPropertyBean().getValue("explodeName") != null) {
 						// Add Exclusionvertex to its implodeExplodeSet
 						implodeExplodeMap.get(
@@ -572,9 +604,6 @@ public class MemoryExclusionGraph extends
 			predecessors.get(vertexID).addAll(incoming.get(vertexID));
 			verticesPredecessors.put(vertexDAG.getName(),
 					predecessors.get(vertexID));
-
-			// Clear useless lists
-			predecessors.set(vertexID, null);
 		}
 	}
 
@@ -718,11 +747,13 @@ public class MemoryExclusionGraph extends
 	}
 
 	/**
-	 * This function prepare the dag in order to update a MemEx that takes
-	 * scheduling info into account.
+	 * This function update a {@link MemoryExclusionGraph MemEx} by taking
+	 * scheduling information contained in a {@link DirectedAcyclicGraph DAG}
+	 * into account.
 	 * 
 	 * @param dag
-	 *            the dag to prepare (will not be modified)
+	 *            the {@link DirectedAcyclicGraph DAG} used (will not be
+	 *            modified)
 	 */
 	public void updateWithSchedule(DirectedAcyclicGraph dag) {
 
@@ -743,7 +774,7 @@ public class MemoryExclusionGraph extends
 															// vertices
 
 		// Create an array list of the DAGVertices, in scheduling order.
-		// As the DAG are scanned in following the precedence order, the
+		// As the DAG are scanned following the precedence order, the
 		// computation needed to sort the list should not be too heavy.
 		HashMap<Integer, DAGVertex> verticesMap = new HashMap<Integer, DAGVertex>();
 
@@ -839,21 +870,50 @@ public class MemoryExclusionGraph extends
 					.getName()));
 
 			if (!newPredecessors.isEmpty()) {
+				// Remove exclusion between the Exclusion Vertex corresponding
+				// to the working memory (if any) of the currentVertex and the
+				// exclusion vertices in the newPredecessors list
+
+				// Re-create the working memory exclusion vertex (weight does
+				// not matter to find the vertex in the Memex)
+				MemoryExclusionVertex wMemVertex = new MemoryExclusionVertex(
+						currentVertex.getName(), currentVertex.getName(), 0);
+				if (this.containsVertex(wMemVertex)) {
+					for (MemoryExclusionVertex newPredecessor : newPredecessors) {
+						this.removeEdge(wMemVertex, newPredecessor);
+					}
+				}
+
 				// Remove exclusion between ExclusionVertices corresponding
-				// to
-				// outgoing edges, and ExclusionVertices in newPredecessors
-				// list
+				// to outgoing edges of the currentVertex, and ExclusionVertices
+				// in newPredecessors list
 				for (DAGEdge outgoingEdge : currentVertex.outgoingEdges()) {
 					if (outgoingEdge.getTarget().getPropertyBean()
 							.getValue("vertexType").toString().equals("task")) {
 						MemoryExclusionVertex edgeVertex = new MemoryExclusionVertex(
 								outgoingEdge);
 						for (MemoryExclusionVertex newPredecessor : newPredecessors) {
-							this.removeEdge(edgeVertex, newPredecessor);
+							if (this.removeEdge(edgeVertex, newPredecessor) == null) {
+								/**
+								 * Possible causes are: <br>
+								 * -edgeVertex or newPredecessor no longer are
+								 * in the graph <br>
+								 * -this.verticesPredecessors was corrupted
+								 * before calling updateWithSchedule() <br>
+								 * -The exclusion or one of the vertex could not
+								 * be found because the
+								 * MemoryExclusionVertex.equals() method is
+								 * corrupted
+								 */
+								throw new RuntimeException(
+										"Failed removing exclusion between "
+												+ edgeVertex + " and "
+												+ newPredecessor);
+							}
 						}
 
 						// Update newPredecessor list of successors
-						// DAGVertices
+						// DAGVertices (the target of the current edge)
 						HashSet<MemoryExclusionVertex> successorPredecessor;
 						successorPredecessor = newVerticesPredecessors
 								.get(outgoingEdge.getTarget().getName());
@@ -870,7 +930,6 @@ public class MemoryExclusionGraph extends
 				}
 			}
 		}
-
 	}
 
 	/**

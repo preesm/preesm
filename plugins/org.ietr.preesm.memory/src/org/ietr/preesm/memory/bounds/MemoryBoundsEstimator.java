@@ -52,7 +52,9 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.jgrapht.graph.DefaultEdge;
 
 /**
- * Workflow element that takes a MemoryExclusionGraph as input and computes its memory bounds.
+ * Workflow element that takes a MemoryExclusionGraph as input and computes its
+ * memory bounds. It outputs the unmodified MemEx as well as the input and
+ * output bounds found.
  * 
  * @author kdesnos
  * 
@@ -69,7 +71,7 @@ public class MemoryBoundsEstimator extends AbstractTaskImplementation {
 	static final public String VALUE_VERBOSE_DEFAULT = "? C {True, False}";
 	static final public String VALUE_VERBOSE_TRUE = "True";
 	static final public String VALUE_VERBOSE_FALSE = "False";
-	
+
 	static final public String OUTPUT_KEY_BOUND_MIN = "BoundMin";
 	static final public String OUTPUT_KEY_BOUND_MAX = "BoundMax";
 	static final public String OUTPUT_KEY_MEM_EX = "MemEx";
@@ -103,44 +105,50 @@ public class MemoryBoundsEstimator extends AbstractTaskImplementation {
 				}
 			}
 		}
-		
+
 		MemoryExclusionGraph memEx = (MemoryExclusionGraph) inputs.get("MemEx");
-		
-		double density = memEx.edgeSet().size()/(memEx.vertexSet().size()*(memEx.vertexSet().size() -1)/2.0 );
-		if(verbose)
-			logger.log(Level.INFO, "Memory exclusion graph with "+memEx.vertexSet().size()+" vertices and density = "+density);
-		
-		
+
+		double density = memEx.edgeSet().size()
+				/ (memEx.vertexSet().size() * (memEx.vertexSet().size() - 1) / 2.0);
+		if (verbose)
+			logger.log(Level.INFO, "Memory exclusion graph with "
+					+ memEx.vertexSet().size() + " vertices and density = "
+					+ density);
+
 		// Derive bounds
 		AbstractMaximumWeightCliqueSolver<MemoryExclusionVertex, DefaultEdge> solver = null;
-		if (valueSolver.equals(VALUE_SOLVER_HEURISTIC)) {
+
+		switch (valueSolver) {
+		case VALUE_SOLVER_HEURISTIC:
 			solver = new HeuristicSolver<MemoryExclusionVertex, DefaultEdge>(
 					memEx);
-		}
-		if (valueSolver.equals(VALUE_SOLVER_OSTERGARD)) {
+			break;
+		case VALUE_SOLVER_OSTERGARD:
 			solver = new OstergardSolver<MemoryExclusionVertex, DefaultEdge>(
 					memEx);
-		}
-		if (valueSolver.equals(VALUE_SOLVER_YAMAGUCHI)) {
+			break;
+		case VALUE_SOLVER_YAMAGUCHI:
 			solver = new YamaguchiSolver<MemoryExclusionVertex, DefaultEdge>(
 					memEx);
-		}
-		if (solver == null) {
+			break;
+		default:
 			solver = new HeuristicSolver<MemoryExclusionVertex, DefaultEdge>(
 					memEx);
 		}
-		
-		if(verbose){
-			logger.log(Level.INFO, "Maximum-Weight Clique Problem : start solving");
+
+		if (verbose) {
+			logger.log(Level.INFO,
+					"Maximum-Weight Clique Problem : start solving");
 		}
-		
-		solver.solve();		
+
+		solver.solve();
 		int minBound = solver.sumWeight(solver.getHeaviestClique());
 		int maxBound = solver.sumWeight(memEx.vertexSet());
-		
-		logger.log(Level.INFO, "Bound_Max = "+ maxBound +" Bound_Min = "+ minBound);
 
-		// Generate output  
+		logger.log(Level.INFO, "Bound_Max = " + maxBound + " Bound_Min = "
+				+ minBound);
+
+		// Generate output
 		Map<String, Object> output = new HashMap<String, Object>();
 		output.put(OUTPUT_KEY_BOUND_MAX, maxBound);
 		output.put(OUTPUT_KEY_BOUND_MIN, minBound);

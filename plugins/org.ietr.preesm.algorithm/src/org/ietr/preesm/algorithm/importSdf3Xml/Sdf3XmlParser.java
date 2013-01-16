@@ -196,11 +196,15 @@ public class Sdf3XmlParser {
 				actor.setPropertyValue("working_memory", new Integer(stateSize));
 			}
 		} catch (RuntimeException e) {
-			if (e.getMessage().contains("too many processor")) {
+			if (e.getMessage().contains("does not contain any")) {
+				// do nothing
+				e.printStackTrace();
+			} else if (e.getMessage().contains("too many processor")) {
 				throw new RuntimeException(
 						"Multiproc architecture are not supported yet.");
-			} else
+			} else {
 				throw e;
+			}
 		}
 
 	}
@@ -325,15 +329,20 @@ public class Sdf3XmlParser {
 
 		// The bufferSIze element exist but is not used (yet)
 		// findElement(channelPtyElt, "bufferSize");
-		Element tokenSize = findElement(channelPtyElt, "tokenSize");
-		String tokenSz = tokenSize.getAttribute("sz");
-		if (tokenSz.isEmpty()) {
-			throw new RuntimeException("Channel " + channelName
-					+ " token size is not set properly.");
+
+		try {
+			Element tokenSize = findElement(channelPtyElt, "tokenSize");
+			String tokenSz = tokenSize.getAttribute("sz");
+			if (tokenSz.isEmpty()) {
+				throw new RuntimeException("Channel " + channelName
+						+ " token size is not set properly.");
+			}
+			String dataType = "t" + tokenSz;
+			edge.setDataType(new SDFStringEdgePropertyType(dataType));
+			dataTypes.put(dataType, new Integer(tokenSz));
+		} catch (RuntimeException e) {
+			e.printStackTrace();
 		}
-		String dataType = "t" + tokenSz;
-		edge.setDataType(new SDFStringEdgePropertyType(dataType));
-		dataTypes.put(dataType, new Integer(tokenSz));
 
 	}
 
