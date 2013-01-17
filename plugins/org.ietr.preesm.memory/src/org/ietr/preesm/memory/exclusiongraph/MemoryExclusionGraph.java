@@ -757,6 +757,10 @@ public class MemoryExclusionGraph extends
 	 */
 	public void updateWithSchedule(DirectedAcyclicGraph dag) {
 
+		// Since the MemEx is modified, the AdjacentVerticesBackup will be
+		// deprecated. Clear it !
+		clearAdjacentVerticesBackup();
+
 		// This map is used along the scan of the vertex of the dag.
 		// Its purpose is to store the last vertex scheduled on each
 		// component. This way, when a new vertex is executed on this

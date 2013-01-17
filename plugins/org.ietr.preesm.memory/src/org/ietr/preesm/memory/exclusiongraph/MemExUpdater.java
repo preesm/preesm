@@ -98,7 +98,7 @@ public class MemExUpdater extends AbstractTaskImplementation {
 					+ memEx.vertexSet().size() + " vertices and density = "
 					+ density);
 			logger.log(Level.INFO, "Exclusions removed: "
-					+ (before - memEx.edgeSet().size()));
+					+ (before - memEx.edgeSet().size())+" ("+Math.round(100.00*(before - memEx.edgeSet().size())/(double)before)+"%)");
 		}
 
 		// Generate output
