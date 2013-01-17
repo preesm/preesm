@@ -1,14 +1,16 @@
 package org.ietr.preesm.experiment.memory.allocation;
 
 import java.util.HashMap;
+import java.util.Map;
+
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.workflow.WorkflowException;
 
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.jgrapht.graph.DefaultEdge;
-import net.sf.dftools.algorithm.model.dag.DAGEdge;
-import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 
 /**
  * This class is both an interface and toolbox class for memory allocator.
@@ -101,10 +103,24 @@ public abstract class MemoryAllocator {
 	 * 
 	 * @return An allocation
 	 */
-	public HashMap<DAGEdge, Integer> getAllocation() {
+	public Map<DAGEdge, Integer> getEdgeAllocation() {
 		return edgeAllocation;
 	}
-	
+
+	/**
+	 * This function return an allocation of the {@link MemoryExclusionVertex
+	 * Memory Objects} of the {@link MemoryExclusionGraph MeMex graph} stored in
+	 * graph attribute.
+	 * 
+	 * An allocation is a map of @link MemoryExclusionVertex Memory Objects}
+	 * associated to an integer which represents their offset in memory.
+	 * Different allocator policy exists (First Fit, Best Fit...)
+	 * 
+	 * @return An allocation
+	 */
+	public Map<MemoryExclusionVertex, Integer> getMemObjectAllocation() {
+		return memExNodeAllocation;
+	}
 
 	/**
 	 * This method computes and return the size of the allocated memory.
@@ -124,8 +140,8 @@ public abstract class MemoryAllocator {
 			}
 			return memorySize;
 		}
-		
-		if (! edgeAllocation.isEmpty()) {
+
+		if (!edgeAllocation.isEmpty()) {
 			try {
 				// Look for the maximum value of (offset + edge.size) in
 				// allocation map
@@ -133,7 +149,7 @@ public abstract class MemoryAllocator {
 					if ((edgeAllocation.get(edge) + edge.getWeight().intValue()) > memorySize) {
 						memorySize = edgeAllocation.get(edge)
 								+ edge.getWeight().intValue();
-						}
+					}
 				}
 			} catch (InvalidExpressionException e) {
 				// TODO Auto-generated catch block
@@ -145,7 +161,7 @@ public abstract class MemoryAllocator {
 	}
 
 	/**
-	 * This method is responsible for checking the conformity of a DAG memory
+	 * This method is responsible for checking the conformity of a memory
 	 * allocation with the following constraints : <li>An input buffer of an
 	 * actor can not share a memory space with an output. <li>As all actors are
 	 * considered self-scheduled, buffers in parallel branches of the DAG can

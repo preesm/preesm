@@ -1,7 +1,10 @@
 package org.ietr.preesm.experiment.memory.allocation;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
@@ -64,36 +67,86 @@ public class FirstFitAllocator extends OrderedAllocator {
 			HashSet<MemoryExclusionVertex> neighbors = inputExclusionGraph
 					.getAdjacentVertexOf(vertex);
 
-			// The offset of the current vertex
-			int offset = 0;
+			// Construct two lists that contains the exclusion ranges in memory
+			ArrayList<Integer> excludeFrom = new ArrayList<Integer>();
+			ArrayList<Integer> excludeTo = new ArrayList<Integer>();
+			for (MemoryExclusionVertex neighbor : neighbors) {
+				if (memExNodeAllocation.containsKey(neighbor)) {
+					int neighborOffset = memExNodeAllocation.get(neighbor);
+					excludeFrom.add(neighborOffset);
+					excludeTo.add(neighborOffset + neighbor.getWeight());
+				}
+			}
+			Collections.sort(excludeFrom);
+			Collections.sort(excludeTo);
 
-			// This boolean indicate that the offset chosen for the vertex is
-			// compatible with all the neighbors that are already allocated.
-			boolean validOffset = false;
+			int firstFitOffset = -1;
+			int freeFrom = 0; // Where the last exclusion ended
 
-			// Iterate until a valid offset is found (this offset will be the
-			// smallest possible)
-			while (!validOffset) {
-				validOffset = true;
-				for (MemoryExclusionVertex neighbor : neighbors) {
-					if (memExNodeAllocation.containsKey(neighbor)) {
-						// If an allocated neighbor overlap with the current
-						// vertex allocaed at the current offset
-						int neighborOffset = memExNodeAllocation.get(neighbor);
-						if (neighborOffset < (offset + vertex.getWeight())
-								&& (neighborOffset + neighbor.getWeight()) > offset) {
-							validOffset = false;
-							// Then, try the top of this neighbor as a new
-							// offset
-							offset = neighborOffset + neighbor.getWeight();
-							break;
+			// Look for first fit only if there are exclusions. Else, simply
+			// allocate at 0.
+			if (!excludeFrom.isEmpty()) {
+				// Look for the first free spaces between the exclusion ranges.
+				Iterator<Integer> iterFrom = excludeFrom.iterator();
+				Iterator<Integer> iterTo = excludeTo.iterator();
+				int from = iterFrom.next();
+				int to = iterTo.next();
+				// Number of from encountered minus number of to encountered. If
+				// this value is 0, the space between the last "to" and the next
+				// "from" is free !
+				int nbExcludeFrom = 0;
+
+				boolean lastFromTreated = false;
+				boolean lastToTreated = false;
+
+				// Iterate over the excludeFrom and excludeTo lists
+				while (!lastToTreated && firstFitOffset == -1) {
+					if (from <= to) {
+						if (nbExcludeFrom == 0) {
+							// This is the end of a free space. check if the
+							// current element fits here ?
+							int freeSpaceSize = from - freeFrom;
+
+							// If the element fits in the space
+							if (vertex.getWeight() <= freeSpaceSize) {
+								firstFitOffset = freeFrom;
+							}
+						}
+						if (iterFrom.hasNext()) {
+							from = iterFrom.next();
+							nbExcludeFrom++;
+						} else {
+							if (!lastFromTreated) {
+								lastFromTreated = true;
+								nbExcludeFrom++;
+							}
+						}
+					}
+
+					if ((to < from) || !iterFrom.hasNext()) {
+						nbExcludeFrom--;
+						if (nbExcludeFrom == 0) {
+							// This is the beginning of a free space !
+							freeFrom = to;
+						}
+
+						if (iterTo.hasNext()) {
+							to = iterTo.next();
+						} else {
+							lastToTreated = true;
 						}
 					}
 				}
 			}
-			// Allocate the vertex at the resulting offset
-			memExNodeAllocation.put(vertex, offset);
-			edgeAllocation.put(vertex.getEdge(), offset);
+
+			// If no free space was found between excluding elements
+			if (firstFitOffset <= -1) {
+				// Put it right after the last element of the list
+				firstFitOffset = freeFrom;
+			}
+
+			memExNodeAllocation.put(vertex, firstFitOffset);
+			edgeAllocation.put(vertex.getEdge(), firstFitOffset);
 		}
 
 		return getMemorySize();

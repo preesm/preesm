@@ -96,7 +96,6 @@ public abstract class OrderedAllocator extends MemoryAllocator {
 			allocateStableSetOrder();
 			break;
 		}
-
 	}
 
 	/**
@@ -220,7 +219,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
 
 		ArrayList<MemoryExclusionVertex> list = getStableSetOrderedList(exactStableSet);
 		allocateInOrder(list);
-	}
+		}
 
 	/**
 	 * @return the nbShuffle
