@@ -91,18 +91,19 @@ public class DeGreefAllocator extends MemoryAllocator {
 					if (neighborOffset < (newOffset + vertex.getWeight())
 							&& (neighborOffset + neighbor.getWeight()) > newOffset) {
 						validOffset = false;
-						newOffset += neighbor.getWeight();
+						newOffset = neighborOffset + neighbor.getWeight();
 						break;
 					}
 				}
 			}
 			// If the offset was not valid
-			if(newOffset != offset){
-				nonAllocatedVertices.add(new IntegerAndVertex(newOffset,vertex));
+			if (newOffset != offset) {
+				nonAllocatedVertices
+						.add(new IntegerAndVertex(newOffset, vertex));
 				Collections.sort(nonAllocatedVertices);
-			} else{
+			} else {
 				memExNodeAllocation.put(vertex, offset);
-				allocation.put(vertex.getEdge(), offset);
+				edgeAllocation.put(vertex.getEdge(), offset);
 			}
 		}
 	}

@@ -140,7 +140,7 @@ public class CustomAllocator extends MemoryAllocator {
 				element.add(node);
 				clique.add(element);
 				// (10) Allocate clique elements
-				allocation.put(node.getEdge(), cliqueOffset);
+				edgeAllocation.put(node.getEdge(), cliqueOffset);
 				memExNodeAllocation.put(node, cliqueOffset);
 			}
 
@@ -221,7 +221,7 @@ public class CustomAllocator extends MemoryAllocator {
 							cliqueSet.add(neighbor);
 							loopAgain = true;
 							// (10)
-							allocation.put(neighbor.getEdge(), cliqueOffset
+							edgeAllocation.put(neighbor.getEdge(), cliqueOffset
 									+ elementWeight);
 							memExNodeAllocation.put(neighbor, cliqueOffset
 									+ elementWeight);

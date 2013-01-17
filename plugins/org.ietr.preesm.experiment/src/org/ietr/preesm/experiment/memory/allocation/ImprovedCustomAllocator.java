@@ -133,7 +133,7 @@ public class ImprovedCustomAllocator extends MemoryAllocator {
 			// Allocate Clique elements
 			for (MemoryExclusionVertex node : cliqueSet) {
 				// (10) Allocate clique elements
-				allocation.put(node.getEdge(), cliqueOffset);
+				edgeAllocation.put(node.getEdge(), cliqueOffset);
 				memExNodeAllocation.put(node, cliqueOffset);
 			}
 
@@ -199,7 +199,7 @@ public class ImprovedCustomAllocator extends MemoryAllocator {
 					// Allocate the vertex at the resulting offset if the set is not enlarged by the weight of the node
 					if ((offset-cliqueOffset) < cliqueWeight && ((offset-cliqueOffset)+vertex.getWeight()) < maximumSize) {
 						memExNodeAllocation.put(vertex, offset);
-						allocation.put(vertex.getEdge(), offset);
+						edgeAllocation.put(vertex.getEdge(), offset);
 						cliqueSet.add(vertex);
 						nonAllocatedVertex.remove(vertex);
 						loopAgain = true;

@@ -44,7 +44,7 @@ public abstract class MemoryAllocator {
 	 * </tr>
 	 * </table>
 	 */
-	protected HashMap<DAGEdge, Integer> allocation;
+	protected HashMap<DAGEdge, Integer> edgeAllocation;
 
 	/**
 	 * The SDF graph whose edges (memory transfers between actors) are to
@@ -65,7 +65,7 @@ public abstract class MemoryAllocator {
 	 */
 	protected MemoryAllocator(DirectedAcyclicGraph graph) {
 		this.graph = graph;
-		allocation = new HashMap<DAGEdge, Integer>();
+		edgeAllocation = new HashMap<DAGEdge, Integer>();
 
 		memExNodeAllocation = null;
 		inputExclusionGraph = null;
@@ -79,7 +79,7 @@ public abstract class MemoryAllocator {
 	 */
 	protected MemoryAllocator(MemoryExclusionGraph memEx) {
 		this.graph = null;
-		allocation = new HashMap<DAGEdge, Integer>();
+		edgeAllocation = new HashMap<DAGEdge, Integer>();
 
 		memExNodeAllocation = new HashMap<MemoryExclusionVertex, Integer>();
 		inputExclusionGraph = memEx;
@@ -102,7 +102,7 @@ public abstract class MemoryAllocator {
 	 * @return An allocation
 	 */
 	public HashMap<DAGEdge, Integer> getAllocation() {
-		return allocation;
+		return edgeAllocation;
 	}
 	
 
@@ -125,13 +125,13 @@ public abstract class MemoryAllocator {
 			return memorySize;
 		}
 		
-		if (! allocation.isEmpty()) {
+		if (! edgeAllocation.isEmpty()) {
 			try {
 				// Look for the maximum value of (offset + edge.size) in
 				// allocation map
-				for (DAGEdge edge : allocation.keySet()) {
-					if ((allocation.get(edge) + edge.getWeight().intValue()) > memorySize) {
-						memorySize = allocation.get(edge)
+				for (DAGEdge edge : edgeAllocation.keySet()) {
+					if ((edgeAllocation.get(edge) + edge.getWeight().intValue()) > memorySize) {
+						memorySize = edgeAllocation.get(edge)
 								+ edge.getWeight().intValue();
 						}
 				}
@@ -190,8 +190,8 @@ public abstract class MemoryAllocator {
 				sourceOffset = memExNodeAllocation.get(source);
 				targetOffset = memExNodeAllocation.get(target);
 			} else {
-				sourceOffset = allocation.get(source.getEdge());
-				targetOffset = allocation.get(target.getEdge());
+				sourceOffset = edgeAllocation.get(source.getEdge());
+				targetOffset = edgeAllocation.get(target.getEdge());
 			}
 
 			// If the memory element share memory space

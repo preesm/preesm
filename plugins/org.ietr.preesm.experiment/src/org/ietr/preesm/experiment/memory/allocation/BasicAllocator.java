@@ -45,7 +45,7 @@ public class BasicAllocator extends MemoryAllocator {
 		if(this.graph != null){
 		try {
 			for (DAGEdge edge : graph.edgeSet()) {
-				allocation.put(edge, offset);
+				edgeAllocation.put(edge, offset);
 				offset+=edge.getWeight().intValue();
 			}
 		} catch (InvalidExpressionException e) {
