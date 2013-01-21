@@ -146,6 +146,7 @@ public class MemoryExclusionGraph extends
 			// If false, this means that an equal node is already in the MemEx..
 			// somehow..
 			if (added == false) {
+				// This may come from several edges belonging to an implodeSet
 				System.out.println("Vertex not added : " + newNode.toString());
 				newNode = null;
 			}
@@ -884,7 +885,9 @@ public class MemoryExclusionGraph extends
 						currentVertex.getName(), currentVertex.getName(), 0);
 				if (this.containsVertex(wMemVertex)) {
 					for (MemoryExclusionVertex newPredecessor : newPredecessors) {
-						this.removeEdge(wMemVertex, newPredecessor);
+						if(this.removeEdge(wMemVertex, newPredecessor) == null){
+							throw new RuntimeException("Missing edge");
+						}
 					}
 				}
 
