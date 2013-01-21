@@ -245,12 +245,10 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 						}
 					}
 					// Update the number of edge added
-					// the first -1 is to ignore the edge coming from the
-					// remaining "implode" vertex
-					// The second -1 is because outgoing edges of broadcast
+					// The -1 is because outgoing edges of broadcast
 					// were already present once.
 					nbEdgeAdded += (outgoingEdges.size())
-							* (incomingEdges.size() - 1 - 1);
+							* (incomingEdges.size() - 1);
 
 					// Remove the vertex from the graph
 					hsdf.removeVertex(vert);
@@ -307,7 +305,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 				}
 			}
 		}
-		hsdf.removeAllVertices(nonTaskVertices);
+		//hsdf.removeAllVertices(nonTaskVertices);
 		if (nonTaskVertices.size() != (nbEdgeBefore + nbEdgeAdded - hsdf
 				.edgeSet().size())) {
 			WorkflowLogger.getLogger().log(
