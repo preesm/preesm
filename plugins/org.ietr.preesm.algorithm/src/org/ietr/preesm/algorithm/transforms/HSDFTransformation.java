@@ -84,7 +84,14 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return;
-		} // Iterator on DAG vertices
+		} catch (RuntimeException e) {
+			Logger logger = WorkflowLogger.getLogger();
+			logger.log(
+					Level.SEVERE,
+					"Explode/Implode vertices were not removed because:\n"
+							+ e.getMessage());
+			return;
+		}
 
 		// Keep track of the initial number of edge to check if the right number
 		// of edges were removed
@@ -305,7 +312,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 				}
 			}
 		}
-		//hsdf.removeAllVertices(nonTaskVertices);
+		// hsdf.removeAllVertices(nonTaskVertices);
 		if (nonTaskVertices.size() != (nbEdgeBefore + nbEdgeAdded - hsdf
 				.edgeSet().size())) {
 			WorkflowLogger.getLogger().log(
