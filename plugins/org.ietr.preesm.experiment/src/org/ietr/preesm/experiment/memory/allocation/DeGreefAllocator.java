@@ -2,15 +2,17 @@ package org.ietr.preesm.experiment.memory.allocation;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.workflow.WorkflowException;
 
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
-
-import net.sf.dftools.workflow.WorkflowException;
-
-import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 
 /**
  * In this class, an adapted version of the placement algorithm presented in <a
@@ -45,6 +47,10 @@ public class DeGreefAllocator extends MemoryAllocator {
 
 	@Override
 	public void allocate() {
+		// clear all previous allocation
+		memExNodeAllocation = new HashMap<MemoryExclusionVertex, Integer>();
+		edgeAllocation = new HashMap<DAGEdge, Integer>();
+
 		// Build the MemoryExclusionGraph if necessary
 		if (inputExclusionGraph == null) {
 			inputExclusionGraph = new MemoryExclusionGraph();
@@ -71,31 +77,96 @@ public class DeGreefAllocator extends MemoryAllocator {
 			IntegerAndVertex currentPair = nonAllocatedVertices.remove(0);
 			int offset = currentPair.getFirst();
 			MemoryExclusionVertex vertex = currentPair.getSecond();
+			// The rest of the code could be simpler, as was done before
+			// revision 123, but it would be slower too.
 
-			@SuppressWarnings("unchecked")
-			HashSet<MemoryExclusionVertex> neighbors = (HashSet<MemoryExclusionVertex>) inputExclusionGraph
-					.getAdjacentVertexOf(vertex).clone();
+			// Get vertex neighbors
+			HashSet<MemoryExclusionVertex> neighbors = inputExclusionGraph
+					.getAdjacentVertexOf(vertex);
 
-			neighbors.retainAll(memExNodeAllocation.keySet());
-
-			int newOffset = offset; // if the current offset is not posible,
-									// this will store the new offset.
-			boolean validOffset = false;
-
-			// Iterate until a valid offset is found (this offset will be the
-			// smallest possible)
-			while (!validOffset) {
-				validOffset = true;
-				for (MemoryExclusionVertex neighbor : neighbors) {
+			// Construct two lists that contains the exclusion ranges in memory
+			ArrayList<Integer> excludeFrom = new ArrayList<Integer>();
+			ArrayList<Integer> excludeTo = new ArrayList<Integer>();
+			for (MemoryExclusionVertex neighbor : neighbors) {
+				if (memExNodeAllocation.containsKey(neighbor)) {
 					int neighborOffset = memExNodeAllocation.get(neighbor);
-					if (neighborOffset < (newOffset + vertex.getWeight())
-							&& (neighborOffset + neighbor.getWeight()) > newOffset) {
-						validOffset = false;
-						newOffset = neighborOffset + neighbor.getWeight();
-						break;
+					excludeFrom.add(neighborOffset);
+					excludeTo.add(neighborOffset + neighbor.getWeight());
+				}
+			}
+
+			Collections.sort(excludeFrom);
+			Collections.sort(excludeTo);
+
+			int newOffset = -1;
+			int freeFrom = 0; // Where the last exclusion ended
+
+			// Look for first fit only if there are exclusions. Else, simply
+			// keep the 0 offset.
+			if (!excludeFrom.isEmpty()) {
+				// Look for the first free spaces between the exclusion ranges.
+				Iterator<Integer> iterFrom = excludeFrom.iterator();
+				Iterator<Integer> iterTo = excludeTo.iterator();
+				int from = iterFrom.next();
+				int to = iterTo.next();
+				// Number of from encountered minus number of to encountered. If
+				// this value is 0, the space between the last "to" and the next
+				// "from" is free !
+				int nbExcludeFrom = 0;
+
+				boolean lastFromTreated = false;
+				boolean lastToTreated = false;
+
+				// Iterate over the excludeFrom and excludeTo lists
+				while (!lastToTreated && newOffset == -1) {
+					if (from <= to) {
+						// If this is the end of a free space with an offset
+						// greater or equal to offset
+						if (nbExcludeFrom == 0 && freeFrom >= offset) {
+							// This is the end of a free space. check if the
+							// current element fits here ?
+							int freeSpaceSize = from - freeFrom;
+
+							// If the element fits in the space
+							if (vertex.getWeight() <= freeSpaceSize) {
+								newOffset = freeFrom;
+							}
+						}
+						if (iterFrom.hasNext()) {
+							from = iterFrom.next();
+							nbExcludeFrom++;
+						} else {
+							if (!lastFromTreated) {
+								lastFromTreated = true;
+								// Add a from to avoid considering the end of
+								// lastTo as a free space
+								nbExcludeFrom++;
+							}
+						}
+					}
+
+					if ((to < from) || !iterFrom.hasNext()) {
+						nbExcludeFrom--;
+						if (nbExcludeFrom == 0) {
+							// This is the beginning of a free space !
+							freeFrom = to;
+						}
+
+						if (iterTo.hasNext()) {
+							to = iterTo.next();
+						} else {
+							lastToTreated = true;
+						}
 					}
 				}
 			}
+
+			// If no free space was found between excluding elements
+			if (newOffset <= -1) {
+				// Put it right after the last element of the list
+				newOffset = freeFrom;
+			}
+
 			// If the offset was not valid
 			if (newOffset != offset) {
 				nonAllocatedVertices

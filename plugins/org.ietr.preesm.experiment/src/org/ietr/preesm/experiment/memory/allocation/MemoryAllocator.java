@@ -170,7 +170,7 @@ public abstract class MemoryAllocator {
 	 * @return The list of conflicting memory elements. Empty list if allocation
 	 *         follow the rules.
 	 */
-	public HashMap<MemoryExclusionVertex, Integer> checkAllocation() {
+	public final HashMap<MemoryExclusionVertex, Integer> checkAllocation() {
 		HashMap<MemoryExclusionVertex, Integer> conflictingElements;
 		conflictingElements = new HashMap<MemoryExclusionVertex, Integer>();
 

@@ -118,6 +118,8 @@ public class FirstFitAllocator extends OrderedAllocator {
 						} else {
 							if (!lastFromTreated) {
 								lastFromTreated = true;
+								// Add a from to avoid considering the end of
+								// lastTo as a free space
 								nbExcludeFrom++;
 							}
 						}

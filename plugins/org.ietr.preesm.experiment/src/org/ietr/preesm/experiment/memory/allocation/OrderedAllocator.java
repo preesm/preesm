@@ -19,7 +19,7 @@ import org.jgrapht.graph.SimpleGraph;
 public abstract class OrderedAllocator extends MemoryAllocator {
 
 	public static enum Order {
-		SHUFFLE, LARGEST_FIRST, STABLE_SET
+		SHUFFLE, LARGEST_FIRST, STABLE_SET, EXACT_STABLE_SET
 	}
 
 	public static enum Policy {
@@ -93,6 +93,9 @@ public abstract class OrderedAllocator extends MemoryAllocator {
 			allocateLargestFirst();
 			break;
 		case STABLE_SET:
+			allocateStableSetOrder(false);
+			break;
+		case EXACT_STABLE_SET:
 			allocateStableSetOrder();
 			break;
 		}
@@ -219,7 +222,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
 
 		ArrayList<MemoryExclusionVertex> list = getStableSetOrderedList(exactStableSet);
 		allocateInOrder(list);
-		}
+	}
 
 	/**
 	 * @return the nbShuffle

@@ -7,11 +7,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
-import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
-
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+
+import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
+import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 
 /**
  * In this class, an adapted version of the best fit allocator is implemented.
@@ -125,6 +125,8 @@ public class BestFitAllocator extends OrderedAllocator {
 						} else {
 							if (!lastFromTreated) {
 								lastFromTreated = true;
+								// Add a from to avoid considering the end of
+								// lastTo as a free space
 								nbExcludeFrom++;
 							}
 						}

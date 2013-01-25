@@ -33,10 +33,11 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
 	static final public String VALUE_ALLOCATORS_DE_GREEF = "DeGreef";
 
 	static final public String PARAM_XFIT_ORDER = "Best/First Fit order";
-	static final public String VALUE_XFIT_ORDER_DEFAULT = "{?,?,...} C {StableSet, LargestFirst, Shuffle}";
-	static final public String VALUE_XFIT_ORDER_STABLE_SET = "StableSet";
+	static final public String VALUE_XFIT_ORDER_DEFAULT = "{?,?,...} C {ApproxStableSet, ExactStableSet, LargestFirst, Shuffle}";
+	static final public String VALUE_XFIT_ORDER_APPROX_STABLE_SET = "ApproxStableSet";
 	static final public String VALUE_XFIT_ORDER_LARGEST_FIRST = "LargestFirst";
 	static final public String VALUE_XFIT_ORDER_SHUFFLE = "Shuffle";
+	static final public String VALUE_XFIT_ORDER_EXACT_STABLE_SET = "ExactStableSet";
 
 	static final public String PARAM_NB_SHUFFLE = "Nb of Shuffling Tested";
 	static final public String VALUE_NB_SHUFFLE_DEFAULT = "10";
@@ -66,8 +67,11 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
 		if (valueXFitOrder.contains(VALUE_XFIT_ORDER_LARGEST_FIRST)) {
 			ordering.add(Order.LARGEST_FIRST);
 		}
-		if (valueXFitOrder.contains(VALUE_XFIT_ORDER_STABLE_SET)) {
+		if (valueXFitOrder.contains(VALUE_XFIT_ORDER_APPROX_STABLE_SET)) {
 			ordering.add(Order.STABLE_SET);
+		}
+		if (valueXFitOrder.contains(VALUE_XFIT_ORDER_EXACT_STABLE_SET)) {
+			ordering.add(Order.EXACT_STABLE_SET);
 		}
 
 		// Retrieve the input of the task
@@ -97,10 +101,12 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
 		if (valueAllocators.contains(VALUE_ALLOCATORS_DE_GREEF)) {
 			allocators.add(new DeGreefAllocator(memEx));
 		}
-		
+
 		// Heat up the neighborsBackup
-		logger.log(Level.INFO, "Heat up MemEx");
-		for(MemoryExclusionVertex vertex : memEx.vertexSet()){
+		if (verbose) {
+			logger.log(Level.INFO, "Heat up MemEx");
+		}
+		for (MemoryExclusionVertex vertex : memEx.vertexSet()) {
 			memEx.getAdjacentVertexOf(vertex);
 		}
 
@@ -117,11 +123,18 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
 				sAllocator += ")";
 			}
 
-			logger.log(Level.INFO, "Starting allocation with " + sAllocator);
+			if (verbose) {
+				logger.log(Level.INFO, "Starting allocation with " + sAllocator);
+			}
 
 			tStart = System.currentTimeMillis();
 			allocator.allocate();
 			tFinish = System.currentTimeMillis();
+
+			if (!allocator.checkAllocation().isEmpty()) {
+				throw new WorkflowException(
+						"The obtained allocation was not valid. The allocator is not working.");
+			}
 
 			String log = sAllocator + " allocates " + allocator.getMemorySize()
 					+ "mem. units in " + (tFinish - tStart) + " ms.";
@@ -138,7 +151,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
 			logger.log(Level.INFO, log);
 		}
 
-		return null;
+		return new HashMap<String, Object>();
 	}
 
 	@Override
