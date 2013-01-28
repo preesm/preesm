@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Transformation
+Bundle-SymbolicName: org.ietr.preesm.experiment.model.transformation;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Activator: org.ietr.preesm.experiment.model.transformation.Activator
+Bundle-Vendor: IETR
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ net.sf.dftools.workflow;bundle-version="0.1.0",
+ org.ietr.preesm.experiment.model;bundle-version="0.1.0",
+ org.ietr.preesm.core;bundle-version="0.6.3",
+ org.eclipse.core.resources;bundle-version="3.8.1",
+ net.sf.dftools.architecture;bundle-version="0.1.0",
+ net.sf.dftools.algorithm;bundle-version="0.1.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
