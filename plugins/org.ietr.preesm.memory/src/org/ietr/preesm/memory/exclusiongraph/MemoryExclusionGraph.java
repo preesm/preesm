@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -108,6 +109,27 @@ public class MemoryExclusionGraph extends
 	 * into a single memory object, in order to maximize the locality.
 	 */
 	private HashMap<String, HashSet<MemoryExclusionVertex>> implodeExplodeMap;
+
+	/**
+	 * {@link DirectedAcyclicGraph DAG} {@link DAGVertex vertices} in the
+	 * scheduling order retrieved in
+	 * {@link #updateWithSchedule(DirectedAcyclicGraph)}.
+	 */
+	protected List<DAGVertex> dagVerticesInSchedulingOrder = null;
+
+	/**
+	 * @return the {@link #dagVerticesInSchedulingOrder} or <code>null</code> if
+	 *         the {@link MemoryExclusionGraph MemEx} was not
+	 *         {@link #updateWithSchedule(DirectedAcyclicGraph) updated with a
+	 *         schedule}
+	 */
+	public List<DAGVertex> getDagVerticesInSchedulingOrder() {
+		if (dagVerticesInSchedulingOrder == null) {
+			return null;
+		} else {
+			return new ArrayList<DAGVertex>(dagVerticesInSchedulingOrder);
+		}
+	}
 
 	/**
 	 * Default constructor
@@ -798,7 +820,7 @@ public class MemoryExclusionGraph extends
 			}
 
 			if (vertKind.equals("dag_vertex")
-					|| vertKind.equals("dag_broadcast_vertex")) {
+					|| vertKind.equals("dag_broadcast_vertex") || vertKind.equals("dag_init_vertex")) {
 				int schedulingOrder = (Integer) currentVertex.getPropertyBean()
 						.getValue("schedulingOrder");
 				verticesMap.put(schedulingOrder, currentVertex);
@@ -831,13 +853,17 @@ public class MemoryExclusionGraph extends
 				dag.removeVertex(currentVertex);
 			}
 		}
+
 		ArrayList<Integer> schedulingOrders = new ArrayList<Integer>(
 				verticesMap.keySet());
 		Collections.sort(schedulingOrders);
 
+		dagVerticesInSchedulingOrder = new ArrayList<DAGVertex>();
+
 		// Scan the vertices in scheduling order
 		for (int order : schedulingOrders) {
 			DAGVertex currentVertex = verticesMap.get(order);
+			dagVerticesInSchedulingOrder.add(currentVertex);
 
 			// retrieve new predecessor list, if any.
 			// else, create an empty one
@@ -885,7 +911,7 @@ public class MemoryExclusionGraph extends
 						currentVertex.getName(), currentVertex.getName(), 0);
 				if (this.containsVertex(wMemVertex)) {
 					for (MemoryExclusionVertex newPredecessor : newPredecessors) {
-						if(this.removeEdge(wMemVertex, newPredecessor) == null){
+						if (this.removeEdge(wMemVertex, newPredecessor) == null) {
 							throw new RuntimeException("Missing edge");
 						}
 					}
