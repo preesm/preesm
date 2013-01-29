@@ -16,7 +16,7 @@
                   object="org.ietr.preesm.experiment.model.pimm.impl.GraphImpl">
             </output>
             <output
-                  id="S-LAM"
+                  id="architecture"
                   object="net.sf.dftools.architecture.slam.Design">
             </output>
          </outputs>
