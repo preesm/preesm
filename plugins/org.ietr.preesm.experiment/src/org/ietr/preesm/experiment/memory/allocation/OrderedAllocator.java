@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.workflow.WorkflowException;
@@ -19,7 +21,7 @@ import org.jgrapht.graph.SimpleGraph;
 public abstract class OrderedAllocator extends MemoryAllocator {
 
 	public static enum Order {
-		SHUFFLE, LARGEST_FIRST, STABLE_SET, EXACT_STABLE_SET
+		SHUFFLE, LARGEST_FIRST, STABLE_SET, EXACT_STABLE_SET, SCHEDULING
 	}
 
 	public static enum Policy {
@@ -98,6 +100,10 @@ public abstract class OrderedAllocator extends MemoryAllocator {
 		case EXACT_STABLE_SET:
 			allocateStableSetOrder();
 			break;
+		case SCHEDULING:
+			allocateSchedulingOrder();
+			break;
+
 		}
 	}
 
@@ -136,6 +142,75 @@ public abstract class OrderedAllocator extends MemoryAllocator {
 				inputExclusionGraph.vertexSet());
 		Collections.sort(list, Collections.reverseOrder());
 		allocateInOrder(list);
+	}
+
+	/**
+	 * Perform the allocation with the vertex ordered according to the
+	 * scheduling order. If the policy of the allocator is changed, the
+	 * resulting allocation will be lost.
+	 */
+	public void allocateSchedulingOrder() {
+		// If the exclusion graph is not built, it means that is does not come
+		// from the MemEx Updater, and we can do nothing
+		if (inputExclusionGraph == null) {
+			return;
+		}
+
+		// Retrieve the DAG vertices in scheduling order
+		List<DAGVertex> dagVertices = inputExclusionGraph
+				.getDagVerticesInSchedulingOrder();
+		if (dagVertices == null) {
+			throw new RuntimeException(
+					"Cannot allocate MemEx in scheduling order"
+							+ " because the MemEx was not updated with a schedule.");
+		}
+
+		// Create a List of MemEx Vertices
+		List<MemoryExclusionVertex> memExVertices = new ArrayList<>(
+				inputExclusionGraph.vertexSet());
+
+		// scan the dag vertices to retrieve the MemEx vertices in Scheduling
+		// order
+		List<MemoryExclusionVertex> memExVerticesInSchedulingOrder = new ArrayList<MemoryExclusionVertex>(
+				inputExclusionGraph.vertexSet().size());
+		for (DAGVertex vertex : dagVertices) {
+			/** 1- Retrieve the Working Memory MemEx Vertex (if any) */
+			{
+				// Re-create the working memory exclusion vertex (weight does
+				// not matter to find the vertex in the Memex)
+				MemoryExclusionVertex wMemVertex = new MemoryExclusionVertex(
+						vertex.getName(), vertex.getName(), 0);
+				int index;
+				if ((index = memExVertices.indexOf(wMemVertex)) != -1) {
+					// The working memory exists
+					memExVerticesInSchedulingOrder
+							.add(memExVertices.get(index));
+				}
+			}
+
+			/** 2- Retrieve the MemEx Vertices of outgoing edges (if any) */
+			{
+				for (DAGEdge outgoingEdge : vertex.outgoingEdges()) {
+					if (outgoingEdge.getTarget().getPropertyBean()
+							.getValue("vertexType").toString().equals("task")) {
+						MemoryExclusionVertex edgeVertex = new MemoryExclusionVertex(
+								outgoingEdge);
+						int index;
+						if ((index = memExVertices.indexOf(edgeVertex)) != -1) {
+							// The working memory exists
+							memExVerticesInSchedulingOrder.add(memExVertices
+									.get(index));
+						} else {
+							throw new RuntimeException("Missing MemEx Vertex: "
+									+ edgeVertex);
+						}
+					}
+				}
+			}
+		}
+
+		// Do the allocation
+		allocateInOrder(memExVerticesInSchedulingOrder);
 	}
 
 	/**

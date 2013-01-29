@@ -33,11 +33,12 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
 	static final public String VALUE_ALLOCATORS_DE_GREEF = "DeGreef";
 
 	static final public String PARAM_XFIT_ORDER = "Best/First Fit order";
-	static final public String VALUE_XFIT_ORDER_DEFAULT = "{?,?,...} C {ApproxStableSet, ExactStableSet, LargestFirst, Shuffle}";
+	static final public String VALUE_XFIT_ORDER_DEFAULT = "{?,?,...} C {ApproxStableSet, ExactStableSet, LargestFirst, Shuffle, Scheduling}";
 	static final public String VALUE_XFIT_ORDER_APPROX_STABLE_SET = "ApproxStableSet";
 	static final public String VALUE_XFIT_ORDER_LARGEST_FIRST = "LargestFirst";
 	static final public String VALUE_XFIT_ORDER_SHUFFLE = "Shuffle";
 	static final public String VALUE_XFIT_ORDER_EXACT_STABLE_SET = "ExactStableSet";
+	static final public String VALUE_XFIT_ORDER_SCHEDULING = "Scheduling";
 
 	static final public String PARAM_NB_SHUFFLE = "Nb of Shuffling Tested";
 	static final public String VALUE_NB_SHUFFLE_DEFAULT = "10";
@@ -72,6 +73,9 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
 		}
 		if (valueXFitOrder.contains(VALUE_XFIT_ORDER_EXACT_STABLE_SET)) {
 			ordering.add(Order.EXACT_STABLE_SET);
+		}
+		if (valueXFitOrder.contains(VALUE_XFIT_ORDER_SCHEDULING)) {
+			ordering.add(Order.SCHEDULING);
 		}
 
 		// Retrieve the input of the task
@@ -110,6 +114,8 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
 			memEx.getAdjacentVertexOf(vertex);
 		}
 
+		String csv = "";
+
 		for (MemoryAllocator allocator : allocators) {
 
 			long tStart, tFinish;
@@ -136,21 +142,28 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
 						"The obtained allocation was not valid. The allocator is not working.");
 			}
 
+			csv += "" + allocator.getMemorySize() + ";" + (tFinish - tStart)
+					+ ";";
 			String log = sAllocator + " allocates " + allocator.getMemorySize()
 					+ "mem. units in " + (tFinish - tStart) + " ms.";
 
 			if (allocator instanceof OrderedAllocator
 					&& ((OrderedAllocator) allocator).getOrder() == Order.SHUFFLE) {
-				((OrderedAllocator) allocator).setPolicy(Policy.mediane);
-				log += "(med: " + allocator.getMemorySize();
 				((OrderedAllocator) allocator).setPolicy(Policy.worst);
 				log += " worst: " + allocator.getMemorySize();
+				csv += allocator.getMemorySize() + ";";
+				((OrderedAllocator) allocator).setPolicy(Policy.mediane);
+				log += "(med: " + allocator.getMemorySize();
+				csv += allocator.getMemorySize() + ";";
 				((OrderedAllocator) allocator).setPolicy(Policy.average);
 				log += " avg: " + allocator.getMemorySize() + ")";
+				csv += allocator.getMemorySize() + ";";
 			}
+
 			logger.log(Level.INFO, log);
 		}
 
+		System.out.println(csv);
 		return new HashMap<String, Object>();
 	}
 
