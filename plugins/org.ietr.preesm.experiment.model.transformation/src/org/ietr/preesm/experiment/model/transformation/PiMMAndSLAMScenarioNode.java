@@ -58,7 +58,7 @@ public class PiMMAndSLAMScenarioNode extends AbstractScenarioImplementation {
 
 		outputs.put("scenario", scenario);
 		outputs.put("PiMM", null);
-		outputs.put("S-LAM", slamDesign);
+		outputs.put("architecture", slamDesign);
 		return outputs;
 	}
 
