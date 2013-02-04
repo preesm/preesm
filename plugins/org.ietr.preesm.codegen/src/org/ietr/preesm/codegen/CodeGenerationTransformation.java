@@ -121,10 +121,9 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 		}
 
 		if (parameters.get("printTemplate") != null) {
+			String templatePath = parameters.get("printTemplate");
 			SystemCPrinterVisitor printer = new SystemCPrinterVisitor(
-					new File(
-							"/home/jpiat/development/Method/Dataflow/preesm-tools/preesm/trunk/plugins/org.ietr.preesm.codegen/templates/preesm_systemc.stg"),
-					sourcePath);
+					new File(templatePath),sourcePath);
 			try {
 				codeGenSDFGraph.accept(printer);
 			} catch (SDF4JException e) {

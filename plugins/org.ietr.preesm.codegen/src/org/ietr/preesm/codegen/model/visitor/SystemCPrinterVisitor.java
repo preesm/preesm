@@ -227,7 +227,7 @@ public class SystemCPrinterVisitor implements
 
 		for (SDFAbstractVertex vertex : sdf.vertexSet()) {
 			if (vertex instanceof SDFInterfaceVertex) {
-				treatInterface((SDFInterfaceVertex) vertex, sdf, ports,
+				treatInterface((SDFInterfaceVertex) vertex, null ,sdf, ports,
 						firingRules, firingRulesSensitivityList);
 				isTestBed = false;
 			} else {
@@ -240,19 +240,22 @@ public class SystemCPrinterVisitor implements
 			graphName = graphName.substring(0, graphName.lastIndexOf('.'));
 		}
 
-		StringTemplate actorBodyTemplate = group.getInstanceOf("actor_body");
+		/*StringTemplate actorBodyTemplate = group.getInstanceOf("actor_body");
 		actorBodyTemplate.setAttribute("connections", connections);
 		actorBodyTemplate.setAttribute("edges_instanciations",
-				edges_instanciations);
+				edges_instanciations);*/
 		StringTemplate actorDeclarationTemplate;
 		if (isTestBed) {
 			actorDeclarationTemplate = group.getInstanceOf("test_bed");
 			actorDeclarationTemplate.setAttribute("name", graphName);
 			actorDeclarationTemplate.setAttribute("actor_declarations",
 					actor_declarations);
+			actorDeclarationTemplate.setAttribute("connections", connections);
 			actorDeclarationTemplate.setAttribute("edge_declarations",
 					edges_declarations);
-			actorDeclarationTemplate.setAttribute("body", actorBodyTemplate);
+			actorDeclarationTemplate.setAttribute("edges_instanciations",
+					edges_instanciations);
+			//actorDeclarationTemplate.setAttribute("body", actorBodyTemplate);
 		} else {
 			actorDeclarationTemplate = group.getInstanceOf("actor_declaration");
 			actorDeclarationTemplate.setAttribute("name", graphName);
@@ -261,7 +264,10 @@ public class SystemCPrinterVisitor implements
 					actor_declarations);
 			actorDeclarationTemplate.setAttribute("edge_declarations",
 					edges_declarations);
-			actorDeclarationTemplate.setAttribute("body", actorBodyTemplate);
+			actorDeclarationTemplate.setAttribute("connections", connections);
+			actorDeclarationTemplate.setAttribute("edges_instanciations",
+					edges_instanciations);
+			//actorDeclarationTemplate.setAttribute("body", actorBodyTemplate);
 			actorDeclarationTemplate.setAttribute("firing_rules", firingRules);
 			actorDeclarationTemplate.setAttribute("firing_rules_sensitivity",
 					firingRulesSensitivityList);
@@ -286,8 +292,13 @@ public class SystemCPrinterVisitor implements
 
 		path = path.append(graphName + extension);
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		String fsPath = workspace.getRoot().getFile(path).getLocation()
-				.toOSString();
+		String fsPath ;
+		if(workspace.getRoot().getFile(path).getLocation() != null){
+			fsPath = workspace.getRoot().getFile(path).getLocation()
+					.toOSString();
+		}else{
+			fsPath = path.toString() ;
+		}
 
 		File printFile = new File(fsPath);
 		FileWriter fileWriter;
@@ -307,7 +318,7 @@ public class SystemCPrinterVisitor implements
 	}
 
 	void treatInterface(SDFInterfaceVertex interfaceVertex,
-			SDFGraph parentGraph, List<StringTemplate> actorPorts,
+			SDFAbstractVertex parentVertex, SDFGraph parentGraph, List<StringTemplate> actorPorts,
 			List<StringTemplate> actorFiringRules,
 			List<StringTemplate> actorFiringRulesSensitivity) {
 		StringTemplate interfaceTemplate;
@@ -330,8 +341,8 @@ public class SystemCPrinterVisitor implements
 					interfaceVertex.getName());
 			for (SDFEdge edge : parentGraph.edgeSet()) {
 				if (edge.getSource().equals(interfaceVertex)
-						|| edge.getTargetInterface().equals(interfaceVertex)) {
-					interfaceSize = edge.getProd();
+						|| (edge.getTargetInterface().equals(interfaceVertex) && edge.getTarget().equals(parentVertex))) {
+					interfaceSize = edge.getCons();
 					StringTemplate portEvent = group
 							.getInstanceOf("port_event");
 					portEvent.setAttribute("port", interfaceVertex.getName());
@@ -367,7 +378,9 @@ public class SystemCPrinterVisitor implements
 					&& ((CodeGenSDFTaskVertex) sdfVertex).getRefinement() instanceof ActorPrototypes) {
 				refinementName = ((ActorPrototypes) ((CodeGenSDFTaskVertex) sdfVertex)
 						.getRefinement()).getLoopPrototype().getFunctionName();
-				includes.add(refinementName);
+				if(!includes.contains(refinementName)){
+					includes.add(refinementName);
+				}
 				exportAtomicActor((CodeGenSDFTaskVertex) sdfVertex);
 			} else if (((CodeGenSDFTaskVertex) sdfVertex).getRefinement() != null
 					&& ((CodeGenSDFTaskVertex) sdfVertex).getRefinement() instanceof CodeGenSDFGraph) {
@@ -450,7 +463,7 @@ public class SystemCPrinterVisitor implements
 				.getFunctionName();
 
 		for (IInterface port : actomicActor.getInterfaces()) {
-			treatInterface((SDFInterfaceVertex) port,
+			treatInterface((SDFInterfaceVertex) port,actomicActor,
 					(SDFGraph) actomicActor.getBase(), atomicPorts,
 					atomicFiringRules, atomicFiringRulesSensitivityList);
 		}
@@ -473,8 +486,13 @@ public class SystemCPrinterVisitor implements
 		IPath path = new Path(this.outputPath);
 		path = path.append(functionName + ".h");
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		String fsPath = workspace.getRoot().getFile(path).getLocation()
-				.toOSString();
+		String fsPath ;
+		if(workspace.getRoot().getFile(path).getLocation() != null){
+			fsPath = workspace.getRoot().getFile(path).getLocation()
+					.toOSString();
+		}else{
+			fsPath = path.toString() ;
+		}
 
 		File printFile = new File(fsPath);
 		FileWriter fileWriter;
