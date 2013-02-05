@@ -3,6 +3,7 @@ group simple ;
 actor_file(includes, actor, symbol, defines)::=<<
 #ifndef <symbol>
 #define <symbol>
+
 <defines;separator=";\n">
 
 #include \<systemc\>

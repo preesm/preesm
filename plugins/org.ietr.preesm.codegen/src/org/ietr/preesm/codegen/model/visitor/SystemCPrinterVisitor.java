@@ -88,7 +88,7 @@ public class SystemCPrinterVisitor implements
 	private List<StringTemplate> firingRulesSensitivityList;
 	private List<StringTemplate> edge_delay_init;
 	private List<String> includes;
-	private List<String> defines;
+	private List<StringTemplate> defines;
 
 	public SystemCPrinterVisitor(File templateFile, String outputPath) {
 		try {
@@ -102,6 +102,7 @@ public class SystemCPrinterVisitor implements
 			firingRules = new ArrayList<StringTemplate>();
 			firingRulesSensitivityList = new ArrayList<StringTemplate>();
 			includes = new ArrayList<String>();
+			defines = new ArrayList<StringTemplate>();
 			edge_delay_init = new ArrayList<StringTemplate>();
 			this.outputPath = outputPath;
 		} catch (FileNotFoundException e) {
@@ -277,11 +278,17 @@ public class SystemCPrinterVisitor implements
 			actorDeclarationTemplate
 					.setAttribute("edge_delay", edge_delay_init);
 		}
+		defines.clear();
 		for (Variable var : sdf.getVariables().values()) {
-			// defines.add(e);
+			StringTemplate variableDeclatationTemplate = group
+					.getInstanceOf("define");
+			variableDeclatationTemplate.setAttribute("label", var.getName());
+			variableDeclatationTemplate.setAttribute("value", var.getValue());
+			defines.add(variableDeclatationTemplate);
 		}
 
 		StringTemplate fileTemplate = group.getInstanceOf("actor_file");
+		fileTemplate.setAttribute("defines", defines);
 		fileTemplate.setAttribute("includes", includes);
 		fileTemplate.setAttribute("actor", actorDeclarationTemplate);
 		fileTemplate.setAttribute("symbol", graphName.toUpperCase() + "_H");
@@ -473,7 +480,7 @@ public class SystemCPrinterVisitor implements
 					(SDFGraph) actomicActor.getBase(), atomicPorts,
 					atomicFiringRules, atomicFiringRulesSensitivityList);
 		}
-
+		
 		StringTemplate actorDeclarationTemplate = group
 				.getInstanceOf("actor_declaration");
 
