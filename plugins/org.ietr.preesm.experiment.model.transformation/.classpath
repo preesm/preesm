@@ -3,5 +3,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="D:/eclipse/plugins/org.eclipse.ui.views.properties.tabbed.source_3.5.300.v20120523-1955.jar"/>
+	<classpathentry kind="lib" path="D:/eclipse/plugins/org.eclipse.ui.views.properties.tabbed_3.5.300.v20120523-1955.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

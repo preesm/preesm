@@ -13,7 +13,7 @@
             </output>
             <output
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.impl.GraphImpl">
+                  object="org.ietr.preesm.experiment.model.pimm.Graph">
             </output>
             <output
                   id="architecture"
@@ -22,5 +22,59 @@
          </outputs>
       </scenario>
    </extension>
+  
+   <extension
+         point="net.sf.dftools.workflow.tasks">
+      <task
+            id="org.ietr.preesm.experiment.model.transformation.taskExpression"
+            type="org.ietr.preesm.experiment.model.transformation.TaskExpression">
+         <inputs>
+            <input
+                  id="PiMM"
+                  object="org.ietr.preesm.experiment.model.pimm.Graph">
+            </input>
+         </inputs>
+      </task>
+   </extension>
+  
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
+      <propertyContributor
+            contributorId="org.ietr.preesm.experiment.model.transformation.properties.contributor"
+            typeMapper="org.ietr.preesm.experiment.model.transformation.properties.PiMMTypeMapper">
+         <propertyCategory
+               category="org.ietr.preesm.experiment.model.transformation.properties.category.graph">
+         </propertyCategory> 
+      </propertyContributor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
+      <propertyTabs
+            contributorId="org.ietr.preesm.experiment.model.transformation.properties.contributor">
+         <propertyTab
+               category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
+               id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basic"
+               label="Basic">
+         </propertyTab>
+      </propertyTabs>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertySections">
+      <propertySections
+            contributorId="org.ietr.preesm.experiment.model.transformation.properties.contributor">
+         <propertySection
+               class="org.eclipse.ui.views.properties.tabbed.AdvancedPropertySection"
+               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basic"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basic">
+            <input
+                  type="org.ietr.preesm.experiment.model.pimm.Graph">
+            </input>
+         </propertySection>
+      </propertySections>
+   </extension>
+       
+     
+  
+
 
 </plugin>
