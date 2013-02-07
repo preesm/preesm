@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
+    <spirit:vendor>ietr</spirit:vendor>
+    <spirit:name>zynq</spirit:name>
+    <spirit:library>zynq</spirit:library>
+    <spirit:version>1</spirit:version>
+    <spirit:componentInstances>
+        <spirit:componentInstance>
+            <spirit:instanceName>ARM_CortexA9_1</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="arm"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues>
+                <spirit:configurableElementValue spirit:referenceId="globalRuntime">true</spirit:configurableElementValue>
+            </spirit:configurableElementValues>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>ARM_CortexA9_2</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="arm"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues>
+                <spirit:configurableElementValue spirit:referenceId="globalRuntime">false</spirit:configurableElementValue>
+            </spirit:configurableElementValues>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>AXI_bus1</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="axi"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>BRAM1_Access</spirit:instanceName>
+            <spirit:componentRef spirit:library=""
+                spirit:name="bram_access" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>AXI_bus2</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="axi"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>BRAM1</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="bram"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>uBlaze1</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="uB"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>uBlaze2</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="uB"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>uBlaze3</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="uB"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>uBlaze4</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="uB"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>uBlaze5</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="uB"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>uBlaze6</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="uB"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>uBlaze7</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="uB"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>uBlaze8</spirit:instanceName>
+            <spirit:componentRef spirit:library="" spirit:name="uB"
+                spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+    </spirit:componentInstances>
+    <spirit:interconnections>
+        <spirit:interconnection>
+            <spirit:name>w1aab2a</spirit:name>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="AXI_bus2"/>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="uBlaze1"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b1</spirit:name>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="AXI_bus2"/>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="uBlaze2"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b2</spirit:name>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="AXI_bus2"/>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="uBlaze3"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b3</spirit:name>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="AXI_bus2"/>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="uBlaze4"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b4</spirit:name>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="AXI_bus2"/>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="uBlaze5"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b5</spirit:name>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="AXI_bus2"/>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="uBlaze6"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b6</spirit:name>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="AXI_bus2"/>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="uBlaze7"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b7</spirit:name>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="AXI_bus2"/>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="uBlaze8"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b8</spirit:name>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="BRAM1_Access"/>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="AXI_bus2"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2b9</spirit:name>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="AXI_bus1"/>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="BRAM1_Access"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2c10</spirit:name>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="ARM_CortexA9_1"/>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="AXI_bus1"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2c11</spirit:name>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="ARM_CortexA9_2"/>
+            <spirit:activeInterface spirit:busRef="axi" spirit:componentRef="AXI_bus1"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2c12</spirit:name>
+            <spirit:activeInterface spirit:busRef="bram" spirit:componentRef="BRAM1_Access"/>
+            <spirit:activeInterface spirit:busRef="bram" spirit:componentRef="BRAM1"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2c13</spirit:name>
+            <spirit:activeInterface spirit:busRef="ctrl" spirit:componentRef="ARM_CortexA9_1"/>
+            <spirit:activeInterface spirit:busRef="ctrl" spirit:componentRef="BRAM1"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2c14</spirit:name>
+            <spirit:activeInterface spirit:busRef="ctrl" spirit:componentRef="ARM_CortexA9_2"/>
+            <spirit:activeInterface spirit:busRef="ctrl" spirit:componentRef="BRAM1"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2c15</spirit:name>
+            <spirit:activeInterface spirit:busRef="ctrl" spirit:componentRef="uBlaze1"/>
+            <spirit:activeInterface spirit:busRef="ctrl" spirit:componentRef="BRAM1"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2c16</spirit:name>
+            <spirit:activeInterface spirit:busRef="ctrl" spirit:componentRef="uBlaze2"/>
+            <spirit:activeInterface spirit:busRef="ctrl" spirit:componentRef="BRAM1"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2c17</spirit:name>
+            <spirit:activeInterface spirit:busRef="ctrl" spirit:componentRef="uBlaze3"/>
+            <spirit:activeInterface spirit:busRef="ctrl" spirit:componentRef="BRAM1"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2c18</spirit:name>
+            <spirit:activeInterface spirit:busRef="ctrl" spirit:componentRef="uBlaze4"/>
+            <spirit:activeInterface spirit:busRef="ctrl" spirit:componentRef="BRAM1"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2c19</spirit:name>
+            <spirit:activeInterface spirit:busRef="ctrl" spirit:componentRef="uBlaze5"/>
+            <spirit:activeInterface spirit:busRef="ctrl" spirit:componentRef="BRAM1"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2c20</spirit:name>
+            <spirit:activeInterface spirit:busRef="ctrl" spirit:componentRef="uBlaze6"/>
+            <spirit:activeInterface spirit:busRef="ctrl" spirit:componentRef="BRAM1"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2c21</spirit:name>
+            <spirit:activeInterface spirit:busRef="ctrl" spirit:componentRef="uBlaze7"/>
+            <spirit:activeInterface spirit:busRef="ctrl" spirit:componentRef="BRAM1"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>w1aab2c22</spirit:name>
+            <spirit:activeInterface spirit:busRef="ctrl" spirit:componentRef="uBlaze8"/>
+            <spirit:activeInterface spirit:busRef="ctrl" spirit:componentRef="BRAM1"/>
+        </spirit:interconnection>
+    </spirit:interconnections>
+    <spirit:hierConnections/>
+    <spirit:vendorExtensions>
+        <slam:componentDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+            <slam:componentDescription slam:componentRef="arm"
+                slam:componentType="Operator" slam:refinement=""/>
+            <slam:componentDescription slam:componentRef="axi"
+                slam:componentType="parallelComNode" slam:refinement="" slam:speed="100"/>
+            <slam:componentDescription slam:componentRef="bram_access"
+                slam:componentType="parallelComNode" slam:refinement="" slam:speed="10"/>
+            <slam:componentDescription slam:componentRef="bram"
+                slam:componentType="Mem" slam:refinement="" slam:size="131072"/>
+            <slam:componentDescription slam:componentRef="uB"
+                slam:componentType="Operator" slam:refinement=""/>
+        </slam:componentDescriptions>
+        <slam:linkDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2a"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2b1"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2b2"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2b3"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2b4"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2b5"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2b6"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2b7"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2b8"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2b9"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2c10"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2c11"/>
+            <slam:linkDescription slam:directedLink="undirected"
+                slam:linkType="DataLink" slam:referenceId="w1aab2c12"/>
+            <slam:linkDescription slam:directedLink="directed"
+                slam:linkType="ControlLink" slam:referenceId="w1aab2c13"/>
+            <slam:linkDescription slam:directedLink="directed"
+                slam:linkType="ControlLink" slam:referenceId="w1aab2c14"/>
+            <slam:linkDescription slam:directedLink="directed"
+                slam:linkType="ControlLink" slam:referenceId="w1aab2c15"/>
+            <slam:linkDescription slam:directedLink="directed"
+                slam:linkType="ControlLink" slam:referenceId="w1aab2c16"/>
+            <slam:linkDescription slam:directedLink="directed"
+                slam:linkType="ControlLink" slam:referenceId="w1aab2c17"/>
+            <slam:linkDescription slam:directedLink="directed"
+                slam:linkType="ControlLink" slam:referenceId="w1aab2c18"/>
+            <slam:linkDescription slam:directedLink="directed"
+                slam:linkType="ControlLink" slam:referenceId="w1aab2c19"/>
+            <slam:linkDescription slam:directedLink="directed"
+                slam:linkType="ControlLink" slam:referenceId="w1aab2c20"/>
+            <slam:linkDescription slam:directedLink="directed"
+                slam:linkType="ControlLink" slam:referenceId="w1aab2c21"/>
+            <slam:linkDescription slam:directedLink="directed"
+                slam:linkType="ControlLink" slam:referenceId="w1aab2c22"/>
+        </slam:linkDescriptions>
+        <slam:designDescription xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+            <slam:parameters/>
+        </slam:designDescription>
+    </spirit:vendorExtensions>
+</spirit:design>
