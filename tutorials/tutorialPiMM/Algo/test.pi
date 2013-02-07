@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <graph edgedefault="directed">
+        <data key="name">test.pi</data>
+        <node id="size" kind="param"/>
+        <node id="mySourceIft" kind="src">
+            <port kind="output" name=""/>
+        </node>
+        <edge kind="dependency" source="size" target="mySourceIft"/>
+    </graph>
+</graphml>

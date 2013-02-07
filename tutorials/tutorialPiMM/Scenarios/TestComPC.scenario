@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/PiMMExpression/Algo/test.pi"/>
+        <architecture url="/tutorial1/Archi/2CoreX86.slam"/>
+        <codegenDirectory url="/tutorial1/Code/x86/generatedSrc"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup/>
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="Sensor2"/>
+            <task name="ParallelTest1"/>
+            <task name="ParallelTest2"/>
+            <task name="Actuator"/>
+            <task name="Sensor"/>
+            <task name="2InputParallelTest"/>
+            <task name="Gen_int"/>
+            <task name="Copy"/>
+        </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup>
+            <task name="Sensor2"/>
+            <task name="ParallelTest1"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest2"/>
+            <task name="Sensor"/>
+            <task name="2InputParallelTest"/>
+            <task name="Gen_int"/>
+            <task name="Copy"/>
+        </constraintGroup>
+        <constraintGroup>
+            <task name="Sensor2"/>
+            <task name="ParallelTest1"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest2"/>
+            <task name="Sensor"/>
+            <task name="2InputParallelTest"/>
+            <task name="Gen_int"/>
+            <task name="Copy"/>
+        </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="Sensor2"/>
+            <task name="ParallelTest1"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest2"/>
+            <task name="Sensor"/>
+            <task name="2InputParallelTest"/>
+            <task name="Gen_int"/>
+            <task name="Copy"/>
+        </constraintGroup>
+        <constraintGroup/>
+    </constraints>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl="">
+        <timing opname="x86" time="10000" vertexname="Sensor"/>
+        <timing opname="x86" time="10000" vertexname="Gen_int"/>
+        <timing opname="x86" time="10000" vertexname="Copy"/>
+        <timing opname="x86" time="10000" vertexname="Actuator"/>
+        <timing opname="x86" time="5000" vertexname="ParallelTest2"/>
+        <timing opname="x86" time="10000" vertexname="Sensor2"/>
+        <timing opname="x86" time="5000" vertexname="2InputParallelTest"/>
+        <timing opname="x86" time="5000" vertexname="ParallelTest1"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core1</mainCore>
+        <mainComNode>tcp</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="char" size="1"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+            <specialVertexOperator path="Core2"/>
+            <specialVertexOperator path="Core1"/>
+        </specialVertexOperators>
+    </simuParams>
+    <variables excelUrl=""/>
+</scenario>
