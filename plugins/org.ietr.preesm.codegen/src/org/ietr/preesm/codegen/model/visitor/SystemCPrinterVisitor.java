@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.dftools.algorithm.model.IInterface;
+import net.sf.dftools.algorithm.model.parameters.Argument;
 import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.algorithm.model.parameters.Variable;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
@@ -441,7 +442,16 @@ public class SystemCPrinterVisitor implements
 		}
 		vertexInstanciationTemplate.setAttribute("name", sdfVertex.getName());
 		vertexDeclarationTemplate.setAttribute("name", sdfVertex.getName());
-
+		if(sdfVertex.getArguments() != null && sdfVertex.getArguments().size() > 0){
+			List<String> argVals = new ArrayList<String>();
+			for(Argument arg : sdfVertex.getArguments().values()){
+				argVals.add(arg.getValue());
+			}
+			vertexInstanciationTemplate
+			.setAttribute("args", argVals);
+			vertexDeclarationTemplate.setAttribute("args", argVals);
+		}
+		
 		actor_declarations.add(vertexDeclarationTemplate);
 		actor_instanciations.add(vertexInstanciationTemplate);
 
@@ -451,7 +461,6 @@ public class SystemCPrinterVisitor implements
 				"enable_" + sdfVertex.getName());
 		signalDeclarationTemplate.setAttribute("type", "bool");
 		edges_declarations.add(signalDeclarationTemplate);
-
 		StringTemplate enableConnection = group.getInstanceOf("connection");
 		enableConnection.setAttribute("actor", sdfVertex.getName());
 		enableConnection.setAttribute("port", "enable_port");
@@ -480,12 +489,22 @@ public class SystemCPrinterVisitor implements
 					(SDFGraph) actomicActor.getBase(), atomicPorts,
 					atomicFiringRules, atomicFiringRulesSensitivityList);
 		}
+	
 		
 		StringTemplate actorDeclarationTemplate = group
 				.getInstanceOf("actor_declaration");
 
 		actorDeclarationTemplate.setAttribute("name", functionName);
 		actorDeclarationTemplate.setAttribute("ports", atomicPorts);
+		
+		if(actomicActor.getArguments() != null && actomicActor.getArguments().size() > 0){
+			List<String> argNames = new ArrayList<String>();
+			for(Argument arg : actomicActor.getArguments().values()){
+				argNames.add(arg.getName().toLowerCase());
+			}
+			actorDeclarationTemplate
+			.setAttribute("generics", argNames);
+		}
 
 		actorDeclarationTemplate
 				.setAttribute("firing_rules", atomicFiringRules);
