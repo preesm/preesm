@@ -66,7 +66,12 @@ SC_MODULE(<name>){
 	//SC_CTOR(<name>)
 	typedef <name> SC_CURRENT_USER_MODULE;
 	<name>( ::sc_core::sc_module_name<if(generics)>, <generics:{g|int <g>}; separator=", "><endif>)<if(generics)>:<else><if(edges_instanciations)>:<endif><endif>
-	<if(generics)><generics:{g|<g>(<g>)}; separator=", "><endif><if(edges_instanciations)><edges_instanciations; separator=", ">,<actor_instanciations; separator=", "><endif>{
+	<if(generics)><generics:{g|<g>(<g>)}; separator=", \n"><if(edges_instanciations)>,<endif><endif>
+	<if(edges_instanciations)>
+	<edges_instanciations; separator=", \n">,
+	<actor_instanciations; separator=", \n">
+	<endif>
+	{
 		SC_THREAD(invoke);
 		SC_THREAD(enable);
 		<if(connections)><connections; separator="; \n">;<endif>
@@ -92,12 +97,12 @@ test_bed(name,actor_declarations, edge_declarations, edges_instanciations, conne
 
 >>
 
-vertex_declaration(name, type, type_template)::=<<
+vertex_declaration(name, args, type, type_template)::=<<
 <type><if(type_template)><type_template><endif> <name>
 >>
 
 vertex_instanciation(name, args)::=<<
-<name>("<name>", <if><args;separator=", "><endif> )
+<name>("<name>"<if(args)>, <args;separator=", "><endif> )
 >>
 
 vertex_test_bed_instanciation(name, args, type, type_template)::=<<
@@ -110,11 +115,11 @@ template_attribute(attributes) ::=<<
 
 
 input_port(name, type)::=<<
-sc_core::sc_fifo_in\<<type>\> <name>
+sc_core::sc_fifo_in\<<type> \> <name>
 >>
 
 output_port(name, type)::=<<
-sc_core::sc_fifo_out\<<type>\> <name>
+sc_core::sc_fifo_out\<<type> \> <name>
 >>
 
 edge_declaration(name, type)::=<<
@@ -163,7 +168,7 @@ template\<<template_arg;separator=", ">\>
 >>
 
 generics_instanciation_template(name) ::=<<
-<names:{n|<name>(<name>)}
+<names:{n|<name>(<name>)}>
 >>
 
 

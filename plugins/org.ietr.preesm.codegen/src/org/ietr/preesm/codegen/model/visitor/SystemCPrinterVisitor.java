@@ -44,9 +44,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.dftools.algorithm.model.CodeRefinement;
 import net.sf.dftools.algorithm.model.IInterface;
 import net.sf.dftools.algorithm.model.parameters.Argument;
 import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.parameters.Parameter;
 import net.sf.dftools.algorithm.model.parameters.Variable;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFEdge;
@@ -125,7 +127,20 @@ public class SystemCPrinterVisitor implements
 		firingRulesSensitivityList = new ArrayList<StringTemplate>();
 		edge_delay_init = new ArrayList<StringTemplate>();
 		includes = new ArrayList<String>();
+		defines = new ArrayList<StringTemplate>();
 		this.outputPath = outputPath;
+	}
+
+	private String toActorName(String name) {
+		String newName = new String();
+		newName = name.substring(0, 1).toUpperCase() + name.substring(1);
+		return newName;
+	}
+
+	private String toInstanceName(String name) {
+		String newName = new String();
+		newName = name.substring(0, 1).toLowerCase() + name.substring(1);
+		return newName;
 	}
 
 	@Override
@@ -145,8 +160,10 @@ public class SystemCPrinterVisitor implements
 			edgeInstanciationTemplate.setAttribute("name", fifoName);
 			edgeDeclarationTemplate.setAttribute("type", sdfEdge.getDataType()
 					.toString());
-			edgeInstanciationTemplate.setAttribute("type", sdfEdge
-					.getDataType().toString());
+			if (isTestBed) {
+				edgeInstanciationTemplate.setAttribute("type", sdfEdge
+						.getDataType().toString());
+			}
 			edgeInstanciationTemplate.setAttribute("size", sdfEdge.getSize());
 			edges_instanciations.add(edgeInstanciationTemplate);
 			edges_declarations.add(edgeDeclarationTemplate);
@@ -280,12 +297,25 @@ public class SystemCPrinterVisitor implements
 					.setAttribute("edge_delay", edge_delay_init);
 		}
 		defines.clear();
-		for (Variable var : sdf.getVariables().values()) {
-			StringTemplate variableDeclatationTemplate = group
-					.getInstanceOf("define");
-			variableDeclatationTemplate.setAttribute("label", var.getName());
-			variableDeclatationTemplate.setAttribute("value", var.getValue());
-			defines.add(variableDeclatationTemplate);
+		if (sdf.getVariables() != null) {
+			for (Variable var : sdf.getVariables().values()) {
+				StringTemplate variableDeclatationTemplate = group
+						.getInstanceOf("define");
+				variableDeclatationTemplate
+						.setAttribute("label", var.getName());
+				variableDeclatationTemplate.setAttribute("value",
+						var.getValue());
+				defines.add(variableDeclatationTemplate);
+			}
+		}
+
+		if (!isTestBed && sdf.getParameters() != null
+				&& sdf.getParameters().size() > 0) {
+			List<String> parNames = new ArrayList<String>();
+			for (Parameter par : sdf.getParameters().values()) {
+				parNames.add(par.getName().toLowerCase());
+			}
+			actorDeclarationTemplate.setAttribute("generics", parNames);
 		}
 
 		StringTemplate fileTemplate = group.getInstanceOf("actor_file");
@@ -342,7 +372,31 @@ public class SystemCPrinterVisitor implements
 		} else {
 			interfaceTemplate = group.getInstanceOf("output_port");
 		}
-		interfaceTemplate.setAttribute("type", interfaceVertex.getDataType());
+		if (interfaceVertex.getDataType() != null) {
+			interfaceTemplate.setAttribute("type",
+					interfaceVertex.getDataType());
+		} else {
+			if (interfaceVertex instanceof SDFSourceInterfaceVertex
+					&& parentGraph.incomingEdgesOf(parentVertex) != null) {
+				for (SDFEdge edge : parentGraph.incomingEdgesOf(parentVertex)) {
+					if (edge.getTargetInterface().equals(interfaceVertex)) {
+						interfaceTemplate.setAttribute("type",
+								edge.getDataType());
+						break;
+					}
+				}
+			}
+			if (interfaceVertex instanceof SDFSinkInterfaceVertex
+					&& parentGraph.outgoingEdgesOf(parentVertex) != null) {
+				for (SDFEdge edge : parentGraph.outgoingEdgesOf(parentVertex)) {
+					if (edge.getSourceInterface().equals(interfaceVertex)) {
+						interfaceTemplate.setAttribute("type",
+								edge.getDataType());
+						break;
+					}
+				}
+			}
+		}
 		interfaceTemplate.setAttribute("name", interfaceVertex.getName());
 		actorPorts.add(interfaceTemplate);
 
@@ -365,7 +419,9 @@ public class SystemCPrinterVisitor implements
 				}
 			}
 			if (interfaceSize != null) {
-				sdfFiringRuleTemplate.setAttribute("nb_tokens", interfaceSize);
+				sdfFiringRuleTemplate.setAttribute("nb_tokens", interfaceSize
+						.toString().toLowerCase()); // TODO: need to get cleaner
+													// lower case version
 				actorFiringRules.add(sdfFiringRuleTemplate);
 			}
 		}
@@ -392,6 +448,13 @@ public class SystemCPrinterVisitor implements
 					&& ((CodeGenSDFTaskVertex) sdfVertex).getRefinement() instanceof ActorPrototypes) {
 				refinementName = ((ActorPrototypes) ((CodeGenSDFTaskVertex) sdfVertex)
 						.getRefinement()).getLoopPrototype().getFunctionName();
+				if (!includes.contains(refinementName)) {
+					includes.add(refinementName);
+				}
+				exportAtomicActor((CodeGenSDFTaskVertex) sdfVertex);
+			} else if (((CodeGenSDFTaskVertex) sdfVertex).getRefinement() != null
+					&& ((CodeGenSDFTaskVertex) sdfVertex).getRefinement() instanceof CodeRefinement) {
+				refinementName = sdfVertex.getRefinement().toString();
 				if (!includes.contains(refinementName)) {
 					includes.add(refinementName);
 				}
@@ -442,16 +505,16 @@ public class SystemCPrinterVisitor implements
 		}
 		vertexInstanciationTemplate.setAttribute("name", sdfVertex.getName());
 		vertexDeclarationTemplate.setAttribute("name", sdfVertex.getName());
-		if(sdfVertex.getArguments() != null && sdfVertex.getArguments().size() > 0){
+		if (sdfVertex.getArguments() != null
+				&& sdfVertex.getArguments().size() > 0) {
 			List<String> argVals = new ArrayList<String>();
-			for(Argument arg : sdfVertex.getArguments().values()){
+			for (Argument arg : sdfVertex.getArguments().values()) {
 				argVals.add(arg.getValue());
 			}
-			vertexInstanciationTemplate
-			.setAttribute("args", argVals);
+			vertexInstanciationTemplate.setAttribute("args", argVals);
 			vertexDeclarationTemplate.setAttribute("args", argVals);
 		}
-		
+
 		actor_declarations.add(vertexDeclarationTemplate);
 		actor_instanciations.add(vertexInstanciationTemplate);
 
@@ -481,29 +544,33 @@ public class SystemCPrinterVisitor implements
 		List<StringTemplate> atomicFiringRules = new ArrayList<StringTemplate>();
 		List<StringTemplate> atomicFiringRulesSensitivityList = new ArrayList<StringTemplate>();
 
-		String functionName = ((ActorPrototypes) actomicActor.getRefinement())
-				.getLoopPrototype().getFunctionName();
+		String functionName;
+		if (actomicActor.getRefinement() instanceof ActorPrototypes) {
+			functionName = ((ActorPrototypes) actomicActor.getRefinement())
+					.getLoopPrototype().getFunctionName();
+		} else {
+			functionName = actomicActor.getRefinement().toString();
+		}
 
 		for (IInterface port : actomicActor.getInterfaces()) {
 			treatInterface((SDFInterfaceVertex) port, actomicActor,
 					(SDFGraph) actomicActor.getBase(), atomicPorts,
 					atomicFiringRules, atomicFiringRulesSensitivityList);
 		}
-	
-		
+
 		StringTemplate actorDeclarationTemplate = group
 				.getInstanceOf("actor_declaration");
 
 		actorDeclarationTemplate.setAttribute("name", functionName);
 		actorDeclarationTemplate.setAttribute("ports", atomicPorts);
-		
-		if(actomicActor.getArguments() != null && actomicActor.getArguments().size() > 0){
+
+		if (actomicActor.getArguments() != null
+				&& actomicActor.getArguments().size() > 0) {
 			List<String> argNames = new ArrayList<String>();
-			for(Argument arg : actomicActor.getArguments().values()){
+			for (Argument arg : actomicActor.getArguments().values()) {
 				argNames.add(arg.getName().toLowerCase());
 			}
-			actorDeclarationTemplate
-			.setAttribute("generics", argNames);
+			actorDeclarationTemplate.setAttribute("generics", argNames);
 		}
 
 		actorDeclarationTemplate

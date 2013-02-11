@@ -85,11 +85,11 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
 	private HashMap<String, ActorPrototypes> createdIdls;
 
 	/**
-	 * Keeping memory of the highest index of init declared.
-	 * Used to determine how many init phases must be generated
+	 * Keeping memory of the highest index of init declared. Used to determine
+	 * how many init phases must be generated
 	 */
 	private int maxInitIndex = -1;
-	
+
 	/**
 	 * Generated prototypes
 	 */
@@ -154,8 +154,9 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
 			currentPrototype = new Prototype();
 			arg0.body.accept(this);
 			finalPrototypes.setInitPrototype(currentPrototype);
-			
-			if(maxInitIndex < 0) maxInitIndex = 0;
+
+			if (maxInitIndex < 0)
+				maxInitIndex = 0;
 		}
 
 		// Previous init phases to fill the delays
@@ -169,8 +170,9 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
 				currentPrototype = new Prototype();
 				finalPrototypes.setInitPrototype(currentPrototype, index);
 				arg0.body.accept(this);
-				
-				if(maxInitIndex < index) maxInitIndex = index;
+
+				if (maxInitIndex < index)
+					maxInitIndex = index;
 			} catch (NumberFormatException e) {
 				WorkflowLogger.getLogger().log(
 						Level.SEVERE,
@@ -236,7 +238,12 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
 			} else {
 				CodeGenArgument argument = new CodeGenArgument(
 						arg0.simple_declarator.name(), CodeGenArgument.INPUT);
-				argument.setType(arg0.paramTypeSpec.getIDLTypeName());
+				if (arg0.paramTypeSpec.name() == null
+						|| arg0.paramTypeSpec.name().length() == 0) {
+					argument.setType(arg0.paramTypeSpec.getIDLTypeName());
+				} else {
+					argument.setType(arg0.paramTypeSpec.name());
+				}
 				currentPrototype.addArgument(argument);
 			}
 		} else if (arg0.paramAttribute == ParamDecl.MODE_OUT) {
@@ -247,7 +254,12 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
 			} else {
 				CodeGenArgument argument = new CodeGenArgument(
 						arg0.simple_declarator.name(), CodeGenArgument.OUTPUT);
-				argument.setType(arg0.paramTypeSpec.getIDLTypeName());
+				if (arg0.paramTypeSpec.name() == null
+						|| arg0.paramTypeSpec.name().length() == 0) {
+					argument.setType(arg0.paramTypeSpec.getIDLTypeName());
+				} else {
+					argument.setType(arg0.paramTypeSpec.name());
+				}
 				currentPrototype.addArgument(argument);
 			}
 		}
@@ -306,13 +318,14 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
 	@Override
 	public void visitEnum(EnumType arg0) {
 	}
-	
+
 	/**
-	 * IDL prototypes determine the number of initialization phases that are necessary
+	 * IDL prototypes determine the number of initialization phases that are
+	 * necessary
 	 * 
 	 * @return The number of code init phases that must be generated
 	 */
-	public int getNumberOfInitPhases(){
+	public int getNumberOfInitPhases() {
 		return maxInitIndex + 1;
 	}
 }

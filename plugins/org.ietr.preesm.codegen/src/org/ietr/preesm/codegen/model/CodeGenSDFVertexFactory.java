@@ -123,7 +123,7 @@ public class CodeGenSDFVertexFactory {
 				&& dagVertex.getCorrespondingSDFVertex().getGraphDescription() != null) {
 			((SDFAbstractVertex) newVertex).setGraphDescription(graphFactory
 					.create(dagVertex.getCorrespondingSDFVertex()
-							.getGraphDescription()));
+							.getGraphDescription(), idlPrototypeFactory));
 			for (SDFAbstractVertex child : ((CodeGenSDFGraph) newVertex
 					.getGraphDescription()).vertexSet()) {
 				if (child instanceof SDFSinkInterfaceVertex) {
@@ -208,7 +208,7 @@ public class CodeGenSDFVertexFactory {
 				mainFile);
 		if (sdfVertex.getGraphDescription() != null) {
 			newVertex.setGraphDescription(graphFactory.create(sdfVertex
-					.getGraphDescription()));
+					.getGraphDescription(), idlPrototypeFactory));
 			for (SDFAbstractVertex child : ((CodeGenSDFGraph) newVertex
 					.getGraphDescription()).vertexSet()) {
 				if (child instanceof SDFSinkInterfaceVertex) {
@@ -223,6 +223,9 @@ public class CodeGenSDFVertexFactory {
 			}
 		} else if (sdfVertex.getRefinement() instanceof CodeRefinement) {
 			CodeRefinement codeRef = (CodeRefinement) sdfVertex.getRefinement();
+			if(codeRef.getLanguage() == Language.TEXT){
+				newVertex.setRefinement(codeRef);
+			}
 			IFile iFile = mainFile.getParent().getFile(
 					new Path(codeRef.getName()));
 			try {

@@ -53,6 +53,7 @@ import net.sf.dftools.algorithm.model.dag.DAGVertex;
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.algorithm.model.parameters.Parameter;
+import net.sf.dftools.algorithm.model.parameters.Variable;
 import net.sf.dftools.algorithm.model.psdf.PSDFGraph;
 import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
@@ -95,7 +96,8 @@ public class CodeGenSDFGraphFactory {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public CodeGenSDFGraph create(DirectedAcyclicGraph dag, IDLPrototypeFactory idlPrototypeFactory)
+	public CodeGenSDFGraph createFromDag(DirectedAcyclicGraph dag,
+			IDLPrototypeFactory idlPrototypeFactory)
 			throws InvalidExpressionException, SDF4JException, PreesmException {
 		CodeGenSDFVertexFactory vertexFactory = new CodeGenSDFVertexFactory(
 				mainFile);
@@ -106,8 +108,8 @@ public class CodeGenSDFGraphFactory {
 		output.copyProperties(dag);
 		if (dag.getCorrespondingSDFGraph() instanceof PSDFGraph) {
 			if (((PSDFGraph) dag.getCorrespondingSDFGraph()).getInitVertex() != null) {
-				SDFAbstractVertex codeGenVertex = vertexFactory
-						.create(((PSDFGraph) dag.getCorrespondingSDFGraph())
+				SDFAbstractVertex codeGenVertex = vertexFactory.create(
+						((PSDFGraph) dag.getCorrespondingSDFGraph())
 								.getInitVertex(), idlPrototypeFactory);
 				output.addVertex(codeGenVertex);
 				codeGenVertex
@@ -133,7 +135,8 @@ public class CodeGenSDFGraphFactory {
 
 		}
 		for (DAGVertex vertex : dag.vertexSet()) {
-			SDFAbstractVertex codeGenVertex = vertexFactory.create(vertex, idlPrototypeFactory);
+			SDFAbstractVertex codeGenVertex = vertexFactory.create(vertex,
+					idlPrototypeFactory);
 			aliases.put(vertex, codeGenVertex);
 			stringAliases.put(vertex.getName(), codeGenVertex);
 			output.addVertex(codeGenVertex);
@@ -214,7 +217,7 @@ public class CodeGenSDFGraphFactory {
 		for (SDFEdge edge : dag.getCorrespondingSDFGraph().edgeSet()) {
 			if (!(edge.getDelay() instanceof SDFIntEdgePropertyType && edge
 					.getDelay().intValue() == 0)) {
-				
+
 				SDFAbstractVertex newSource = stringAliases.get(edge
 						.getSource().getName());
 				SDFAbstractVertex newTarget = stringAliases.get(edge
@@ -248,9 +251,8 @@ public class CodeGenSDFGraphFactory {
 		}
 		for (AbstractVertex codeGenVertex : output.vertexSet()) {
 			if (codeGenVertex instanceof CodeGenSDFFifoPullVertex) {
-				if (output
-						.getVertex(((CodeGenSDFFifoPullVertex) codeGenVertex)
-								.getEndReference().getName()) != null) {
+				if (output.getVertex(((CodeGenSDFFifoPullVertex) codeGenVertex)
+						.getEndReference().getName()) != null) {
 					((CodeGenSDFFifoPullVertex) codeGenVertex)
 							.setEndReference((SDFEndVertex) output
 									.getVertex(((CodeGenSDFFifoPullVertex) codeGenVertex)
@@ -293,18 +295,23 @@ public class CodeGenSDFGraphFactory {
 		return output;
 	}
 
-	public CodeGenSDFGraph create(AbstractGraph<?, ?> sdf)
-			throws SDF4JException, PreesmException, InvalidExpressionException {
-		if (sdf instanceof PSDFGraph) {
-			return create((PSDFGraph) sdf);
-		} else if (sdf instanceof SDFGraph) {
-			return create((SDFGraph) sdf);
+	public CodeGenSDFGraph create(AbstractGraph<?, ?> graph,
+			IDLPrototypeFactory idlPrototypeFactory) throws SDF4JException,
+			PreesmException, InvalidExpressionException {
+		if (graph instanceof DirectedAcyclicGraph) {
+			return createFromDag((DirectedAcyclicGraph) graph,
+					idlPrototypeFactory);
+		} else if (graph instanceof PSDFGraph) {
+			return createFromPsdf((PSDFGraph) graph, idlPrototypeFactory);
+		} else if (graph instanceof SDFGraph) {
+			return createFromSdf((SDFGraph) graph, idlPrototypeFactory);
 		} else {
 			return null;
 		}
 	}
 
-	public CodeGenSDFGraph create(SDFGraph sdf, IDLPrototypeFactory idlPrototypeFactory)
+	public CodeGenSDFGraph createFromSdf(SDFGraph sdf,
+			IDLPrototypeFactory idlPrototypeFactory)
 			throws InvalidExpressionException, SDF4JException, PreesmException {
 		clusterizeStronglyConnected(sdf); // Clusterize strongly connected
 		// components, as code generation
@@ -320,7 +327,8 @@ public class CodeGenSDFGraphFactory {
 		int pos = 0;
 		while (iterator.hasNext()) {
 			SDFAbstractVertex vertex = iterator.next();
-			SDFAbstractVertex codeGenVertex = vertexFactory.create(vertex, idlPrototypeFactory);
+			SDFAbstractVertex codeGenVertex = vertexFactory.create(vertex,
+					idlPrototypeFactory);
 			if (codeGenVertex instanceof CodeGenSDFTaskVertex) {
 				((ICodeGenSDFVertex) codeGenVertex).setNbRepeat(vertex
 						.getNbRepeat());
@@ -332,81 +340,92 @@ public class CodeGenSDFGraphFactory {
 		}
 		for (SDFEdge edge : sdf.edgeSet()) {
 			transformEdge(edge, output, aliases);
-			/*SDFAbstractVertex source = edge.getSource();
-			SDFAbstractVertex target = edge.getTarget();
-			SDFAbstractVertex newSource = aliases.get(source);
-			SDFAbstractVertex newTarget = aliases.get(target);
-			CodeGenSDFEdge newEdge = (CodeGenSDFEdge) output.addEdge(newSource,
-					newTarget);
-			SDFInterfaceVertex sourceInterface = null;
-			SDFInterfaceVertex targetInterface = null;
-			
-			
-			if ((sourceInterface = newSource.getInterface(edge
-					.getSourceInterface().getName())) == null) {
-				sourceInterface = new SDFSinkInterfaceVertex();
-				sourceInterface.setName(edge.getSourceInterface().getName());
-				newSource.addSink(sourceInterface);
+			/*
+			 * SDFAbstractVertex source = edge.getSource(); SDFAbstractVertex
+			 * target = edge.getTarget(); SDFAbstractVertex newSource =
+			 * aliases.get(source); SDFAbstractVertex newTarget =
+			 * aliases.get(target); CodeGenSDFEdge newEdge = (CodeGenSDFEdge)
+			 * output.addEdge(newSource, newTarget); SDFInterfaceVertex
+			 * sourceInterface = null; SDFInterfaceVertex targetInterface =
+			 * null;
+			 * 
+			 * 
+			 * if ((sourceInterface = newSource.getInterface(edge
+			 * .getSourceInterface().getName())) == null) { sourceInterface =
+			 * new SDFSinkInterfaceVertex();
+			 * sourceInterface.setName(edge.getSourceInterface().getName());
+			 * newSource.addSink(sourceInterface); } if ((targetInterface =
+			 * newTarget.getInterface(edge .getTargetInterface().getName())) ==
+			 * null) { targetInterface = new SDFSourceInterfaceVertex();
+			 * targetInterface.setName(edge.getTargetInterface().getName());
+			 * newTarget.addSource(targetInterface); }
+			 * newEdge.setSourceInterface(sourceInterface);
+			 * newEdge.setTargetInterface(targetInterface);
+			 * newEdge.setCons(edge.getCons().clone());
+			 * newEdge.setProd(edge.getProd().clone());
+			 * newEdge.setDelay(edge.getDelay().clone());
+			 * newEdge.setDataType(edge.getDataType());
+			 */
+		}
+		if (sdf.getParameters() != null) {
+			for (Parameter param : sdf.getParameters().values()) {
+				output.addParameter(param.clone());
 			}
-			if ((targetInterface = newTarget.getInterface(edge
-					.getTargetInterface().getName())) == null) {
-				targetInterface = new SDFSourceInterfaceVertex();
-				targetInterface.setName(edge.getTargetInterface().getName());
-				newTarget.addSource(targetInterface);
+		}
+		if (sdf.getVariables() != null) {
+			for (Variable var : sdf.getVariables().values()) {
+				output.addVariable(var.clone());
 			}
-			newEdge.setSourceInterface(sourceInterface);
-			newEdge.setTargetInterface(targetInterface);
-			newEdge.setCons(edge.getCons().clone());
-			newEdge.setProd(edge.getProd().clone());
-			newEdge.setDelay(edge.getDelay().clone());
-			newEdge.setDataType(edge.getDataType());*/
 		}
 		return output;
 	}
 
-	
-private SDFEdge transformEdge(SDFEdge oldEdge, CodeGenSDFGraph newGraph, HashMap<AbstractVertex<?>, SDFAbstractVertex> aliases){
-	SDFAbstractVertex source = oldEdge.getSource();
-	SDFAbstractVertex target = oldEdge.getTarget();
-	SDFAbstractVertex newSource = aliases.get(source);
-	SDFAbstractVertex newTarget = aliases.get(target);
-	CodeGenSDFEdge newEdge = (CodeGenSDFEdge) newGraph.addEdge(newSource,
-			newTarget);
-	SDFInterfaceVertex sourceInterface = null;
-	SDFInterfaceVertex targetInterface = null;
-	
-	
-	if ((sourceInterface = newSource.getInterface(oldEdge
-			.getSourceInterface().getName())) == null) {
-		sourceInterface = new SDFSinkInterfaceVertex();
-		sourceInterface.setName(oldEdge.getSourceInterface().getName());
-		newSource.addSink(sourceInterface);
+	private SDFEdge transformEdge(SDFEdge oldEdge, CodeGenSDFGraph newGraph,
+			HashMap<AbstractVertex<?>, SDFAbstractVertex> aliases) {
+		SDFAbstractVertex source = oldEdge.getSource();
+		SDFAbstractVertex target = oldEdge.getTarget();
+		SDFAbstractVertex newSource = aliases.get(source);
+		SDFAbstractVertex newTarget = aliases.get(target);
+		CodeGenSDFEdge newEdge = (CodeGenSDFEdge) newGraph.addEdge(newSource,
+				newTarget);
+		SDFInterfaceVertex sourceInterface = null;
+		SDFInterfaceVertex targetInterface = null;
+
+		if ((sourceInterface = newSource.getInterface(oldEdge
+				.getSourceInterface().getName())) == null) {
+			sourceInterface = new SDFSinkInterfaceVertex();
+			sourceInterface.setName(oldEdge.getSourceInterface().getName());
+			newSource.addSink(sourceInterface);
+		}
+		if ((targetInterface = newTarget.getInterface(oldEdge
+				.getTargetInterface().getName())) == null) {
+			targetInterface = new SDFSourceInterfaceVertex();
+			targetInterface.setName(oldEdge.getTargetInterface().getName());
+			newTarget.addSource(targetInterface);
+		}
+		if (newSource instanceof CodeGenSDFSourceInterfaceVertex
+				&& oldEdge.getDataType() != null) {
+			((CodeGenSDFSourceInterfaceVertex) newSource).setDataType(oldEdge
+					.getDataType().toString());
+		}
+		if (newTarget instanceof CodeGenSDFSinkInterfaceVertex
+				&& oldEdge.getDataType() != null) {
+			((CodeGenSDFSinkInterfaceVertex) newTarget).setDataType(oldEdge
+					.getDataType().toString());
+		}
+
+		newEdge.setSourceInterface(sourceInterface);
+		newEdge.setTargetInterface(targetInterface);
+		newEdge.setCons(oldEdge.getCons().clone());
+		newEdge.setProd(oldEdge.getProd().clone());
+		newEdge.setDelay(oldEdge.getDelay().clone());
+		newEdge.setDataType(oldEdge.getDataType());
+		return newEdge;
 	}
-	if ((targetInterface = newTarget.getInterface(oldEdge
-			.getTargetInterface().getName())) == null) {
-		targetInterface = new SDFSourceInterfaceVertex();
-		targetInterface.setName(oldEdge.getTargetInterface().getName());
-		newTarget.addSource(targetInterface);
-	}
-	if(newSource instanceof CodeGenSDFSourceInterfaceVertex && oldEdge.getDataType() != null){
-		((CodeGenSDFSourceInterfaceVertex) newSource).setDataType(oldEdge.getDataType().toString());
-	}
-	if(newTarget instanceof CodeGenSDFSinkInterfaceVertex && oldEdge.getDataType() != null){
-		((CodeGenSDFSinkInterfaceVertex) newTarget).setDataType(oldEdge.getDataType().toString());
-	}
-	
-	newEdge.setSourceInterface(sourceInterface);
-	newEdge.setTargetInterface(targetInterface);
-	newEdge.setCons(oldEdge.getCons().clone());
-	newEdge.setProd(oldEdge.getProd().clone());
-	newEdge.setDelay(oldEdge.getDelay().clone());
-	newEdge.setDataType(oldEdge.getDataType());
-	return newEdge ;
-}
-	
-	
+
 	@SuppressWarnings("rawtypes")
-	public CodeGenSDFGraph create(PSDFGraph sdf, IDLPrototypeFactory idlPrototypeFactory)
+	public CodeGenSDFGraph createFromPsdf(PSDFGraph sdf,
+			IDLPrototypeFactory idlPrototypeFactory)
 			throws InvalidExpressionException, SDF4JException, PreesmException {
 		clusterizeStronglyConnected(sdf); // Clusterize strongly connected
 		// components, as code generation
@@ -421,8 +440,8 @@ private SDFEdge transformEdge(SDFEdge oldEdge, CodeGenSDFGraph newGraph, HashMap
 		SDFIterator iterator = new SDFIterator(sdf);
 		int pos = 0;
 		if (sdf.getInitVertex() != null) {
-			SDFAbstractVertex dCodeGenVertex = vertexFactory.create(sdf
-					.getInitVertex(), idlPrototypeFactory);
+			SDFAbstractVertex dCodeGenVertex = vertexFactory.create(
+					sdf.getInitVertex(), idlPrototypeFactory);
 			output.addVertex(dCodeGenVertex);
 			dCodeGenVertex
 					.getPropertyBean()
@@ -438,7 +457,8 @@ private SDFEdge transformEdge(SDFEdge oldEdge, CodeGenSDFGraph newGraph, HashMap
 		}
 		while (iterator.hasNext()) {
 			SDFAbstractVertex vertex = iterator.next();
-			SDFAbstractVertex codeGenVertex = vertexFactory.create(vertex, idlPrototypeFactory);
+			SDFAbstractVertex codeGenVertex = vertexFactory.create(vertex,
+					idlPrototypeFactory);
 			if (codeGenVertex instanceof CodeGenSDFTaskVertex) {
 				((ICodeGenSDFVertex) codeGenVertex).setNbRepeat(vertex
 						.getNbRepeat());
@@ -450,32 +470,29 @@ private SDFEdge transformEdge(SDFEdge oldEdge, CodeGenSDFGraph newGraph, HashMap
 		}
 		for (SDFEdge edge : sdf.edgeSet()) {
 			transformEdge(edge, output, aliases);
-			/*SDFAbstractVertex source = edge.getSource();
-			SDFAbstractVertex target = edge.getTarget();
-			SDFAbstractVertex newSource = aliases.get(source);
-			SDFAbstractVertex newTarget = aliases.get(target);
-			CodeGenSDFEdge newEdge = (CodeGenSDFEdge) output.addEdge(newSource,
-					newTarget);
-			SDFInterfaceVertex sourceInterface = null;
-			SDFInterfaceVertex targetInterface = null;
-			if ((sourceInterface = newSource.getInterface(edge
-					.getSourceInterface().getName())) == null) {
-				sourceInterface = new SDFSinkInterfaceVertex();
-				sourceInterface.setName(edge.getSourceInterface().getName());
-				newSource.addSink(sourceInterface);
-			}
-			if ((targetInterface = newTarget.getInterface(edge
-					.getTargetInterface().getName())) == null) {
-				targetInterface = new SDFSourceInterfaceVertex();
-				targetInterface.setName(edge.getTargetInterface().getName());
-				newTarget.addSource(targetInterface);
-			}
-			newEdge.setSourceInterface(sourceInterface);
-			newEdge.setTargetInterface(targetInterface);
-			newEdge.setCons(edge.getCons().clone());
-			newEdge.setProd(edge.getProd().clone());
-			newEdge.setDelay(edge.getDelay().clone());
-			newEdge.setDataType(edge.getDataType());*/
+			/*
+			 * SDFAbstractVertex source = edge.getSource(); SDFAbstractVertex
+			 * target = edge.getTarget(); SDFAbstractVertex newSource =
+			 * aliases.get(source); SDFAbstractVertex newTarget =
+			 * aliases.get(target); CodeGenSDFEdge newEdge = (CodeGenSDFEdge)
+			 * output.addEdge(newSource, newTarget); SDFInterfaceVertex
+			 * sourceInterface = null; SDFInterfaceVertex targetInterface =
+			 * null; if ((sourceInterface = newSource.getInterface(edge
+			 * .getSourceInterface().getName())) == null) { sourceInterface =
+			 * new SDFSinkInterfaceVertex();
+			 * sourceInterface.setName(edge.getSourceInterface().getName());
+			 * newSource.addSink(sourceInterface); } if ((targetInterface =
+			 * newTarget.getInterface(edge .getTargetInterface().getName())) ==
+			 * null) { targetInterface = new SDFSourceInterfaceVertex();
+			 * targetInterface.setName(edge.getTargetInterface().getName());
+			 * newTarget.addSource(targetInterface); }
+			 * newEdge.setSourceInterface(sourceInterface);
+			 * newEdge.setTargetInterface(targetInterface);
+			 * newEdge.setCons(edge.getCons().clone());
+			 * newEdge.setProd(edge.getProd().clone());
+			 * newEdge.setDelay(edge.getDelay().clone());
+			 * newEdge.setDataType(edge.getDataType());
+			 */
 		}
 		if (sdf.getParameters() != null) {
 			for (Parameter dParam : sdf.getParameters().values()) {
