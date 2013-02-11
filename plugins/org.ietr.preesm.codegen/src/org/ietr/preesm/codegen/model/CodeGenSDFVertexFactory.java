@@ -144,6 +144,9 @@ public class CodeGenSDFVertexFactory {
 				&& dagVertex.getCorrespondingSDFVertex().getRefinement() instanceof CodeRefinement) {
 			CodeRefinement codeRef = (CodeRefinement) dagVertex
 					.getCorrespondingSDFVertex().getRefinement();
+			if(codeRef.getLanguage() == Language.TEXT){
+				((SDFAbstractVertex) newVertex).setRefinement(codeRef);
+			}
 			IFile iFile = mainFile.getParent().getFile(
 					new Path(codeRef.getName()));
 			try {
