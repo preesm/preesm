@@ -71,6 +71,8 @@ import org.ietr.preesm.codegen.model.CodeGenSDFEdge;
 import org.ietr.preesm.codegen.model.CodeGenSDFForkVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.codegen.model.CodeGenSDFJoinVertex;
+import org.ietr.preesm.codegen.model.CodeGenSDFReceiveVertex;
+import org.ietr.preesm.codegen.model.CodeGenSDFSendVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFTaskVertex;
 
 public class SystemCPrinterVisitor implements
@@ -203,6 +205,9 @@ public class SystemCPrinterVisitor implements
 			srcConnection.setAttribute("port", "outs[" + edgeIndex + "]");
 		} else if (sdfEdge.getSource() instanceof CodeGenSDFJoinVertex) {
 			srcConnection.setAttribute("port", "out");
+		} else if (sdfEdge.getSource() instanceof CodeGenSDFSendVertex
+				|| sdfEdge.getSource() instanceof CodeGenSDFReceiveVertex) {
+			srcConnection.setAttribute("port", "out");
 		} else {
 			srcConnection.setAttribute("port", sdfEdge.getSourceInterface()
 					.getName());
@@ -226,6 +231,9 @@ public class SystemCPrinterVisitor implements
 			int edgeIndex = joinTarget.getEdgeIndex(sdfEdge);
 			trgtConnection.setAttribute("port", "ins[" + edgeIndex + "]");
 		} else if (sdfEdge.getTarget() instanceof CodeGenSDFForkVertex) {
+			trgtConnection.setAttribute("port", "in");
+		} else if (sdfEdge.getTarget() instanceof CodeGenSDFSendVertex
+				|| sdfEdge.getTarget() instanceof CodeGenSDFReceiveVertex) {
 			trgtConnection.setAttribute("port", "in");
 		} else {
 			trgtConnection.setAttribute("port", sdfEdge.getTargetInterface()
@@ -442,7 +450,47 @@ public class SystemCPrinterVisitor implements
 					.getInstanceOf("vertex_declaration");
 		}
 
-		if (sdfVertex instanceof CodeGenSDFTaskVertex) {
+		if (sdfVertex instanceof CodeGenSDFBroadcastVertex) {
+			StringTemplate broadcastTemplate = broadcastTemplateAttribute((CodeGenSDFBroadcastVertex) sdfVertex);
+			vertexDeclarationTemplate.setAttribute("type_template",
+					broadcastTemplate);
+			vertexDeclarationTemplate.setAttribute("type", "preesm_broadcast");
+			if (!includes.contains("preesm_broadcast")) {
+				includes.add("preesm_broadcast");
+			}
+		} else if (sdfVertex instanceof CodeGenSDFJoinVertex) {
+			StringTemplate joinTemplate = joinTemplateAttribute((CodeGenSDFJoinVertex) sdfVertex);
+			vertexDeclarationTemplate.setAttribute("type_template",
+					joinTemplate);
+			vertexDeclarationTemplate.setAttribute("type", "preesm_join");
+			if (!includes.contains("preesm_join")) {
+				includes.add("preesm_join");
+			}
+		} else if (sdfVertex instanceof CodeGenSDFForkVertex) {
+			StringTemplate forkTemplate = forkTemplateAttribute((CodeGenSDFForkVertex) sdfVertex);
+			vertexDeclarationTemplate.setAttribute("type_template",
+					forkTemplate);
+			vertexDeclarationTemplate.setAttribute("type", "preesm_fork");
+			if (!includes.contains("preesm_fork")) {
+				includes.add("preesm_fork");
+			}
+		} else if (sdfVertex instanceof CodeGenSDFSendVertex) {
+			StringTemplate sendTemplate = sendTemplateAttribute((CodeGenSDFSendVertex) sdfVertex);
+			vertexDeclarationTemplate.setAttribute("type_template",
+					sendTemplate);
+			vertexDeclarationTemplate.setAttribute("type", "preesm_send");
+			if (!includes.contains("preesm_send")) {
+				includes.add("preesm_send");
+			}
+		} else if (sdfVertex instanceof CodeGenSDFReceiveVertex) {
+			StringTemplate recTemplate = receiveTemplateAttribute((CodeGenSDFReceiveVertex) sdfVertex);
+			vertexDeclarationTemplate
+					.setAttribute("type_template", recTemplate);
+			vertexDeclarationTemplate.setAttribute("type", "preesm_receive");
+			if (!includes.contains("preesm_receive")) {
+				includes.add("preesm_receive");
+			}
+		} else if (sdfVertex instanceof CodeGenSDFTaskVertex) {
 			String refinementName = null;
 			if (((CodeGenSDFTaskVertex) sdfVertex).getRefinement() != null
 					&& ((CodeGenSDFTaskVertex) sdfVertex).getRefinement() instanceof ActorPrototypes) {
@@ -476,30 +524,6 @@ public class SystemCPrinterVisitor implements
 				refGraph.accept(childVisitor);
 			}
 			vertexDeclarationTemplate.setAttribute("type", refinementName);
-		} else if (sdfVertex instanceof CodeGenSDFBroadcastVertex) {
-			StringTemplate broadcastTemplate = broadcastTemplateAttribute((CodeGenSDFBroadcastVertex) sdfVertex);
-			vertexDeclarationTemplate.setAttribute("type_template",
-					broadcastTemplate);
-			vertexDeclarationTemplate.setAttribute("type", "preesm_broadcast");
-			if (!includes.contains("preesm_broadcast")) {
-				includes.add("preesm_broadcast");
-			}
-		} else if (sdfVertex instanceof CodeGenSDFJoinVertex) {
-			StringTemplate joinTemplate = joinTemplateAttribute((CodeGenSDFJoinVertex) sdfVertex);
-			vertexDeclarationTemplate.setAttribute("type_template",
-					joinTemplate);
-			vertexDeclarationTemplate.setAttribute("type", "preesm_join");
-			if (!includes.contains("preesm_join")) {
-				includes.add("preesm_join");
-			}
-		} else if (sdfVertex instanceof CodeGenSDFForkVertex) {
-			StringTemplate forkTemplate = forkTemplateAttribute((CodeGenSDFForkVertex) sdfVertex);
-			vertexDeclarationTemplate.setAttribute("type_template",
-					forkTemplate);
-			vertexDeclarationTemplate.setAttribute("type", "preesm_fork");
-			if (!includes.contains("preesm_fork")) {
-				includes.add("preesm_fork");
-			}
 		} else {
 			vertexDeclarationTemplate.setAttribute("type", sdfVertex.getName());
 		}
@@ -685,6 +709,52 @@ public class SystemCPrinterVisitor implements
 		attributes.add(dataType);
 		attributes.add(String.valueOf(inputSize));
 		attributes.add(String.valueOf(nb_output));
+		template_attribute.setAttribute("attributes", attributes);
+		return template_attribute;
+	}
+
+	StringTemplate sendTemplateAttribute(CodeGenSDFSendVertex sendVertex) {
+		StringTemplate template_attribute = group
+				.getInstanceOf("template_attribute");
+		List<String> attributes = new ArrayList<String>();
+		int inputSize = 1;
+		String dataType = "char";
+		for (SDFEdge edge : ((SDFGraph) sendVertex.getBase())
+				.incomingEdgesOf(sendVertex)) {
+			try {
+				inputSize = edge.getCons().intValue();
+			} catch (InvalidExpressionException e) {
+
+			}
+			if (edge.getDataType() != null) {
+				dataType = edge.getDataType().toString();
+			}
+		}
+		attributes.add(dataType);
+		attributes.add(String.valueOf(inputSize));
+		template_attribute.setAttribute("attributes", attributes);
+		return template_attribute;
+	}
+
+	StringTemplate receiveTemplateAttribute(CodeGenSDFReceiveVertex recVertex) {
+		StringTemplate template_attribute = group
+				.getInstanceOf("template_attribute");
+		List<String> attributes = new ArrayList<String>();
+		int inputSize = 1;
+		String dataType = "char";
+		for (SDFEdge edge : ((SDFGraph) recVertex.getBase())
+				.incomingEdgesOf(recVertex)) {
+			try {
+				inputSize = edge.getCons().intValue();
+			} catch (InvalidExpressionException e) {
+
+			}
+			if (edge.getDataType() != null) {
+				dataType = edge.getDataType().toString();
+			}
+		}
+		attributes.add(dataType);
+		attributes.add(String.valueOf(inputSize));
 		template_attribute.setAttribute("attributes", attributes);
 		return template_attribute;
 	}
