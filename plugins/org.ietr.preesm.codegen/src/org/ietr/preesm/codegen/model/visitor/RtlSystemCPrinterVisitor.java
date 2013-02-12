@@ -75,52 +75,16 @@ import org.ietr.preesm.codegen.model.CodeGenSDFReceiveVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFSendVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFTaskVertex;
 
-public class SystemCPrinterVisitor implements
-		IGraphVisitor<CodeGenSDFGraph, SDFAbstractVertex, CodeGenSDFEdge> {
+public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 
-	protected String templatePath;
-	protected StringTemplateGroup group;
-	protected String outputPath;
+	private static String rtl_template = "preesm_rtl_systemc.stg";
 
-	protected boolean isTestBed;;
-
-	protected List<StringTemplate> ports;
-	protected List<StringTemplate> edges_declarations;
-	protected List<StringTemplate> edges_instanciations;
-	protected List<StringTemplate> actor_declarations;
-	protected List<StringTemplate> actor_instanciations;
-	protected List<StringTemplate> connections;
-	protected List<StringTemplate> firingRules;
-	protected List<StringTemplate> firingRulesSensitivityList;
-	protected List<StringTemplate> edge_delay_init;
-	protected List<String> includes;
-	protected List<StringTemplate> defines;
-
-	private static String base_template = "preesm_systemc.stg";
-
-	public SystemCPrinterVisitor() {
-		ports = new ArrayList<StringTemplate>();
-		edges_declarations = new ArrayList<StringTemplate>();
-		edges_instanciations = new ArrayList<StringTemplate>();
-		actor_declarations = new ArrayList<StringTemplate>();
-		actor_instanciations = new ArrayList<StringTemplate>();
-		connections = new ArrayList<StringTemplate>();
-		firingRules = new ArrayList<StringTemplate>();
-		firingRulesSensitivityList = new ArrayList<StringTemplate>();
-		includes = new ArrayList<String>();
-		defines = new ArrayList<StringTemplate>();
-		edge_delay_init = new ArrayList<StringTemplate>();
-		this.templatePath = null;
-		group = null;
-		this.outputPath = null ;
-	}
-
-	public SystemCPrinterVisitor(String templatePath, String outputPath) {
-		this();
+	public RtlSystemCPrinterVisitor(String templatePath, String outputPath) {
+		super();
 		try {
 			this.templatePath = templatePath;
 			group = new StringTemplateGroup(new FileReader(templatePath
-					+ File.separator + base_template));
+					+ File.separator + rtl_template));
 			this.outputPath = outputPath;
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -128,9 +92,9 @@ public class SystemCPrinterVisitor implements
 		}
 	}
 
-	public SystemCPrinterVisitor(StringTemplateGroup templateGroup,
+	public RtlSystemCPrinterVisitor(StringTemplateGroup templateGroup,
 			String outputPath) {
-		this();
+		super();
 		group = templateGroup;
 		this.outputPath = outputPath;
 	}
@@ -521,17 +485,10 @@ public class SystemCPrinterVisitor implements
 				if (!includes.contains(refinementName)) {
 					includes.add(refinementName);
 				}
-				if (((CodeGenSDFTaskVertex) sdfVertex).getOperator()
-						.getComponent().getVlnv().getName().equals("fpga")) {
-					RtlSystemCPrinterVisitor childVisitor = new RtlSystemCPrinterVisitor(
-							this.templatePath, this.outputPath);
-					refGraph.accept(childVisitor);
-				} else {
-					SystemCPrinterVisitor childVisitor = new SystemCPrinterVisitor(
-							this.group, this.outputPath);
-					refGraph.accept(childVisitor);
-				}
+				RtlSystemCPrinterVisitor childVisitor = new RtlSystemCPrinterVisitor(
+						this.group, this.outputPath);
 
+				refGraph.accept(childVisitor);
 			}
 			vertexDeclarationTemplate.setAttribute("type", refinementName);
 		} else {
