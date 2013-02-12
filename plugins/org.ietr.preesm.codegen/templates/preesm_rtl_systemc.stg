@@ -1,0 +1,144 @@
+group simple ;
+
+actor_file(includes, actor, symbol, defines)::=<<
+#ifndef <symbol>
+#define <symbol>
+
+<defines;separator=";\n">
+
+#include \<systemc\>
+#include "app-utils.h" //should contains all your app related includes
+<includes:{inc|#include "<inc>.h"}; separator=" \n">
+
+using namespace std ;
+
+<actor>
+
+#endif
+>>
+
+actor_declaration(name, ports, generics, actor_declarations, actor_instanciations, connections, edge_declarations, edges_instanciations, body, firing_rules, firing_rules_sensitivity, edge_delay)::=<<
+SC_MODULE(<name>){
+	
+	sc_core::sc_out\<bool\> enable_port ;
+	sc_core::sc_in\<bool\> invoke_port ; 
+	sc_core::sc_in\<bool\> clk ;
+	sc_core::sc_out\<bool\> dv ;
+	
+	<if(generics)><generics:{g|int <g>}; separator="; \n">;<endif>
+	<if(ports)><ports; separator="; \n">;<endif>
+	<if(edge_declarations)><edge_declarations; separator="; \n">;<endif>
+	<if(actor_declarations)><actor_declarations; separator="; \n">;<endif>
+	
+	void enable(){ // check schedulability, and update enable_port value
+		bool isEnable ;
+		if(clk.posedge()){
+			isEnable = true ;
+			<if(firing_rules_sensitivity)>
+			<firing_rules:{f|isEnable &=<f>};separator=";\n">;
+			<endif>
+			enable_port.write(isEnable);
+		}
+	}
+	
+	void actor_firing() ; // actor behavior
+	
+	void invoke(){ // runs one iteration of the actor
+		if(clk.posedge()){
+			if(invoke_port.read()){
+				cout \<\< "invoking actor: " \<\< "<name>" \<\< endl ;
+				actor_firing();
+			}
+		}
+	}
+
+
+	typedef <name> SC_CURRENT_USER_MODULE;
+	<name>( ::sc_core::sc_module_name<if(generics)>, <generics:{g|int <g>}; separator=", "><endif>)<if(generics)>:<else><if(edges_instanciations)>:<endif><endif>
+	<if(generics)><generics:{g|<g>(<g>)}; separator=", \n"><if(edges_instanciations)>,<endif><endif>
+	<if(edges_instanciations)>
+	<edges_instanciations; separator=", \n">,
+	<actor_instanciations; separator=", \n">
+	<endif>
+	{
+		SC_METHOD(invoke);
+		sensitive \<\< clk.pos() ;
+		SC_METHOD(enable);
+		sensitive \<\< clk.pos() ;
+		<if(connections)><connections; separator="; \n">;<endif>
+	}
+};
+
+>>
+
+vertex_declaration(name, args, type, type_template)::=<<
+<type><if(type_template)><type_template><endif> <name>
+>>
+
+vertex_instanciation(name, args)::=<<
+<name>("<name>"<if(args)>, <args;separator=", "><endif> )
+>>
+
+template_attribute(attributes) ::=<<
+\<<attributes;separator=", ">\>
+>>
+
+
+input_port(name, type)::=<<
+sc_core::sc_in\<<type> \> <name>
+>>
+
+output_port(name, type)::=<<
+sc_core::sc_out\<<type> \> <name>
+>>
+
+edge_declaration(name, type)::=<<
+sc_core::sc_signal\< <type> \> <name>
+>>
+
+edge_instanciation(name, type, size)::=<<
+<if(type)>sc_core::sc_signal\< <type> \> <endif><name>  ("<name>")
+>>
+
+edge_delay(fifo, delay_size, delay_value)::=<<
+	for( int <fifo>_index = 0 ; <fifo>_index \< <delay_size> ; <fifo>_index ++){
+		<fifo>.write(<delay_value>);
+	}
+>>
+
+signal_declaration(name, type)::=<<
+sc_core::sc_signal\< <type> \> <name>
+>>
+
+connection(actor, port, edge) ::=<<
+<actor>.<port>( <edge> )
+>>
+
+sdf_firing_rule(port, nb_tokens) ::=<<
+	(<port>.num_available() >= <nb_tokens>)
+>>
+
+fire_actor(actor, latency) ::=<<
+	<actor>.invoke_port.write(HIGH);
+	wait(1, SC_NS);
+	<actor>.invoke_port.write(LOW);
+>>
+
+
+port_event(port) ::=<<
+<port>.data_written_event()
+>>
+
+define(label, value) ::=<<
+#define <label> <value>
+>>
+
+template_declaration(template_arg) ::=<<
+template\<<template_arg;separator=", ">\>
+>>
+
+generics_instanciation_template(name) ::=<<
+<names:{n|<name>(<name>)}>
+>>
+
+
