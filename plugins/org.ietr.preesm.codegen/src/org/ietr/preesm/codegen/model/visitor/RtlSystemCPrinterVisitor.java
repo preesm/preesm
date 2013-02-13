@@ -56,7 +56,6 @@ import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import net.sf.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import net.sf.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import net.sf.dftools.algorithm.model.visitors.IGraphVisitor;
 import net.sf.dftools.algorithm.model.visitors.SDF4JException;
 
 import org.antlr.stringtemplate.StringTemplate;
@@ -78,14 +77,21 @@ import org.ietr.preesm.codegen.model.CodeGenSDFTaskVertex;
 public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 
 	private static String rtl_template = "preesm_rtl_systemc.stg";
+	private boolean isWrapper;
+
+	protected List<StringTemplate> endRules;
+	protected List<StringTemplate> startRules;
 
 	public RtlSystemCPrinterVisitor(String templatePath, String outputPath) {
 		super();
 		try {
+			endRules = new ArrayList<StringTemplate>();
+			startRules = new ArrayList<StringTemplate>();
 			this.templatePath = templatePath;
 			group = new StringTemplateGroup(new FileReader(templatePath
 					+ File.separator + rtl_template));
 			this.outputPath = outputPath;
+			isWrapper = true;
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -95,27 +101,18 @@ public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 	public RtlSystemCPrinterVisitor(StringTemplateGroup templateGroup,
 			String outputPath) {
 		super();
+		endRules = new ArrayList<StringTemplate>();
+		startRules = new ArrayList<StringTemplate>();
 		group = templateGroup;
 		this.outputPath = outputPath;
-	}
-
-	private String toActorName(String name) {
-		String newName = new String();
-		newName = name.substring(0, 1).toUpperCase() + name.substring(1);
-		return newName;
-	}
-
-	private String toInstanceName(String name) {
-		String newName = new String();
-		newName = name.substring(0, 1).toLowerCase() + name.substring(1);
-		return newName;
+		isWrapper = false;
 	}
 
 	@Override
 	public void visit(CodeGenSDFEdge sdfEdge) {
 		String fifoName = new String();
 		if (!(sdfEdge.getSource() instanceof SDFSourceInterfaceVertex || sdfEdge
-				.getTarget() instanceof SDFSinkInterfaceVertex)) {
+				.getTarget() instanceof SDFSinkInterfaceVertex) || isWrapper) {
 			fifoName = sdfEdge.getTarget().getName() + "_"
 					+ sdfEdge.getSource().getName() + "_"
 					+ sdfEdge.getTargetInterface().getName();
@@ -128,10 +125,6 @@ public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 			edgeInstanciationTemplate.setAttribute("name", fifoName);
 			edgeDeclarationTemplate.setAttribute("type", sdfEdge.getDataType()
 					.toString());
-			if (isTestBed) {
-				edgeInstanciationTemplate.setAttribute("type", sdfEdge
-						.getDataType().toString());
-			}
 			edgeInstanciationTemplate.setAttribute("size", sdfEdge.getSize());
 			edges_instanciations.add(edgeInstanciationTemplate);
 			edges_declarations.add(edgeDeclarationTemplate);
@@ -152,7 +145,7 @@ public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 		}
 
 		StringTemplate srcConnection = group.getInstanceOf("connection");
-		if (sdfEdge.getTarget() instanceof SDFSinkInterfaceVertex) {
+		if (sdfEdge.getTarget() instanceof SDFSinkInterfaceVertex && !isWrapper) {
 			srcConnection.setAttribute("actor", sdfEdge.getSource().getName());
 			srcConnection.setAttribute("edge", sdfEdge.getTarget().getName());
 		} else {
@@ -184,7 +177,7 @@ public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 		}
 
 		StringTemplate trgtConnection = group.getInstanceOf("connection");
-		if (sdfEdge.getSource() instanceof SDFSourceInterfaceVertex) {
+		if (sdfEdge.getSource() instanceof SDFSourceInterfaceVertex && !isWrapper) {
 			trgtConnection.setAttribute("actor", sdfEdge.getTarget().getName());
 			trgtConnection.setAttribute("edge", sdfEdge.getSource().getName());
 		} else {
@@ -214,20 +207,13 @@ public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 
 	@Override
 	public void visit(CodeGenSDFGraph sdf) throws SDF4JException {
-		if (sdf.getParentVertex() == null) {
-			isTestBed = true;
-		} else {
-			isTestBed = false;
-		}
 		for (SDFEdge edge : sdf.edgeSet()) {
 			edge.accept(this);
 		}
-
 		for (SDFAbstractVertex vertex : sdf.vertexSet()) {
 			if (vertex instanceof SDFInterfaceVertex) {
-				treatInterface((SDFInterfaceVertex) vertex, null, sdf, ports,
-						firingRules, firingRulesSensitivityList);
-				isTestBed = false;
+				treatWrapperInterface((SDFInterfaceVertex) vertex, null, sdf,
+						ports, firingRules, firingRulesSensitivityList);
 			} else {
 				vertex.accept(this);
 			}
@@ -239,37 +225,32 @@ public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 		}
 
 		StringTemplate actorDeclarationTemplate;
-		if (isTestBed) {
-			actorDeclarationTemplate = group.getInstanceOf("test_bed");
-			actorDeclarationTemplate.setAttribute("name", graphName);
-			actorDeclarationTemplate.setAttribute("actor_declarations",
-					actor_declarations);
-			actorDeclarationTemplate.setAttribute("connections", connections);
-			actorDeclarationTemplate.setAttribute("edge_declarations",
-					edges_declarations);
-			actorDeclarationTemplate.setAttribute("edges_instanciations",
-					edges_instanciations);
-			// actorDeclarationTemplate.setAttribute("body", actorBodyTemplate);
+		if (isWrapper) {
+			actorDeclarationTemplate = group
+					.getInstanceOf("wrapper_declaration");
+			actorDeclarationTemplate.setAttribute("end_rules", endRules);
+			actorDeclarationTemplate.setAttribute("start_rules", startRules);
 		} else {
 			actorDeclarationTemplate = group.getInstanceOf("actor_declaration");
-			actorDeclarationTemplate.setAttribute("name", graphName);
-			actorDeclarationTemplate.setAttribute("ports", ports);
-			actorDeclarationTemplate.setAttribute("actor_declarations",
-					actor_declarations);
-			actorDeclarationTemplate.setAttribute("edge_declarations",
-					edges_declarations);
-			actorDeclarationTemplate.setAttribute("connections", connections);
-			actorDeclarationTemplate.setAttribute("edges_instanciations",
-					edges_instanciations);
-			// actorDeclarationTemplate.setAttribute("body", actorBodyTemplate);
-			actorDeclarationTemplate.setAttribute("firing_rules", firingRules);
-			actorDeclarationTemplate.setAttribute("firing_rules_sensitivity",
-					firingRulesSensitivityList);
-			actorDeclarationTemplate.setAttribute("actor_instanciations",
-					actor_instanciations);
-			actorDeclarationTemplate
-					.setAttribute("edge_delay", edge_delay_init);
 		}
+
+		actorDeclarationTemplate.setAttribute("name", graphName);
+		actorDeclarationTemplate.setAttribute("ports", ports);
+		actorDeclarationTemplate.setAttribute("actor_declarations",
+				actor_declarations);
+		actorDeclarationTemplate.setAttribute("edge_declarations",
+				edges_declarations);
+		actorDeclarationTemplate.setAttribute("connections", connections);
+		actorDeclarationTemplate.setAttribute("edges_instanciations",
+				edges_instanciations);
+		// actorDeclarationTemplate.setAttribute("body", actorBodyTemplate);
+		actorDeclarationTemplate.setAttribute("firing_rules", firingRules);
+		actorDeclarationTemplate.setAttribute("firing_rules_sensitivity",
+				firingRulesSensitivityList);
+		actorDeclarationTemplate.setAttribute("actor_instanciations",
+				actor_instanciations);
+		actorDeclarationTemplate.setAttribute("edge_delay", edge_delay_init);
+
 		defines.clear();
 		if (sdf.getVariables() != null) {
 			for (Variable var : sdf.getVariables().values()) {
@@ -333,18 +314,18 @@ public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 		System.out.println(actorDeclarationTemplate);
 	}
 
-	void treatInterface(SDFInterfaceVertex interfaceVertex,
+	void treatWrapperInterface(SDFInterfaceVertex interfaceVertex,
 			SDFAbstractVertex parentVertex, SDFGraph parentGraph,
 			List<StringTemplate> actorPorts,
 			List<StringTemplate> actorFiringRules,
 			List<StringTemplate> actorFiringRulesSensitivity) {
 		StringTemplate interfaceTemplate;
 		if (interfaceVertex instanceof SDFSourceInterfaceVertex) {
-			interfaceTemplate = group.getInstanceOf("input_port");
+			interfaceTemplate = group.getInstanceOf("wrapper_input");
 		} else if (interfaceVertex instanceof SDFSinkInterfaceVertex) {
-			interfaceTemplate = group.getInstanceOf("output_port");
+			interfaceTemplate = group.getInstanceOf("wrapper_output");
 		} else {
-			interfaceTemplate = group.getInstanceOf("output_port");
+			interfaceTemplate = group.getInstanceOf("wrapper_output");
 		}
 		if (interfaceVertex.getDataType() != null) {
 			interfaceTemplate.setAttribute("type",
@@ -402,43 +383,61 @@ public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 
 	}
 
+	private String getTriggeringSignal(SDFAbstractVertex v) {
+		for (SDFEdge incEdge : ((SDFGraph) v.getBase()).incomingEdgesOf(v)) {
+			if (incEdge.getSource() instanceof SDFSourceInterfaceVertex) {
+				if (isWrapper) {
+					return "enable_pipeline";
+				} else {
+					return "invoke";
+				}
+			} else {
+				return "dv_" + incEdge.getSource().getName();
+			}
+		}
+		return "";
+	}
+
+	private boolean isPipelineEndVertex(SDFAbstractVertex v) {
+		for (SDFEdge outEdge : ((SDFGraph) v.getBase()).outgoingEdgesOf(v)) {
+			if (outEdge.getTarget() instanceof SDFSinkInterfaceVertex) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	@Override
 	public void visit(SDFAbstractVertex sdfVertex) throws SDF4JException {
 		StringTemplate vertexInstanciationTemplate = group
 				.getInstanceOf("vertex_instanciation");
 
 		StringTemplate vertexDeclarationTemplate;
-		if (isTestBed) {
-			vertexDeclarationTemplate = group
-					.getInstanceOf("vertex_test_bed_instanciation");
-		} else {
-			vertexDeclarationTemplate = group
-					.getInstanceOf("vertex_declaration");
-		}
 
+		vertexDeclarationTemplate = group.getInstanceOf("vertex_declaration");
 		if (sdfVertex instanceof CodeGenSDFBroadcastVertex) {
 			StringTemplate broadcastTemplate = broadcastTemplateAttribute((CodeGenSDFBroadcastVertex) sdfVertex);
 			vertexDeclarationTemplate.setAttribute("type_template",
 					broadcastTemplate);
-			vertexDeclarationTemplate.setAttribute("type", "preesm_broadcast");
-			if (!includes.contains("preesm_broadcast")) {
-				includes.add("preesm_broadcast");
+			vertexDeclarationTemplate.setAttribute("type", "preesm_rtl_broadcast");
+			if (!includes.contains("preesm_rtl_broadcast")) {
+				includes.add("preesm_rtl_broadcast");
 			}
 		} else if (sdfVertex instanceof CodeGenSDFJoinVertex) {
 			StringTemplate joinTemplate = joinTemplateAttribute((CodeGenSDFJoinVertex) sdfVertex);
 			vertexDeclarationTemplate.setAttribute("type_template",
 					joinTemplate);
-			vertexDeclarationTemplate.setAttribute("type", "preesm_join");
-			if (!includes.contains("preesm_join")) {
-				includes.add("preesm_join");
+			vertexDeclarationTemplate.setAttribute("type", "preesm_rtl_join");
+			if (!includes.contains("preesm_rtl_join")) {
+				includes.add("preesm_rtl_join");
 			}
 		} else if (sdfVertex instanceof CodeGenSDFForkVertex) {
 			StringTemplate forkTemplate = forkTemplateAttribute((CodeGenSDFForkVertex) sdfVertex);
 			vertexDeclarationTemplate.setAttribute("type_template",
 					forkTemplate);
-			vertexDeclarationTemplate.setAttribute("type", "preesm_fork");
-			if (!includes.contains("preesm_fork")) {
-				includes.add("preesm_fork");
+			vertexDeclarationTemplate.setAttribute("type", "preesm_rtl_fork");
+			if (!includes.contains("preesm_rtl_fork")) {
+				includes.add("preesm_rtl_fork");
 			}
 		} else if (sdfVertex instanceof CodeGenSDFSendVertex) {
 			StringTemplate sendTemplate = sendTemplateAttribute((CodeGenSDFSendVertex) sdfVertex);
@@ -512,20 +511,59 @@ public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 		StringTemplate signalDeclarationTemplate = group
 				.getInstanceOf("signal_declaration");
 		signalDeclarationTemplate.setAttribute("name",
-				"enable_" + sdfVertex.getName());
+				"dv_" + sdfVertex.getName());
 		signalDeclarationTemplate.setAttribute("type", "bool");
 		edges_declarations.add(signalDeclarationTemplate);
 		StringTemplate enableConnection = group.getInstanceOf("connection");
 		enableConnection.setAttribute("actor", sdfVertex.getName());
-		enableConnection.setAttribute("port", "enable_port");
-		enableConnection.setAttribute("edge", "enable_" + sdfVertex.getName());
+		enableConnection.setAttribute("port", "dv");
+		enableConnection.setAttribute("edge", "dv_" + sdfVertex.getName());
 		connections.add(enableConnection);
 
 		StringTemplate invokeConnection = group.getInstanceOf("connection");
 		invokeConnection.setAttribute("actor", sdfVertex.getName());
 		invokeConnection.setAttribute("port", "invoke_port");
-		invokeConnection.setAttribute("edge", "enable_" + sdfVertex.getName());
+		invokeConnection.setAttribute("edge", getTriggeringSignal(sdfVertex));
 		connections.add(invokeConnection);
+
+		StringTemplate clockConnection = group.getInstanceOf("connection");
+		clockConnection.setAttribute("actor", sdfVertex.getName());
+		clockConnection.setAttribute("port", "clk");
+		clockConnection.setAttribute("edge", "clk");
+		connections.add(clockConnection);
+
+		if (isWrapper) {
+			for (SDFEdge outEdge : ((SDFGraph) sdfVertex.getBase())
+					.outgoingEdgesOf(sdfVertex)) {
+				if (outEdge.getTarget() instanceof SDFSinkInterfaceVertex) {
+					String dataName = outEdge.getTarget().getName() + "_"
+							+ outEdge.getSource().getName() + "_"
+							+ outEdge.getTargetInterface().getName();
+					StringTemplate endRuleTemplate = group
+							.getInstanceOf("sdf_end_rule");
+					endRuleTemplate.setAttribute("dv_port",
+							"dv_" + sdfVertex.getName());
+					endRuleTemplate.setAttribute("data_signal", dataName);
+					endRuleTemplate.setAttribute("data_fifo", outEdge
+							.getTarget().getName());
+					endRules.add(endRuleTemplate);
+				}
+			}
+			for (SDFEdge incEdge : ((SDFGraph) sdfVertex.getBase())
+					.incomingEdgesOf(sdfVertex)) {
+				if (incEdge.getSource() instanceof SDFSourceInterfaceVertex) {
+					String dataName = incEdge.getTarget().getName() + "_"
+							+ incEdge.getSource().getName() + "_"
+							+ incEdge.getTargetInterface().getName();
+					StringTemplate startRuleTemplate = group
+							.getInstanceOf("sdf_start_rule");
+					startRuleTemplate.setAttribute("data_signal", dataName);
+					startRuleTemplate.setAttribute("data_fifo", incEdge
+							.getSource().getName());
+					startRules.add(startRuleTemplate);
+				}
+			}
+		}
 
 	}
 

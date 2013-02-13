@@ -122,8 +122,7 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 
 		if (parameters.get("printTemplate") != null) {
 			String templatePath = parameters.get("printTemplate");
-			SystemCPrinterVisitor printer = new SystemCPrinterVisitor(
-					new File(templatePath),sourcePath);
+			SystemCPrinterVisitor printer = new SystemCPrinterVisitor(templatePath,sourcePath);
 			try {
 				codeGenSDFGraph.accept(printer);
 			} catch (SDF4JException e) {
