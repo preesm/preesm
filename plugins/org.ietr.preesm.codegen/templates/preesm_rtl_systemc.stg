@@ -17,18 +17,20 @@ using namespace std ;
 #endif
 >>
 
-actor_declaration(name, ports, generics, actor_declarations, actor_instanciations, connections, edge_declarations, edges_instanciations, body, firing_rules, firing_rules_sensitivity, edge_delay)::=<<
+wrapper_declaration(name, ports, generics, actor_declarations, actor_instanciations, connections, edge_declarations, edges_instanciations, body, firing_rules, firing_rules_sensitivity, start_rules, end_rules, edge_delay)::=<<
 SC_MODULE(<name>){
 	
 	sc_core::sc_out\<bool\> enable_port ;
 	sc_core::sc_in\<bool\> invoke_port ; 
+	
 	sc_core::sc_in\<bool\> clk ;
-	sc_core::sc_out\<bool\> dv ;
 	
 	<if(generics)><generics:{g|int <g>}; separator="; \n">;<endif>
 	<if(ports)><ports; separator="; \n">;<endif>
 	<if(edge_declarations)><edge_declarations; separator="; \n">;<endif>
 	<if(actor_declarations)><actor_declarations; separator="; \n">;<endif>
+	
+	sc_core::sc_signal\<bool\> enable_pipeline ;
 	
 	void enable(){ // check schedulability, and update enable_port value
 		bool isEnable ;
@@ -41,13 +43,61 @@ SC_MODULE(<name>){
 		}
 	}
 	
+	void invoke(){ // runs one iteration of the actor
+		if(clk.posedge()){
+			enable_pipeline.write(false);
+			if(invoke_port.read()){
+				cout \<\< "invoking actor: " \<\< "<name>" \<\< endl ;
+				enable_pipeline.write(true);
+			}
+			<if(start_rules)>
+			<start_rules; separator=";\n">;
+			<endif>
+			<if(end_rules)>
+			<end_rules; separator=";\n">;
+			<endif>
+		}
+	}
+	
+	//SC_CTOR(<name>)
+	typedef <name> SC_CURRENT_USER_MODULE;
+	<name>( ::sc_core::sc_module_name<if(generics)>, <generics:{g|int <g>}; separator=", "><endif>)<if(generics)>:<else><if(actor_instanciations)>:<endif><endif>
+	<if(generics)><generics:{g|<g>(<g>)}; separator=", \n"><if(actor_instanciations)>,<endif><endif>
+	<if(actor_instanciations)>
+	<actor_instanciations; separator=", \n">
+	<endif>
+	{
+		SC_METHOD(invoke);
+		sensitive \<\< clk.pos();
+		SC_METHOD(enable);
+		sensitive \<\< clk.pos();
+		<if(connections)><connections; separator="; \n">;<endif>
+	}
+};
+
+>>
+
+actor_declaration(name, ports, generics, actor_declarations, actor_instanciations, connections, edge_declarations, edges_instanciations, body, firing_rules, firing_rules_sensitivity, edge_delay)::=<<
+SC_MODULE(<name>){
+
+	sc_core::sc_in\<bool\> invoke_port ; 
+	sc_core::sc_in\<bool\> clk ;
+	sc_core::sc_out\<bool\> dv ;
+	
+	<if(generics)><generics:{g|int <g>}; separator="; \n">;<endif>
+	<if(ports)><ports; separator="; \n">;<endif>
+	<if(edge_declarations)><edge_declarations; separator="; \n">;<endif>
+	<if(actor_declarations)><actor_declarations; separator="; \n">;<endif>
+	
 	void actor_firing() ; // actor behavior
 	
 	void invoke(){ // runs one iteration of the actor
 		if(clk.posedge()){
+			dv.write(false);
 			if(invoke_port.read()){
 				cout \<\< "invoking actor: " \<\< "<name>" \<\< endl ;
 				actor_firing();
+				dv.write(true);
 			}
 		}
 	}
@@ -62,8 +112,6 @@ SC_MODULE(<name>){
 	<endif>
 	{
 		SC_METHOD(invoke);
-		sensitive \<\< clk.pos() ;
-		SC_METHOD(enable);
 		sensitive \<\< clk.pos() ;
 		<if(connections)><connections; separator="; \n">;<endif>
 	}
@@ -84,6 +132,14 @@ template_attribute(attributes) ::=<<
 >>
 
 
+wrapper_input(name, type)::=<<
+sc_core::sc_fifo_in\<<type> \> <name>
+>>
+
+wrapper_output(name, type)::=<<
+sc_core::sc_fifo_out\<<type> \> <name>
+>>
+
 input_port(name, type)::=<<
 sc_core::sc_in\<<type> \> <name>
 >>
@@ -100,12 +156,6 @@ edge_instanciation(name, type, size)::=<<
 <if(type)>sc_core::sc_signal\< <type> \> <endif><name>  ("<name>")
 >>
 
-edge_delay(fifo, delay_size, delay_value)::=<<
-	for( int <fifo>_index = 0 ; <fifo>_index \< <delay_size> ; <fifo>_index ++){
-		<fifo>.write(<delay_value>);
-	}
->>
-
 signal_declaration(name, type)::=<<
 sc_core::sc_signal\< <type> \> <name>
 >>
@@ -118,10 +168,21 @@ sdf_firing_rule(port, nb_tokens) ::=<<
 	(<port>.num_available() >= <nb_tokens>)
 >>
 
-fire_actor(actor, latency) ::=<<
-	<actor>.invoke_port.write(HIGH);
-	wait(1, SC_NS);
-	<actor>.invoke_port.write(LOW);
+
+sdf_start_rule(data_signal, data_fifo) ::=<<
+if(invoke_port.read()){
+	<data_signal>.write(<data_fifo>.read());
+}
+>>
+
+sdf_end_rule(dv_port, data_signal, data_fifo) ::=<<
+if(<dv_port>.read()){
+	if(<data_fifo>.num_free() > 0){
+		<data_fifo>.write(<data_signal>.read());
+	}else{
+		cout \<\< "Missing one token, should consider revising fifo size " \<\< endl ;
+	}	
+}
 >>
 
 
