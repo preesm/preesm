@@ -112,7 +112,7 @@ public class SystemCPrinterVisitor implements
 		edge_delay_init = new ArrayList<StringTemplate>();
 		this.templatePath = null;
 		group = null;
-		this.outputPath = null ;
+		this.outputPath = null;
 	}
 
 	public SystemCPrinterVisitor(String templatePath, String outputPath) {
@@ -189,10 +189,12 @@ public class SystemCPrinterVisitor implements
 
 		StringTemplate srcConnection = group.getInstanceOf("connection");
 		if (sdfEdge.getTarget() instanceof SDFSinkInterfaceVertex) {
-			srcConnection.setAttribute("actor", sdfEdge.getSource().getName());
+			srcConnection.setAttribute("actor", toInstanceName(sdfEdge
+					.getSource().getName()));
 			srcConnection.setAttribute("edge", sdfEdge.getTarget().getName());
 		} else {
-			srcConnection.setAttribute("actor", sdfEdge.getSource().getName());
+			srcConnection.setAttribute("actor", toInstanceName(sdfEdge
+					.getSource().getName()));
 			srcConnection.setAttribute("edge", fifoName);
 		}
 		if (sdfEdge.getSource() instanceof CodeGenSDFForkVertex) {
@@ -221,10 +223,12 @@ public class SystemCPrinterVisitor implements
 
 		StringTemplate trgtConnection = group.getInstanceOf("connection");
 		if (sdfEdge.getSource() instanceof SDFSourceInterfaceVertex) {
-			trgtConnection.setAttribute("actor", sdfEdge.getTarget().getName());
+			trgtConnection.setAttribute("actor", toInstanceName(sdfEdge
+					.getTarget().getName()));
 			trgtConnection.setAttribute("edge", sdfEdge.getSource().getName());
 		} else {
-			trgtConnection.setAttribute("actor", sdfEdge.getTarget().getName());
+			trgtConnection.setAttribute("actor", toInstanceName(sdfEdge
+					.getTarget().getName()));
 			trgtConnection.setAttribute("edge", fifoName);
 		}
 		if (sdfEdge.getTarget() instanceof CodeGenSDFJoinVertex) {
@@ -523,6 +527,18 @@ public class SystemCPrinterVisitor implements
 				}
 				if (((CodeGenSDFTaskVertex) sdfVertex).getOperator()
 						.getComponent().getVlnv().getName().equals("fpga")) {
+					
+					StringTemplate clkConnect = group.getInstanceOf("connection");
+					clkConnect.setAttribute("actor", toInstanceName(sdfVertex.getName()));
+					clkConnect.setAttribute("port", "clk");
+					clkConnect.setAttribute("edge", "clk");
+					connections.add(clkConnect);
+					StringTemplate clockTemplate = group.getInstanceOf("vertex_test_bed_instanciation");
+					clockTemplate.setAttribute("args", "10, sc_core::SC_NS");
+					clockTemplate.setAttribute("name", "clk");
+					clockTemplate.setAttribute("type", "sc_core::sc_clock");
+					actor_instanciations.add(clockTemplate);
+					actor_declarations.add(clockTemplate);
 					RtlSystemCPrinterVisitor childVisitor = new RtlSystemCPrinterVisitor(
 							this.templatePath, this.outputPath);
 					refGraph.accept(childVisitor);
@@ -537,8 +553,10 @@ public class SystemCPrinterVisitor implements
 		} else {
 			vertexDeclarationTemplate.setAttribute("type", sdfVertex.getName());
 		}
-		vertexInstanciationTemplate.setAttribute("name", sdfVertex.getName());
-		vertexDeclarationTemplate.setAttribute("name", sdfVertex.getName());
+		vertexInstanciationTemplate.setAttribute("name",
+				toInstanceName(sdfVertex.getName()));
+		vertexDeclarationTemplate.setAttribute("name",
+				toInstanceName(sdfVertex.getName()));
 		if (sdfVertex.getArguments() != null
 				&& sdfVertex.getArguments().size() > 0) {
 			List<String> argVals = new ArrayList<String>();
@@ -555,19 +573,19 @@ public class SystemCPrinterVisitor implements
 		StringTemplate signalDeclarationTemplate = group
 				.getInstanceOf("signal_declaration");
 		signalDeclarationTemplate.setAttribute("name",
-				"enable_" + sdfVertex.getName());
+				"enable_" + toInstanceName(sdfVertex.getName()));
 		signalDeclarationTemplate.setAttribute("type", "bool");
 		edges_declarations.add(signalDeclarationTemplate);
 		StringTemplate enableConnection = group.getInstanceOf("connection");
-		enableConnection.setAttribute("actor", sdfVertex.getName());
+		enableConnection.setAttribute("actor", toInstanceName(sdfVertex.getName()));
 		enableConnection.setAttribute("port", "enable_port");
-		enableConnection.setAttribute("edge", "enable_" + sdfVertex.getName());
+		enableConnection.setAttribute("edge", "enable_" + toInstanceName(sdfVertex.getName()));
 		connections.add(enableConnection);
 
 		StringTemplate invokeConnection = group.getInstanceOf("connection");
-		invokeConnection.setAttribute("actor", sdfVertex.getName());
+		invokeConnection.setAttribute("actor", toInstanceName(sdfVertex.getName()));
 		invokeConnection.setAttribute("port", "invoke_port");
-		invokeConnection.setAttribute("edge", "enable_" + sdfVertex.getName());
+		invokeConnection.setAttribute("edge", "enable_" + toInstanceName(sdfVertex.getName()));
 		connections.add(invokeConnection);
 
 	}
