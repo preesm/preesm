@@ -40,8 +40,7 @@
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
       <propertyContributor
-            contributorId="org.ietr.preesm.experiment.model.transformation.properties.contributor"
-            typeMapper="org.ietr.preesm.experiment.model.transformation.properties.PiMMTypeMapper">
+            contributorId="PiMM.PropertyContributor">
          <propertyCategory
                category="org.ietr.preesm.experiment.model.transformation.properties.category.graph">
          </propertyCategory> 
@@ -50,7 +49,7 @@
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
       <propertyTabs
-            contributorId="org.ietr.preesm.experiment.model.transformation.properties.contributor">
+            contributorId="PiMM.PropertyContributor">
          <propertyTab
                category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
                id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basic"
@@ -61,20 +60,13 @@
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertySections">
       <propertySections
-            contributorId="org.ietr.preesm.experiment.model.transformation.properties.contributor">
+            contributorId="PiMM.PropertyContributor">
          <propertySection
-               class="org.eclipse.ui.views.properties.tabbed.AdvancedPropertySection"
-               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basic"
-               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basic">
-            <input
-                  type="org.ietr.preesm.experiment.model.pimm.Graph">
-            </input>
-         </propertySection>
+              class="org.ietr.preesm.experiment.model.transformation.properties.Section"
+              filter="org.ietr.preesm.experiment.model.transformation.properties.PiMMFilter"
+              id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basic"
+              tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basic">
+        </propertySection>
       </propertySections>
    </extension>
-       
-     
-  
-
-
 </plugin>

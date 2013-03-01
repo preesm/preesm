@@ -15,10 +15,14 @@ Require-Bundle: org.eclipse.ui,
  net.sf.dftools.algorithm;bundle-version="0.1.0",
  org.eclipse.ui.views.properties.tabbed;bundle-version="3.5.300",
  org.eclipse.graphiti.ui;bundle-version="0.9.1",
- org.eclipse.graphiti;bundle-version="0.9.1"
+ org.eclipse.graphiti;bundle-version="0.9.1",
+ org.ietr.preesm.experiment.ui.pimm;bundle-version="0.1.0",
+ org.ietr.preesm.experiment;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.ietr.preesm.experiment.model.transformation
 Import-Package: org.eclipse.gef,
+ org.eclipse.gef.palette,
+ org.eclipse.gef.ui.parts,
  org.eclipse.graphiti.mm.pictograms;version="0.9.1",
  org.eclipse.ui.model
