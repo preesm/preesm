@@ -1,4 +1,4 @@
-package org.ietr.preesm.experiment.model.transformation.property;
+package org.ietr.preesm.experiment.model.transformation.test;
 
 import org.eclipse.swt.graphics.Image;
 
