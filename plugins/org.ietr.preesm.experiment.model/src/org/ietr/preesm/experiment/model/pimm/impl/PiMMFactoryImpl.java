@@ -71,6 +71,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 			case PiMMPackage.PARAMETER: return createParameter();
 			case PiMMPackage.DEPENDENCY: return createDependency();
 			case PiMMPackage.DELAY: return createDelay();
+			case PiMMPackage.EXPRESSION: return createExpression();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -224,6 +225,16 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	public Delay createDelay() {
 		DelayImpl delay = new DelayImpl();
 		return delay;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Expression createExpression() {
+		ExpressionImpl expression = new ExpressionImpl();
+		return expression;
 	}
 
 	/**

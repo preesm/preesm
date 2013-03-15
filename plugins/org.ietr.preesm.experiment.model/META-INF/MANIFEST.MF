@@ -12,8 +12,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore.xmi;bundle-version="2.7.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.ietr.preesm.experiment.model.pimm,
+ org.ietr.preesm.experiment.model.pimm.adapter,
+ org.ietr.preesm.experiment.model.pimm.impl,
  org.ietr.preesm.experiment.model.pimm.util
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ lib/jep-java-3.4-trial.jar
 Import-Package: net.sf.dftools.algorithm.exporter,
  net.sf.dftools.architecture.utils

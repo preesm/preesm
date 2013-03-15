@@ -45,6 +45,8 @@
   <eClassifiers xsi:type="ecore:EClass" name="OutputPort" eSuperTypes="#//Port">
     <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingFifo" eType="#//Fifo"
         eOpposite="#//Fifo/sourcePort"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
+        eType="#//Expression" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ConfigInputPort" eSuperTypes="#//Port">
     <eStructuralFeatures xsi:type="ecore:EReference" name="incomingDependency" eType="#//Dependency"
@@ -82,6 +84,8 @@
         lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="graphPort" lowerBound="1"
         eType="#//ConfigInputPort"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
+        eType="#//Expression" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Dependency">
     <eStructuralFeatures xsi:type="ecore:EReference" name="setter" lowerBound="1"
@@ -90,8 +94,17 @@
         eType="#//ConfigInputPort" eOpposite="#//ConfigInputPort/incomingDependency"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ISetter" abstract="true" interface="true">
+    <eOperations name="getValue" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingDependencies" upperBound="-1"
         eType="#//Dependency" eOpposite="#//Dependency/setter"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Delay" eSuperTypes="#//Parameterizable"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Delay" eSuperTypes="#//Parameterizable">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" eType="#//Expression"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Expression">
+    <eOperations name="evaluate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="expressionString" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        defaultValueLiteral=""/>
+  </eClassifiers>
 </ecore:EPackage>

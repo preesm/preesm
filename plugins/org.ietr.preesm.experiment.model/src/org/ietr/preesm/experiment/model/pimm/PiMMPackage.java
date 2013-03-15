@@ -488,13 +488,22 @@ public interface PiMMPackage extends EPackage {
 	int OUTPUT_PORT__OUTGOING_FIFO = PORT_FEATURE_COUNT + 0;
 
 	/**
+	 * The feature id for the '<em><b>Expression</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OUTPUT_PORT__EXPRESSION = PORT_FEATURE_COUNT + 1;
+
+	/**
 	 * The number of structural features of the '<em>Output Port</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int OUTPUT_PORT_FEATURE_COUNT = PORT_FEATURE_COUNT + 1;
+	int OUTPUT_PORT_FEATURE_COUNT = PORT_FEATURE_COUNT + 2;
 
 
 	/**
@@ -579,6 +588,15 @@ public interface PiMMPackage extends EPackage {
 	 * @ordered
 	 */
 	int CONFIG_OUTPUT_PORT__OUTGOING_FIFO = OUTPUT_PORT__OUTGOING_FIFO;
+
+	/**
+	 * The feature id for the '<em><b>Expression</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIG_OUTPUT_PORT__EXPRESSION = OUTPUT_PORT__EXPRESSION;
 
 	/**
 	 * The feature id for the '<em><b>Outgoing Dependencies</b></em>' reference list.
@@ -1078,13 +1096,22 @@ public interface PiMMPackage extends EPackage {
 	int PARAMETER__GRAPH_PORT = ABSTRACT_VERTEX_FEATURE_COUNT + 3;
 
 	/**
+	 * The feature id for the '<em><b>Expression</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PARAMETER__EXPRESSION = ABSTRACT_VERTEX_FEATURE_COUNT + 4;
+
+	/**
 	 * The number of structural features of the '<em>Parameter</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PARAMETER_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 4;
+	int PARAMETER_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 5;
 
 
 	/**
@@ -1173,13 +1200,51 @@ public interface PiMMPackage extends EPackage {
 	int DELAY__CONFIG_INPUT_PORTS = PARAMETERIZABLE__CONFIG_INPUT_PORTS;
 
 	/**
+	 * The feature id for the '<em><b>Expression</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DELAY__EXPRESSION = PARAMETERIZABLE_FEATURE_COUNT + 0;
+
+	/**
 	 * The number of structural features of the '<em>Delay</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int DELAY_FEATURE_COUNT = PARAMETERIZABLE_FEATURE_COUNT + 0;
+	int DELAY_FEATURE_COUNT = PARAMETERIZABLE_FEATURE_COUNT + 1;
+
+
+	/**
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl <em>Expression</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getExpression()
+	 * @generated
+	 */
+	int EXPRESSION = 20;
+
+	/**
+	 * The feature id for the '<em><b>Expression String</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EXPRESSION__EXPRESSION_STRING = 0;
+
+	/**
+	 * The number of structural features of the '<em>Expression</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EXPRESSION_FEATURE_COUNT = 1;
 
 
 	/**
@@ -1428,6 +1493,17 @@ public interface PiMMPackage extends EPackage {
 	EReference getOutputPort_OutgoingFifo();
 
 	/**
+	 * Returns the meta object for the containment reference '{@link org.ietr.preesm.experiment.model.pimm.OutputPort#getExpression <em>Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Expression</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.OutputPort#getExpression()
+	 * @see #getOutputPort()
+	 * @generated
+	 */
+	EReference getOutputPort_Expression();
+
+	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.ConfigInputPort <em>Config Input Port</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1639,6 +1715,17 @@ public interface PiMMPackage extends EPackage {
 	EReference getParameter_GraphPort();
 
 	/**
+	 * Returns the meta object for the containment reference '{@link org.ietr.preesm.experiment.model.pimm.Parameter#getExpression <em>Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Expression</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.Parameter#getExpression()
+	 * @see #getParameter()
+	 * @generated
+	 */
+	EReference getParameter_Expression();
+
+	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Dependency <em>Dependency</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1700,6 +1787,38 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getDelay();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.ietr.preesm.experiment.model.pimm.Delay#getExpression <em>Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Expression</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.Delay#getExpression()
+	 * @see #getDelay()
+	 * @generated
+	 */
+	EReference getDelay_Expression();
+
+	/**
+	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Expression <em>Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Expression</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.Expression
+	 * @generated
+	 */
+	EClass getExpression();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Expression#getExpressionString <em>Expression String</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Expression String</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.Expression#getExpressionString()
+	 * @see #getExpression()
+	 * @generated
+	 */
+	EAttribute getExpression_ExpressionString();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -1924,6 +2043,14 @@ public interface PiMMPackage extends EPackage {
 		EReference OUTPUT_PORT__OUTGOING_FIFO = eINSTANCE.getOutputPort_OutgoingFifo();
 
 		/**
+		 * The meta object literal for the '<em><b>Expression</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference OUTPUT_PORT__EXPRESSION = eINSTANCE.getOutputPort_Expression();
+
+		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigInputPortImpl <em>Config Input Port</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -2102,6 +2229,14 @@ public interface PiMMPackage extends EPackage {
 		EReference PARAMETER__GRAPH_PORT = eINSTANCE.getParameter_GraphPort();
 
 		/**
+		 * The meta object literal for the '<em><b>Expression</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference PARAMETER__EXPRESSION = eINSTANCE.getParameter_Expression();
+
+		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DependencyImpl <em>Dependency</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -2154,6 +2289,32 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EClass DELAY = eINSTANCE.getDelay();
+
+		/**
+		 * The meta object literal for the '<em><b>Expression</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference DELAY__EXPRESSION = eINSTANCE.getDelay_Expression();
+
+		/**
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl <em>Expression</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getExpression()
+		 * @generated
+		 */
+		EClass EXPRESSION = eINSTANCE.getExpression();
+
+		/**
+		 * The meta object literal for the '<em><b>Expression String</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EXPRESSION__EXPRESSION_STRING = eINSTANCE.getExpression_ExpressionString();
 
 	}
 

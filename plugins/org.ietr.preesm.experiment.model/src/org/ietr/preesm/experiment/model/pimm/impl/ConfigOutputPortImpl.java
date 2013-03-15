@@ -192,4 +192,15 @@ public class ConfigOutputPortImpl extends OutputPortImpl implements ConfigOutput
 		return outgoingDependencies;
 	}
 
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public int getValue() {
+		// TODO: implement this method
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
+	}
+
 } //ConfigOutputPortImpl

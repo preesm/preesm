@@ -14,6 +14,7 @@ package org.ietr.preesm.experiment.model.pimm;
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Parameter#isLocallyStatic <em>Locally Static</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Parameter#isConfigurationInterface <em>Configuration Interface</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Parameter#getGraphPort <em>Graph Port</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.Parameter#getExpression <em>Expression</em>}</li>
  * </ul>
  * </p>
  *
@@ -99,5 +100,31 @@ public interface Parameter extends AbstractVertex, ISetter {
 	 * @generated
 	 */
 	void setGraphPort(ConfigInputPort value);
+
+	/**
+	 * Returns the value of the '<em><b>Expression</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Expression</em>' containment reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Expression</em>' containment reference.
+	 * @see #setExpression(Expression)
+	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameter_Expression()
+	 * @model containment="true" required="true"
+	 * @generated
+	 */
+	Expression getExpression();
+
+	/**
+	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Parameter#getExpression <em>Expression</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Expression</em>' containment reference.
+	 * @see #getExpression()
+	 * @generated
+	 */
+	void setExpression(Expression value);
 
 } // Parameter

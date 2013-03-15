@@ -1,11 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
-    modelDirectory="/org.ietr.preesm.experiment.model/src" modelPluginID="org.ietr.preesm.experiment.model"
-    redirection="" modelName="PiMM" importerID="org.eclipse.emf.importer.ecore"
-    complianceLevel="7.0" copyrightFields="false" classNamePattern="">
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.ietr.preesm.experiment.model/src" modelPluginID="org.ietr.preesm.experiment.model"
+    redirection="" modelName="PiMM" importerID="org.eclipse.emf.importer.ecore" complianceLevel="7.0"
+    copyrightFields="false" classNamePattern="">
   <foreignModel>PiMM.ecore</foreignModel>
   <genPackages prefix="PiMM" basePackage="org.ietr.preesm.experiment.model" disposableProviderFactory="true"
       dataTypeConverters="true" ecorePackage="PiMM.ecore#/">
-    <genClasses image="false" ecoreClass="PiMM.ecore#//AbstractVertex"/>
+    <genClasses image="false" ecoreClass="PiMM.ecore#//Parameterizable">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference PiMM.ecore#//Parameterizable/configInputPorts"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="PiMM.ecore#//AbstractVertex">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PiMM.ecore#//AbstractVertex/name"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="PiMM.ecore#//AbstractActor">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference PiMM.ecore#//AbstractActor/inputPorts"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference PiMM.ecore#//AbstractActor/outputPorts"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference PiMM.ecore#//AbstractActor/configOutputPorts"/>
+    </genClasses>
+    <genClasses ecoreClass="PiMM.ecore#//Graph">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference PiMM.ecore#//Graph/vertices"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference PiMM.ecore#//Graph/fifos"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference PiMM.ecore#//Graph/parameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference PiMM.ecore#//Graph/dependencies"/>
+    </genClasses>
+    <genClasses ecoreClass="PiMM.ecore#//Actor">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference PiMM.ecore#//Actor/refinement"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute PiMM.ecore#//Actor/configurationActor"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="PiMM.ecore#//Port">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PiMM.ecore#//Port/name"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute PiMM.ecore#//Port/kind"/>
+    </genClasses>
+    <genClasses ecoreClass="PiMM.ecore#//InputPort">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference PiMM.ecore#//InputPort/incomingFifo"/>
+    </genClasses>
+    <genClasses ecoreClass="PiMM.ecore#//OutputPort">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference PiMM.ecore#//OutputPort/outgoingFifo"/>
+    </genClasses>
+    <genClasses ecoreClass="PiMM.ecore#//ConfigInputPort">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference PiMM.ecore#//ConfigInputPort/incomingDependency"/>
+    </genClasses>
+    <genClasses ecoreClass="PiMM.ecore#//ConfigOutputPort"/>
+    <genClasses ecoreClass="PiMM.ecore#//Fifo">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference PiMM.ecore#//Fifo/sourcePort"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference PiMM.ecore#//Fifo/targetPort"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference PiMM.ecore#//Fifo/delay"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute PiMM.ecore#//Fifo/id"/>
+    </genClasses>
+    <genClasses ecoreClass="PiMM.ecore#//InterfaceActor">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference PiMM.ecore#//InterfaceActor/graphPort"/>
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute PiMM.ecore#//InterfaceActor/kind"/>
+    </genClasses>
+    <genClasses ecoreClass="PiMM.ecore#//SourceInterface"/>
+    <genClasses ecoreClass="PiMM.ecore#//SinkInterface"/>
+    <genClasses ecoreClass="PiMM.ecore#//ConfigOutputInterface"/>
+    <genClasses ecoreClass="PiMM.ecore#//Refinement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PiMM.ecore#//Refinement/fileName"/>
+      <genOperations ecoreOperation="PiMM.ecore#//Refinement/getAbstractActor"/>
+    </genClasses>
+    <genClasses ecoreClass="PiMM.ecore#//Parameter">
+      <genFeatures property="Readonly" createChild="false" ecoreFeature="ecore:EAttribute PiMM.ecore#//Parameter/locallyStatic"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PiMM.ecore#//Parameter/configurationInterface"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference PiMM.ecore#//Parameter/graphPort"/>
+      <genFeatures property="None" children="true" createChild="true" propertyCategory=""
+          ecoreFeature="ecore:EReference PiMM.ecore#//Parameter/expression"/>
+    </genClasses>
+    <genClasses ecoreClass="PiMM.ecore#//Dependency">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference PiMM.ecore#//Dependency/setter"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference PiMM.ecore#//Dependency/getter"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="PiMM.ecore#//ISetter">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference PiMM.ecore#//ISetter/outgoingDependencies"/>
+      <genOperations ecoreOperation="PiMM.ecore#//ISetter/getValue"/>
+    </genClasses>
+    <genClasses ecoreClass="PiMM.ecore#//Delay">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference PiMM.ecore#//Delay/expression"/>
+    </genClasses>
+    <genClasses ecoreClass="PiMM.ecore#//Expression">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute PiMM.ecore#//Expression/expressionString"/>
+      <genOperations ecoreOperation="PiMM.ecore#//Expression/evaluate"/>
+    </genClasses>
   </genPackages>
 </genmodel:GenModel>
