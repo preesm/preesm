@@ -26,3 +26,4 @@ Import-Package: org.eclipse.gef,
  org.eclipse.gef.ui.parts,
  org.eclipse.graphiti.mm.pictograms;version="0.9.1",
  org.eclipse.ui.model
+Bundle-ClassPath: .

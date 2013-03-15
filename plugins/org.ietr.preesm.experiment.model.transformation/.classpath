@@ -5,10 +5,5 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="D:/eclipse/plugins/org.eclipse.ui.views.properties.tabbed.source_3.5.300.v20120523-1955.jar"/>
 	<classpathentry kind="lib" path="D:/eclipse/plugins/org.eclipse.ui.views.properties.tabbed_3.5.300.v20120523-1955.jar"/>
-	<classpathentry kind="lib" path="D:/jep-java-3.4-trial/jep-java-3.4-trial.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/D:/jep-java-3.4-trial/doc/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
