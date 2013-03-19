@@ -374,6 +374,8 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 					if (explImplSuppr.equals("true")) {
 						logger.log(Level.INFO, "Removing implode/explode ");
 						supprImplodeExplode(hsdf);
+						// Kdesnos addition for csv stat. can be removed 
+						System.out.print(hsdf.vertexSet().size()+";"+hsdf.edgeSet().size()+";");
 					}
 				}
 

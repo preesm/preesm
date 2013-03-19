@@ -147,6 +147,7 @@ public class MemoryBoundsEstimator extends AbstractTaskImplementation {
 
 		logger.log(Level.INFO, "Bound_Max = " + maxBound + " Bound_Min = "
 				+ minBound);
+		System.out.println(minBound+";");
 
 		// Generate output
 		Map<String, Object> output = new HashMap<String, Object>();
