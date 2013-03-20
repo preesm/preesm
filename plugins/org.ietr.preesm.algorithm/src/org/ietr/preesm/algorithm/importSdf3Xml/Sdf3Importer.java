@@ -79,7 +79,13 @@ public class Sdf3Importer extends AbstractTaskImplementation {
 
 		// Parse the input SDF3 graph
 		Sdf3XmlParser sdf3Parser = new Sdf3XmlParser();
-		SDFGraph graph = (sdf3Parser.parse(iStream));
+		SDFGraph graph = null;
+		try{
+		graph = (sdf3Parser.parse(iStream));
+		} catch (RuntimeException e){
+		 	logger.log(Level.SEVERE, "SDF3 Parser Error: "+e.getMessage());
+		 	return null;
+		}
 		Map<String, Object> outputs = null;
 
 		// If there was no problem while parsing the graph

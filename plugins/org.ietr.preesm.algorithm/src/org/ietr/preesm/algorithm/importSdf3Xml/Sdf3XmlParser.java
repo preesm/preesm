@@ -110,7 +110,7 @@ public class Sdf3XmlParser {
 	 *            The Parsed input stream
 	 * @return The parsed {@link SDFGraph} or null is something went wrong
 	 */
-	public SDFGraph parse(InputStream inputStream) {
+	public SDFGraph parse(InputStream inputStream) throws RuntimeException {
 		// Instantiate the new graph
 		SDFGraph graph = new SDFGraph();
 
@@ -126,7 +126,7 @@ public class Sdf3XmlParser {
 
 		} catch (RuntimeException e) {
 			e.printStackTrace();
-			return null;
+			throw e;
 		}
 
 		return graph;
