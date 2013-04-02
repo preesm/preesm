@@ -56,14 +56,14 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
  * This class is a visitor for SDF graphs whose purpose is to export the visited
  * graph into the DIF format. The visitor should be used only on Single-rate
  * SDF. Each actor of the graph can be given a parameter "nb_node" which will be
- * used in the exported format. 
+ * used in the exported format.
  * 
  * All edges with delays are removed from the exported graph.
  * 
  * All actors of the graph should have an execution time for cores of type x86.
  * 
- * This class is a quick solution to convert very specific graph to the DIF.
- * It is not well coded and should be replaced with a better solution in the
+ * This class is a quick solution to convert very specific graph to the DIF. It
+ * is not well coded and should be replaced with a better solution in the
  * future. (Or simply removed if not used anymore)
  * 
  * @see http://www.ece.umd.edu/DSPCAD/dif/index.htm
@@ -108,17 +108,17 @@ public class DIFExporterVisitor implements
 
 	@Override
 	public void visit(SDFEdge edge) {
-		
+
 		// Skip edges with delays
 		try {
-			if(edge.getDelay().intValue()>0){
+			if (edge.getDelay().intValue() > 0) {
 				return;
 			}
 		} catch (InvalidExpressionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		// Add the edge entry to the actorAttributes Map
 		// With an empty attributes map
 		HashMap<String, Object> attributesMap = new HashMap<String, Object>();
@@ -133,6 +133,11 @@ public class DIFExporterVisitor implements
 		// Fill the map with the edge attributes
 		attributesMap.put("source", edge.getSource().getName());
 		attributesMap.put("target", edge.getTarget().getName());
+
+		String comm_cost = edge.getPropertyStringValue("comm_cost");
+		if (comm_cost != null) {
+			attributesMap.put("comm_cost", Integer.decode(comm_cost));
+		}
 
 	}
 
@@ -165,7 +170,7 @@ public class DIFExporterVisitor implements
 		actorAttributes.put(vertex.getName(), attributesMap);
 
 		// Fill the map with the vertex attributes
-		
+
 		// Retrieve execution time
 		// Only the execution runtime for cores with type x86 will be taken
 		// into account
@@ -234,6 +239,10 @@ public class DIFExporterVisitor implements
 			writeTopologyBlock(writer);
 
 			writeActorBlocks(writer);
+
+			writeEdgeBlocks(writer);
+
+			writer.write("}");
 
 			writer.close();
 		} catch (IOException e) {
@@ -344,6 +353,31 @@ public class DIFExporterVisitor implements
 				writer.write(";\n");
 
 				writer.write("\t}\n\n");
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void writeEdgeBlocks(FileWriter writer) {
+		try {
+			// Print a block for each edge
+			for (String edgeName : edgeAttributes.keySet()) {
+				// Print the block only if the attribute map is not empty
+				if (!edgeAttributes.get(edgeName).isEmpty()) {
+					// Edge block
+					writer.write('\t' + "edge " + edgeName + " {\n");
+
+					// Exec time
+					if (edgeAttributes.get(edgeName).get("comm_cost") != null) {
+						writer.write("\t\tExecutionTime = "
+								+ edgeAttributes.get(edgeName).get("comm_cost"));
+						writer.write(";\n");
+					}
+
+					writer.write("\t}\n\n");
+				}
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
