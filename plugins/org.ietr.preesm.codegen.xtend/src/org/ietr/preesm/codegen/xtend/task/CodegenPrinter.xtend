@@ -4,7 +4,7 @@ import net.sf.dftools.architecture.slam.Design
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
 import org.ietr.preesm.core.scenario.PreesmScenario
-import org.ietr.preesm.experiment.memory.allocation.MemoryAllocator
+
 
 /**
  * The {@link CodegenPrinter} class is the main class of the Xtend code 
