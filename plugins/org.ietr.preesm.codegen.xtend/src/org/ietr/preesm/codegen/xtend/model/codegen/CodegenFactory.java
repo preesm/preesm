@@ -127,6 +127,15 @@ public interface CodegenFactory extends EFactory {
 	ActorBlock createActorBlock();
 
 	/**
+	 * Returns a new object of class '<em>Loop Block</em>'. <!-- begin-user-doc
+	 * --> <!-- end-user-doc -->
+	 * 
+	 * @return a new object of class '<em>Loop Block</em>'.
+	 * @generated
+	 */
+	LoopBlock createLoopBlock();
+
+	/**
 	 * Returns the package supported by this factory. <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * 

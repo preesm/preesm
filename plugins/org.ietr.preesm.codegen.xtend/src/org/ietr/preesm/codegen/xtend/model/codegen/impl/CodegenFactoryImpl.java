@@ -106,6 +106,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 			return createCoreBlock();
 		case CodegenPackage.ACTOR_BLOCK:
 			return createActorBlock();
+		case CodegenPackage.LOOP_BLOCK:
+			return createLoopBlock();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName()
 					+ "' is not a valid classifier");
@@ -226,6 +228,16 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	public ActorBlock createActorBlock() {
 		ActorBlockImpl actorBlock = new ActorBlockImpl();
 		return actorBlock;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public LoopBlock createLoopBlock() {
+		LoopBlockImpl loopBlock = new LoopBlockImpl();
+		return loopBlock;
 	}
 
 	/**

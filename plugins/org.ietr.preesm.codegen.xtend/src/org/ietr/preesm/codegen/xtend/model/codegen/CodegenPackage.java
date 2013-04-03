@@ -548,6 +548,45 @@ public interface CodegenPackage extends EPackage {
 
 	/**
 	 * The meta object id for the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.LoopBlockImpl
+	 * <em>Loop Block</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.LoopBlockImpl
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getLoopBlock()
+	 * @generated
+	 */
+	int LOOP_BLOCK = 11;
+
+	/**
+	 * The feature id for the '<em><b>Code Elts</b></em>' containment reference
+	 * list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int LOOP_BLOCK__CODE_ELTS = BLOCK__CODE_ELTS;
+
+	/**
+	 * The feature id for the '<em><b>Declarations</b></em>' containment
+	 * reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int LOOP_BLOCK__DECLARATIONS = BLOCK__DECLARATIONS;
+
+	/**
+	 * The number of structural features of the '<em>Loop Block</em>' class.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int LOOP_BLOCK_FEATURE_COUNT = BLOCK_FEATURE_COUNT + 0;
+
+	/**
+	 * The meta object id for the '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Direction
 	 * <em>Direction</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -555,7 +594,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDirection()
 	 * @generated
 	 */
-	int DIRECTION = 11;
+	int DIRECTION = 12;
 
 	/**
 	 * The meta object id for the '
@@ -566,7 +605,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDelimiter()
 	 * @generated
 	 */
-	int DELIMITER = 12;
+	int DELIMITER = 13;
 
 	/**
 	 * Returns the meta object for class '
@@ -822,6 +861,17 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getActorBlock();
+
+	/**
+	 * Returns the meta object for class '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
+	 * <em>Loop Block</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for class '<em>Loop Block</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
+	 * @generated
+	 */
+	EClass getLoopBlock();
 
 	/**
 	 * Returns the meta object for enum '
@@ -1089,6 +1139,18 @@ public interface CodegenPackage extends EPackage {
 		 * @generated
 		 */
 		EClass ACTOR_BLOCK = eINSTANCE.getActorBlock();
+
+		/**
+		 * The meta object literal for the '
+		 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.LoopBlockImpl
+		 * <em>Loop Block</em>}' class. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.LoopBlockImpl
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getLoopBlock()
+		 * @generated
+		 */
+		EClass LOOP_BLOCK = eINSTANCE.getLoopBlock();
 
 		/**
 		 * The meta object literal for the '
