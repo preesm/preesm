@@ -1,8 +1,6 @@
 package org.ietr.preesm.experiment.memory.allocation;
 
-import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
@@ -44,19 +42,16 @@ public class BasicAllocator extends MemoryAllocator {
 	 */
 	public void allocate() {
 		int offset = 0;
-		if (this.graph != null) {
-			try {
-				for (DAGEdge edge : graph.edgeSet()) {
-					edgeAllocation.put(edge, offset);
-					offset += edge.getWeight().intValue();
-				}
-			} catch (InvalidExpressionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else if (inputExclusionGraph != null) {
+		if (this.graph != null && inputExclusionGraph == null) {
+
+			// Karol: I think we should forbid the allocation without an
+			// exclusion graph
+			throw new RuntimeException("Allocation without a MemEx.");
+		}
+
+		if (inputExclusionGraph != null) {
 			for (MemoryExclusionVertex vertex : inputExclusionGraph.vertexSet()) {
-				memExNodeAllocation.put(vertex, offset);
+				allocateMemoryObject(vertex, offset);
 				offset += vertex.getWeight();
 			}
 		}

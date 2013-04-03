@@ -173,8 +173,7 @@ public class DeGreefAllocator extends MemoryAllocator {
 						.add(new IntegerAndVertex(newOffset, vertex));
 				Collections.sort(nonAllocatedVertices);
 			} else {
-				memExNodeAllocation.put(vertex, offset);
-				edgeAllocation.put(vertex.getEdge(), offset);
+				allocateMemoryObject(vertex, offset);
 			}
 		}
 	}

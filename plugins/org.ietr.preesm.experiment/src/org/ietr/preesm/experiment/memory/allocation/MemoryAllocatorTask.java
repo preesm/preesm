@@ -164,7 +164,9 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
 		}
 
 		System.out.println(csv);
-		return new HashMap<String, Object>();
+		Map<String,Object> output = new HashMap<String, Object>();
+		output.put("MemEx", memEx);
+		return output;
 	}
 
 	@Override

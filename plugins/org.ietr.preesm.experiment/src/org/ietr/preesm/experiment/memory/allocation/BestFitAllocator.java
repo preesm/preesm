@@ -154,8 +154,7 @@ public class BestFitAllocator extends OrderedAllocator {
 				bestFitOffset = freeFrom;
 			}
 
-			memExNodeAllocation.put(vertex, bestFitOffset);
-			edgeAllocation.put(vertex.getEdge(), bestFitOffset);
+			allocateMemoryObject(vertex, bestFitOffset);
 		}
 
 		return getMemorySize();

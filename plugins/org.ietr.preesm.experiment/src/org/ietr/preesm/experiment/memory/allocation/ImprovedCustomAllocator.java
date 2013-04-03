@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+
+import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.workflow.WorkflowException;
 
 import org.ietr.preesm.memory.bounds.OstergardSolver;
@@ -11,8 +14,6 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
-import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 
 /**
  * This implementation of the MemoryAllocator mainly is based on a custom
@@ -133,8 +134,7 @@ public class ImprovedCustomAllocator extends MemoryAllocator {
 			// Allocate Clique elements
 			for (MemoryExclusionVertex node : cliqueSet) {
 				// (10) Allocate clique elements
-				edgeAllocation.put(node.getEdge(), cliqueOffset);
-				memExNodeAllocation.put(node, cliqueOffset);
+				allocateMemoryObject(node, cliqueOffset);
 			}
 
 			// This boolean is used to iterate over the list as long as a vertex
@@ -148,18 +148,15 @@ public class ImprovedCustomAllocator extends MemoryAllocator {
 			// the cliqueWeight will store the weight of the current max element
 			// of clique
 			int cliqueWeight = Collections.max(cliqueSet).getWeight();
-			int maximumSize = 2*cliqueWeight;
+			int maximumSize = 2 * cliqueWeight;
 
+			ArrayList<MemoryExclusionVertex> nonAllocatedVertex;
+			nonAllocatedVertex = new ArrayList<MemoryExclusionVertex>(
+					exclusionGraph.vertexSet());
+			Collections.sort(nonAllocatedVertex, Collections.reverseOrder());
 
-
-				ArrayList<MemoryExclusionVertex> nonAllocatedVertex;
-				nonAllocatedVertex = new ArrayList<MemoryExclusionVertex>(
-						exclusionGraph.vertexSet());
-				Collections
-						.sort(nonAllocatedVertex, Collections.reverseOrder());
-				
-				while (loopAgain) {
-					loopAgain = false;
+			while (loopAgain) {
+				loopAgain = false;
 
 				for (MemoryExclusionVertex vertex : nonAllocatedVertex) {
 					// Get vertex neighbors
@@ -184,7 +181,7 @@ public class ImprovedCustomAllocator extends MemoryAllocator {
 							Integer neighborOffset;
 							if ((neighborOffset = memExNodeAllocation
 									.get(neighbor)) != null) {
-								
+
 								if (neighborOffset < (offset + vertex
 										.getWeight())
 										&& (neighborOffset + neighbor
@@ -196,14 +193,18 @@ public class ImprovedCustomAllocator extends MemoryAllocator {
 							}
 						}
 					}
-					// Allocate the vertex at the resulting offset if the set is not enlarged by the weight of the node
-					if ((offset-cliqueOffset) < cliqueWeight && ((offset-cliqueOffset)+vertex.getWeight()) < maximumSize) {
-						memExNodeAllocation.put(vertex, offset);
-						edgeAllocation.put(vertex.getEdge(), offset);
+					// Allocate the vertex at the resulting offset if the set is
+					// not enlarged by the weight of the node
+					if ((offset - cliqueOffset) < cliqueWeight
+							&& ((offset - cliqueOffset) + vertex.getWeight()) < maximumSize) {
+						allocateMemoryObject(vertex, offset);
 						cliqueSet.add(vertex);
 						nonAllocatedVertex.remove(vertex);
 						loopAgain = true;
-						cliqueWeight = (((offset-cliqueOffset)+vertex.getWeight()) > cliqueWeight)?(offset-cliqueOffset)+vertex.getWeight() : cliqueWeight;
+						cliqueWeight = (((offset - cliqueOffset) + vertex
+								.getWeight()) > cliqueWeight) ? (offset - cliqueOffset)
+								+ vertex.getWeight()
+								: cliqueWeight;
 						break;
 					}
 				}

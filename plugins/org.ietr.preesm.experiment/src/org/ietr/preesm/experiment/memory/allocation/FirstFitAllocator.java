@@ -147,8 +147,7 @@ public class FirstFitAllocator extends OrderedAllocator {
 				firstFitOffset = freeFrom;
 			}
 
-			memExNodeAllocation.put(vertex, firstFitOffset);
-			edgeAllocation.put(vertex.getEdge(), firstFitOffset);
+			allocateMemoryObject(vertex, firstFitOffset);
 		}
 
 		return getMemorySize();

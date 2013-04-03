@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+
+import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.workflow.WorkflowException;
 
 import org.ietr.preesm.memory.bounds.OstergardSolver;
@@ -12,8 +15,6 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
-import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 
 /**
  * This implementation of the MemoryAllocator mainly is based on a custom
@@ -140,8 +141,7 @@ public class CustomAllocator extends MemoryAllocator {
 				element.add(node);
 				clique.add(element);
 				// (10) Allocate clique elements
-				edgeAllocation.put(node.getEdge(), cliqueOffset);
-				memExNodeAllocation.put(node, cliqueOffset);
+				allocateMemoryObject(node, cliqueOffset);
 			}
 
 			// This boolean is used to iterate over the list as long as a vertex
@@ -196,8 +196,7 @@ public class CustomAllocator extends MemoryAllocator {
 					for (MemoryExclusionVertex vertex : element) {
 						temporary.addAll(toolSolver.adjacentVerticesOf(vertex));
 					}
-					neighbors = new ArrayList<MemoryExclusionVertex>(
-							temporary);
+					neighbors = new ArrayList<MemoryExclusionVertex>(temporary);
 
 					// logger.log(Level.INFO, "7 - Sort neighbors");
 					// (6.1)
@@ -221,9 +220,7 @@ public class CustomAllocator extends MemoryAllocator {
 							cliqueSet.add(neighbor);
 							loopAgain = true;
 							// (10)
-							edgeAllocation.put(neighbor.getEdge(), cliqueOffset
-									+ elementWeight);
-							memExNodeAllocation.put(neighbor, cliqueOffset
+							allocateMemoryObject(neighbor, cliqueOffset
 									+ elementWeight);
 							break; // break the neighbors loop (goto 5)
 						}

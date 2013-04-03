@@ -166,7 +166,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
 		}
 
 		// Create a List of MemEx Vertices
-		List<MemoryExclusionVertex> memExVertices = new ArrayList<>(
+		List<MemoryExclusionVertex> memExVertices = new ArrayList<MemoryExclusionVertex>(
 				inputExclusionGraph.vertexSet());
 
 		// scan the dag vertices to retrieve the MemEx vertices in Scheduling
