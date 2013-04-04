@@ -44,6 +44,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 
 import org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.ActorCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.Call;
@@ -150,6 +151,13 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * @generated
 	 */
 	private EClass loopBlockEClass = null;
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	private EClass actorCallEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -445,6 +453,15 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	public EClass getActorCall() {
+		return actorCallEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	public EEnum getDirection() {
 		return directionEEnum;
 	}
@@ -522,6 +539,8 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
 		loopBlockEClass = createEClass(LOOP_BLOCK);
 
+		actorCallEClass = createEClass(ACTOR_CALL);
+
 		// Create enums
 		directionEEnum = createEEnum(DIRECTION);
 		delimiterEEnum = createEEnum(DELIMITER);
@@ -566,6 +585,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		coreBlockEClass.getESuperTypes().add(this.getBlock());
 		actorBlockEClass.getESuperTypes().add(this.getBlock());
 		loopBlockEClass.getESuperTypes().add(this.getBlock());
+		actorCallEClass.getESuperTypes().add(this.getCall());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(blockEClass, Block.class, "Block", !IS_ABSTRACT,
@@ -644,6 +664,9 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(loopBlockEClass, LoopBlock.class, "LoopBlock", !IS_ABSTRACT,
+				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(actorCallEClass, ActorCall.class, "ActorCall", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		// Initialize enums and add enum literals

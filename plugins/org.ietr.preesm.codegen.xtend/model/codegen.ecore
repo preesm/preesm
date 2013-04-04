@@ -46,4 +46,5 @@
   <eClassifiers xsi:type="ecore:EClass" name="CoreBlock" eSuperTypes="#//Block"/>
   <eClassifiers xsi:type="ecore:EClass" name="ActorBlock" eSuperTypes="#//Block"/>
   <eClassifiers xsi:type="ecore:EClass" name="LoopBlock" eSuperTypes="#//Block"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ActorCall" eSuperTypes="#//Call"/>
 </ecore:EPackage>

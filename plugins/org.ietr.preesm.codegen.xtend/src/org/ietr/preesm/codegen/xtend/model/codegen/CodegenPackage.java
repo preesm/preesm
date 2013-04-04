@@ -587,6 +587,45 @@ public interface CodegenPackage extends EPackage {
 
 	/**
 	 * The meta object id for the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.ActorCallImpl
+	 * <em>Actor Call</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.ActorCallImpl
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getActorCall()
+	 * @generated
+	 */
+	int ACTOR_CALL = 12;
+
+	/**
+	 * The feature id for the '<em><b>Parameters</b></em>' reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int ACTOR_CALL__PARAMETERS = CALL__PARAMETERS;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int ACTOR_CALL__NAME = CALL__NAME;
+
+	/**
+	 * The number of structural features of the '<em>Actor Call</em>' class.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int ACTOR_CALL_FEATURE_COUNT = CALL_FEATURE_COUNT + 0;
+
+	/**
+	 * The meta object id for the '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Direction
 	 * <em>Direction</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -594,7 +633,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDirection()
 	 * @generated
 	 */
-	int DIRECTION = 12;
+	int DIRECTION = 13;
 
 	/**
 	 * The meta object id for the '
@@ -605,7 +644,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDelimiter()
 	 * @generated
 	 */
-	int DELIMITER = 13;
+	int DELIMITER = 14;
 
 	/**
 	 * Returns the meta object for class '
@@ -872,6 +911,17 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getLoopBlock();
+
+	/**
+	 * Returns the meta object for class '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.ActorCall
+	 * <em>Actor Call</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for class '<em>Actor Call</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.ActorCall
+	 * @generated
+	 */
+	EClass getActorCall();
 
 	/**
 	 * Returns the meta object for enum '
@@ -1151,6 +1201,18 @@ public interface CodegenPackage extends EPackage {
 		 * @generated
 		 */
 		EClass LOOP_BLOCK = eINSTANCE.getLoopBlock();
+
+		/**
+		 * The meta object literal for the '
+		 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.ActorCallImpl
+		 * <em>Actor Call</em>}' class. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.ActorCallImpl
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getActorCall()
+		 * @generated
+		 */
+		EClass ACTOR_CALL = eINSTANCE.getActorCall();
 
 		/**
 		 * The meta object literal for the '

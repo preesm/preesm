@@ -36,14 +36,13 @@
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
 /**
- * <!-- begin-user-doc --> An {@link LoopBlock} is a {@link Block} containing
- * all information needed to generate the source code associated to an infinite
- * loop. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An {@link ActorCall} represents a {@link Call} to a
+ * non-flattened hierarchical actor. <!-- end-user-doc -->
  * 
  * 
- * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getLoopBlock()
+ * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getActorCall()
  * @model
  * @generated
  */
-public interface LoopBlock extends Block {
-} // LoopBlock
+public interface ActorCall extends Call {
+} // ActorCall

@@ -33,17 +33,25 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package org.ietr.preesm.codegen.xtend.model.codegen;
+
+package org.ietr.preesm.codegen.xtend.task;
+
+import net.sf.dftools.workflow.WorkflowException;
 
 /**
- * <!-- begin-user-doc --> An {@link LoopBlock} is a {@link Block} containing
- * all information needed to generate the source code associated to an infinite
- * loop. <!-- end-user-doc -->
+ * Exception thrown when an error has occured during the codegen.
  * 
- * 
- * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getLoopBlock()
- * @model
- * @generated
+ * @author kdesnos
  */
-public interface LoopBlock extends Block {
-} // LoopBlock
+public class CodegenException extends WorkflowException {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 277244171165787353L;
+
+	public CodegenException(String msg) {
+		super(msg);
+	}
+
+}

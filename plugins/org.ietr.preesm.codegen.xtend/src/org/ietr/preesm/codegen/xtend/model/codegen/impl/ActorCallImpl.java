@@ -33,17 +33,39 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package org.ietr.preesm.codegen.xtend.model.codegen;
+package org.ietr.preesm.codegen.xtend.model.codegen.impl;
+
+import org.eclipse.emf.ecore.EClass;
+
+import org.ietr.preesm.codegen.xtend.model.codegen.ActorCall;
+import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 
 /**
- * <!-- begin-user-doc --> An {@link LoopBlock} is a {@link Block} containing
- * all information needed to generate the source code associated to an infinite
- * loop. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '
+ * <em><b>Actor Call</b></em>'. <!-- end-user-doc -->
+ * <p>
+ * </p>
  * 
- * 
- * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getLoopBlock()
- * @model
  * @generated
  */
-public interface LoopBlock extends Block {
-} // LoopBlock
+public class ActorCallImpl extends CallImpl implements ActorCall {
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	protected ActorCallImpl() {
+		super();
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	protected EClass eStaticClass() {
+		return CodegenPackage.Literals.ACTOR_CALL;
+	}
+
+} // ActorCallImpl
