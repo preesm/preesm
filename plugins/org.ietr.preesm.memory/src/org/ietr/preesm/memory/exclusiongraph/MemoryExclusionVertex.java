@@ -42,6 +42,7 @@ import java.util.Map;
 
 import net.sf.dftools.algorithm.model.AbstractEdge;
 import net.sf.dftools.algorithm.model.AbstractVertex;
+import net.sf.dftools.algorithm.model.PropertyBean;
 import net.sf.dftools.algorithm.model.PropertyFactory;
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 
@@ -57,6 +58,13 @@ import org.ietr.preesm.core.types.DataType;
  */
 public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 		implements IWeightedVertex<Integer>, Comparable<MemoryExclusionVertex> {
+
+	/**
+	 * String used in the {@link PropertyBean} of a
+	 * {@link MemoryExclusionVertex} to store the offset at which the memory
+	 * object is stored in memory.
+	 */
+	public static final String MEMORY_OFFSET_PROPERTY = "memory_offset";
 
 	/**
 	 * This Map is used as a reference of dataTypes size when creating an vertex
