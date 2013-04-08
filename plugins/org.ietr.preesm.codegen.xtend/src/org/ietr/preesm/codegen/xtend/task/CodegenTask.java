@@ -29,7 +29,7 @@ public class CodegenTask extends AbstractTaskImplementation {
 		// Generate intermediary model
 		CodegenModelGenerator generator = new CodegenModelGenerator(archi, dag,
 				memEx, scenario);
-		
+
 		generator.generate();
 
 		// Create empty output map

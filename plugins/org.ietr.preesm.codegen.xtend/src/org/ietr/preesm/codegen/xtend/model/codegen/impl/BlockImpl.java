@@ -47,6 +47,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
@@ -132,10 +133,28 @@ public class BlockImpl extends EObjectImpl implements Block {
 	 */
 	public EList<Variable> getDeclarations() {
 		if (declarations == null) {
-			declarations = new EObjectContainmentEList<Variable>(
-					Variable.class, this, CodegenPackage.BLOCK__DECLARATIONS);
+			declarations = new EObjectWithInverseResolvingEList.ManyInverse<Variable>(
+					Variable.class, this, CodegenPackage.BLOCK__DECLARATIONS,
+					CodegenPackage.VARIABLE__USERS);
 		}
 		return declarations;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public NotificationChain eInverseAdd(InternalEObject otherEnd,
+			int featureID, NotificationChain msgs) {
+		switch (featureID) {
+		case CodegenPackage.BLOCK__DECLARATIONS:
+			return ((InternalEList<InternalEObject>) (InternalEList<?>) getDeclarations())
+					.basicAdd(otherEnd, msgs);
+		}
+		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
 
 	/**

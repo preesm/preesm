@@ -91,6 +91,7 @@ public class CodegenModelGenerator {
 	 * {@link PreesmScenario Scenario} at the origin of the call to the
 	 * {@link CodegenPrinter Code Generator}.
 	 */
+	@SuppressWarnings("unused")
 	private PreesmScenario scenario;
 
 	/**
@@ -143,12 +144,13 @@ public class CodegenModelGenerator {
 	 *         </ul>
 	 */
 	public Set<Block> generate() {
-		// 1 - Iterate on the actors of the DAG to construct the "loop" of each core.
-		// 2 - Init of actors ???
+		// 1 - Iterate on the actors of the DAG to construct the "loop" of each
+		// core.
+		// 1.1 - The init function of actors is executed on the same core of
+		// their first firing.
 		DAGIterator iter = new DAGIterator(dag);
-		while(iter.hasNext()){
-			DAGVertex vert = iter.next();
-			int i =3;
+		while (iter.hasNext()) {
+			//DAGVertex vert = iter.next();
 		}
 		return null;
 

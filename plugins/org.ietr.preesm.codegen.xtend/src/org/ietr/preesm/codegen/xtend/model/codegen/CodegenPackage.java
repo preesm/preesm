@@ -128,8 +128,8 @@ public interface CodegenPackage extends EPackage {
 	int BLOCK__CODE_ELTS = CODE_ELT_FEATURE_COUNT + 0;
 
 	/**
-	 * The feature id for the '<em><b>Declarations</b></em>' containment
-	 * reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * The feature id for the '<em><b>Declarations</b></em>' reference list.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
@@ -213,13 +213,31 @@ public interface CodegenPackage extends EPackage {
 	int VARIABLE__TYPE = 1;
 
 	/**
+	 * The feature id for the '<em><b>Creator</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int VARIABLE__CREATOR = 2;
+
+	/**
+	 * The feature id for the '<em><b>Users</b></em>' reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int VARIABLE__USERS = 3;
+
+	/**
 	 * The number of structural features of the '<em>Variable</em>' class. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int VARIABLE_FEATURE_COUNT = 2;
+	int VARIABLE_FEATURE_COUNT = 4;
 
 	/**
 	 * The meta object id for the '
@@ -249,6 +267,24 @@ public interface CodegenPackage extends EPackage {
 	 * @ordered
 	 */
 	int BUFFER__TYPE = VARIABLE__TYPE;
+
+	/**
+	 * The feature id for the '<em><b>Creator</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int BUFFER__CREATOR = VARIABLE__CREATOR;
+
+	/**
+	 * The feature id for the '<em><b>Users</b></em>' reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int BUFFER__USERS = VARIABLE__USERS;
 
 	/**
 	 * The feature id for the '<em><b>Size</b></em>' attribute. <!--
@@ -297,6 +333,24 @@ public interface CodegenPackage extends EPackage {
 	 * @ordered
 	 */
 	int SUB_BUFFER__TYPE = BUFFER__TYPE;
+
+	/**
+	 * The feature id for the '<em><b>Creator</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SUB_BUFFER__CREATOR = BUFFER__CREATOR;
+
+	/**
+	 * The feature id for the '<em><b>Users</b></em>' reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SUB_BUFFER__USERS = BUFFER__USERS;
 
 	/**
 	 * The feature id for the '<em><b>Size</b></em>' attribute. <!--
@@ -362,6 +416,24 @@ public interface CodegenPackage extends EPackage {
 	 * @ordered
 	 */
 	int CONSTANT__TYPE = VARIABLE__TYPE;
+
+	/**
+	 * The feature id for the '<em><b>Creator</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int CONSTANT__CREATOR = VARIABLE__CREATOR;
+
+	/**
+	 * The feature id for the '<em><b>Users</b></em>' reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int CONSTANT__USERS = VARIABLE__USERS;
 
 	/**
 	 * The number of structural features of the '<em>Constant</em>' class. <!--
@@ -490,8 +562,8 @@ public interface CodegenPackage extends EPackage {
 	int CORE_BLOCK__CODE_ELTS = BLOCK__CODE_ELTS;
 
 	/**
-	 * The feature id for the '<em><b>Declarations</b></em>' containment
-	 * reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * The feature id for the '<em><b>Declarations</b></em>' reference list.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
@@ -529,8 +601,8 @@ public interface CodegenPackage extends EPackage {
 	int ACTOR_BLOCK__CODE_ELTS = BLOCK__CODE_ELTS;
 
 	/**
-	 * The feature id for the '<em><b>Declarations</b></em>' containment
-	 * reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * The feature id for the '<em><b>Declarations</b></em>' reference list.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
@@ -568,8 +640,8 @@ public interface CodegenPackage extends EPackage {
 	int LOOP_BLOCK__CODE_ELTS = BLOCK__CODE_ELTS;
 
 	/**
-	 * The feature id for the '<em><b>Declarations</b></em>' containment
-	 * reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * The feature id for the '<em><b>Declarations</b></em>' reference list.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
@@ -671,12 +743,11 @@ public interface CodegenPackage extends EPackage {
 	EReference getBlock_CodeElts();
 
 	/**
-	 * Returns the meta object for the containment reference list '
+	 * Returns the meta object for the reference list '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDeclarations
 	 * <em>Declarations</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @return the meta object for the containment reference list '
-	 *         <em>Declarations</em>'.
+	 * @return the meta object for the reference list '<em>Declarations</em>'.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Block#getDeclarations()
 	 * @see #getBlock()
 	 * @generated
@@ -763,6 +834,30 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getVariable_Type();
+
+	/**
+	 * Returns the meta object for the reference '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator
+	 * <em>Creator</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference '<em>Creator</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator()
+	 * @see #getVariable()
+	 * @generated
+	 */
+	EReference getVariable_Creator();
+
+	/**
+	 * Returns the meta object for the reference list '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getUsers
+	 * <em>Users</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference list '<em>Users</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Variable#getUsers()
+	 * @see #getVariable()
+	 * @generated
+	 */
+	EReference getVariable_Users();
 
 	/**
 	 * Returns the meta object for class '
@@ -990,8 +1085,7 @@ public interface CodegenPackage extends EPackage {
 
 		/**
 		 * The meta object literal for the '<em><b>Declarations</b></em>'
-		 * containment reference list feature. <!-- begin-user-doc --> <!--
-		 * end-user-doc -->
+		 * reference list feature. <!-- begin-user-doc --> <!-- end-user-doc -->
 		 * 
 		 * @generated
 		 */
@@ -1063,6 +1157,22 @@ public interface CodegenPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute VARIABLE__TYPE = eINSTANCE.getVariable_Type();
+
+		/**
+		 * The meta object literal for the '<em><b>Creator</b></em>' reference
+		 * feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference VARIABLE__CREATOR = eINSTANCE.getVariable_Creator();
+
+		/**
+		 * The meta object literal for the '<em><b>Users</b></em>' reference
+		 * list feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference VARIABLE__USERS = eINSTANCE.getVariable_Users();
 
 		/**
 		 * The meta object literal for the '

@@ -5,7 +5,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="codeElts" upperBound="-1"
         eType="#//CodeElt" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="declarations" upperBound="-1"
-        eType="#//Variable" containment="true"/>
+        eType="#//Variable" eOpposite="#//Variable/users"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="CodeElt" abstract="true" interface="true"/>
   <eClassifiers xsi:type="ecore:EClass" name="Call" abstract="true" eSuperTypes="#//CodeElt">
@@ -17,6 +17,10 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         iD="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="creator" lowerBound="1"
+        eType="#//Block"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="users" lowerBound="1" upperBound="-1"
+        eType="#//Block" eOpposite="#//Block/declarations"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Buffer" eSuperTypes="#//Variable">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="size" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>

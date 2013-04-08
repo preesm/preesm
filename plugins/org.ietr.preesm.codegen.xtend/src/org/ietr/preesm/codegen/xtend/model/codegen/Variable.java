@@ -35,6 +35,7 @@
  */
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 
 /**
@@ -53,6 +54,10 @@ import org.eclipse.emf.ecore.EObject;
  * Name</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getType <em>
  * Type</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator
+ * <em>Creator</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getUsers <em>
+ * Users</em>}</li>
  * </ul>
  * </p>
  * 
@@ -118,5 +123,57 @@ public interface Variable extends EObject {
 	 * @generated
 	 */
 	void setType(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Creator</b></em>' reference. <!--
+	 * begin-user-doc -->
+	 * <p>
+	 * The {@link #getCreator() creator} of a {@link Variable} is the
+	 * {@link Block} that declare and define the {@link Variable}.
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Creator</em>' reference.
+	 * @see #setCreator(Block)
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getVariable_Creator()
+	 * @model required="true"
+	 * @generated
+	 */
+	Block getCreator();
+
+	/**
+	 * Sets the value of the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator
+	 * <em>Creator</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Creator</em>' reference.
+	 * @see #getCreator()
+	 * @generated
+	 */
+	void setCreator(Block value);
+
+	/**
+	 * Returns the value of the '<em><b>Users</b></em>' reference list. The list
+	 * contents are of type
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Block}. It is
+	 * bidirectional and its opposite is '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDeclarations
+	 * <em>Declarations</em>}'. <!-- begin-user-doc -->
+	 * <p>
+	 * The {@link #getUsers() users} of a {@link Variable} are the {@link Block
+	 * Blocks} using the {@link Variable}. One of the {@link #getUsers() users}
+	 * of the variable is also its {@link #getCreator() creator}.
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Users</em>' reference list.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getVariable_Users()
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Block#getDeclarations
+	 * @model opposite="declarations" required="true"
+	 * @generated
+	 */
+	EList<Block> getUsers();
 
 } // Variable
