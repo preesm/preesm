@@ -36,6 +36,8 @@
 
 package org.ietr.preesm.codegen.xtend.task;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import net.sf.dftools.algorithm.iterators.DAGIterator;
@@ -46,9 +48,11 @@ import net.sf.dftools.architecture.slam.Design;
 
 import org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
+import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.types.VertexType;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 
@@ -95,6 +99,12 @@ public class CodegenModelGenerator {
 	private PreesmScenario scenario;
 
 	/**
+	 * This {@link Map} associates each {@link ComponentInstance} to its
+	 * corresponding {@link CoreBlock}.
+	 */
+	protected Map<ComponentInstance, CoreBlock> coreBlocks;
+
+	/**
 	 * Constructor of the {@link CodegenModelGenerator}. The constructor
 	 * performs verification to ensure that the inputs are valid:
 	 * <ul>
@@ -126,6 +136,8 @@ public class CodegenModelGenerator {
 		this.scenario = scenario;
 
 		checkInputs(this.archi, this.dag, this.memEx);
+
+		this.coreBlocks = new HashMap<ComponentInstance, CoreBlock>();
 	}
 
 	/**
@@ -142,15 +154,60 @@ public class CodegenModelGenerator {
 	 *         <li>{@link ActorBlock A block corresponding to the code of an
 	 *         non-flattened hierarchical actor}</li>
 	 *         </ul>
+	 * @throws CodegenException
+	 *             If a vertex has an unknown {@link DAGVertex#getKind() Kind}.
 	 */
-	public Set<Block> generate() {
-		// 1 - Iterate on the actors of the DAG to construct the "loop" of each
-		// core.
-		// 1.1 - The init function of actors is executed on the same core of
+	public Set<Block> generate() throws CodegenException {
+		// 1 - Iterate on the actors of the DAG
+		// 1.0 - Identify the core used.
+		// 1.1 - Construct the "loop" of each core.
+		// 1.2 - The init function of actors is executed on the same core of
 		// their first firing.
+		// 1.3 - Identify the buffer accessed/owned by each core.
+
 		DAGIterator iter = new DAGIterator(dag);
 		while (iter.hasNext()) {
-			//DAGVertex vert = iter.next();
+
+			DAGVertex vert = iter.next();
+
+			// 1.0 - Identify the core used.
+			ComponentInstance operator = null;
+			CoreBlock operatorBlock = null;
+			{
+				// This call can not fail as checks were already performed in
+				// the constructor
+				operator = (ComponentInstance) vert.getPropertyBean().getValue(
+						"Operator", ComponentInstance.class);
+				// If this is the first time this operator is encountered,
+				// Create a Block and store it.
+				operatorBlock = coreBlocks.get(operator);
+				if (operatorBlock == null) {
+					operatorBlock = CodegenFactory.eINSTANCE.createCoreBlock();
+					coreBlocks.put(operator, operatorBlock);
+				}
+			} // end 1.0
+
+			// 1.1 - Construct the "loop" of each core.
+			{
+				switch (((VertexType) vert.getPropertyBean().getValue(
+						"vertexType", VertexType.class)).toString()) {
+
+				case VertexType.TYPE_TASK:
+					// Actor (Hierarchical or not) call
+					// Fork Join call
+					break;
+
+				case VertexType.TYPE_SEND:
+					break;
+
+				case VertexType.TYPE_RECEIVE:
+					break;
+				default:
+					throw new CodegenException("Vertex " + vert
+							+ " has an unknown kind: " + vert.getKind());
+
+				}
+			}
 		}
 		return null;
 
@@ -231,7 +288,7 @@ public class CodegenModelGenerator {
 					throw new CodegenException(
 							"MemEx graph memory object ("
 									+ memObj
-									+ ") refers to a DAG Edge "
+									+ ") refers to a DAG Edge"
 									+ " that does not exist in the input DAG.\n"
 									+ "Make sure that the MemEx is derived from the input DAG of the codegen.");
 				}
