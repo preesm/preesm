@@ -49,11 +49,13 @@ import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.preesm.algorithm.transforms.ForkJoinRemover;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.DataType;
 
 /**
- * Workflow element that takes a DAG as input and Create its Memory Exclusion Graph.
+ * Workflow element that takes a DAG as input and Create its Memory Exclusion
+ * Graph.
  * 
  * @author kdesnos
  * 
@@ -61,11 +63,14 @@ import org.ietr.preesm.core.types.DataType;
 public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
 
 	static final public String PARAM_VERBOSE = "Verbose";
-	static final public String VALUE_VERBOSE_DEFAULT = "? C {True, False}";
-	static final public String VALUE_VERBOSE_TRUE = "True";
-	static final public String VALUE_VERBOSE_FALSE = "False";
-	
+	static final public String VALUE_TRUE_FALSE_DEFAULT = "? C {True, False}";
+	static final public String VALUE_TRUE = "True";
+	static final public String VALUE_FALSE = "False";
+
+	static final public String PARAM_SUPPR_FORK_JOIN = "Suppr Fork/Join";
+
 	static final public String OUTPUT_KEY_MEM_EX = "MemEx";
+	static final public String OUTPUT_KEY_DAG = "DAG";
 
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
@@ -78,24 +83,34 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
 		// Check Workflow element parameters
 		String valueVerbose = parameters.get(PARAM_VERBOSE);
 		boolean verbose;
-		verbose = valueVerbose.equals(VALUE_VERBOSE_TRUE);
-		
+		verbose = valueVerbose.equals(VALUE_TRUE);
+
+		String valueSupprForkJoin = parameters.get(PARAM_SUPPR_FORK_JOIN);
+		boolean supprForkJoin;
+		supprForkJoin = valueSupprForkJoin.equals(VALUE_TRUE);
+
 		// Retrieve list of types and associated sizes in the scenario
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
-		Map<String, DataType> dataTypes = scenario.getSimulationManager().getDataTypes();
+		Map<String, DataType> dataTypes = scenario.getSimulationManager()
+				.getDataTypes();
 		MemoryExclusionVertex.setDataTypes(dataTypes);
 
 		// Make a copy of the Input DAG for treatment
 		// The DAG is altered when building the exclusion graph.
 		DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
-		DirectedAcyclicGraph localDAG = (DirectedAcyclicGraph) dag.clone(); // Clone is deep copy 
-																			// i.e. vertices are thus copied too.
+		// Clone is deep copy i.e. vertices are thus copied too.
+		DirectedAcyclicGraph localDAG = (DirectedAcyclicGraph) dag.clone();
 		if (localDAG == null) {
 			localDAG = dag;
 		}
 
+		// Remove Fork/Join vertices
+		if (supprForkJoin) {
+			ForkJoinRemover.supprImplodeExplode(localDAG);
+		}
+
 		// Build the exclusion graph
-		if(verbose)
+		if (verbose)
 			logger.log(Level.INFO, "Memory exclusion graph : start building");
 		MemoryExclusionGraph memEx = new MemoryExclusionGraph();
 		try {
@@ -103,21 +118,25 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
 		} catch (InvalidExpressionException e) {
 			throw new WorkflowException(e.getLocalizedMessage());
 		}
-		double density = memEx.edgeSet().size()/(memEx.vertexSet().size()*(memEx.vertexSet().size() -1)/2.0 );
-		if(verbose)
-			logger.log(Level.INFO, "Memory exclusion graph built with "+memEx.vertexSet().size()+" vertices and density = "+density);
+		double density = memEx.edgeSet().size()
+				/ (memEx.vertexSet().size() * (memEx.vertexSet().size() - 1) / 2.0);
+		if (verbose)
+			logger.log(Level.INFO, "Memory exclusion graph built with "
+					+ memEx.vertexSet().size() + " vertices and density = "
+					+ density);
 
-
-		// Generate output  
+		// Generate output
 		Map<String, Object> output = new HashMap<String, Object>();
 		output.put(OUTPUT_KEY_MEM_EX, memEx);
+		output.put(OUTPUT_KEY_DAG, localDAG);
 		return output;
 	}
 
 	@Override
 	public Map<String, String> getDefaultParameters() {
 		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put(PARAM_VERBOSE, VALUE_VERBOSE_DEFAULT);
+		parameters.put(PARAM_VERBOSE, VALUE_TRUE_FALSE_DEFAULT);
+		parameters.put(PARAM_SUPPR_FORK_JOIN, VALUE_TRUE_FALSE_DEFAULT);
 		return parameters;
 	}
 

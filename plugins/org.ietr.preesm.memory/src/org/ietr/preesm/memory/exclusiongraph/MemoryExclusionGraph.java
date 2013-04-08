@@ -43,7 +43,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -110,7 +109,8 @@ public class MemoryExclusionGraph extends
 	 * an implode/explode operation can (and must, for the codegen) be merged
 	 * into a single memory object, in order to maximize the locality.
 	 */
-	private HashMap<String, HashSet<MemoryExclusionVertex>> implodeExplodeMap;
+	// private HashMap<String, HashSet<MemoryExclusionVertex>>
+	// implodeExplodeMap;
 
 	/**
 	 * {@link DirectedAcyclicGraph DAG} {@link DAGVertex vertices} in the
@@ -139,7 +139,6 @@ public class MemoryExclusionGraph extends
 	public MemoryExclusionGraph() {
 		super(DefaultEdge.class);
 		adjacentVerticesBackup = new HashMap<MemoryExclusionVertex, HashSet<MemoryExclusionVertex>>();
-		implodeExplodeMap = new HashMap<String, HashSet<MemoryExclusionVertex>>();
 	}
 
 	/**
@@ -236,7 +235,11 @@ public class MemoryExclusionGraph extends
 			}
 
 			if (vertKind.equals("dag_vertex")
-					|| vertKind.equals("dag_broadcast_vertex")) {
+					|| vertKind.equals("dag_broadcast_vertex")
+					|| vertKind.equals("dag_init_vertex")
+					|| vertKind.equals("dag_end_vertex")
+					|| vertKind.equals("dag_fork_vertex")
+					|| vertKind.equals("dag_join_vertex")) {
 				// If the dagVertex is a task (except implode/explode task), set
 				// the scheduling Order which will be used as a unique ID for
 				// each vertex
@@ -247,70 +250,13 @@ public class MemoryExclusionGraph extends
 					sourcesVertices.add(vert);
 				}
 			} else {
-				if (vertKind.equals("dag_fork_vertex")
-						|| vertKind.equals("dag_join_vertex")) {
-					// If the vertex is a task (an implode or explode vertex)
-
-					// First, create an entry in implodeExplodeMap
-					HashSet<MemoryExclusionVertex> implodeExplodeSet = new HashSet<MemoryExclusionVertex>();
-					this.implodeExplodeMap.put(vert.getName(),
-							implodeExplodeSet);
-
-					// Then link incoming/outgoing edges of the implode/explode
-					// directly to the target/source of explosion.
-					Set<DAGEdge> outgoingEdges = vert.outgoingEdges();
-					Set<DAGEdge> incomingEdges = vert.incomingEdges();
-					for (DAGEdge incomingEdge : incomingEdges) {
-						for (DAGEdge outgoingEdge : outgoingEdges) {
-							// One of this two nested loop will have only one
-							// iteration. Indeed, an implode vertex only has 1
-							// outgoing edge and a explode vertex only has 1
-							// incoming edge.
-
-							// Check that the edge is linked to a task (we do
-							// not
-							// consider edges linked to send/receive)
-							if (incomingEdge.getSource().getPropertyBean()
-									.getValue("vertexType").toString()
-									.equals("task")
-									&& outgoingEdge.getTarget()
-											.getPropertyBean()
-											.getValue("vertexType").toString()
-											.equals("task")) {
-
-								// Select the edges whose properties must be
-								// copied to the new edge
-								DAGEdge edge = (vert.getPropertyBean()
-										.getValue("kind").toString()
-										.equals("dag_join_vertex")) ? incomingEdge
-										: outgoingEdge;
-
-								// Create the new edge that bypass the
-								// explode/implode
-								DAGEdge newEdge = dag.addEdge(
-										incomingEdge.getSource(),
-										outgoingEdge.getTarget());
-
-								newEdge.copyProperties(edge);
-								newEdge.setSourceLabel(incomingEdge
-										.getSourceLabel());
-								newEdge.setTargetLabel(outgoingEdge
-										.getTargetLabel());
-								newEdge.setPropertyValue("explodeName",
-										vert.getName());
-
-								// Add ExclusionObject to its implodeExplodeSet
-								// implodeExplodeSet
-								// .add(new MemoryExclusionVertex(newEdge));
-							}
-						}
-					}
-				}
+				// Send/Receive
 				nonTaskVertices.add(vert);
 			}
 		}
 		dag.removeAllVertices(nonTaskVertices);
 		dagVertices.removeAll(nonTaskVertices);
+
 
 		// iterDAGVertices = new DAGIterator(dag); // Iterator on DAG vertices
 
@@ -396,6 +342,7 @@ public class MemoryExclusionGraph extends
 	 */
 	public void buildGraph(DirectedAcyclicGraph dag)
 			throws InvalidExpressionException, WorkflowException {
+		
 		/*
 		 * Declarations & initializations
 		 */
@@ -437,7 +384,9 @@ public class MemoryExclusionGraph extends
 			if (vertKind.equals("dag_vertex")
 					|| vertKind.equals("dag_broadcast_vertex")
 					|| vertKind.equals("dag_init_vertex")
-					|| vertKind.equals("dag_end_vertex")) {
+					|| vertKind.equals("dag_end_vertex")
+					|| vertKind.equals("dag_fork_vertex")
+					|| vertKind.equals("dag_join_vertex")) {
 				// If the dagVertex is a task (except implode/explode task), set
 				// the scheduling Order which will be used as a unique ID for
 				// each vertex
@@ -448,65 +397,7 @@ public class MemoryExclusionGraph extends
 					sourcesVertices.add(vert);
 				}
 			} else {
-				if (vertKind.equals("dag_fork_vertex")
-						|| vertKind.equals("dag_join_vertex")) {
-					// If the vertex is a task (an implode or explode vertex)
-
-					// First, create an entry in implodeExplodeMap
-					HashSet<MemoryExclusionVertex> implodeExplodeSet = new HashSet<MemoryExclusionVertex>();
-					this.implodeExplodeMap.put(vert.getName(),
-							implodeExplodeSet);
-
-					// Then link incoming/outgoing edges of the implode/explode
-					// directly to the target/source of explosion.
-					Set<DAGEdge> outgoingEdges = vert.outgoingEdges();
-					Set<DAGEdge> incomingEdges = vert.incomingEdges();
-					for (DAGEdge incomingEdge : incomingEdges) {
-						for (DAGEdge outgoingEdge : outgoingEdges) {
-							// One of this two nested loop will have only one
-							// iteration. Indeed, an implode vertex only has 1
-							// outgoing edge and a explode vertex only has 1
-							// incoming edge.
-
-							// Check that the edge is linked to a task (we do
-							// not
-							// consider edges linked to send/receive)
-							if (incomingEdge.getSource().getPropertyBean()
-									.getValue("vertexType").toString()
-									.equals("task")
-									&& outgoingEdge.getTarget()
-											.getPropertyBean()
-											.getValue("vertexType").toString()
-											.equals("task")) {
-
-								// Select the edges whose properties must be
-								// copied to the new edge
-								DAGEdge edge = (vert.getPropertyBean()
-										.getValue("kind").toString()
-										.equals("dag_join_vertex")) ? incomingEdge
-										: outgoingEdge;
-
-								// Create the new edge that bypass the
-								// explode/implode
-								DAGEdge newEdge = dag.addEdge(
-										incomingEdge.getSource(),
-										outgoingEdge.getTarget());
-
-								newEdge.copyProperties(edge);
-								newEdge.setSourceLabel(incomingEdge
-										.getSourceLabel());
-								newEdge.setTargetLabel(outgoingEdge
-										.getTargetLabel());
-								newEdge.setPropertyValue("explodeName",
-										vert.getName());
-
-								// Add ExclusionObject to its implodeExplodeSet
-								// implodeExplodeSet
-								// .add(new MemoryExclusionVertex(newEdge));
-							}
-						}
-					}
-				}
+				// Send/Receive
 				nonTaskVertices.add(vert);
 			}
 		}
@@ -584,14 +475,6 @@ public class MemoryExclusionGraph extends
 
 					// If a node was added.(It should always be the case)
 
-					// If this edge belongs to an explosionSet
-					if (edge.getPropertyBean().getValue("explodeName") != null) {
-						// Add Exclusionvertex to its implodeExplodeSet
-						implodeExplodeMap.get(
-								edge.getPropertyBean().getValue("explodeName")
-										.toString()).add(newNode);
-					}
-
 					// Add Exclusions with all non-predecessors of the current
 					// vertex
 					HashSet<MemoryExclusionVertex> inclusions = predecessors
@@ -655,8 +538,6 @@ public class MemoryExclusionGraph extends
 	public Object clone() {
 		Object o = super.clone();
 		((MemoryExclusionGraph) o).adjacentVerticesBackup = new HashMap<MemoryExclusionVertex, HashSet<MemoryExclusionVertex>>();
-		((MemoryExclusionGraph) o).implodeExplodeMap = new HashMap<String, HashSet<MemoryExclusionVertex>>(
-				this.implodeExplodeMap);
 
 		return o;
 
@@ -1077,8 +958,8 @@ public class MemoryExclusionGraph extends
 								+ " has no duration property.");
 			}
 
-			return new AbstractMap.SimpleEntry<Long, Long>(
-					(Long) birth, (Long) death + (Integer) duration);
+			return new AbstractMap.SimpleEntry<Long, Long>((Long) birth,
+					(Long) death + (Integer) duration);
 		}
 
 		// Else the memEx vertex corresponds to a working memory
@@ -1103,8 +984,8 @@ public class MemoryExclusionGraph extends
 								+ " because its DAGVertex has no TaskStartTime and/or duration property");
 			}
 
-			return new AbstractMap.SimpleEntry<Long, Long>(
-					(Long) birth, (Long) birth + (Integer) duration);
+			return new AbstractMap.SimpleEntry<Long, Long>((Long) birth,
+					(Long) birth + (Integer) duration);
 
 		} else {
 			// the vertex does not come from an edge nor from working memory.
@@ -1131,7 +1012,7 @@ public class MemoryExclusionGraph extends
 	public void updateWithMemObjectLifetimes(DirectedAcyclicGraph dag) {
 
 		Set<DefaultEdge> removedExclusions = new HashSet<>();
-		
+
 		// Scan the exclusions
 		for (DefaultEdge exclusion : this.edgeSet()) {
 			MemoryExclusionVertex memObject1 = this.getEdgeSource(exclusion);
@@ -1141,13 +1022,13 @@ public class MemoryExclusionGraph extends
 			Entry<Long, Long> obj2Lifetime = getLifeTime(memObject2, dag);
 
 			// If the lifetimes do not overlap
-			if (!(obj1Lifetime.getKey() < obj2Lifetime.getValue()
-					&& obj2Lifetime.getKey() < obj1Lifetime.getValue())) {
+			if (!(obj1Lifetime.getKey() < obj2Lifetime.getValue() && obj2Lifetime
+					.getKey() < obj1Lifetime.getValue())) {
 				// Remove the exclution
 				removedExclusions.add(exclusion);
-			} 
+			}
 		}
-		
+
 		this.removeAllEdges(removedExclusions);
 	}
 }

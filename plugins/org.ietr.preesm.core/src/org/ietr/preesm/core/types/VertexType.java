@@ -47,21 +47,34 @@ import net.sf.dftools.algorithm.model.sdf.SDFGraph;
  * @author mpelcat
  */
 public class VertexType {
+	
+	/**
+	 * String used to qualify receive actors
+	 */
+	public static final String TYPE_RECEIVE = "receive";
+	/**
+	 * String used to qualify send actors
+	 */
+	public static final String TYPE_SEND = "send";
+	/**
+	 * String used to qualify task actors
+	 */
+	public static final String TYPE_TASK = "task";
 
 	/**
 	 * VertexType representing a receive operation
 	 */
-	public static final VertexType RECEIVE = new VertexType("receive");
+	public static final VertexType RECEIVE = new VertexType(TYPE_RECEIVE);
 
 	/**
 	 * VertexType representing a send operation
 	 */
-	public static final VertexType SEND = new VertexType("send");
+	public static final VertexType SEND = new VertexType(TYPE_SEND);
 
 	/**
 	 * VertexType representing a task
 	 */
-	public static final VertexType TASK = new VertexType("task");
+	public static final VertexType TASK = new VertexType(TYPE_TASK);
 
 	/**
 	 * Returns true if this receive operation leads to a send operation
