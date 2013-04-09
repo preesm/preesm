@@ -41,18 +41,42 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.dftools.algorithm.iterators.DAGIterator;
+import net.sf.dftools.algorithm.model.AbstractEdge;
+import net.sf.dftools.algorithm.model.AbstractGraph;
+import net.sf.dftools.algorithm.model.CodeRefinement;
+import net.sf.dftools.algorithm.model.CodeRefinement.Language;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import net.sf.dftools.algorithm.model.dag.EdgeAggregate;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.sdf.SDFInterfaceVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.Design;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Path;
+import org.ietr.preesm.codegen.idl.ActorPrototypes;
+import org.ietr.preesm.codegen.idl.IDLPrototypeFactory;
+import org.ietr.preesm.codegen.idl.Prototype;
+import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.ActorCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
+import org.ietr.preesm.codegen.xtend.model.codegen.Call;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
+import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.core.types.VertexType;
+import org.ietr.preesm.experiment.memory.allocation.MemoryAllocator;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 
@@ -105,6 +129,13 @@ public class CodegenModelGenerator {
 	protected Map<ComponentInstance, CoreBlock> coreBlocks;
 
 	/**
+	 * This {@link SDFGraph} is the original hierarchical {@link SDFGraph}
+	 * parsed by the scenario. It will be used to retrieve the original location
+	 * of the different IDL and Graphml files.
+	 */
+	protected SDFGraph originalSDF;
+
+	/**
 	 * Constructor of the {@link CodegenModelGenerator}. The constructor
 	 * performs verification to ensure that the inputs are valid:
 	 * <ul>
@@ -138,6 +169,14 @@ public class CodegenModelGenerator {
 		checkInputs(this.archi, this.dag, this.memEx);
 
 		this.coreBlocks = new HashMap<ComponentInstance, CoreBlock>();
+		try {
+			originalSDF = ScenarioParser.getAlgorithm(scenario
+					.getAlgorithmURL());
+		} catch (Exception e) {
+			// This exception should never happen here. as the algorithm is
+			// parsed at the beginning of the workflow execution.
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -193,8 +232,19 @@ public class CodegenModelGenerator {
 						"vertexType", VertexType.class)).toString()) {
 
 				case VertexType.TYPE_TASK:
-					// Actor (Hierarchical or not) call
-					// Fork Join call
+					// May be an actor (Hierarchical or not) call
+					// or a Fork Join call
+					String vertKind = vert.getPropertyBean().getValue("kind")
+							.toString();
+					switch (vertKind) {
+					case "dag_vertex":
+						generateActorCall(operatorBlock, vert);
+						break;
+					case "dag_fork_vertex":
+						break;
+					case "dag_join_vertex":
+						break;
+					}
 					break;
 
 				case VertexType.TYPE_SEND:
@@ -210,6 +260,156 @@ public class CodegenModelGenerator {
 			}
 		}
 		return null;
+
+	}
+
+	/**
+	 * Generate the {@link CodegenPackage Codegen Model} for an
+	 * {@link ActorCall actor call}. This method will create an
+	 * {@link ActorCall} {@link Call} and place it in the {@link LoopBlock} of
+	 * the given {@link CoreBlock}. If the called {@link DAGVertex actor} has an
+	 * initialization function, this method will check if it has already been
+	 * called. If not, it will create a call in the current {@link CoreBlock}.
+	 * 
+	 * @param operatorBlock
+	 *            the {@link CoreBlock} where the {@link ActorCall} is
+	 *            performed.
+	 * @param dagVertex
+	 *            the {@link DAGVertex} corresponding to the {@link ActorCall}.
+	 * @throws CodegenException
+	 *             if an unflattened hierarchical {@link SDFVertex actor} is
+	 *             encountered or an actor without refinement, or a mismatch
+	 *             between the IDL and the actor ports, or an actor port is
+	 *             connected to no edge.
+	 */
+	protected void generateActorCall(CoreBlock operatorBlock,
+			DAGVertex dagVertex) throws CodegenException {
+		// Check whether the ActorCall is a call to a hierarchical actor or not.
+		SDFVertex sdfVertex = (SDFVertex) dagVertex.getPropertyBean().getValue(
+				"sdf_vertex", SDFVertex.class);
+		Object refinement = sdfVertex.getPropertyBean().getValue("graph_desc");
+
+		// If the actor is hierarchical
+		if (refinement instanceof AbstractGraph) {
+			throw new CodegenException(
+					"Unflattened hierarchical actors ("
+							+ sdfVertex
+							+ ") are not yet supported by the Xtend Code Generation.\n"
+							+ "Flatten the graph completely before using this code-generation.");
+		} else // If the actor has an IDL refinement
+		if (refinement instanceof CodeRefinement
+				&& ((CodeRefinement) refinement).getLanguage() == Language.IDL) {
+
+			// Retrieve the IDL File
+			IWorkspace workspace = ResourcesPlugin.getWorkspace();
+			String path = originalSDF
+					.getHierarchicalVertexFromPath(sdfVertex.getInfo())
+					.getBase().getPropertyStringValue(AbstractGraph.PATH);
+
+			IFile algoFile = workspace.getRoot().getFileForLocation(
+					new Path(path));
+
+			IFile idlFile = algoFile.getParent().getFile(
+					new Path(((CodeRefinement) refinement).getName()));
+
+			// Retrieve the ActorPrototype
+			ActorPrototypes prototypes = IDLPrototypeFactory.INSTANCE
+					.create(idlFile.getRawLocation().toOSString());
+			Prototype loopPrototype = prototypes.getLoopPrototype();
+			// Prototype init = prototypes.getInitPrototype();
+
+			// Create the corresponding FunctionCall
+			if (loopPrototype == null) {
+				throw new CodegenException(
+						"Loop interface is missing from Actor (" + sdfVertex
+								+ ") refinement: " + idlFile);
+			}
+			FunctionCall func = CodegenFactory.eINSTANCE.createFunctionCall();
+			func.setName(loopPrototype.getFunctionName());
+
+			// Retrieve the Arguments that must correspond to the incoming data
+			// fifos
+			for (CodeGenArgument arg : loopPrototype.getArguments().keySet()) {
+				// Check that the Actor has the right ports
+				SDFInterfaceVertex port;
+				switch (arg.getDirection()) {
+				case CodeGenArgument.OUTPUT:
+					port = sdfVertex.getSink(arg.getName());
+					break;
+				case CodeGenArgument.INPUT:
+					port = sdfVertex.getSource(arg.getName());
+					break;
+				default:
+					port = null;
+				}
+				if (port == null) {
+					throw new CodegenException("Mismatch between actor ("
+							+ sdfVertex
+							+ ") ports and IDL loop prototype argument"
+							+ arg.getName());
+				}
+				// Retrieve the Edge corresponding to the current Argument
+				DAGEdge dagEdge = null;
+				SDFEdge srsdfEdge = null;
+				switch (arg.getDirection()) {
+				case CodeGenArgument.OUTPUT: {
+					Set<DAGEdge> edges = dag.outgoingEdgesOf(dagVertex);
+					for (DAGEdge edge : edges) {
+						EdgeAggregate aggregate = edge.getAggregate();
+						for (AbstractEdge<?, ?> subEdge : aggregate) {
+							if (subEdge.getSourceLabel().equals(arg.getName())
+									&& subEdge.getPropertyBean()
+											.getValue(SDFEdge.DATA_TYPE)
+											.toString().equals(arg.getType())) {
+								dagEdge = edge;
+								srsdfEdge = (SDFEdge) subEdge;
+							}
+						}
+					}
+				}
+					break;
+				case CodeGenArgument.INPUT: {
+					Set<DAGEdge> edges = dag.incomingEdgesOf(dagVertex);
+					for (DAGEdge edge : edges) {
+						EdgeAggregate aggregate = edge.getAggregate();
+						for (AbstractEdge<?, ?> subEdge : aggregate) {
+							if (subEdge.getTargetLabel().equals(arg.getName())
+									&& subEdge.getPropertyBean()
+											.getValue(SDFEdge.DATA_TYPE)
+											.toString().equals(arg.getType())) {
+								dagEdge = edge;
+								srsdfEdge = (SDFEdge) subEdge;
+							}
+						}
+					}
+				}
+					break;
+				}
+
+				if (dagEdge == null || srsdfEdge == null) {
+					throw new CodegenException(
+							"The DAGEdge connected to the port " + port
+									+ " of Actor (" + dagVertex
+									+ ") does not exist.\n"
+									+ "Probable cause is that the DAG"
+									+ " was aletered before entering"
+									+ " the Code generation.");
+				}
+
+				// At this point, the dagEdge, srsdfEdge corresponding to the
+				// current argument were identified
+
+			}
+
+		} else
+		// If the actor has no refinement
+		{
+			throw new CodegenException(
+					"Actor ("
+							+ sdfVertex
+							+ ") has no valid refinement (IDL or graphml)."
+							+ " Associate a refinement to this actor before generating code.");
+		}
 
 	}
 

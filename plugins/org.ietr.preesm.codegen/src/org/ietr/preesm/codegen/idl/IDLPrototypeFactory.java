@@ -79,6 +79,8 @@ import org.jacorb.idl.parser;
  */
 public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
 
+	public final static IDLPrototypeFactory INSTANCE = new IDLPrototypeFactory();
+	
 	/**
 	 * Keeping memory of all created IDL prototypes
 	 */
