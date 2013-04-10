@@ -114,6 +114,9 @@ public abstract class MemoryAllocator {
 
 		memExNodeAllocation = new HashMap<MemoryExclusionVertex, Integer>();
 		inputExclusionGraph = memEx;
+
+		inputExclusionGraph.setPropertyValue(
+				MemoryExclusionGraph.DAG_EDGE_ALLOCATION, edgeAllocation);
 	}
 
 	/**
@@ -148,7 +151,16 @@ public abstract class MemoryAllocator {
 		memExNodeAllocation.put(vertex, offset);
 		edgeAllocation.put(vertex.getEdge(), offset);
 
-		vertex.setPropertyValue("memory_offset", offset);
+		vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
+				offset);
+		Integer size = (Integer) inputExclusionGraph.getPropertyBean()
+				.getValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE,
+						Integer.class);
+		if (size == null || size < offset + vertex.getWeight()) {
+			inputExclusionGraph.setPropertyValue(
+					MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE,
+					offset + vertex.getWeight());
+		}
 	}
 
 	/**
