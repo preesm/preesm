@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.codegen.idl;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import net.sf.dftools.algorithm.model.IRefinement;
@@ -60,15 +60,15 @@ public class Prototype implements IRefinement {
 
 	public Prototype() {
 		functionName = "";
-		arguments = new HashMap<CodeGenArgument, Integer>();
-		parameters = new HashMap<CodeGenParameter, Integer>();
+		arguments = new LinkedHashMap<CodeGenArgument, Integer>();
+		parameters = new LinkedHashMap<CodeGenParameter, Integer>();
 		nbArgs = 0;
 	}
 
 	public Prototype(String name) {
 		functionName = name;
-		arguments = new HashMap<CodeGenArgument, Integer>();
-		parameters = new HashMap<CodeGenParameter, Integer>();
+		arguments = new LinkedHashMap<CodeGenArgument, Integer>();
+		parameters = new LinkedHashMap<CodeGenParameter, Integer>();
 		nbArgs = 0;
 	}
 
