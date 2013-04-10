@@ -47,6 +47,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import net.sf.dftools.algorithm.iterators.DAGIterator;
+import net.sf.dftools.algorithm.model.CloneableProperty;
+import net.sf.dftools.algorithm.model.PropertyBean;
+import net.sf.dftools.algorithm.model.PropertyFactory;
+import net.sf.dftools.algorithm.model.PropertySource;
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
@@ -72,7 +76,8 @@ import org.jgrapht.graph.SimpleGraph;
  * 
  */
 public class MemoryExclusionGraph extends
-		SimpleGraph<MemoryExclusionVertex, DefaultEdge> {
+		SimpleGraph<MemoryExclusionVertex, DefaultEdge> implements
+		PropertySource {
 
 	/**
 	 * Mandatory when extending SimpleGraph
@@ -120,24 +125,23 @@ public class MemoryExclusionGraph extends
 	protected List<DAGVertex> dagVerticesInSchedulingOrder = null;
 
 	/**
-	 * @return the {@link #dagVerticesInSchedulingOrder} or <code>null</code> if
-	 *         the {@link MemoryExclusionGraph MemEx} was not
-	 *         {@link #updateWithSchedule(DirectedAcyclicGraph) updated with a
-	 *         schedule}
+	 * The {@link PropertyBean} that stores the properties of the
+	 * {@link MemoryExclusionGraph}.
 	 */
-	public List<DAGVertex> getDagVerticesInSchedulingOrder() {
-		if (dagVerticesInSchedulingOrder == null) {
-			return null;
-		} else {
-			return new ArrayList<DAGVertex>(dagVerticesInSchedulingOrder);
+	protected PropertyBean properties;
+
+	@SuppressWarnings("serial")
+	protected static List<String> public_properties = new ArrayList<String>() {
+		{
 		}
-	}
+	};
 
 	/**
 	 * Default constructor
 	 */
 	public MemoryExclusionGraph() {
 		super(DefaultEdge.class);
+		properties = new PropertyBean();
 		adjacentVerticesBackup = new HashMap<MemoryExclusionVertex, HashSet<MemoryExclusionVertex>>();
 	}
 
@@ -257,7 +261,6 @@ public class MemoryExclusionGraph extends
 		dag.removeAllVertices(nonTaskVertices);
 		dagVertices.removeAll(nonTaskVertices);
 
-
 		// iterDAGVertices = new DAGIterator(dag); // Iterator on DAG vertices
 
 		// Each element of the "predecessors" list corresponds to a DagVertex
@@ -342,7 +345,7 @@ public class MemoryExclusionGraph extends
 	 */
 	public void buildGraph(DirectedAcyclicGraph dag)
 			throws InvalidExpressionException, WorkflowException {
-		
+
 		/*
 		 * Declarations & initializations
 		 */
@@ -543,6 +546,21 @@ public class MemoryExclusionGraph extends
 
 	}
 
+	@Override
+	public void copyProperties(PropertySource props) {
+		for (String key : props.getPropertyBean().keys()) {
+			if (props.getPropertyBean().getValue(key) instanceof CloneableProperty) {
+				this.getPropertyBean().setValue(
+						key,
+						((CloneableProperty) props.getPropertyBean().getValue(
+								key)).clone());
+			} else {
+				this.getPropertyBean().setValue(key,
+						props.getPropertyBean().getValue(key));
+			}
+		}
+	}
+
 	/**
 	 * This method is used to access all the neighbors of a given vertex.
 	 * 
@@ -639,6 +657,139 @@ public class MemoryExclusionGraph extends
 	}
 
 	/**
+	 * @return the {@link #dagVerticesInSchedulingOrder} or <code>null</code> if
+	 *         the {@link MemoryExclusionGraph MemEx} was not
+	 *         {@link #updateWithSchedule(DirectedAcyclicGraph) updated with a
+	 *         schedule}
+	 */
+	public List<DAGVertex> getDagVerticesInSchedulingOrder() {
+		if (dagVerticesInSchedulingOrder == null) {
+			return null;
+		} else {
+			return new ArrayList<DAGVertex>(dagVerticesInSchedulingOrder);
+		}
+	}
+
+	@Override
+	public PropertyFactory getFactoryForProperty(String propertyName) {
+		return null;
+	}
+
+	/**
+	 * Return the lifetime of the {@link MemoryExclusionVertex memory object}
+	 * passed as a parameter.
+	 * 
+	 * @param vertex
+	 *            the vertex whose lifetime is searched
+	 * @param dag
+	 *            the scheduled {@link DirectedAcyclicGraph DAG} from which the
+	 *            {@link MemoryExclusionVertex MemEx Vertex} is derived
+	 * @return the lifetime of the memory object in the form of 2 integers
+	 *         corresponding to its life beginning and end.
+	 * @throws RuntimeException
+	 *             if the {@link MemoryExclusionVertex} is not derived from the
+	 *             given {@link DirectedAcyclicGraph DAG} or if the
+	 *             {@link DirectedAcyclicGraph DAG} was not scheduled.
+	 */
+	protected Entry<Long, Long> getLifeTime(MemoryExclusionVertex vertex,
+			DirectedAcyclicGraph dag) throws RuntimeException {
+
+		// If the MemObject corresponds to an edge, its lifetime spans from the
+		// execution start of its source until the execution end of its target
+		DAGEdge edge = vertex.getEdge();
+		if (edge != null) {
+			DAGVertex source = edge.getSource();
+			DAGVertex target = edge.getTarget();
+
+			if (source == null || target == null) {
+				throw new RuntimeException(
+						"Cannot get lifetime of a memory object "
+								+ vertex.toString()
+								+ " because its corresponding DAGEdge has no valid source and/or target");
+			}
+
+			Object birth = source.getPropertyBean().getValue("TaskStartTime",
+					Long.class);
+
+			Object death = target.getPropertyBean().getValue("TaskStartTime",
+					Long.class);
+
+			if (death == null || birth == null) {
+				throw new RuntimeException(
+						"Cannot get lifetime of a memory object "
+								+ vertex.toString()
+								+ " because the source or target of its corresponding DAGEdge"
+								+ " has no TaskStartTime property. Maybe the DAG was not sheduled.");
+			}
+
+			Object duration = target.getPropertyBean().getValue("duration",
+					Integer.class);
+			if (duration == null) {
+				throw new RuntimeException(
+						"Cannot get lifetime of a memory object "
+								+ vertex
+								+ " because the target of its corresponding DAGEdge"
+								+ " has no duration property.");
+			}
+
+			return new AbstractMap.SimpleEntry<Long, Long>((Long) birth,
+					(Long) death + (Integer) duration);
+		}
+
+		// Else the memEx vertex corresponds to a working memory
+		if (vertex.getSink().equals(vertex.getSource())) {
+			DAGVertex dagVertex = dag.getVertex(vertex.getSink());
+			if (dagVertex == null) {
+				throw new RuntimeException(
+						"Cannot get lifetime of working memory object "
+								+ vertex
+								+ " because its corresponding DAGVertex does not exist in the given DAG.");
+			}
+
+			Object birth = dagVertex.getPropertyBean().getValue(
+					"TaskStartTime", Long.class);
+			Object duration = dagVertex.getPropertyBean().getValue("duration",
+					Integer.class);
+
+			if (birth == null || duration == null) {
+				throw new RuntimeException(
+						"Cannot get lifetime of working memory object "
+								+ vertex
+								+ " because its DAGVertex has no TaskStartTime and/or duration property");
+			}
+
+			return new AbstractMap.SimpleEntry<Long, Long>((Long) birth,
+					(Long) birth + (Integer) duration);
+
+		} else {
+			// the vertex does not come from an edge nor from working memory.
+			// Error
+			throw new RuntimeException(
+					"Cannot get lifetime of a memory object "
+							+ "that is not derived from a scheduled DAG."
+							+ " (MemObject: " + vertex.toString() + ")");
+		}
+	}
+
+	@Override
+	public PropertyBean getPropertyBean() {
+		return properties;
+	}
+
+	@Override
+	public String getPropertyStringValue(String propertyName) {
+		if (this.getPropertyBean().getValue(propertyName) != null) {
+			return this.getPropertyBean().getValue(propertyName).toString();
+		}
+		return null;
+	}
+
+	@Override
+	public List<String> getPublicProperties() {
+		return public_properties;
+	}
+
+	/**
 	 * @override
 	 */
 	public boolean removeAllVertices(
@@ -650,6 +801,98 @@ public class MemoryExclusionGraph extends
 			result |= backup.removeAll(arg0);
 		}
 		return result;
+	}
+
+	/**
+	 * This method remove node A from the graph if:<br>
+	 * - Node A and node B are <b>NOT</b> linked by an edge.<br>
+	 * - Nodes A and B have ALL their neighbors in common.<br>
+	 * - Nodes A has a lighter weight than node B.<br>
+	 * Applying this method to an exclusion graph before a
+	 * MaximumWeightCliqueSolver is executed remove nodes that will never be
+	 * part of the maximum weight clique.<br>
+	 * <br>
+	 * This method also clears the adjacentverticesBackup lists.
+	 * 
+	 * @return A list of merged vertices
+	 * @deprecated Not used anywhere
+	 */
+	public void removeLightestEquivalentNodes() {
+
+		// Retrieve the list of nodes of the gaph
+		ArrayList<MemoryExclusionVertex> nodes = new ArrayList<MemoryExclusionVertex>(
+				this.vertexSet());
+
+		// Sort it in descending order of weights
+		Collections.sort(nodes, Collections.reverseOrder());
+
+		HashSet<MemoryExclusionVertex> fusionned = new HashSet<MemoryExclusionVertex>();
+
+		// Look for a pair of nodes with the properties exposed in method
+		// comments
+		for (MemoryExclusionVertex node : nodes) {
+			if (!fusionned.contains(node)) {
+				HashSet<MemoryExclusionVertex> nonAdjacentSet = new HashSet<MemoryExclusionVertex>(
+						this.vertexSet());
+				nonAdjacentSet.removeAll(getAdjacentVertexOf(node));
+				nonAdjacentSet.remove(node);
+
+				for (MemoryExclusionVertex notNeighbor : nonAdjacentSet) {
+					if (getAdjacentVertexOf(notNeighbor).size() == getAdjacentVertexOf(
+							node).size()) {
+						if (getAdjacentVertexOf(notNeighbor).containsAll(
+								getAdjacentVertexOf(node))) {
+
+							// Keep only the one with the max weight
+							fusionned.add(notNeighbor);
+
+						}
+					}
+				}
+				this.removeAllVertices(fusionned);
+			}
+		}
+		adjacentVerticesBackup = new HashMap<MemoryExclusionVertex, HashSet<MemoryExclusionVertex>>();
+	}
+
+	@Override
+	public void setPropertyValue(String propertyName, Object value) {
+		this.getPropertyBean().setValue(propertyName, value);
+	}
+
+	/**
+	 * This function update a {@link MemoryExclusionGraph MemEx} by taking
+	 * timing information contained in a {@link DirectedAcyclicGraph DAG} into
+	 * account.
+	 * 
+	 * 
+	 * @param dag
+	 *            the {@link DirectedAcyclicGraph DAG} used which must be the
+	 *            one from which the {@link MemoryExclusionGraph MemEx} graph is
+	 *            {@link #buildGraph(DirectedAcyclicGraph) built} (will not be
+	 *            modified)
+	 */
+	public void updateWithMemObjectLifetimes(DirectedAcyclicGraph dag) {
+
+		Set<DefaultEdge> removedExclusions = new HashSet<>();
+
+		// Scan the exclusions
+		for (DefaultEdge exclusion : this.edgeSet()) {
+			MemoryExclusionVertex memObject1 = this.getEdgeSource(exclusion);
+			Entry<Long, Long> obj1Lifetime = getLifeTime(memObject1, dag);
+
+			MemoryExclusionVertex memObject2 = this.getEdgeTarget(exclusion);
+			Entry<Long, Long> obj2Lifetime = getLifeTime(memObject2, dag);
+
+			// If the lifetimes do not overlap
+			if (!(obj1Lifetime.getKey() < obj2Lifetime.getValue() && obj2Lifetime
+					.getKey() < obj1Lifetime.getValue())) {
+				// Remove the exclution
+				removedExclusions.add(exclusion);
+			}
+		}
+
+		this.removeAllEdges(removedExclusions);
 	}
 
 	/**
@@ -847,188 +1090,5 @@ public class MemoryExclusionGraph extends
 				}
 			}
 		}
-	}
-
-	/**
-	 * This method remove node A from the graph if:<br>
-	 * - Node A and node B are <b>NOT</b> linked by an edge.<br>
-	 * - Nodes A and B have ALL their neighbors in common.<br>
-	 * - Nodes A has a lighter weight than node B.<br>
-	 * Applying this method to an exclusion graph before a
-	 * MaximumWeightCliqueSolver is executed remove nodes that will never be
-	 * part of the maximum weight clique.<br>
-	 * <br>
-	 * This method also clears the adjacentverticesBackup lists.
-	 * 
-	 * @return A list of merged vertices
-	 * @deprecated Not used anywhere
-	 */
-	public void removeLightestEquivalentNodes() {
-
-		// Retrieve the list of nodes of the gaph
-		ArrayList<MemoryExclusionVertex> nodes = new ArrayList<MemoryExclusionVertex>(
-				this.vertexSet());
-
-		// Sort it in descending order of weights
-		Collections.sort(nodes, Collections.reverseOrder());
-
-		HashSet<MemoryExclusionVertex> fusionned = new HashSet<MemoryExclusionVertex>();
-
-		// Look for a pair of nodes with the properties exposed in method
-		// comments
-		for (MemoryExclusionVertex node : nodes) {
-			if (!fusionned.contains(node)) {
-				HashSet<MemoryExclusionVertex> nonAdjacentSet = new HashSet<MemoryExclusionVertex>(
-						this.vertexSet());
-				nonAdjacentSet.removeAll(getAdjacentVertexOf(node));
-				nonAdjacentSet.remove(node);
-
-				for (MemoryExclusionVertex notNeighbor : nonAdjacentSet) {
-					if (getAdjacentVertexOf(notNeighbor).size() == getAdjacentVertexOf(
-							node).size()) {
-						if (getAdjacentVertexOf(notNeighbor).containsAll(
-								getAdjacentVertexOf(node))) {
-
-							// Keep only the one with the max weight
-							fusionned.add(notNeighbor);
-
-						}
-					}
-				}
-				this.removeAllVertices(fusionned);
-			}
-		}
-		adjacentVerticesBackup = new HashMap<MemoryExclusionVertex, HashSet<MemoryExclusionVertex>>();
-	}
-
-	/**
-	 * Return the lifetime of the {@link MemoryExclusionVertex memory object}
-	 * passed as a parameter.
-	 * 
-	 * @param vertex
-	 *            the vertex whose lifetime is searched
-	 * @param dag
-	 *            the scheduled {@link DirectedAcyclicGraph DAG} from which the
-	 *            {@link MemoryExclusionVertex MemEx Vertex} is derived
-	 * @return the lifetime of the memory object in the form of 2 integers
-	 *         corresponding to its life beginning and end.
-	 * @throws RuntimeException
-	 *             if the {@link MemoryExclusionVertex} is not derived from the
-	 *             given {@link DirectedAcyclicGraph DAG} or if the
-	 *             {@link DirectedAcyclicGraph DAG} was not scheduled.
-	 */
-	protected Entry<Long, Long> getLifeTime(MemoryExclusionVertex vertex,
-			DirectedAcyclicGraph dag) throws RuntimeException {
-
-		// If the MemObject corresponds to an edge, its lifetime spans from the
-		// execution start of its source until the execution end of its target
-		DAGEdge edge = vertex.getEdge();
-		if (edge != null) {
-			DAGVertex source = edge.getSource();
-			DAGVertex target = edge.getTarget();
-
-			if (source == null || target == null) {
-				throw new RuntimeException(
-						"Cannot get lifetime of a memory object "
-								+ vertex.toString()
-								+ " because its corresponding DAGEdge has no valid source and/or target");
-			}
-
-			Object birth = source.getPropertyBean().getValue("TaskStartTime",
-					Long.class);
-
-			Object death = target.getPropertyBean().getValue("TaskStartTime",
-					Long.class);
-
-			if (death == null || birth == null) {
-				throw new RuntimeException(
-						"Cannot get lifetime of a memory object "
-								+ vertex.toString()
-								+ " because the source or target of its corresponding DAGEdge"
-								+ " has no TaskStartTime property. Maybe the DAG was not sheduled.");
-			}
-
-			Object duration = target.getPropertyBean().getValue("duration",
-					Integer.class);
-			if (duration == null) {
-				throw new RuntimeException(
-						"Cannot get lifetime of a memory object "
-								+ vertex
-								+ " because the target of its corresponding DAGEdge"
-								+ " has no duration property.");
-			}
-
-			return new AbstractMap.SimpleEntry<Long, Long>((Long) birth,
-					(Long) death + (Integer) duration);
-		}
-
-		// Else the memEx vertex corresponds to a working memory
-		if (vertex.getSink().equals(vertex.getSource())) {
-			DAGVertex dagVertex = dag.getVertex(vertex.getSink());
-			if (dagVertex == null) {
-				throw new RuntimeException(
-						"Cannot get lifetime of working memory object "
-								+ vertex
-								+ " because its corresponding DAGVertex does not exist in the given DAG.");
-			}
-
-			Object birth = dagVertex.getPropertyBean().getValue(
-					"TaskStartTime", Long.class);
-			Object duration = dagVertex.getPropertyBean().getValue("duration",
-					Integer.class);
-
-			if (birth == null || duration == null) {
-				throw new RuntimeException(
-						"Cannot get lifetime of working memory object "
-								+ vertex
-								+ " because its DAGVertex has no TaskStartTime and/or duration property");
-			}
-
-			return new AbstractMap.SimpleEntry<Long, Long>((Long) birth,
-					(Long) birth + (Integer) duration);
-
-		} else {
-			// the vertex does not come from an edge nor from working memory.
-			// Error
-			throw new RuntimeException(
-					"Cannot get lifetime of a memory object "
-							+ "that is not derived from a scheduled DAG."
-							+ " (MemObject: " + vertex.toString() + ")");
-		}
-	}
-
-	/**
-	 * This function update a {@link MemoryExclusionGraph MemEx} by taking
-	 * timing information contained in a {@link DirectedAcyclicGraph DAG} into
-	 * account.
-	 * 
-	 * 
-	 * @param dag
-	 *            the {@link DirectedAcyclicGraph DAG} used which must be the
-	 *            one from which the {@link MemoryExclusionGraph MemEx} graph is
-	 *            {@link #buildGraph(DirectedAcyclicGraph) built} (will not be
-	 *            modified)
-	 */
-	public void updateWithMemObjectLifetimes(DirectedAcyclicGraph dag) {
-
-		Set<DefaultEdge> removedExclusions = new HashSet<>();
-
-		// Scan the exclusions
-		for (DefaultEdge exclusion : this.edgeSet()) {
-			MemoryExclusionVertex memObject1 = this.getEdgeSource(exclusion);
-			Entry<Long, Long> obj1Lifetime = getLifeTime(memObject1, dag);
-
-			MemoryExclusionVertex memObject2 = this.getEdgeTarget(exclusion);
-			Entry<Long, Long> obj2Lifetime = getLifeTime(memObject2, dag);
-
-			// If the lifetimes do not overlap
-			if (!(obj1Lifetime.getKey() < obj2Lifetime.getValue() && obj2Lifetime
-					.getKey() < obj1Lifetime.getValue())) {
-				// Remove the exclution
-				removedExclusions.add(exclusion);
-			}
-		}
-
-		this.removeAllEdges(removedExclusions);
 	}
 }
