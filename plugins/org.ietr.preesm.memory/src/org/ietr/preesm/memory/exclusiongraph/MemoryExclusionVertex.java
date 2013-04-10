@@ -143,7 +143,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 		// }
 		// if datatype is defined, correct the vertex weight
 		BufferAggregate buffers = (BufferAggregate) inputEdge.getPropertyBean()
-				.getValue("bufferAggregate");
+				.getValue(BufferAggregate.propertyBeanName);
 		Iterator<BufferProperties> iter = buffers.iterator();
 		int vertexWeight = 0;
 		while (iter.hasNext()) {

@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -83,6 +84,18 @@ public class MemoryExclusionGraph extends
 	 * Mandatory when extending SimpleGraph
 	 */
 	private static final long serialVersionUID = 6491894138235944107L;
+
+	/**
+	 * Property to store a {@link Map} corresponding to the allocation of the
+	 * {@link DAGEdge}.
+	 */
+	public static final String DAG_EDGE_ALLOCATION = "dag_edges_allocation";
+
+	/**
+	 * Property to store an {@link Integer} corresponding to the amount of
+	 * memory allocated.
+	 */
+	public static final String ALLOCATED_MEMORY_SIZE = "allocated_memory_size";
 
 	/**
 	 * Backup the vertex adjacent to a given vertex for speed-up purposes.
