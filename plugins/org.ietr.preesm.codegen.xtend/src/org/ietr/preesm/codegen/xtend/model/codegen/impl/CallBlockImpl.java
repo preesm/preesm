@@ -33,52 +33,39 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package org.ietr.preesm.codegen.xtend.model.codegen;
+package org.ietr.preesm.codegen.xtend.model.codegen.impl;
+
+import org.eclipse.emf.ecore.EClass;
+
+import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 
 /**
- * <!-- begin-user-doc --> A {@link Constant} is a {@link Variable} whose value
- * can not be changed. <!-- end-user-doc -->
- * 
+ * <!-- begin-user-doc --> An implementation of the model object '
+ * <em><b>Call Block</b></em>'. <!-- end-user-doc -->
  * <p>
- * The following features are supported:
- * <ul>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Constant#getValue <em>
- * Value</em>}</li>
- * </ul>
  * </p>
  * 
- * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getConstant()
- * @model
  * @generated
  */
-public interface Constant extends Variable {
-
+public class CallBlockImpl extends BlockImpl implements CallBlock {
 	/**
-	 * Returns the value of the '<em><b>Value</b></em>' attribute. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Value</em>' attribute isn't clear, there
-	 * really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @return the value of the '<em>Value</em>' attribute.
-	 * @see #setValue(long)
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getConstant_Value()
-	 * @model required="true"
 	 * @generated
 	 */
-	long getValue();
+	protected CallBlockImpl() {
+		super();
+	}
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Constant#getValue
-	 * <em>Value</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @param value
-	 *            the new value of the '<em>Value</em>' attribute.
-	 * @see #getValue()
 	 * @generated
 	 */
-	void setValue(long value);
-} // Constant
+	@Override
+	protected EClass eStaticClass() {
+		return CodegenPackage.Literals.CALL_BLOCK;
+	}
+
+} // CallBlockImpl

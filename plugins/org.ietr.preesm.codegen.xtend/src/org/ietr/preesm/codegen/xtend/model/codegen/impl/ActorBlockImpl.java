@@ -35,27 +35,66 @@
  */
 package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
-
+import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt;
+import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
+import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
  * <em><b>Actor Block</b></em>'. <!-- end-user-doc -->
  * <p>
+ * The following features are implemented:
+ * <ul>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.ActorBlockImpl#getLoopBlock
+ * <em>Loop Block</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.ActorBlockImpl#getInitBlock
+ * <em>Init Block</em>}</li>
+ * </ul>
  * </p>
  * 
  * @generated
  */
 public class ActorBlockImpl extends BlockImpl implements ActorBlock {
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * The cached value of the '{@link #getLoopBlock() <em>Loop Block</em>}'
+	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
+	 * @see #getLoopBlock()
 	 * @generated
+	 * @ordered
+	 */
+	protected LoopBlock loopBlock;
+	/**
+	 * The cached value of the '{@link #getInitBlock() <em>Init Block</em>}'
+	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #getInitBlock()
+	 * @generated
+	 * @ordered
+	 */
+	protected CallBlock initBlock;
+
+	/**
+	 * <!-- begin-user-doc -->Default Constructor also create the init and loop
+	 * blocks and add them to the {@link CodeElt} list<!-- end-user-doc -->
+	 * 
+	 * 
 	 */
 	protected ActorBlockImpl() {
 		super();
+		initBlock = CodegenFactory.eINSTANCE.createCallBlock();
+		this.getCodeElts().add(initBlock);
+		loopBlock = CodegenFactory.eINSTANCE.createLoopBlock();
+		this.getCodeElts().add(loopBlock);
 	}
 
 	/**
@@ -66,6 +105,162 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
 	@Override
 	protected EClass eStaticClass() {
 		return CodegenPackage.Literals.ACTOR_BLOCK;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public LoopBlock getLoopBlock() {
+		if (loopBlock != null && loopBlock.eIsProxy()) {
+			InternalEObject oldLoopBlock = (InternalEObject) loopBlock;
+			loopBlock = (LoopBlock) eResolveProxy(oldLoopBlock);
+			if (loopBlock != oldLoopBlock) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							CodegenPackage.ACTOR_BLOCK__LOOP_BLOCK,
+							oldLoopBlock, loopBlock));
+			}
+		}
+		return loopBlock;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public LoopBlock basicGetLoopBlock() {
+		return loopBlock;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public void setLoopBlock(LoopBlock newLoopBlock) {
+		LoopBlock oldLoopBlock = loopBlock;
+		loopBlock = newLoopBlock;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					CodegenPackage.ACTOR_BLOCK__LOOP_BLOCK, oldLoopBlock,
+					loopBlock));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public CallBlock getInitBlock() {
+		if (initBlock != null && initBlock.eIsProxy()) {
+			InternalEObject oldInitBlock = (InternalEObject) initBlock;
+			initBlock = (CallBlock) eResolveProxy(oldInitBlock);
+			if (initBlock != oldInitBlock) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							CodegenPackage.ACTOR_BLOCK__INIT_BLOCK,
+							oldInitBlock, initBlock));
+			}
+		}
+		return initBlock;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public CallBlock basicGetInitBlock() {
+		return initBlock;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public void setInitBlock(CallBlock newInitBlock) {
+		CallBlock oldInitBlock = initBlock;
+		initBlock = newInitBlock;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					CodegenPackage.ACTOR_BLOCK__INIT_BLOCK, oldInitBlock,
+					initBlock));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+		switch (featureID) {
+		case CodegenPackage.ACTOR_BLOCK__LOOP_BLOCK:
+			if (resolve)
+				return getLoopBlock();
+			return basicGetLoopBlock();
+		case CodegenPackage.ACTOR_BLOCK__INIT_BLOCK:
+			if (resolve)
+				return getInitBlock();
+			return basicGetInitBlock();
+		}
+		return super.eGet(featureID, resolve, coreType);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public void eSet(int featureID, Object newValue) {
+		switch (featureID) {
+		case CodegenPackage.ACTOR_BLOCK__LOOP_BLOCK:
+			setLoopBlock((LoopBlock) newValue);
+			return;
+		case CodegenPackage.ACTOR_BLOCK__INIT_BLOCK:
+			setInitBlock((CallBlock) newValue);
+			return;
+		}
+		super.eSet(featureID, newValue);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public void eUnset(int featureID) {
+		switch (featureID) {
+		case CodegenPackage.ACTOR_BLOCK__LOOP_BLOCK:
+			setLoopBlock((LoopBlock) null);
+			return;
+		case CodegenPackage.ACTOR_BLOCK__INIT_BLOCK:
+			setInitBlock((CallBlock) null);
+			return;
+		}
+		super.eUnset(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public boolean eIsSet(int featureID) {
+		switch (featureID) {
+		case CodegenPackage.ACTOR_BLOCK__LOOP_BLOCK:
+			return loopBlock != null;
+		case CodegenPackage.ACTOR_BLOCK__INIT_BLOCK:
+			return initBlock != null;
+		}
+		return super.eIsSet(featureID);
 	}
 
 } // ActorBlockImpl

@@ -31,7 +31,9 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="offset" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Constant" eSuperTypes="#//Variable"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Constant" eSuperTypes="#//Variable">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELong"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="FunctionCall" eSuperTypes="#//Call"/>
   <eClassifiers xsi:type="ecore:EClass" name="Communication" eSuperTypes="#//Call">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="direction" lowerBound="1"
@@ -47,8 +49,19 @@
     <eLiterals name="START"/>
     <eLiterals name="END" value="1"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="CoreBlock" eSuperTypes="#//Block"/>
-  <eClassifiers xsi:type="ecore:EClass" name="ActorBlock" eSuperTypes="#//Block"/>
+  <eClassifiers xsi:type="ecore:EClass" name="CoreBlock" eSuperTypes="#//Block">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="loopBlock" lowerBound="1"
+        eType="#//LoopBlock"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="initBlock" lowerBound="1"
+        eType="#//CallBlock"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ActorBlock" eSuperTypes="#//Block">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="loopBlock" lowerBound="1"
+        eType="#//LoopBlock"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="initBlock" lowerBound="1"
+        eType="#//CallBlock"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="LoopBlock" eSuperTypes="#//Block"/>
   <eClassifiers xsi:type="ecore:EClass" name="ActorCall" eSuperTypes="#//Call"/>
+  <eClassifiers xsi:type="ecore:EClass" name="CallBlock" eSuperTypes="#//Block"/>
 </ecore:EPackage>

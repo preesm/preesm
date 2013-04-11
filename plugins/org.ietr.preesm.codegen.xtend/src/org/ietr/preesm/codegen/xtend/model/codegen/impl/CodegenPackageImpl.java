@@ -48,6 +48,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.ActorCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.Call;
+import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
@@ -158,6 +159,13 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * @generated
 	 */
 	private EClass actorCallEClass = null;
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	private EClass callBlockEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -408,6 +416,15 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	public EAttribute getConstant_Value() {
+		return (EAttribute) constantEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	public EClass getFunctionCall() {
 		return functionCallEClass;
 	}
@@ -453,8 +470,44 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	public EReference getCoreBlock_LoopBlock() {
+		return (EReference) coreBlockEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EReference getCoreBlock_InitBlock() {
+		return (EReference) coreBlockEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	public EClass getActorBlock() {
 		return actorBlockEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EReference getActorBlock_LoopBlock() {
+		return (EReference) actorBlockEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EReference getActorBlock_InitBlock() {
+		return (EReference) actorBlockEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -473,6 +526,15 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 */
 	public EClass getActorCall() {
 		return actorCallEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EClass getCallBlock() {
+		return callBlockEClass;
 	}
 
 	/**
@@ -546,6 +608,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		createEAttribute(subBufferEClass, SUB_BUFFER__OFFSET);
 
 		constantEClass = createEClass(CONSTANT);
+		createEAttribute(constantEClass, CONSTANT__VALUE);
 
 		functionCallEClass = createEClass(FUNCTION_CALL);
 
@@ -554,12 +617,18 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		createEAttribute(communicationEClass, COMMUNICATION__DELIMITER);
 
 		coreBlockEClass = createEClass(CORE_BLOCK);
+		createEReference(coreBlockEClass, CORE_BLOCK__LOOP_BLOCK);
+		createEReference(coreBlockEClass, CORE_BLOCK__INIT_BLOCK);
 
 		actorBlockEClass = createEClass(ACTOR_BLOCK);
+		createEReference(actorBlockEClass, ACTOR_BLOCK__LOOP_BLOCK);
+		createEReference(actorBlockEClass, ACTOR_BLOCK__INIT_BLOCK);
 
 		loopBlockEClass = createEClass(LOOP_BLOCK);
 
 		actorCallEClass = createEClass(ACTOR_CALL);
+
+		callBlockEClass = createEClass(CALL_BLOCK);
 
 		// Create enums
 		directionEEnum = createEEnum(DIRECTION);
@@ -606,6 +675,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		actorBlockEClass.getESuperTypes().add(this.getBlock());
 		loopBlockEClass.getESuperTypes().add(this.getBlock());
 		actorCallEClass.getESuperTypes().add(this.getCall());
+		callBlockEClass.getESuperTypes().add(this.getBlock());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(blockEClass, Block.class, "Block", !IS_ABSTRACT,
@@ -672,6 +742,10 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
 		initEClass(constantEClass, Constant.class, "Constant", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getConstant_Value(), ecorePackage.getELong(), "value",
+				null, 1, 1, Constant.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
 
 		initEClass(functionCallEClass, FunctionCall.class, "FunctionCall",
 				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -689,14 +763,33 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
 		initEClass(coreBlockEClass, CoreBlock.class, "CoreBlock", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getCoreBlock_LoopBlock(), this.getLoopBlock(), null,
+				"loopBlock", null, 1, 1, CoreBlock.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCoreBlock_InitBlock(), this.getCallBlock(), null,
+				"initBlock", null, 1, 1, CoreBlock.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(actorBlockEClass, ActorBlock.class, "ActorBlock",
 				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getActorBlock_LoopBlock(), this.getLoopBlock(), null,
+				"loopBlock", null, 1, 1, ActorBlock.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getActorBlock_InitBlock(), this.getCallBlock(), null,
+				"initBlock", null, 1, 1, ActorBlock.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(loopBlockEClass, LoopBlock.class, "LoopBlock", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(actorCallEClass, ActorCall.class, "ActorCall", !IS_ABSTRACT,
+				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(callBlockEClass, CallBlock.class, "CallBlock", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		// Initialize enums and add enum literals
