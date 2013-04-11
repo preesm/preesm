@@ -54,8 +54,16 @@ public class Prototype implements IRefinement {
 	private String functionName;
 	private int nbArgs;
 
+	/**
+	 * This map associates {@link CodeGenArgument} of the prototype with an
+	 * integer that represent the order of the argument in the prototype.
+	 */
 	private Map<CodeGenArgument, Integer> arguments;
 
+	/**
+	 * This map associates {@link CodeGenParameter} of the prototype with an
+	 * integer that represent the order of the argument in the prototype.
+	 */
 	private Map<CodeGenParameter, Integer> parameters;
 
 	public Prototype() {
