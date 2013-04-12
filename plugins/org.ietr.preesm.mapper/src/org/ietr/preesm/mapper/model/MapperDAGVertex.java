@@ -111,9 +111,18 @@ public class MapperDAGVertex extends DAGVertex {
 			result = new OverheadVertex(this.getId(),
 					(MapperDAG) this.getBase());
 		} else if (this instanceof SendVertex) {
-			result = new SendVertex(this.getId(), (MapperDAG) this.getBase());
+			result = new SendVertex(this.getId(), (MapperDAG) this.getBase(),
+					((SendVertex) this).getSource(),
+					((SendVertex) this).getTarget(),
+					((SendVertex) this).getRouteStepIndex(),
+					((SendVertex) this).getNodeIndex());
 		} else if (this instanceof ReceiveVertex) {
-			result = new ReceiveVertex(this.getId(), (MapperDAG) this.getBase());
+			result = new ReceiveVertex(this.getId(),
+					(MapperDAG) this.getBase(),
+					((ReceiveVertex) this).getSource(),
+					((ReceiveVertex) this).getTarget(),
+					((ReceiveVertex) this).getRouteStepIndex(),
+					((ReceiveVertex) this).getNodeIndex());
 		} else if (this instanceof TransferVertex) {
 			TransferVertex t = (TransferVertex) this;
 			result = new TransferVertex(this.getId(),

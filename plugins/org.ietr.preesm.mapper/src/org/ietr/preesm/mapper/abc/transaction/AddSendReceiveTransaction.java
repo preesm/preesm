@@ -123,8 +123,8 @@ public class AddSendReceiveTransaction extends Transaction {
 
 	public AddSendReceiveTransaction(Transaction precedingTransaction,
 			MapperDAGEdge edge, MapperDAG implementation,
-			OrderManager orderManager, int routeIndex,
-			AbstractRouteStep step, long transferCost) {
+			OrderManager orderManager, int routeIndex, AbstractRouteStep step,
+			long transferCost) {
 		super();
 		this.precedingTransaction = precedingTransaction;
 		this.edge = edge;
@@ -168,24 +168,26 @@ public class AddSendReceiveTransaction extends Transaction {
 		ComponentInstance senderOperator = step.getSender();
 		ComponentInstance receiverOperator = step.getReceiver();
 
-		sendVertex = new SendVertex(sendVertexID, implementation);
+		sendVertex = new SendVertex(sendVertexID, implementation,
+				(MapperDAGVertex) edge.getSource(),
+				(MapperDAGVertex) edge.getTarget(), 0, 0);
 		implementation.getTimings().dedicate(sendVertex);
 		implementation.getMappings().dedicate(sendVertex);
 		sendVertex.setRouteStep(step);
 		implementation.addVertex(sendVertex);
 		sendVertex.getTiming().setCost(transferCost);
-		sendVertex.getMapping().setEffectiveOperator(
-				senderOperator);
+		sendVertex.getMapping().setEffectiveOperator(senderOperator);
 		orderManager.insertAfter(currentSource, sendVertex);
 
-		receiveVertex = new ReceiveVertex(receiveVertexID, implementation);
+		receiveVertex = new ReceiveVertex(receiveVertexID, implementation,
+				(MapperDAGVertex) edge.getSource(),
+				(MapperDAGVertex) edge.getTarget(), 0, 0);
 		implementation.getTimings().dedicate(receiveVertex);
 		implementation.getMappings().dedicate(receiveVertex);
 		receiveVertex.setRouteStep(step);
 		implementation.addVertex(receiveVertex);
 		receiveVertex.getTiming().setCost(transferCost);
-		receiveVertex.getMapping().setEffectiveOperator(
-				receiverOperator);
+		receiveVertex.getMapping().setEffectiveOperator(receiverOperator);
 		orderManager.insertAfter(sendVertex, receiveVertex);
 
 		newEdge1 = (MapperDAGEdge) implementation.addEdge(currentSource,

@@ -92,6 +92,10 @@ public class TransferVertex extends MapperDAGVertex {
 		this.target = target;
 		this.routeStepIndex = routeStepIndex;
 		this.nodeIndex = nodeIndex;
+		
+		// Retrieve and Save the corresponding DAGEdge in the properties
+		DAGEdge dagEdge = base.getEdge(source, target);
+		this.setPropertyValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge, dagEdge);
 	}
 
 	public AbstractRouteStep getRouteStep() {

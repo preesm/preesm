@@ -40,6 +40,7 @@ import net.sf.dftools.algorithm.model.dag.types.DAGDefaultVertexPropertyType;
 
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.mapper.model.MapperDAG;
+import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 /**
  * Vertex corresponding to sending a data. This vertex is mapped on the sender
@@ -55,9 +56,10 @@ public class SendVertex extends TransferVertex {
 					.add(ImplementationPropertyNames.SendReceive_OperatorDef);
 		}
 	};
-
-	public SendVertex(String id, MapperDAG base) {
-		super(id, base, null, null, 0, 0);
+	
+	public SendVertex(String id, MapperDAG base, MapperDAGVertex source,
+			MapperDAGVertex target, int routeStepIndex, int nodeIndex) {
+		super(id,base,source,target,routeStepIndex, nodeIndex);
 	}
 
 	public DAGDefaultVertexPropertyType getNbRepeat() {

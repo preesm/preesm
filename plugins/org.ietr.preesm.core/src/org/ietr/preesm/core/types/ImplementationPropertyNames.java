@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -35,6 +35,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
 package org.ietr.preesm.core.types;
+
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
 
 /**
  * This class contains property bean names used to exchange vertex properties
@@ -103,6 +105,11 @@ public final class ImplementationPropertyNames {
 	public static final String Start_time = "TaskStartTime";
 
 	// Vertex of type send or receive properties
+	/**
+	 * {@link DAGEdge} that corresponds to a Transfer Vertex
+	 */
+	public static final String SendReceive_correspondingDagEdge = "correspondingDagEdge";
+
 	/**
 	 * Route step transfering the data.
 	 */
