@@ -41,6 +41,15 @@
         eType="#//Direction"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="delimiter" lowerBound="1"
         eType="#//Delimiter"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="data" lowerBound="1" eType="#//Buffer"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sendStart" eType="#//Communication"
+        transient="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sendEnd" eType="#//Communication"
+        transient="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="receiveStart" eType="#//Communication"
+        transient="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="receiveEnd" eType="#//Communication"
+        transient="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="Direction">
     <eLiterals name="SEND"/>

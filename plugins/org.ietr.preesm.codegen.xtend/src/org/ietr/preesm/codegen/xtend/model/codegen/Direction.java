@@ -46,16 +46,15 @@ import org.eclipse.emf.common.util.Enumerator;
  * {@link Communication} {@link Call calls} to determine whether the current
  * {@link Communication} {@link #SEND sends} or {@link #RECEIVE receives} a
  * data. <!-- end-user-doc -->
- * 
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getDirection()
  * @model
  * @generated
  */
 public enum Direction implements Enumerator {
 	/**
-	 * The '<em><b>SEND</b></em>' literal object. <!-- begin-user-doc --> <!--
+	 * The '<em><b>SEND</b></em>' literal object.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @see #SEND_VALUE
 	 * @generated
 	 * @ordered
@@ -63,9 +62,9 @@ public enum Direction implements Enumerator {
 	SEND(0, "SEND", "SEND"),
 
 	/**
-	 * The '<em><b>RECEIVE</b></em>' literal object. <!-- begin-user-doc -->
+	 * The '<em><b>RECEIVE</b></em>' literal object.
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * 
 	 * @see #RECEIVE_VALUE
 	 * @generated
 	 * @ordered
@@ -73,13 +72,13 @@ public enum Direction implements Enumerator {
 	RECEIVE(1, "RECEIVE", "RECEIVE");
 
 	/**
-	 * The '<em><b>SEND</b></em>' literal value. <!-- begin-user-doc -->
+	 * The '<em><b>SEND</b></em>' literal value.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of '<em><b>SEND</b></em>' literal object isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @see #SEND
 	 * @model
 	 * @generated
@@ -88,13 +87,13 @@ public enum Direction implements Enumerator {
 	public static final int SEND_VALUE = 0;
 
 	/**
-	 * The '<em><b>RECEIVE</b></em>' literal value. <!-- begin-user-doc -->
+	 * The '<em><b>RECEIVE</b></em>' literal value.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of '<em><b>RECEIVE</b></em>' literal object isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @see #RECEIVE
 	 * @model
 	 * @generated
@@ -108,22 +107,21 @@ public enum Direction implements Enumerator {
 	 * 
 	 * @generated
 	 */
-	private static final Direction[] VALUES_ARRAY = new Direction[] { SEND,
-			RECEIVE, };
+	private static final Direction[] VALUES_ARRAY = new Direction[] {
+			SEND,
+			RECEIVE,
+		};
 
 	/**
-	 * A public read-only list of all the '<em><b>Direction</b></em>'
-	 * enumerators. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * A public read-only list of all the '<em><b>Direction</b></em>' enumerators.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public static final List<Direction> VALUES = Collections
-			.unmodifiableList(Arrays.asList(VALUES_ARRAY));
+	public static final List<Direction> VALUES = Collections.unmodifiableList(Arrays.asList(VALUES_ARRAY));
 
 	/**
-	 * Returns the '<em><b>Direction</b></em>' literal with the specified
-	 * literal value. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the '<em><b>Direction</b></em>' literal with the specified literal value.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public static Direction get(String literal) {
@@ -139,7 +137,6 @@ public enum Direction implements Enumerator {
 	/**
 	 * Returns the '<em><b>Direction</b></em>' literal with the specified name.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public static Direction getByName(String name) {
@@ -153,46 +150,40 @@ public enum Direction implements Enumerator {
 	}
 
 	/**
-	 * Returns the '<em><b>Direction</b></em>' literal with the specified
-	 * integer value. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the '<em><b>Direction</b></em>' literal with the specified integer value.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public static Direction get(int value) {
 		switch (value) {
-		case SEND_VALUE:
-			return SEND;
-		case RECEIVE_VALUE:
-			return RECEIVE;
+			case SEND_VALUE: return SEND;
+			case RECEIVE_VALUE: return RECEIVE;
 		}
 		return null;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private final int value;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private final String name;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private final String literal;
 
 	/**
-	 * Only this class can construct instances. <!-- begin-user-doc --> <!--
+	 * Only this class can construct instances.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private Direction(int value, String name, String literal) {
@@ -203,35 +194,31 @@ public enum Direction implements Enumerator {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public int getValue() {
-		return value;
+	  return value;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public String getName() {
-		return name;
+	  return name;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public String getLiteral() {
-		return literal;
+	  return literal;
 	}
 
 	/**
-	 * Returns the literal value of the enumerator, which is its string
-	 * representation. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the literal value of the enumerator, which is its string representation.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override

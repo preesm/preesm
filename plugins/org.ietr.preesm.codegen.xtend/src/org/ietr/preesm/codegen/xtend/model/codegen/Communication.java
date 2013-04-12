@@ -40,19 +40,20 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  * represent the transmission of data between processing elements. Each
  * {@link Communication} {@link Call} has a {@link Direction} and a
  * {@link Delimiter}.<!-- end-user-doc -->
- * 
+ *
  * <p>
  * The following features are supported:
  * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getDirection
- * <em>Direction</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getDelimiter
- * <em>Delimiter</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getDirection <em>Direction</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getDelimiter <em>Delimiter</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getData <em>Data</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getSendStart <em>Send Start</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getSendEnd <em>Send End</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveStart <em>Receive Start</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveEnd <em>Receive End</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCommunication()
  * @model
  * @generated
@@ -125,5 +126,144 @@ public interface Communication extends Call {
 	 * @generated
 	 */
 	void setDelimiter(Delimiter value);
+
+	/**
+	 * Returns the value of the '<em><b>Data</b></em>' reference. <!--
+	 * begin-user-doc --> {@link Buffer} that is sent or received by the current
+	 * {@link Communication}. Calling this method is equivalent to calling
+	 * <code>thisCommunication.getParameters().iterator().next()</code> since
+	 * the only "Parameter" of a communication is the buffer it transfers. <!--
+	 * end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Data</em>' reference.
+	 * @see #setData(Buffer)
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCommunication_Data()
+	 * @model required="true"
+	 * @generated
+	 */
+	Buffer getData();
+
+	/**
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getData <em>Data</em>}' reference.
+	 * <!-- begin-user-doc -->Set the
+	 * {@link #getData()} associated to the current {@link Communication}.
+	 * Calling this method will also modify the
+	 * {@link Communication#getParameters() parameters}.<!-- end-user-doc -->
+	 * @param value the new value of the '<em>Data</em>' reference.
+	 * @see #getData()
+	 * @generated
+	 */
+	void setData(Buffer value);
+
+	/**
+	 * Returns the value of the '<em><b>Send Start</b></em>' reference. <!--
+	 * begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Send Start</em>' reference isn't clear, there
+	 * really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Send Start</em>' reference.
+	 * @see #setSendStart(Communication)
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCommunication_SendStart()
+	 * @model
+	 * @generated
+	 */
+	Communication getSendStart();
+
+	/**
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getSendStart <em>Send Start</em>}' reference.
+	 * <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * @param value the new value of the '<em>Send Start</em>' reference.
+	 * @see #getSendStart()
+	 * @generated
+	 */
+	void setSendStart(Communication value);
+
+	/**
+	 * Returns the value of the '<em><b>Send End</b></em>' reference. <!--
+	 * begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Send End</em>' reference isn't clear, there
+	 * really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Send End</em>' reference.
+	 * @see #setSendEnd(Communication)
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCommunication_SendEnd()
+	 * @model
+	 * @generated
+	 */
+	Communication getSendEnd();
+
+	/**
+	 * Sets the value of the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getSendEnd
+	 * <em>Send End</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Send End</em>' reference.
+	 * @see #getSendEnd()
+	 * @generated
+	 */
+	void setSendEnd(Communication value);
+
+	/**
+	 * Returns the value of the '<em><b>Receive Start</b></em>' reference. <!--
+	 * begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Receive Start</em>' reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Receive Start</em>' reference.
+	 * @see #setReceiveStart(Communication)
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCommunication_ReceiveStart()
+	 * @model
+	 * @generated
+	 */
+	Communication getReceiveStart();
+
+	/**
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveStart <em>Receive Start</em>}' reference.
+	 * <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * @param value the new value of the '<em>Receive Start</em>' reference.
+	 * @see #getReceiveStart()
+	 * @generated
+	 */
+	void setReceiveStart(Communication value);
+
+	/**
+	 * Returns the value of the '<em><b>Receive End</b></em>' reference. <!--
+	 * begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Receive End</em>' reference isn't clear, there
+	 * really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Receive End</em>' reference.
+	 * @see #setReceiveEnd(Communication)
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCommunication_ReceiveEnd()
+	 * @model
+	 * @generated
+	 */
+	Communication getReceiveEnd();
+
+	/**
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveEnd <em>Receive End</em>}' reference.
+	 * <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * @param value the new value of the '<em>Receive End</em>' reference.
+	 * @see #getReceiveEnd()
+	 * @generated
+	 */
+	void setReceiveEnd(Communication value);
 
 } // Communication

@@ -73,10 +73,14 @@ import org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.ActorCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer;
+import org.ietr.preesm.codegen.xtend.model.codegen.Call;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
+import org.ietr.preesm.codegen.xtend.model.codegen.Communication;
 import org.ietr.preesm.codegen.xtend.model.codegen.Constant;
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter;
+import org.ietr.preesm.codegen.xtend.model.codegen.Direction;
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
@@ -86,6 +90,7 @@ import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
+import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
 import org.ietr.preesm.experiment.memory.allocation.MemoryAllocator;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
@@ -150,7 +155,21 @@ public class CodegenModelGenerator {
 	 * the {@link DAGEdge edges} of the {@link DirectedAcyclicGraph DAG} to its
 	 * corresponding {@link Buffer}.
 	 */
-	private Map<BufferProperties, Buffer> dagEdgeBuffers;
+	private Map<BufferProperties, Buffer> srSDFEdgeBuffers;
+
+	/**
+	 * This {@link Map} associates each {@link DAGEdge} to its corresponding
+	 * {@link Buffer}.
+	 */
+	private Map<DAGEdge, Buffer> dagEdgeBuffers;
+
+	/**
+	 * This {@link Map} associates a unique communication ID to a list of all
+	 * the {@link Communication} {@link Call Calls} in involves. The
+	 * communication id is a {@link String} formed as follow:<br>
+	 * <code>SenderCore__SenderVertexName___ReceiverCore__ReceiverVertexName </code>
+	 */
+	private Map<String, List<Communication>> communications;
 
 	/**
 	 * Constructor of the {@link CodegenModelGenerator}. The constructor
@@ -186,7 +205,9 @@ public class CodegenModelGenerator {
 		checkInputs(this.archi, this.dag, this.memEx);
 
 		this.coreBlocks = new HashMap<ComponentInstance, CoreBlock>();
-		this.dagEdgeBuffers = new HashMap<BufferProperties, Buffer>();
+		this.srSDFEdgeBuffers = new HashMap<BufferProperties, Buffer>();
+		this.dagEdgeBuffers = new HashMap<DAGEdge, Buffer>();
+		this.communications = new HashMap<String, List<Communication>>();
 		try {
 			originalSDF = ScenarioParser.getAlgorithm(scenario
 					.getAlgorithmURL());
@@ -332,7 +353,8 @@ public class CodegenModelGenerator {
 				// This call can not fail as checks were already performed in
 				// the constructor
 				operator = (ComponentInstance) vert.getPropertyBean().getValue(
-						"Operator", ComponentInstance.class);
+						ImplementationPropertyNames.Vertex_Operator,
+						ComponentInstance.class);
 				// If this is the first time this operator is encountered,
 				// Create a Block and store it.
 				operatorBlock = coreBlocks.get(operator);
@@ -365,9 +387,13 @@ public class CodegenModelGenerator {
 					break;
 
 				case VertexType.TYPE_SEND:
+					generateCommunication(operatorBlock, vert,
+							VertexType.TYPE_SEND);
 					break;
 
 				case VertexType.TYPE_RECEIVE:
+					generateCommunication(operatorBlock, vert,
+							VertexType.TYPE_RECEIVE);
 					break;
 				default:
 					throw new CodegenException("Vertex " + vert
@@ -377,6 +403,127 @@ public class CodegenModelGenerator {
 			}
 		}
 		return new HashSet<Block>(coreBlocks.values());
+	}
+
+	/**
+	 * Generate the {@link CodegenPackage Codegen Model} for communication
+	 * "firing". This method will create an {@link Communication} and place it
+	 * in the {@link LoopBlock} of the {@link CoreBlock} passed as a parameter.
+	 * 
+	 * @param operatorBlock
+	 *            the {@link CoreBlock} where the actor {@link Communication} is
+	 *            performed.
+	 * @param dagVertex
+	 *            the {@link DAGVertex} corresponding to the actor firing.
+	 * @param direction
+	 *            the Type of communication ({@link VertexType#TYPE_SEND} or
+	 *            {@link VertexType#TYPE_RECEIVE}).
+	 * @throws CodegenException
+	 *             Exception is thrown if:
+	 *             <ul>
+	 *             </ul>
+	 * 
+	 */
+	protected void generateCommunication(CoreBlock operatorBlock,
+			DAGVertex vert, String direction) throws CodegenException {
+		// Create the communication
+		Communication newCommmunication = CodegenFactory.eINSTANCE
+				.createCommunication();
+		Direction dir = (direction.equals(VertexType.TYPE_SEND)) ? Direction.SEND
+				: Direction.RECEIVE;
+		Delimiter delimiter = (direction.equals(VertexType.TYPE_SEND)) ? Delimiter.START
+				: Delimiter.END;
+		newCommmunication.setDirection(dir);
+		newCommmunication.setDelimiter(delimiter);
+
+		// Find the corresponding DAGEdge buffer(s)
+		DAGEdge dagEdge = (DAGEdge) vert.getPropertyBean().getValue(
+				ImplementationPropertyNames.SendReceive_correspondingDagEdge,
+				DAGEdge.class);
+		Buffer buffer = dagEdgeBuffers.get(dagEdge);
+		if (buffer == null) {
+			throw new CodegenException("No buffer found for edge" + dagEdge);
+		}
+		newCommmunication.setData(buffer);
+
+		// Set the name of the communication
+		// SS <=> Start Send
+		// RE <=> Receive End
+		String commName = (newCommmunication.getDirection()
+				.equals(Direction.SEND)) ? "SS" : "RE";
+		commName += "__" + buffer.getName();
+		commName += "__" + operatorBlock.getName();
+		newCommmunication.setName(commName);
+
+		// Find corresponding communications (SS/SE/RS/RE)
+		registerCommunication(newCommmunication, dagEdge, vert);
+
+		// Add the new communication to the loop of the codeblock
+		operatorBlock.getLoopBlock().getCodeElts().add(newCommmunication);
+	}
+
+	/**
+	 * This method find the {@link Communication communications} associated to
+	 * the {@link Communication} passed as a parameter. Communication are
+	 * associated if they are involved in the communication of the same buffer
+	 * but with different {@link Direction} and {@link Delimiter}. The
+	 * {@link Communication#getSendStart()}, {@link Communication#getSendEnd()},
+	 * {@link Communication#getReceiveStart()} and
+	 * {@link Communication#getReceiveEnd()} attributes are updated by this
+	 * method.
+	 * 
+	 * @param newCommmunication
+	 *            The {@link Communication} to register.
+	 * @param dagEdge
+	 *            The {@link DAGEdge} associated to the communication.
+	 * @param dagVertex
+	 *            the {@link DAGVertex} (Send or Receive) at the origin of the
+	 *            newCommunication creation.
+	 */
+	protected void registerCommunication(Communication newCommmunication,
+			DAGEdge dagEdge, DAGVertex dagVertex) {
+		if(dagVertex != null){
+		throw new RuntimeException("Back to work here ! Use the da vertex to retrieve multi step comm.");
+		}
+		String commID = dagEdge.getSource().getPropertyStringValue(
+				ImplementationPropertyNames.Vertex_Operator);
+		commID += "__" + dagEdge.getSource().getName();
+		commID += "___"
+				+ dagEdge.getTarget().getPropertyStringValue(
+						ImplementationPropertyNames.Vertex_Operator);
+		commID += "__" + dagEdge.getTarget().getName();
+		List<Communication> associatedCommunications = communications
+				.get(commID);
+		if (associatedCommunications == null) {
+			associatedCommunications = new ArrayList<Communication>();
+			communications.put(commID, associatedCommunications);
+		}
+
+		// Register other comm to the new
+		for (Communication com : associatedCommunications) {
+			if (com.getDirection().equals(Direction.SEND)) {
+				if (com.getDelimiter().equals(Delimiter.START))
+					newCommmunication.setSendStart(com);
+				if (com.getDelimiter().equals(Delimiter.END))
+					newCommmunication.setSendEnd(com);
+			}
+			if (com.getDirection().equals(Direction.RECEIVE)) {
+				if (com.getDelimiter().equals(Delimiter.START))
+					newCommmunication.setReceiveStart(com);
+				if (com.getDelimiter().equals(Delimiter.END))
+					newCommmunication.setReceiveEnd(com);
+			}
+		}
+
+		// Register new comm to its co-workers
+		associatedCommunications.add(newCommmunication);
+		for (Communication com : associatedCommunications) {
+			if (newCommmunication.getDirection().equals(Direction.SEND)) {
+				com.setSendStart(newCommmunication);
+			} else {
+				com.setReceiveEnd(newCommmunication);
+			}
+		}
 	}
 
 	/**
@@ -477,9 +624,10 @@ public class CodegenModelGenerator {
 	}
 
 	/**
+	 * @throws CodegenException
 	 * 
 	 */
-	protected void generateBuffers() {
+	protected void generateBuffers() throws CodegenException {
 		// Right now, all memory allocations are performed only in shared
 		// memory.
 		// If it changes one day there will be a specific Memory exclusion graph
@@ -497,11 +645,30 @@ public class CodegenModelGenerator {
 						MemoryExclusionGraph.DAG_EDGE_ALLOCATION,
 						(new HashMap<DAGEdge, Integer>()).getClass());
 
-		// generate the subbuffers allocated in memory. Each sub buffer
-		// corresponds to an edge of the single rate SDF Graph
+		// generate the subbuffer for each dagedge
 		for (Entry<DAGEdge, Integer> dagAlloc : allocation.entrySet()) {
-			generateSubBuffers(sharedBuffer, dagAlloc.getKey(),
-					dagAlloc.getValue());
+			SubBuffer dagEdgeBuffer = CodegenFactory.eINSTANCE
+					.createSubBuffer();
+			dagEdgeBuffer.setName(dagAlloc.getKey().getSource().getName()
+					+ "__" + dagAlloc.getKey().getTarget().getName());
+			dagEdgeBuffer.setContainer(sharedBuffer);
+			dagEdgeBuffer.setOffset(dagAlloc.getValue());
+			// Generate subsubbuffers. Each subsubbuffer corresponds to an edge
+			// of the single rate SDF Graph
+			Integer dagEdgeSize = generateSubBuffers(dagEdgeBuffer,
+					dagAlloc.getKey(), dagAlloc.getValue());
+
+			// also accessible with dagAlloc.getKey().getWeight();
+			dagEdgeBuffer.setSize(dagEdgeSize);
+
+			// Save the DAGEdgeBuffer
+			DAGVertex originalSource = dag.getVertex(dagAlloc.getKey()
+					.getSource().getName());
+			DAGVertex originalTarget = dag.getVertex(dagAlloc.getKey()
+					.getTarget().getName());
+			DAGEdge originalDagEdge = dag.getEdge(originalSource,
+					originalTarget);
+			dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
 		}
 	}
 
@@ -521,8 +688,9 @@ public class CodegenModelGenerator {
 	 *             <li>There is a mismatch between the {@link Prototype}
 	 *             parameter and and the actor ports</li>
 	 *             <li>an actor port is connected to no edge.</li>
-	 *             <li>No {@link Buffer} in {@link #dagEdgeBuffers} corresponds
-	 *             to the edge connected to a port of the {@link DAGVertex}</li>
+	 *             <li>No {@link Buffer} in {@link #srSDFEdgeBuffers}
+	 *             corresponds to the edge connected to a port of the
+	 *             {@link DAGVertex}</li>
 	 *             <li>There is a mismatch between Parameters declared in the
 	 *             IDL and in the {@link SDFGraph}</li>
 	 *             </ul>
@@ -620,7 +788,7 @@ public class CodegenModelGenerator {
 			// At this point, the dagEdge, srsdfEdge corresponding to the
 			// current argument were identified
 			// Get the corresponding Variable
-			Variable var = this.dagEdgeBuffers.get(subBufferProperties);
+			Variable var = this.srSDFEdgeBuffers.get(subBufferProperties);
 			if (var == null) {
 				throw new CodegenException(
 						"Edge connected to "
@@ -721,10 +889,14 @@ public class CodegenModelGenerator {
 	 *            the {@link DAGEdge} whose {@link Buffer} is generated.
 	 * @param offset
 	 *            the of the {@link DAGEdge} in the {@link Buffer}
+	 * @return the total size of the subbuffers
+	 * @throws CodegenException
+	 *             If a {@link DataType} used in the graph is not declared in
+	 *             the {@link PreesmScenario}.
 	 * 
 	 */
-	protected void generateSubBuffers(Buffer parentBuffer, DAGEdge dagEdge,
-			Integer offset) {
+	protected Integer generateSubBuffers(Buffer parentBuffer, DAGEdge dagEdge,
+			Integer offset) throws CodegenException {
 
 		Map<String, DataType> dataTypes = scenario.getSimulationManager()
 				.getDataTypes();
@@ -742,20 +914,31 @@ public class CodegenModelGenerator {
 			name += '_' + subBufferProperties.getDestInputPortID();
 			subBuff.setName(name);
 			subBuff.setContainer(parentBuffer);
-			subBuff.setOffset(offset + aggregateOffset);
+			subBuff.setOffset(aggregateOffset);
 			subBuff.setType(subBufferProperties.getDataType());
 			subBuff.setSize(subBufferProperties.getSize());
 
 			// Increment the aggregate offset with the size of the current
 			// subBuffer multiplied by the size of the datatype
-			aggregateOffset += (subBuff.getSize() * dataTypes.get(
-					subBufferProperties.getDataType()).getSize());
+			if (subBufferProperties.getDataType().equals("typeNotFound")) {
+				throw new CodegenException(
+						"There is a problem with datatypes.\n"
+								+ "Please make sure that all data types are defined in the Simulation tab of the scenario editor.");
+			}
+			DataType subBuffDataType = dataTypes.get(subBufferProperties
+					.getDataType());
+			if (subBuffDataType == null) {
+				throw new CodegenException("Data type "
+						+ subBufferProperties.getDataType()
+						+ " is undefined in the scenario.");
+			}
+			aggregateOffset += (subBuff.getSize() * subBuffDataType.getSize());
 
 			// Save the created SubBuffer
-			dagEdgeBuffers.put(subBufferProperties, subBuff);
+			srSDFEdgeBuffers.put(subBufferProperties, subBuff);
 		}
 
-		return;
+		return aggregateOffset;
 	}
 
 	/**

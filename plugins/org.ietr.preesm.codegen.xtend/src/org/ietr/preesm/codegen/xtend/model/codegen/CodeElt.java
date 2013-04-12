@@ -44,8 +44,8 @@ import org.eclipse.emf.ecore.EObject;
  * a parent {@link Block}.
  * 
  * <!-- end-user-doc -->
- * 
- * 
+ *
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCodeElt()
  * @model interface="true" abstract="true"
  * @generated

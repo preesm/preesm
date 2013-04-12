@@ -40,8 +40,8 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  * native function. A {@link FunctionCall} is characterized by its
  * {@link #getName() name} and the {@link #getParameters() parameters} it
  * involves. <!-- end-user-doc -->
- * 
- * 
+ *
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFunctionCall()
  * @model
  * @generated

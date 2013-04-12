@@ -46,21 +46,17 @@ import org.eclipse.emf.ecore.EObject;
  * {@link Block#getCodeElts() code elements} of this {@link Block code block}. <br>
  * Each {@link Variable} has a {@link #getName() name} and a {@link #getType()
  * type}. <!-- end-user-doc -->
- * 
+ *
  * <p>
  * The following features are supported:
  * <ul>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getName <em>
- * Name</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getType <em>
- * Type</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator
- * <em>Creator</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getUsers <em>
- * Users</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getName <em>Name</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getType <em>Type</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator <em>Creator</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getUsers <em>Users</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getVariable()
  * @model abstract="true"
  * @generated
@@ -84,12 +80,9 @@ public interface Variable extends EObject {
 	String getName();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getName
-	 * <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Name</em>' attribute.
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getName <em>Name</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Name</em>' attribute.
 	 * @see #getName()
 	 * @generated
 	 */
@@ -113,12 +106,9 @@ public interface Variable extends EObject {
 	String getType();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getType
-	 * <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Type</em>' attribute.
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getType <em>Type</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Type</em>' attribute.
 	 * @see #getType()
 	 * @generated
 	 */
@@ -155,19 +145,16 @@ public interface Variable extends EObject {
 	void setCreator(Block value);
 
 	/**
-	 * Returns the value of the '<em><b>Users</b></em>' reference list. The list
-	 * contents are of type
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Block}. It is
-	 * bidirectional and its opposite is '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDeclarations
-	 * <em>Declarations</em>}'. <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Users</b></em>' reference list.
+	 * The list contents are of type {@link org.ietr.preesm.codegen.xtend.model.codegen.Block}.
+	 * It is bidirectional and its opposite is '{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDeclarations <em>Declarations</em>}'.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * The {@link #getUsers() users} of a {@link Variable} are the {@link Block
 	 * Blocks} using the {@link Variable}. One of the {@link #getUsers() users}
 	 * of the variable is also its {@link #getCreator() creator}.
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the value of the '<em>Users</em>' reference list.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getVariable_Users()
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Block#getDeclarations

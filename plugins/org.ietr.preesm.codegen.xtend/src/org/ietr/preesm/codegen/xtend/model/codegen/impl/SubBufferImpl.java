@@ -52,22 +52,17 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SubBufferImpl#getContainer
- * <em>Container</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SubBufferImpl#getOffset
- * <em>Offset</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SubBufferImpl#getContainer <em>Container</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SubBufferImpl#getOffset <em>Offset</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @generated
  */
 public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	/**
-	 * The cached value of the '{@link #getContainer() <em>Container</em>}'
-	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getContainer() <em>Container</em>}' reference.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getContainer()
 	 * @generated
 	 * @ordered
@@ -75,9 +70,8 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	protected Buffer container;
 
 	/**
-	 * The default value of the '{@link #getOffset() <em>Offset</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The default value of the '{@link #getOffset() <em>Offset</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getOffset()
 	 * @generated
 	 * @ordered
@@ -87,7 +81,6 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	/**
 	 * The cached value of the '{@link #getOffset() <em>Offset</em>}' attribute.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @see #getOffset()
 	 * @generated
 	 * @ordered
@@ -96,7 +89,6 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected SubBufferImpl() {
@@ -105,7 +97,6 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -115,18 +106,15 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Buffer getContainer() {
 		if (container != null && container.eIsProxy()) {
-			InternalEObject oldContainer = (InternalEObject) container;
-			container = (Buffer) eResolveProxy(oldContainer);
+			InternalEObject oldContainer = (InternalEObject)container;
+			container = (Buffer)eResolveProxy(oldContainer);
 			if (container != oldContainer) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							CodegenPackage.SUB_BUFFER__CONTAINER, oldContainer,
-							container));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.SUB_BUFFER__CONTAINER, oldContainer, container));
 			}
 		}
 		return container;
@@ -134,7 +122,6 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Buffer basicGetContainer() {
@@ -143,21 +130,17 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public void setContainer(Buffer newContainer) {
 		Buffer oldContainer = container;
 		container = newContainer;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.SUB_BUFFER__CONTAINER, oldContainer,
-					container));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.SUB_BUFFER__CONTAINER, oldContainer, container));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public int getOffset() {
@@ -166,96 +149,87 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public void setOffset(int newOffset) {
 		int oldOffset = offset;
 		offset = newOffset;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.SUB_BUFFER__OFFSET, oldOffset, offset));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.SUB_BUFFER__OFFSET, oldOffset, offset));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case CodegenPackage.SUB_BUFFER__CONTAINER:
-			if (resolve)
-				return getContainer();
-			return basicGetContainer();
-		case CodegenPackage.SUB_BUFFER__OFFSET:
-			return getOffset();
+			case CodegenPackage.SUB_BUFFER__CONTAINER:
+				if (resolve) return getContainer();
+				return basicGetContainer();
+			case CodegenPackage.SUB_BUFFER__OFFSET:
+				return getOffset();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case CodegenPackage.SUB_BUFFER__CONTAINER:
-			setContainer((Buffer) newValue);
-			return;
-		case CodegenPackage.SUB_BUFFER__OFFSET:
-			setOffset((Integer) newValue);
-			return;
+			case CodegenPackage.SUB_BUFFER__CONTAINER:
+				setContainer((Buffer)newValue);
+				return;
+			case CodegenPackage.SUB_BUFFER__OFFSET:
+				setOffset((Integer)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case CodegenPackage.SUB_BUFFER__CONTAINER:
-			setContainer((Buffer) null);
-			return;
-		case CodegenPackage.SUB_BUFFER__OFFSET:
-			setOffset(OFFSET_EDEFAULT);
-			return;
+			case CodegenPackage.SUB_BUFFER__CONTAINER:
+				setContainer((Buffer)null);
+				return;
+			case CodegenPackage.SUB_BUFFER__OFFSET:
+				setOffset(OFFSET_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case CodegenPackage.SUB_BUFFER__CONTAINER:
-			return container != null;
-		case CodegenPackage.SUB_BUFFER__OFFSET:
-			return offset != OFFSET_EDEFAULT;
+			case CodegenPackage.SUB_BUFFER__CONTAINER:
+				return container != null;
+			case CodegenPackage.SUB_BUFFER__OFFSET:
+				return offset != OFFSET_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy())
-			return super.toString();
+		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (offset: ");

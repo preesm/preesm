@@ -49,22 +49,21 @@ import org.ietr.preesm.codegen.xtend.model.codegen.*;
  * starting with the actual class of the object and proceeding up the
  * inheritance hierarchy until a non-null result is returned, which is the
  * result of the switch. <!-- end-user-doc -->
- * 
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage
  * @generated
  */
 public class CodegenSwitch<T> extends Switch<T> {
 	/**
-	 * The cached model package <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached model package
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	protected static CodegenPackage modelPackage;
 
 	/**
-	 * Creates an instance of the switch. <!-- begin-user-doc --> <!--
+	 * Creates an instance of the switch.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public CodegenSwitch() {
@@ -87,170 +86,130 @@ public class CodegenSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Calls <code>caseXXX</code> for each class of the model until one returns
-	 * a non null result; it yields that result. <!-- begin-user-doc --> <!--
+	 * Calls <code>caseXXX</code> for each class of the model until one returns a non null result; it yields that result.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
-	 * @return the first non-null result returned by a <code>caseXXX</code>
-	 *         call.
+	 * @return the first non-null result returned by a <code>caseXXX</code> call.
 	 * @generated
 	 */
 	@Override
 	protected T doSwitch(int classifierID, EObject theEObject) {
 		switch (classifierID) {
-		case CodegenPackage.BLOCK: {
-			Block block = (Block) theEObject;
-			T result = caseBlock(block);
-			if (result == null)
-				result = caseCodeElt(block);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case CodegenPackage.CODE_ELT: {
-			CodeElt codeElt = (CodeElt) theEObject;
-			T result = caseCodeElt(codeElt);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case CodegenPackage.CALL: {
-			Call call = (Call) theEObject;
-			T result = caseCall(call);
-			if (result == null)
-				result = caseCodeElt(call);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case CodegenPackage.VARIABLE: {
-			Variable variable = (Variable) theEObject;
-			T result = caseVariable(variable);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case CodegenPackage.BUFFER: {
-			Buffer buffer = (Buffer) theEObject;
-			T result = caseBuffer(buffer);
-			if (result == null)
-				result = caseVariable(buffer);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case CodegenPackage.SUB_BUFFER: {
-			SubBuffer subBuffer = (SubBuffer) theEObject;
-			T result = caseSubBuffer(subBuffer);
-			if (result == null)
-				result = caseBuffer(subBuffer);
-			if (result == null)
-				result = caseVariable(subBuffer);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case CodegenPackage.CONSTANT: {
-			Constant constant = (Constant) theEObject;
-			T result = caseConstant(constant);
-			if (result == null)
-				result = caseVariable(constant);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case CodegenPackage.FUNCTION_CALL: {
-			FunctionCall functionCall = (FunctionCall) theEObject;
-			T result = caseFunctionCall(functionCall);
-			if (result == null)
-				result = caseCall(functionCall);
-			if (result == null)
-				result = caseCodeElt(functionCall);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case CodegenPackage.COMMUNICATION: {
-			Communication communication = (Communication) theEObject;
-			T result = caseCommunication(communication);
-			if (result == null)
-				result = caseCall(communication);
-			if (result == null)
-				result = caseCodeElt(communication);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case CodegenPackage.CORE_BLOCK: {
-			CoreBlock coreBlock = (CoreBlock) theEObject;
-			T result = caseCoreBlock(coreBlock);
-			if (result == null)
-				result = caseBlock(coreBlock);
-			if (result == null)
-				result = caseCodeElt(coreBlock);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case CodegenPackage.ACTOR_BLOCK: {
-			ActorBlock actorBlock = (ActorBlock) theEObject;
-			T result = caseActorBlock(actorBlock);
-			if (result == null)
-				result = caseBlock(actorBlock);
-			if (result == null)
-				result = caseCodeElt(actorBlock);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case CodegenPackage.LOOP_BLOCK: {
-			LoopBlock loopBlock = (LoopBlock) theEObject;
-			T result = caseLoopBlock(loopBlock);
-			if (result == null)
-				result = caseBlock(loopBlock);
-			if (result == null)
-				result = caseCodeElt(loopBlock);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case CodegenPackage.ACTOR_CALL: {
-			ActorCall actorCall = (ActorCall) theEObject;
-			T result = caseActorCall(actorCall);
-			if (result == null)
-				result = caseCall(actorCall);
-			if (result == null)
-				result = caseCodeElt(actorCall);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case CodegenPackage.CALL_BLOCK: {
-			CallBlock callBlock = (CallBlock) theEObject;
-			T result = caseCallBlock(callBlock);
-			if (result == null)
-				result = caseBlock(callBlock);
-			if (result == null)
-				result = caseCodeElt(callBlock);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		default:
-			return defaultCase(theEObject);
+			case CodegenPackage.BLOCK: {
+				Block block = (Block)theEObject;
+				T result = caseBlock(block);
+				if (result == null) result = caseCodeElt(block);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case CodegenPackage.CODE_ELT: {
+				CodeElt codeElt = (CodeElt)theEObject;
+				T result = caseCodeElt(codeElt);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case CodegenPackage.CALL: {
+				Call call = (Call)theEObject;
+				T result = caseCall(call);
+				if (result == null) result = caseCodeElt(call);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case CodegenPackage.VARIABLE: {
+				Variable variable = (Variable)theEObject;
+				T result = caseVariable(variable);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case CodegenPackage.BUFFER: {
+				Buffer buffer = (Buffer)theEObject;
+				T result = caseBuffer(buffer);
+				if (result == null) result = caseVariable(buffer);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case CodegenPackage.SUB_BUFFER: {
+				SubBuffer subBuffer = (SubBuffer)theEObject;
+				T result = caseSubBuffer(subBuffer);
+				if (result == null) result = caseBuffer(subBuffer);
+				if (result == null) result = caseVariable(subBuffer);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case CodegenPackage.CONSTANT: {
+				Constant constant = (Constant)theEObject;
+				T result = caseConstant(constant);
+				if (result == null) result = caseVariable(constant);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case CodegenPackage.FUNCTION_CALL: {
+				FunctionCall functionCall = (FunctionCall)theEObject;
+				T result = caseFunctionCall(functionCall);
+				if (result == null) result = caseCall(functionCall);
+				if (result == null) result = caseCodeElt(functionCall);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case CodegenPackage.COMMUNICATION: {
+				Communication communication = (Communication)theEObject;
+				T result = caseCommunication(communication);
+				if (result == null) result = caseCall(communication);
+				if (result == null) result = caseCodeElt(communication);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case CodegenPackage.CORE_BLOCK: {
+				CoreBlock coreBlock = (CoreBlock)theEObject;
+				T result = caseCoreBlock(coreBlock);
+				if (result == null) result = caseBlock(coreBlock);
+				if (result == null) result = caseCodeElt(coreBlock);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case CodegenPackage.ACTOR_BLOCK: {
+				ActorBlock actorBlock = (ActorBlock)theEObject;
+				T result = caseActorBlock(actorBlock);
+				if (result == null) result = caseBlock(actorBlock);
+				if (result == null) result = caseCodeElt(actorBlock);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case CodegenPackage.LOOP_BLOCK: {
+				LoopBlock loopBlock = (LoopBlock)theEObject;
+				T result = caseLoopBlock(loopBlock);
+				if (result == null) result = caseBlock(loopBlock);
+				if (result == null) result = caseCodeElt(loopBlock);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case CodegenPackage.ACTOR_CALL: {
+				ActorCall actorCall = (ActorCall)theEObject;
+				T result = caseActorCall(actorCall);
+				if (result == null) result = caseCall(actorCall);
+				if (result == null) result = caseCodeElt(actorCall);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case CodegenPackage.CALL_BLOCK: {
+				CallBlock callBlock = (CallBlock)theEObject;
+				T result = caseCallBlock(callBlock);
+				if (result == null) result = caseBlock(callBlock);
+				if (result == null) result = caseCodeElt(callBlock);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			default: return defaultCase(theEObject);
 		}
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '
-	 * <em>Block</em>'. <!-- begin-user-doc --> This implementation returns
+	 * Returns the result of interpreting the object as an instance of '<em>Block</em>'.
+	 * <!-- begin-user-doc --> This implementation returns
 	 * null; returning a non-null result will terminate the switch. <!--
 	 * end-user-doc -->
-	 * 
-	 * @param object
-	 *            the target of the switch.
-	 * @return the result of interpreting the object as an instance of '
-	 *         <em>Block</em>'.
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Block</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
@@ -259,15 +218,12 @@ public class CodegenSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '
-	 * <em>Code Elt</em>'. <!-- begin-user-doc --> This implementation returns
+	 * Returns the result of interpreting the object as an instance of '<em>Code Elt</em>'.
+	 * <!-- begin-user-doc --> This implementation returns
 	 * null; returning a non-null result will terminate the switch. <!--
 	 * end-user-doc -->
-	 * 
-	 * @param object
-	 *            the target of the switch.
-	 * @return the result of interpreting the object as an instance of '
-	 *         <em>Code Elt</em>'.
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Code Elt</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
@@ -293,15 +249,12 @@ public class CodegenSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '
-	 * <em>Variable</em>'. <!-- begin-user-doc --> This implementation returns
+	 * Returns the result of interpreting the object as an instance of '<em>Variable</em>'.
+	 * <!-- begin-user-doc --> This implementation returns
 	 * null; returning a non-null result will terminate the switch. <!--
 	 * end-user-doc -->
-	 * 
-	 * @param object
-	 *            the target of the switch.
-	 * @return the result of interpreting the object as an instance of '
-	 *         <em>Variable</em>'.
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Variable</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
@@ -310,15 +263,12 @@ public class CodegenSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '
-	 * <em>Buffer</em>'. <!-- begin-user-doc --> This implementation returns
+	 * Returns the result of interpreting the object as an instance of '<em>Buffer</em>'.
+	 * <!-- begin-user-doc --> This implementation returns
 	 * null; returning a non-null result will terminate the switch. <!--
 	 * end-user-doc -->
-	 * 
-	 * @param object
-	 *            the target of the switch.
-	 * @return the result of interpreting the object as an instance of '
-	 *         <em>Buffer</em>'.
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Buffer</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
@@ -327,15 +277,12 @@ public class CodegenSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '
-	 * <em>Sub Buffer</em>'. <!-- begin-user-doc --> This implementation returns
+	 * Returns the result of interpreting the object as an instance of '<em>Sub Buffer</em>'.
+	 * <!-- begin-user-doc --> This implementation returns
 	 * null; returning a non-null result will terminate the switch. <!--
 	 * end-user-doc -->
-	 * 
-	 * @param object
-	 *            the target of the switch.
-	 * @return the result of interpreting the object as an instance of '
-	 *         <em>Sub Buffer</em>'.
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Sub Buffer</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
@@ -344,15 +291,12 @@ public class CodegenSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '
-	 * <em>Constant</em>'. <!-- begin-user-doc --> This implementation returns
+	 * Returns the result of interpreting the object as an instance of '<em>Constant</em>'.
+	 * <!-- begin-user-doc --> This implementation returns
 	 * null; returning a non-null result will terminate the switch. <!--
 	 * end-user-doc -->
-	 * 
-	 * @param object
-	 *            the target of the switch.
-	 * @return the result of interpreting the object as an instance of '
-	 *         <em>Constant</em>'.
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Constant</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
@@ -361,15 +305,12 @@ public class CodegenSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '
-	 * <em>Function Call</em>'. <!-- begin-user-doc --> This implementation
+	 * Returns the result of interpreting the object as an instance of '<em>Function Call</em>'.
+	 * <!-- begin-user-doc --> This implementation
 	 * returns null; returning a non-null result will terminate the switch. <!--
 	 * end-user-doc -->
-	 * 
-	 * @param object
-	 *            the target of the switch.
-	 * @return the result of interpreting the object as an instance of '
-	 *         <em>Function Call</em>'.
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Function Call</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
@@ -378,15 +319,12 @@ public class CodegenSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '
-	 * <em>Communication</em>'. <!-- begin-user-doc --> This implementation
+	 * Returns the result of interpreting the object as an instance of '<em>Communication</em>'.
+	 * <!-- begin-user-doc --> This implementation
 	 * returns null; returning a non-null result will terminate the switch. <!--
 	 * end-user-doc -->
-	 * 
-	 * @param object
-	 *            the target of the switch.
-	 * @return the result of interpreting the object as an instance of '
-	 *         <em>Communication</em>'.
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Communication</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
@@ -395,15 +333,12 @@ public class CodegenSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '
-	 * <em>Core Block</em>'. <!-- begin-user-doc --> This implementation returns
+	 * Returns the result of interpreting the object as an instance of '<em>Core Block</em>'.
+	 * <!-- begin-user-doc --> This implementation returns
 	 * null; returning a non-null result will terminate the switch. <!--
 	 * end-user-doc -->
-	 * 
-	 * @param object
-	 *            the target of the switch.
-	 * @return the result of interpreting the object as an instance of '
-	 *         <em>Core Block</em>'.
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Core Block</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
@@ -412,15 +347,12 @@ public class CodegenSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '
-	 * <em>Actor Block</em>'. <!-- begin-user-doc --> This implementation
+	 * Returns the result of interpreting the object as an instance of '<em>Actor Block</em>'.
+	 * <!-- begin-user-doc --> This implementation
 	 * returns null; returning a non-null result will terminate the switch. <!--
 	 * end-user-doc -->
-	 * 
-	 * @param object
-	 *            the target of the switch.
-	 * @return the result of interpreting the object as an instance of '
-	 *         <em>Actor Block</em>'.
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Actor Block</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
@@ -429,15 +361,12 @@ public class CodegenSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '
-	 * <em>Loop Block</em>'. <!-- begin-user-doc --> This implementation returns
+	 * Returns the result of interpreting the object as an instance of '<em>Loop Block</em>'.
+	 * <!-- begin-user-doc --> This implementation returns
 	 * null; returning a non-null result will terminate the switch. <!--
 	 * end-user-doc -->
-	 * 
-	 * @param object
-	 *            the target of the switch.
-	 * @return the result of interpreting the object as an instance of '
-	 *         <em>Loop Block</em>'.
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Loop Block</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
@@ -446,15 +375,12 @@ public class CodegenSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '
-	 * <em>Actor Call</em>'. <!-- begin-user-doc --> This implementation returns
+	 * Returns the result of interpreting the object as an instance of '<em>Actor Call</em>'.
+	 * <!-- begin-user-doc --> This implementation returns
 	 * null; returning a non-null result will terminate the switch. <!--
 	 * end-user-doc -->
-	 * 
-	 * @param object
-	 *            the target of the switch.
-	 * @return the result of interpreting the object as an instance of '
-	 *         <em>Actor Call</em>'.
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Actor Call</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
@@ -463,15 +389,12 @@ public class CodegenSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '
-	 * <em>Call Block</em>'. <!-- begin-user-doc --> This implementation returns
+	 * Returns the result of interpreting the object as an instance of '<em>Call Block</em>'.
+	 * <!-- begin-user-doc --> This implementation returns
 	 * null; returning a non-null result will terminate the switch. <!--
 	 * end-user-doc -->
-	 * 
-	 * @param object
-	 *            the target of the switch.
-	 * @return the result of interpreting the object as an instance of '
-	 *         <em>Call Block</em>'.
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Call Block</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
@@ -480,15 +403,12 @@ public class CodegenSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '
-	 * <em>EObject</em>'. <!-- begin-user-doc --> This implementation returns
+	 * Returns the result of interpreting the object as an instance of '<em>EObject</em>'.
+	 * <!-- begin-user-doc --> This implementation returns
 	 * null; returning a non-null result will terminate the switch, but this is
 	 * the last case anyway. <!-- end-user-doc -->
-	 * 
-	 * @param object
-	 *            the target of the switch.
-	 * @return the result of interpreting the object as an instance of '
-	 *         <em>EObject</em>'.
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>EObject</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject)
 	 * @generated
 	 */

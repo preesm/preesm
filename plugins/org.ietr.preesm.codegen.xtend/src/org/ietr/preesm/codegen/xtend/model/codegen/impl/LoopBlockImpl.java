@@ -45,13 +45,12 @@ import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
  * <em><b>Loop Block</b></em>'. <!-- end-user-doc -->
  * <p>
  * </p>
- * 
+ *
  * @generated
  */
 public class LoopBlockImpl extends BlockImpl implements LoopBlock {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected LoopBlockImpl() {
@@ -60,7 +59,6 @@ public class LoopBlockImpl extends BlockImpl implements LoopBlock {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override

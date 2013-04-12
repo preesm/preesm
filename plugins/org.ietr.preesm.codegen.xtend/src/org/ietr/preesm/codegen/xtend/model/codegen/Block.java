@@ -46,19 +46,16 @@ import org.eclipse.emf.common.util.EList;
  * similar to variable declarations and statement in C. Since a {@link Block} is
  * a {@link CodeElt code element} itself, {@link Block blocks} can contain other
  * blocks (e.g. a for-loop block).<!-- end-user-doc -->
- * 
+ *
  * <p>
  * The following features are supported:
  * <ul>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getCodeElts <em>
- * Code Elts</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDeclarations
- * <em>Declarations</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getName <em>Name
- * </em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getCodeElts <em>Code Elts</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDeclarations <em>Declarations</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getName <em>Name</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBlock()
  * @model
  * @generated
@@ -119,12 +116,9 @@ public interface Block extends CodeElt {
 	String getName();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getName
-	 * <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Name</em>' attribute.
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getName <em>Name</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Name</em>' attribute.
 	 * @see #getName()
 	 * @generated
 	 */

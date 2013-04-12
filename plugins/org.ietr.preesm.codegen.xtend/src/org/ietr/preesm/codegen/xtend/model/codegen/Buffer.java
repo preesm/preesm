@@ -41,15 +41,14 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  * seen as equivalent to an array in C code. <br>
  * A {@link Buffer} has a {@link #getSize() size} which is the number of element
  * of its {@link #getType() type} it can store.<!-- end-user-doc -->
- * 
+ *
  * <p>
  * The following features are supported:
  * <ul>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getSize <em>
- * Size</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getSize <em>Size</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBuffer()
  * @model
  * @generated
@@ -73,12 +72,9 @@ public interface Buffer extends Variable {
 	int getSize();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getSize
-	 * <em>Size</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Size</em>' attribute.
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getSize <em>Size</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Size</em>' attribute.
 	 * @see #getSize()
 	 * @generated
 	 */

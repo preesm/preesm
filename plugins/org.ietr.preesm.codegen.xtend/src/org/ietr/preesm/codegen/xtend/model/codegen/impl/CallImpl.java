@@ -58,21 +58,17 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getParameters
- * <em>Parameters</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getName
- * <em>Name</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getParameters <em>Parameters</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getName <em>Name</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @generated
  */
 public abstract class CallImpl extends EObjectImpl implements Call {
 	/**
-	 * The cached value of the '{@link #getParameters() <em>Parameters</em>}'
-	 * reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getParameters() <em>Parameters</em>}' reference list.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getParameters()
 	 * @generated
 	 * @ordered
@@ -82,7 +78,6 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 	/**
 	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -92,7 +87,6 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 	/**
 	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -101,7 +95,6 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected CallImpl() {
@@ -110,7 +103,6 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -120,20 +112,17 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public EList<Variable> getParameters() {
 		if (parameters == null) {
-			parameters = new EObjectResolvingEList<Variable>(Variable.class,
-					this, CodegenPackage.CALL__PARAMETERS);
+			parameters = new EObjectResolvingEList<Variable>(Variable.class, this, CodegenPackage.CALL__PARAMETERS);
 		}
 		return parameters;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public String getName() {
@@ -142,97 +131,88 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public void setName(String newName) {
 		String oldName = name;
 		name = newName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.CALL__NAME, oldName, name));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.CALL__NAME, oldName, name));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case CodegenPackage.CALL__PARAMETERS:
-			return getParameters();
-		case CodegenPackage.CALL__NAME:
-			return getName();
+			case CodegenPackage.CALL__PARAMETERS:
+				return getParameters();
+			case CodegenPackage.CALL__NAME:
+				return getName();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case CodegenPackage.CALL__PARAMETERS:
-			getParameters().clear();
-			getParameters().addAll((Collection<? extends Variable>) newValue);
-			return;
-		case CodegenPackage.CALL__NAME:
-			setName((String) newValue);
-			return;
+			case CodegenPackage.CALL__PARAMETERS:
+				getParameters().clear();
+				getParameters().addAll((Collection<? extends Variable>)newValue);
+				return;
+			case CodegenPackage.CALL__NAME:
+				setName((String)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case CodegenPackage.CALL__PARAMETERS:
-			getParameters().clear();
-			return;
-		case CodegenPackage.CALL__NAME:
-			setName(NAME_EDEFAULT);
-			return;
+			case CodegenPackage.CALL__PARAMETERS:
+				getParameters().clear();
+				return;
+			case CodegenPackage.CALL__NAME:
+				setName(NAME_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case CodegenPackage.CALL__PARAMETERS:
-			return parameters != null && !parameters.isEmpty();
-		case CodegenPackage.CALL__NAME:
-			return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT
-					.equals(name);
+			case CodegenPackage.CALL__PARAMETERS:
+				return parameters != null && !parameters.isEmpty();
+			case CodegenPackage.CALL__NAME:
+				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy())
-			return super.toString();
+		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (name: ");
