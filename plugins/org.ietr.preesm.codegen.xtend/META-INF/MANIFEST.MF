@@ -6,18 +6,20 @@ Bundle-Version: 0.6.3.v20130322
 Bundle-Activator: org.ietr.preesm.codegen.xtend.Activator
 Bundle-Vendor: IETR/INSA of Rennes
 Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.emf,
+ org.eclipse.emf.ecore.xmi,
+ org.eclipse.xtend.lib,
+ org.eclipse.xtext.xbase.lib,
+ com.google.guava,
  org.jgrapht,
  net.sf.dftools.algorithm,
  net.sf.dftools.workflow,
- org.ietr.preesm.memory,
  net.sf.dftools.architecture,
+ org.ietr.preesm.memory,
  org.ietr.preesm.core,
- org.eclipse.xtend.lib,
- com.google.guava,
- org.eclipse.xtext.xbase.lib,
- org.ietr.preesm.experiment;resolution:=optional,
  org.ietr.preesm.plugin.codegen,
- org.eclipse.core.resources
+ org.ietr.preesm.experiment;resolution:=optional
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.ietr.preesm.codegen.xtend.task
 

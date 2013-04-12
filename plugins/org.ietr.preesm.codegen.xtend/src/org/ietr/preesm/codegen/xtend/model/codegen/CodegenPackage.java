@@ -137,13 +137,22 @@ public interface CodegenPackage extends EPackage {
 	int BLOCK__DECLARATIONS = CODE_ELT_FEATURE_COUNT + 1;
 
 	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int BLOCK__NAME = CODE_ELT_FEATURE_COUNT + 2;
+
+	/**
 	 * The number of structural features of the '<em>Block</em>' class. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int BLOCK_FEATURE_COUNT = CODE_ELT_FEATURE_COUNT + 2;
+	int BLOCK_FEATURE_COUNT = CODE_ELT_FEATURE_COUNT + 3;
 
 	/**
 	 * The meta object id for the '
@@ -580,6 +589,15 @@ public interface CodegenPackage extends EPackage {
 	int CORE_BLOCK__DECLARATIONS = BLOCK__DECLARATIONS;
 
 	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int CORE_BLOCK__NAME = BLOCK__NAME;
+
+	/**
 	 * The feature id for the '<em><b>Loop Block</b></em>' reference. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -637,6 +655,15 @@ public interface CodegenPackage extends EPackage {
 	int ACTOR_BLOCK__DECLARATIONS = BLOCK__DECLARATIONS;
 
 	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int ACTOR_BLOCK__NAME = BLOCK__NAME;
+
+	/**
 	 * The feature id for the '<em><b>Loop Block</b></em>' reference. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -692,6 +719,15 @@ public interface CodegenPackage extends EPackage {
 	 * @ordered
 	 */
 	int LOOP_BLOCK__DECLARATIONS = BLOCK__DECLARATIONS;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int LOOP_BLOCK__NAME = BLOCK__NAME;
 
 	/**
 	 * The number of structural features of the '<em>Loop Block</em>' class.
@@ -772,6 +808,15 @@ public interface CodegenPackage extends EPackage {
 	int CALL_BLOCK__DECLARATIONS = BLOCK__DECLARATIONS;
 
 	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int CALL_BLOCK__NAME = BLOCK__NAME;
+
+	/**
 	 * The number of structural features of the '<em>Call Block</em>' class.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -837,6 +882,18 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getBlock_Declarations();
+
+	/**
+	 * Returns the meta object for the attribute '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getName
+	 * <em>Name</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Name</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Block#getName()
+	 * @see #getBlock()
+	 * @generated
+	 */
+	EAttribute getBlock_Name();
 
 	/**
 	 * Returns the meta object for class '
@@ -1245,6 +1302,14 @@ public interface CodegenPackage extends EPackage {
 		 * @generated
 		 */
 		EReference BLOCK__DECLARATIONS = eINSTANCE.getBlock_Declarations();
+
+		/**
+		 * The meta object literal for the '<em><b>Name</b></em>' attribute
+		 * feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute BLOCK__NAME = eINSTANCE.getBlock_Name();
 
 		/**
 		 * The meta object literal for the '

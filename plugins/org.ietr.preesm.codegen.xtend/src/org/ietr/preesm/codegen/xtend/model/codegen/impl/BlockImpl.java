@@ -37,6 +37,7 @@ package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
 import java.util.Collection;
 
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
 import org.eclipse.emf.common.util.EList;
@@ -44,6 +45,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
@@ -67,6 +69,9 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
  * <li>
  * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BlockImpl#getDeclarations
  * <em>Declarations</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BlockImpl#getName
+ * <em>Name</em>}</li>
  * </ul>
  * </p>
  * 
@@ -93,6 +98,26 @@ public class BlockImpl extends EObjectImpl implements Block {
 	 * @ordered
 	 */
 	protected EList<Variable> declarations;
+
+	/**
+	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #getName()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String NAME_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #getName()
+	 * @generated
+	 * @ordered
+	 */
+	protected String name = NAME_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -145,6 +170,28 @@ public class BlockImpl extends EObjectImpl implements Block {
 	 * 
 	 * @generated
 	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public void setName(String newName) {
+		String oldName = name;
+		name = newName;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					CodegenPackage.BLOCK__NAME, oldName, name));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd,
@@ -188,6 +235,8 @@ public class BlockImpl extends EObjectImpl implements Block {
 			return getCodeElts();
 		case CodegenPackage.BLOCK__DECLARATIONS:
 			return getDeclarations();
+		case CodegenPackage.BLOCK__NAME:
+			return getName();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -209,6 +258,9 @@ public class BlockImpl extends EObjectImpl implements Block {
 			getDeclarations().clear();
 			getDeclarations().addAll((Collection<? extends Variable>) newValue);
 			return;
+		case CodegenPackage.BLOCK__NAME:
+			setName((String) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -227,6 +279,9 @@ public class BlockImpl extends EObjectImpl implements Block {
 		case CodegenPackage.BLOCK__DECLARATIONS:
 			getDeclarations().clear();
 			return;
+		case CodegenPackage.BLOCK__NAME:
+			setName(NAME_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -243,8 +298,28 @@ public class BlockImpl extends EObjectImpl implements Block {
 			return codeElts != null && !codeElts.isEmpty();
 		case CodegenPackage.BLOCK__DECLARATIONS:
 			return declarations != null && !declarations.isEmpty();
+		case CodegenPackage.BLOCK__NAME:
+			return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT
+					.equals(name);
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public String toString() {
+		if (eIsProxy())
+			return super.toString();
+
+		StringBuffer result = new StringBuffer(super.toString());
+		result.append(" (name: ");
+		result.append(name);
+		result.append(')');
+		return result.toString();
 	}
 
 } // BlockImpl

@@ -281,6 +281,15 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	public EAttribute getBlock_Name() {
+		return (EAttribute) blockEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	public EClass getCodeElt() {
 		return codeEltEClass;
 	}
@@ -587,6 +596,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		blockEClass = createEClass(BLOCK);
 		createEReference(blockEClass, BLOCK__CODE_ELTS);
 		createEReference(blockEClass, BLOCK__DECLARATIONS);
+		createEAttribute(blockEClass, BLOCK__NAME);
 
 		codeEltEClass = createEClass(CODE_ELT);
 
@@ -689,6 +699,10 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 				Block.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
+		initEAttribute(getBlock_Name(), ecorePackage.getEString(), "name",
+				null, 0, 1, Block.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
 
 		initEClass(codeEltEClass, CodeElt.class, "CodeElt", IS_ABSTRACT,
 				IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);

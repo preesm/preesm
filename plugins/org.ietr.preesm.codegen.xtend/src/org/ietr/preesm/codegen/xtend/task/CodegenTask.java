@@ -1,17 +1,28 @@
 package org.ietr.preesm.codegen.xtend.task;
 
+import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
+import java.util.Set;
 
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.elements.Workflow;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
+
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.ietr.preesm.codegen.xtend.model.codegen.Block;
+import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
 public class CodegenTask extends AbstractTaskImplementation {
 
@@ -26,11 +37,44 @@ public class CodegenTask extends AbstractTaskImplementation {
 		MemoryExclusionGraph memEx = (MemoryExclusionGraph) inputs.get("MemEx");
 		DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 
-		// Generate intermediary model
+		// Generate intermediate model
 		CodegenModelGenerator generator = new CodegenModelGenerator(archi, dag,
 				memEx, scenario);
 
-		generator.generate();
+		Set<Block> codeBlock = generator.generate();
+
+		// Save the intermediate model
+
+		// Register the XMI resource factory for the .website extension
+		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+		Map<String, Object> m = reg.getExtensionToFactoryMap();
+		m.put("codegen", new XMIResourceFactoryImpl());
+
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		workspace.getRoot().getLocation();
+		String codegenPath = scenario.getCodegenManager().getCodegenDirectory()
+				+ "/codegen/";
+
+		// Obtain a new resource set
+		ResourceSet resSet = new ResourceSetImpl();
+
+		for (Block b : codeBlock) {
+			// Create a resource
+			scenario.getCodegenManager().getCodegenDirectory();
+			Resource resource = resSet.createResource(URI.createURI(codegenPath
+					+ b.getName() + ".codegen"));
+			// Get the first model element and cast it to the right type, in my
+			// example everything is hierarchical included in this first node
+			resource.getContents().add(b);
+
+			// Now save the content.
+			try {
+				resource.save(Collections.EMPTY_MAP);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 
 		// Create empty output map
 		Map<String, Object> output = new HashMap<String, Object>();

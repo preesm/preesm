@@ -54,6 +54,8 @@ import org.eclipse.emf.common.util.EList;
  * Code Elts</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDeclarations
  * <em>Declarations</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getName <em>Name
+ * </em>}</li>
  * </ul>
  * </p>
  * 
@@ -98,5 +100,34 @@ public interface Block extends CodeElt {
 	 * @generated
 	 */
 	EList<Variable> getDeclarations();
+
+	/**
+	 * Returns the value of the '<em><b>Name</b></em>' attribute. <!--
+	 * begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Name</em>' attribute isn't clear, there really
+	 * should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Name</em>' attribute.
+	 * @see #setName(String)
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBlock_Name()
+	 * @model
+	 * @generated
+	 */
+	String getName();
+
+	/**
+	 * Sets the value of the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getName
+	 * <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Name</em>' attribute.
+	 * @see #getName()
+	 * @generated
+	 */
+	void setName(String value);
 
 } // Block

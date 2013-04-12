@@ -38,6 +38,7 @@ package org.ietr.preesm.codegen.xtend.task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -129,7 +130,6 @@ public class CodegenModelGenerator {
 	 * {@link PreesmScenario Scenario} at the origin of the call to the
 	 * {@link CodegenPrinter Code Generator}.
 	 */
-	@SuppressWarnings("unused")
 	private PreesmScenario scenario;
 
 	/**
@@ -313,15 +313,13 @@ public class CodegenModelGenerator {
 		// 0 - Create the Buffers of the MemEx
 		// 1 - Iterate on the actors of the DAG
 		// 1.0 - Identify the core used.
-		// 1.1 - Construct the "loop" of each core.
-		// 1.2 - The init function of actors is executed on the same core of
-		// their first firing.
-		// 1.3 - Identify the buffer accessed/owned by each core.
+		// 1.1 - Construct the "loop" & "init" of each core.
 		// 2 - Put the buffer declaration in their right place
 
 		// 0 - Create the Buffers of the MemEx
 		generateBuffers();
 
+		// 1 - Iterate on the actors of the DAG
 		DAGIterator iter = new DAGIterator(dag);
 		while (iter.hasNext()) {
 
@@ -340,6 +338,7 @@ public class CodegenModelGenerator {
 				operatorBlock = coreBlocks.get(operator);
 				if (operatorBlock == null) {
 					operatorBlock = CodegenFactory.eINSTANCE.createCoreBlock();
+					operatorBlock.setName(operator.getInstanceName());
 					coreBlocks.put(operator, operatorBlock);
 				}
 			} // end 1.0
@@ -377,8 +376,7 @@ public class CodegenModelGenerator {
 				}
 			}
 		}
-		return null;
-
+		return new HashSet<Block>(coreBlocks.values());
 	}
 
 	/**
@@ -433,7 +431,11 @@ public class CodegenModelGenerator {
 
 				// Register the core Block as a user of the function variable
 				for (Variable var : functionCall.getParameters()) {
-					var.getUsers().add(operatorBlock);
+					// Currently, constants do not need to be declared nor
+					// have creator since their value is directly used.
+					if (!(var instanceof Constant)) {
+						var.getUsers().add(operatorBlock);
+					}
 				}
 				// Add the function call to the operatorBlock
 				operatorBlock.getLoopBlock().getCodeElts().add(functionCall);
@@ -449,7 +451,11 @@ public class CodegenModelGenerator {
 					// Register the core Block as a user of the function
 					// variable
 					for (Variable var : functionCall.getParameters()) {
-						var.getUsers().add(operatorBlock);
+						// Currently, constants do not need to be declared nor
+						// have creator since their value is directly used.
+						if (!(var instanceof Constant)) {
+							var.getUsers().add(operatorBlock);
+						}
 					}
 					// Add the function call to the operatorBlock
 					operatorBlock.getInitBlock().getCodeElts()
