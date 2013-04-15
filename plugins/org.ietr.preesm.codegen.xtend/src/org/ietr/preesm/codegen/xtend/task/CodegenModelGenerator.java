@@ -85,6 +85,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
+import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.core.types.BufferAggregate;
@@ -482,18 +483,21 @@ public class CodegenModelGenerator {
 	 */
 	protected void registerCommunication(Communication newCommmunication,
 			DAGEdge dagEdge, DAGVertex dagVertex) {
-		if(dagVertex != null){
-		throw new RuntimeException("Back to work here ! Use the da vertex to retrieve multi step comm.");
-		}
-		String commID = dagEdge.getSource().getPropertyStringValue(
-				ImplementationPropertyNames.Vertex_Operator);
+		// Retrieve the routeStep corresponding to the vertex.
+		// In case of multi-step communication, this is the easiest
+		// way to retrieve the target and source of the communication
+		// corresponding to the current Send/ReceiveVertex
+		MessageRouteStep routeStep = (MessageRouteStep) dagVertex
+				.getPropertyBean()
+				.getValue("routeStep", MessageRouteStep.class);
+
+		String commID = routeStep.getSender().getInstanceName();
 		commID += "__" + dagEdge.getSource().getName();
-		commID += "___"
-				+ dagEdge.getTarget().getPropertyStringValue(
-						ImplementationPropertyNames.Vertex_Operator);
+		commID += "___"	+ routeStep.getReceiver().getInstanceName();
 		commID += "__" + dagEdge.getTarget().getName();
 		List<Communication> associatedCommunications = communications
 				.get(commID);
+
 		if (associatedCommunications == null) {
 			associatedCommunications = new ArrayList<Communication>();
 			communications.put(commID, associatedCommunications);
