@@ -42,6 +42,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -59,6 +60,7 @@ import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.WorkflowException;
 
+import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
@@ -213,6 +215,8 @@ public class MemoryExclusionGraph extends
 		System.out
 				.println("Complementary graph may not be corrupted.. \n"
 						+ "check with several examples before using this function again !");
+		
+		final String localOrdering = "memExBuildingLocalOrdering";
 		/*
 		 * Declarations & initializations
 		 */
@@ -221,7 +225,7 @@ public class MemoryExclusionGraph extends
 		// Be careful, DAGiterator does not seem to work well if dag is
 		// modified throughout the iteration.
 		// That's why we use first copy the ordered dag vertex set.
-		ArrayList<DAGVertex> dagVertices = new ArrayList<DAGVertex>(dag
+		LinkedHashSet<DAGVertex> dagVertices = new LinkedHashSet<DAGVertex>(dag
 				.vertexSet().size());
 		while (iterDAGVertices.hasNext()) {
 			DAGVertex vert = iterDAGVertices.next();
@@ -260,7 +264,7 @@ public class MemoryExclusionGraph extends
 				// If the dagVertex is a task (except implode/explode task), set
 				// the scheduling Order which will be used as a unique ID for
 				// each vertex
-				vert.getPropertyBean().setValue("schedulingOrder", newOrder);
+				vert.getPropertyBean().setValue(localOrdering, newOrder);
 				newOrder++;
 
 				if (vert.incomingEdges().size() == 0) {
@@ -306,7 +310,7 @@ public class MemoryExclusionGraph extends
 		for (DAGVertex vertexDAG : dagVertices) // For each vertex of the DAG
 		{
 			int vertexID = (Integer) vertexDAG.getPropertyBean().getValue(
-					"schedulingOrder"); // Retrieve the vertex unique ID
+					localOrdering); // Retrieve the vertex unique ID
 
 			// For each outgoing edge
 			for (DAGEdge edge : vertexDAG.outgoingEdges()) {
@@ -327,12 +331,12 @@ public class MemoryExclusionGraph extends
 					// edge
 					incoming.get(
 							(Integer) edge.getTarget().getPropertyBean()
-									.getValue("schedulingOrder")).add(newNode);
+									.getValue(localOrdering)).add(newNode);
 
 					// Update the predecessor list of the consumer of this edge
 					HashSet<MemoryExclusionVertex> predecessor;
 					predecessor = predecessors.get((Integer) edge.getTarget()
-							.getPropertyBean().getValue("schedulingOrder"));
+							.getPropertyBean().getValue(localOrdering));
 					predecessor.addAll(inclusions);
 					predecessor.addAll(incoming.get(vertexID));
 				}
@@ -358,6 +362,8 @@ public class MemoryExclusionGraph extends
 	 */
 	public void buildGraph(DirectedAcyclicGraph dag)
 			throws InvalidExpressionException, WorkflowException {
+		
+		final String localOrdering = "memExBuildingLocalOrdering";
 
 		/*
 		 * Declarations & initializations
@@ -367,7 +373,7 @@ public class MemoryExclusionGraph extends
 		// Be careful, DAGiterator does not seem to work well if dag is
 		// modified throughout the iteration.
 		// That's why we use first copy the ordered dag vertex set.
-		ArrayList<DAGVertex> dagVertices = new ArrayList<DAGVertex>(dag
+		LinkedHashSet<DAGVertex> dagVertices = new LinkedHashSet<DAGVertex>(dag
 				.vertexSet().size());
 		while (iterDAGVertices.hasNext()) {
 			DAGVertex vert = iterDAGVertices.next();
@@ -406,7 +412,7 @@ public class MemoryExclusionGraph extends
 				// If the dagVertex is a task (except implode/explode task), set
 				// the scheduling Order which will be used as a unique ID for
 				// each vertex
-				vert.getPropertyBean().setValue("schedulingOrder", newOrder);
+				vert.getPropertyBean().setValue(localOrdering, newOrder);
 				newOrder++;
 
 				if (vert.incomingEdges().size() == 0) {
@@ -455,7 +461,7 @@ public class MemoryExclusionGraph extends
 			// vertex
 			// to process
 			int vertexID = (Integer) vertexDAG.getPropertyBean().getValue(
-					"schedulingOrder"); // Retrieve the vertex unique ID
+					localOrdering); // Retrieve the vertex unique ID
 
 			// If the current vertex has some working memory, create the
 			// associated MemoryExclusionGraphVertex
@@ -507,12 +513,12 @@ public class MemoryExclusionGraph extends
 					// edge
 					incoming.get(
 							(Integer) edge.getTarget().getPropertyBean()
-									.getValue("schedulingOrder")).add(newNode);
+									.getValue(localOrdering)).add(newNode);
 
 					// Update the predecessor list of the consumer of this edge
 					HashSet<MemoryExclusionVertex> predecessor;
 					predecessor = predecessors.get((Integer) edge.getTarget()
-							.getPropertyBean().getValue("schedulingOrder"));
+							.getPropertyBean().getValue(localOrdering));
 					predecessor.addAll(inclusions);
 					predecessor.addAll(incoming.get(vertexID));
 				} else {
@@ -962,7 +968,7 @@ public class MemoryExclusionGraph extends
 					|| vertKind.equals("dag_broadcast_vertex")
 					|| vertKind.equals("dag_init_vertex")) {
 				int schedulingOrder = (Integer) currentVertex.getPropertyBean()
-						.getValue("schedulingOrder");
+						.getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
 				verticesMap.put(schedulingOrder, currentVertex);
 			}
 			if (vertKind.equals("dag_fork_vertex")
