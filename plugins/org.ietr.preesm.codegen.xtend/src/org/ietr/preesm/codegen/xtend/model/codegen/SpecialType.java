@@ -42,97 +42,142 @@ import java.util.List;
 import org.eclipse.emf.common.util.Enumerator;
 
 /**
- * <!-- begin-user-doc --> The {@link Delimiter} is used to determine whether a
- * {@link Communication} {@link Call} {@link #START starts} or {@link #END ends}
- * a communication zone. <br>
- * Data can be sent/received as soon a communication zone {@link #START starts}
- * and until this zone {@link #END ends}. If the {@link #END} of a zone is
- * reached before the completion of the corresponding, the process must wait
- * until the communication completes before pursuing its computation. <!--
- * end-user-doc -->
+ * <!-- begin-user-doc --> A representation of the literals of the enumeration '
+ * <em><b>Special Type</b></em>', and utility methods for working with them.
+ * <!-- end-user-doc -->
  * 
- * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getDelimiter()
+ * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSpecialType()
  * @model
  * @generated
  */
-public enum Delimiter implements Enumerator {
+public enum SpecialType implements Enumerator {
 	/**
-	 * The '<em><b>START</b></em>' literal object. <!-- begin-user-doc --> <!--
+	 * The '<em><b>FORK</b></em>' literal object. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
-	 * @see #START_VALUE
+	 * @see #FORK_VALUE
 	 * @generated
 	 * @ordered
 	 */
-	START(0, "START", "START"),
+	FORK(0, "FORK", "FORK"),
 
 	/**
-	 * The '<em><b>END</b></em>' literal object. <!-- begin-user-doc --> <!--
+	 * The '<em><b>JOIN</b></em>' literal object. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
-	 * @see #END_VALUE
+	 * @see #JOIN_VALUE
 	 * @generated
 	 * @ordered
 	 */
-	END(1, "END", "END");
+	JOIN(1, "JOIN", "JOIN"),
 
 	/**
-	 * The '<em><b>START</b></em>' literal value. <!-- begin-user-doc -->
+	 * The '<em><b>BROADCAST</b></em>' literal object. <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @see #BROADCAST_VALUE
+	 * @generated
+	 * @ordered
+	 */
+	BROADCAST(2, "BROADCAST", "BROADCAST"),
+
+	/**
+	 * The '<em><b>ROUND BUFFER</b></em>' literal object. <!-- begin-user-doc
+	 * --> <!-- end-user-doc -->
+	 * 
+	 * @see #ROUND_BUFFER_VALUE
+	 * @generated
+	 * @ordered
+	 */
+	ROUND_BUFFER(3, "ROUND_BUFFER", "ROUND_BUFFER");
+
+	/**
+	 * The '<em><b>FORK</b></em>' literal value. <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of '<em><b>START</b></em>' literal object isn't clear,
+	 * If the meaning of '<em><b>FORK</b></em>' literal object isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * 
-	 * @see #START
+	 * @see #FORK
 	 * @model
 	 * @generated
 	 * @ordered
 	 */
-	public static final int START_VALUE = 0;
+	public static final int FORK_VALUE = 0;
 
 	/**
-	 * The '<em><b>END</b></em>' literal value. <!-- begin-user-doc -->
+	 * The '<em><b>JOIN</b></em>' literal value. <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of '<em><b>END</b></em>' literal object isn't clear, there
-	 * really should be more of a description here...
+	 * If the meaning of '<em><b>JOIN</b></em>' literal object isn't clear,
+	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * 
-	 * @see #END
+	 * @see #JOIN
 	 * @model
 	 * @generated
 	 * @ordered
 	 */
-	public static final int END_VALUE = 1;
+	public static final int JOIN_VALUE = 1;
 
 	/**
-	 * An array of all the '<em><b>Delimiter</b></em>' enumerators. <!--
+	 * The '<em><b>BROADCAST</b></em>' literal value. <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of '<em><b>BROADCAST</b></em>' literal object isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @see #BROADCAST
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int BROADCAST_VALUE = 2;
+
+	/**
+	 * The '<em><b>ROUND BUFFER</b></em>' literal value. <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of '<em><b>ROUND BUFFER</b></em>' literal object isn't
+	 * clear, there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @see #ROUND_BUFFER
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int ROUND_BUFFER_VALUE = 3;
+
+	/**
+	 * An array of all the '<em><b>Special Type</b></em>' enumerators. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
-	private static final Delimiter[] VALUES_ARRAY = new Delimiter[] { START,
-			END, };
+	private static final SpecialType[] VALUES_ARRAY = new SpecialType[] { FORK,
+			JOIN, BROADCAST, ROUND_BUFFER, };
 
 	/**
-	 * A public read-only list of all the '<em><b>Delimiter</b></em>'
+	 * A public read-only list of all the '<em><b>Special Type</b></em>'
 	 * enumerators. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
-	public static final List<Delimiter> VALUES = Collections
+	public static final List<SpecialType> VALUES = Collections
 			.unmodifiableList(Arrays.asList(VALUES_ARRAY));
 
 	/**
-	 * Returns the '<em><b>Delimiter</b></em>' literal with the specified
+	 * Returns the '<em><b>Special Type</b></em>' literal with the specified
 	 * literal value. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
-	public static Delimiter get(String literal) {
+	public static SpecialType get(String literal) {
 		for (int i = 0; i < VALUES_ARRAY.length; ++i) {
-			Delimiter result = VALUES_ARRAY[i];
+			SpecialType result = VALUES_ARRAY[i];
 			if (result.toString().equals(literal)) {
 				return result;
 			}
@@ -141,14 +186,14 @@ public enum Delimiter implements Enumerator {
 	}
 
 	/**
-	 * Returns the '<em><b>Delimiter</b></em>' literal with the specified name.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * Returns the '<em><b>Special Type</b></em>' literal with the specified
+	 * name. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
-	public static Delimiter getByName(String name) {
+	public static SpecialType getByName(String name) {
 		for (int i = 0; i < VALUES_ARRAY.length; ++i) {
-			Delimiter result = VALUES_ARRAY[i];
+			SpecialType result = VALUES_ARRAY[i];
 			if (result.getName().equals(name)) {
 				return result;
 			}
@@ -157,17 +202,21 @@ public enum Delimiter implements Enumerator {
 	}
 
 	/**
-	 * Returns the '<em><b>Delimiter</b></em>' literal with the specified
+	 * Returns the '<em><b>Special Type</b></em>' literal with the specified
 	 * integer value. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
-	public static Delimiter get(int value) {
+	public static SpecialType get(int value) {
 		switch (value) {
-		case START_VALUE:
-			return START;
-		case END_VALUE:
-			return END;
+		case FORK_VALUE:
+			return FORK;
+		case JOIN_VALUE:
+			return JOIN;
+		case BROADCAST_VALUE:
+			return BROADCAST;
+		case ROUND_BUFFER_VALUE:
+			return ROUND_BUFFER;
 		}
 		return null;
 	}
@@ -199,7 +248,7 @@ public enum Delimiter implements Enumerator {
 	 * 
 	 * @generated
 	 */
-	private Delimiter(int value, String name, String literal) {
+	private SpecialType(int value, String name, String literal) {
 		this.value = value;
 		this.name = name;
 		this.literal = literal;
@@ -243,4 +292,4 @@ public enum Delimiter implements Enumerator {
 		return literal;
 	}
 
-} // Delimiter
+} // SpecialType

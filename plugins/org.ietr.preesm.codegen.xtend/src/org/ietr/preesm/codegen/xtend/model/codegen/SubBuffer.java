@@ -42,15 +42,18 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  * the portion of a {@link Buffer} accessed by this {@link SubBuffer}. The
  * parent {@link Buffer} of a {@link SubBuffer} is called its
  * {@link #getContainer() container}. <!-- end-user-doc -->
- *
+ * 
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getContainer <em>Container</em>}</li>
- *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getOffset <em>Offset</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getContainer
+ * <em>Container</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getOffset
+ * <em>Offset</em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSubBuffer()
  * @model
  * @generated

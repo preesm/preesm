@@ -45,12 +45,13 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
  * <em><b>Actor Call</b></em>'. <!-- end-user-doc -->
  * <p>
  * </p>
- *
+ * 
  * @generated
  */
 public class ActorCallImpl extends CallImpl implements ActorCall {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected ActorCallImpl() {
@@ -59,6 +60,7 @@ public class ActorCallImpl extends CallImpl implements ActorCall {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override

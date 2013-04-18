@@ -38,14 +38,15 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
 /**
  * <!-- begin-user-doc --> A {@link Constant} is a {@link Variable} whose value
  * can not be changed. <!-- end-user-doc -->
- *
+ * 
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Constant#getValue <em>Value</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Constant#getValue <em>
+ * Value</em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getConstant()
  * @model
  * @generated
@@ -70,9 +71,12 @@ public interface Constant extends Variable {
 	long getValue();
 
 	/**
-	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Constant#getValue <em>Value</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Value</em>' attribute.
+	 * Sets the value of the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Constant#getValue
+	 * <em>Value</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Value</em>' attribute.
 	 * @see #getValue()
 	 * @generated
 	 */

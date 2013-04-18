@@ -39,8 +39,8 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  * <!-- begin-user-doc --> A {@link LoopBlock} is a {@link Block} containing all
  * information needed to generate the source code associated to an infinite
  * loop. <!-- end-user-doc -->
- *
- *
+ * 
+ * 
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getLoopBlock()
  * @model
  * @generated

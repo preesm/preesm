@@ -45,12 +45,13 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
  * <em><b>Function Call</b></em>'. <!-- end-user-doc -->
  * <p>
  * </p>
- *
+ * 
  * @generated
  */
 public class FunctionCallImpl extends CallImpl implements FunctionCall {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected FunctionCallImpl() {
@@ -59,6 +60,7 @@ public class FunctionCallImpl extends CallImpl implements FunctionCall {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override

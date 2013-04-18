@@ -41,23 +41,43 @@ import org.eclipse.emf.common.util.EList;
  * <!-- begin-user-doc --> A {@link Call} is a {@link CodeElt} used to represent
  * a {@link Call} to a {@link FunctionCall function} or other primitive used in
  * the codegen such as {@link Communication} primitives. <!-- end-user-doc -->
- *
+ * 
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getParameters <em>Parameters</em>}</li>
- *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getName <em>Name</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getParameters
+ * <em>Parameters</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getName <em>Name
+ * </em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCall()
  * @model abstract="true"
  * @generated
  */
 public interface Call extends CodeElt {
 	/**
-	 * Returns the value of the '<em><b>Parameters</b></em>' reference list. The
-	 * list contents are of type
+	 * Returns a copy of the value of of the '<em><b>Parameters</b></em>'
+	 * reference list. The list contents are of type
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable}. <!--
+	 * begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Parameters</em>' reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Parameters</em>' reference list.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCall_Parameters()
+	 * @model
+	 * 
+	 */
+	EList<Variable> internalGetParameters();
+
+	/**
+	 * Returns the value of of the '<em><b>Parameters</b></em>' reference list.
+	 * The list contents are of type
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable}. <!--
 	 * begin-user-doc -->
 	 * <p>
@@ -70,6 +90,7 @@ public interface Call extends CodeElt {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCall_Parameters()
 	 * @model
 	 * @generated
+	 * 
 	 */
 	EList<Variable> getParameters();
 
@@ -91,12 +112,32 @@ public interface Call extends CodeElt {
 	String getName();
 
 	/**
-	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getName <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Name</em>' attribute.
+	 * Sets the value of the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getName
+	 * <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Name</em>' attribute.
 	 * @see #getName()
 	 * @generated
 	 */
 	void setName(String value);
+
+	/**
+	 * <!-- begin-user-doc --> Add a {@link Variable} from the {@link #g} list.
+	 * <!-- end-user-doc -->
+	 * 
+	 * @model
+	 * @generated
+	 */
+	void addParameter(Variable variable);
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @model
+	 * @generated
+	 */
+	void removeParameter(Variable variable);
 
 } // Call

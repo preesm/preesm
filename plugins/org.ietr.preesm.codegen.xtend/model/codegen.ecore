@@ -3,15 +3,21 @@
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="codegen" nsURI="http://codegen/1.0" nsPrefix="codegen">
   <eClassifiers xsi:type="ecore:EClass" name="Block" eSuperTypes="#//CodeElt">
     <eStructuralFeatures xsi:type="ecore:EReference" name="codeElts" upperBound="-1"
-        eType="#//CodeElt" containment="true"/>
+        eType="#//CodeElt" changeable="false" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="declarations" upperBound="-1"
-        eType="#//Variable" eOpposite="#//Variable/users"/>
+        eType="#//Variable" changeable="false" eOpposite="#//Variable/users"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="CodeElt" abstract="true" interface="true"/>
   <eClassifiers xsi:type="ecore:EClass" name="Call" abstract="true" eSuperTypes="#//CodeElt">
+    <eOperations name="addParameter">
+      <eParameters name="variable" eType="#//Variable"/>
+    </eOperations>
+    <eOperations name="removeParameter">
+      <eParameters name="variable" eType="#//Variable"/>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
-        eType="#//Variable"/>
+        eType="#//Variable" changeable="false"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Variable" abstract="true">
@@ -21,7 +27,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="creator" lowerBound="1"
         eType="#//Block"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="users" lowerBound="1" upperBound="-1"
-        eType="#//Block" eOpposite="#//Block/declarations"/>
+        eType="#//Block" changeable="false" eOpposite="#//Block/declarations"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Buffer" eSuperTypes="#//Variable">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="size" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
@@ -74,4 +80,33 @@
   <eClassifiers xsi:type="ecore:EClass" name="LoopBlock" eSuperTypes="#//Block"/>
   <eClassifiers xsi:type="ecore:EClass" name="ActorCall" eSuperTypes="#//Call"/>
   <eClassifiers xsi:type="ecore:EClass" name="CallBlock" eSuperTypes="#//Block"/>
+  <eClassifiers xsi:type="ecore:EClass" name="SpecialCall" eSuperTypes="#//Call">
+    <eOperations name="isFork" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eOperations name="isJoin" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eOperations name="isBroadcast" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eOperations name="isRoundBuffer" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eOperations name="addInputBuffer">
+      <eParameters name="buffer" eType="#//Buffer"/>
+    </eOperations>
+    <eOperations name="addOutputBuffer">
+      <eParameters name="buffer" eType="#//Buffer"/>
+    </eOperations>
+    <eOperations name="removeInputBuffer">
+      <eParameters name="buffer" eType="#//Buffer"/>
+    </eOperations>
+    <eOperations name="removeOutputBuffer">
+      <eParameters name="buffer" eType="#//Buffer"/>
+    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" lowerBound="1" eType="#//SpecialType"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="inputBuffers" lowerBound="1"
+        upperBound="-1" eType="#//Buffer" changeable="false"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="outputBuffers" lowerBound="1"
+        upperBound="-1" eType="#//Buffer" changeable="false" resolveProxies="false"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="SpecialType">
+    <eLiterals name="FORK"/>
+    <eLiterals name="JOIN" value="1"/>
+    <eLiterals name="BROADCAST" value="2"/>
+    <eLiterals name="ROUND_BUFFER" value="3"/>
+  </eClassifiers>
 </ecore:EPackage>

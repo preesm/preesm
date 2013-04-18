@@ -47,12 +47,17 @@ import java.util.TreeMap;
 
 import net.sf.dftools.algorithm.iterators.DAGIterator;
 import net.sf.dftools.algorithm.model.AbstractGraph;
+import net.sf.dftools.algorithm.model.AbstractVertex;
 import net.sf.dftools.algorithm.model.CodeRefinement;
 import net.sf.dftools.algorithm.model.CodeRefinement.Language;
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import net.sf.dftools.algorithm.model.dag.edag.DAGBroadcastVertex;
+import net.sf.dftools.algorithm.model.dag.edag.DAGForkVertex;
+import net.sf.dftools.algorithm.model.dag.edag.DAGJoinVertex;
 import net.sf.dftools.algorithm.model.parameters.Argument;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.algorithm.model.sdf.SDFInterfaceVertex;
@@ -84,6 +89,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter;
 import org.ietr.preesm.codegen.xtend.model.codegen.Direction;
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
+import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
@@ -399,37 +406,30 @@ public class CodegenModelGenerator {
 
 			// 1.1 - Construct the "loop" of each core.
 			{
-				switch (((VertexType) vert.getPropertyBean().getValue(
-						ImplementationPropertyNames.Vertex_vertexType,
-						VertexType.class)).toString()) {
+				String vertexType = ((VertexType) vert.getPropertyBean()
+						.getValue(
+								ImplementationPropertyNames.Vertex_vertexType,
+								VertexType.class)).toString();
+				switch (vertexType) {
 
 				case VertexType.TYPE_TASK:
 					// May be an actor (Hierarchical or not) call
 					// or a Fork Join call
-					String vertKind = vert.getPropertyBean().getValue("kind")
-							.toString();
+					String vertKind = vert.getPropertyBean()
+							.getValue(AbstractVertex.KIND).toString();
 					switch (vertKind) {
-					case "dag_vertex":
+					case DAGVertex.DAG_VERTEX:
 						generateActorFiring(operatorBlock, vert);
 						break;
-					case "dag_fork_vertex":
-					// TEMP SOLUTION
-					{
-						FunctionCall f = CodegenFactory.eINSTANCE
-								.createFunctionCall();
-						f.setName(vert.getName());
-						operatorBlock.getLoopBlock().getCodeElts().add(f);
-						dagVertexCalls.put(vert, f);
-					}
+					case DAGForkVertex.DAG_FORK_VERTEX:
+						generateSpecialCall(operatorBlock, vert);
 						break;
-					case "dag_join_vertex": {
-						FunctionCall f = CodegenFactory.eINSTANCE
-								.createFunctionCall();
-						f.setName(vert.getName());
-						operatorBlock.getLoopBlock().getCodeElts().add(f);
-						dagVertexCalls.put(vert, f);
-					}
+					case DAGJoinVertex.DAG_JOIN_VERTEX:
+						generateSpecialCall(operatorBlock, vert);
 						break;
+					default:
+						throw new CodegenException("DAGVertex " + vert
+								+ "has an unknown kind: " + vertKind);
 					}
 					break;
 
@@ -442,7 +442,7 @@ public class CodegenModelGenerator {
 					break;
 				default:
 					throw new CodegenException("Vertex " + vert
-							+ " has an unknown kind: " + vert.getKind());
+							+ " has an unknown type: " + vert.getKind());
 				}
 			}
 		}
@@ -480,6 +480,127 @@ public class CodegenModelGenerator {
 			}
 		}
 		return new HashSet<Block>(coreBlocks.values());
+	}
+
+	/**
+	 * Generate the {@link CodegenPackage Codegen Model} for a "special actor"
+	 * (fork, join, broadcast or roundbuffer) firing. This method will create an
+	 * {@link SpecialCall} and place it in the {@link LoopBlock} of the
+	 * {@link CoreBlock} passed as a parameter.
+	 * 
+	 * @param operatorBlock
+	 *            the {@link CoreBlock} where the special actor firing is
+	 *            performed.
+	 * @param dagVertex
+	 *            the {@link DAGVertex} corresponding to the actor firing.
+	 * @throws CodegenException
+	 * 
+	 */
+	protected void generateSpecialCall(CoreBlock operatorBlock,
+			DAGVertex dagVertex) throws CodegenException {
+		// get the corresponding SDFVertex
+		SDFAbstractVertex sdfVertex = (SDFAbstractVertex) dagVertex
+				.getPropertyBean().getValue(DAGVertex.SDF_VERTEX,
+						SDFAbstractVertex.class);
+
+		SpecialCall f = CodegenFactory.eINSTANCE.createSpecialCall();
+		f.setName(dagVertex.getName());
+		String vertexType = dagVertex.getPropertyStringValue(DAGVertex.KIND);
+		switch (vertexType) {
+		case DAGForkVertex.DAG_FORK_VERTEX:
+			f.setType(SpecialType.FORK);
+			break;
+		case DAGJoinVertex.DAG_JOIN_VERTEX:
+			f.setType(SpecialType.JOIN);
+			break;
+		case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
+			f.setType(SpecialType.BROADCAST);
+		}
+
+		// Retrieve input/output edge in correct order !
+		@SuppressWarnings("unchecked")
+		Map<Integer, SDFEdge> orderedEdges = (Map<Integer, SDFEdge>) sdfVertex
+				.getPropertyBean().getValue("edges_order");
+		SDFGraph srSDFGraph = (SDFGraph) sdfVertex.getPropertyBean().getValue(
+				"base");
+
+		for (int i = 0; i < orderedEdges.size(); i++) {
+			// Find the corresponding DAGEdge.
+			DAGEdge dagEdge = null;
+			{
+				DAGVertex source = null;
+				DAGVertex target = null;
+
+				// Get the target or the source of the currentEdge
+				SDFAbstractVertex sourceOrTargetVertex = null;
+				if (f.getType().equals(SpecialType.FORK)
+						|| f.getType().equals(SpecialType.BROADCAST)) {
+					sourceOrTargetVertex = srSDFGraph
+							.getEdgeTarget(orderedEdges.get(i));
+					source = dagVertex;
+					target = dag.getVertex(sourceOrTargetVertex.getName());
+				} else { // join or roundbuffer
+					sourceOrTargetVertex = srSDFGraph
+							.getEdgeSource(orderedEdges.get(i));
+					target = dagVertex;
+					source = dag.getVertex(sourceOrTargetVertex.getName());
+				}
+
+				dagEdge = dag.getEdge(source, target);
+			}
+
+			if (dagEdge == null) {
+				throw new CodegenException(
+						"DAGEdge corresponding to srSDFEdge "
+								+ orderedEdges.get(i) + " was not found.");
+			}
+
+			// Find the corresponding BufferProperty
+			BufferProperties subBuffProperty = null;
+			BufferAggregate buffers = (BufferAggregate) dagEdge
+					.getPropertyBean().getValue(
+							BufferAggregate.propertyBeanName,
+							BufferAggregate.class);
+			for (BufferProperties subBufferProperties : buffers) {
+				// The source and target actor are the same, check that the
+				// ports are corrects
+				if (orderedEdges.get(i).getTargetLabel()
+						.equals(subBufferProperties.getDestInputPortID())
+						&& orderedEdges
+								.get(i)
+								.getSourceLabel()
+								.equals(subBufferProperties
+										.getSourceOutputPortID())) {
+					subBuffProperty = subBufferProperties;
+					break;
+				}
+			}
+
+			if (subBuffProperty == null) {
+				throw new CodegenException("Buffer property with ports "
+						+ orderedEdges.get(i).getTargetLabel() + " and "
+						+ orderedEdges.get(i).getSourceLabel()
+						+ " was not found in DAGEdge aggregate " + dagEdge);
+			}
+
+			// Get the corresponding Buffer
+			Buffer buffer = srSDFEdgeBuffers.get(subBuffProperty);
+			if (buffer == null) {
+				throw new CodegenException("Buffer corresponding to DAGEdge"
+						+ dagEdge + "was not allocated.");
+			}
+			// Add it to the specialCall
+			if (f.getType().equals(SpecialType.FORK)
+					|| f.getType().equals(SpecialType.BROADCAST)) {
+
+			} else {
+
+			}
+			f.getParameters().add(buffer);
+		}
+
+		operatorBlock.getLoopBlock().getCodeElts().add(f);
+		dagVertexCalls.put(dagVertex, f);
 	}
 
 	/**
@@ -927,8 +1048,9 @@ public class CodegenModelGenerator {
 			DAGVertex dagVertex) throws CodegenException {
 		// Check whether the ActorCall is a call to a hierarchical actor or not.
 		SDFVertex sdfVertex = (SDFVertex) dagVertex.getPropertyBean().getValue(
-				"sdf_vertex", SDFVertex.class);
-		Object refinement = sdfVertex.getPropertyBean().getValue("graph_desc");
+				DAGVertex.SDF_VERTEX, SDFVertex.class);
+		Object refinement = sdfVertex.getPropertyBean().getValue(
+				DAGVertex.REFINEMENT);
 
 		// If the actor is hierarchical
 		if (refinement instanceof AbstractGraph) {
@@ -1252,7 +1374,9 @@ public class CodegenModelGenerator {
 		// fifos
 		List<Variable> callVars = generateCallVariables(dagVertex, prototype);
 		// Put Variables in the function call
-		func.getParameters().addAll(callVars);
+		for (Variable var : callVars) {
+			func.addParameter(var);
+		}
 
 		return func;
 	}
@@ -1338,7 +1462,8 @@ public class CodegenModelGenerator {
 	 */
 	protected ActorPrototypes getActorPrototypes(SDFVertex sdfVertex)
 			throws CodegenException {
-		Object refinement = sdfVertex.getPropertyBean().getValue("graph_desc");
+		Object refinement = sdfVertex.getPropertyBean().getValue(
+				DAGVertex.REFINEMENT);
 
 		// Check that it has an IDL refinement.
 		if (!(refinement instanceof CodeRefinement)
