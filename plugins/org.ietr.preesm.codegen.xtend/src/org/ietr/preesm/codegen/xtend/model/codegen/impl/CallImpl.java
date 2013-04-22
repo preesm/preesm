@@ -36,7 +36,6 @@
 package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
@@ -115,29 +114,14 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 	/**
 	 * <!-- begin-user-doc --><!-- end-user-doc -->
 	 * 
-	 * 
-	 */
-	public EList<Variable> internalGetParameters() {
-		if (parameters == null) {
-			parameters = new EObjectResolvingEList<Variable>(Variable.class,
-					this, CodegenPackage.CALL__PARAMETERS);
-		}
-		return parameters;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->Return a copy of the {@link Variable} list.
-	 * Modification made to this list will not affect the {@link Call}<!--
-	 * end-user-doc -->
-	 * 
-	 * 
+	 * @generated
 	 */
 	public EList<Variable> getParameters() {
 		if (parameters == null) {
 			parameters = new EObjectResolvingEList<Variable>(Variable.class,
 					this, CodegenPackage.CALL__PARAMETERS);
 		}
-		return new BasicEList<Variable>(parameters);
+		return parameters;
 	}
 
 	/**
@@ -168,7 +152,7 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 	 * 
 	 */
 	public void addParameter(Variable variable) {
-		internalGetParameters().add(variable);
+		getParameters().add(variable);
 	}
 
 	/**
@@ -177,7 +161,9 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 	 * @generated
 	 */
 	public void removeParameter(Variable variable) {
-		this.internalGetParameters().remove(variable);
+		// TODO: implement this method
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
 	}
 
 	/**

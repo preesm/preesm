@@ -36,7 +36,6 @@
 package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
@@ -154,35 +153,9 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * 
+	 * @generated
 	 */
 	public EList<Buffer> getInputBuffers() {
-		if (inputBuffers == null) {
-			inputBuffers = new EObjectResolvingEList<Buffer>(Buffer.class,
-					this, CodegenPackage.SPECIAL_CALL__INPUT_BUFFERS);
-		}
-		return new BasicEList<Buffer>(inputBuffers);
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * 
-	 */
-	public EList<Buffer> getOutputBuffers() {
-		if (outputBuffers == null) {
-			outputBuffers = new EObjectEList<Buffer>(Buffer.class, this,
-					CodegenPackage.SPECIAL_CALL__OUTPUT_BUFFERS);
-		}
-		return new BasicEList<Buffer>(outputBuffers);
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * 
-	 */
-	public EList<Buffer> internalGetInputBuffers() {
 		if (inputBuffers == null) {
 			inputBuffers = new EObjectResolvingEList<Buffer>(Buffer.class,
 					this, CodegenPackage.SPECIAL_CALL__INPUT_BUFFERS);
@@ -193,9 +166,9 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * 
+	 * @generated
 	 */
-	public EList<Buffer> internalGetOutputBuffers() {
+	public EList<Buffer> getOutputBuffers() {
 		if (outputBuffers == null) {
 			outputBuffers = new EObjectEList<Buffer>(Buffer.class, this,
 					CodegenPackage.SPECIAL_CALL__OUTPUT_BUFFERS);
@@ -245,8 +218,8 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 * 
 	 */
 	public void addInputBuffer(Buffer buffer) {
-		internalGetInputBuffers().add(buffer);
-		internalGetParameters().add(buffer);
+		getInputBuffers().add(buffer);
+		getParameters().add(buffer);
 	}
 
 	/**
@@ -255,8 +228,8 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 * 
 	 */
 	public void addOutputBuffer(Buffer buffer) {
-		internalGetOutputBuffers().add(buffer);
-		internalGetParameters().add(buffer);
+		getOutputBuffers().add(buffer);
+		getParameters().add(buffer);
 	}
 
 	/**
@@ -265,8 +238,8 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 * 
 	 */
 	public void removeInputBuffer(Buffer buffer) {
-		internalGetInputBuffers().remove(buffer);
-		internalGetParameters().remove(buffer);
+		getInputBuffers().remove(buffer);
+		getParameters().remove(buffer);
 	}
 
 	/**
@@ -275,8 +248,8 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 * 
 	 */
 	public void removeOutputBuffer(Buffer buffer) {
-		internalGetOutputBuffers().remove(buffer);
-		internalGetParameters().remove(buffer);
+		getOutputBuffers().remove(buffer);
+		getParameters().remove(buffer);
 	}
 
 	/**

@@ -272,7 +272,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET,
 					CodegenPackage.COMMUNICATION__DATA, oldData, data));
-		this.internalGetParameters().clear();
+		this.getParameters().clear();
 		if (newData != null) {
 			this.addParameter(newData);
 		}

@@ -94,42 +94,6 @@ public interface SpecialCall extends Call {
 	void setType(SpecialType value);
 
 	/**
-	 * Returns a copy of the value of the '<em><b>Input Buffers</b></em>'
-	 * reference list. The list contents are of type
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer}. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Input Buffers</em>' reference list isn't
-	 * clear, there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Input Buffers</em>' reference list.
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSpecialCall_InputBuffers()
-	 * @model required="true" changeable="false"
-	 * @generated
-	 */
-	EList<Buffer> getInputBuffers();
-
-	/**
-	 * Returns a copy of the value of the '<em><b>Output Buffers</b></em>'
-	 * reference list. The list contents are of type
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer}. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Output Buffers</em>' reference list isn't
-	 * clear, there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Output Buffers</em>' reference list.
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSpecialCall_OutputBuffers()
-	 * @model resolveProxies="false" required="true" changeable="false"
-	 * @generated
-	 */
-	EList<Buffer> getOutputBuffers();
-
-	/**
 	 * Returns the value of the '<em><b>Input Buffers</b></em>' reference list.
 	 * The list contents are of type
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer}. <!--
@@ -143,9 +107,10 @@ public interface SpecialCall extends Call {
 	 * @return the value of the '<em>Input Buffers</em>' reference list.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSpecialCall_InputBuffers()
 	 * @model required="true" changeable="false"
+	 * @generated
 	 * 
 	 */
-	EList<Buffer> internalGetInputBuffers();
+	EList<Buffer> getInputBuffers();
 
 	/**
 	 * Returns the value of the '<em><b>Output Buffers</b></em>' reference list.
@@ -161,9 +126,10 @@ public interface SpecialCall extends Call {
 	 * @return the value of the '<em>Output Buffers</em>' reference list.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSpecialCall_OutputBuffers()
 	 * @model resolveProxies="false" required="true" changeable="false"
+	 * @generated
 	 * 
 	 */
-	EList<Buffer> internalGetOutputBuffers();
+	EList<Buffer> getOutputBuffers();
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
