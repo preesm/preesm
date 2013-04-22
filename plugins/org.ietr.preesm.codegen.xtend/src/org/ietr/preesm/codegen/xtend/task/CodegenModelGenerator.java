@@ -62,6 +62,8 @@ import net.sf.dftools.algorithm.model.sdf.SDFEdge;
 import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.Design;
 
@@ -427,6 +429,9 @@ public class CodegenModelGenerator {
 					case DAGJoinVertex.DAG_JOIN_VERTEX:
 						generateSpecialCall(operatorBlock, vert);
 						break;
+					case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
+						generateSpecialCall(operatorBlock, vert);
+						break;
 					default:
 						throw new CodegenException("DAGVertex " + vert
 								+ "has an unknown kind: " + vertKind);
@@ -514,13 +519,23 @@ public class CodegenModelGenerator {
 			f.setType(SpecialType.JOIN);
 			break;
 		case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
-			f.setType(SpecialType.BROADCAST);
+			if (sdfVertex instanceof SDFRoundBufferVertex) {
+				f.setType(SpecialType.ROUND_BUFFER);
+				break;
+			} else if (sdfVertex instanceof SDFBroadcastVertex) {
+				f.setType(SpecialType.BROADCAST);
+				break;
+			}
+			// Do not break here !
+		default:
+			throw new CodegenException("DAGVertex " + dagVertex
+					+ " has an unknown type: " + vertexType);
 		}
 
 		// Retrieve input/output edge in correct order !
 		@SuppressWarnings("unchecked")
 		Map<Integer, SDFEdge> orderedEdges = (Map<Integer, SDFEdge>) sdfVertex
-				.getPropertyBean().getValue("edges_order");
+				.getPropertyBean().getValue(DAGForkVertex.EDGES_ORDER);
 		SDFGraph srSDFGraph = (SDFGraph) sdfVertex.getPropertyBean().getValue(
 				"base");
 
@@ -544,6 +559,15 @@ public class CodegenModelGenerator {
 							.getEdgeSource(orderedEdges.get(i));
 					target = dagVertex;
 					source = dag.getVertex(sourceOrTargetVertex.getName());
+				}
+				// For broadcast and round
+				// buffersf.getType().equals(SpecialType.BROADCAST) vertices,
+				// respectively skip the input and the outputs
+				if ((f.getType().equals(SpecialType.BROADCAST) || f.getType()
+						.equals(SpecialType.ROUND_BUFFER))
+						&& target != null
+						&& target.equals(source)) {
+					continue;
 				}
 
 				dagEdge = dag.getEdge(source, target);
@@ -592,11 +616,75 @@ public class CodegenModelGenerator {
 			// Add it to the specialCall
 			if (f.getType().equals(SpecialType.FORK)
 					|| f.getType().equals(SpecialType.BROADCAST)) {
-
+				f.addOutputBuffer(buffer);
 			} else {
-
+				f.addInputBuffer(buffer);
 			}
-			f.getParameters().add(buffer);
+		}
+
+		// Find the last buffer that correspond to the
+		// exploded/broadcasted/joined/roundbuffered edge
+		DAGEdge lastEdge = null;
+		{
+			// The vertex may have a maximum of 2 incoming/outgoing edges
+			// but only one should be linked to the producer/consumer
+			// the other must be linked to a send/receive vertex
+			Set<DAGEdge> candidates;
+			if (f.getType().equals(SpecialType.FORK)
+					|| f.getType().equals(SpecialType.BROADCAST)) {
+				candidates = dag.incomingEdgesOf(dagVertex);
+			} else {
+				candidates = dag.outgoingEdgesOf(dagVertex);
+			}
+
+			if (candidates.size() > 2) {
+				String direction;
+				if (f.getType().equals(SpecialType.FORK)
+						|| f.getType().equals(SpecialType.BROADCAST)) {
+					direction = "incoming";
+				} else {
+					direction = "outgoing";
+				}
+				throw new CodegenException(f.getType().getName() + " vertex "
+						+ dagVertex + " more than 1 " + direction
+						+ "edge. Check the exported DAG.");
+			}
+			for (DAGEdge edge : candidates) {
+				if (edge.getSource()
+						.getPropertyBean()
+						.getValue(
+								ImplementationPropertyNames.Vertex_vertexType,
+								VertexType.class).equals(VertexType.TASK)
+						&& edge.getTarget()
+								.getPropertyBean()
+								.getValue(
+										ImplementationPropertyNames.Vertex_vertexType,
+										VertexType.class)
+								.equals(VertexType.TASK)) {
+					lastEdge = edge;
+				}
+			}
+			if (lastEdge == null) {
+				// This should never happen. It would mean that a
+				// "special vertex" does receive data only from send/receive
+				// vertices
+				throw new CodegenException(f.getType().getName() + " vertex "
+						+ dagVertex + "is not properly connected.");
+			}
+		}
+
+		BufferAggregate bufferAggregate = (BufferAggregate) lastEdge
+				.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+		// there should be only one buffer in the aggregate
+		BufferProperties lastBuffProperty = bufferAggregate.get(0);
+		Buffer lastBuffer = srSDFEdgeBuffers.get(lastBuffProperty);
+
+		// Add it to the specialCall
+		if (f.getType().equals(SpecialType.FORK)
+				|| f.getType().equals(SpecialType.BROADCAST)) {
+			f.addInputBuffer(lastBuffer);
+		} else {
+			f.addOutputBuffer(lastBuffer);
 		}
 
 		operatorBlock.getLoopBlock().getCodeElts().add(f);
