@@ -129,6 +129,9 @@ public class CodegenModelGenerator {
 	 */
 	private Design archi;
 
+	/** The shared {@link Buffer} */
+	private Buffer sharedBuffer;
+
 	/**
 	 * {@link DirectedAcyclicGraph DAG} used to generate code. This
 	 * {@link DirectedAcyclicGraph DAG} must be the result of mapping/scheduling
@@ -339,6 +342,137 @@ public class CodegenModelGenerator {
 	}
 
 	/**
+	 * Insert the {@link Communication} in the {@link LoopBlock} of the
+	 * {@link CoreBlock} passed as a parameter. All {@link DAGVertex} consuming
+	 * or producing data handled by the {@link Communication} must have been
+	 * scheduled {@link #generateActorFiring(CoreBlock, DAGVertex) generated}
+	 * before calling this method.<br>
+	 * <br>
+	 * In the current version, Send primitives are inserted as follow:<br>
+	 * <code>(SendEnd)-(ProducingActor)-(SendStart)</code><br>
+	 * and Receive primitives as follow:<br>
+	 * <code>(ReceiveEnd)-(ConsumingActor)-(ReceiveStart)</code> <br>
+	 * The SendEnd and ReceiveStart placed like this enable the
+	 * reception/sending for the next iteration. <br>
+	 * 
+	 * 
+	 * @param operatorBlock
+	 *            the {@link CoreBlock} on which the communication is executed.
+	 * @param dagVertex
+	 *            the {@link DAGVertex} corresponding to the given
+	 *            {@link Communication}.
+	 * @param newComm
+	 *            the {@link Communication} {@link Call} to insert.
+	 */
+	protected void futurinsertCommunication(CoreBlock operatorBlock,
+			DAGVertex dagVertex, Communication newComm) {
+		if (dagVertex != null && newComm != null) { // dumb if only here to
+													// remove waring
+			// This method was kept only as a hint on how to implement future
+			// "smarter" insertion where send receive zones may span over
+			// multiple iterations. This method will be safe only when each
+			// buffer has a dedicated space in memory.
+			throw new RuntimeException(
+					"This method is not completely coded, do not use it !");
+			// This method does not work, especially because the insertion of RS
+			// and SE is corrupted in case of multistep com.
+		}
+
+		// Retrieve the vertex that must be before/after the communication.
+		DAGVertex producerOrConsumer = null;
+		if (newComm.getDirection().equals(Direction.SEND)) {
+			// Get the producer.
+			producerOrConsumer = dag.incomingEdgesOf(dagVertex).iterator()
+					.next().getSource();
+		} else {
+			producerOrConsumer = dag.outgoingEdgesOf(dagVertex).iterator()
+					.next().getTarget();
+		}
+
+		// Get the corresponding call
+		Call prodOrConsumerCall = dagVertexCalls.get(producerOrConsumer);
+		int index = operatorBlock.getLoopBlock().getCodeElts()
+				.indexOf(prodOrConsumerCall);
+		// If the index was found
+		if (index != -1) {
+			if (newComm.getDelimiter().equals(Delimiter.START)) {
+				// Insert after the producer/consumer
+				operatorBlock.getLoopBlock().getCodeElts()
+						.add(index + 1, newComm);
+			} else {
+				// Insert before the producer/consumer
+				operatorBlock.getLoopBlock().getCodeElts().add(index, newComm);
+			}
+
+			// Save the communication in the dagVertexCalls map only if it is a
+			// SS or a ER
+			if ((newComm.getDelimiter().equals(Delimiter.START) && newComm
+					.getDirection().equals(Direction.SEND))
+					|| (newComm.getDelimiter().equals(Delimiter.END) && newComm
+							.getDirection().equals(Direction.RECEIVE))) {
+				dagVertexCalls.put(dagVertex, newComm);
+			}
+		} else {
+			// The index was not found, this may happen when a multi-step
+			// communication occurs
+			// The receive end of the first step of a multistep communication
+			// will be the first to be processed.
+			if (newComm.getDelimiter().equals(Delimiter.END)
+					&& newComm.getDirection().equals(Direction.RECEIVE)) {
+				// Insert it according to its scheduled place.
+				int dagVertexSchedulingOrder = (Integer) dagVertex
+						.getPropertyBean()
+						.getValue(
+								ImplementationPropertyNames.Vertex_schedulingOrder,
+								Integer.class);
+				int insertionIndex = 0;
+				for (CodeElt codeElt : operatorBlock.getLoopBlock()
+						.getCodeElts()) {
+					// Iterate over the calls of the current operator
+					if (codeElt instanceof Call) {
+						DAGVertex vertex = dagVertexCalls.inverse().get(
+								(Call) codeElt);
+
+						if (vertex == null) {
+							// this will happen when a ReceiveStart or a Receive
+							// End is encountered, since they have no
+							// corresponding vertices in the DAG
+						} else if ((Integer) vertex
+								.getPropertyBean()
+								.getValue(
+										ImplementationPropertyNames.Vertex_schedulingOrder,
+										Integer.class) > dagVertexSchedulingOrder) {
+							break;
+						}
+					}
+					insertionIndex++;
+				}
+				// Do the insertion
+				operatorBlock.getLoopBlock().getCodeElts()
+						.add(insertionIndex, newComm);
+				dagVertexCalls.put(dagVertex, newComm);
+			} else if (newComm.getDelimiter().equals(Delimiter.START)
+					&& newComm.getDirection().equals(Direction.RECEIVE)) {
+				// In multistep communications, RS will be processed (inserted)
+				// before the associated "consumer" (a SS) is inserted. In such
+				// case, the RS is simply inserted right before its associated
+				// RE. When the SS is processed, it will automatically be
+				// inserted right after its producer (i.e. the RE) and hence,
+				// just before the RS. (This imply that the SS performes a copy
+				// of the data during its execution, which is to be expected in
+				// multistep comm)
+
+				int insertionIndex = operatorBlock.getLoopBlock().getCodeElts()
+						.indexOf(newComm.getReceiveEnd());
+				// Do the insertion
+				operatorBlock.getLoopBlock().getCodeElts()
+						.add(insertionIndex + 1, newComm);
+				// Do not save RS in dagVertexCalls !
+			}
+		}
+	}
+
+	/**
 	 * Method to generate the intermediate model of the codegen based on the
 	 * {@link Design architecture}, the {@link MemoryExclusionGraph MemEx graph}
 	 * , the {@link DirectedAcyclicGraph DAG} and the {@link PreesmScenario
@@ -484,632 +618,11 @@ public class CodegenModelGenerator {
 
 			}
 		}
+
+		// 3 - Put the buffer definition in their right place
+		generateBufferDefinitions();
+
 		return new HashSet<Block>(coreBlocks.values());
-	}
-
-	/**
-	 * Generate the {@link CodegenPackage Codegen Model} for a "special actor"
-	 * (fork, join, broadcast or roundbuffer) firing. This method will create an
-	 * {@link SpecialCall} and place it in the {@link LoopBlock} of the
-	 * {@link CoreBlock} passed as a parameter.
-	 * 
-	 * @param operatorBlock
-	 *            the {@link CoreBlock} where the special actor firing is
-	 *            performed.
-	 * @param dagVertex
-	 *            the {@link DAGVertex} corresponding to the actor firing.
-	 * @throws CodegenException
-	 * 
-	 */
-	protected void generateSpecialCall(CoreBlock operatorBlock,
-			DAGVertex dagVertex) throws CodegenException {
-		// get the corresponding SDFVertex
-		SDFAbstractVertex sdfVertex = (SDFAbstractVertex) dagVertex
-				.getPropertyBean().getValue(DAGVertex.SDF_VERTEX,
-						SDFAbstractVertex.class);
-
-		SpecialCall f = CodegenFactory.eINSTANCE.createSpecialCall();
-		f.setName(dagVertex.getName());
-		String vertexType = dagVertex.getPropertyStringValue(DAGVertex.KIND);
-		switch (vertexType) {
-		case DAGForkVertex.DAG_FORK_VERTEX:
-			f.setType(SpecialType.FORK);
-			break;
-		case DAGJoinVertex.DAG_JOIN_VERTEX:
-			f.setType(SpecialType.JOIN);
-			break;
-		case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
-			if (sdfVertex instanceof SDFRoundBufferVertex) {
-				f.setType(SpecialType.ROUND_BUFFER);
-				break;
-			} else if (sdfVertex instanceof SDFBroadcastVertex) {
-				f.setType(SpecialType.BROADCAST);
-				break;
-			}
-			// Do not break here !
-		default:
-			throw new CodegenException("DAGVertex " + dagVertex
-					+ " has an unknown type: " + vertexType);
-		}
-
-		// Retrieve input/output edge in correct order !
-		@SuppressWarnings("unchecked")
-		Map<Integer, SDFEdge> orderedEdges = (Map<Integer, SDFEdge>) sdfVertex
-				.getPropertyBean().getValue(DAGForkVertex.EDGES_ORDER);
-		SDFGraph srSDFGraph = (SDFGraph) sdfVertex.getPropertyBean().getValue(
-				"base");
-
-		for (int i = 0; i < orderedEdges.size(); i++) {
-			// Find the corresponding DAGEdge.
-			DAGEdge dagEdge = null;
-			{
-				DAGVertex source = null;
-				DAGVertex target = null;
-
-				// Get the target or the source of the currentEdge
-				SDFAbstractVertex sourceOrTargetVertex = null;
-				if (f.getType().equals(SpecialType.FORK)
-						|| f.getType().equals(SpecialType.BROADCAST)) {
-					sourceOrTargetVertex = srSDFGraph
-							.getEdgeTarget(orderedEdges.get(i));
-					source = dagVertex;
-					target = dag.getVertex(sourceOrTargetVertex.getName());
-				} else { // join or roundbuffer
-					sourceOrTargetVertex = srSDFGraph
-							.getEdgeSource(orderedEdges.get(i));
-					target = dagVertex;
-					source = dag.getVertex(sourceOrTargetVertex.getName());
-				}
-				// For broadcast and round
-				// buffersf.getType().equals(SpecialType.BROADCAST) vertices,
-				// respectively skip the input and the outputs
-				if ((f.getType().equals(SpecialType.BROADCAST) || f.getType()
-						.equals(SpecialType.ROUND_BUFFER))
-						&& target != null
-						&& target.equals(source)) {
-					continue;
-				}
-
-				dagEdge = dag.getEdge(source, target);
-			}
-
-			if (dagEdge == null) {
-				throw new CodegenException(
-						"DAGEdge corresponding to srSDFEdge "
-								+ orderedEdges.get(i) + " was not found.");
-			}
-
-			// Find the corresponding BufferProperty
-			BufferProperties subBuffProperty = null;
-			BufferAggregate buffers = (BufferAggregate) dagEdge
-					.getPropertyBean().getValue(
-							BufferAggregate.propertyBeanName,
-							BufferAggregate.class);
-			for (BufferProperties subBufferProperties : buffers) {
-				// The source and target actor are the same, check that the
-				// ports are corrects
-				if (orderedEdges.get(i).getTargetLabel()
-						.equals(subBufferProperties.getDestInputPortID())
-						&& orderedEdges
-								.get(i)
-								.getSourceLabel()
-								.equals(subBufferProperties
-										.getSourceOutputPortID())) {
-					subBuffProperty = subBufferProperties;
-					break;
-				}
-			}
-
-			if (subBuffProperty == null) {
-				throw new CodegenException("Buffer property with ports "
-						+ orderedEdges.get(i).getTargetLabel() + " and "
-						+ orderedEdges.get(i).getSourceLabel()
-						+ " was not found in DAGEdge aggregate " + dagEdge);
-			}
-
-			// Get the corresponding Buffer
-			Buffer buffer = srSDFEdgeBuffers.get(subBuffProperty);
-			if (buffer == null) {
-				throw new CodegenException("Buffer corresponding to DAGEdge"
-						+ dagEdge + "was not allocated.");
-			}
-			// Add it to the specialCall
-			if (f.getType().equals(SpecialType.FORK)
-					|| f.getType().equals(SpecialType.BROADCAST)) {
-				f.addOutputBuffer(buffer);
-			} else {
-				f.addInputBuffer(buffer);
-			}
-		}
-
-		// Find the last buffer that correspond to the
-		// exploded/broadcasted/joined/roundbuffered edge
-		DAGEdge lastEdge = null;
-		{
-			// The vertex may have a maximum of 2 incoming/outgoing edges
-			// but only one should be linked to the producer/consumer
-			// the other must be linked to a send/receive vertex
-			Set<DAGEdge> candidates;
-			if (f.getType().equals(SpecialType.FORK)
-					|| f.getType().equals(SpecialType.BROADCAST)) {
-				candidates = dag.incomingEdgesOf(dagVertex);
-			} else {
-				candidates = dag.outgoingEdgesOf(dagVertex);
-			}
-
-			if (candidates.size() > 2) {
-				String direction;
-				if (f.getType().equals(SpecialType.FORK)
-						|| f.getType().equals(SpecialType.BROADCAST)) {
-					direction = "incoming";
-				} else {
-					direction = "outgoing";
-				}
-				throw new CodegenException(f.getType().getName() + " vertex "
-						+ dagVertex + " more than 1 " + direction
-						+ "edge. Check the exported DAG.");
-			}
-			for (DAGEdge edge : candidates) {
-				if (edge.getSource()
-						.getPropertyBean()
-						.getValue(
-								ImplementationPropertyNames.Vertex_vertexType,
-								VertexType.class).equals(VertexType.TASK)
-						&& edge.getTarget()
-								.getPropertyBean()
-								.getValue(
-										ImplementationPropertyNames.Vertex_vertexType,
-										VertexType.class)
-								.equals(VertexType.TASK)) {
-					lastEdge = edge;
-				}
-			}
-			if (lastEdge == null) {
-				// This should never happen. It would mean that a
-				// "special vertex" does receive data only from send/receive
-				// vertices
-				throw new CodegenException(f.getType().getName() + " vertex "
-						+ dagVertex + "is not properly connected.");
-			}
-		}
-
-		BufferAggregate bufferAggregate = (BufferAggregate) lastEdge
-				.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
-		// there should be only one buffer in the aggregate
-		BufferProperties lastBuffProperty = bufferAggregate.get(0);
-		Buffer lastBuffer = srSDFEdgeBuffers.get(lastBuffProperty);
-
-		// Add it to the specialCall
-		if (f.getType().equals(SpecialType.FORK)
-				|| f.getType().equals(SpecialType.BROADCAST)) {
-			f.addInputBuffer(lastBuffer);
-		} else {
-			f.addOutputBuffer(lastBuffer);
-		}
-
-		operatorBlock.getLoopBlock().getCodeElts().add(f);
-		dagVertexCalls.put(dagVertex, f);
-	}
-
-	/**
-	 * Generate the {@link CodegenPackage Codegen Model} for communication
-	 * "firing". This method will create an {@link Communication} and place it
-	 * in the {@link LoopBlock} of the {@link CoreBlock} passed as a parameter.
-	 * 
-	 * @param operatorBlock
-	 *            the {@link CoreBlock} where the actor {@link Communication} is
-	 *            performed.
-	 * @param dagVertex
-	 *            the {@link DAGVertex} corresponding to the actor firing.
-	 * @param direction
-	 *            the Type of communication ({@link VertexType#TYPE_SEND} or
-	 *            {@link VertexType#TYPE_RECEIVE}).
-	 * @throws CodegenException
-	 *             Exception is thrown if:
-	 *             <ul>
-	 *             </ul>
-	 * 
-	 */
-	protected void generateCommunication(CoreBlock operatorBlock,
-			DAGVertex dagVertex, String direction) throws CodegenException {
-		// Create the communication
-		Communication newComm = CodegenFactory.eINSTANCE.createCommunication();
-		Direction dir = (direction.equals(VertexType.TYPE_SEND)) ? Direction.SEND
-				: Direction.RECEIVE;
-		Delimiter delimiter = (direction.equals(VertexType.TYPE_SEND)) ? Delimiter.START
-				: Delimiter.END;
-		newComm.setDirection(dir);
-		newComm.setDelimiter(delimiter);
-
-		// Find the corresponding DAGEdge buffer(s)
-		DAGEdge dagEdge = (DAGEdge) dagVertex.getPropertyBean().getValue(
-				ImplementationPropertyNames.SendReceive_correspondingDagEdge,
-				DAGEdge.class);
-		Buffer buffer = dagEdgeBuffers.get(dagEdge);
-		if (buffer == null) {
-			throw new CodegenException("No buffer found for edge" + dagEdge);
-		}
-		newComm.setData(buffer);
-
-		// Set the name of the communication
-		// SS <=> Start Send
-		// RE <=> Receive End
-		String commName = "__" + buffer.getName();
-		commName += "__" + operatorBlock.getName();
-		newComm.setName(((newComm.getDirection().equals(Direction.SEND)) ? "SS"
-				: "RE") + commName);
-
-		// Find corresponding communications (SS/SE/RS/RE)
-		registerCommunication(newComm, dagEdge, dagVertex);
-
-		// Insert the new communication to the loop of the codeblock
-		insertCommunication(operatorBlock, dagVertex, newComm);
-
-		// Create the corresponding SE or RS
-		Communication newCommZoneComplement = CodegenFactory.eINSTANCE
-				.createCommunication();
-		newCommZoneComplement.setDirection(dir);
-		newCommZoneComplement
-				.setDelimiter((delimiter.equals(Delimiter.START)) ? Delimiter.END
-						: Delimiter.START);
-		newCommZoneComplement.setData(buffer);
-		newCommZoneComplement.setName(((newComm.getDirection()
-				.equals(Direction.SEND)) ? "SE" : "RS") + commName);
-		// Find corresponding communications (SS/SE/RS/RE)
-		registerCommunication(newCommZoneComplement, dagEdge, dagVertex);
-
-		// Insert the new communication to the loop of the codeblock
-		insertCommunication(operatorBlock, dagVertex, newCommZoneComplement);
-	}
-
-	/**
-	 * Insert the {@link Communication} in the {@link LoopBlock} of the
-	 * {@link CoreBlock} passed as a parameter. All {@link DAGVertex} consuming
-	 * or producing data handled by the {@link Communication} must have been
-	 * scheduled {@link #generateActorFiring(CoreBlock, DAGVertex) generated}
-	 * before calling this method.<br>
-	 * <br>
-	 * In the current version, Send primitives are inserted as follow:<br>
-	 * <code>(ProducingActor)-(SendStart)-(SendEnd)</code><br>
-	 * and Receive primitives as follow:<br>
-	 * <code>(ReceiveStart)-(ReceiveEnd)-(ConsumingActor)</code> <br>
-	 * The SendEnd and ReceiveStart placed like this do not enable the
-	 * reception/sending for the next iteration. <br>
-	 * {@link #futureInsertCommunication(CoreBlock, DAGVertex, Communication)
-	 * see this method to implement futur comm insertion.}
-	 * 
-	 * 
-	 * @param operatorBlock
-	 *            the {@link CoreBlock} on which the communication is executed.
-	 * @param dagVertex
-	 *            the {@link DAGVertex} corresponding to the given
-	 *            {@link Communication}.
-	 * @param newComm
-	 *            the {@link Communication} {@link Call} to insert.
-	 */
-	protected void insertCommunication(CoreBlock operatorBlock,
-			DAGVertex dagVertex, Communication newComm) {
-
-		// Do this only for SS and RE
-		if ((newComm.getDelimiter().equals(Delimiter.START) && newComm
-				.getDirection().equals(Direction.SEND))
-				|| (newComm.getDelimiter().equals(Delimiter.END) && newComm
-						.getDirection().equals(Direction.RECEIVE))) {
-
-			// Retrieve the vertex that must be before/after the communication.
-			DAGVertex producerOrConsumer = null;
-			if (newComm.getDirection().equals(Direction.SEND)) {
-				// Get the producer.
-				producerOrConsumer = dag.incomingEdgesOf(dagVertex).iterator()
-						.next().getSource();
-			} else {
-				producerOrConsumer = dag.outgoingEdgesOf(dagVertex).iterator()
-						.next().getTarget();
-			}
-
-			// Get the corresponding call
-			Call prodOrConsumerCall = dagVertexCalls.get(producerOrConsumer);
-			int index = operatorBlock.getLoopBlock().getCodeElts()
-					.indexOf(prodOrConsumerCall);
-			// If the index was found
-			if (index != -1) {
-				if (newComm.getDelimiter().equals(Delimiter.START)) {
-					// Insert after the producer/consumer
-					operatorBlock.getLoopBlock().getCodeElts()
-							.add(index + 1, newComm);
-				} else {
-					// Insert before the producer/consumer
-					operatorBlock.getLoopBlock().getCodeElts()
-							.add(index, newComm);
-				}
-
-				// Save the communication in the dagVertexCalls map only if it
-				// is a
-				// SS or a ER
-				if ((newComm.getDelimiter().equals(Delimiter.START) && newComm
-						.getDirection().equals(Direction.SEND))
-						|| (newComm.getDelimiter().equals(Delimiter.END) && newComm
-								.getDirection().equals(Direction.RECEIVE))) {
-					dagVertexCalls.put(dagVertex, newComm);
-				}
-			} else {
-				// The index was not found, this may happen when a multi-step
-				// communication occurs
-				// The receive end of the first step of a multistep
-				// communication
-				// will be the first to be processed.
-				if (newComm.getDelimiter().equals(Delimiter.END)
-						&& newComm.getDirection().equals(Direction.RECEIVE)) {
-					// Insert it according to its scheduled place.
-					int dagVertexSchedulingOrder = (Integer) dagVertex
-							.getPropertyBean()
-							.getValue(
-									ImplementationPropertyNames.Vertex_schedulingOrder,
-									Integer.class);
-					int insertionIndex = 0;
-					for (CodeElt codeElt : operatorBlock.getLoopBlock()
-							.getCodeElts()) {
-						// Iterate over the calls of the current operator
-						if (codeElt instanceof Call) {
-							DAGVertex vertex = dagVertexCalls.inverse().get(
-									(Call) codeElt);
-
-							if (vertex == null) {
-								// this will happen when a ReceiveStart or a
-								// Receive
-								// End is encountered, since they have no
-								// corresponding vertices in the DAG
-							} else if ((Integer) vertex
-									.getPropertyBean()
-									.getValue(
-											ImplementationPropertyNames.Vertex_schedulingOrder,
-											Integer.class) > dagVertexSchedulingOrder) {
-								break;
-							}
-						}
-						insertionIndex++;
-					}
-					// Do the insertion
-					operatorBlock.getLoopBlock().getCodeElts()
-							.add(insertionIndex, newComm);
-					dagVertexCalls.put(dagVertex, newComm);
-				}
-			}
-		} else {
-			// For SE and RS
-			// Retrieve the corresponding End or Start
-			Call zoneComplement = null;
-			if ((newComm.getDelimiter().equals(Delimiter.END) && newComm
-					.getDirection().equals(Direction.SEND))) {
-				zoneComplement = newComm.getSendStart();
-			}
-			if ((newComm.getDelimiter().equals(Delimiter.START) && newComm
-					.getDirection().equals(Direction.RECEIVE))) {
-				zoneComplement = newComm.getReceiveEnd();
-			}
-
-			// Get the index for the zone complement
-			int index = operatorBlock.getLoopBlock().getCodeElts()
-					.indexOf(zoneComplement);
-
-			// DO the insertion
-			if (newComm.getDelimiter().equals(Delimiter.START)) {
-				// Insert the RS before the RE
-				operatorBlock.getLoopBlock().getCodeElts().add(index, newComm);
-			} else {
-				// Insert the SE after the SS
-				operatorBlock.getLoopBlock().getCodeElts()
-						.add(index + 1, newComm);
-			}
-			// DO NOT save the SE and RS in the dagVertexCall.
-
-		}
-	}
-
-	/**
-	 * Insert the {@link Communication} in the {@link LoopBlock} of the
-	 * {@link CoreBlock} passed as a parameter. All {@link DAGVertex} consuming
-	 * or producing data handled by the {@link Communication} must have been
-	 * scheduled {@link #generateActorFiring(CoreBlock, DAGVertex) generated}
-	 * before calling this method.<br>
-	 * <br>
-	 * In the current version, Send primitives are inserted as follow:<br>
-	 * <code>(SendEnd)-(ProducingActor)-(SendStart)</code><br>
-	 * and Receive primitives as follow:<br>
-	 * <code>(ReceiveEnd)-(ConsumingActor)-(ReceiveStart)</code> <br>
-	 * The SendEnd and ReceiveStart placed like this enable the
-	 * reception/sending for the next iteration. <br>
-	 * 
-	 * 
-	 * @param operatorBlock
-	 *            the {@link CoreBlock} on which the communication is executed.
-	 * @param dagVertex
-	 *            the {@link DAGVertex} corresponding to the given
-	 *            {@link Communication}.
-	 * @param newComm
-	 *            the {@link Communication} {@link Call} to insert.
-	 */
-	protected void futurinsertCommunication(CoreBlock operatorBlock,
-			DAGVertex dagVertex, Communication newComm) {
-		if (dagVertex != null && newComm != null) { // dumb if only here to
-													// remove waring
-			// This method was kept only as a hint on how to implement future
-			// "smarter" insertion where send receive zones may span over
-			// multiple iterations. This method will be safe only when each
-			// buffer has a dedicated space in memory.
-			throw new RuntimeException(
-					"This method is not completely coded, do not use it !");
-			// This method does not work, especially because the insertion of RS
-			// and SE is corrupted in case of multistep com.
-		}
-
-		// Retrieve the vertex that must be before/after the communication.
-		DAGVertex producerOrConsumer = null;
-		if (newComm.getDirection().equals(Direction.SEND)) {
-			// Get the producer.
-			producerOrConsumer = dag.incomingEdgesOf(dagVertex).iterator()
-					.next().getSource();
-		} else {
-			producerOrConsumer = dag.outgoingEdgesOf(dagVertex).iterator()
-					.next().getTarget();
-		}
-
-		// Get the corresponding call
-		Call prodOrConsumerCall = dagVertexCalls.get(producerOrConsumer);
-		int index = operatorBlock.getLoopBlock().getCodeElts()
-				.indexOf(prodOrConsumerCall);
-		// If the index was found
-		if (index != -1) {
-			if (newComm.getDelimiter().equals(Delimiter.START)) {
-				// Insert after the producer/consumer
-				operatorBlock.getLoopBlock().getCodeElts()
-						.add(index + 1, newComm);
-			} else {
-				// Insert before the producer/consumer
-				operatorBlock.getLoopBlock().getCodeElts().add(index, newComm);
-			}
-
-			// Save the communication in the dagVertexCalls map only if it is a
-			// SS or a ER
-			if ((newComm.getDelimiter().equals(Delimiter.START) && newComm
-					.getDirection().equals(Direction.SEND))
-					|| (newComm.getDelimiter().equals(Delimiter.END) && newComm
-							.getDirection().equals(Direction.RECEIVE))) {
-				dagVertexCalls.put(dagVertex, newComm);
-			}
-		} else {
-			// The index was not found, this may happen when a multi-step
-			// communication occurs
-			// The receive end of the first step of a multistep communication
-			// will be the first to be processed.
-			if (newComm.getDelimiter().equals(Delimiter.END)
-					&& newComm.getDirection().equals(Direction.RECEIVE)) {
-				// Insert it according to its scheduled place.
-				int dagVertexSchedulingOrder = (Integer) dagVertex
-						.getPropertyBean()
-						.getValue(
-								ImplementationPropertyNames.Vertex_schedulingOrder,
-								Integer.class);
-				int insertionIndex = 0;
-				for (CodeElt codeElt : operatorBlock.getLoopBlock()
-						.getCodeElts()) {
-					// Iterate over the calls of the current operator
-					if (codeElt instanceof Call) {
-						DAGVertex vertex = dagVertexCalls.inverse().get(
-								(Call) codeElt);
-
-						if (vertex == null) {
-							// this will happen when a ReceiveStart or a Receive
-							// End is encountered, since they have no
-							// corresponding vertices in the DAG
-						} else if ((Integer) vertex
-								.getPropertyBean()
-								.getValue(
-										ImplementationPropertyNames.Vertex_schedulingOrder,
-										Integer.class) > dagVertexSchedulingOrder) {
-							break;
-						}
-					}
-					insertionIndex++;
-				}
-				// Do the insertion
-				operatorBlock.getLoopBlock().getCodeElts()
-						.add(insertionIndex, newComm);
-				dagVertexCalls.put(dagVertex, newComm);
-			} else if (newComm.getDelimiter().equals(Delimiter.START)
-					&& newComm.getDirection().equals(Direction.RECEIVE)) {
-				// In multistep communications, RS will be processed (inserted)
-				// before the associated "consumer" (a SS) is inserted. In such
-				// case, the RS is simply inserted right before its associated
-				// RE. When the SS is processed, it will automatically be
-				// inserted right after its producer (i.e. the RE) and hence,
-				// just before the RS. (This imply that the SS performes a copy
-				// of the data during its execution, which is to be expected in
-				// multistep comm)
-
-				int insertionIndex = operatorBlock.getLoopBlock().getCodeElts()
-						.indexOf(newComm.getReceiveEnd());
-				// Do the insertion
-				operatorBlock.getLoopBlock().getCodeElts()
-						.add(insertionIndex + 1, newComm);
-				// Do not save RS in dagVertexCalls !
-			}
-		}
-	}
-
-	/**
-	 * This method find the {@link Communication communications} associated to
-	 * the {@link Communication} passed as a parameter. Communication are
-	 * associated if they are involved in the communication of the same buffer
-	 * but with different {@link Direction} and {@link Delimiter}. The
-	 * {@link Communication#getSendStart()}, {@link Communication#getSendEnd()},
-	 * {@link Communication#getReceiveStart()} and
-	 * {@link Communication#getReceiveEnd()} attributes are updated by this
-	 * method.
-	 * 
-	 * @param newCommmunication
-	 *            The {@link Communication} to register.
-	 * @param dagEdge
-	 *            The {@link DAGEdge} associated to the communication.
-	 * @param dagVertex
-	 *            the {@link DAGVertex} (Send or Receive) at the origin of the
-	 *            newCommunication creation.
-	 */
-	protected void registerCommunication(Communication newCommmunication,
-			DAGEdge dagEdge, DAGVertex dagVertex) {
-		// Retrieve the routeStep corresponding to the vertex.
-		// In case of multi-step communication, this is the easiest
-		// way to retrieve the target and source of the communication
-		// corresponding to the current Send/ReceiveVertex
-		MessageRouteStep routeStep = (MessageRouteStep) dagVertex
-				.getPropertyBean()
-				.getValue("routeStep", MessageRouteStep.class);
-
-		String commID = routeStep.getSender().getInstanceName();
-		commID += "__" + dagEdge.getSource().getName();
-		commID += "___" + routeStep.getReceiver().getInstanceName();
-		commID += "__" + dagEdge.getTarget().getName();
-		List<Communication> associatedCommunications = communications
-				.get(commID);
-
-		if (associatedCommunications == null) {
-			associatedCommunications = new ArrayList<Communication>();
-			communications.put(commID, associatedCommunications);
-		}
-
-		// Register other comm to the new
-		for (Communication com : associatedCommunications) {
-			if (com.getDirection().equals(Direction.SEND)) {
-				if (com.getDelimiter().equals(Delimiter.START))
-					newCommmunication.setSendStart(com);
-				if (com.getDelimiter().equals(Delimiter.END))
-					newCommmunication.setSendEnd(com);
-			}
-			if (com.getDirection().equals(Direction.RECEIVE)) {
-				if (com.getDelimiter().equals(Delimiter.START))
-					newCommmunication.setReceiveStart(com);
-				if (com.getDelimiter().equals(Delimiter.END))
-					newCommmunication.setReceiveEnd(com);
-			}
-		}
-
-		// Register new comm to its co-workers
-		associatedCommunications.add(newCommmunication);
-		for (Communication com : associatedCommunications) {
-			if (newCommmunication.getDirection().equals(Direction.SEND)) {
-				if (newCommmunication.getDelimiter().equals(Delimiter.START)) {
-					com.setSendStart(newCommmunication);
-				} else {
-					com.setSendEnd(newCommmunication);
-				}
-			} else {
-				if (newCommmunication.getDelimiter().equals(Delimiter.START)) {
-					com.setReceiveStart(newCommmunication);
-				} else {
-					com.setReceiveEnd(newCommmunication);
-				}
-			}
-		}
 	}
 
 	/**
@@ -1163,14 +676,7 @@ public class CodegenModelGenerator {
 				FunctionCall functionCall = generateFunctionCall(dagVertex,
 						loopPrototype);
 
-				// Register the core Block as a user of the function variable
-				for (Variable var : functionCall.getParameters()) {
-					// Currently, constants do not need to be declared nor
-					// have creator since their value is directly used.
-					if (!(var instanceof Constant)) {
-						var.getUsers().add(operatorBlock);
-					}
-				}
+				registerCallVariableToCoreBlock(operatorBlock, functionCall);
 				// Add the function call to the operatorBlock
 				operatorBlock.getLoopBlock().getCodeElts().add(functionCall);
 
@@ -1185,15 +691,7 @@ public class CodegenModelGenerator {
 					FunctionCall functionCall = generateFunctionCall(dagVertex,
 							initPrototype);
 
-					// Register the core Block as a user of the function
-					// variable
-					for (Variable var : functionCall.getParameters()) {
-						// Currently, constants do not need to be declared nor
-						// have creator since their value is directly used.
-						if (!(var instanceof Constant)) {
-							var.getUsers().add(operatorBlock);
-						}
-					}
+					registerCallVariableToCoreBlock(operatorBlock, functionCall);
 					// Add the function call to the operatorBlock
 					operatorBlock.getInitBlock().getCodeElts()
 							.add(functionCall);
@@ -1214,6 +712,42 @@ public class CodegenModelGenerator {
 	}
 
 	/**
+	 * Generate the {@link Buffer} definition. This method sets the
+	 * {@link Buffer#setCreator(Block) Creator} attributes.
+	 * 
+	 */
+	protected void generateBufferDefinitions() {
+		// Currently, all buffers are declared by the main operator since they
+		// all are allocated "in shared memory".
+
+		// Identify the main operator block.
+		CoreBlock mainOperatorBlock = null;
+		{
+			final String mainOperatorID = scenario.getSimulationManager()
+					.getMainOperatorName();
+			for (Entry<ComponentInstance, CoreBlock> componentEntry : coreBlocks
+					.entrySet()) {
+				if (componentEntry.getKey().getInstanceName()
+						.equals(mainOperatorID)) {
+					mainOperatorBlock = componentEntry.getValue();
+				}
+			}
+		}
+
+		sharedBuffer.setCreator(mainOperatorBlock);
+
+		// set creator of buffers
+		for (Buffer buffer : dagEdgeBuffers.values()) {
+			buffer.setCreator(mainOperatorBlock);
+		}
+
+		// set creator of subbuffer
+		for (Buffer buffer : srSDFEdgeBuffers.values()) {
+			buffer.setCreator(mainOperatorBlock);
+		}
+	}
+
+	/**
 	 * @throws CodegenException
 	 * 
 	 */
@@ -1226,7 +760,7 @@ public class CodegenModelGenerator {
 		// Create the Main Shared buffer
 		Integer size = (Integer) memEx.getPropertyBean().getValue(
 				MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE, Integer.class);
-		Buffer sharedBuffer = CodegenFactory.eINSTANCE.createBuffer();
+		sharedBuffer = CodegenFactory.eINSTANCE.createBuffer();
 		sharedBuffer.setSize(size);
 
 		@SuppressWarnings("unchecked")
@@ -1436,6 +970,77 @@ public class CodegenModelGenerator {
 	}
 
 	/**
+	 * Generate the {@link CodegenPackage Codegen Model} for communication
+	 * "firing". This method will create an {@link Communication} and place it
+	 * in the {@link LoopBlock} of the {@link CoreBlock} passed as a parameter.
+	 * 
+	 * @param operatorBlock
+	 *            the {@link CoreBlock} where the actor {@link Communication} is
+	 *            performed.
+	 * @param dagVertex
+	 *            the {@link DAGVertex} corresponding to the actor firing.
+	 * @param direction
+	 *            the Type of communication ({@link VertexType#TYPE_SEND} or
+	 *            {@link VertexType#TYPE_RECEIVE}).
+	 * @throws CodegenException
+	 *             Exception is thrown if:
+	 *             <ul>
+	 *             </ul>
+	 * 
+	 */
+	protected void generateCommunication(CoreBlock operatorBlock,
+			DAGVertex dagVertex, String direction) throws CodegenException {
+		// Create the communication
+		Communication newComm = CodegenFactory.eINSTANCE.createCommunication();
+		Direction dir = (direction.equals(VertexType.TYPE_SEND)) ? Direction.SEND
+				: Direction.RECEIVE;
+		Delimiter delimiter = (direction.equals(VertexType.TYPE_SEND)) ? Delimiter.START
+				: Delimiter.END;
+		newComm.setDirection(dir);
+		newComm.setDelimiter(delimiter);
+
+		// Find the corresponding DAGEdge buffer(s)
+		DAGEdge dagEdge = (DAGEdge) dagVertex.getPropertyBean().getValue(
+				ImplementationPropertyNames.SendReceive_correspondingDagEdge,
+				DAGEdge.class);
+		Buffer buffer = dagEdgeBuffers.get(dagEdge);
+		if (buffer == null) {
+			throw new CodegenException("No buffer found for edge" + dagEdge);
+		}
+		newComm.setData(buffer);
+
+		// Set the name of the communication
+		// SS <=> Start Send
+		// RE <=> Receive End
+		String commName = "__" + buffer.getName();
+		commName += "__" + operatorBlock.getName();
+		newComm.setName(((newComm.getDirection().equals(Direction.SEND)) ? "SS"
+				: "RE") + commName);
+
+		// Find corresponding communications (SS/SE/RS/RE)
+		registerCommunication(newComm, dagEdge, dagVertex);
+
+		// Insert the new communication to the loop of the codeblock
+		insertCommunication(operatorBlock, dagVertex, newComm);
+
+		// Create the corresponding SE or RS
+		Communication newCommZoneComplement = CodegenFactory.eINSTANCE
+				.createCommunication();
+		newCommZoneComplement.setDirection(dir);
+		newCommZoneComplement
+				.setDelimiter((delimiter.equals(Delimiter.START)) ? Delimiter.END
+						: Delimiter.START);
+		newCommZoneComplement.setData(buffer);
+		newCommZoneComplement.setName(((newComm.getDirection()
+				.equals(Direction.SEND)) ? "SE" : "RS") + commName);
+		// Find corresponding communications (SS/SE/RS/RE)
+		registerCommunication(newCommZoneComplement, dagEdge, dagVertex);
+
+		// Insert the new communication to the loop of the codeblock
+		insertCommunication(operatorBlock, dagVertex, newCommZoneComplement);
+	}
+
+	/**
 	 * This method generate the {@link FunctionCall} corresponding to a
 	 * {@link Prototype} associated to a {@link DAGVertex}, both passed as
 	 * parameters.
@@ -1467,6 +1072,212 @@ public class CodegenModelGenerator {
 		}
 
 		return func;
+	}
+
+	/**
+	 * Generate the {@link CodegenPackage Codegen Model} for a "special actor"
+	 * (fork, join, broadcast or roundbuffer) firing. This method will create an
+	 * {@link SpecialCall} and place it in the {@link LoopBlock} of the
+	 * {@link CoreBlock} passed as a parameter.
+	 * 
+	 * @param operatorBlock
+	 *            the {@link CoreBlock} where the special actor firing is
+	 *            performed.
+	 * @param dagVertex
+	 *            the {@link DAGVertex} corresponding to the actor firing.
+	 * @throws CodegenException
+	 * 
+	 */
+	protected void generateSpecialCall(CoreBlock operatorBlock,
+			DAGVertex dagVertex) throws CodegenException {
+		// get the corresponding SDFVertex
+		SDFAbstractVertex sdfVertex = (SDFAbstractVertex) dagVertex
+				.getPropertyBean().getValue(DAGVertex.SDF_VERTEX,
+						SDFAbstractVertex.class);
+
+		SpecialCall f = CodegenFactory.eINSTANCE.createSpecialCall();
+		f.setName(dagVertex.getName());
+		String vertexType = dagVertex.getPropertyStringValue(DAGVertex.KIND);
+		switch (vertexType) {
+		case DAGForkVertex.DAG_FORK_VERTEX:
+			f.setType(SpecialType.FORK);
+			break;
+		case DAGJoinVertex.DAG_JOIN_VERTEX:
+			f.setType(SpecialType.JOIN);
+			break;
+		case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
+			if (sdfVertex instanceof SDFRoundBufferVertex) {
+				f.setType(SpecialType.ROUND_BUFFER);
+				break;
+			} else if (sdfVertex instanceof SDFBroadcastVertex) {
+				f.setType(SpecialType.BROADCAST);
+				break;
+			}
+			// Do not break here !
+		default:
+			throw new CodegenException("DAGVertex " + dagVertex
+					+ " has an unknown type: " + vertexType);
+		}
+
+		// Retrieve input/output edge in correct order !
+		@SuppressWarnings("unchecked")
+		Map<Integer, SDFEdge> orderedEdges = (Map<Integer, SDFEdge>) sdfVertex
+				.getPropertyBean().getValue(DAGForkVertex.EDGES_ORDER);
+		SDFGraph srSDFGraph = (SDFGraph) sdfVertex.getPropertyBean().getValue(
+				"base");
+
+		for (int i = 0; i < orderedEdges.size(); i++) {
+			// Find the corresponding DAGEdge.
+			DAGEdge dagEdge = null;
+			{
+				DAGVertex source = null;
+				DAGVertex target = null;
+
+				// Get the target or the source of the currentEdge
+				SDFAbstractVertex sourceOrTargetVertex = null;
+				if (f.getType().equals(SpecialType.FORK)
+						|| f.getType().equals(SpecialType.BROADCAST)) {
+					sourceOrTargetVertex = srSDFGraph
+							.getEdgeTarget(orderedEdges.get(i));
+					source = dagVertex;
+					target = dag.getVertex(sourceOrTargetVertex.getName());
+				} else { // join or roundbuffer
+					sourceOrTargetVertex = srSDFGraph
+							.getEdgeSource(orderedEdges.get(i));
+					target = dagVertex;
+					source = dag.getVertex(sourceOrTargetVertex.getName());
+				}
+				// For broadcast and round
+				// buffersf.getType().equals(SpecialType.BROADCAST) vertices,
+				// respectively skip the input and the outputs
+				if ((f.getType().equals(SpecialType.BROADCAST) || f.getType()
+						.equals(SpecialType.ROUND_BUFFER))
+						&& target != null
+						&& target.equals(source)) {
+					continue;
+				}
+
+				dagEdge = dag.getEdge(source, target);
+			}
+
+			if (dagEdge == null) {
+				throw new CodegenException(
+						"DAGEdge corresponding to srSDFEdge "
+								+ orderedEdges.get(i) + " was not found.");
+			}
+
+			// Find the corresponding BufferProperty
+			BufferProperties subBuffProperty = null;
+			BufferAggregate buffers = (BufferAggregate) dagEdge
+					.getPropertyBean().getValue(
+							BufferAggregate.propertyBeanName,
+							BufferAggregate.class);
+			for (BufferProperties subBufferProperties : buffers) {
+				// The source and target actor are the same, check that the
+				// ports are corrects
+				if (orderedEdges.get(i).getTargetLabel()
+						.equals(subBufferProperties.getDestInputPortID())
+						&& orderedEdges
+								.get(i)
+								.getSourceLabel()
+								.equals(subBufferProperties
+										.getSourceOutputPortID())) {
+					subBuffProperty = subBufferProperties;
+					break;
+				}
+			}
+
+			if (subBuffProperty == null) {
+				throw new CodegenException("Buffer property with ports "
+						+ orderedEdges.get(i).getTargetLabel() + " and "
+						+ orderedEdges.get(i).getSourceLabel()
+						+ " was not found in DAGEdge aggregate " + dagEdge);
+			}
+
+			// Get the corresponding Buffer
+			Buffer buffer = srSDFEdgeBuffers.get(subBuffProperty);
+			if (buffer == null) {
+				throw new CodegenException("Buffer corresponding to DAGEdge"
+						+ dagEdge + "was not allocated.");
+			}
+			// Add it to the specialCall
+			if (f.getType().equals(SpecialType.FORK)
+					|| f.getType().equals(SpecialType.BROADCAST)) {
+				f.addOutputBuffer(buffer);
+			} else {
+				f.addInputBuffer(buffer);
+			}
+		}
+
+		// Find the last buffer that correspond to the
+		// exploded/broadcasted/joined/roundbuffered edge
+		DAGEdge lastEdge = null;
+		{
+			// The vertex may have a maximum of 2 incoming/outgoing edges
+			// but only one should be linked to the producer/consumer
+			// the other must be linked to a send/receive vertex
+			Set<DAGEdge> candidates;
+			if (f.getType().equals(SpecialType.FORK)
+					|| f.getType().equals(SpecialType.BROADCAST)) {
+				candidates = dag.incomingEdgesOf(dagVertex);
+			} else {
+				candidates = dag.outgoingEdgesOf(dagVertex);
+			}
+
+			if (candidates.size() > 2) {
+				String direction;
+				if (f.getType().equals(SpecialType.FORK)
+						|| f.getType().equals(SpecialType.BROADCAST)) {
+					direction = "incoming";
+				} else {
+					direction = "outgoing";
+				}
+				throw new CodegenException(f.getType().getName() + " vertex "
+						+ dagVertex + " more than 1 " + direction
+						+ "edge. Check the exported DAG.");
+			}
+			for (DAGEdge edge : candidates) {
+				if (edge.getSource()
+						.getPropertyBean()
+						.getValue(
+								ImplementationPropertyNames.Vertex_vertexType,
+								VertexType.class).equals(VertexType.TASK)
+						&& edge.getTarget()
+								.getPropertyBean()
+								.getValue(
+										ImplementationPropertyNames.Vertex_vertexType,
+										VertexType.class)
+								.equals(VertexType.TASK)) {
+					lastEdge = edge;
+				}
+			}
+			if (lastEdge == null) {
+				// This should never happen. It would mean that a
+				// "special vertex" does receive data only from send/receive
+				// vertices
+				throw new CodegenException(f.getType().getName() + " vertex "
+						+ dagVertex + "is not properly connected.");
+			}
+		}
+
+		BufferAggregate bufferAggregate = (BufferAggregate) lastEdge
+				.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+		// there should be only one buffer in the aggregate
+		BufferProperties lastBuffProperty = bufferAggregate.get(0);
+		Buffer lastBuffer = srSDFEdgeBuffers.get(lastBuffProperty);
+
+		// Add it to the specialCall
+		if (f.getType().equals(SpecialType.FORK)
+				|| f.getType().equals(SpecialType.BROADCAST)) {
+			f.addInputBuffer(lastBuffer);
+		} else {
+			f.addOutputBuffer(lastBuffer);
+		}
+
+		operatorBlock.getLoopBlock().getCodeElts().add(f);
+		dagVertexCalls.put(dagVertex, f);
+
+		registerCallVariableToCoreBlock(operatorBlock, f);
 	}
 
 	/**
@@ -1575,5 +1386,246 @@ public class CodegenModelGenerator {
 		ActorPrototypes prototypes = IDLPrototypeFactory.INSTANCE
 				.create(idlFile.getRawLocation().toOSString());
 		return prototypes;
+	}
+
+	/**
+	 * Insert the {@link Communication} in the {@link LoopBlock} of the
+	 * {@link CoreBlock} passed as a parameter. All {@link DAGVertex} consuming
+	 * or producing data handled by the {@link Communication} must have been
+	 * scheduled {@link #generateActorFiring(CoreBlock, DAGVertex) generated}
+	 * before calling this method.<br>
+	 * <br>
+	 * In the current version, Send primitives are inserted as follow:<br>
+	 * <code>(ProducingActor)-(SendStart)-(SendEnd)</code><br>
+	 * and Receive primitives as follow:<br>
+	 * <code>(ReceiveStart)-(ReceiveEnd)-(ConsumingActor)</code> <br>
+	 * The SendEnd and ReceiveStart placed like this do not enable the
+	 * reception/sending for the next iteration. <br>
+	 * {@link #futureInsertCommunication(CoreBlock, DAGVertex, Communication)
+	 * see this method to implement futur comm insertion.}
+	 * 
+	 * 
+	 * @param operatorBlock
+	 *            the {@link CoreBlock} on which the communication is executed.
+	 * @param dagVertex
+	 *            the {@link DAGVertex} corresponding to the given
+	 *            {@link Communication}.
+	 * @param newComm
+	 *            the {@link Communication} {@link Call} to insert.
+	 */
+	protected void insertCommunication(CoreBlock operatorBlock,
+			DAGVertex dagVertex, Communication newComm) {
+
+		// Do this only for SS and RE
+		if ((newComm.getDelimiter().equals(Delimiter.START) && newComm
+				.getDirection().equals(Direction.SEND))
+				|| (newComm.getDelimiter().equals(Delimiter.END) && newComm
+						.getDirection().equals(Direction.RECEIVE))) {
+
+			// Retrieve the vertex that must be before/after the communication.
+			DAGVertex producerOrConsumer = null;
+			if (newComm.getDirection().equals(Direction.SEND)) {
+				// Get the producer.
+				producerOrConsumer = dag.incomingEdgesOf(dagVertex).iterator()
+						.next().getSource();
+			} else {
+				producerOrConsumer = dag.outgoingEdgesOf(dagVertex).iterator()
+						.next().getTarget();
+			}
+
+			// Get the corresponding call
+			Call prodOrConsumerCall = dagVertexCalls.get(producerOrConsumer);
+			int index = operatorBlock.getLoopBlock().getCodeElts()
+					.indexOf(prodOrConsumerCall);
+			// If the index was found
+			if (index != -1) {
+				if (newComm.getDelimiter().equals(Delimiter.START)) {
+					// Insert after the producer/consumer
+					operatorBlock.getLoopBlock().getCodeElts()
+							.add(index + 1, newComm);
+				} else {
+					// Insert before the producer/consumer
+					operatorBlock.getLoopBlock().getCodeElts()
+							.add(index, newComm);
+				}
+
+				// Save the communication in the dagVertexCalls map only if it
+				// is a
+				// SS or a ER
+				if ((newComm.getDelimiter().equals(Delimiter.START) && newComm
+						.getDirection().equals(Direction.SEND))
+						|| (newComm.getDelimiter().equals(Delimiter.END) && newComm
+								.getDirection().equals(Direction.RECEIVE))) {
+					dagVertexCalls.put(dagVertex, newComm);
+				}
+			} else {
+				// The index was not found, this may happen when a multi-step
+				// communication occurs
+				// The receive end of the first step of a multistep
+				// communication
+				// will be the first to be processed.
+				if (newComm.getDelimiter().equals(Delimiter.END)
+						&& newComm.getDirection().equals(Direction.RECEIVE)) {
+					// Insert it according to its scheduled place.
+					int dagVertexSchedulingOrder = (Integer) dagVertex
+							.getPropertyBean()
+							.getValue(
+									ImplementationPropertyNames.Vertex_schedulingOrder,
+									Integer.class);
+					int insertionIndex = 0;
+					for (CodeElt codeElt : operatorBlock.getLoopBlock()
+							.getCodeElts()) {
+						// Iterate over the calls of the current operator
+						if (codeElt instanceof Call) {
+							DAGVertex vertex = dagVertexCalls.inverse().get(
+									(Call) codeElt);
+
+							if (vertex == null) {
+								// this will happen when a ReceiveStart or a
+								// Receive
+								// End is encountered, since they have no
+								// corresponding vertices in the DAG
+							} else if ((Integer) vertex
+									.getPropertyBean()
+									.getValue(
+											ImplementationPropertyNames.Vertex_schedulingOrder,
+											Integer.class) > dagVertexSchedulingOrder) {
+								break;
+							}
+						}
+						insertionIndex++;
+					}
+					// Do the insertion
+					operatorBlock.getLoopBlock().getCodeElts()
+							.add(insertionIndex, newComm);
+					dagVertexCalls.put(dagVertex, newComm);
+				}
+			}
+		} else {
+			// For SE and RS
+			// Retrieve the corresponding End or Start
+			Call zoneComplement = null;
+			if ((newComm.getDelimiter().equals(Delimiter.END) && newComm
+					.getDirection().equals(Direction.SEND))) {
+				zoneComplement = newComm.getSendStart();
+			}
+			if ((newComm.getDelimiter().equals(Delimiter.START) && newComm
+					.getDirection().equals(Direction.RECEIVE))) {
+				zoneComplement = newComm.getReceiveEnd();
+			}
+
+			// Get the index for the zone complement
+			int index = operatorBlock.getLoopBlock().getCodeElts()
+					.indexOf(zoneComplement);
+
+			// DO the insertion
+			if (newComm.getDelimiter().equals(Delimiter.START)) {
+				// Insert the RS before the RE
+				operatorBlock.getLoopBlock().getCodeElts().add(index, newComm);
+			} else {
+				// Insert the SE after the SS
+				operatorBlock.getLoopBlock().getCodeElts()
+						.add(index + 1, newComm);
+			}
+			// DO NOT save the SE and RS in the dagVertexCall.
+
+		}
+	}
+
+	/**
+	 * Register the {@link Variable} used by the {@link Call} as used by the
+	 * {@link CoreBlock} passed as a parameter.
+	 * 
+	 * @param operatorBlock
+	 *            the {@link CoreBlock} that is a user of the variables.
+	 * @param call
+	 *            the {@link Call} whose {@link Variable variables} are
+	 *            registered
+	 */
+	protected void registerCallVariableToCoreBlock(CoreBlock operatorBlock,
+			Call call) {
+		// Register the core Block as a user of the function variable
+		for (Variable var : call.getParameters()) {
+			// Currently, constants do not need to be declared nor
+			// have creator since their value is directly used.
+			if (!(var instanceof Constant)) {
+				var.getUsers().add(operatorBlock);
+			}
+		}
+	}
+
+	/**
+	 * This method find the {@link Communication communications} associated to
+	 * the {@link Communication} passed as a parameter. Communication are
+	 * associated if they are involved in the communication of the same buffer
+	 * but with different {@link Direction} and {@link Delimiter}. The
+	 * {@link Communication#getSendStart()}, {@link Communication#getSendEnd()},
+	 * {@link Communication#getReceiveStart()} and
+	 * {@link Communication#getReceiveEnd()} attributes are updated by this
+	 * method.
+	 * 
+	 * @param newCommmunication
+	 *            The {@link Communication} to register.
+	 * @param dagEdge
+	 *            The {@link DAGEdge} associated to the communication.
+	 * @param dagVertex
+	 *            the {@link DAGVertex} (Send or Receive) at the origin of the
+	 *            newCommunication creation.
+	 */
+	protected void registerCommunication(Communication newCommmunication,
+			DAGEdge dagEdge, DAGVertex dagVertex) {
+		// Retrieve the routeStep corresponding to the vertex.
+		// In case of multi-step communication, this is the easiest
+		// way to retrieve the target and source of the communication
+		// corresponding to the current Send/ReceiveVertex
+		MessageRouteStep routeStep = (MessageRouteStep) dagVertex
+				.getPropertyBean()
+				.getValue("routeStep", MessageRouteStep.class);
+
+		String commID = routeStep.getSender().getInstanceName();
+		commID += "__" + dagEdge.getSource().getName();
+		commID += "___" + routeStep.getReceiver().getInstanceName();
+		commID += "__" + dagEdge.getTarget().getName();
+		List<Communication> associatedCommunications = communications
+				.get(commID);
+
+		if (associatedCommunications == null) {
+			associatedCommunications = new ArrayList<Communication>();
+			communications.put(commID, associatedCommunications);
+		}
+
+		// Register other comm to the new
+		for (Communication com : associatedCommunications) {
+			if (com.getDirection().equals(Direction.SEND)) {
+				if (com.getDelimiter().equals(Delimiter.START))
+					newCommmunication.setSendStart(com);
+				if (com.getDelimiter().equals(Delimiter.END))
+					newCommmunication.setSendEnd(com);
+			}
+			if (com.getDirection().equals(Direction.RECEIVE)) {
+				if (com.getDelimiter().equals(Delimiter.START))
+					newCommmunication.setReceiveStart(com);
+				if (com.getDelimiter().equals(Delimiter.END))
+					newCommmunication.setReceiveEnd(com);
+			}
+		}
+
+		// Register new comm to its co-workers
+		associatedCommunications.add(newCommmunication);
+		for (Communication com : associatedCommunications) {
+			if (newCommmunication.getDirection().equals(Direction.SEND)) {
+				if (newCommmunication.getDelimiter().equals(Delimiter.START)) {
+					com.setSendStart(newCommmunication);
+				} else {
+					com.setSendEnd(newCommmunication);
+				}
+			} else {
+				if (newCommmunication.getDelimiter().equals(Delimiter.START)) {
+					com.setReceiveStart(newCommmunication);
+				} else {
+					com.setReceiveEnd(newCommmunication);
+				}
+			}
+		}
 	}
 }

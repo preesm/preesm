@@ -56,6 +56,8 @@ import org.eclipse.emf.common.util.EList;
  * <em>Declarations</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getName <em>Name
  * </em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDefinitions
+ * <em>Definitions</em>}</li>
  * </ul>
  * </p>
  * 
@@ -129,5 +131,27 @@ public interface Block extends CodeElt {
 	 * @generated
 	 */
 	void setName(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Definitions</b></em>' containment
+	 * reference list. The list contents are of type
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable}. It is
+	 * bidirectional and its opposite is '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator
+	 * <em>Creator</em>}'. <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Definitions</em>' containment reference list
+	 * isn't clear, there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Definitions</em>' containment reference
+	 *         list.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBlock_Definitions()
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator
+	 * @model opposite="creator" containment="true"
+	 * @generated
+	 */
+	EList<Variable> getDefinitions();
 
 } // Block

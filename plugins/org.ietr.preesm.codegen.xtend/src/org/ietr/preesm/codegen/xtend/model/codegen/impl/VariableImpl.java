@@ -43,6 +43,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
@@ -111,16 +112,6 @@ public abstract class VariableImpl extends EObjectImpl implements Variable {
 	 * @ordered
 	 */
 	protected String type = TYPE_EDEFAULT;
-
-	/**
-	 * The cached value of the '{@link #getCreator() <em>Creator</em>}'
-	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getCreator()
-	 * @generated
-	 * @ordered
-	 */
-	protected Block creator;
 
 	/**
 	 * The cached value of the '{@link #getUsers() <em>Users</em>}' reference
@@ -201,17 +192,9 @@ public abstract class VariableImpl extends EObjectImpl implements Variable {
 	 * @generated
 	 */
 	public Block getCreator() {
-		if (creator != null && creator.eIsProxy()) {
-			InternalEObject oldCreator = (InternalEObject) creator;
-			creator = (Block) eResolveProxy(oldCreator);
-			if (creator != oldCreator) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							CodegenPackage.VARIABLE__CREATOR, oldCreator,
-							creator));
-			}
-		}
-		return creator;
+		if (eContainerFeatureID() != CodegenPackage.VARIABLE__CREATOR)
+			return null;
+		return (Block) eContainer();
 	}
 
 	/**
@@ -219,8 +202,11 @@ public abstract class VariableImpl extends EObjectImpl implements Variable {
 	 * 
 	 * @generated
 	 */
-	public Block basicGetCreator() {
-		return creator;
+	public NotificationChain basicSetCreator(Block newCreator,
+			NotificationChain msgs) {
+		msgs = eBasicSetContainer((InternalEObject) newCreator,
+				CodegenPackage.VARIABLE__CREATOR, msgs);
+		return msgs;
 	}
 
 	/**
@@ -229,11 +215,23 @@ public abstract class VariableImpl extends EObjectImpl implements Variable {
 	 * @generated
 	 */
 	public void setCreator(Block newCreator) {
-		Block oldCreator = creator;
-		creator = newCreator;
-		if (eNotificationRequired())
+		if (newCreator != eInternalContainer()
+				|| (eContainerFeatureID() != CodegenPackage.VARIABLE__CREATOR && newCreator != null)) {
+			if (EcoreUtil.isAncestor(this, newCreator))
+				throw new IllegalArgumentException(
+						"Recursive containment not allowed for " + toString());
+			NotificationChain msgs = null;
+			if (eInternalContainer() != null)
+				msgs = eBasicRemoveFromContainer(msgs);
+			if (newCreator != null)
+				msgs = ((InternalEObject) newCreator).eInverseAdd(this,
+						CodegenPackage.BLOCK__DEFINITIONS, Block.class, msgs);
+			msgs = basicSetCreator(newCreator, msgs);
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.VARIABLE__CREATOR, oldCreator, creator));
+					CodegenPackage.VARIABLE__CREATOR, newCreator, newCreator));
 	}
 
 	/**
@@ -260,6 +258,10 @@ public abstract class VariableImpl extends EObjectImpl implements Variable {
 	public NotificationChain eInverseAdd(InternalEObject otherEnd,
 			int featureID, NotificationChain msgs) {
 		switch (featureID) {
+		case CodegenPackage.VARIABLE__CREATOR:
+			if (eInternalContainer() != null)
+				msgs = eBasicRemoveFromContainer(msgs);
+			return basicSetCreator((Block) otherEnd, msgs);
 		case CodegenPackage.VARIABLE__USERS:
 			return ((InternalEList<InternalEObject>) (InternalEList<?>) getUsers())
 					.basicAdd(otherEnd, msgs);
@@ -276,10 +278,28 @@ public abstract class VariableImpl extends EObjectImpl implements Variable {
 	public NotificationChain eInverseRemove(InternalEObject otherEnd,
 			int featureID, NotificationChain msgs) {
 		switch (featureID) {
+		case CodegenPackage.VARIABLE__CREATOR:
+			return basicSetCreator(null, msgs);
 		case CodegenPackage.VARIABLE__USERS:
 			return ((InternalEList<?>) getUsers()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public NotificationChain eBasicRemoveFromContainerFeature(
+			NotificationChain msgs) {
+		switch (eContainerFeatureID()) {
+		case CodegenPackage.VARIABLE__CREATOR:
+			return eInternalContainer().eInverseRemove(this,
+					CodegenPackage.BLOCK__DEFINITIONS, Block.class, msgs);
+		}
+		return super.eBasicRemoveFromContainerFeature(msgs);
 	}
 
 	/**
@@ -295,9 +315,7 @@ public abstract class VariableImpl extends EObjectImpl implements Variable {
 		case CodegenPackage.VARIABLE__TYPE:
 			return getType();
 		case CodegenPackage.VARIABLE__CREATOR:
-			if (resolve)
-				return getCreator();
-			return basicGetCreator();
+			return getCreator();
 		case CodegenPackage.VARIABLE__USERS:
 			return getUsers();
 		}
@@ -361,7 +379,7 @@ public abstract class VariableImpl extends EObjectImpl implements Variable {
 			return TYPE_EDEFAULT == null ? type != null : !TYPE_EDEFAULT
 					.equals(type);
 		case CodegenPackage.VARIABLE__CREATOR:
-			return creator != null;
+			return getCreator() != null;
 		case CodegenPackage.VARIABLE__USERS:
 			return users != null && !users.isEmpty();
 		}

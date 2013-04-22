@@ -7,6 +7,8 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="declarations" upperBound="-1"
         eType="#//Variable" changeable="false" eOpposite="#//Variable/users"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="definitions" upperBound="-1"
+        eType="#//Variable" containment="true" eOpposite="#//Variable/creator"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="CodeElt" abstract="true" interface="true"/>
   <eClassifiers xsi:type="ecore:EClass" name="Call" abstract="true" eSuperTypes="#//CodeElt">
@@ -25,7 +27,7 @@
         iD="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="creator" lowerBound="1"
-        eType="#//Block"/>
+        eType="#//Block" eOpposite="#//Block/definitions"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="users" lowerBound="1" upperBound="-1"
         eType="#//Block" changeable="false" eOpposite="#//Block/declarations"/>
   </eClassifiers>

@@ -35,6 +35,7 @@
  */
 package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
+import java.util.Collection;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
@@ -43,6 +44,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
@@ -65,6 +67,9 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
  * <li>
  * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BlockImpl#getName
  * <em>Name</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BlockImpl#getDefinitions
+ * <em>Definitions</em>}</li>
  * </ul>
  * </p>
  * 
@@ -111,6 +116,16 @@ public class BlockImpl extends EObjectImpl implements Block {
 	 * @ordered
 	 */
 	protected String name = NAME_EDEFAULT;
+
+	/**
+	 * The cached value of the '{@link #getDefinitions() <em>Definitions</em>}'
+	 * containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #getDefinitions()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<Variable> definitions;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -185,6 +200,20 @@ public class BlockImpl extends EObjectImpl implements Block {
 	 * 
 	 * @generated
 	 */
+	public EList<Variable> getDefinitions() {
+		if (definitions == null) {
+			definitions = new EObjectContainmentWithInverseEList<Variable>(
+					Variable.class, this, CodegenPackage.BLOCK__DEFINITIONS,
+					CodegenPackage.VARIABLE__CREATOR);
+		}
+		return definitions;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd,
@@ -192,6 +221,9 @@ public class BlockImpl extends EObjectImpl implements Block {
 		switch (featureID) {
 		case CodegenPackage.BLOCK__DECLARATIONS:
 			return ((InternalEList<InternalEObject>) (InternalEList<?>) getDeclarations())
+					.basicAdd(otherEnd, msgs);
+		case CodegenPackage.BLOCK__DEFINITIONS:
+			return ((InternalEList<InternalEObject>) (InternalEList<?>) getDefinitions())
 					.basicAdd(otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
@@ -212,6 +244,9 @@ public class BlockImpl extends EObjectImpl implements Block {
 		case CodegenPackage.BLOCK__DECLARATIONS:
 			return ((InternalEList<?>) getDeclarations()).basicRemove(otherEnd,
 					msgs);
+		case CodegenPackage.BLOCK__DEFINITIONS:
+			return ((InternalEList<?>) getDefinitions()).basicRemove(otherEnd,
+					msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -230,6 +265,8 @@ public class BlockImpl extends EObjectImpl implements Block {
 			return getDeclarations();
 		case CodegenPackage.BLOCK__NAME:
 			return getName();
+		case CodegenPackage.BLOCK__DEFINITIONS:
+			return getDefinitions();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -239,11 +276,16 @@ public class BlockImpl extends EObjectImpl implements Block {
 	 * 
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 		case CodegenPackage.BLOCK__NAME:
 			setName((String) newValue);
+			return;
+		case CodegenPackage.BLOCK__DEFINITIONS:
+			getDefinitions().clear();
+			getDefinitions().addAll((Collection<? extends Variable>) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -259,6 +301,9 @@ public class BlockImpl extends EObjectImpl implements Block {
 		switch (featureID) {
 		case CodegenPackage.BLOCK__NAME:
 			setName(NAME_EDEFAULT);
+			return;
+		case CodegenPackage.BLOCK__DEFINITIONS:
+			getDefinitions().clear();
 			return;
 		}
 		super.eUnset(featureID);
@@ -279,6 +324,8 @@ public class BlockImpl extends EObjectImpl implements Block {
 		case CodegenPackage.BLOCK__NAME:
 			return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT
 					.equals(name);
+		case CodegenPackage.BLOCK__DEFINITIONS:
+			return definitions != null && !definitions.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

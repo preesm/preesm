@@ -307,6 +307,15 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	public EReference getBlock_Definitions() {
+		return (EReference) blockEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	public EClass getCodeElt() {
 		return codeEltEClass;
 	}
@@ -704,6 +713,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		createEReference(blockEClass, BLOCK__CODE_ELTS);
 		createEReference(blockEClass, BLOCK__DECLARATIONS);
 		createEAttribute(blockEClass, BLOCK__NAME);
+		createEReference(blockEClass, BLOCK__DEFINITIONS);
 
 		codeEltEClass = createEClass(CODE_ELT);
 
@@ -823,6 +833,11 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 				null, 0, 1, Block.class, !IS_TRANSIENT, !IS_VOLATILE,
 				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
 				IS_ORDERED);
+		initEReference(getBlock_Definitions(), this.getVariable(),
+				this.getVariable_Creator(), "definitions", null, 0, -1,
+				Block.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
 		initEClass(codeEltEClass, CodeElt.class, "CodeElt", IS_ABSTRACT,
 				IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -858,10 +873,11 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 				null, 1, 1, Variable.class, !IS_TRANSIENT, !IS_VOLATILE,
 				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
 				IS_ORDERED);
-		initEReference(getVariable_Creator(), this.getBlock(), null, "creator",
-				null, 1, 1, Variable.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getVariable_Creator(), this.getBlock(),
+				this.getBlock_Definitions(), "creator", null, 1, 1,
+				Variable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 		initEReference(getVariable_Users(), this.getBlock(),
 				this.getBlock_Declarations(), "users", null, 1, -1,
 				Variable.class, !IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE,

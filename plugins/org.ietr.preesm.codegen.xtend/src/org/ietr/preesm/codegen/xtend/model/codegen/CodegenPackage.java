@@ -146,13 +146,22 @@ public interface CodegenPackage extends EPackage {
 	int BLOCK__NAME = CODE_ELT_FEATURE_COUNT + 2;
 
 	/**
+	 * The feature id for the '<em><b>Definitions</b></em>' containment
+	 * reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int BLOCK__DEFINITIONS = CODE_ELT_FEATURE_COUNT + 3;
+
+	/**
 	 * The number of structural features of the '<em>Block</em>' class. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int BLOCK_FEATURE_COUNT = CODE_ELT_FEATURE_COUNT + 3;
+	int BLOCK_FEATURE_COUNT = CODE_ELT_FEATURE_COUNT + 4;
 
 	/**
 	 * The meta object id for the '
@@ -643,6 +652,15 @@ public interface CodegenPackage extends EPackage {
 	int CORE_BLOCK__NAME = BLOCK__NAME;
 
 	/**
+	 * The feature id for the '<em><b>Definitions</b></em>' containment
+	 * reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int CORE_BLOCK__DEFINITIONS = BLOCK__DEFINITIONS;
+
+	/**
 	 * The feature id for the '<em><b>Loop Block</b></em>' reference. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -709,6 +727,15 @@ public interface CodegenPackage extends EPackage {
 	int ACTOR_BLOCK__NAME = BLOCK__NAME;
 
 	/**
+	 * The feature id for the '<em><b>Definitions</b></em>' containment
+	 * reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int ACTOR_BLOCK__DEFINITIONS = BLOCK__DEFINITIONS;
+
+	/**
 	 * The feature id for the '<em><b>Loop Block</b></em>' reference. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -773,6 +800,15 @@ public interface CodegenPackage extends EPackage {
 	 * @ordered
 	 */
 	int LOOP_BLOCK__NAME = BLOCK__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Definitions</b></em>' containment
+	 * reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int LOOP_BLOCK__DEFINITIONS = BLOCK__DEFINITIONS;
 
 	/**
 	 * The number of structural features of the '<em>Loop Block</em>' class.
@@ -860,6 +896,15 @@ public interface CodegenPackage extends EPackage {
 	 * @ordered
 	 */
 	int CALL_BLOCK__NAME = BLOCK__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Definitions</b></em>' containment
+	 * reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int CALL_BLOCK__DEFINITIONS = BLOCK__DEFINITIONS;
 
 	/**
 	 * The number of structural features of the '<em>Call Block</em>' class.
@@ -1019,6 +1064,19 @@ public interface CodegenPackage extends EPackage {
 	EAttribute getBlock_Name();
 
 	/**
+	 * Returns the meta object for the containment reference list '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDefinitions
+	 * <em>Definitions</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the containment reference list '
+	 *         <em>Definitions</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Block#getDefinitions()
+	 * @see #getBlock()
+	 * @generated
+	 */
+	EReference getBlock_Definitions();
+
+	/**
 	 * Returns the meta object for class '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.CodeElt
 	 * <em>Code Elt</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1100,11 +1158,11 @@ public interface CodegenPackage extends EPackage {
 	EAttribute getVariable_Type();
 
 	/**
-	 * Returns the meta object for the reference '
+	 * Returns the meta object for the container reference '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator
 	 * <em>Creator</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @return the meta object for the reference '<em>Creator</em>'.
+	 * @return the meta object for the container reference '<em>Creator</em>'.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator()
 	 * @see #getVariable()
 	 * @generated
@@ -1553,6 +1611,15 @@ public interface CodegenPackage extends EPackage {
 		EAttribute BLOCK__NAME = eINSTANCE.getBlock_Name();
 
 		/**
+		 * The meta object literal for the '<em><b>Definitions</b></em>'
+		 * containment reference list feature. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference BLOCK__DEFINITIONS = eINSTANCE.getBlock_Definitions();
+
+		/**
 		 * The meta object literal for the '
 		 * {@link org.ietr.preesm.codegen.xtend.model.codegen.CodeElt
 		 * <em>Code Elt</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc
@@ -1620,8 +1687,8 @@ public interface CodegenPackage extends EPackage {
 		EAttribute VARIABLE__TYPE = eINSTANCE.getVariable_Type();
 
 		/**
-		 * The meta object literal for the '<em><b>Creator</b></em>' reference
-		 * feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * The meta object literal for the '<em><b>Creator</b></em>' container
+		 * reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
 		 * 
 		 * @generated
 		 */
