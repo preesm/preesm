@@ -1,13 +1,13 @@
-package org.ietr.preesm.codegen.xtend.task
+package org.ietr.preesm.codegen.xtend.printer
 
-import net.sf.dftools.architecture.slam.Design
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph
-import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
+import net.sf.dftools.architecture.slam.Design
 import org.ietr.preesm.core.scenario.PreesmScenario
-
+import org.ietr.preesm.experiment.memory.allocation.MemoryAllocator
+import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
 
 /**
- * The {@link CodegenPrinter} class is the main class of the Xtend code 
+ * The {@link org.ietr.preesm.codegen.xtend.task.CodegenPrinter} class is the main class of the Xtend code 
  * generation plugin.<br>
  *
  * @author kdesnos
@@ -35,16 +35,16 @@ class CodegenPrinter {
 
 	/**
 	 * {@link PreesmScenario Scenario} at the origin of the call
-	 * to the {@link CodegenPrinter Code Generator}.
+	 * to the {@link org.ietr.preesm.codegen.xtend.task.CodegenPrinter Code Generator}.
 	 */
 	PreesmScenario scenario
 
 	/**
- 	 *  Constructor of the {@link CodegenPrinter}.
- 	 *  @param archi See {@link CodegenPrinter#archi}
- 	 *  @param dag See {@link CodegenPrinter#dag}
- 	 *  @param memEx See {@link CodegenPrinter#memEx}
- 	 *  @param scenario See {@link CodegenPrinter#scenario}
+ 	 *  Constructor of the {@link org.ietr.preesm.codegen.xtend.task.CodegenPrinter}.
+ 	 *  @param archi See {@link org.ietr.preesm.codegen.xtend.task.CodegenPrinter#archi}
+ 	 *  @param dag See {@link org.ietr.preesm.codegen.xtend.task.CodegenPrinter#dag}
+ 	 *  @param memEx See {@link org.ietr.preesm.codegen.xtend.task.CodegenPrinter#memEx}
+ 	 *  @param scenario See {@link org.ietr.preesm.codegen.xtend.task.CodegenPrinter#scenario}
  	 */
 	new(Design archi, DirectedAcyclicGraph dag, MemoryExclusionGraph memEx, PreesmScenario scenario) {
 		this.archi = archi
