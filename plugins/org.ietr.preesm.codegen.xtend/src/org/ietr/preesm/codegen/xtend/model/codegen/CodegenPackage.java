@@ -1011,13 +1011,13 @@ public interface CodegenPackage extends EPackage {
 	int FIFO_CALL__NAME = CALL__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Delimiter</b></em>' attribute. <!--
+	 * The feature id for the '<em><b>Operation</b></em>' attribute. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int FIFO_CALL__DELIMITER = CALL_FEATURE_COUNT + 0;
+	int FIFO_CALL__OPERATION = CALL_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Fifo Head</b></em>' reference. <!--
@@ -1079,6 +1079,18 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 */
 	int SPECIAL_TYPE = 18;
+
+	/**
+	 * The meta object id for the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
+	 * <em>Fifo Operation</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getFifoOperation()
+	 * @generated
+	 */
+	int FIFO_OPERATION = 19;
 
 	/**
 	 * Returns the meta object for class '
@@ -1596,15 +1608,15 @@ public interface CodegenPackage extends EPackage {
 
 	/**
 	 * Returns the meta object for the attribute '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getDelimiter
-	 * <em>Delimiter</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getOperation
+	 * <em>Operation</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @return the meta object for the attribute '<em>Delimiter</em>'.
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getDelimiter()
+	 * @return the meta object for the attribute '<em>Operation</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getOperation()
 	 * @see #getFifoCall()
 	 * @generated
 	 */
-	EAttribute getFifoCall_Delimiter();
+	EAttribute getFifoCall_Operation();
 
 	/**
 	 * Returns the meta object for the reference '
@@ -1662,6 +1674,17 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 */
 	EEnum getSpecialType();
+
+	/**
+	 * Returns the meta object for enum '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
+	 * <em>Fifo Operation</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for enum '<em>Fifo Operation</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
+	 * @generated
+	 */
+	EEnum getFifoOperation();
 
 	/**
 	 * Returns the factory that creates the instances of the model. <!--
@@ -2113,12 +2136,12 @@ public interface CodegenPackage extends EPackage {
 		EClass FIFO_CALL = eINSTANCE.getFifoCall();
 
 		/**
-		 * The meta object literal for the '<em><b>Delimiter</b></em>' attribute
+		 * The meta object literal for the '<em><b>Operation</b></em>' attribute
 		 * feature. <!-- begin-user-doc --> <!-- end-user-doc -->
 		 * 
 		 * @generated
 		 */
-		EAttribute FIFO_CALL__DELIMITER = eINSTANCE.getFifoCall_Delimiter();
+		EAttribute FIFO_CALL__OPERATION = eINSTANCE.getFifoCall_Operation();
 
 		/**
 		 * The meta object literal for the '<em><b>Fifo Head</b></em>' reference
@@ -2171,6 +2194,18 @@ public interface CodegenPackage extends EPackage {
 		 * @generated
 		 */
 		EEnum SPECIAL_TYPE = eINSTANCE.getSpecialType();
+
+		/**
+		 * The meta object literal for the '
+		 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
+		 * <em>Fifo Operation</em>}' enum. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getFifoOperation()
+		 * @generated
+		 */
+		EEnum FIFO_OPERATION = eINSTANCE.getFifoOperation();
 
 	}
 

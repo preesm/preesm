@@ -36,15 +36,12 @@
 package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
 import org.eclipse.emf.common.notify.Notification;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
-import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter;
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall;
+import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -53,8 +50,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall;
  * The following features are implemented:
  * <ul>
  * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FifoCallImpl#getDelimiter
- * <em>Delimiter</em>}</li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FifoCallImpl#getOperation
+ * <em>Operation</em>}</li>
  * <li>
  * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FifoCallImpl#getFifoHead
  * <em>Fifo Head</em>}</li>
@@ -68,24 +65,24 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall;
  */
 public class FifoCallImpl extends CallImpl implements FifoCall {
 	/**
-	 * The default value of the '{@link #getDelimiter() <em>Delimiter</em>}'
+	 * The default value of the '{@link #getOperation() <em>Operation</em>}'
 	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @see #getDelimiter()
+	 * @see #getOperation()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final Delimiter DELIMITER_EDEFAULT = Delimiter.START;
+	protected static final FifoOperation OPERATION_EDEFAULT = FifoOperation.PUSH;
 
 	/**
-	 * The cached value of the '{@link #getDelimiter() <em>Delimiter</em>}'
+	 * The cached value of the '{@link #getOperation() <em>Operation</em>}'
 	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @see #getDelimiter()
+	 * @see #getOperation()
 	 * @generated
 	 * @ordered
 	 */
-	protected Delimiter delimiter = DELIMITER_EDEFAULT;
+	protected FifoOperation operation = OPERATION_EDEFAULT;
 
 	/**
 	 * The cached value of the '{@link #getFifoHead() <em>Fifo Head</em>}'
@@ -131,8 +128,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	 * 
 	 * @generated
 	 */
-	public Delimiter getDelimiter() {
-		return delimiter;
+	public FifoOperation getOperation() {
+		return operation;
 	}
 
 	/**
@@ -140,13 +137,13 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	 * 
 	 * @generated
 	 */
-	public void setDelimiter(Delimiter newDelimiter) {
-		Delimiter oldDelimiter = delimiter;
-		delimiter = newDelimiter == null ? DELIMITER_EDEFAULT : newDelimiter;
+	public void setOperation(FifoOperation newOperation) {
+		FifoOperation oldOperation = operation;
+		operation = newOperation == null ? OPERATION_EDEFAULT : newOperation;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.FIFO_CALL__DELIMITER, oldDelimiter,
-					delimiter));
+					CodegenPackage.FIFO_CALL__OPERATION, oldOperation,
+					operation));
 	}
 
 	/**
@@ -239,8 +236,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case CodegenPackage.FIFO_CALL__DELIMITER:
-			return getDelimiter();
+		case CodegenPackage.FIFO_CALL__OPERATION:
+			return getOperation();
 		case CodegenPackage.FIFO_CALL__FIFO_HEAD:
 			if (resolve)
 				return getFifoHead();
@@ -261,8 +258,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case CodegenPackage.FIFO_CALL__DELIMITER:
-			setDelimiter((Delimiter) newValue);
+		case CodegenPackage.FIFO_CALL__OPERATION:
+			setOperation((FifoOperation) newValue);
 			return;
 		case CodegenPackage.FIFO_CALL__FIFO_HEAD:
 			setFifoHead((FifoCall) newValue);
@@ -282,8 +279,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case CodegenPackage.FIFO_CALL__DELIMITER:
-			setDelimiter(DELIMITER_EDEFAULT);
+		case CodegenPackage.FIFO_CALL__OPERATION:
+			setOperation(OPERATION_EDEFAULT);
 			return;
 		case CodegenPackage.FIFO_CALL__FIFO_HEAD:
 			setFifoHead((FifoCall) null);
@@ -303,8 +300,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case CodegenPackage.FIFO_CALL__DELIMITER:
-			return delimiter != DELIMITER_EDEFAULT;
+		case CodegenPackage.FIFO_CALL__OPERATION:
+			return operation != OPERATION_EDEFAULT;
 		case CodegenPackage.FIFO_CALL__FIFO_HEAD:
 			return fifoHead != null;
 		case CodegenPackage.FIFO_CALL__FIFO_TAIL:
@@ -324,8 +321,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 			return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (delimiter: ");
-		result.append(delimiter);
+		result.append(" (operation: ");
+		result.append(operation);
 		result.append(')');
 		return result.toString();
 	}

@@ -54,7 +54,9 @@ import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import net.sf.dftools.algorithm.model.dag.edag.DAGBroadcastVertex;
+import net.sf.dftools.algorithm.model.dag.edag.DAGEndVertex;
 import net.sf.dftools.algorithm.model.dag.edag.DAGForkVertex;
+import net.sf.dftools.algorithm.model.dag.edag.DAGInitVertex;
 import net.sf.dftools.algorithm.model.dag.edag.DAGJoinVertex;
 import net.sf.dftools.algorithm.model.parameters.Argument;
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
@@ -63,6 +65,8 @@ import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import net.sf.dftools.algorithm.model.sdf.SDFVertex;
 import net.sf.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
 import net.sf.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.architecture.slam.Design;
@@ -89,12 +93,15 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Constant;
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter;
 import org.ietr.preesm.codegen.xtend.model.codegen.Direction;
+import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall;
+import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation;
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
+import org.ietr.preesm.codegen.xtend.printer.AbstractCodegenPrinter;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
@@ -181,6 +188,12 @@ public class CodegenModelGenerator {
 	private Map<DAGEdge, Buffer> dagEdgeBuffers;
 
 	/**
+	 * This {@link Map} associates a {@link SDFInitVertex} to its corresponding
+	 * {@link FifoOperation#POP Pop} {@link FifoCall}.
+	 */
+	private Map<SDFInitVertex, FifoCall> popFifoCalls;
+
+	/**
 	 * This {@link Map} associates each {@link DAGVertex} to its corresponding
 	 * {@link Call}. It will be filled during when creating the function call of
 	 * actors and updated later by inserting {@link Communication} {@link Call
@@ -236,6 +249,7 @@ public class CodegenModelGenerator {
 		this.dagEdgeBuffers = new HashMap<DAGEdge, Buffer>();
 		this.dagVertexCalls = HashBiMap.create(dag.vertexSet().size());
 		this.communications = new HashMap<String, List<Communication>>();
+		this.popFifoCalls = new HashMap<SDFInitVertex, FifoCall>();
 		try {
 			originalSDF = ScenarioParser.getAlgorithm(scenario
 					.getAlgorithmURL());
@@ -566,9 +580,15 @@ public class CodegenModelGenerator {
 					case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
 						generateSpecialCall(operatorBlock, vert);
 						break;
+					case DAGInitVertex.DAG_INIT_VERTEX:
+						generateFifoCall(operatorBlock, vert);
+						break;
+					case DAGEndVertex.DAG_END_VERTEX:
+						generateFifoCall(operatorBlock, vert);
+						break;
 					default:
 						throw new CodegenException("DAGVertex " + vert
-								+ "has an unknown kind: " + vertKind);
+								+ " has an unknown kind: " + vertKind);
 					}
 					break;
 
@@ -623,6 +643,72 @@ public class CodegenModelGenerator {
 		generateBufferDefinitions();
 
 		return new HashSet<Block>(coreBlocks.values());
+	}
+
+	/**
+	 * Generate the {@link FifoCall} that corresponds to the {@link DAGVertex}
+	 * passed as a parameter and add it to the {@link CoreBlock#getLoopBlock()
+	 * loop block} of the given {@link CoreBlock}.
+	 * 
+	 * @param operatorBlock
+	 *            the {@link CoreBlock} that executes the {@link DAGVertex}
+	 * @param dagVertex
+	 *            A {@link DAGInitVertex} or a {@link DAGEndVertex} that
+	 *            respectively correspond to a pull and a push operation.
+	 * @throws CodegenException
+	 *             if the passed vertex is not a {@link DAGInitVertex} nor a
+	 *             {@link DAGEndVertex}
+	 */
+	protected void generateFifoCall(CoreBlock operatorBlock, DAGVertex dagVertex)
+			throws CodegenException {
+		// Retrieve the sdf vertex
+		SDFAbstractVertex sdfVertex = (SDFAbstractVertex) dagVertex
+				.getPropertyBean().getValue(DAGVertex.SDF_VERTEX,
+						SDFAbstractVertex.class);
+
+		// Create the Fifo call and set basic property
+		FifoCall fifoCall = CodegenFactory.eINSTANCE.createFifoCall();
+		fifoCall.setName(dagVertex.getName());
+
+		// Find the type of FiFo operation
+		String kind = dagVertex.getPropertyStringValue(DAGVertex.KIND);
+		switch (kind) {
+		case DAGInitVertex.DAG_INIT_VERTEX:
+			fifoCall.setOperation(FifoOperation.POP);
+			break;
+		case DAGEndVertex.DAG_END_VERTEX:
+			fifoCall.setOperation(FifoOperation.PUSH);
+			break;
+		default:
+			throw new CodegenException("DAGVertex " + dagVertex
+					+ " does not corresponds to a Fifo primitive.");
+		}
+
+		// Get the depth of the fifo
+		System.out.println("TODO: Get the fifo depth\n");
+
+		// Get buffer used by the FifoCall
+		System.out.println("TODO: Get the fifo buffers\n");
+
+		// Register associated fifo calls (push/pop)
+		if (fifoCall.getOperation().equals(FifoOperation.POP)) {
+			// Pop operations are the first to be encountered.
+			// We simply store the dagVertex with its associated fifoCall in a
+			// Map. This Map will be used when processing the associated Push
+			// operation
+			popFifoCalls.put((SDFInitVertex) sdfVertex, fifoCall);
+
+		} else { // Push case
+			// Retrieve the corresponding Pop
+			FifoCall popCall = popFifoCalls.remove(((SDFEndVertex) sdfVertex)
+					.getEndReference());
+			popCall.setFifoHead(fifoCall);
+			fifoCall.setFifoTail(popCall);
+		}
+
+		// Add the Fifo call to the loop of its coreBlock
+		operatorBlock.getLoopBlock().getCodeElts().add(fifoCall);
+
 	}
 
 	/**
@@ -846,7 +932,8 @@ public class CodegenModelGenerator {
 			}
 			if (port == null) {
 				throw new CodegenException("Mismatch between actor ("
-						+ sdfVertex + ") ports and IDL loop prototype argument"
+						+ sdfVertex
+						+ ") ports and IDL loop prototype argument "
 						+ arg.getName());
 			}
 
@@ -1548,9 +1635,11 @@ public class CodegenModelGenerator {
 		for (Variable var : call.getParameters()) {
 			// Currently, constants do not need to be declared nor
 			// have creator since their value is directly used.
-			if (!(var instanceof Constant)) {
-				var.getUsers().add(operatorBlock);
+			// Consequently the used block can also be declared as the creator
+			if (var instanceof Constant) {
+				var.setCreator(operatorBlock);
 			}
+			var.getUsers().add(operatorBlock);
 		}
 	}
 
@@ -1579,8 +1668,9 @@ public class CodegenModelGenerator {
 		// way to retrieve the target and source of the communication
 		// corresponding to the current Send/ReceiveVertex
 		MessageRouteStep routeStep = (MessageRouteStep) dagVertex
-				.getPropertyBean()
-				.getValue("routeStep", MessageRouteStep.class);
+				.getPropertyBean().getValue(
+						ImplementationPropertyNames.SendReceive_routeStep,
+						MessageRouteStep.class);
 
 		String commID = routeStep.getSender().getInstanceName();
 		commID += "__" + dagEdge.getSource().getName();

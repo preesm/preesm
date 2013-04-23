@@ -136,6 +136,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 			return createDelimiterFromString(eDataType, initialValue);
 		case CodegenPackage.SPECIAL_TYPE:
 			return createSpecialTypeFromString(eDataType, initialValue);
+		case CodegenPackage.FIFO_OPERATION:
+			return createFifoOperationFromString(eDataType, initialValue);
 		default:
 			throw new IllegalArgumentException("The datatype '"
 					+ eDataType.getName() + "' is not a valid classifier");
@@ -156,6 +158,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 			return convertDelimiterToString(eDataType, instanceValue);
 		case CodegenPackage.SPECIAL_TYPE:
 			return convertSpecialTypeToString(eDataType, instanceValue);
+		case CodegenPackage.FIFO_OPERATION:
+			return convertFifoOperationToString(eDataType, instanceValue);
 		default:
 			throw new IllegalArgumentException("The datatype '"
 					+ eDataType.getName() + "' is not a valid classifier");
@@ -363,6 +367,31 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * @generated
 	 */
 	public String convertSpecialTypeToString(EDataType eDataType,
+			Object instanceValue) {
+		return instanceValue == null ? null : instanceValue.toString();
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public FifoOperation createFifoOperationFromString(EDataType eDataType,
+			String initialValue) {
+		FifoOperation result = FifoOperation.get(initialValue);
+		if (result == null)
+			throw new IllegalArgumentException("The value '" + initialValue
+					+ "' is not a valid enumerator of '" + eDataType.getName()
+					+ "'");
+		return result;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public String convertFifoOperationToString(EDataType eDataType,
 			Object instanceValue) {
 		return instanceValue == null ? null : instanceValue.toString();
 	}

@@ -395,7 +395,7 @@
     <children xmi:type="notation:Node" xmi:id="_1Vxw46viEeKnJ9Ri7qUrHQ" type="4001"/>
     <children xmi:type="notation:Node" xmi:id="_1Vxw5KviEeKnJ9Ri7qUrHQ" type="5001">
       <children xmi:type="notation:Node" xmi:id="_9Eo6AKviEeKnJ9Ri7qUrHQ" type="2001">
-        <element xmi:type="ecore:EAttribute" href="codegen.ecore#//FifoCall/delimiter"/>
+        <element xmi:type="ecore:EAttribute" href="codegen.ecore#//FifoCall/operation"/>
         <layoutConstraint xmi:type="notation:Location" xmi:id="_9Eo6AaviEeKnJ9Ri7qUrHQ"/>
       </children>
       <styles xmi:type="notation:DrawerStyle" xmi:id="_1Vxw5aviEeKnJ9Ri7qUrHQ"/>
@@ -410,6 +410,25 @@
     <styles xmi:type="notation:ShapeStyle" xmi:id="_1Vxw4aviEeKnJ9Ri7qUrHQ" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
     <element xmi:type="ecore:EClass" href="codegen.ecore#//FifoCall"/>
     <layoutConstraint xmi:type="notation:Bounds" xmi:id="_1Vxw4qviEeKnJ9Ri7qUrHQ" x="254" y="624"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_I6lIQKwaEeKnJ9Ri7qUrHQ" type="1005">
+    <children xmi:type="notation:Node" xmi:id="_I6rO4KwaEeKnJ9Ri7qUrHQ" type="4010"/>
+    <children xmi:type="notation:Node" xmi:id="_I6rO4awaEeKnJ9Ri7qUrHQ" type="5008">
+      <children xmi:type="notation:Node" xmi:id="_Ka5rgKwaEeKnJ9Ri7qUrHQ" type="2006">
+        <element xmi:type="ecore:EEnumLiteral" href="codegen.ecore#//FifoOperation/PUSH"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_Ka5rgawaEeKnJ9Ri7qUrHQ"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_LIM2YKwaEeKnJ9Ri7qUrHQ" type="2006">
+        <element xmi:type="ecore:EEnumLiteral" href="codegen.ecore#//FifoOperation/POP"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_LIM2YawaEeKnJ9Ri7qUrHQ"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_I6rO4qwaEeKnJ9Ri7qUrHQ"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_I6rO46waEeKnJ9Ri7qUrHQ"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_I6rO5KwaEeKnJ9Ri7qUrHQ"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_I6lIQawaEeKnJ9Ri7qUrHQ" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EEnum" href="codegen.ecore#//FifoOperation"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_I6lIQqwaEeKnJ9Ri7qUrHQ" x="699" y="653"/>
   </children>
   <styles xmi:type="notation:DiagramStyle" xmi:id="_ermTYZuZEeKpdeZtHB9wCw"/>
   <element xmi:type="ecore:EPackage" href="codegen.ecore#/"/>

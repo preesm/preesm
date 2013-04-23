@@ -59,6 +59,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter;
 import org.ietr.preesm.codegen.xtend.model.codegen.Direction;
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall;
+import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation;
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
@@ -205,6 +206,13 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * @generated
 	 */
 	private EEnum specialTypeEEnum = null;
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	private EEnum fifoOperationEEnum = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -675,7 +683,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
-	public EAttribute getFifoCall_Delimiter() {
+	public EAttribute getFifoCall_Operation() {
 		return (EAttribute) fifoCallEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -722,6 +730,15 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 */
 	public EEnum getSpecialType() {
 		return specialTypeEEnum;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EEnum getFifoOperation() {
+		return fifoOperationEEnum;
 	}
 
 	/**
@@ -812,7 +829,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		createEReference(specialCallEClass, SPECIAL_CALL__OUTPUT_BUFFERS);
 
 		fifoCallEClass = createEClass(FIFO_CALL);
-		createEAttribute(fifoCallEClass, FIFO_CALL__DELIMITER);
+		createEAttribute(fifoCallEClass, FIFO_CALL__OPERATION);
 		createEReference(fifoCallEClass, FIFO_CALL__FIFO_HEAD);
 		createEReference(fifoCallEClass, FIFO_CALL__FIFO_TAIL);
 
@@ -820,6 +837,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		directionEEnum = createEEnum(DIRECTION);
 		delimiterEEnum = createEEnum(DELIMITER);
 		specialTypeEEnum = createEEnum(SPECIAL_TYPE);
+		fifoOperationEEnum = createEEnum(FIFO_OPERATION);
 	}
 
 	/**
@@ -924,7 +942,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
 				IS_ORDERED);
 		initEReference(getVariable_Creator(), this.getBlock(),
-				this.getBlock_Definitions(), "creator", null, 1, 1,
+				this.getBlock_Definitions(), "creator", null, 0, 1,
 				Variable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				!IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
@@ -1077,8 +1095,8 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
 		initEClass(fifoCallEClass, FifoCall.class, "FifoCall", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getFifoCall_Delimiter(), this.getDelimiter(),
-				"delimiter", null, 1, 1, FifoCall.class, !IS_TRANSIENT,
+		initEAttribute(getFifoCall_Operation(), this.getFifoOperation(),
+				"operation", null, 1, 1, FifoCall.class, !IS_TRANSIENT,
 				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
 		initEReference(getFifoCall_FifoHead(), this.getFifoCall(), null,
@@ -1104,6 +1122,10 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		addEEnumLiteral(specialTypeEEnum, SpecialType.JOIN);
 		addEEnumLiteral(specialTypeEEnum, SpecialType.BROADCAST);
 		addEEnumLiteral(specialTypeEEnum, SpecialType.ROUND_BUFFER);
+
+		initEEnum(fifoOperationEEnum, FifoOperation.class, "FifoOperation");
+		addEEnumLiteral(fifoOperationEEnum, FifoOperation.PUSH);
+		addEEnumLiteral(fifoOperationEEnum, FifoOperation.POP);
 
 		// Create resource
 		createResource(eNS_URI);

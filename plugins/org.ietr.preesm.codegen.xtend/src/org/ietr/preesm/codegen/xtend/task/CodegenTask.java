@@ -67,7 +67,10 @@ public class CodegenTask extends AbstractTaskImplementation {
 			// example everything is hierarchical included in this first node
 			resource.getContents().add(b);
 
-			// Now save the content.
+		}
+
+		// Now save the content.
+		for (Resource resource : resSet.getResources()) {
 			try {
 				resource.save(Collections.EMPTY_MAP);
 			} catch (IOException e) {

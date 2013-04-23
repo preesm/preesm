@@ -26,8 +26,8 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         iD="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="creator" lowerBound="1"
-        eType="#//Block" eOpposite="#//Block/definitions"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="creator" eType="#//Block"
+        eOpposite="#//Block/definitions"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="users" lowerBound="1" upperBound="-1"
         eType="#//Block" changeable="false" eOpposite="#//Block/declarations"/>
   </eClassifiers>
@@ -112,11 +112,15 @@
     <eLiterals name="ROUND_BUFFER" value="3"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="FifoCall" eSuperTypes="#//Call">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="delimiter" lowerBound="1"
-        eType="#//Delimiter"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="operation" lowerBound="1"
+        eType="#//FifoOperation"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="fifoHead" eType="#//FifoCall"
         transient="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="fifoTail" eType="#//FifoCall"
         transient="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="FifoOperation">
+    <eLiterals name="PUSH"/>
+    <eLiterals name="POP" value="1"/>
   </eClassifiers>
 </ecore:EPackage>

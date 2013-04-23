@@ -42,8 +42,8 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  * <p>
  * The following features are supported:
  * <ul>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getDelimiter
- * <em>Delimiter</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getOperation
+ * <em>Operation</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getFifoHead
  * <em>Fifo Head</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getFifoTail
@@ -57,38 +57,38 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  */
 public interface FifoCall extends Call {
 	/**
-	 * Returns the value of the '<em><b>Delimiter</b></em>' attribute. The
+	 * Returns the value of the '<em><b>Operation</b></em>' attribute. The
 	 * literals are from the enumeration
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Delimiter}. <!--
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation}. <!--
 	 * begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Delimiter</em>' attribute isn't clear, there
+	 * If the meaning of the '<em>Operation</em>' attribute isn't clear, there
 	 * really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * 
-	 * @return the value of the '<em>Delimiter</em>' attribute.
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Delimiter
-	 * @see #setDelimiter(Delimiter)
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFifoCall_Delimiter()
+	 * @return the value of the '<em>Operation</em>' attribute.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
+	 * @see #setOperation(FifoOperation)
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFifoCall_Operation()
 	 * @model required="true"
 	 * @generated
 	 */
-	Delimiter getDelimiter();
+	FifoOperation getOperation();
 
 	/**
 	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getDelimiter
-	 * <em>Delimiter</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getOperation
+	 * <em>Operation</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
 	 * @param value
-	 *            the new value of the '<em>Delimiter</em>' attribute.
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Delimiter
-	 * @see #getDelimiter()
+	 *            the new value of the '<em>Operation</em>' attribute.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
+	 * @see #getOperation()
 	 * @generated
 	 */
-	void setDelimiter(Delimiter value);
+	void setOperation(FifoOperation value);
 
 	/**
 	 * Returns the value of the '<em><b>Fifo Head</b></em>' reference. <!--
