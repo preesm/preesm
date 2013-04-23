@@ -111,4 +111,12 @@
     <eLiterals name="BROADCAST" value="2"/>
     <eLiterals name="ROUND_BUFFER" value="3"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FifoCall" eSuperTypes="#//Call">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="delimiter" lowerBound="1"
+        eType="#//Delimiter"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="fifoHead" eType="#//FifoCall"
+        transient="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="fifoTail" eType="#//FifoCall"
+        transient="true"/>
+  </eClassifiers>
 </ecore:EPackage>

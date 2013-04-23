@@ -150,7 +150,7 @@ public class CodegenModelGenerator {
 
 	/**
 	 * {@link PreesmScenario Scenario} at the origin of the call to the
-	 * {@link CodegenPrinter Code Generator}.
+	 * {@link AbstractCodegenPrinter Code Generator}.
 	 */
 	private PreesmScenario scenario;
 
@@ -211,13 +211,13 @@ public class CodegenModelGenerator {
 	 * </ul>
 	 * 
 	 * @param archi
-	 *            See {@link CodegenPrinter#archi}
+	 *            See {@link AbstractCodegenPrinter#archi}
 	 * @param dag
-	 *            See {@link CodegenPrinter#dag}
+	 *            See {@link AbstractCodegenPrinter#dag}
 	 * @param memEx
-	 *            See {@link CodegenPrinter#memEx}
+	 *            See {@link AbstractCodegenPrinter#memEx}
 	 * @param scenario
-	 *            See {@link CodegenPrinter#scenario}
+	 *            See {@link AbstractCodegenPrinter#scenario}
 	 * @throws CodegenException
 	 *             When one of the previous verification fails.
 	 */
@@ -258,11 +258,11 @@ public class CodegenModelGenerator {
 	 * </ul>
 	 * 
 	 * @param archi
-	 *            See {@link CodegenPrinter#archi}
+	 *            See {@link AbstractCodegenPrinter#archi}
 	 * @param dag
-	 *            See {@link CodegenPrinter#dag}
+	 *            See {@link AbstractCodegenPrinter#dag}
 	 * @param memEx
-	 *            See {@link CodegenPrinter#memEx}
+	 *            See {@link AbstractCodegenPrinter#memEx}
 	 * @throws CodegenException
 	 *             When one of the previous verification fails.
 	 */

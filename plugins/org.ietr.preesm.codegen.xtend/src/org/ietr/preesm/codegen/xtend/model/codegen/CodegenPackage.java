@@ -983,6 +983,71 @@ public interface CodegenPackage extends EPackage {
 
 	/**
 	 * The meta object id for the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FifoCallImpl
+	 * <em>Fifo Call</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.FifoCallImpl
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getFifoCall()
+	 * @generated
+	 */
+	int FIFO_CALL = 15;
+
+	/**
+	 * The feature id for the '<em><b>Parameters</b></em>' reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int FIFO_CALL__PARAMETERS = CALL__PARAMETERS;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int FIFO_CALL__NAME = CALL__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Delimiter</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int FIFO_CALL__DELIMITER = CALL_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Fifo Head</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int FIFO_CALL__FIFO_HEAD = CALL_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Fifo Tail</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int FIFO_CALL__FIFO_TAIL = CALL_FEATURE_COUNT + 2;
+
+	/**
+	 * The number of structural features of the '<em>Fifo Call</em>' class. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int FIFO_CALL_FEATURE_COUNT = CALL_FEATURE_COUNT + 3;
+
+	/**
+	 * The meta object id for the '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Direction
 	 * <em>Direction</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -990,7 +1055,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDirection()
 	 * @generated
 	 */
-	int DIRECTION = 15;
+	int DIRECTION = 16;
 
 	/**
 	 * The meta object id for the '
@@ -1001,7 +1066,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDelimiter()
 	 * @generated
 	 */
-	int DELIMITER = 16;
+	int DELIMITER = 17;
 
 	/**
 	 * The meta object id for the '
@@ -1013,7 +1078,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getSpecialType()
 	 * @generated
 	 */
-	int SPECIAL_TYPE = 17;
+	int SPECIAL_TYPE = 18;
 
 	/**
 	 * Returns the meta object for class '
@@ -1519,6 +1584,53 @@ public interface CodegenPackage extends EPackage {
 	EReference getSpecialCall_OutputBuffers();
 
 	/**
+	 * Returns the meta object for class '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
+	 * <em>Fifo Call</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for class '<em>Fifo Call</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
+	 * @generated
+	 */
+	EClass getFifoCall();
+
+	/**
+	 * Returns the meta object for the attribute '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getDelimiter
+	 * <em>Delimiter</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Delimiter</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getDelimiter()
+	 * @see #getFifoCall()
+	 * @generated
+	 */
+	EAttribute getFifoCall_Delimiter();
+
+	/**
+	 * Returns the meta object for the reference '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getFifoHead
+	 * <em>Fifo Head</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference '<em>Fifo Head</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getFifoHead()
+	 * @see #getFifoCall()
+	 * @generated
+	 */
+	EReference getFifoCall_FifoHead();
+
+	/**
+	 * Returns the meta object for the reference '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getFifoTail
+	 * <em>Fifo Tail</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference '<em>Fifo Tail</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getFifoTail()
+	 * @see #getFifoCall()
+	 * @generated
+	 */
+	EReference getFifoCall_FifoTail();
+
+	/**
 	 * Returns the meta object for enum '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Direction
 	 * <em>Direction</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1987,6 +2099,42 @@ public interface CodegenPackage extends EPackage {
 		 */
 		EReference SPECIAL_CALL__OUTPUT_BUFFERS = eINSTANCE
 				.getSpecialCall_OutputBuffers();
+
+		/**
+		 * The meta object literal for the '
+		 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FifoCallImpl
+		 * <em>Fifo Call</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc
+		 * -->
+		 * 
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.FifoCallImpl
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getFifoCall()
+		 * @generated
+		 */
+		EClass FIFO_CALL = eINSTANCE.getFifoCall();
+
+		/**
+		 * The meta object literal for the '<em><b>Delimiter</b></em>' attribute
+		 * feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute FIFO_CALL__DELIMITER = eINSTANCE.getFifoCall_Delimiter();
+
+		/**
+		 * The meta object literal for the '<em><b>Fifo Head</b></em>' reference
+		 * feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference FIFO_CALL__FIFO_HEAD = eINSTANCE.getFifoCall_FifoHead();
+
+		/**
+		 * The meta object literal for the '<em><b>Fifo Tail</b></em>' reference
+		 * feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference FIFO_CALL__FIFO_TAIL = eINSTANCE.getFifoCall_FifoTail();
 
 		/**
 		 * The meta object literal for the '

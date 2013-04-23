@@ -12,7 +12,7 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
  *
  * @author kdesnos
  */
-class CodegenPrinter {
+class AbstractCodegenPrinter {
 	/**
 	 * Targeted {@link Design Architecture} of the code generation 
 	 */

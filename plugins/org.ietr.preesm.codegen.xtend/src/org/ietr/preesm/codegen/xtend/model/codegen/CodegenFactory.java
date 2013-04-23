@@ -163,6 +163,15 @@ public interface CodegenFactory extends EFactory {
 	SpecialCall createSpecialCall();
 
 	/**
+	 * Returns a new object of class '<em>Fifo Call</em>'. <!-- begin-user-doc
+	 * --> <!-- end-user-doc -->
+	 * 
+	 * @return a new object of class '<em>Fifo Call</em>'.
+	 * @generated
+	 */
+	FifoCall createFifoCall();
+
+	/**
 	 * Returns the package supported by this factory. <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * 

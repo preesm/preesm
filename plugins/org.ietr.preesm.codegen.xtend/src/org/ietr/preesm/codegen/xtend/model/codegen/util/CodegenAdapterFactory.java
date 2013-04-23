@@ -175,6 +175,11 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseFifoCall(FifoCall object) {
+			return createFifoCallAdapter();
+		}
+
+		@Override
 		public Adapter defaultCase(EObject object) {
 			return createEObjectAdapter();
 		}
@@ -429,6 +434,22 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createSpecialCallAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
+	 * <em>Fifo Call</em>}'. <!-- begin-user-doc --> This default implementation
+	 * returns null so that we can easily ignore cases; it's useful to ignore a
+	 * case when inheritance will catch all the cases anyway. <!-- end-user-doc
+	 * -->
+	 * 
+	 * @return the new adapter.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
+	 * @generated
+	 */
+	public Adapter createFifoCallAdapter() {
 		return null;
 	}
 

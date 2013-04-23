@@ -114,6 +114,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 			return createCallBlock();
 		case CodegenPackage.SPECIAL_CALL:
 			return createSpecialCall();
+		case CodegenPackage.FIFO_CALL:
+			return createFifoCall();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName()
 					+ "' is not a valid classifier");
@@ -278,6 +280,16 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	public SpecialCall createSpecialCall() {
 		SpecialCallImpl specialCall = new SpecialCallImpl();
 		return specialCall;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public FifoCall createFifoCall() {
+		FifoCallImpl fifoCall = new FifoCallImpl();
+		return fifoCall;
 	}
 
 	/**
