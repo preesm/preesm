@@ -48,6 +48,9 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  * <em>Fifo Head</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getFifoTail
  * <em>Fifo Tail</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getStorageBuffer
+ * <em>Storage Buffer</em>}</li>
  * </ul>
  * </p>
  * 
@@ -149,5 +152,35 @@ public interface FifoCall extends Call {
 	 * @generated
 	 */
 	void setFifoTail(FifoCall value);
+
+	/**
+	 * Returns the value of the '<em><b>Storage Buffer</b></em>' reference. <!--
+	 * begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Storage Buffer</em>' reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Storage Buffer</em>' reference.
+	 * @see #setStorageBuffer(Buffer)
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFifoCall_StorageBuffer()
+	 * @model
+	 * @generated
+	 */
+	Buffer getStorageBuffer();
+
+	/**
+	 * Sets the value of the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getStorageBuffer
+	 * <em>Storage Buffer</em>}' reference. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Storage Buffer</em>' reference.
+	 * @see #getStorageBuffer()
+	 * @generated
+	 */
+	void setStorageBuffer(Buffer value);
 
 } // FifoCall

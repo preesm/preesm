@@ -118,6 +118,7 @@
         transient="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="fifoTail" eType="#//FifoCall"
         transient="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="storageBuffer" eType="#//Buffer"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="FifoOperation">
     <eLiterals name="PUSH"/>

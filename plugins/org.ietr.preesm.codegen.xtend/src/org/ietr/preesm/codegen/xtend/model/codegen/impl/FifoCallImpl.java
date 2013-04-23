@@ -39,6 +39,7 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.ietr.preesm.codegen.xtend.model.codegen.Buffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation;
@@ -58,6 +59,9 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation;
  * <li>
  * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FifoCallImpl#getFifoTail
  * <em>Fifo Tail</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FifoCallImpl#getStorageBuffer
+ * <em>Storage Buffer</em>}</li>
  * </ul>
  * </p>
  * 
@@ -103,6 +107,17 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	 * @ordered
 	 */
 	protected FifoCall fifoTail;
+
+	/**
+	 * The cached value of the '{@link #getStorageBuffer()
+	 * <em>Storage Buffer</em>}' reference. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @see #getStorageBuffer()
+	 * @generated
+	 * @ordered
+	 */
+	protected Buffer storageBuffer;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -233,6 +248,48 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	 * 
 	 * @generated
 	 */
+	public Buffer getStorageBuffer() {
+		if (storageBuffer != null && storageBuffer.eIsProxy()) {
+			InternalEObject oldStorageBuffer = (InternalEObject) storageBuffer;
+			storageBuffer = (Buffer) eResolveProxy(oldStorageBuffer);
+			if (storageBuffer != oldStorageBuffer) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							CodegenPackage.FIFO_CALL__STORAGE_BUFFER,
+							oldStorageBuffer, storageBuffer));
+			}
+		}
+		return storageBuffer;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public Buffer basicGetStorageBuffer() {
+		return storageBuffer;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public void setStorageBuffer(Buffer newStorageBuffer) {
+		Buffer oldStorageBuffer = storageBuffer;
+		storageBuffer = newStorageBuffer;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					CodegenPackage.FIFO_CALL__STORAGE_BUFFER, oldStorageBuffer,
+					storageBuffer));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
@@ -246,6 +303,10 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 			if (resolve)
 				return getFifoTail();
 			return basicGetFifoTail();
+		case CodegenPackage.FIFO_CALL__STORAGE_BUFFER:
+			if (resolve)
+				return getStorageBuffer();
+			return basicGetStorageBuffer();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -266,6 +327,9 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 			return;
 		case CodegenPackage.FIFO_CALL__FIFO_TAIL:
 			setFifoTail((FifoCall) newValue);
+			return;
+		case CodegenPackage.FIFO_CALL__STORAGE_BUFFER:
+			setStorageBuffer((Buffer) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -288,6 +352,9 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 		case CodegenPackage.FIFO_CALL__FIFO_TAIL:
 			setFifoTail((FifoCall) null);
 			return;
+		case CodegenPackage.FIFO_CALL__STORAGE_BUFFER:
+			setStorageBuffer((Buffer) null);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -306,6 +373,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 			return fifoHead != null;
 		case CodegenPackage.FIFO_CALL__FIFO_TAIL:
 			return fifoTail != null;
+		case CodegenPackage.FIFO_CALL__STORAGE_BUFFER:
+			return storageBuffer != null;
 		}
 		return super.eIsSet(featureID);
 	}

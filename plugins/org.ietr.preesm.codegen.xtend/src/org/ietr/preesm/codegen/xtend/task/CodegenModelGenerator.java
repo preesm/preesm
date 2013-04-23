@@ -684,11 +684,24 @@ public class CodegenModelGenerator {
 					+ " does not corresponds to a Fifo primitive.");
 		}
 
-		// Get the depth of the fifo
-		System.out.println("TODO: Get the fifo depth\n");
-
 		// Get buffer used by the FifoCall
 		System.out.println("TODO: Get the fifo buffers\n");
+
+		if (fifoCall.getOperation().equals(FifoOperation.POP)) {
+			// Pop operation is always the first encountered in scheduling
+			// order.
+			// Get the depth of the fifo, and create the storage buffer
+			Buffer storageBuffer = CodegenFactory.eINSTANCE.createBuffer();
+			storageBuffer.setName(dagVertex.getName());
+			storageBuffer.setCreator(operatorBlock);
+			storageBuffer.getUsers().add(operatorBlock);
+			Integer size = ((SDFInitVertex) sdfVertex).getInitSize();
+			storageBuffer.setSize(size);
+
+			System.out.println("TODO: set type of internal buffer\n");
+
+			fifoCall.setStorageBuffer(storageBuffer);
+		}
 
 		// Register associated fifo calls (push/pop)
 		if (fifoCall.getOperation().equals(FifoOperation.POP)) {

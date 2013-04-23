@@ -1038,13 +1038,22 @@ public interface CodegenPackage extends EPackage {
 	int FIFO_CALL__FIFO_TAIL = CALL_FEATURE_COUNT + 2;
 
 	/**
+	 * The feature id for the '<em><b>Storage Buffer</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int FIFO_CALL__STORAGE_BUFFER = CALL_FEATURE_COUNT + 3;
+
+	/**
 	 * The number of structural features of the '<em>Fifo Call</em>' class. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int FIFO_CALL_FEATURE_COUNT = CALL_FEATURE_COUNT + 3;
+	int FIFO_CALL_FEATURE_COUNT = CALL_FEATURE_COUNT + 4;
 
 	/**
 	 * The meta object id for the '
@@ -1643,6 +1652,18 @@ public interface CodegenPackage extends EPackage {
 	EReference getFifoCall_FifoTail();
 
 	/**
+	 * Returns the meta object for the reference '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getStorageBuffer
+	 * <em>Storage Buffer</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference '<em>Storage Buffer</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getStorageBuffer()
+	 * @see #getFifoCall()
+	 * @generated
+	 */
+	EReference getFifoCall_StorageBuffer();
+
+	/**
 	 * Returns the meta object for enum '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Direction
 	 * <em>Direction</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2158,6 +2179,15 @@ public interface CodegenPackage extends EPackage {
 		 * @generated
 		 */
 		EReference FIFO_CALL__FIFO_TAIL = eINSTANCE.getFifoCall_FifoTail();
+
+		/**
+		 * The meta object literal for the '<em><b>Storage Buffer</b></em>'
+		 * reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference FIFO_CALL__STORAGE_BUFFER = eINSTANCE
+				.getFifoCall_StorageBuffer();
 
 		/**
 		 * The meta object literal for the '
