@@ -78,6 +78,7 @@ public class CodegenTask extends AbstractTaskImplementation {
 				e.printStackTrace();
 			}
 		}
+	
 
 		// Create empty output map
 		Map<String, Object> output = new HashMap<String, Object>();
