@@ -684,21 +684,67 @@ public class CodegenModelGenerator {
 					+ " does not corresponds to a Fifo primitive.");
 		}
 
-		// Get buffer used by the FifoCall
-		System.out.println("TODO: Get the fifo buffers\n");
+		// Get buffer used by the FifoCall (in/out)
+		Set<DAGEdge> edges;
+		if (fifoCall.getOperation().equals(FifoOperation.POP)) {
+			edges = dag.outgoingEdgesOf(dagVertex);
+		} else {
+			edges = dag.incomingEdgesOf(dagVertex);
+		}
+		// There might be more than one edge, if one is connected to a
+		// send/receive
+		Buffer buffer = null;
+		{
+			DAGEdge edge = null;
+			for (DAGEdge currentEdge : edges) {
+				if (currentEdge
+						.getSource()
+						.getPropertyBean()
+						.getValue(
+								ImplementationPropertyNames.Vertex_vertexType,
+								VertexType.class).equals(VertexType.TASK)
+						&& currentEdge
+								.getTarget()
+								.getPropertyBean()
+								.getValue(
+										ImplementationPropertyNames.Vertex_vertexType,
+										VertexType.class)
+								.equals(VertexType.TASK)) {
+					edge = currentEdge;
+				}
+			}
+			if (edge == null) {
+				throw new CodegenException("DAGVertex " + dagVertex
+						+ " is not connected to any " + VertexType.TYPE_TASK
+						+ " vertex.");
+			}
 
+			BufferAggregate aggregate = (BufferAggregate) edge
+					.getPropertyBean().getValue(
+							BufferAggregate.propertyBeanName,
+							BufferAggregate.class);
+			BufferProperties bufferProperty = aggregate.get(0);
+			buffer = srSDFEdgeBuffers.get(bufferProperty);
+			if (buffer == null) {
+				throw new CodegenException("DAGEdge " + edge
+						+ " was not allocated in memory.");
+			}
+			fifoCall.addParameter(buffer);
+		}
+
+		// Retrieve the internal buffer (or create it)
 		if (fifoCall.getOperation().equals(FifoOperation.POP)) {
 			// Pop operation is always the first encountered in scheduling
 			// order.
 			// Get the depth of the fifo, and create the storage buffer
 			Buffer storageBuffer = CodegenFactory.eINSTANCE.createBuffer();
-			storageBuffer.setName(dagVertex.getName());
+			storageBuffer.setName("fifo__" + sdfVertex.getName() + "__"
+					+ ((SDFInitVertex) sdfVertex).getEndReference().getName());
 			storageBuffer.setCreator(operatorBlock);
 			storageBuffer.getUsers().add(operatorBlock);
 			Integer size = ((SDFInitVertex) sdfVertex).getInitSize();
 			storageBuffer.setSize(size);
-
-			System.out.println("TODO: set type of internal buffer\n");
+			storageBuffer.setType(buffer.getType());
 
 			fifoCall.setStorageBuffer(storageBuffer);
 		}
@@ -717,11 +763,13 @@ public class CodegenModelGenerator {
 					.getEndReference());
 			popCall.setFifoHead(fifoCall);
 			fifoCall.setFifoTail(popCall);
+
+			// Also get the internal buffer
+			fifoCall.setStorageBuffer(popCall.getStorageBuffer());
 		}
 
 		// Add the Fifo call to the loop of its coreBlock
 		operatorBlock.getLoopBlock().getCodeElts().add(fifoCall);
-
 	}
 
 	/**
