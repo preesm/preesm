@@ -36,7 +36,9 @@
 package org.ietr.preesm.codegen.xtend.printer
 
 import java.util.ArrayList
+import java.util.List
 import org.eclipse.emf.common.util.EList
+import org.eclipse.emf.ecore.EObject
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
 import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.Communication
@@ -45,11 +47,10 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
+import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 import org.ietr.preesm.codegen.xtend.model.codegen.util.CodegenSwitch
-import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
-import org.eclipse.emf.ecore.EObject
 import org.ietr.preesm.codegen.xtend.task.CodegenException
 
 /**
@@ -204,52 +205,268 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 		return super.caseSubBuffer(subBuffer)
 	}
 
+	/**
+	 * Method called to print a {@link Buffer} within the
+	 * {@link CoreBlock#getDeclarations() declaration} {@link CallBlock} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param buffer
+	 *            the {@link Buffer} to print.
+	 * @return the printed {@link CharSequence}
+	 */
 	def CharSequence printBufferDeclaration(Buffer buffer)
 
+	/**
+	 * Method called to print a {@link Buffer} within the
+	 * {@link CoreBlock#getDefinitions() definition} {@link LoopBlock} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param buffer
+	 *            the {@link Buffer} to print.
+	 * @return the printed {@link CharSequence}
+	 */
 	def CharSequence printBufferDefinition(Buffer buffer)
 
-	def CharSequence printCallBlockFooter(CallBlock block)
+	/**
+	 * Method called after printing all {@link CodeElement} belonging 
+	 * to a {@link CallBlock}.
+	 * 
+	 * @param callBlock
+	 *            the {@link CallBlock} whose {@link CodeElement} were 
+	 * 			  printed before calling this method.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printCallBlockFooter(CallBlock callBlock)
 
+	/**
+	 * Method called before printing all {@link CodeElement} belonging 
+	 * to a {@link CallBlock}.
+	 * 
+	 * @param callBlock
+	 *            the {@link CallBlock} whose {@link CodeElement} will be 
+	 * 			  printed after calling this method.
+	 * @return the printed {@link CharSequence}
+	 */
 	def CharSequence printCallBlockHeader(CallBlock block)
 
+	/**
+	 * Method called to print a {@link Communication}.
+	 * 
+	 * @param communication
+	 *             the printed {@link Communication}.
+	 * @return the printed {@link CharSequence}
+	 */
 	def CharSequence printCommunication(Communication communication)
 
+	/**
+	 * Method called to print a {@link Constant} within the
+	 * {@link CoreBlock#getDeclarations() declaration} {@link CallBlock} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param constant
+	 *            the {@link Constant} to print.
+	 * @return the printed {@link CharSequence}
+	 */
 	def CharSequence printConstantDeclaration(Constant constant)
 
+	/**
+	 * Method called to print a {@link Constant} within the
+	 * {@link CoreBlock#getDefinitions() definition} {@link LoopBlock} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param constant
+	 *            the {@link Constant} to print.
+	 * @return the printed {@link CharSequence}
+	 */
 	def CharSequence printConstantDefinition(Constant constant)
 
-	def CharSequence printCoreBlockFooter(CoreBlock block)
+	/**
+	 * Method called after printing all code belonging 
+	 * to a {@link CoreBlock}.
+	 * 
+	 * @param coreBlock
+	 *            the {@link CoreBlock} whose code was 
+	 * 			  printed before calling this method.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printCoreBlockFooter(CoreBlock coreBlock)
 
-	def CharSequence printCoreBlockHeader(CoreBlock block)
+	/**
+	 * Method called before printing all code belonging 
+	 * to a {@link CoreBlock}.
+	 * 
+	 * @param coreBlock
+	 *            the {@link CoreBlock} whose code will be 
+	 * 			  printed after calling this method.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printCoreBlockHeader(CoreBlock coreBlock)
 
+	/**
+	 * Method called after printing all {@link CodeElement} belonging 
+	 * to the {@link CoreBlock#getInitBlock() initBlock} {@link CallBlock} of 
+	 * a {@link CoreBlock}.
+	 * 
+	 * @param callBlock
+	 *            the {@link CallBlock} whose {@link CodeElement} were 
+	 * 			  printed before calling this method.
+	 * @return the printed {@link CharSequence}
+	 */
 	def CharSequence printCoreInitBlockFooter(CallBlock callBlock)
 
+	/**
+	 * Method called before printing all {@link CodeElement} belonging 
+	 * to the {@link CoreBlock#getInitBlock() initBlock} {@link CallBlock} of 
+	 * a {@link CoreBlock}.
+	 * 
+	 * @param callBlock
+	 *            the {@link CallBlock} whose {@link CodeElement} will be
+	 * 			  printed after calling this method.
+	 * @return the printed {@link CharSequence}
+	 */
 	def CharSequence printCoreInitBlockHeader(CallBlock callBlock)
 
-	def CharSequence printCoreLoopBlockFooter(LoopBlock block2)
+	/**
+	 * Method called after printing all {@link CodeElement} belonging 
+	 * to the {@link CoreBlock#getLoopBlock() loopBlock} {@link CallBlock} of 
+	 * a {@link CoreBlock}.
+	 * 
+	 * @param loopBlock
+	 *            the {@link LoopBlock} whose {@link CodeElement} were 
+	 * 			  printed before calling this method.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printCoreLoopBlockFooter(LoopBlock loopBlock)
 
-	def CharSequence printCoreLoopBlockHeader(LoopBlock block2)
+	/**
+	 * Method called before printing all {@link CodeElement} belonging 
+	 * to the {@link CoreBlock#getLoopBlock() loopBlock} {@link CallBlock} of 
+	 * a {@link CoreBlock}.
+	 * 
+	 * @param loopBlock
+	 *            the {@link LoopBlock} whose {@link CodeElement} will be 
+	 * 			  printed after calling this method.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printCoreLoopBlockHeader(LoopBlock loopBlock)
 
-	def CharSequence printDeclarationsFooter(EList<Variable> list)
+	/**
+	 * Method called after printing all {@link Variable} belonging 
+	 * to the {@link CoreBlock#getDeclarations() declarations} of 
+	 * a {@link CoreBlock}.
+	 * 
+	 * @param variableList
+	 *            the {@link List} of {@link Variable} that were 
+	 * 			  printed before calling this method.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printDeclarationsFooter(EList<Variable> variableList)
 
-	def CharSequence printDeclarationsHeader(EList<Variable> list)
+	/**
+	 * Method called before printing all {@link Variable} belonging 
+	 * to the {@link CoreBlock#getDeclarations() declarations} of 
+	 * a {@link CoreBlock}.
+	 * 
+	 * @param variableList
+	 *            the {@link List} of {@link Variable} that will be 
+	 * 			  printed after calling this method.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printDeclarationsHeader(EList<Variable> variableList)
 
-	def CharSequence printDefinitionsFooter(EList<Variable> list)
+	/**
+	 * Method called after printing all {@link Variable} belonging 
+	 * to the {@link CoreBlock#getDefinitions() definitions} of 
+	 * a {@link CoreBlock}.
+	 * 
+	 * @param variableList
+	 *            the {@link List} of {@link Variable} that were 
+	 * 			  printed before calling this method.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printDefinitionsFooter(EList<Variable> variableList)
 
-	def CharSequence printDefinitionsHeader(EList<Variable> list)
+	/**
+	 * Method called before printing all {@link Variable} belonging 
+	 * to the {@link CoreBlock#getDefinitions() definitions} of 
+	 * a {@link CoreBlock}.
+	 * 
+	 * @param variableList
+	 *            the {@link List} of {@link Variable} that will be 
+	 * 			  printed after calling this method.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printDefinitionsHeader(EList<Variable> vaeiableList)
 
+	/**
+	 * Method called to print a {@link FifoCall}.
+	 * 
+	 * @param communication
+	 *             the printed {@link FifoCall}.
+	 * @return the printed {@link CharSequence}
+	 */
 	def CharSequence printFifoCall(FifoCall fifoCall)
 
+	/**
+	 * Method called to print a {@link FunctionCall}.
+	 * 
+	 * @param functionCall
+	 *             the printed {@link FunctionCall}.
+	 * @return the printed {@link CharSequence}
+	 */
 	def CharSequence printFunctionCall(FunctionCall functionCall)
 
-	def CharSequence printLoopBlockFooter(LoopBlock block)
+	/**
+	 * Method called after printing all {@link CodeElement} belonging 
+	 * to a {@link LoopBlock}.
+	 * 
+	 * @param loopBlock
+	 *            the {@link LoopBlock} whose {@link CodeElement} were 
+	 * 			  printed before calling this method.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printLoopBlockFooter(LoopBlock loopBlock)
 
+	/**
+	 * Method called before printing all {@link CodeElement} belonging 
+	 * to a {@link LoopBlock}.
+	 * 
+	 * @param loopBlock
+	 *            the {@link LoopBlock} whose {@link CodeElement} will be 
+	 * 			  printed after calling this method.
+	 * @return the printed {@link CharSequence}
+	 */
 	def CharSequence printLoopBlockHeader(LoopBlock block)
 
+	/**
+	 * Method called to print a {@link SpecialCall}.
+	 * 
+	 * @param specialCall
+	 *             the printed {@link SpecialCall}.
+	 * @return the printed {@link CharSequence}
+	 */
 	def CharSequence printSpecialCall(SpecialCall specialCall)
 
-	def CharSequence printSubBufferDeclaration(SubBuffer buffer)
+	/**
+	 * Method called to print a {@link SubBuffer} within the
+	 * {@link CoreBlock#getDeclarations() declaration} {@link CallBlock} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param subBuffer
+	 *            the {@link SubBuffer} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printSubBufferDeclaration(SubBuffer subBuffer)
 
-	def CharSequence printSubBufferDefinition(SubBuffer buffer)
+	/**
+	 * Method called to print a {@link SubBuffer} within the
+	 * {@link CoreBlock#getDefinitions() definition} {@link LoopBlock} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param subBuffer
+	 *            the {@link SubBuffer} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printSubBufferDefinition(SubBuffer subBuffer)
 
 }
