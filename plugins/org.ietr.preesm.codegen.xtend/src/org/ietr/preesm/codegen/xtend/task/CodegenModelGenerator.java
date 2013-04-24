@@ -646,133 +646,6 @@ public class CodegenModelGenerator {
 	}
 
 	/**
-	 * Generate the {@link FifoCall} that corresponds to the {@link DAGVertex}
-	 * passed as a parameter and add it to the {@link CoreBlock#getLoopBlock()
-	 * loop block} of the given {@link CoreBlock}.
-	 * 
-	 * @param operatorBlock
-	 *            the {@link CoreBlock} that executes the {@link DAGVertex}
-	 * @param dagVertex
-	 *            A {@link DAGInitVertex} or a {@link DAGEndVertex} that
-	 *            respectively correspond to a pull and a push operation.
-	 * @throws CodegenException
-	 *             if the passed vertex is not a {@link DAGInitVertex} nor a
-	 *             {@link DAGEndVertex}
-	 */
-	protected void generateFifoCall(CoreBlock operatorBlock, DAGVertex dagVertex)
-			throws CodegenException {
-		// Retrieve the sdf vertex
-		SDFAbstractVertex sdfVertex = (SDFAbstractVertex) dagVertex
-				.getPropertyBean().getValue(DAGVertex.SDF_VERTEX,
-						SDFAbstractVertex.class);
-
-		// Create the Fifo call and set basic property
-		FifoCall fifoCall = CodegenFactory.eINSTANCE.createFifoCall();
-		fifoCall.setName(dagVertex.getName());
-
-		// Find the type of FiFo operation
-		String kind = dagVertex.getPropertyStringValue(DAGVertex.KIND);
-		switch (kind) {
-		case DAGInitVertex.DAG_INIT_VERTEX:
-			fifoCall.setOperation(FifoOperation.POP);
-			break;
-		case DAGEndVertex.DAG_END_VERTEX:
-			fifoCall.setOperation(FifoOperation.PUSH);
-			break;
-		default:
-			throw new CodegenException("DAGVertex " + dagVertex
-					+ " does not corresponds to a Fifo primitive.");
-		}
-
-		// Get buffer used by the FifoCall (in/out)
-		Set<DAGEdge> edges;
-		if (fifoCall.getOperation().equals(FifoOperation.POP)) {
-			edges = dag.outgoingEdgesOf(dagVertex);
-		} else {
-			edges = dag.incomingEdgesOf(dagVertex);
-		}
-		// There might be more than one edge, if one is connected to a
-		// send/receive
-		Buffer buffer = null;
-		{
-			DAGEdge edge = null;
-			for (DAGEdge currentEdge : edges) {
-				if (currentEdge
-						.getSource()
-						.getPropertyBean()
-						.getValue(
-								ImplementationPropertyNames.Vertex_vertexType,
-								VertexType.class).equals(VertexType.TASK)
-						&& currentEdge
-								.getTarget()
-								.getPropertyBean()
-								.getValue(
-										ImplementationPropertyNames.Vertex_vertexType,
-										VertexType.class)
-								.equals(VertexType.TASK)) {
-					edge = currentEdge;
-				}
-			}
-			if (edge == null) {
-				throw new CodegenException("DAGVertex " + dagVertex
-						+ " is not connected to any " + VertexType.TYPE_TASK
-						+ " vertex.");
-			}
-
-			BufferAggregate aggregate = (BufferAggregate) edge
-					.getPropertyBean().getValue(
-							BufferAggregate.propertyBeanName,
-							BufferAggregate.class);
-			BufferProperties bufferProperty = aggregate.get(0);
-			buffer = srSDFEdgeBuffers.get(bufferProperty);
-			if (buffer == null) {
-				throw new CodegenException("DAGEdge " + edge
-						+ " was not allocated in memory.");
-			}
-			fifoCall.addParameter(buffer);
-		}
-
-		// Retrieve the internal buffer (or create it)
-		if (fifoCall.getOperation().equals(FifoOperation.POP)) {
-			// Pop operation is always the first encountered in scheduling
-			// order.
-			// Get the depth of the fifo, and create the storage buffer
-			Buffer storageBuffer = CodegenFactory.eINSTANCE.createBuffer();
-			storageBuffer.setName("fifo__" + sdfVertex.getName() + "__"
-					+ ((SDFInitVertex) sdfVertex).getEndReference().getName());
-			storageBuffer.setCreator(operatorBlock);
-			storageBuffer.getUsers().add(operatorBlock);
-			Integer size = ((SDFInitVertex) sdfVertex).getInitSize();
-			storageBuffer.setSize(size);
-			storageBuffer.setType(buffer.getType());
-
-			fifoCall.setStorageBuffer(storageBuffer);
-		}
-
-		// Register associated fifo calls (push/pop)
-		if (fifoCall.getOperation().equals(FifoOperation.POP)) {
-			// Pop operations are the first to be encountered.
-			// We simply store the dagVertex with its associated fifoCall in a
-			// Map. This Map will be used when processing the associated Push
-			// operation
-			popFifoCalls.put((SDFInitVertex) sdfVertex, fifoCall);
-
-		} else { // Push case
-			// Retrieve the corresponding Pop
-			FifoCall popCall = popFifoCalls.remove(((SDFEndVertex) sdfVertex)
-					.getEndReference());
-			popCall.setFifoHead(fifoCall);
-			fifoCall.setFifoTail(popCall);
-
-			// Also get the internal buffer
-			fifoCall.setStorageBuffer(popCall.getStorageBuffer());
-		}
-
-		// Add the Fifo call to the loop of its coreBlock
-		operatorBlock.getLoopBlock().getCodeElts().add(fifoCall);
-	}
-
-	/**
 	 * Generate the {@link CodegenPackage Codegen Model} for an actor firing.
 	 * This method will create an {@link ActorCall} or a {@link FunctionCall}
 	 * and place it in the {@link LoopBlock} of the {@link CoreBlock} passed as
@@ -1186,6 +1059,133 @@ public class CodegenModelGenerator {
 
 		// Insert the new communication to the loop of the codeblock
 		insertCommunication(operatorBlock, dagVertex, newCommZoneComplement);
+	}
+
+	/**
+	 * Generate the {@link FifoCall} that corresponds to the {@link DAGVertex}
+	 * passed as a parameter and add it to the {@link CoreBlock#getLoopBlock()
+	 * loop block} of the given {@link CoreBlock}.
+	 * 
+	 * @param operatorBlock
+	 *            the {@link CoreBlock} that executes the {@link DAGVertex}
+	 * @param dagVertex
+	 *            A {@link DAGInitVertex} or a {@link DAGEndVertex} that
+	 *            respectively correspond to a pull and a push operation.
+	 * @throws CodegenException
+	 *             if the passed vertex is not a {@link DAGInitVertex} nor a
+	 *             {@link DAGEndVertex}
+	 */
+	protected void generateFifoCall(CoreBlock operatorBlock, DAGVertex dagVertex)
+			throws CodegenException {
+		// Retrieve the sdf vertex
+		SDFAbstractVertex sdfVertex = (SDFAbstractVertex) dagVertex
+				.getPropertyBean().getValue(DAGVertex.SDF_VERTEX,
+						SDFAbstractVertex.class);
+
+		// Create the Fifo call and set basic property
+		FifoCall fifoCall = CodegenFactory.eINSTANCE.createFifoCall();
+		fifoCall.setName(dagVertex.getName());
+
+		// Find the type of FiFo operation
+		String kind = dagVertex.getPropertyStringValue(DAGVertex.KIND);
+		switch (kind) {
+		case DAGInitVertex.DAG_INIT_VERTEX:
+			fifoCall.setOperation(FifoOperation.POP);
+			break;
+		case DAGEndVertex.DAG_END_VERTEX:
+			fifoCall.setOperation(FifoOperation.PUSH);
+			break;
+		default:
+			throw new CodegenException("DAGVertex " + dagVertex
+					+ " does not corresponds to a Fifo primitive.");
+		}
+
+		// Get buffer used by the FifoCall (in/out)
+		Set<DAGEdge> edges;
+		if (fifoCall.getOperation().equals(FifoOperation.POP)) {
+			edges = dag.outgoingEdgesOf(dagVertex);
+		} else {
+			edges = dag.incomingEdgesOf(dagVertex);
+		}
+		// There might be more than one edge, if one is connected to a
+		// send/receive
+		Buffer buffer = null;
+		{
+			DAGEdge edge = null;
+			for (DAGEdge currentEdge : edges) {
+				if (currentEdge
+						.getSource()
+						.getPropertyBean()
+						.getValue(
+								ImplementationPropertyNames.Vertex_vertexType,
+								VertexType.class).equals(VertexType.TASK)
+						&& currentEdge
+								.getTarget()
+								.getPropertyBean()
+								.getValue(
+										ImplementationPropertyNames.Vertex_vertexType,
+										VertexType.class)
+								.equals(VertexType.TASK)) {
+					edge = currentEdge;
+				}
+			}
+			if (edge == null) {
+				throw new CodegenException("DAGVertex " + dagVertex
+						+ " is not connected to any " + VertexType.TYPE_TASK
+						+ " vertex.");
+			}
+
+			BufferAggregate aggregate = (BufferAggregate) edge
+					.getPropertyBean().getValue(
+							BufferAggregate.propertyBeanName,
+							BufferAggregate.class);
+			BufferProperties bufferProperty = aggregate.get(0);
+			buffer = srSDFEdgeBuffers.get(bufferProperty);
+			if (buffer == null) {
+				throw new CodegenException("DAGEdge " + edge
+						+ " was not allocated in memory.");
+			}
+			fifoCall.addParameter(buffer);
+		}
+
+		// Retrieve the internal buffer (or create it)
+		if (fifoCall.getOperation().equals(FifoOperation.POP)) {
+			// Pop operation is always the first encountered in scheduling
+			// order.
+			// Get the depth of the fifo, and create the storage buffer
+			Buffer storageBuffer = CodegenFactory.eINSTANCE.createBuffer();
+			storageBuffer.setName("fifo__" + sdfVertex.getName() + "__"
+					+ ((SDFInitVertex) sdfVertex).getEndReference().getName());
+			storageBuffer.setCreator(operatorBlock);
+			storageBuffer.getUsers().add(operatorBlock);
+			Integer size = ((SDFInitVertex) sdfVertex).getInitSize();
+			storageBuffer.setSize(size);
+			storageBuffer.setType(buffer.getType());
+
+			fifoCall.setStorageBuffer(storageBuffer);
+		}
+
+		// Register associated fifo calls (push/pop)
+		if (fifoCall.getOperation().equals(FifoOperation.POP)) {
+			// Pop operations are the first to be encountered.
+			// We simply store the dagVertex with its associated fifoCall in a
+			// Map. This Map will be used when processing the associated Push
+			// operation
+			popFifoCalls.put((SDFInitVertex) sdfVertex, fifoCall);
+
+		} else { // Push case
+			// Retrieve the corresponding Pop
+			FifoCall popCall = popFifoCalls.remove(((SDFEndVertex) sdfVertex)
+					.getEndReference());
+			popCall.setFifoHead(fifoCall);
+			fifoCall.setFifoTail(popCall);
+
+			// Also get the internal buffer
+			fifoCall.setStorageBuffer(popCall.getStorageBuffer());
+		}
+
+		// Add the Fifo call to the loop of its coreBlock
+		operatorBlock.getLoopBlock().getCodeElts().add(fifoCall);
 	}
 
 	/**
