@@ -21,6 +21,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
+import org.ietr.preesm.codegen.xtend.printer.XMLPrinter;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
@@ -79,6 +80,11 @@ public class CodegenTask extends AbstractTaskImplementation {
 			}
 		}
 	
+		// Test XMLPrinter
+		XMLPrinter printer = new XMLPrinter();
+		for(Block b : codeBlock){
+			System.out.println(printer.doSwitch(b));
+		}
 
 		// Create empty output map
 		Map<String, Object> output = new HashMap<String, Object>();
