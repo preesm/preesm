@@ -58,6 +58,10 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable
  * @author kdesnos
  */
 class DevelopperPrinter extends CodegenAbstractPrinter {
+	
+	override printBroadcast(SpecialCall call) '''<Broadcast>'''
+	
+	override printBuffer(Buffer buffer) '''<Buffer>'''
 
 	override printBufferDeclaration(Buffer buffer) '''<Buffer_Decl>'''
 
@@ -68,6 +72,8 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printCallBlockHeader(CallBlock block) '''<Call_Block_Head>'''
 
 	override printCommunication(Communication communication) '''<Communication>'''
+	
+	override printConstant(Constant constant) '''<Constant>'''
 
 	override printConstantDeclaration(Constant constant) '''<Constant_Declaration>'''
 
@@ -94,14 +100,22 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printDefinitionsHeader(EList<Variable> list) '''<Definitions_Head>'''
 
 	override printFifoCall(FifoCall fifoCall) '''<Fifo_Call>'''
+	
+	override printFork(SpecialCall call) '''<Fork>'''
 
 	override printFunctionCall(FunctionCall functionCall) '''<Function_Call>'''
+	
+	override printJoin(SpecialCall call) '''<Join>'''
 
 	override printLoopBlockFooter(LoopBlock block) '''<Loop_Block_Foot>'''
 
 	override printLoopBlockHeader(LoopBlock block) '''<Loop_Block_Head>'''
+	
+	override printRoundBuffer(SpecialCall call) '''<RoundBuffer>'''
 
 	override printSpecialCall(SpecialCall specialCall) '''<Special_Call>'''
+	
+	override printSubBuffer(SubBuffer subBuffer) '''<SubBuffer>'''
 
 	override printSubBufferDeclaration(SubBuffer buffer) '''<Sub_Buffer_Declaration>'''
 

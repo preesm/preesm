@@ -368,7 +368,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 		if (state.equals(PrinterState::PRINTING_DECLARATIONS))
 			return printBufferDeclaration(buffer)
 
-		return super.caseBuffer(buffer)
+		return printBuffer(buffer)
 	}
 
 	override caseCallBlock(CallBlock callBlock) {
@@ -391,7 +391,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 		if (state.equals(PrinterState::PRINTING_DECLARATIONS))
 			return printConstantDeclaration(constant)
 
-		return super.caseConstant(constant)
+		return printConstant(constant)
 	}
 
 	override defaultCase(EObject object) {
@@ -422,7 +422,13 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	}
 
 	override caseSpecialCall(SpecialCall specialCall) {
-		printSpecialCall(specialCall)
+		var result = switch specialCall {
+			case specialCall.fork: printFork(specialCall)
+			case specialCall.join: printJoin(specialCall)
+			case specialCall.broadcast: printBroadcast(specialCall)
+			case specialCall.roundBuffer: printRoundBuffer(specialCall)
+		}
+		result ?: printSpecialCall(specialCall)
 	}
 
 	override caseSubBuffer(SubBuffer subBuffer) {
@@ -432,12 +438,37 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 		if (state.equals(PrinterState::PRINTING_DECLARATIONS))
 			return printSubBufferDeclaration(subBuffer)
 
-		return super.caseSubBuffer(subBuffer)
+		return printSubBuffer(subBuffer)
 	}
 
 	/**
+	 * Method called to print a {@link SpecialCall} with
+	 * {@link SpecialCall#getType() type} {@link SpecialType#BROADCAST}. If this
+	 * method returns <code>null</code>, the result of
+	 * {@link #printSpecialCall(SpecialCall) } will be used
+	 * instead (in case the method is called through doSwitch).
+	 * 
+	 * @param specialCall
+	 *            the printed {@link specialCall}.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printBroadcast(SpecialCall call)
+
+	/**
+	 * Method called to print a {@link Buffer} outside the
+	 * {@link CoreBlock#getDefinitions() definition} or the
+	 * {@link CoreBlock#getDeclarations() declaration} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param buffer
+	 *            the {@link Buffer} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printBuffer(Buffer buffer)
+
+	/**
 	 * Method called to print a {@link Buffer} within the
-	 * {@link CoreBlock#getDeclarations() declaration} {@link CallBlock} of a
+	 * {@link CoreBlock#getDeclarations() declaration} of a
 	 * {@link CoreBlock}
 	 * 
 	 * @param buffer
@@ -487,6 +518,18 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printCommunication(Communication communication)
+
+	/**
+	 * Method called to print a {@link Constant} outside the
+	 * {@link CoreBlock#getDefinitions() definition} or the
+	 * {@link CoreBlock#getDeclarations() declaration} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param constant
+	 *            the {@link Constant} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printConstant(Constant constant)
 
 	/**
 	 * Method called to print a {@link Constant} within the
@@ -661,6 +704,19 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	def CharSequence printFifoCall(FifoCall fifoCall)
 
 	/**
+	 * Method called to print a {@link SpecialCall} with
+	 * {@link SpecialCall#getType() type} {@link SpecialType#FORK}. If this
+	 * method returns <code>null</code>, the result of
+	 * {@link #printSpecialCall(SpecialCall) } will be used
+	 * instead (in case the method is called through doSwitch).
+	 * 
+	 * @param specialCall
+	 *            the printed {@link specialCall}.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printFork(SpecialCall call)
+
+	/**
 	 * Method called to print a {@link FunctionCall}.
 	 * 
 	 * @param functionCall
@@ -668,6 +724,19 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printFunctionCall(FunctionCall functionCall)
+
+	/**
+	 * Method called to print a {@link SpecialCall} with
+	 * {@link SpecialCall#getType() type} {@link SpecialType#JOIN}. If this
+	 * method returns <code>null</code>, the result of
+	 * {@link #printSpecialCall(SpecialCall) } will be used
+	 * instead (in case the method is called through doSwitch).
+	 * 
+	 * @param specialCall
+	 *            the printed {@link specialCall}.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printJoin(SpecialCall call)
 
 	/**
 	 * Method called after printing all {@link CodeElement} belonging 
@@ -692,6 +761,19 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	def CharSequence printLoopBlockHeader(LoopBlock block)
 
 	/**
+	 * Method called to print a {@link SpecialCall} with
+	 * {@link SpecialCall#getType() type} {@link SpecialType#ROUND_BUFFER}. If this
+	 * method returns <code>null</code>, the result of
+	 * {@link #printSpecialCall(SpecialCall) } will be used
+	 * instead (in case the method is called through doSwitch).
+	 * 
+	 * @param specialCall
+	 *            the printed {@link specialCall}.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printRoundBuffer(SpecialCall call)
+
+	/**
 	 * Method called to print a {@link SpecialCall}.
 	 * 
 	 * @param specialCall
@@ -699,6 +781,18 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printSpecialCall(SpecialCall specialCall)
+
+	/**
+	 * Method called to print a {@link SubBuffer} outside the
+	 * {@link CoreBlock#getDefinitions() definition} or the
+	 * {@link CoreBlock#getDeclarations() declaration} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param subBuffer
+	 *            the {@link SubBuffer} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printSubBuffer(SubBuffer subBuffer)
 
 	/**
 	 * Method called to print a {@link SubBuffer} within the
@@ -721,4 +815,5 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printSubBufferDefinition(SubBuffer subBuffer)
+
 }

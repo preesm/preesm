@@ -57,6 +57,12 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable
  * @author kdesnos
  */
 class DefaultPrinter extends CodegenAbstractPrinter {
+	
+	override printBroadcast(SpecialCall call) {
+		return null
+	}
+
+	override printBuffer(Buffer buffer) ''''''
 
 	override printBufferDeclaration(Buffer buffer) ''''''
 
@@ -67,6 +73,8 @@ class DefaultPrinter extends CodegenAbstractPrinter {
 	override printCallBlockHeader(CallBlock block) ''''''
 
 	override printCommunication(Communication communication) ''''''
+
+	override printConstant(Constant constant) ''''''
 
 	override printConstantDeclaration(Constant constant) ''''''
 
@@ -93,14 +101,28 @@ class DefaultPrinter extends CodegenAbstractPrinter {
 	override printDefinitionsHeader(EList<Variable> list) ''''''
 
 	override printFifoCall(FifoCall fifoCall) ''''''
+	
+	override printFork(SpecialCall call) {
+		return null
+	}
 
 	override printFunctionCall(FunctionCall functionCall) ''''''
+	
+	override printJoin(SpecialCall call) {
+		return null
+	}
 
 	override printLoopBlockFooter(LoopBlock block) ''''''
 
 	override printLoopBlockHeader(LoopBlock block) ''''''
+	
+	override printRoundBuffer(SpecialCall call) {
+		return null
+	}
 
 	override printSpecialCall(SpecialCall specialCall) ''''''
+
+	override printSubBuffer(SubBuffer subBuffer) ''''''
 
 	override printSubBufferDeclaration(SubBuffer buffer) ''''''
 
