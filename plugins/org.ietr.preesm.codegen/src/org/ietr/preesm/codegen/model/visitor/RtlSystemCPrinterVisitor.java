@@ -130,7 +130,7 @@ public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 			edges_declarations.add(edgeDeclarationTemplate);
 		}
 
-		try {
+/*		try {
 			if (sdfEdge.getDelay().intValue() > 0) {
 				StringTemplate edgeDelayTemplate = group
 						.getInstanceOf("edge_delay");
@@ -143,7 +143,7 @@ public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 		} catch (InvalidExpressionException e) {
 			e.printStackTrace();
 		}
-
+*/
 		StringTemplate srcConnection = group.getInstanceOf("connection");
 		if (sdfEdge.getTarget() instanceof SDFSinkInterfaceVertex && !isWrapper) {
 			srcConnection.setAttribute("actor", sdfEdge.getSource().getName());
@@ -391,7 +391,7 @@ public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 				} else {
 					return "invoke";
 				}
-			} else {
+			} else if(incEdge.getSource() != v){ // avoid state edges ...
 				return "dv_" + incEdge.getSource().getName();
 			}
 		}
