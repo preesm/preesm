@@ -3,7 +3,7 @@
    <description name="PREESM Project Update Site" url="http://preesm.sourceforge.net/eclipse/updates/">
       Preesm Project Update Site
    </description>
-   <feature url="features/org.ietr.preesm.feature_0.6.3.v20121206.jar" id="org.ietr.preesm.feature" version="0.6.3.v20121206">
+   <feature url="features/org.ietr.preesm.feature_0.7.0.v20130512.jar" id="org.ietr.preesm.feature" version="0.7.0.v20130512">
       <category name="PREESM"/>
    </feature>
    <category-def name="PREESM" label="PREESM"/>
