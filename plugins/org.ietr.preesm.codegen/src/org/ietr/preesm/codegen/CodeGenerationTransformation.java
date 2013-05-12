@@ -36,7 +36,6 @@ knowledge of the CeCILL-B license and that you accept its terms.
 
 package org.ietr.preesm.codegen;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -280,9 +280,9 @@ public class Sdf3XmlParser {
 		SDFEdge edge = graph.addEdge(srcActor, srcPort, tgtActor, tgtPort);
 
 		// Set the prod/consumption rates
-		edge.setProd(new SDFIntEdgePropertyType((int) srcPort.getPropertyBean()
+		edge.setProd(new SDFIntEdgePropertyType((Integer) srcPort.getPropertyBean()
 				.getValue("port_rate")));
-		edge.setCons(new SDFIntEdgePropertyType((int) tgtPort.getPropertyBean()
+		edge.setCons(new SDFIntEdgePropertyType((Integer) tgtPort.getPropertyBean()
 				.getValue("port_rate")));
 
 		// Give a name to the edge (not really usefull in SDFGraphs but since
