@@ -442,13 +442,22 @@ public interface PiMMPackage extends EPackage {
 	int INPUT_PORT__INCOMING_FIFO = PORT_FEATURE_COUNT + 0;
 
 	/**
+	 * The feature id for the '<em><b>Expression</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int INPUT_PORT__EXPRESSION = PORT_FEATURE_COUNT + 1;
+
+	/**
 	 * The number of structural features of the '<em>Input Port</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int INPUT_PORT_FEATURE_COUNT = PORT_FEATURE_COUNT + 1;
+	int INPUT_PORT_FEATURE_COUNT = PORT_FEATURE_COUNT + 2;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.OutputPortImpl <em>Output Port</em>}' class.
@@ -1238,13 +1247,22 @@ public interface PiMMPackage extends EPackage {
 	int EXPRESSION__EXPRESSION_STRING = 0;
 
 	/**
+	 * The feature id for the '<em><b>Value String</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EXPRESSION__VALUE_STRING = 1;
+
+	/**
 	 * The number of structural features of the '<em>Expression</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int EXPRESSION_FEATURE_COUNT = 1;
+	int EXPRESSION_FEATURE_COUNT = 2;
 
 
 	/**
@@ -1470,6 +1488,17 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getInputPort_IncomingFifo();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.ietr.preesm.experiment.model.pimm.InputPort#getExpression <em>Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Expression</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.InputPort#getExpression()
+	 * @see #getInputPort()
+	 * @generated
+	 */
+	EReference getInputPort_Expression();
 
 	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.OutputPort <em>Output Port</em>}'.
@@ -1821,6 +1850,17 @@ public interface PiMMPackage extends EPackage {
 	EAttribute getExpression_ExpressionString();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Expression#getValueString <em>Value String</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Value String</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.Expression#getValueString()
+	 * @see #getExpression()
+	 * @generated
+	 */
+	EAttribute getExpression_ValueString();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2023,6 +2063,14 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EReference INPUT_PORT__INCOMING_FIFO = eINSTANCE.getInputPort_IncomingFifo();
+
+		/**
+		 * The meta object literal for the '<em><b>Expression</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference INPUT_PORT__EXPRESSION = eINSTANCE.getInputPort_Expression();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.OutputPortImpl <em>Output Port</em>}' class.
@@ -2315,6 +2363,14 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute EXPRESSION__EXPRESSION_STRING = eINSTANCE.getExpression_ExpressionString();
+
+		/**
+		 * The meta object literal for the '<em><b>Value String</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EXPRESSION__VALUE_STRING = eINSTANCE.getExpression_ValueString();
 
 	}
 
