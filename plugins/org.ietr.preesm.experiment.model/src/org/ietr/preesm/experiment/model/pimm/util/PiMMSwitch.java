@@ -226,6 +226,16 @@ public class PiMMSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case PiMMPackage.CONFIG_INPUT_INTERFACE: {
+				ConfigInputInterface configInputInterface = (ConfigInputInterface)theEObject;
+				T result = caseConfigInputInterface(configInputInterface);
+				if (result == null) result = caseParameter(configInputInterface);
+				if (result == null) result = caseAbstractVertex(configInputInterface);
+				if (result == null) result = caseISetter(configInputInterface);
+				if (result == null) result = caseParameterizable(configInputInterface);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -542,6 +552,21 @@ public class PiMMSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseExpression(Expression object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Config Input Interface</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Config Input Interface</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseConfigInputInterface(ConfigInputInterface object) {
 		return null;
 	}
 

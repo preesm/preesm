@@ -1266,6 +1266,89 @@ public interface PiMMPackage extends EPackage {
 
 
 	/**
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigInputInterfaceImpl <em>Config Input Interface</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.ConfigInputInterfaceImpl
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getConfigInputInterface()
+	 * @generated
+	 */
+	int CONFIG_INPUT_INTERFACE = 21;
+
+	/**
+	 * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIG_INPUT_INTERFACE__CONFIG_INPUT_PORTS = PARAMETER__CONFIG_INPUT_PORTS;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIG_INPUT_INTERFACE__NAME = PARAMETER__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Outgoing Dependencies</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIG_INPUT_INTERFACE__OUTGOING_DEPENDENCIES = PARAMETER__OUTGOING_DEPENDENCIES;
+
+	/**
+	 * The feature id for the '<em><b>Locally Static</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIG_INPUT_INTERFACE__LOCALLY_STATIC = PARAMETER__LOCALLY_STATIC;
+
+	/**
+	 * The feature id for the '<em><b>Configuration Interface</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIG_INPUT_INTERFACE__CONFIGURATION_INTERFACE = PARAMETER__CONFIGURATION_INTERFACE;
+
+	/**
+	 * The feature id for the '<em><b>Graph Port</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIG_INPUT_INTERFACE__GRAPH_PORT = PARAMETER__GRAPH_PORT;
+
+	/**
+	 * The feature id for the '<em><b>Expression</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIG_INPUT_INTERFACE__EXPRESSION = PARAMETER__EXPRESSION;
+
+	/**
+	 * The number of structural features of the '<em>Config Input Interface</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIG_INPUT_INTERFACE_FEATURE_COUNT = PARAMETER_FEATURE_COUNT + 0;
+
+
+	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Parameterizable <em>Parameterizable</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1861,6 +1944,16 @@ public interface PiMMPackage extends EPackage {
 	EAttribute getExpression_ValueString();
 
 	/**
+	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.ConfigInputInterface <em>Config Input Interface</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Config Input Interface</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.ConfigInputInterface
+	 * @generated
+	 */
+	EClass getConfigInputInterface();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2371,6 +2464,16 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute EXPRESSION__VALUE_STRING = eINSTANCE.getExpression_ValueString();
+
+		/**
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigInputInterfaceImpl <em>Config Input Interface</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.ConfigInputInterfaceImpl
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getConfigInputInterface()
+		 * @generated
+		 */
+		EClass CONFIG_INPUT_INTERFACE = eINSTANCE.getConfigInputInterface();
 
 	}
 

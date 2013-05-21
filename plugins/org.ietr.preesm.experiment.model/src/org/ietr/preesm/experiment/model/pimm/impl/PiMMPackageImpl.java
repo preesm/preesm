@@ -11,6 +11,7 @@ import org.eclipse.emf.ecore.impl.EPackageImpl;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
@@ -185,6 +186,13 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * @generated
 	 */
 	private EClass expressionEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass configInputInterfaceEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -756,6 +764,15 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getConfigInputInterface() {
+		return configInputInterfaceEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public PiMMFactory getPiMMFactory() {
 		return (PiMMFactory)getEFactoryInstance();
 	}
@@ -855,6 +872,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		expressionEClass = createEClass(EXPRESSION);
 		createEAttribute(expressionEClass, EXPRESSION__EXPRESSION_STRING);
 		createEAttribute(expressionEClass, EXPRESSION__VALUE_STRING);
+
+		configInputInterfaceEClass = createEClass(CONFIG_INPUT_INTERFACE);
 	}
 
 	/**
@@ -901,6 +920,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		parameterEClass.getESuperTypes().add(this.getAbstractVertex());
 		parameterEClass.getESuperTypes().add(this.getISetter());
 		delayEClass.getESuperTypes().add(this.getParameterizable());
+		configInputInterfaceEClass.getESuperTypes().add(this.getParameter());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(parameterizableEClass, Parameterizable.class, "Parameterizable", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -986,6 +1006,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
 		EOperation op = addEOperation(expressionEClass, ecorePackage.getEInt(), "evaluate", 0, 1, IS_UNIQUE, IS_ORDERED);
 		addEParameter(op, ecorePackage.getEString(), "str", 0, 1, IS_UNIQUE, IS_ORDERED);
+
+		initEClass(configInputInterfaceEClass, ConfigInputInterface.class, "ConfigInputInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		// Create resource
 		createResource(eNS_URI);

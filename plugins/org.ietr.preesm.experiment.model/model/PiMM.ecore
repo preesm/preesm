@@ -74,6 +74,7 @@
   <eClassifiers xsi:type="ecore:EClass" name="SourceInterface" eSuperTypes="#//InterfaceActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="SinkInterface" eSuperTypes="#//InterfaceActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="ConfigOutputInterface" eSuperTypes="#//InterfaceActor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ConfigInputInterface" eSuperTypes="#//Parameter"/>
   <eClassifiers xsi:type="ecore:EClass" name="Refinement">
     <eOperations name="getAbstractActor" eType="#//AbstractActor"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="fileName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>

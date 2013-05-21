@@ -31,8 +31,13 @@ import com.singularsys.jep.ParseException;
 import com.singularsys.jep.parser.Node;
 
 
+/**
+ * @author Romina Racca
+ *
+ */
 public class Section extends GFPropertySection implements ITabbedPropertyConstants{
 
+	
 	private Text txtName;
 	private Text txtExpression;
 	private Text txtValue;
@@ -42,7 +47,16 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 	private CLabel lblValue;
 	private CLabel lblMessage;
 	
+	/**
+	 * The String of expressions is added in form "nameOfParameter=expression"
+	 * The String of expressions are added of form BFS in the tour of the DAG
+	 */
 	private List<String> listExpression = new ArrayList<String>();
+	
+	/**
+	 * Add the parameters to cross the list of recursive form and 
+	 * find dependences associated with the parameters.
+	 */
 	private List<Parameter> listParameter = new ArrayList<Parameter>();
 	
 	private Jep jep;
@@ -56,7 +70,9 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 		Composite composite = factory.createFlatFormComposite(parent);
 		FormData data;
 		
-		/** NAME **/
+		/**
+		 * NAME
+		 */
 		txtName = factory.createText(composite, "");
 		data = new FormData();
 		data.left = new FormAttachment(0, STANDARD_LABEL_WIDTH);
@@ -70,7 +86,9 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 		data.right = new FormAttachment(txtName, -HSPACE);
 		lblName.setLayoutData(data);
 
-		/** EXPRESION **/
+		/**
+		 * EXPRESION
+		 */
 		txtExpression = factory.createText(composite, "");
 		data = new FormData();
 		data.left = new FormAttachment(0, STANDARD_LABEL_WIDTH);
@@ -86,7 +104,9 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 		data.top = new FormAttachment(lblName);
 		lblExpression.setLayoutData(data);
 	
-		/** MESSAGE **/
+		/**
+		 * MESSAGE
+		 */
 		lblMessage = factory.createCLabel(composite, "Expression valid.");
 		data = new FormData();
 		data.left = new FormAttachment(0, STANDARD_LABEL_WIDTH);
@@ -94,7 +114,9 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 		data.top = new FormAttachment(lblExpression);
 		lblMessage.setLayoutData(data);
 		
-		/** VALUE **/
+		/**
+		 * VALUE
+		 */
 		txtValue = factory.createText(composite, "");
 		data = new FormData();
 		data.left = new FormAttachment(0, STANDARD_LABEL_WIDTH);
@@ -128,40 +150,44 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 
 						dependency(((Parameter) bo));
 						
+						/**
+						 * Array of string expressions 
+						 * where expressions are ordered to be processed and evaluated.
+						 */
 						String eqns[] = new String[listExpression.size()];
-						
 						for (int i = 1; i <= listExpression.size(); i++) {
 							eqns[i-1] = listExpression.get(listExpression.size()-i);
 						}
 			
 						try {
-							
-							//Parse each expression 
+							/**
+							 *Parse each expression 
+							 */
 							Node[] nodes = new Node[eqns.length];
 							for(int j=0;j<eqns.length;++j) {
 								nodes[j]=jep.parse(eqns[j]);
 							}
 						
-							//Evaluate them in turn 
+							/**
+							 *Evaluate them in turn 
+							 */
 							Object res = null;
 							for(Node n:nodes) { 
 								//jep.println(n)
 								res = jep.evaluate(n);
 							}
-							lblMessage.setText("Expresion valida");
+							lblMessage.setText("Expression valid");
 							txtValue.setText(res.toString() == "" || res.toString() == null ? "0" : res.toString());
 							
 						}catch (EvaluationException ex) {
 							listExpression.clear();
 							listParameter.clear();
-							lblMessage.setText("Expresion no valida");
-					
+							lblMessage.setText("Expression not valid");
 							txtValue.setText("");
 						} catch (ParseException ex) {
 							listExpression.clear();
 							listParameter.clear();
-							lblMessage.setText("Expresion no valida");
-
+							lblMessage.setText("Expression not valid");
 							txtValue.setText("");
 						} 
 
@@ -210,40 +236,45 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 
 				dependency(((Parameter) bo));
 				
+				/**
+				 * Array of string expressions 
+				 * where expressions are ordered to be processed and evaluated.
+				 */
 				String eqns[] = new String[listExpression.size()];
-				
 				for (int i = 1; i <= listExpression.size(); i++) {
 					eqns[i-1] = listExpression.get(listExpression.size()-i);
 				}
 	
 				try {
 					
-					//Parse each expression 
+					/**
+					 * Parse each expression 
+					 */
 					Node[] nodes = new Node[eqns.length];
 					for(int j=0;j<eqns.length;++j) {
 						nodes[j]=jep.parse(eqns[j]);
 					}
 				
-					//Evaluate them in turn 
+					/**
+					 * Evaluate them in turn 
+					 */
 					Object res = null;
 					for(Node n:nodes) { 
 						//jep.println(n)
 						res = jep.evaluate(n);
 					}
-					lblMessage.setText("Expresion valida");
+					lblMessage.setText("Expression valid");
 					txtValue.setText(res.toString() == "" || res.toString() == null ? "0" : res.toString());
 					
 				}catch (EvaluationException e) {
 					listExpression.clear();
 					listParameter.clear();
-					lblMessage.setText("Expresion no valida");
-
+					lblMessage.setText("Expression not valid");
 					txtValue.setText("");
 				} catch (ParseException e) {
 					listExpression.clear();
 					listParameter.clear();
-					lblMessage.setText("Expresion no valida");
-
+					lblMessage.setText("Expression not valid");
 					txtValue.setText("");
 				} 
 			}
@@ -271,6 +302,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 			}
 			
 			if(bo instanceof InterfaceActor){
+				
 				List<ConfigInputPort> ports = ((InterfaceActor)bo).getConfigInputPorts();
 				
 				listParameter.clear();
@@ -281,7 +313,6 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 				
 				String expression;
 			
-				
 				if(bo instanceof SourceInterface){
 					expression = ((InterfaceActor) bo).getOutputPorts().get(0).getExpression().getExpressionString();
 					txtExpression.setText(expression == "" ? "0" : expression);
@@ -308,6 +339,10 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 					} 
 				}
 				
+				/**
+				 * Array of string expressions 
+				 * where expressions are ordered to be processed and evaluated.
+				 */
 				String eqns[] = new String[listExpression.size()];
 				for (int i = 1; i <= listExpression.size(); i++) {
 					if(i==1){
@@ -318,35 +353,44 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 				}
 	
 				try {
-					// Parse each expression 
+					/**
+					 * Parse each expression
+					 */
 					Node[] nodes = new Node[eqns.length];
 					for(int j=0;j<eqns.length;++j) {
 						nodes[j]=jep.parse(eqns[j]);
 					}
 				
-					// Evaluate them in turn 
+					/**
+					 * Evaluate them in turn
+					 */
 					Object res = null;
 					for(Node n:nodes) { 			
 						res = jep.evaluate(n);
 					}
-					lblMessage.setText("Expresion valida");
+					lblMessage.setText("Expression valid");
 					txtValue.setText(res.toString() == ""  || res.toString() == null ? "0" : res.toString());
 					
 				}catch (EvaluationException e) {
 					listExpression.clear();
 					listParameter.clear();
-					lblMessage.setText("Expresion no valida");
+					lblMessage.setText("Expression not valid");
 					txtValue.setText("");
 				} catch (ParseException e) {
 					listExpression.clear();
 					listParameter.clear();
-					lblMessage.setText("Expresion no valida");
+					lblMessage.setText("Expression not valid");
 					txtValue.setText("");
 				} 
 			} //if(bo instanceof InterfaceActor)
 		}
 	}
 	
+	/**
+	 * Search all dependencies recursively of the Parameter passed as argument in the DAG and
+	 * it loads the listExpression (list of expressions)
+	 * @param p Parameter
+	 */
 	public void dependency(Parameter p){
 		if(!p.getConfigInputPorts().isEmpty()){ //if there is dependency...
 			for (int i = 0; i < p.getConfigInputPorts().size(); i++) {

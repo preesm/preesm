@@ -166,6 +166,15 @@ public interface PiMMFactory extends EFactory {
 	Expression createExpression();
 
 	/**
+	 * Returns a new object of class '<em>Config Input Interface</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Config Input Interface</em>'.
+	 * @generated
+	 */
+	ConfigInputInterface createConfigInputInterface();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

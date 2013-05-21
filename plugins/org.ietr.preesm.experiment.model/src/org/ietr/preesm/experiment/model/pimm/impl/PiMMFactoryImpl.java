@@ -72,6 +72,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 			case PiMMPackage.DEPENDENCY: return createDependency();
 			case PiMMPackage.DELAY: return createDelay();
 			case PiMMPackage.EXPRESSION: return createExpression();
+			case PiMMPackage.CONFIG_INPUT_INTERFACE: return createConfigInputInterface();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -235,6 +236,16 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	public Expression createExpression() {
 		ExpressionImpl expression = new ExpressionImpl();
 		return expression;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public ConfigInputInterface createConfigInputInterface() {
+		ConfigInputInterfaceImpl configInputInterface = new ConfigInputInterfaceImpl();
+		return configInputInterface;
 	}
 
 	/**
