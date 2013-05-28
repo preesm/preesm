@@ -10,6 +10,8 @@ import org.ietr.preesm.experiment.model.pimm.InputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.SinkInterface;
+import org.ietr.preesm.experiment.model.pimm.impl.ActorImpl;
 
 public class PiMMFilter extends AbstractPropertySectionFilter{
 
@@ -34,7 +36,22 @@ public class PiMMFilter extends AbstractPropertySectionFilter{
 			return true;
 		}
 		
+		if(eObject instanceof SinkInterface)
+			System.out.println("SinkInterfaces");
+		if(eObject instanceof ConfigOutputInterface)
+			System.out.println("ConfigOutputInterface");
+		
 		if(eObject instanceof OutputPort){
+			System.out.println("Output Port");
+			// agrego esto para que cuando tengo un output port dentro del actor ...
+			//no tenga propiedades
+			
+			if(eObject.eContainer() instanceof ActorImpl){
+				System.out.println("Es un output contennido en un Actor");
+				return false;
+			}
+			
+			
 			return true;
 		}
 		
