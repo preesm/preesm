@@ -46,6 +46,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 	private CLabel lblExpression;
 	private CLabel lblValue;
 	private CLabel lblMessage;
+	private CLabel lblAllExpression;
 	
 	/**
 	 * The String of expressions is added in form "nameOfParameter=expression"
@@ -58,6 +59,11 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 	 * find dependences associated with the parameters.
 	 */
 	private List<Parameter> listParameter = new ArrayList<Parameter>();
+	
+	/**
+	 * List the name of the all expressions.
+	 */
+	private List<String> listName = new ArrayList<String>();
 	
 	private Jep jep;
 	
@@ -86,6 +92,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 		data.right = new FormAttachment(txtName, -HSPACE);
 		lblName.setLayoutData(data);
 
+		
 		/**
 		 * EXPRESION
 		 */
@@ -105,13 +112,24 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 		lblExpression.setLayoutData(data);
 	
 		/**
+		 * ALL EXPRESSION
+		 */
+		lblAllExpression = factory.createCLabel(composite, " ");
+		data = new FormData();
+		data.left = new FormAttachment(0, STANDARD_LABEL_WIDTH);
+		data.right = new FormAttachment(100, 0);
+		data.top = new FormAttachment(lblExpression);
+		lblAllExpression.setLayoutData(data);
+		
+		
+		/**
 		 * MESSAGE
 		 */
 		lblMessage = factory.createCLabel(composite, "Expression valid.");
 		data = new FormData();
 		data.left = new FormAttachment(0, STANDARD_LABEL_WIDTH);
 		data.right = new FormAttachment(100, 0);
-		data.top = new FormAttachment(lblExpression);
+		data.top = new FormAttachment(lblAllExpression);
 		lblMessage.setLayoutData(data);
 		
 		/**
@@ -145,6 +163,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 						
 						listParameter.clear();
 						listExpression.clear();
+						listName.clear();
 				
 						listExpression.add(((Parameter) bo).getName()+"="+((Parameter) bo).getExpression().getExpressionString());
 
@@ -165,15 +184,32 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 							 */
 							Node[] nodes = new Node[eqns.length];
 							for(int j=0;j<eqns.length;++j) {
+								int inicio = eqns[j].indexOf("=");
+								listName.add(eqns[j].substring(0, inicio));
 								nodes[j]=jep.parse(eqns[j]);
+								
 							}
-						
+							
+							/**
+							 * Create the full expression for the lblAllExpression
+							 */
+							for (int j = 1; j < eqns.length; ++j) {
+								for (int k = j-1; k != -1 ; k--) {
+									if(eqns.length>1){
+										if(eqns[j].contains(listName.get(k))){
+											int inicio = eqns[k].indexOf("=");
+											eqns[j] = eqns[j].replaceAll(listName.get(k), "("+eqns[k].substring(inicio+1)+")");
+										}
+									}
+								}
+							}
+							lblAllExpression.setText(eqns[eqns.length-1]);
+							
 							/**
 							 *Evaluate them in turn 
 							 */
 							Object res = null;
 							for(Node n:nodes) { 
-								//jep.println(n)
 								res = jep.evaluate(n);
 							}
 							lblMessage.setText("Valid Expression");
@@ -181,11 +217,13 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 						}catch (EvaluationException ex) {
 							listExpression.clear();
 							listParameter.clear();
+							listName.clear();
 							lblMessage.setText("Not valid expression");
 							txtValue.setText("");
 						} catch (ParseException ex) {
 							listExpression.clear();
 							listParameter.clear();
+							listName.clear();
 							lblMessage.setText("Not valid expression");
 							txtValue.setText("");
 						} 
@@ -230,6 +268,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 				
 				listParameter.clear();
 				listExpression.clear();
+				listName.clear();
 		
 				listExpression.add(((Parameter) bo).getName()+"="+((Parameter) bo).getExpression().getExpressionString());
 
@@ -250,15 +289,26 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 					 * Parse each expression 
 					 */
 					Node[] nodes = new Node[eqns.length];
-//					TreeAnalyzer ta = new TreeAnalyzer();
 					for(int j=0;j<eqns.length;++j) {
-						System.out.println("Nro de nodos en su subgrado: "+jep.parse(eqns[j]).getPFMC().getNumberOfParameters());
+						int inicio = eqns[j].indexOf("=");
+						listName.add(eqns[j].substring(0, inicio));
 						nodes[j]=jep.parse(eqns[j]);
-						
-						//System.out.println("VAR: "+((ASTVarNode) nodes[j]).getName());
-						//ta.analyze(nodes[j]);
 					}
-					//System.out.println("Variables:"+ta.getVariableNames()[0]);
+					
+					/**
+					 * Create the full expression for the lblAllExpression
+					 */
+					for (int j = 1; j < eqns.length; ++j) {
+						for (int k = j-1; k != -1 ; k--) {
+							if(eqns.length>1){
+								if(eqns[j].contains(listName.get(k))){
+									int inicio = eqns[k].indexOf("=");
+									eqns[j] = eqns[j].replaceAll(listName.get(k), "("+eqns[k].substring(inicio+1)+")");
+								}
+							}
+						}
+					}
+					lblAllExpression.setText(eqns[eqns.length-1]);
 					
 					
 					/**
@@ -266,39 +316,23 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 					 */
 					Object res = null;
 					for(Node n:nodes) { 
-				/*		jep.println(n);
-						
-						System.out.println("ID: "+n.getId()+
-								"\n GetName: "+n.getName()+
-								"\n jjtGetNumChildren: "+n.jjtGetNumChildren()+
-								"\n getOperator: "+n.getOperator()+
-								"\n getPFMC: "+n.getPFMC()+
-								"\n getValue: "+n.getValue()+
-								"\n getVar: "+n.getVar()+
-								"\n jjtGetParent(): "+n.jjtGetParent());
-				*/		
-						/*for(Node child:n.children()) {
-							System.out.println("HIJO: ");
-							jep.println(child);
-						}*/
 						res = jep.evaluate(n);
 					}
 					lblMessage.setText("Valid expression");
-					//int valor = (int) Math.floor((Double)res);
-					//String str = String.valueOf(valor);
 					txtValue.setText(res.toString() == "" || res.toString() == null ? "0" : String.valueOf((int) Math.floor((Double)res)));
 					
 				}catch (EvaluationException e) {
 					listExpression.clear();
 					listParameter.clear();
+					listName.clear();
 					lblMessage.setText("Not valid expression");
 					txtValue.setText("");
 				} catch (ParseException e) {
 					listExpression.clear();
 					listParameter.clear();
+					listName.clear();
 					lblMessage.setText("Not valid expression");
 					txtValue.setText("");
-				//} catch (JepException e){
 				}
 			}
 			
@@ -330,6 +364,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 				
 				listParameter.clear();
 				listExpression.clear();
+				listName.clear();
 				
 				String name = ((InterfaceActor) bo).getName();
 				txtName.setText(name == null ? " " : name);
@@ -381,9 +416,27 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 					 */
 					Node[] nodes = new Node[eqns.length];
 					for(int j=0;j<eqns.length;++j) {
+						int inicio = eqns[j].indexOf("=");
+						listName.add(eqns[j].substring(0, inicio));
 						nodes[j]=jep.parse(eqns[j]);
 					}
 				
+					/**
+					 * Create the full expression for the lblAllExpression
+					 */
+					for (int j = 1; j < eqns.length; ++j) {
+						for (int k = j-1; k != -1 ; k--) {
+							if(eqns.length>1){
+								if(eqns[j].contains(listName.get(k))){
+									int inicio = eqns[k].indexOf("=");
+									eqns[j] = eqns[j].replaceAll(listName.get(k), "("+eqns[k].substring(inicio+1)+")");
+								}
+							}
+						}
+					}
+					System.out.println("Valor: "+eqns[eqns.length-1]);
+					lblAllExpression.setText(eqns[eqns.length-1]);
+					
 					/**
 					 * Evaluate them in turn
 					 */
@@ -398,11 +451,13 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 				}catch (EvaluationException e) {
 					listExpression.clear();
 					listParameter.clear();
+					listName.clear();
 					lblMessage.setText("Not valid expression");
 					txtValue.setText("");
 				} catch (ParseException e) {
 					listExpression.clear();
 					listParameter.clear();
+					listName.clear();
 					lblMessage.setText("Not valid expression");
 					txtValue.setText("");
 				} 
@@ -416,19 +471,12 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 	 * @param p Parameter
 	 */
 	public void dependency(Parameter p){
-//		System.out.println("TAMAÑO DE LISTA DE DEPENDENCIAS: "+p.getConfigInputPorts().size());
-		
 		if(!p.getConfigInputPorts().isEmpty()){ //if there is dependency...
-//			System.out.println("DEPENDENCIA: "+p.getConfigInputPorts().get(0).getIncomingDependency().getSetter());
-			
 			for (int i = 0; i < p.getConfigInputPorts().size(); i++) {
 				if(p.getConfigInputPorts().get(i).getIncomingDependency().getSetter() instanceof Parameter){
-//					System.out.println("ES UNA INSTANCIA DE PARAMETRO");
-				
-				listParameter.add((Parameter)p.getConfigInputPorts().get(i).getIncomingDependency().getSetter());
-				listExpression.add(((Parameter)p.getConfigInputPorts().get(i).getIncomingDependency().getSetter()).getName()+"="+((Parameter)p.getConfigInputPorts().get(i).getIncomingDependency().getSetter()).getExpression().getExpressionString());
+					listParameter.add((Parameter)p.getConfigInputPorts().get(i).getIncomingDependency().getSetter());
+					listExpression.add(((Parameter)p.getConfigInputPorts().get(i).getIncomingDependency().getSetter()).getName()+"="+((Parameter)p.getConfigInputPorts().get(i).getIncomingDependency().getSetter()).getExpression().getExpressionString());
 				} 
-//				else { System.out.println("NO LO ES PARAMETREO");}
 			}
 		}
 		if(!listParameter.isEmpty()){
