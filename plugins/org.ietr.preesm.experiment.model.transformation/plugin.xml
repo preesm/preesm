@@ -69,4 +69,31 @@
         </propertySection>
       </propertySections>
    </extension>
+   
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <commonFilter
+            activeByDefault="true"
+            class="org.ietr.preesm.experiment.model.filter.ProjectExplorerPiFilter"
+            description="Filters the *.pi files"
+            id="org.ietr.preesm.experiment.pifilefilter"
+            name="PiFileFilter"
+            visibleInUI="true">
+      </commonFilter>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.viewer">
+      <viewerContentBinding
+            viewerId="org.eclipse.ui.navigator.ProjectExplorer">
+         <includes>
+            <contentExtension
+                  isRoot="true"
+                  pattern="org.ietr.preesm.experiment.pifilefilter">
+            </contentExtension>
+            <contentExtension
+                  isRoot="true"
+                  pattern="org.eclipse.ui.navigator.resourceContent">
+            </contentExtension></includes>
+      </viewerContentBinding>
+   </extension>
 </plugin>
