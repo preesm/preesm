@@ -1,17 +1,18 @@
 package org.ietr.preesm.experiment.model.transformation.properties;
 
+
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.platform.AbstractPropertySectionFilter;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
-import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.InputPort;
-import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.SinkInterface;
-import org.ietr.preesm.experiment.model.pimm.impl.ActorImpl;
+import org.ietr.preesm.experiment.model.pimm.SourceInterface;
 
 public class PiMMFilter extends AbstractPropertySectionFilter{
 
@@ -24,53 +25,48 @@ public class PiMMFilter extends AbstractPropertySectionFilter{
 		EObject eObject = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pictogramElement);
 
 		/**
-		 * Parameter, SourceInterface, SinkInterface are EObject has associated properties window.
+		 * Parameter, SourceInterface, SinkInterface and Delay are EObject has associated properties window.
 		 */
+
+		//System.out.println(eObject.toString()+" Container: "+eObject.eContainer());
 		
-		if(eObject instanceof ConfigInputInterface){
-			//Check ConfigInputInterface before checking the Parameter
+		// Parameter and ConfigInputInterface.
+		if(eObject instanceof Parameter){
+			if(((Parameter) eObject).isConfigurationInterface())	// is an ConfigInputInterface
+				return false;
+			return true;
+		}
+	
+		// ConfigOutputPort contained in the Actor.
+		if(eObject instanceof ConfigOutputPort)
 			return false;
+		
+		// OutputPort contained in the SourceInterface and Actor
+		if(eObject instanceof OutputPort){
+			if(eObject.eContainer() instanceof SourceInterface)
+				return true;
+			if(eObject.eContainer() instanceof Actor)
+				return true;
 		}
 		
-		if(eObject instanceof Parameter){
-			return true;
+		// InputPort contained in the SinkInterface and Actor
+		if(eObject instanceof InputPort){
+			if(eObject.eContainer() instanceof SinkInterface)
+				return true;
+			if(eObject.eContainer() instanceof Actor)
+				return true;
 		}
 		
 		if(eObject instanceof SinkInterface)
-			System.out.println("SinkInterfaces");
-		if(eObject instanceof ConfigOutputInterface)
-			System.out.println("ConfigOutputInterface");
-		
-		if(eObject instanceof OutputPort){
-			System.out.println("Output Port");
-			// agrego esto para que cuando tengo un output port dentro del actor ...
-			//no tenga propiedades
-			
-			if(eObject.eContainer() instanceof ActorImpl){
-				System.out.println("Es un output contennido en un Actor");
-				return false;
-			}
-			
-			
 			return true;
-		}
 		
-		if(eObject instanceof InputPort){
-			//If the "InputPort" is contained in "ConfigOutputInterface" (triangle image)
-			//must not have visible properties window.
-			if(eObject.eContainer() instanceof ConfigOutputInterface){
-				return false;
-			}
-			return true; //If the "InputPort" is contained in "SinkInterface"
-		}
-		
-		if(eObject instanceof InterfaceActor){
-			if(eObject instanceof ConfigOutputInterface){
-				return false;
-			}	
+		if(eObject instanceof SourceInterface)
 			return true;
-		}
+		
+		if(eObject instanceof Delay)
+			return true;
 
+		
 		return false;
 	}
 
