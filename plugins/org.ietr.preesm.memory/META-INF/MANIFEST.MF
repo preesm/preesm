@@ -13,7 +13,8 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: IETR/INSA of Rennes
-Export-Package: org.ietr.preesm.memory.bounds,
+Export-Package: org.ietr.preesm.memory.allocation,
+ org.ietr.preesm.memory.bounds,
  org.ietr.preesm.memory.exclusiongraph
 Import-Package: org.ietr.preesm.core.scenario,
  org.ietr.preesm.core.types

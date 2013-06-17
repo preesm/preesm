@@ -80,6 +80,23 @@
             </output>
          </outputs>
       </task>
+      <task
+            id="org.ietr.preesm.memory.allocation.MemoryAllocatorTask"
+            name="Memory Allocator"
+            type="org.ietr.preesm.memory.allocation.MemoryAllocatorTask">
+         <inputs>
+            <input
+                  id="MemEx"
+                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="MemEx"
+                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+            </output>
+         </outputs>
+      </task>
    </extension>
 
 </plugin>
