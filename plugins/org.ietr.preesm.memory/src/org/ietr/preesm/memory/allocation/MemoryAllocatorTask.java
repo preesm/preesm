@@ -1,4 +1,4 @@
-package org.ietr.preesm.experiment.memory.allocation;
+package org.ietr.preesm.memory.allocation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,8 +13,8 @@ import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.preesm.experiment.memory.allocation.OrderedAllocator.Order;
-import org.ietr.preesm.experiment.memory.allocation.OrderedAllocator.Policy;
+import org.ietr.preesm.memory.allocation.OrderedAllocator.Order;
+import org.ietr.preesm.memory.allocation.OrderedAllocator.Policy;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 

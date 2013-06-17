@@ -1,4 +1,4 @@
-package org.ietr.preesm.experiment.memory.allocation;
+package org.ietr.preesm.memory.allocation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,42 +14,42 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 
 /**
- * In this class, an adapted version of the best fit allocator is implemented.
+ * In this class, an adapted version of the first fit allocator is implemented.
  * As the lifetime of the memory elements is not known (because of the
  * self-timed assumption), adaptation had to be made. In particular, the order
- * in which the memory elements are considered had to be defined. In the
+ * in which the memory elements are considered had to be defined, as in the
  * original algorithm, this order is the scheduling order. The order chosen in
  * this implementation is a random order. Several random orders are tested, and
- * only the (best/mediane/average/worst) is kept. Other orders have been
+ * only the (best/mediane/average/worst)? is kept. Other orders have been
  * implemented : StableSet and LargestFirst.
  * 
  * @author kdesnos
  * 
  */
-public class BestFitAllocator extends OrderedAllocator {
+public class FirstFitAllocator extends OrderedAllocator {
 
 	/**
-	 * Constructor of the allocator
+	 * Constructor of the Allocator
 	 * 
 	 * @param graph
-	 *            the graph whose edges are to allocate
+	 *            The graph to analyze
 	 */
-	public BestFitAllocator(DirectedAcyclicGraph graph) {
+	public FirstFitAllocator(DirectedAcyclicGraph graph) {
 		super(graph);
 	}
 
 	/**
-	 * Constructor of the allocator
+	 * Constructor of the Allocator
 	 * 
 	 * @param memEx
-	 *            The exclusion graph whose vertices are to allocate
+	 *            The exclusion graph to analyze
 	 */
-	public BestFitAllocator(MemoryExclusionGraph memEx) {
+	public FirstFitAllocator(MemoryExclusionGraph memEx) {
 		super(memEx);
 	}
 
 	/**
-	 * This method allocate the memory elements with the best fit algorithm and
+	 * This method allocate the memory elements with the first fit algorithm and
 	 * return the cost of the allocation.
 	 * 
 	 * @param vertexList
@@ -80,13 +80,13 @@ public class BestFitAllocator extends OrderedAllocator {
 			Collections.sort(excludeFrom);
 			Collections.sort(excludeTo);
 
-			int bestFitOffset = -1;
+			int firstFitOffset = -1;
 			int freeFrom = 0; // Where the last exclusion ended
 
-			// Look for best fit only if there are exclusions. Else, simply
+			// Look for first fit only if there are exclusions. Else, simply
 			// allocate at 0.
 			if (!excludeFrom.isEmpty()) {
-				// Look for free spaces between the exclusion ranges.
+				// Look for the first free spaces between the exclusion ranges.
 				Iterator<Integer> iterFrom = excludeFrom.iterator();
 				Iterator<Integer> iterTo = excludeTo.iterator();
 				int from = iterFrom.next();
@@ -96,27 +96,20 @@ public class BestFitAllocator extends OrderedAllocator {
 				// "from" is free !
 				int nbExcludeFrom = 0;
 
-				// this value is the occupation rate of the best fit occupation
-				// = size_element / size_best_fit_space.
-				// The closest it is from 1, the best it fits !
-				double bestFitOccupation = 0;
 				boolean lastFromTreated = false;
 				boolean lastToTreated = false;
 
-				while (!lastToTreated) {
+				// Iterate over the excludeFrom and excludeTo lists
+				while (!lastToTreated && firstFitOffset == -1) {
 					if (from <= to) {
 						if (nbExcludeFrom == 0) {
 							// This is the end of a free space. check if the
-							// current element best fits here ?
+							// current element fits here ?
 							int freeSpaceSize = from - freeFrom;
-							double occupation = (double) vertex.getWeight()
-									/ (double) freeSpaceSize;
-							// If the element fits in the space AND fits better
-							// than previous best fit
-							if (occupation <= 1.0
-									&& occupation > bestFitOccupation) {
-								bestFitOffset = freeFrom;
-								bestFitOccupation = occupation;
+
+							// If the element fits in the space
+							if (vertex.getWeight() <= freeSpaceSize) {
+								firstFitOffset = freeFrom;
 							}
 						}
 						if (iterFrom.hasNext()) {
@@ -149,12 +142,12 @@ public class BestFitAllocator extends OrderedAllocator {
 			}
 
 			// If no free space was found between excluding elements
-			if (bestFitOffset <= -1) {
+			if (firstFitOffset <= -1) {
 				// Put it right after the last element of the list
-				bestFitOffset = freeFrom;
+				firstFitOffset = freeFrom;
 			}
 
-			allocateMemoryObject(vertex, bestFitOffset);
+			allocateMemoryObject(vertex, firstFitOffset);
 		}
 
 		return getMemorySize();

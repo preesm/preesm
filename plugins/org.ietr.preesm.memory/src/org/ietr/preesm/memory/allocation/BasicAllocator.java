@@ -1,4 +1,4 @@
-package org.ietr.preesm.experiment.memory.allocation;
+package org.ietr.preesm.memory.allocation;
 
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 
