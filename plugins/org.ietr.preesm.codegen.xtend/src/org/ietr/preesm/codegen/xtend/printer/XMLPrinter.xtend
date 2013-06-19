@@ -72,7 +72,7 @@ class XMLPrinter extends DefaultPrinter {
 
 	override printCoreLoopBlockHeader(LoopBlock loopBlock) '''
 		«"\t"»<forLoop comment="Main loop of computation">
-			
+				
 	'''
 
 	override printCoreLoopBlockFooter(LoopBlock loopBlock) '''
