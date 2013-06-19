@@ -53,6 +53,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
+import org.ietr.preesm.codegen.xtend.model.codegen.Commentable;
 import org.ietr.preesm.codegen.xtend.model.codegen.Communication;
 import org.ietr.preesm.codegen.xtend.model.codegen.Constant;
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
@@ -185,6 +186,13 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * @generated
 	 */
 	private EClass fifoCallEClass = null;
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	private EClass commentableEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -719,6 +727,24 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	public EClass getCommentable() {
+		return commentableEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EAttribute getCommentable_Comment() {
+		return (EAttribute) commentableEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	public EEnum getDirection() {
 		return directionEEnum;
 	}
@@ -843,6 +869,9 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		createEReference(fifoCallEClass, FIFO_CALL__FIFO_TAIL);
 		createEReference(fifoCallEClass, FIFO_CALL__STORAGE_BUFFER);
 
+		commentableEClass = createEClass(COMMENTABLE);
+		createEAttribute(commentableEClass, COMMENTABLE__COMMENT);
+
 		// Create enums
 		directionEEnum = createEEnum(DIRECTION);
 		delimiterEEnum = createEEnum(DELIMITER);
@@ -881,6 +910,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		// Add supertypes to classes
 		blockEClass.getESuperTypes().add(this.getCodeElt());
 		callEClass.getESuperTypes().add(this.getCodeElt());
+		variableEClass.getESuperTypes().add(this.getCommentable());
 		bufferEClass.getESuperTypes().add(this.getVariable());
 		subBufferEClass.getESuperTypes().add(this.getBuffer());
 		constantEClass.getESuperTypes().add(this.getVariable());
@@ -1121,6 +1151,13 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 				"storageBuffer", null, 0, 1, FifoCall.class, !IS_TRANSIENT,
 				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(commentableEClass, Commentable.class, "Commentable",
+				IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getCommentable_Comment(), ecorePackage.getEString(),
+				"comment", null, 0, 1, Commentable.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(directionEEnum, Direction.class, "Direction");

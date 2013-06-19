@@ -180,6 +180,11 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseCommentable(Commentable object) {
+			return createCommentableAdapter();
+		}
+
+		@Override
 		public Adapter defaultCase(EObject object) {
 			return createEObjectAdapter();
 		}
@@ -450,6 +455,22 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createFifoCallAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Commentable
+	 * <em>Commentable</em>}'. <!-- begin-user-doc --> This default
+	 * implementation returns null so that we can easily ignore cases; it's
+	 * useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the new adapter.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Commentable
+	 * @generated
+	 */
+	public Adapter createCommentableAdapter() {
 		return null;
 	}
 

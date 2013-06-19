@@ -812,8 +812,10 @@ public class CodegenModelGenerator {
 					.createSubBuffer();
 
 			// Old Naming (too long)
-			// String name = dagAlloc.getKey().getSource().getName()
-			// + "__" + dagAlloc.getKey().getTarget().getName();
+			 String comment = dagAlloc.getKey().getSource().getName()
+			 + " > " + dagAlloc.getKey().getTarget().getName();
+			dagEdgeBuffer.setComment(comment);
+			
 			String name = dagAlloc.getKey().getSource().getName() + "__"
 					+ dagAlloc.getKey().getTarget().getName();
 
@@ -1179,6 +1181,9 @@ public class CodegenModelGenerator {
 			// order.
 			// Get the depth of the fifo, and create the storage buffer
 			Buffer storageBuffer = CodegenFactory.eINSTANCE.createBuffer();
+			String comment = "fifo: " + sdfVertex.getName() + " > "
+					+ ((SDFInitVertex) sdfVertex).getEndReference().getName();
+			storageBuffer.setComment(comment);
 			String name = "fifo__" + sdfVertex.getName() + "__"
 					+ ((SDFInitVertex) sdfVertex).getEndReference().getName();
 			name = generateUniqueBufferName(name);
@@ -1489,10 +1494,11 @@ public class CodegenModelGenerator {
 			SubBuffer subBuff = CodegenFactory.eINSTANCE.createSubBuffer();
 			// Old naming techniques with complete path to port. (too long, kept
 			// as a comment)
-			// String name = dagEdge.getSource().getName();
-			// name += '_' + subBufferProperties.getSourceOutputPortID();
-			// name += "__" + dagEdge.getTarget().getName();
-			// name += '_' + subBufferProperties.getDestInputPortID();
+			String comment = dagEdge.getSource().getName();
+			comment += '_' + subBufferProperties.getSourceOutputPortID();
+			comment += " > " + dagEdge.getTarget().getName();
+			comment += '_' + subBufferProperties.getDestInputPortID();
+			subBuff.setComment(comment);
 
 			// Buffer is named only with ports ID
 			String name = subBufferProperties.getSourceOutputPortID();

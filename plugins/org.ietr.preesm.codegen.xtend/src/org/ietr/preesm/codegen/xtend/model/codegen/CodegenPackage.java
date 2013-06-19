@@ -203,6 +203,36 @@ public interface CodegenPackage extends EPackage {
 
 	/**
 	 * The meta object id for the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommentableImpl
+	 * <em>Commentable</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CommentableImpl
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getCommentable()
+	 * @generated
+	 */
+	int COMMENTABLE = 16;
+
+	/**
+	 * The feature id for the '<em><b>Comment</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int COMMENTABLE__COMMENT = 0;
+
+	/**
+	 * The number of structural features of the '<em>Commentable</em>' class.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int COMMENTABLE_FEATURE_COUNT = 1;
+
+	/**
+	 * The meta object id for the '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.VariableImpl
 	 * <em>Variable</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -213,13 +243,22 @@ public interface CodegenPackage extends EPackage {
 	int VARIABLE = 3;
 
 	/**
+	 * The feature id for the '<em><b>Comment</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int VARIABLE__COMMENT = COMMENTABLE__COMMENT;
+
+	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int VARIABLE__NAME = 0;
+	int VARIABLE__NAME = COMMENTABLE_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' attribute. <!--
@@ -228,7 +267,7 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int VARIABLE__TYPE = 1;
+	int VARIABLE__TYPE = COMMENTABLE_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Creator</b></em>' reference. <!--
@@ -237,7 +276,7 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int VARIABLE__CREATOR = 2;
+	int VARIABLE__CREATOR = COMMENTABLE_FEATURE_COUNT + 2;
 
 	/**
 	 * The feature id for the '<em><b>Users</b></em>' reference list. <!--
@@ -246,7 +285,7 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int VARIABLE__USERS = 3;
+	int VARIABLE__USERS = COMMENTABLE_FEATURE_COUNT + 3;
 
 	/**
 	 * The number of structural features of the '<em>Variable</em>' class. <!--
@@ -255,7 +294,7 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int VARIABLE_FEATURE_COUNT = 4;
+	int VARIABLE_FEATURE_COUNT = COMMENTABLE_FEATURE_COUNT + 4;
 
 	/**
 	 * The meta object id for the '
@@ -267,6 +306,15 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 */
 	int BUFFER = 4;
+
+	/**
+	 * The feature id for the '<em><b>Comment</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int BUFFER__COMMENT = VARIABLE__COMMENT;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute. <!--
@@ -333,6 +381,15 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 */
 	int SUB_BUFFER = 5;
+
+	/**
+	 * The feature id for the '<em><b>Comment</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SUB_BUFFER__COMMENT = BUFFER__COMMENT;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute. <!--
@@ -416,6 +473,15 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 */
 	int CONSTANT = 6;
+
+	/**
+	 * The feature id for the '<em><b>Comment</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int CONSTANT__COMMENT = VARIABLE__COMMENT;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute. <!--
@@ -1064,7 +1130,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDirection()
 	 * @generated
 	 */
-	int DIRECTION = 16;
+	int DIRECTION = 17;
 
 	/**
 	 * The meta object id for the '
@@ -1075,7 +1141,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDelimiter()
 	 * @generated
 	 */
-	int DELIMITER = 17;
+	int DELIMITER = 18;
 
 	/**
 	 * The meta object id for the '
@@ -1087,7 +1153,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getSpecialType()
 	 * @generated
 	 */
-	int SPECIAL_TYPE = 18;
+	int SPECIAL_TYPE = 19;
 
 	/**
 	 * The meta object id for the '
@@ -1099,7 +1165,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getFifoOperation()
 	 * @generated
 	 */
-	int FIFO_OPERATION = 19;
+	int FIFO_OPERATION = 20;
 
 	/**
 	 * Returns the meta object for class '
@@ -1664,6 +1730,29 @@ public interface CodegenPackage extends EPackage {
 	EReference getFifoCall_StorageBuffer();
 
 	/**
+	 * Returns the meta object for class '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Commentable
+	 * <em>Commentable</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for class '<em>Commentable</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Commentable
+	 * @generated
+	 */
+	EClass getCommentable();
+
+	/**
+	 * Returns the meta object for the attribute '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Commentable#getComment
+	 * <em>Comment</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Comment</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Commentable#getComment()
+	 * @see #getCommentable()
+	 * @generated
+	 */
+	EAttribute getCommentable_Comment();
+
+	/**
 	 * Returns the meta object for enum '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Direction
 	 * <em>Direction</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2188,6 +2277,26 @@ public interface CodegenPackage extends EPackage {
 		 */
 		EReference FIFO_CALL__STORAGE_BUFFER = eINSTANCE
 				.getFifoCall_StorageBuffer();
+
+		/**
+		 * The meta object literal for the '
+		 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommentableImpl
+		 * <em>Commentable</em>}' class. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CommentableImpl
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getCommentable()
+		 * @generated
+		 */
+		EClass COMMENTABLE = eINSTANCE.getCommentable();
+
+		/**
+		 * The meta object literal for the '<em><b>Comment</b></em>' attribute
+		 * feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute COMMENTABLE__COMMENT = eINSTANCE.getCommentable_Comment();
 
 		/**
 		 * The meta object literal for the '
