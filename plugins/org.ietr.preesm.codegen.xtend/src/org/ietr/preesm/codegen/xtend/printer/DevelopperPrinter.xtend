@@ -35,7 +35,6 @@
  */
 package org.ietr.preesm.codegen.xtend.printer
 
-import org.eclipse.emf.common.util.EList
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
 import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.Communication
@@ -47,6 +46,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
+import java.util.List
 
 /**
  * This {@link DevelopperPrinter} is a dummy implementation of the 
@@ -91,13 +91,13 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 
 	override printCoreLoopBlockHeader(LoopBlock block2) '''<Core_Loop_Block_Head>'''
 
-	override printDeclarationsFooter(EList<Variable> list) '''<Declarations_Foot>'''
+	override printDeclarationsFooter(List<Variable> list) '''<Declarations_Foot>'''
 
-	override printDeclarationsHeader(EList<Variable> list) '''<Declarations_Head>'''
+	override printDeclarationsHeader(List<Variable> list) '''<Declarations_Head>'''
 
-	override printDefinitionsFooter(EList<Variable> list) '''<Definitions_Foot>'''
+	override printDefinitionsFooter(List<Variable> list) '''<Definitions_Foot>'''
 
-	override printDefinitionsHeader(EList<Variable> list) '''<Definitions_Head>'''
+	override printDefinitionsHeader(List<Variable> list) '''<Definitions_Head>'''
 
 	override printFifoCall(FifoCall fifoCall) '''<Fifo_Call>'''
 	

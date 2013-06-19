@@ -36,8 +36,6 @@
 package org.ietr.preesm.codegen.xtend.printer
 
 import java.util.ArrayList
-import java.util.List
-import org.eclipse.emf.common.util.EList
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtend2.lib.StringConcatenation
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
@@ -49,10 +47,12 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
+import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 import org.ietr.preesm.codegen.xtend.model.codegen.util.CodegenSwitch
 import org.ietr.preesm.codegen.xtend.task.CodegenException
+import java.util.List
 
 enum PrinterState {
 	PRINTING_DEFINITIONS,
@@ -187,7 +187,8 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 		// Visit Declarations
 		{
 			setState(PrinterState::PRINTING_DECLARATIONS);
-			val declarationsHeader = printDeclarationsHeader(coreBlock.declarations)
+			val declarationsHeader = printDeclarationsHeader(
+				coreBlock.declarations.filter[!coreBlock.definitions.contains(it)].toList)
 			result.append(declarationsHeader, indentationCoreBlock)
 			if (declarationsHeader.length > 0) {
 				indentation = result.lastLineIndentation
@@ -197,7 +198,8 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 				indentation = indentationCoreBlock
 				hasNewLine = false
 			}
-			result.append(coreBlock.declarations.map[doSwitch].join(''), indentation)
+			result.append(coreBlock.declarations.filter[!coreBlock.definitions.contains(it)].map[doSwitch].join(''),
+				indentation)
 			if (hasNewLine) {
 				result.newLineIfNotEmpty()
 				result.append(indentationCoreBlock)
@@ -449,7 +451,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * instead (in case the method is called through doSwitch).
 	 * 
 	 * @param specialCall
-	 *            the printed {@link specialCall}.
+	 *            the printed {@link SpecialCall}.
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printBroadcast(SpecialCall call)
@@ -469,7 +471,8 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	/**
 	 * Method called to print a {@link Buffer} within the
 	 * {@link CoreBlock#getDeclarations() declaration} of a
-	 * {@link CoreBlock}
+	 * {@link CoreBlock}. If a {@link Buffer} was defined in
+	 * the current block, it will not be declared.
 	 * 
 	 * @param buffer
 	 *            the {@link Buffer} to print.
@@ -633,7 +636,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * 			  printed before calling this method.
 	 * @return the printed {@link CharSequence}
 	 */
-	def CharSequence printDeclarationsFooter(EList<Variable> variableList)
+	def CharSequence printDeclarationsFooter(List<Variable> variableList)
 
 	/**
 	 * Method called before printing all {@link Variable} belonging 
@@ -645,7 +648,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * 			  printed after calling this method.
 	 * @return the printed {@link CharSequence}
 	 */
-	def CharSequence printDeclarationsHeader(EList<Variable> variableList)
+	def CharSequence printDeclarationsHeader(List<Variable> variableList)
 
 	/**
 	 * Method called after printing all {@link Variable} belonging 
@@ -657,7 +660,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * 			  printed before calling this method.
 	 * @return the printed {@link CharSequence}
 	 */
-	def CharSequence printDefinitionsFooter(EList<Variable> variableList)
+	def CharSequence printDefinitionsFooter(List<Variable> variableList)
 
 	/**
 	 * Method called before printing all {@link Variable} belonging 
@@ -669,7 +672,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * 			  printed after calling this method.
 	 * @return the printed {@link CharSequence}
 	 */
-	def CharSequence printDefinitionsHeader(EList<Variable> vaeiableList)
+	def CharSequence printDefinitionsHeader(List<Variable> vaeiableList)
 
 	/**
  	* This method should be called when printing a "printXXXHeader" method 
@@ -711,7 +714,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * instead (in case the method is called through doSwitch).
 	 * 
 	 * @param specialCall
-	 *            the printed {@link specialCall}.
+	 *            the printed {@link SpecialCall}.
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printFork(SpecialCall call)
@@ -733,7 +736,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * instead (in case the method is called through doSwitch).
 	 * 
 	 * @param specialCall
-	 *            the printed {@link specialCall}.
+	 *            the printed {@link SpecialCall}.
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printJoin(SpecialCall call)
@@ -768,7 +771,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * instead (in case the method is called through doSwitch).
 	 * 
 	 * @param specialCall
-	 *            the printed {@link specialCall}.
+	 *            the printed {@link SpecialCall}.
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printRoundBuffer(SpecialCall call)

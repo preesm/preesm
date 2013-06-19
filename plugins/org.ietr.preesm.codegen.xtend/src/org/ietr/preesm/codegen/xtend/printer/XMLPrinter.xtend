@@ -1,6 +1,5 @@
 package org.ietr.preesm.codegen.xtend.printer
 
-import org.eclipse.emf.common.util.EList
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
 import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory
@@ -14,6 +13,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
+import java.util.List
 
 class XMLPrinter extends DefaultPrinter {
 
@@ -80,16 +80,16 @@ class XMLPrinter extends DefaultPrinter {
 		</threadDeclaration>
 	'''
 
-	override printDeclarationsHeader(EList<Variable> list) {
+	override printDeclarationsHeader(List<Variable> list) {
 		return "\t\r\n" //printEmptyHeaderWithNIndentation(1)
 	}
 
-	override printDefinitionsHeader(EList<Variable> list) '''
+	override printDefinitionsHeader(List<Variable> list) '''
 		<bufferContainer>
 			
 	'''
 
-	override printDeclarationsFooter(EList<Variable> list) '''
+	override printDeclarationsFooter(List<Variable> list) '''
 		</bufferContainer>
 	'''
 

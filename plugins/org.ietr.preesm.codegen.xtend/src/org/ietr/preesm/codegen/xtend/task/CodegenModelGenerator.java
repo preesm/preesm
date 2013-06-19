@@ -110,6 +110,7 @@ import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
+import org.ietr.preesm.memory.allocation.MemoryAllocator;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 
@@ -767,6 +768,15 @@ public class CodegenModelGenerator {
 	}
 
 	/**
+	 * This method creates a {@link Buffer} for each {@link DAGEdge} of the
+	 * {@link #dag}. It also calls
+	 * {@link #generateSubBuffers(Buffer, DAGEdge, Integer)} to create distinct
+	 * {@link SubBuffer} corresponding to all the {@link SDFEdge} of the
+	 * single-rate {@link SDFGraph} from which the {@link #dag} is derived.<br>
+	 * <br>
+	 * In this method, the {@link #sharedBuffer}, and the
+	 * {@link #dagEdgeBuffers} attributes are filled.
+	 * 
 	 * @throws CodegenException
 	 * 
 	 */
@@ -796,6 +806,7 @@ public class CodegenModelGenerator {
 					+ "__" + dagAlloc.getKey().getTarget().getName());
 			dagEdgeBuffer.setContainer(sharedBuffer);
 			dagEdgeBuffer.setOffset(dagAlloc.getValue());
+
 			// Generate subsubbuffers. Each subsubbuffer corresponds to an edge
 			// of the single rate SDF Graph
 			Integer dagEdgeSize = generateSubBuffers(dagEdgeBuffer,
@@ -1431,7 +1442,8 @@ public class CodegenModelGenerator {
 	 * This method create a {@link SubBuffer} for each {@link SDFEdge}
 	 * aggregated in the given {@link DAGEdge}. {@link SubBuffer} information
 	 * are retrieved from the {@link #memEx} of the
-	 * {@link CodegenModelGenerator}.
+	 * {@link CodegenModelGenerator}. All created {@link SubBuffer} are
+	 * referenced in the {@link #srSDFEdgeBuffers} map.
 	 * 
 	 * @param parentBuffer
 	 *            the {@link Buffer} containing the generated {@link SubBuffer}
