@@ -50,6 +50,8 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  * <li>
  * {@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getInitBlock
  * <em>Init Block</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getCoreType
+ * <em>Core Type</em>}</li>
  * </ul>
  * </p>
  * 
@@ -118,4 +120,34 @@ public interface CoreBlock extends Block {
 	 * @generated
 	 */
 	void setInitBlock(CallBlock value);
+
+	/**
+	 * Returns the value of the '<em><b>Core Type</b></em>' attribute. <!--
+	 * begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Core Type</em>' attribute isn't clear, there
+	 * really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Core Type</em>' attribute.
+	 * @see #setCoreType(String)
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCoreBlock_CoreType()
+	 * @model required="true"
+	 * @generated
+	 */
+	String getCoreType();
+
+	/**
+	 * Sets the value of the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getCoreType
+	 * <em>Core Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Core Type</em>' attribute.
+	 * @see #getCoreType()
+	 * @generated
+	 */
+	void setCoreType(String value);
 } // CoreBlock

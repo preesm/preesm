@@ -72,6 +72,8 @@
         eType="#//LoopBlock"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="initBlock" lowerBound="1"
         eType="#//CallBlock"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="coreType" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ActorBlock" eSuperTypes="#//Block">
     <eStructuralFeatures xsi:type="ecore:EReference" name="loopBlock" lowerBound="1"

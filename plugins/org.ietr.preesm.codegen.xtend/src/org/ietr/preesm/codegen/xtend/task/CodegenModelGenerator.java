@@ -557,6 +557,7 @@ public class CodegenModelGenerator {
 				if (operatorBlock == null) {
 					operatorBlock = CodegenFactory.eINSTANCE.createCoreBlock();
 					operatorBlock.setName(operator.getInstanceName());
+					operatorBlock.setCoreType(operator.getComponent().getVlnv().getName());
 					coreBlocks.put(operator, operatorBlock);
 				}
 			} // end 1.0

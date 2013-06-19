@@ -745,13 +745,22 @@ public interface CodegenPackage extends EPackage {
 	int CORE_BLOCK__INIT_BLOCK = BLOCK_FEATURE_COUNT + 1;
 
 	/**
+	 * The feature id for the '<em><b>Core Type</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int CORE_BLOCK__CORE_TYPE = BLOCK_FEATURE_COUNT + 2;
+
+	/**
 	 * The number of structural features of the '<em>Core Block</em>' class.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int CORE_BLOCK_FEATURE_COUNT = BLOCK_FEATURE_COUNT + 2;
+	int CORE_BLOCK_FEATURE_COUNT = BLOCK_FEATURE_COUNT + 3;
 
 	/**
 	 * The meta object id for the '
@@ -1556,6 +1565,18 @@ public interface CodegenPackage extends EPackage {
 	EReference getCoreBlock_InitBlock();
 
 	/**
+	 * Returns the meta object for the attribute '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getCoreType
+	 * <em>Core Type</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Core Type</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getCoreType()
+	 * @see #getCoreBlock()
+	 * @generated
+	 */
+	EAttribute getCoreBlock_CoreType();
+
+	/**
 	 * Returns the meta object for class '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock
 	 * <em>Actor Block</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2128,6 +2149,14 @@ public interface CodegenPackage extends EPackage {
 		 * @generated
 		 */
 		EReference CORE_BLOCK__INIT_BLOCK = eINSTANCE.getCoreBlock_InitBlock();
+
+		/**
+		 * The meta object literal for the '<em><b>Core Type</b></em>' attribute
+		 * feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute CORE_BLOCK__CORE_TYPE = eINSTANCE.getCoreBlock_CoreType();
 
 		/**
 		 * The meta object literal for the '

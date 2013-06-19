@@ -233,6 +233,10 @@
   <children xmi:type="notation:Node" xmi:id="_fBqwYJuhEeKpdeZtHB9wCw" type="1001">
     <children xmi:type="notation:Node" xmi:id="_fBqwY5uhEeKpdeZtHB9wCw" type="4001"/>
     <children xmi:type="notation:Node" xmi:id="_fBqwZJuhEeKpdeZtHB9wCw" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_GqmwANjYEeKurutkgY-2bg" type="2001">
+        <element xmi:type="ecore:EAttribute" href="codegen.ecore#//CoreBlock/coreType"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_GqmwAdjYEeKurutkgY-2bg"/>
+      </children>
       <styles xmi:type="notation:DrawerStyle" xmi:id="_fBqwZZuhEeKpdeZtHB9wCw"/>
       <styles xmi:type="notation:SortingStyle" xmi:id="_fBqwZpuhEeKpdeZtHB9wCw"/>
       <styles xmi:type="notation:FilteringStyle" xmi:id="_fBqwZ5uhEeKpdeZtHB9wCw"/>

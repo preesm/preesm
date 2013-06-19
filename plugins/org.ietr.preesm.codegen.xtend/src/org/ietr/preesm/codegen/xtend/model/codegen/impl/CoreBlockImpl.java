@@ -59,6 +59,9 @@ import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
  * <li>
  * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CoreBlockImpl#getInitBlock
  * <em>Init Block</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CoreBlockImpl#getCoreType
+ * <em>Core Type</em>}</li>
  * </ul>
  * </p>
  * 
@@ -83,6 +86,25 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 	 * @ordered
 	 */
 	protected CallBlock initBlock;
+
+	/**
+	 * The default value of the '{@link #getCoreType() <em>Core Type</em>}'
+	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #getCoreType()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String CORE_TYPE_EDEFAULT = null;
+	/**
+	 * The cached value of the '{@link #getCoreType() <em>Core Type</em>}'
+	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #getCoreType()
+	 * @generated
+	 * @ordered
+	 */
+	protected String coreType = CORE_TYPE_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc --> Default Constructor also create the init and loop
@@ -196,6 +218,28 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 	 * 
 	 * @generated
 	 */
+	public String getCoreType() {
+		return coreType;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public void setCoreType(String newCoreType) {
+		String oldCoreType = coreType;
+		coreType = newCoreType;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					CodegenPackage.CORE_BLOCK__CORE_TYPE, oldCoreType, coreType));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
@@ -207,6 +251,8 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 			if (resolve)
 				return getInitBlock();
 			return basicGetInitBlock();
+		case CodegenPackage.CORE_BLOCK__CORE_TYPE:
+			return getCoreType();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -224,6 +270,9 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 			return;
 		case CodegenPackage.CORE_BLOCK__INIT_BLOCK:
 			setInitBlock((CallBlock) newValue);
+			return;
+		case CodegenPackage.CORE_BLOCK__CORE_TYPE:
+			setCoreType((String) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -243,6 +292,9 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 		case CodegenPackage.CORE_BLOCK__INIT_BLOCK:
 			setInitBlock((CallBlock) null);
 			return;
+		case CodegenPackage.CORE_BLOCK__CORE_TYPE:
+			setCoreType(CORE_TYPE_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -259,8 +311,28 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 			return loopBlock != null;
 		case CodegenPackage.CORE_BLOCK__INIT_BLOCK:
 			return initBlock != null;
+		case CodegenPackage.CORE_BLOCK__CORE_TYPE:
+			return CORE_TYPE_EDEFAULT == null ? coreType != null
+					: !CORE_TYPE_EDEFAULT.equals(coreType);
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public String toString() {
+		if (eIsProxy())
+			return super.toString();
+
+		StringBuffer result = new StringBuffer(super.toString());
+		result.append(" (coreType: ");
+		result.append(coreType);
+		result.append(')');
+		return result.toString();
 	}
 
 } // CoreBlockImpl

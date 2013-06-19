@@ -26,7 +26,7 @@ class XMLPrinter extends DefaultPrinter {
 	}
 
 	override printBufferDefinition(Buffer buffer) '''
-		<bufferAllocation>
+		<bufferAllocation
 			comment="«buffer.class.simpleName»"
 			name="«buffer.name»" size="«buffer.size»" type="«buffer.type»"/>
 	'''
@@ -38,7 +38,7 @@ class XMLPrinter extends DefaultPrinter {
 	override printCoreBlockHeader(CoreBlock coreBlock) '''
 		<?xml version="1.0" encoding="UTF-8"?>
 		<sourceCode xmlns="http://org.ietr.preesm.sourceCode">
-			<coreType>«"XXX"»</coreType>
+			<coreType>«coreBlock.coreType»</coreType>
 			<coreName>«coreBlock.name»</coreName>
 			<SourceFile>
 				

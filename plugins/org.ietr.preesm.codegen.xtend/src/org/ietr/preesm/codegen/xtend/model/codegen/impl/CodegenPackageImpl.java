@@ -592,6 +592,15 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	public EAttribute getCoreBlock_CoreType() {
+		return (EAttribute) coreBlockEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	public EClass getActorBlock() {
 		return actorBlockEClass;
 	}
@@ -847,6 +856,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		coreBlockEClass = createEClass(CORE_BLOCK);
 		createEReference(coreBlockEClass, CORE_BLOCK__LOOP_BLOCK);
 		createEReference(coreBlockEClass, CORE_BLOCK__INIT_BLOCK);
+		createEAttribute(coreBlockEClass, CORE_BLOCK__CORE_TYPE);
 
 		actorBlockEClass = createEClass(ACTOR_BLOCK);
 		createEReference(actorBlockEClass, ACTOR_BLOCK__LOOP_BLOCK);
@@ -1063,6 +1073,10 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 				"initBlock", null, 1, 1, CoreBlock.class, !IS_TRANSIENT,
 				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getCoreBlock_CoreType(), ecorePackage.getEString(),
+				"coreType", null, 1, 1, CoreBlock.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
 		initEClass(actorBlockEClass, ActorBlock.class, "ActorBlock",
 				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
