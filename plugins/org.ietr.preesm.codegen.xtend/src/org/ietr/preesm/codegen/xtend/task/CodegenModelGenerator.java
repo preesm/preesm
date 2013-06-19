@@ -140,6 +140,13 @@ public class CodegenModelGenerator {
 	private Buffer sharedBuffer;
 
 	/**
+	 * Map used to keep track of the number of {@link Buffer} created with a
+	 * given name. Since buffer are named using ports names, duplicates name may
+	 * happen and number must be added to ensure correctness.
+	 */
+	private Map<String, Integer> bufferNames;
+
+	/**
 	 * {@link DirectedAcyclicGraph DAG} used to generate code. This
 	 * {@link DirectedAcyclicGraph DAG} must be the result of mapping/scheduling
 	 * process.
@@ -243,7 +250,7 @@ public class CodegenModelGenerator {
 		this.scenario = scenario;
 
 		checkInputs(this.archi, this.dag, this.memEx);
-
+		this.bufferNames = new HashMap<String, Integer>();
 		this.coreBlocks = new HashMap<ComponentInstance, CoreBlock>();
 		this.srSDFEdgeBuffers = new HashMap<BufferProperties, Buffer>();
 		this.dagEdgeBuffers = new HashMap<DAGEdge, Buffer>();
@@ -791,6 +798,7 @@ public class CodegenModelGenerator {
 				MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE, Integer.class);
 		sharedBuffer = CodegenFactory.eINSTANCE.createBuffer();
 		sharedBuffer.setSize(size);
+		sharedBuffer.setName("SharedMem");
 
 		@SuppressWarnings("unchecked")
 		Map<DAGEdge, Integer> allocation = (Map<DAGEdge, Integer>) memEx
@@ -802,8 +810,15 @@ public class CodegenModelGenerator {
 		for (Entry<DAGEdge, Integer> dagAlloc : allocation.entrySet()) {
 			SubBuffer dagEdgeBuffer = CodegenFactory.eINSTANCE
 					.createSubBuffer();
-			dagEdgeBuffer.setName(dagAlloc.getKey().getSource().getName()
-					+ "__" + dagAlloc.getKey().getTarget().getName());
+
+			// Old Naming (too long)
+			// String name = dagAlloc.getKey().getSource().getName()
+			// + "__" + dagAlloc.getKey().getTarget().getName();
+			String name = dagAlloc.getKey().getSource().getName() + "__"
+					+ dagAlloc.getKey().getTarget().getName();
+
+			name = generateUniqueBufferName(name);
+			dagEdgeBuffer.setName(name);
 			dagEdgeBuffer.setContainer(sharedBuffer);
 			dagEdgeBuffer.setOffset(dagAlloc.getValue());
 
@@ -1164,8 +1179,10 @@ public class CodegenModelGenerator {
 			// order.
 			// Get the depth of the fifo, and create the storage buffer
 			Buffer storageBuffer = CodegenFactory.eINSTANCE.createBuffer();
-			storageBuffer.setName("fifo__" + sdfVertex.getName() + "__"
-					+ ((SDFInitVertex) sdfVertex).getEndReference().getName());
+			String name = "fifo__" + sdfVertex.getName() + "__"
+					+ ((SDFInitVertex) sdfVertex).getEndReference().getName();
+			name = generateUniqueBufferName(name);
+			storageBuffer.setName(name);
 			storageBuffer.setCreator(operatorBlock);
 			storageBuffer.getUsers().add(operatorBlock);
 			Integer size = ((SDFInitVertex) sdfVertex).getInitSize();
@@ -1470,10 +1487,20 @@ public class CodegenModelGenerator {
 		Integer aggregateOffset = new Integer(0);
 		for (BufferProperties subBufferProperties : buffers) {
 			SubBuffer subBuff = CodegenFactory.eINSTANCE.createSubBuffer();
-			String name = dagEdge.getSource().getName();
-			name += '_' + subBufferProperties.getSourceOutputPortID();
-			name += "__" + dagEdge.getTarget().getName();
-			name += '_' + subBufferProperties.getDestInputPortID();
+			// Old naming techniques with complete path to port. (too long, kept
+			// as a comment)
+			// String name = dagEdge.getSource().getName();
+			// name += '_' + subBufferProperties.getSourceOutputPortID();
+			// name += "__" + dagEdge.getTarget().getName();
+			// name += '_' + subBufferProperties.getDestInputPortID();
+
+			// Buffer is named only with ports ID
+			String name = subBufferProperties.getSourceOutputPortID();
+			name += "__" + subBufferProperties.getDestInputPortID();
+
+			// Check for duplicates
+			name = generateUniqueBufferName(name);
+
 			subBuff.setName(name);
 			subBuff.setContainer(parentBuffer);
 			subBuff.setOffset(aggregateOffset);
@@ -1501,6 +1528,30 @@ public class CodegenModelGenerator {
 		}
 
 		return aggregateOffset;
+	}
+
+	/**
+	 * Using the {@link #bufferNames} map, this methods gives a new unique
+	 * {@link Buffer} name beginning with the string passed as a parameter.
+	 * Names that are longer than 28 characters will be shortened to this
+	 * length..
+	 * 
+	 * @param name
+	 *            the buffer name
+	 * @return a unique name for the buffer
+	 */
+	protected String generateUniqueBufferName(String name) {
+		Integer idx;
+		if (name.length() > 28) {
+			name = name.substring(0, 28);
+		}
+		if ((idx = bufferNames.get(name)) == null) {
+			idx = new Integer(0);
+			bufferNames.put(name, idx);
+		}
+		name += "__" + idx;
+		idx++;
+		return name;
 	}
 
 	/**
