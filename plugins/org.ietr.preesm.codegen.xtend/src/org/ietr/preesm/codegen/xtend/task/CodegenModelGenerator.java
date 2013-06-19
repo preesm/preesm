@@ -89,6 +89,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.Communication;
+import org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode;
 import org.ietr.preesm.codegen.xtend.model.codegen.Constant;
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter;
@@ -557,7 +558,8 @@ public class CodegenModelGenerator {
 				if (operatorBlock == null) {
 					operatorBlock = CodegenFactory.eINSTANCE.createCoreBlock();
 					operatorBlock.setName(operator.getInstanceName());
-					operatorBlock.setCoreType(operator.getComponent().getVlnv().getName());
+					operatorBlock.setCoreType(operator.getComponent().getVlnv()
+							.getName());
 					coreBlocks.put(operator, operatorBlock);
 				}
 			} // end 1.0
@@ -813,10 +815,10 @@ public class CodegenModelGenerator {
 					.createSubBuffer();
 
 			// Old Naming (too long)
-			 String comment = dagAlloc.getKey().getSource().getName()
-			 + " > " + dagAlloc.getKey().getTarget().getName();
+			String comment = dagAlloc.getKey().getSource().getName() + " > "
+					+ dagAlloc.getKey().getTarget().getName();
 			dagEdgeBuffer.setComment(comment);
-			
+
 			String name = dagAlloc.getKey().getSource().getName() + "__"
 					+ dagAlloc.getKey().getTarget().getName();
 
@@ -1047,6 +1049,17 @@ public class CodegenModelGenerator {
 				: Delimiter.END;
 		newComm.setDirection(dir);
 		newComm.setDelimiter(delimiter);
+		MessageRouteStep routeStep = (MessageRouteStep) dagVertex
+				.getPropertyBean().getValue(
+						ImplementationPropertyNames.SendReceive_routeStep,
+						MessageRouteStep.class);
+		for (ComponentInstance comp : routeStep.getNodes()) {
+			CommunicationNode comNode = CodegenFactory.eINSTANCE
+					.createCommunicationNode();
+			comNode.setName(comp.getInstanceName());
+			comNode.setType(comp.getComponent().getVlnv().getName());
+			newComm.getNodes().add(comNode);
+		}
 
 		// Find the corresponding DAGEdge buffer(s)
 		DAGEdge dagEdge = (DAGEdge) dagVertex.getPropertyBean().getValue(
@@ -1082,6 +1095,14 @@ public class CodegenModelGenerator {
 		newCommZoneComplement.setData(buffer);
 		newCommZoneComplement.setName(((newComm.getDirection()
 				.equals(Direction.SEND)) ? "SE" : "RS") + commName);
+		for (ComponentInstance comp : routeStep.getNodes()) {
+			CommunicationNode comNode = CodegenFactory.eINSTANCE
+					.createCommunicationNode();
+			comNode.setName(comp.getInstanceName());
+			comNode.setType(comp.getComponent().getVlnv().getName());
+			newCommZoneComplement.getNodes().add(comNode);
+		}
+
 		// Find corresponding communications (SS/SE/RS/RE)
 		registerCommunication(newCommZoneComplement, dagEdge, dagVertex);
 
@@ -1219,6 +1240,7 @@ public class CodegenModelGenerator {
 
 		// Add the Fifo call to the loop of its coreBlock
 		operatorBlock.getLoopBlock().getCodeElts().add(fifoCall);
+		dagVertexCalls.put(dagVertex, fifoCall);
 	}
 
 	/**
@@ -1781,7 +1803,10 @@ public class CodegenModelGenerator {
 	 * {@link Communication#getSendStart()}, {@link Communication#getSendEnd()},
 	 * {@link Communication#getReceiveStart()} and
 	 * {@link Communication#getReceiveEnd()} attributes are updated by this
-	 * method.
+	 * method.<br>
+	 * <br>
+	 * The methods also associates a common {@link Communication#getId() Id} to
+	 * all associated communications.
 	 * 
 	 * @param newCommmunication
 	 *            The {@link Communication} to register.
@@ -1809,9 +1834,13 @@ public class CodegenModelGenerator {
 		List<Communication> associatedCommunications = communications
 				.get(commID);
 
+		// Get associated Communications and set ID
 		if (associatedCommunications == null) {
 			associatedCommunications = new ArrayList<Communication>();
+			newCommmunication.setId(communications.size());
 			communications.put(commID, associatedCommunications);
+		} else {
+			newCommmunication.setId(associatedCommunications.get(0).getId());
 		}
 
 		// Register other comm to the new

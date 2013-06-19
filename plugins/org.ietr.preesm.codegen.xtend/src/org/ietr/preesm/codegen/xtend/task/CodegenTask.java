@@ -99,7 +99,7 @@ public class CodegenTask extends AbstractTaskImplementation {
 
 	@Override
 	public String monitorMessage() {
-		return "Generate code";
+		return "Generate xtend code";
 	}
 
 }

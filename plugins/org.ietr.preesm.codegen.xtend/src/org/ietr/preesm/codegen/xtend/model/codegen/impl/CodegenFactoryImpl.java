@@ -116,6 +116,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 			return createSpecialCall();
 		case CodegenPackage.FIFO_CALL:
 			return createFifoCall();
+		case CodegenPackage.COMMUNICATION_NODE:
+			return createCommunicationNode();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName()
 					+ "' is not a valid classifier");
@@ -294,6 +296,16 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	public FifoCall createFifoCall() {
 		FifoCallImpl fifoCall = new FifoCallImpl();
 		return fifoCall;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public CommunicationNode createCommunicationNode() {
+		CommunicationNodeImpl communicationNode = new CommunicationNodeImpl();
+		return communicationNode;
 	}
 
 	/**

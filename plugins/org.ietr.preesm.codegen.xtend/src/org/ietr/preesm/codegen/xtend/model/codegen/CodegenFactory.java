@@ -172,6 +172,15 @@ public interface CodegenFactory extends EFactory {
 	FifoCall createFifoCall();
 
 	/**
+	 * Returns a new object of class '<em>Communication Node</em>'. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return a new object of class '<em>Communication Node</em>'.
+	 * @generated
+	 */
+	CommunicationNode createCommunicationNode();
+
+	/**
 	 * Returns the package supported by this factory. <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * 

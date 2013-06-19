@@ -670,13 +670,31 @@ public interface CodegenPackage extends EPackage {
 	int COMMUNICATION__RECEIVE_END = CALL_FEATURE_COUNT + 6;
 
 	/**
+	 * The feature id for the '<em><b>Id</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int COMMUNICATION__ID = CALL_FEATURE_COUNT + 7;
+
+	/**
+	 * The feature id for the '<em><b>Nodes</b></em>' containment reference
+	 * list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int COMMUNICATION__NODES = CALL_FEATURE_COUNT + 8;
+
+	/**
 	 * The number of structural features of the '<em>Communication</em>' class.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int COMMUNICATION_FEATURE_COUNT = CALL_FEATURE_COUNT + 7;
+	int COMMUNICATION_FEATURE_COUNT = CALL_FEATURE_COUNT + 9;
 
 	/**
 	 * The meta object id for the '
@@ -1132,6 +1150,45 @@ public interface CodegenPackage extends EPackage {
 
 	/**
 	 * The meta object id for the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationNodeImpl
+	 * <em>Communication Node</em>}' class. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationNodeImpl
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getCommunicationNode()
+	 * @generated
+	 */
+	int COMMUNICATION_NODE = 17;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int COMMUNICATION_NODE__NAME = 0;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int COMMUNICATION_NODE__TYPE = 1;
+
+	/**
+	 * The number of structural features of the '<em>Communication Node</em>'
+	 * class. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int COMMUNICATION_NODE_FEATURE_COUNT = 2;
+
+	/**
+	 * The meta object id for the '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Direction
 	 * <em>Direction</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -1139,7 +1196,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDirection()
 	 * @generated
 	 */
-	int DIRECTION = 17;
+	int DIRECTION = 18;
 
 	/**
 	 * The meta object id for the '
@@ -1150,7 +1207,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDelimiter()
 	 * @generated
 	 */
-	int DELIMITER = 18;
+	int DELIMITER = 19;
 
 	/**
 	 * The meta object id for the '
@@ -1162,7 +1219,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getSpecialType()
 	 * @generated
 	 */
-	int SPECIAL_TYPE = 19;
+	int SPECIAL_TYPE = 20;
 
 	/**
 	 * The meta object id for the '
@@ -1174,7 +1231,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getFifoOperation()
 	 * @generated
 	 */
-	int FIFO_OPERATION = 20;
+	int FIFO_OPERATION = 21;
 
 	/**
 	 * Returns the meta object for class '
@@ -1530,6 +1587,31 @@ public interface CodegenPackage extends EPackage {
 	EReference getCommunication_ReceiveEnd();
 
 	/**
+	 * Returns the meta object for the attribute '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getId
+	 * <em>Id</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Id</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Communication#getId()
+	 * @see #getCommunication()
+	 * @generated
+	 */
+	EAttribute getCommunication_Id();
+
+	/**
+	 * Returns the meta object for the containment reference list '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getNodes
+	 * <em>Nodes</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the containment reference list '
+	 *         <em>Nodes</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Communication#getNodes()
+	 * @see #getCommunication()
+	 * @generated
+	 */
+	EReference getCommunication_Nodes();
+
+	/**
 	 * Returns the meta object for class '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
 	 * <em>Core Block</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1772,6 +1854,42 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getCommentable_Comment();
+
+	/**
+	 * Returns the meta object for class '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode
+	 * <em>Communication Node</em>}'. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @return the meta object for class '<em>Communication Node</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode
+	 * @generated
+	 */
+	EClass getCommunicationNode();
+
+	/**
+	 * Returns the meta object for the attribute '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode#getName
+	 * <em>Name</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Name</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode#getName()
+	 * @see #getCommunicationNode()
+	 * @generated
+	 */
+	EAttribute getCommunicationNode_Name();
+
+	/**
+	 * Returns the meta object for the attribute '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode#getType
+	 * <em>Type</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Type</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode#getType()
+	 * @see #getCommunicationNode()
+	 * @generated
+	 */
+	EAttribute getCommunicationNode_Type();
 
 	/**
 	 * Returns the meta object for enum '
@@ -2123,6 +2241,22 @@ public interface CodegenPackage extends EPackage {
 				.getCommunication_ReceiveEnd();
 
 		/**
+		 * The meta object literal for the '<em><b>Id</b></em>' attribute
+		 * feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute COMMUNICATION__ID = eINSTANCE.getCommunication_Id();
+
+		/**
+		 * The meta object literal for the '<em><b>Nodes</b></em>' containment
+		 * reference list feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference COMMUNICATION__NODES = eINSTANCE.getCommunication_Nodes();
+
+		/**
 		 * The meta object literal for the '
 		 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CoreBlockImpl
 		 * <em>Core Block</em>}' class. <!-- begin-user-doc --> <!--
@@ -2326,6 +2460,36 @@ public interface CodegenPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute COMMENTABLE__COMMENT = eINSTANCE.getCommentable_Comment();
+
+		/**
+		 * The meta object literal for the '
+		 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationNodeImpl
+		 * <em>Communication Node</em>}' class. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationNodeImpl
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getCommunicationNode()
+		 * @generated
+		 */
+		EClass COMMUNICATION_NODE = eINSTANCE.getCommunicationNode();
+
+		/**
+		 * The meta object literal for the '<em><b>Name</b></em>' attribute
+		 * feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute COMMUNICATION_NODE__NAME = eINSTANCE
+				.getCommunicationNode_Name();
+
+		/**
+		 * The meta object literal for the '<em><b>Type</b></em>' attribute
+		 * feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute COMMUNICATION_NODE__TYPE = eINSTANCE
+				.getCommunicationNode_Type();
 
 		/**
 		 * The meta object literal for the '

@@ -35,6 +35,8 @@
  */
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
+import org.eclipse.emf.common.util.EList;
+
 /**
  * <!-- begin-user-doc --> A {@link Communication} is a {@link Call} used to
  * represent the transmission of data between processing elements. Each
@@ -64,6 +66,11 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  * <li>
  * {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveEnd
  * <em>Receive End</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getId
+ * <em>Id</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getNodes
+ * <em>Nodes</em>}</li>
  * </ul>
  * </p>
  * 
@@ -290,5 +297,62 @@ public interface Communication extends Call {
 	 * @generated
 	 */
 	void setReceiveEnd(Communication value);
+
+	/**
+	 * Returns the value of the '<em><b>Id</b></em>' attribute. <!--
+	 * begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Id</em>' attribute isn't clear, there really
+	 * should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Id</em>' attribute.
+	 * @see #setId(int)
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCommunication_Id()
+	 * @model required="true"
+	 * @generated
+	 */
+	int getId();
+
+	/**
+	 * Sets the value of the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getId
+	 * <em>Id</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Id</em>' attribute.
+	 * @see #getId()
+	 * @generated
+	 */
+	void setId(int value);
+
+	/**
+	 * Returns the value of the '<em><b>Nodes</b></em>' containment reference
+	 * list. The list contents are of type
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Nodes</em>' containment reference list isn't
+	 * clear, there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Nodes</em>' containment reference list.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCommunication_Nodes()
+	 * @model containment="true" required="true"
+	 * @generated
+	 */
+	EList<CommunicationNode> getNodes();
+
+	/**
+	 * <!-- begin-user-doc --> This method browse the {@link #eContainer()}
+	 * recursively of the {@link Communication} until it finds a
+	 * {@link CoreBlock}. <!-- end-user-doc -->
+	 * 
+	 * @model kind="operation" required="true"
+	 * @generated
+	 */
+	CoreBlock getCoreContainer();
 
 } // Communication

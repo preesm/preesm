@@ -27,7 +27,7 @@ class XMLPrinter extends DefaultPrinter {
 
 	override printBufferDefinition(Buffer buffer) '''
 		<bufferAllocation
-			comment="«buffer.class.simpleName»"
+			comment="«buffer.class.simpleName»: «buffer.comment»"
 			name="«buffer.name»" size="«buffer.size»" type="«buffer.type»"/>
 	'''
 
@@ -102,12 +102,14 @@ class XMLPrinter extends DefaultPrinter {
 	'''
 
 	override printCommunication(Communication communication) '''
-		<«IF communication.direction == Direction::SEND»send«ELSE»receive«ENDIF»Msg ID="«"X"»" comment="«"XXX"»"
-			phase="«communication.delimiter»" «IF communication.direction == Direction::SEND»target«ELSE»source«ENDIF»="«"XXX"»">
+		<«IF communication.direction == Direction::SEND»send«ELSE»receive«ENDIF»Msg ID="«communication.id»" comment="«communication.name»"
+			phase="«communication.delimiter»" «IF communication.direction == Direction::SEND»target="«communication.receiveStart.coreContainer.name»"«ELSE»source="«communication.sendStart.coreContainer.name»"«ENDIF»>
 			<routeStep type"msg">
-				<sender def="«"XXX"»" name="«"XXX"»"/>
-				<receiver def="«"XXX"»" name="«"XXX"»"/>
-				<node def="«"XXX"»" name="«"XXX"»"/>
+				<sender def="«communication.sendStart.coreContainer.coreType»" name="«communication.sendStart.coreContainer.name»"/>
+				<receiver def="«communication.receiveStart.coreContainer.coreType»" name="«communication.receiveStart.coreContainer.name»"/>
+				«FOR node : communication.nodes»
+					<node def="«node.type»" name="«node.name»"/>
+				«ENDFOR»
 			</routeStep>
 			«communication.data.doSwitch»
 		</«IF communication.direction == Direction::SEND»send«ELSE»receive«ENDIF»Msg>
@@ -123,7 +125,7 @@ class XMLPrinter extends DefaultPrinter {
 			var const = CodegenFactory::eINSTANCE.createConstant
 			const.name = "nbTokens"
 			const.type = "long"
-			const.value = -1
+			const.value = -100000
 			const
 		}.doSwitch»
 		</userFunctionCall>

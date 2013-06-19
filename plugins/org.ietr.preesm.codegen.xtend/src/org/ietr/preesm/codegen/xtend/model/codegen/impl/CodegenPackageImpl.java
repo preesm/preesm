@@ -55,6 +55,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.Commentable;
 import org.ietr.preesm.codegen.xtend.model.codegen.Communication;
+import org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode;
 import org.ietr.preesm.codegen.xtend.model.codegen.Constant;
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter;
@@ -193,6 +194,13 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * @generated
 	 */
 	private EClass commentableEClass = null;
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	private EClass communicationNodeEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -565,6 +573,24 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	public EAttribute getCommunication_Id() {
+		return (EAttribute) communicationEClass.getEStructuralFeatures().get(7);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EReference getCommunication_Nodes() {
+		return (EReference) communicationEClass.getEStructuralFeatures().get(8);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	public EClass getCoreBlock() {
 		return coreBlockEClass;
 	}
@@ -754,6 +780,35 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	public EClass getCommunicationNode() {
+		return communicationNodeEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EAttribute getCommunicationNode_Name() {
+		return (EAttribute) communicationNodeEClass.getEStructuralFeatures()
+				.get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EAttribute getCommunicationNode_Type() {
+		return (EAttribute) communicationNodeEClass.getEStructuralFeatures()
+				.get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	public EEnum getDirection() {
 		return directionEEnum;
 	}
@@ -852,6 +907,8 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		createEReference(communicationEClass, COMMUNICATION__SEND_END);
 		createEReference(communicationEClass, COMMUNICATION__RECEIVE_START);
 		createEReference(communicationEClass, COMMUNICATION__RECEIVE_END);
+		createEAttribute(communicationEClass, COMMUNICATION__ID);
+		createEReference(communicationEClass, COMMUNICATION__NODES);
 
 		coreBlockEClass = createEClass(CORE_BLOCK);
 		createEReference(coreBlockEClass, CORE_BLOCK__LOOP_BLOCK);
@@ -881,6 +938,10 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
 		commentableEClass = createEClass(COMMENTABLE);
 		createEAttribute(commentableEClass, COMMENTABLE__COMMENT);
+
+		communicationNodeEClass = createEClass(COMMUNICATION_NODE);
+		createEAttribute(communicationNodeEClass, COMMUNICATION_NODE__NAME);
+		createEAttribute(communicationNodeEClass, COMMUNICATION_NODE__TYPE);
 
 		// Create enums
 		directionEEnum = createEEnum(DIRECTION);
@@ -1062,6 +1123,17 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 				IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
 				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
 				IS_ORDERED);
+		initEAttribute(getCommunication_Id(), ecorePackage.getEInt(), "id",
+				null, 1, 1, Communication.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
+		initEReference(getCommunication_Nodes(), this.getCommunicationNode(),
+				null, "nodes", null, 1, -1, Communication.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		addEOperation(communicationEClass, this.getCoreBlock(),
+				"getCoreContainer", 1, 1, IS_UNIQUE, IS_ORDERED);
 
 		initEClass(coreBlockEClass, CoreBlock.class, "CoreBlock", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -1170,6 +1242,18 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 				IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getCommentable_Comment(), ecorePackage.getEString(),
 				"comment", null, 0, 1, Commentable.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+
+		initEClass(communicationNodeEClass, CommunicationNode.class,
+				"CommunicationNode", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getCommunicationNode_Name(), ecorePackage.getEString(),
+				"name", null, 1, 1, CommunicationNode.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+		initEAttribute(getCommunicationNode_Type(), ecorePackage.getEString(),
+				"type", null, 1, 1, CommunicationNode.class, !IS_TRANSIENT,
 				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
 
