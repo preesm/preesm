@@ -14,6 +14,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 import java.util.List
+import java.lang.Math
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
 
 class XMLPrinter extends DefaultPrinter {
@@ -181,6 +182,22 @@ class XMLPrinter extends DefaultPrinter {
 		</CompoundCode>
 	'''
 
+	override printRoundBuffer(SpecialCall call) '''
+		<CompoundCode name="«call.name»">«var output = call.outputBuffers.head»«var index = 0»
+			«FOR buffer : call.inputBuffers.reverseView»«var inputIdx = 0»
+				«FOR nbIter : 0..buffer.size-1/*Worst case id buffer.size exec of the loop */»
+					«IF inputIdx < buffer.size /* Execute only first loop core */»
+						<userFunctionCall comment="" name="memcpy">
+							<bufferAtIndex index="«index»" name="«output.name»"/>
+							<bufferAtIndex index="«inputIdx»" name="«buffer.name»"/>
+							<constant name="size" type="string" value="«val value = Math::min(buffer.size-inputIdx,output.size-index)»«value»*sizeof(«buffer.type»)"/>
+						</userFunctionCall>«{index=(index+value)%output.size;inputIdx=(inputIdx+value); ""}»
+					«ENDIF»
+				«ENDFOR»
+			«ENDFOR»
+			</CompoundCode>
+	'''
+	
 	override printSubBuffer(SubBuffer subBuffer) {
 		printBuffer(subBuffer)
 	}
