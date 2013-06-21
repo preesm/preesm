@@ -1277,6 +1277,7 @@ public class CodegenModelGenerator {
 		// Create the corresponding FunctionCall
 		FunctionCall func = CodegenFactory.eINSTANCE.createFunctionCall();
 		func.setName(prototype.getFunctionName());
+		func.setActorName(dagVertex.getName());
 
 		// Retrieve the Arguments that must correspond to the incoming data
 		// fifos
@@ -1583,16 +1584,18 @@ public class CodegenModelGenerator {
 	 */
 	protected String generateUniqueBufferName(String name) {
 		Integer idx;
-		if (name.length() > 28) {
-			name = name.substring(0, 28);
+		String key = new String(name);
+		if (key.length() > 28) {
+			key = key.substring(0, 28);
 		}
-		if ((idx = bufferNames.get(name)) == null) {
+		if ((idx = bufferNames.get(key)) == null) {
 			idx = new Integer(0);
-			bufferNames.put(name, idx);
+			bufferNames.put(key, idx);
 		}
-		name += "__" + idx;
-		idx++;
-		return name;
+		String bufferName = key + "__" + idx;
+		idx+=1;
+		bufferNames.put(key, idx);
+		return bufferName;
 	}
 
 	/**

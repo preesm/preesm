@@ -17,6 +17,18 @@ import java.util.List
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
 
 class XMLPrinter extends DefaultPrinter {
+	
+	override printBroadcast(SpecialCall call) '''
+		<CompoundCode name="«call.name»">«var input = call.inputBuffers.head»«var index = 0»
+			«FOR buffer : call.outputBuffers»
+				<userFunctionCall comment="" name="memcpy">
+					«buffer.doSwitch»
+					<bufferAtIndex index="«index»" name="«input.name»"/>
+					<constant name="size" type="string" value="«buffer.size»*sizeof(«buffer.type»)"/>
+				</userFunctionCall>«{index=(buffer.size+index)%input.size; ""}»
+			«ENDFOR»
+		</CompoundCode>
+	'''
 
 	override printBuffer(Buffer buffer) '''
 		<buffer name="«buffer.name»" size="«buffer.size»" type="«buffer.type»"/>
@@ -95,7 +107,7 @@ class XMLPrinter extends DefaultPrinter {
 	'''
 
 	override printFunctionCall(FunctionCall functionCall) '''
-		<userFunctionCall comment="«"XXX"»" name="«functionCall.name»">
+		<userFunctionCall comment="«functionCall.actorName»" name="«functionCall.name»">
 			«FOR param : functionCall.parameters»
 				«param.doSwitch»
 			«ENDFOR»
@@ -163,7 +175,7 @@ class XMLPrinter extends DefaultPrinter {
 			const.type = "long"
 			const.value = call.inputBuffers.get(index).size
 			const
-		}.doSwitch»
+			}.doSwitch»
 				</userFunctionCall>
 			«ENDFOR»
 		</CompoundCode>

@@ -568,13 +568,22 @@ public interface CodegenPackage extends EPackage {
 	int FUNCTION_CALL__NAME = CALL__NAME;
 
 	/**
+	 * The feature id for the '<em><b>Actor Name</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int FUNCTION_CALL__ACTOR_NAME = CALL_FEATURE_COUNT + 0;
+
+	/**
 	 * The number of structural features of the '<em>Function Call</em>' class.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int FUNCTION_CALL_FEATURE_COUNT = CALL_FEATURE_COUNT + 0;
+	int FUNCTION_CALL_FEATURE_COUNT = CALL_FEATURE_COUNT + 1;
 
 	/**
 	 * The meta object id for the '
@@ -1492,6 +1501,18 @@ public interface CodegenPackage extends EPackage {
 	EClass getFunctionCall();
 
 	/**
+	 * Returns the meta object for the attribute '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall#getActorName
+	 * <em>Actor Name</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Actor Name</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall#getActorName()
+	 * @see #getFunctionCall()
+	 * @generated
+	 */
+	EAttribute getFunctionCall_ActorName();
+
+	/**
 	 * Returns the meta object for class '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication
 	 * <em>Communication</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2165,6 +2186,15 @@ public interface CodegenPackage extends EPackage {
 		 * @generated
 		 */
 		EClass FUNCTION_CALL = eINSTANCE.getFunctionCall();
+
+		/**
+		 * The meta object literal for the '<em><b>Actor Name</b></em>'
+		 * attribute feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute FUNCTION_CALL__ACTOR_NAME = eINSTANCE
+				.getFunctionCall_ActorName();
 
 		/**
 		 * The meta object literal for the '

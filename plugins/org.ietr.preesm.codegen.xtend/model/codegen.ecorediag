@@ -155,6 +155,10 @@
   <children xmi:type="notation:Node" xmi:id="_42qcoJuaEeKpdeZtHB9wCw" type="1001">
     <children xmi:type="notation:Node" xmi:id="_42qco5uaEeKpdeZtHB9wCw" type="4001"/>
     <children xmi:type="notation:Node" xmi:id="_42qcpJuaEeKpdeZtHB9wCw" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_qQ87ENpREeKurutkgY-2bg" type="2001">
+        <element xmi:type="ecore:EAttribute" href="codegen.ecore#//FunctionCall/actorName"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_qQ87EdpREeKurutkgY-2bg"/>
+      </children>
       <styles xmi:type="notation:DrawerStyle" xmi:id="_42qcpZuaEeKpdeZtHB9wCw"/>
       <styles xmi:type="notation:SortingStyle" xmi:id="_42qcppuaEeKpdeZtHB9wCw"/>
       <styles xmi:type="notation:FilteringStyle" xmi:id="_42qcp5uaEeKpdeZtHB9wCw"/>

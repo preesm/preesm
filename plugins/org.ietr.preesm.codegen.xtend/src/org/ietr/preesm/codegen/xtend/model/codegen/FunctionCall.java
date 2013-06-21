@@ -41,10 +41,48 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  * {@link #getName() name} and the {@link #getParameters() parameters} it
  * involves. <!-- end-user-doc -->
  * 
+ * <p>
+ * The following features are supported:
+ * <ul>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall#getActorName
+ * <em>Actor Name</em>}</li>
+ * </ul>
+ * </p>
  * 
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFunctionCall()
  * @model
  * @generated
  */
 public interface FunctionCall extends Call {
+
+	/**
+	 * Returns the value of the '<em><b>Actor Name</b></em>' attribute. <!--
+	 * begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Actor Name</em>' attribute isn't clear, there
+	 * really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Actor Name</em>' attribute.
+	 * @see #setActorName(String)
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFunctionCall_ActorName()
+	 * @model required="true"
+	 * @generated
+	 */
+	String getActorName();
+
+	/**
+	 * Sets the value of the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall#getActorName
+	 * <em>Actor Name</em>}' attribute. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Actor Name</em>' attribute.
+	 * @see #getActorName()
+	 * @generated
+	 */
+	void setActorName(String value);
 } // FunctionCall

@@ -501,6 +501,15 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	public EAttribute getFunctionCall_ActorName() {
+		return (EAttribute) functionCallEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	public EClass getCommunication() {
 		return communicationEClass;
 	}
@@ -898,6 +907,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		createEAttribute(constantEClass, CONSTANT__VALUE);
 
 		functionCallEClass = createEClass(FUNCTION_CALL);
+		createEAttribute(functionCallEClass, FUNCTION_CALL__ACTOR_NAME);
 
 		communicationEClass = createEClass(COMMUNICATION);
 		createEAttribute(communicationEClass, COMMUNICATION__DIRECTION);
@@ -1089,6 +1099,10 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
 		initEClass(functionCallEClass, FunctionCall.class, "FunctionCall",
 				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getFunctionCall_ActorName(), ecorePackage.getEString(),
+				"actorName", null, 1, 1, FunctionCall.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
 		initEClass(communicationEClass, Communication.class, "Communication",
 				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
