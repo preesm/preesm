@@ -1275,6 +1275,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		initEEnum(fifoOperationEEnum, FifoOperation.class, "FifoOperation");
 		addEEnumLiteral(fifoOperationEEnum, FifoOperation.PUSH);
 		addEEnumLiteral(fifoOperationEEnum, FifoOperation.POP);
+		addEEnumLiteral(fifoOperationEEnum, FifoOperation.INIT);
 
 		// Create resource
 		createResource(eNS_URI);

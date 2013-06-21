@@ -129,6 +129,7 @@
   <eClassifiers xsi:type="ecore:EEnum" name="FifoOperation">
     <eLiterals name="PUSH"/>
     <eLiterals name="POP" value="1"/>
+    <eLiterals name="INIT" value="2"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Commentable" abstract="true">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="comment" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>

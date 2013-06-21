@@ -14,6 +14,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 import java.util.List
+import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
 
 class XMLPrinter extends DefaultPrinter {
 
@@ -116,18 +117,28 @@ class XMLPrinter extends DefaultPrinter {
 	'''
 
 	override printFifoCall(FifoCall fifoCall) '''
-		<userFunctionCall comment="«fifoCall.name»" name="«fifoCall.operation»">
-			<variable name="&«fifoCall.storageBuffer.name»"/>
-			«FOR param : fifoCall.parameters/*There should be only one iteration here */»
-				«param.doSwitch»
-			«ENDFOR»
+		<userFunctionCall comment="«fifoCall.name»" name="«
+			switch (fifoCall.operation) 
+			{
+				case FifoOperation::POP: "pull"
+				case FifoOperation::INIT: "new_fifo"
+				case FifoOperation::PUSH: "push"
+			}
+		»">
+			<variable name="&amp;«fifoCall.storageBuffer.name»"/>
+			«IF fifoCall.operation != FifoOperation::INIT»
+				«fifoCall.parameters.head.doSwitch»
+				<constant name="nb_token" type="int" value="«(fifoCall.parameters.head as Buffer).size»"/>
+			«ELSE»
+			<constant name="size" type="string" value="sizeof(«fifoCall.storageBuffer.type»)"/>
 			«{
 			var const = CodegenFactory::eINSTANCE.createConstant
-			const.name = "nbTokens"
-			const.type = "long"
-			const.value = -100000
+			const.name = "fifo_size"
+			const.type = "int"
+			const.value = fifoCall.storageBuffer.size
 			const
-		}.doSwitch»
+			}.doSwitch»
+			«ENDIF»
 		</userFunctionCall>
 	'''
 

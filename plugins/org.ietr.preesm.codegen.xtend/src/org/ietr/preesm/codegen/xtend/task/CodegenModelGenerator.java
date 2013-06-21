@@ -1113,7 +1113,9 @@ public class CodegenModelGenerator {
 	/**
 	 * Generate the {@link FifoCall} that corresponds to the {@link DAGVertex}
 	 * passed as a parameter and add it to the {@link CoreBlock#getLoopBlock()
-	 * loop block} of the given {@link CoreBlock}.
+	 * loop block} of the given {@link CoreBlock}. Also generate the
+	 * corresponding init call and add it to the
+	 * {@link CoreBlock#getInitBlock()}.
 	 * 
 	 * @param operatorBlock
 	 *            the {@link CoreBlock} that executes the {@link DAGVertex}
@@ -1241,6 +1243,16 @@ public class CodegenModelGenerator {
 		// Add the Fifo call to the loop of its coreBlock
 		operatorBlock.getLoopBlock().getCodeElts().add(fifoCall);
 		dagVertexCalls.put(dagVertex, fifoCall);
+		
+		// Create the init call (only the first time te fifo is encountered)
+		if (fifoCall.getOperation().equals(FifoOperation.POP)){
+			FifoCall fifoInitCall = CodegenFactory.eINSTANCE.createFifoCall();
+			fifoInitCall.setOperation(FifoOperation.INIT);
+			fifoInitCall.setFifoHead(fifoCall);
+			fifoInitCall.setName(fifoCall.getName());
+			fifoInitCall.setStorageBuffer(fifoCall.getStorageBuffer());
+			operatorBlock.getInitBlock().getCodeElts().add(fifoInitCall);
+		}
 	}
 
 	/**

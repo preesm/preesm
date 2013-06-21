@@ -434,13 +434,17 @@
         <element xmi:type="ecore:EEnumLiteral" href="codegen.ecore#//FifoOperation/POP"/>
         <layoutConstraint xmi:type="notation:Location" xmi:id="_LIM2YawaEeKnJ9Ri7qUrHQ"/>
       </children>
+      <children xmi:type="notation:Node" xmi:id="_xifvANjxEeKurutkgY-2bg" type="2006">
+        <element xmi:type="ecore:EEnumLiteral" href="codegen.ecore#//FifoOperation/INIT"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_xifvAdjxEeKurutkgY-2bg"/>
+      </children>
       <styles xmi:type="notation:DrawerStyle" xmi:id="_I6rO4qwaEeKnJ9Ri7qUrHQ"/>
       <styles xmi:type="notation:SortingStyle" xmi:id="_I6rO46waEeKnJ9Ri7qUrHQ"/>
       <styles xmi:type="notation:FilteringStyle" xmi:id="_I6rO5KwaEeKnJ9Ri7qUrHQ"/>
     </children>
     <styles xmi:type="notation:ShapeStyle" xmi:id="_I6lIQawaEeKnJ9Ri7qUrHQ" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
     <element xmi:type="ecore:EEnum" href="codegen.ecore#//FifoOperation"/>
-    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_I6lIQqwaEeKnJ9Ri7qUrHQ" x="699" y="653"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_I6lIQqwaEeKnJ9Ri7qUrHQ" x="700" y="620"/>
   </children>
   <children xmi:type="notation:Node" xmi:id="_t6bb8NjMEeKurutkgY-2bg" type="1001">
     <children xmi:type="notation:Node" xmi:id="_t6bb89jMEeKurutkgY-2bg" type="4001"/>

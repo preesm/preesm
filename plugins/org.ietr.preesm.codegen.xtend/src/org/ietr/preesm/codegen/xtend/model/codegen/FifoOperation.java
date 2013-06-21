@@ -69,7 +69,15 @@ public enum FifoOperation implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	POP(1, "POP", "POP");
+	POP(1, "POP", "POP"), /**
+	 * The '<em><b>INIT</b></em>' literal object. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #INIT_VALUE
+	 * @generated
+	 * @ordered
+	 */
+	INIT(2, "INIT", "INIT");
 
 	/**
 	 * The '<em><b>PUSH</b></em>' literal value. <!-- begin-user-doc -->
@@ -102,13 +110,28 @@ public enum FifoOperation implements Enumerator {
 	public static final int POP_VALUE = 1;
 
 	/**
+	 * The '<em><b>INIT</b></em>' literal value. <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of '<em><b>INIT</b></em>' literal object isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @see #INIT
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int INIT_VALUE = 2;
+
+	/**
 	 * An array of all the '<em><b>Fifo Operation</b></em>' enumerators. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	private static final FifoOperation[] VALUES_ARRAY = new FifoOperation[] {
-			PUSH, POP, };
+			PUSH, POP, INIT, };
 
 	/**
 	 * A public read-only list of all the '<em><b>Fifo Operation</b></em>'
@@ -163,6 +186,8 @@ public enum FifoOperation implements Enumerator {
 			return PUSH;
 		case POP_VALUE:
 			return POP;
+		case INIT_VALUE:
+			return INIT;
 		}
 		return null;
 	}
