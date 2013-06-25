@@ -1,5 +1,6 @@
 package org.ietr.preesm.codegen.xtend.task;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,9 +13,13 @@ import net.sf.dftools.workflow.WorkflowException;
 import net.sf.dftools.workflow.elements.Workflow;
 import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -67,7 +72,6 @@ public class CodegenTask extends AbstractTaskImplementation {
 			// Get the first model element and cast it to the right type, in my
 			// example everything is hierarchical included in this first node
 			resource.getContents().add(b);
-
 		}
 
 		// Now save the content.
@@ -75,15 +79,26 @@ public class CodegenTask extends AbstractTaskImplementation {
 			try {
 				resource.save(Collections.EMPTY_MAP);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-	
+
 		// Test XMLPrinter
 		XMLPrinter printer = new XMLPrinter();
-		for(Block b : codeBlock){
-			System.out.println(printer.doSwitch(b));
+		for (Block b : codeBlock) {
+			IFile iFile = workspace.getRoot().getFile(
+					new Path(codegenPath + b.getName() + ".xml"));
+			try {
+				if (!iFile.exists()) {
+					iFile.create(null, false, new NullProgressMonitor());
+				}
+				iFile.setContents(new ByteArrayInputStream(printer.doSwitch(b)
+						.toString().getBytes()), true, false,
+						new NullProgressMonitor());
+			} catch (CoreException e1) {
+				e1.printStackTrace();
+			}
+
 		}
 
 		// Create empty output map
