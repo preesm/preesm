@@ -801,6 +801,7 @@ public class CodegenModelGenerator {
 		sharedBuffer = CodegenFactory.eINSTANCE.createBuffer();
 		sharedBuffer.setSize(size);
 		sharedBuffer.setName("SharedMem");
+		sharedBuffer.setType("char");
 
 		@SuppressWarnings("unchecked")
 		Map<DAGEdge, Integer> allocation = (Map<DAGEdge, Integer>) memEx
@@ -825,6 +826,7 @@ public class CodegenModelGenerator {
 			dagEdgeBuffer.setName(name);
 			dagEdgeBuffer.setContainer(sharedBuffer);
 			dagEdgeBuffer.setOffset(dagAlloc.getValue());
+			dagEdgeBuffer.setType("char");
 
 			// Generate subsubbuffers. Each subsubbuffer corresponds to an edge
 			// of the single rate SDF Graph
@@ -1237,6 +1239,7 @@ public class CodegenModelGenerator {
 
 			// Also get the internal buffer
 			fifoCall.setStorageBuffer(popCall.getStorageBuffer());
+			popCall.getStorageBuffer().getUsers().add(operatorBlock);
 		}
 
 		// Add the Fifo call to the loop of its coreBlock

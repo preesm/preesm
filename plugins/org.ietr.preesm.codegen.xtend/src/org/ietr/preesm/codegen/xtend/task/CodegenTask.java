@@ -26,6 +26,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
+import org.ietr.preesm.codegen.xtend.printer.CPrinter;
 import org.ietr.preesm.codegen.xtend.printer.XMLPrinter;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
@@ -98,7 +99,23 @@ public class CodegenTask extends AbstractTaskImplementation {
 			} catch (CoreException e1) {
 				e1.printStackTrace();
 			}
+		}
 
+		// Test CPrinter
+		CPrinter cPrinter = new CPrinter();
+		for (Block b : codeBlock) {
+			IFile iFile = workspace.getRoot().getFile(
+					new Path(codegenPath + b.getName() + ".c"));
+			try {
+				if (!iFile.exists()) {
+					iFile.create(null, false, new NullProgressMonitor());
+				}
+				iFile.setContents(new ByteArrayInputStream(cPrinter.doSwitch(b)
+						.toString().getBytes()), true, false,
+						new NullProgressMonitor());
+			} catch (CoreException e1) {
+				e1.printStackTrace();
+			}
 		}
 
 		// Create empty output map
