@@ -79,8 +79,13 @@ public interface SubBuffer extends Buffer {
 	/**
 	 * Sets the value of the '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getContainer
-	 * <em>Container</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
+	 * <em>Container</em>}' reference. <!-- begin-user-doc --> The container of
+	 * the {@link SubBuffer} is a {@link Buffer} containing the current
+	 * {@link SubBuffer}. If the {@link SubBuffer} already has a
+	 * {@link #getCreator() creator}, it will be added to the
+	 * {@link #getUsers()} list of the new container. (If an old container is
+	 * replaced, the creator of the current SubBuffer will not be removed from
+	 * its users list)<!-- end-user-doc -->
 	 * 
 	 * @param value
 	 *            the new value of the '<em>Container</em>' reference.
@@ -118,5 +123,22 @@ public interface SubBuffer extends Buffer {
 	 * @generated
 	 */
 	void setOffset(int value);
+
+	/**
+	 * Sets the value of the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator
+	 * <em>Creator</em>}' reference. <!-- begin-user-doc --> If the
+	 * {@link SubBuffer} already has a {@link #getContainer() container}, the
+	 * new creator will be added to the {@link #getUsers() users} list of the
+	 * container. (If an old creator is replaced, it will not be removed from
+	 * the users list of the container)<!-- end-user-doc -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Creator</em>' reference.
+	 * @see #getCreator()
+	 * @generated
+	 */
+	@Override
+	public void setCreator(Block value);
 
 } // SubBuffer

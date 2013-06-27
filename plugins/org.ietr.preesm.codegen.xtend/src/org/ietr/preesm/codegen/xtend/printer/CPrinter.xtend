@@ -114,7 +114,7 @@ class CPrinter extends DefaultPrinter {
 	'''
 	
 	override printSubBufferDeclaration(SubBuffer buffer) '''
-	extern «printSubBufferDefinition(buffer).toString.trim/*Trimed to remove EOL*/» defined in «buffer.creator.name»
+	extern «buffer.type» *const «buffer.name»;  // «buffer.comment» size:= «buffer.size»*«buffer.type» defined in «buffer.creator.name»
 	'''
 	
 	override printDeclarationsFooter(List<Variable> list) '''

@@ -36,12 +36,10 @@
 package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
 import org.eclipse.emf.common.notify.Notification;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-
+import org.ietr.preesm.codegen.xtend.model.codegen.Block;
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
@@ -144,7 +142,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @generated
+	 * 
 	 */
 	public void setContainer(Buffer newContainer) {
 		Buffer oldContainer = container;
@@ -153,6 +151,18 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 			eNotify(new ENotificationImpl(this, Notification.SET,
 					CodegenPackage.SUB_BUFFER__CONTAINER, oldContainer,
 					container));
+		if(getCreator() != null){
+			newContainer.getUsers().add(getCreator());
+		}
+	}
+
+	@Override
+	public void setCreator(Block newCreator) {
+		super.setCreator(newCreator);
+		Buffer container = getContainer();
+		if (container != null) {
+			container.getUsers().add(newCreator);
+		}
 	}
 
 	/**
@@ -263,5 +273,4 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 		result.append(')');
 		return result.toString();
 	}
-
 } // SubBufferImpl

@@ -169,7 +169,7 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * 
+	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
