@@ -57,14 +57,18 @@ class XMLPrinter extends DefaultPrinter {
 	
 	override printBroadcast(SpecialCall call) '''
 		<CompoundCode name="«call.name»">«var input = call.inputBuffers.head»«var index = 0»
-			«FOR buffer : call.outputBuffers»
-				<userFunctionCall comment="" name="memcpy">
-					«buffer.doSwitch»
-					<bufferAtIndex index="«index»" name="«input.name»"/>
-					<constant name="size" type="string" value="«buffer.size»*sizeof(«buffer.type»)"/>
-				</userFunctionCall>«{index=(buffer.size+index)%input.size; ""}»
+		«FOR output : call.outputBuffers»«var outputIdx = 0»
+			«FOR nbIter : 0..output.size/input.size+1/*Worst number the loop exec */»
+				«IF outputIdx < output.size /* Execute only first loop cores */»
+					<userFunctionCall comment="" name="memcpy">
+						<bufferAtIndex index="«outputIdx»" name="«output.name»"/>
+						<bufferAtIndex index="«index»" name="«input.name»"/>
+						<constant name="size" type="string" value="«val value = Math::min(output.size-outputIdx,input.size-index)»«value»*sizeof(«output.type»)"/>
+					</userFunctionCall>«{index=(index+value)%input.size;outputIdx=(outputIdx+value); ""}»
+				«ENDIF»
 			«ENDFOR»
-		</CompoundCode>
+		«ENDFOR»
+			</CompoundCode>
 	'''
 
 	override printBuffer(Buffer buffer) '''
@@ -192,16 +196,32 @@ class XMLPrinter extends DefaultPrinter {
 	'''
 
 	override printFork(SpecialCall call) '''
-		<CompoundCode name="«call.name»"> «var input = call.inputBuffers.head»
+		<CompoundCode name="«call.name»">«var input = call.inputBuffers.head»«var index = 0»
+			«FOR output : call.outputBuffers»
+				<userFunctionCall comment="" name="memcpy">
+					«output.doSwitch»
+					<bufferAtIndex index="«index»" name="«input.name»"/>
+					<constant name="size" type="string" value="«output.size»*sizeof(«output.type»)"/>
+				</userFunctionCall>«{index=(index+output.size); ""}»
+			«ENDFOR»
+		</CompoundCode>	«/*<CompoundCode name="«call.name»"> «var input = call.inputBuffers.head»
 			«FOR index : 0 .. call.outputBuffers.size - 1»
 				<Assignement var="«call.outputBuffers.get(index).name»">&amp;«input.name»[«call.outputBuffers.get(index).size *
 			index»]</Assignement>
 			«ENDFOR»
-		</CompoundCode>
+		</CompoundCode>*/ »
 	'''
 
 	override printJoin(SpecialCall call) '''
-		<CompoundCode name="«call.name»">«var output = call.outputBuffers.head»
+	<CompoundCode name="«call.name»">«var output = call.outputBuffers.head»«var index = 0»
+		«FOR input : call.inputBuffers»
+			<userFunctionCall comment="" name="memcpy">
+				<bufferAtIndex index="«index»" name="«output.name»"/>
+				«input.doSwitch»
+				<constant name="size" type="string" value="«input.size»*sizeof(«input.type»)"/>
+			</userFunctionCall>«{index=(index+input.size); ""}»
+		«ENDFOR»
+			</CompoundCode>	«/*<CompoundCode name="«call.name»">«var output = call.outputBuffers.head»
 			«FOR index : 0 .. call.inputBuffers.size - 1»
 				<userFunctionCall comment="" name="memcpy">
 					<bufferAtIndex index="«call.inputBuffers.get(index).size * index»" name="«output.name»"/>
@@ -215,22 +235,22 @@ class XMLPrinter extends DefaultPrinter {
 			}.doSwitch»
 				</userFunctionCall>
 			«ENDFOR»
-		</CompoundCode>
+		</CompoundCode> */»
 	'''
 
 	override printRoundBuffer(SpecialCall call) '''
 		<CompoundCode name="«call.name»">«var output = call.outputBuffers.head»«var index = 0»
-			«FOR buffer : call.inputBuffers.reverseView»«var inputIdx = 0»
-				«FOR nbIter : 0..buffer.size-1/*Worst case id buffer.size exec of the loop */»
-					«IF inputIdx < buffer.size /* Execute only first loop core */»
-						<userFunctionCall comment="" name="memcpy">
-							<bufferAtIndex index="«index»" name="«output.name»"/>
-							<bufferAtIndex index="«inputIdx»" name="«buffer.name»"/>
-							<constant name="size" type="string" value="«val value = Math::min(buffer.size-inputIdx,output.size-index)»«value»*sizeof(«buffer.type»)"/>
-						</userFunctionCall>«{index=(index+value)%output.size;inputIdx=(inputIdx+value); ""}»
-					«ENDIF»
-				«ENDFOR»
+		«FOR buffer : call.inputBuffers»«var inputIdx = 0»
+			«FOR nbIter : 0..buffer.size/output.size+1/*Worst case id buffer.size exec of the loop */»
+				«IF inputIdx < buffer.size /* Execute only first loop core */»
+					<userFunctionCall comment="" name="memcpy">
+						<bufferAtIndex index="«index»" name="«output.name»"/>
+						<bufferAtIndex index="«inputIdx»" name="«buffer.name»"/>
+						<constant name="size" type="string" value="«val value = Math::min(buffer.size-inputIdx,output.size-index)»«value»*sizeof(«buffer.type»)"/>
+					</userFunctionCall>«{index=(index+value)%output.size;inputIdx=(inputIdx+value); ""}»
+				«ENDIF»
 			«ENDFOR»
+		«ENDFOR»
 			</CompoundCode>
 	'''
 	

@@ -48,6 +48,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
+import org.ietr.preesm.codegen.xtend.model.codegen.Communication
 
 /**
  * This printer is currently used to print C code only for X86 processor with
@@ -174,8 +175,27 @@ class CPrinter extends DefaultPrinter {
 	override printBroadcast(SpecialCall call) '''
 	// Broadcast «call.name»«var input = call.inputBuffers.head»«var index = 0»
 	{
-		«FOR output : call.outputBuffers»
-			memcpy(«output.doSwitch», «input.doSwitch»+«index», «output.size»*sizeof(«output.type»));«{index=(output.size+index)%input.size; ""}»
+		«FOR output : call.outputBuffers»«var outputIdx = 0»
+		«FOR nbIter : 0..output.size/input.size+1/*Worst case is output.size exec of the loop */»
+			«IF outputIdx < output.size /* Execute loop core until all output for current buffer are produced */»
+				memcpy(«output.doSwitch»+«outputIdx», «input.doSwitch»+«index», «val value = Math::min(output.size-outputIdx,input.size-index)»«value»*sizeof(«output.type»));«
+				{index=(index+value)%input.size;outputIdx=(outputIdx+value); ""}»
+			«ENDIF»
+		«ENDFOR»
+		«ENDFOR»
+	}
+	'''
+	
+	override printRoundBuffer(SpecialCall call) '''
+	// RoundBuffer «call.name»«var output = call.outputBuffers.head»«var index = 0»
+	{
+		«FOR input : call.inputBuffers»«var inputIdx = 0»
+		«FOR nbIter : 0..input.size/output.size+1/*Worst number the loop exec */»
+			«IF inputIdx < input.size /* Execute loop core until all input for current buffer are produced */»
+				memcpy(«output.doSwitch»+«index», «input.doSwitch»+«inputIdx», «val value = Math::min(input.size-inputIdx,output.size-index)»«value»*sizeof(«input.type»));«
+				{index=(index+value)%output.size;inputIdx=(inputIdx+value); ""}»
+			«ENDIF»
+		«ENDFOR»
 		«ENDFOR»
 	}
 	'''
@@ -187,6 +207,23 @@ class CPrinter extends DefaultPrinter {
 			memcpy(«output.doSwitch»+«index», «input.doSwitch», «input.size»*sizeof(«input.type»));«{index=(input.size+index); ""}»
 		«ENDFOR»
 	}
+	'''
+	
+	override caseCommunication(Communication communication) {
+		
+		if(communication.nodes.forall[type == "SHARED_MEM"]) {
+			super.caseCommunication(communication)
+		} else {
+			throw new CodegenException("Communication "+ communication.name +
+				 " has at least one unsupported communication node"+ 
+				 " for the " + this.class.name + " printer")
+		}
+	}
+	
+	override printCommunication(Communication communication) '''
+	«/*Since everything is already in shared memory, communications are simple synchronizations here*/
+	»«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«
+		communication.id»/*ID*/); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.data.doSwitch» 
 	'''
 	
 	override printFunctionCall(FunctionCall functionCall) '''
