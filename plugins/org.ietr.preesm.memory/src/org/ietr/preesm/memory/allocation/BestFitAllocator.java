@@ -60,6 +60,8 @@ public class BestFitAllocator extends OrderedAllocator {
 		// clear all previous allocation
 		memExNodeAllocation = new HashMap<MemoryExclusionVertex, Integer>();
 		edgeAllocation = new HashMap<DAGEdge, Integer>();
+		inputExclusionGraph.setPropertyValue(
+				MemoryExclusionGraph.DAG_EDGE_ALLOCATION, edgeAllocation);
 
 		// Allocate vertices in the list order
 		for (MemoryExclusionVertex vertex : vertexList) {

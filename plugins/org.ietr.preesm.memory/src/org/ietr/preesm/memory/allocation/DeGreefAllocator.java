@@ -50,6 +50,8 @@ public class DeGreefAllocator extends MemoryAllocator {
 		// clear all previous allocation
 		memExNodeAllocation = new HashMap<MemoryExclusionVertex, Integer>();
 		edgeAllocation = new HashMap<DAGEdge, Integer>();
+		inputExclusionGraph.setPropertyValue(
+				MemoryExclusionGraph.DAG_EDGE_ALLOCATION, edgeAllocation);
 
 		// Build the MemoryExclusionGraph if necessary
 		if (inputExclusionGraph == null) {
