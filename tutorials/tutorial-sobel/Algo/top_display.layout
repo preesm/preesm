@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="Read_YUV" x="57" y="225"/>
+      <vertex id="display_pic" x="581" y="214"/>
+      <vertex id="SobelY" x="415" y="438"/>
+      <vertex id="display_res" x="663" y="378"/>
+      <vertex id="Br_U" x="228" y="203"/>
+      <vertex id="Br_V" x="221" y="286"/>
+      <vertex id="Br_Y" x="224" y="365"/>
+      <vertex id="SplitY" x="296" y="445"/>
+      <vertex id="MergeY" x="538" y="463"/>
+   </vertices>
+</layout>

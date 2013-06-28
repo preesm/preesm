@@ -1,0 +1,10 @@
+
+module Read_YUV {
+	typedef long parameter ;
+	interface init {
+		void initReadYUV ( in parameter xSize , in parameter ySize ) ;
+	} ;
+	interface loop {
+		void readYUV (in parameter xSize, in parameter ySize, out char y , out char u , out char v ) ;
+	} ;
+} ;

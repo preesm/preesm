@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/tutorial-sobel/Algo/top_display.graphml"/>
+        <architecture url="/tutorial-sobel/Archi/4CoreX86.slam"/>
+        <codegenDirectory url="/tutorial-sobel/Code/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="MergeY"/>
+            <task name="SplitY"/>
+            <task name="Read_YUV"/>
+            <task name="display_pic"/>
+            <task name="display_res"/>
+            <task name="SobelY"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
+        </constraintGroup>
+    </constraints>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl=""/>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="char" size="1"/>
+            <dataType name="uchar" size="1"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+    </simuParams>
+    <variables excelUrl=""/>
+</scenario>

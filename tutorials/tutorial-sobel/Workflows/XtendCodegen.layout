@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="scenario" x="57" y="310"/>
+      <vertex id="Gantt Plotter" x="813" y="341"/>
+      <vertex id="LIST scheduler" x="641" y="186"/>
+      <vertex id="srSDF" x="384" y="105"/>
+      <vertex id="HierarchyFlattening" x="200" y="220"/>
+      <vertex id="Exporter" x="513" y="116"/>
+      <vertex id="Exporter2" x="384" y="220"/>
+      <vertex id="DAGExporter" x="813" y="70"/>
+      <vertex id="MemEx Builder" x="813" y="206"/>
+      <vertex id="Mem Bounds" x="1017" y="497"/>
+      <vertex id="Mem Alloc" x="1017" y="228"/>
+      <vertex id="Codegen Xtend" x="1123" y="343"/>
+   </vertices>
+</layout>
