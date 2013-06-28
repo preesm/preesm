@@ -49,6 +49,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.Communication
+import org.ietr.preesm.codegen.xtend.model.codegen.Constant
 
 /**
  * This printer is currently used to print C code only for X86 processor with
@@ -75,7 +76,7 @@ class CPrinter extends DefaultPrinter {
 			 * @date «new Date»
 			 */
 			
-			#include "x86.h"
+			#include "../include/x86.h"
 			
 			
 		«ENDIF»
@@ -93,7 +94,14 @@ class CPrinter extends DefaultPrinter {
 	'''
 	
 	override printSubBufferDefinition(SubBuffer buffer) '''
-	«buffer.type» *const «buffer.name» = («buffer.type»*) «buffer.container.name»+«buffer.offset»;  // «buffer.comment» size:= «buffer.size»*«buffer.type»
+	«buffer.type» *const «buffer.name» = («buffer.type»*) «var offset = 0»«
+	{offset = buffer.offset
+	 var b = buffer.container;
+	 while(b instanceof SubBuffer){
+	 	offset = offset + (b as SubBuffer).offset
+	  	b = (b as SubBuffer).container
+	  }
+	 b}.name»+«offset»;  // «buffer.comment» size:= «buffer.size»*«buffer.type»
 	'''
 	
 	override printDefinitionsFooter(List<Variable> list) '''
@@ -229,6 +237,8 @@ class CPrinter extends DefaultPrinter {
 	override printFunctionCall(FunctionCall functionCall) '''
 	«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 	'''
+	
+	override printConstant(Constant constant) '''«constant.value»/*«constant.name»*/'''
 
 	override printBuffer(Buffer buffer) '''«buffer.name»'''
 	

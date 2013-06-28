@@ -915,8 +915,8 @@ public class CodegenModelGenerator {
 					for (BufferProperties buffProperty : bufferAggregate) {
 						if (buffProperty.getSourceOutputPortID().equals(
 								arg.getName())
-								&& buffProperty.getDataType().equals(
-										arg.getType())) {
+								/*&& buffProperty.getDataType().equals(
+										arg.getType())*/) {
 							// check that this edge is not connected to a
 							// receive vertex
 							if (edge.getTarget().getKind() != null) {
@@ -937,8 +937,8 @@ public class CodegenModelGenerator {
 					for (BufferProperties buffProperty : bufferAggregate) {
 						if (buffProperty.getDestInputPortID().equals(
 								arg.getName())
-								&& buffProperty.getDataType().equals(
-										arg.getType())) {
+								/*&& buffProperty.getDataType().equals(
+										arg.getType())*/) {
 							// check that this edge is not connected to a send
 							// vertex
 							if (edge.getSource().getKind() != null) {
@@ -953,12 +953,14 @@ public class CodegenModelGenerator {
 			}
 
 			if (dagEdge == null || subBufferProperties == null) {
-				throw new CodegenException("The DAGEdge connected to the port "
+				throw new CodegenException("The DAGEdge connected to the port  "
 						+ port + " of Actor (" + dagVertex
 						+ ") does not exist.\n"
-						+ "Probable cause is that the DAG"
+						+ "Possible cause is that the DAG"
 						+ " was altered before entering"
-						+ " the Code generation.");
+						+ " the Code generation.\n"
+						+ "This error may also happen if the port type "
+						+"in the graph and in the IDL are not identical");
 			}
 
 			// At this point, the dagEdge, srsdfEdge corresponding to the

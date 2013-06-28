@@ -60,7 +60,7 @@ public class CodegenTask extends AbstractTaskImplementation {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		workspace.getRoot().getLocation();
 		String codegenPath = scenario.getCodegenManager().getCodegenDirectory()
-				+ "/codegen/";
+				+ "/";
 
 		// Obtain a new resource set
 		ResourceSet resSet = new ResourceSetImpl();

@@ -413,12 +413,12 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	override caseLoopBlock(LoopBlock loopBlock) {
 		var result = new ArrayList<CharSequence>
 
-		printLoopBlockHeader(loopBlock)
+		result.add(printLoopBlockHeader(loopBlock))
 
 		// Visit all codeElements
 		result.addAll(loopBlock.codeElts.map[doSwitch])
 
-		printLoopBlockFooter(loopBlock)
+		result.add(printLoopBlockFooter(loopBlock))
 
 		result.join('')
 	}
