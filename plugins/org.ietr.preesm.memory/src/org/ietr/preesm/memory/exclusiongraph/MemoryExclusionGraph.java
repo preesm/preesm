@@ -215,7 +215,7 @@ public class MemoryExclusionGraph extends
 		System.out
 				.println("Complementary graph may not be corrupted.. \n"
 						+ "check with several examples before using this function again !");
-		
+
 		final String localOrdering = "memExBuildingLocalOrdering";
 		/*
 		 * Declarations & initializations
@@ -362,7 +362,7 @@ public class MemoryExclusionGraph extends
 	 */
 	public void buildGraph(DirectedAcyclicGraph dag)
 			throws InvalidExpressionException, WorkflowException {
-		
+
 		final String localOrdering = "memExBuildingLocalOrdering";
 
 		/*
@@ -966,37 +966,14 @@ public class MemoryExclusionGraph extends
 
 			if (vertKind.equals("dag_vertex")
 					|| vertKind.equals("dag_broadcast_vertex")
-					|| vertKind.equals("dag_init_vertex")) {
-				int schedulingOrder = (Integer) currentVertex.getPropertyBean()
-						.getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
-				verticesMap.put(schedulingOrder, currentVertex);
-			}
-			if (vertKind.equals("dag_fork_vertex")
+					|| vertKind.equals("dag_init_vertex")
+					|| vertKind.equals("dag_fork_vertex")
 					|| vertKind.equals("dag_join_vertex")) {
-				// This vertex is a implode/explode vertex.
-				Set<DAGEdge> outgoingEdges = currentVertex.outgoingEdges();
-				Set<DAGEdge> incomingEdges = currentVertex.incomingEdges();
-				for (DAGEdge incomingEdge : incomingEdges) {
-					for (DAGEdge outgoingEdge : outgoingEdges) {
-						// Link incoming/outgoing edges of the implode/explode
-						// directly to
-						// the target/source of explosion.
-						DAGEdge newEdge = dag.addEdge(incomingEdge.getSource(),
-								outgoingEdge.getTarget());
-						// Select the edges whose properties must be copied to
-						// the new edge
-						DAGEdge edge = (currentVertex.getPropertyBean()
-								.getValue("kind").toString()
-								.equals("dag_join_vertex")) ? incomingEdge
-								: outgoingEdge;
-
-						newEdge.copyProperties(edge);
-						newEdge.setSourceLabel(incomingEdge.getSourceLabel());
-						newEdge.setTargetLabel(outgoingEdge.getTargetLabel());
-					}
-				}
-				// remove the implode/explode vertex from dag
-				dag.removeVertex(currentVertex);
+				int schedulingOrder = (Integer) currentVertex
+						.getPropertyBean()
+						.getValue(
+								ImplementationPropertyNames.Vertex_schedulingOrder);
+				verticesMap.put(schedulingOrder, currentVertex);
 			}
 		}
 
@@ -1082,7 +1059,8 @@ public class MemoryExclusionGraph extends
 								 * -The exclusion or one of the vertex could not
 								 * be found because the
 								 * MemoryExclusionVertex.equals() method is
-								 * corrupted
+								 * corrupted -Explode Implode were removed when
+								 * creating the MemEx but not when updating it.
 								 */
 								throw new RuntimeException(
 										"Failed removing exclusion between "

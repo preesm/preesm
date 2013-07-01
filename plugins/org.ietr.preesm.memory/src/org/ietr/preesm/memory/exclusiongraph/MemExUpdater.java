@@ -48,6 +48,7 @@ import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.preesm.algorithm.transforms.ForkJoinRemover;
 
 /**
  * Workflow element that takes a Scheduled DAG and a MemEx as inputs and update
@@ -59,14 +60,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
 public class MemExUpdater extends AbstractTaskImplementation {
 
 	static final public String PARAM_VERBOSE = "Verbose";
-	static final public String VALUE_VERBOSE_DEFAULT = "? C {True, False}";
-	static final public String VALUE_VERBOSE_TRUE = "True";
-	static final public String VALUE_VERBOSE_FALSE = "False";
 
 	static final public String PARAM_LIFETIME = "Update with MemObject lifetime";
-	static final public String VALUE_LIFETIME_DEFAULT = "? C {True, False}";
-	static final public String VALUE_LIFETIME_TRUE = "True";
-	static final public String VALUE_LIFETIME_FALSE = "False";
+	
+	static final public String PARAM_SUPPR_FORK_JOIN = "Suppr Fork/Join";
+	static final public String VALUE_TRUE_FALSE_DEFAULT = "? C {True, False}";
+	static final public String VALUE_TRUE = "True";
+	static final public String VALUE_FALSE = "False";
 
 	static final public String OUTPUT_KEY_MEM_EX = "MemEx";
 
@@ -81,17 +81,32 @@ public class MemExUpdater extends AbstractTaskImplementation {
 		// Check Workflow element parameters
 		String valueVerbose = parameters.get(PARAM_VERBOSE);
 		boolean verbose;
-		verbose = valueVerbose.equals(VALUE_VERBOSE_TRUE);
+		verbose = valueVerbose.equals(VALUE_TRUE);
 
 		String valueLifetime = parameters.get(PARAM_LIFETIME);
 		boolean lifetime;
-		lifetime = valueLifetime.equals(VALUE_LIFETIME_TRUE);
+		lifetime = valueLifetime.equals(VALUE_TRUE);
+		
+		String valueSupprForkJoin = parameters.get(PARAM_SUPPR_FORK_JOIN);
+		boolean forkJoin;
+		forkJoin = valueSupprForkJoin.equals(VALUE_TRUE);
 
 		// Retrieve inputs
 		DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 		MemoryExclusionGraph memEx = (MemoryExclusionGraph) inputs.get("MemEx");
 
 		int before = memEx.edgeSet().size();
+		
+		// Make a copy of the Input DAG for treatment
+				// Clone is deep copy i.e. vertices are thus copied too.
+				DirectedAcyclicGraph localDAG = (DirectedAcyclicGraph) dag.clone();
+				if (localDAG == null) {
+					localDAG = dag;
+				}
+		
+		if(forkJoin){
+			ForkJoinRemover.supprImplodeExplode(localDAG);
+		}
 
 		if (verbose) {
 			logger.log(Level.INFO,
@@ -104,7 +119,7 @@ public class MemExUpdater extends AbstractTaskImplementation {
 							* (memEx.vertexSet().size() - 1) / 2.0) + ";");
 		}
 
-		memEx.updateWithSchedule(dag);
+		memEx.updateWithSchedule(localDAG);
 
 		double density = memEx.edgeSet().size()
 				/ (memEx.vertexSet().size() * (memEx.vertexSet().size() - 1) / 2.0);
@@ -130,7 +145,7 @@ public class MemExUpdater extends AbstractTaskImplementation {
 						"Memory exclusion graph : start updating with memObject lifetimes");
 			}
 
-			memEx.updateWithMemObjectLifetimes(dag);
+			memEx.updateWithMemObjectLifetimes(localDAG);
 
 			density = memEx.edgeSet().size()
 					/ (memEx.vertexSet().size()
@@ -161,8 +176,9 @@ public class MemExUpdater extends AbstractTaskImplementation {
 	@Override
 	public Map<String, String> getDefaultParameters() {
 		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put(PARAM_VERBOSE, VALUE_VERBOSE_DEFAULT);
-		parameters.put(PARAM_LIFETIME, VALUE_LIFETIME_DEFAULT);
+		parameters.put(PARAM_VERBOSE, VALUE_TRUE_FALSE_DEFAULT);
+		parameters.put(PARAM_LIFETIME, VALUE_TRUE_FALSE_DEFAULT);
+		parameters.put(PARAM_SUPPR_FORK_JOIN, VALUE_TRUE_FALSE_DEFAULT);
 		return parameters;
 	}
 
