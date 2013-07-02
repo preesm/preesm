@@ -13,13 +13,14 @@
     <key attr.name="edge_delay" attr.type="string" for="edge"/>
     <key attr.name="edge_prod" attr.type="string" for="edge"/>
     <key attr.name="data_type" attr.type="string" for="edge"/>
+    <key attr.name="Weight" attr.type="string" for="edge"/>
     <graph edgedefault="directed" kind="sdf">
         <data key="name">top_display</data>
         <data key="kind">sdf</data>
         <data key="variables">
-            <variable name="ysize" value="288"/>
-            <variable name="xsize" value="352"/>
-            <variable name="N" value="16"/>
+            <variable name="ysize" value="1080"/>
+            <variable name="xsize" value="1920"/>
+            <variable name="N" value="4"/>
         </data>
         <node id="Read_YUV">
             <data key="graph_desc">../Code/IDL/readYuv.idl</data>
@@ -27,8 +28,8 @@
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
             <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="288"/>
+                <argument name="xSize" value="1920"/>
+                <argument name="ySize" value="1080"/>
             </data>
         </node>
         <node id="display_pic">
@@ -38,8 +39,8 @@
             <data key="nbRepeat">1</data>
             <data key="arguments">
                 <argument name="index" value="0"/>
-                <argument name="ysize" value="288"/>
-                <argument name="xsize" value="352"/>
+                <argument name="ysize" value="1080"/>
+                <argument name="xsize" value="1920"/>
             </data>
         </node>
         <node id="SobelY_0">
@@ -48,8 +49,8 @@
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
             <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="20"/>
+                <argument name="xSize" value="1920"/>
+                <argument name="ySize" value="272"/>
             </data>
         </node>
         <node id="SobelY_1">
@@ -58,8 +59,8 @@
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
             <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="20"/>
+                <argument name="xSize" value="1920"/>
+                <argument name="ySize" value="272"/>
             </data>
         </node>
         <node id="SobelY_2">
@@ -68,8 +69,8 @@
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
             <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="20"/>
+                <argument name="xSize" value="1920"/>
+                <argument name="ySize" value="272"/>
             </data>
         </node>
         <node id="SobelY_3">
@@ -78,128 +79,8 @@
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
             <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="20"/>
-            </data>
-        </node>
-        <node id="SobelY_4">
-            <data key="graph_desc">../Code/IDL/sobel.idl</data>
-            <data key="name">SobelY_4</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="20"/>
-            </data>
-        </node>
-        <node id="SobelY_5">
-            <data key="graph_desc">../Code/IDL/sobel.idl</data>
-            <data key="name">SobelY_5</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="20"/>
-            </data>
-        </node>
-        <node id="SobelY_6">
-            <data key="graph_desc">../Code/IDL/sobel.idl</data>
-            <data key="name">SobelY_6</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="20"/>
-            </data>
-        </node>
-        <node id="SobelY_7">
-            <data key="graph_desc">../Code/IDL/sobel.idl</data>
-            <data key="name">SobelY_7</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="20"/>
-            </data>
-        </node>
-        <node id="SobelY_8">
-            <data key="graph_desc">../Code/IDL/sobel.idl</data>
-            <data key="name">SobelY_8</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="20"/>
-            </data>
-        </node>
-        <node id="SobelY_9">
-            <data key="graph_desc">../Code/IDL/sobel.idl</data>
-            <data key="name">SobelY_9</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="20"/>
-            </data>
-        </node>
-        <node id="SobelY_10">
-            <data key="graph_desc">../Code/IDL/sobel.idl</data>
-            <data key="name">SobelY_10</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="20"/>
-            </data>
-        </node>
-        <node id="SobelY_11">
-            <data key="graph_desc">../Code/IDL/sobel.idl</data>
-            <data key="name">SobelY_11</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="20"/>
-            </data>
-        </node>
-        <node id="SobelY_12">
-            <data key="graph_desc">../Code/IDL/sobel.idl</data>
-            <data key="name">SobelY_12</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="20"/>
-            </data>
-        </node>
-        <node id="SobelY_13">
-            <data key="graph_desc">../Code/IDL/sobel.idl</data>
-            <data key="name">SobelY_13</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="20"/>
-            </data>
-        </node>
-        <node id="SobelY_14">
-            <data key="graph_desc">../Code/IDL/sobel.idl</data>
-            <data key="name">SobelY_14</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="20"/>
-            </data>
-        </node>
-        <node id="SobelY_15">
-            <data key="graph_desc">../Code/IDL/sobel.idl</data>
-            <data key="name">SobelY_15</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="20"/>
+                <argument name="xSize" value="1920"/>
+                <argument name="ySize" value="272"/>
             </data>
         </node>
         <node id="display_res">
@@ -209,8 +90,8 @@
             <data key="nbRepeat">1</data>
             <data key="arguments">
                 <argument name="index" value="1"/>
-                <argument name="ysize" value="288"/>
-                <argument name="xsize" value="352"/>
+                <argument name="ysize" value="1080"/>
+                <argument name="xsize" value="1920"/>
             </data>
         </node>
         <node id="Br_U">
@@ -234,9 +115,9 @@
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
             <data key="arguments">
-                <argument name="nbSlice" value="16"/>
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="288"/>
+                <argument name="nbSlice" value="4"/>
+                <argument name="xSize" value="1920"/>
+                <argument name="ySize" value="1080"/>
             </data>
         </node>
         <node id="MergeY">
@@ -245,9 +126,9 @@
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
             <data key="arguments">
-                <argument name="nbSlice" value="16"/>
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="288"/>
+                <argument name="nbSlice" value="4"/>
+                <argument name="xSize" value="1920"/>
+                <argument name="ySize" value="1080"/>
             </data>
         </node>
         <node id="explode_SplitY_output">
@@ -261,302 +142,154 @@
             <data key="nbRepeat">1</data>
         </node>
         <edge source="Read_YUV" sourceport="u" target="Br_U" targetport="u">
-            <data key="edge_cons">25344</data>
+            <data key="edge_cons">518400</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
+            <data key="edge_prod">518400</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
         <edge source="Br_U" sourceport="u" target="display_res" targetport="u">
-            <data key="edge_cons">25344</data>
+            <data key="edge_cons">518400</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
+            <data key="edge_prod">518400</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
         <edge source="Br_U" sourceport="u" target="display_pic" targetport="u">
-            <data key="edge_cons">25344</data>
+            <data key="edge_cons">518400</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
+            <data key="edge_prod">518400</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
         <edge source="Read_YUV" sourceport="v" target="Br_V" targetport="v">
-            <data key="edge_cons">25344</data>
+            <data key="edge_cons">518400</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
+            <data key="edge_prod">518400</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
         <edge source="Br_V" sourceport="v" target="display_res" targetport="v">
-            <data key="edge_cons">25344</data>
+            <data key="edge_cons">518400</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
+            <data key="edge_prod">518400</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
         <edge source="Read_YUV" sourceport="y" target="Br_Y" targetport="y">
-            <data key="edge_cons">101376</data>
+            <data key="edge_cons">2073600</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">101376</data>
+            <data key="edge_prod">2073600</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
         <edge source="Br_Y" sourceport="y" target="display_pic" targetport="y">
-            <data key="edge_cons">101376</data>
+            <data key="edge_cons">2073600</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">101376</data>
+            <data key="edge_prod">2073600</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
         <edge source="Br_V" sourceport="v" target="display_pic" targetport="v">
-            <data key="edge_cons">25344</data>
+            <data key="edge_cons">518400</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
+            <data key="edge_prod">518400</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
         <edge source="Br_Y" sourceport="y" target="SplitY" targetport="input">
-            <data key="edge_cons">101376</data>
+            <data key="edge_cons">2073600</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">101376</data>
+            <data key="edge_prod">2073600</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
         <edge source="SplitY" sourceport="output"
             target="explode_SplitY_output" targetport="input">
-            <data key="edge_cons">112640</data>
+            <data key="edge_cons">2088960</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">112640</data>
+            <data key="edge_prod">2088960</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
         <edge source="explode_SplitY_output" sourceport="output"
             target="SobelY_0" targetport="input">
-            <data key="edge_cons">7040</data>
+            <data key="edge_cons">522240</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
+            <data key="edge_prod">522240</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
         <edge source="explode_SplitY_output" sourceport="output"
             target="SobelY_1" targetport="input">
-            <data key="edge_cons">7040</data>
+            <data key="edge_cons">522240</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
+            <data key="edge_prod">522240</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
         <edge source="explode_SplitY_output" sourceport="output"
             target="SobelY_2" targetport="input">
-            <data key="edge_cons">7040</data>
+            <data key="edge_cons">522240</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
+            <data key="edge_prod">522240</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
         <edge source="explode_SplitY_output" sourceport="output"
             target="SobelY_3" targetport="input">
-            <data key="edge_cons">7040</data>
+            <data key="edge_cons">522240</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
+            <data key="edge_prod">522240</data>
             <data key="data_type">uchar</data>
-        </edge>
-        <edge source="explode_SplitY_output" sourceport="output"
-            target="SobelY_4" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="explode_SplitY_output" sourceport="output"
-            target="SobelY_5" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="explode_SplitY_output" sourceport="output"
-            target="SobelY_6" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="explode_SplitY_output" sourceport="output"
-            target="SobelY_7" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="explode_SplitY_output" sourceport="output"
-            target="SobelY_8" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="explode_SplitY_output" sourceport="output"
-            target="SobelY_9" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="explode_SplitY_output" sourceport="output"
-            target="SobelY_10" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="explode_SplitY_output" sourceport="output"
-            target="SobelY_11" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="explode_SplitY_output" sourceport="output"
-            target="SobelY_12" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="explode_SplitY_output" sourceport="output"
-            target="SobelY_13" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="explode_SplitY_output" sourceport="output"
-            target="SobelY_14" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="explode_SplitY_output" sourceport="output"
-            target="SobelY_15" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
         <edge source="implode_MergeY_input" sourceport="output"
             target="MergeY" targetport="input">
-            <data key="edge_cons">112640</data>
+            <data key="edge_cons">2088960</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">112640</data>
+            <data key="edge_prod">2088960</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
         <edge source="SobelY_0" sourceport="output"
             target="implode_MergeY_input" targetport="input">
-            <data key="edge_cons">7040</data>
+            <data key="edge_cons">522240</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
+            <data key="edge_prod">522240</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
         <edge source="SobelY_1" sourceport="output"
             target="implode_MergeY_input" targetport="input">
-            <data key="edge_cons">7040</data>
+            <data key="edge_cons">522240</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
+            <data key="edge_prod">522240</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
         <edge source="SobelY_2" sourceport="output"
             target="implode_MergeY_input" targetport="input">
-            <data key="edge_cons">7040</data>
+            <data key="edge_cons">522240</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
+            <data key="edge_prod">522240</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
         <edge source="SobelY_3" sourceport="output"
             target="implode_MergeY_input" targetport="input">
-            <data key="edge_cons">7040</data>
+            <data key="edge_cons">522240</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
+            <data key="edge_prod">522240</data>
             <data key="data_type">uchar</data>
-        </edge>
-        <edge source="SobelY_4" sourceport="output"
-            target="implode_MergeY_input" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="SobelY_5" sourceport="output"
-            target="implode_MergeY_input" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="SobelY_6" sourceport="output"
-            target="implode_MergeY_input" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="SobelY_7" sourceport="output"
-            target="implode_MergeY_input" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="SobelY_8" sourceport="output"
-            target="implode_MergeY_input" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="SobelY_9" sourceport="output"
-            target="implode_MergeY_input" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="SobelY_10" sourceport="output"
-            target="implode_MergeY_input" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="SobelY_11" sourceport="output"
-            target="implode_MergeY_input" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="SobelY_12" sourceport="output"
-            target="implode_MergeY_input" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="SobelY_13" sourceport="output"
-            target="implode_MergeY_input" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="SobelY_14" sourceport="output"
-            target="implode_MergeY_input" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="SobelY_15" sourceport="output"
-            target="implode_MergeY_input" targetport="input">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
         <edge source="MergeY" sourceport="output" target="display_res" targetport="y">
-            <data key="edge_cons">101376</data>
+            <data key="edge_cons">2073600</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">101376</data>
+            <data key="edge_prod">2073600</data>
             <data key="data_type">uchar</data>
+            <data key="Weight"/>
         </edge>
     </graph>
 </graphml>

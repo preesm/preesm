@@ -13,8 +13,8 @@
 
 void fifoInit(void* storageBuffer, int size, int nbTokens);
 
-void fifoPush(void* storageBuffer, void * inputBuffer, int size);
+void fifoPush(void* storageBuffer, void * inputBuffer, int size, int fifoSize);
 
-void fifoPull(void* storageBuffer, void * outputBuffer, int size);
+void fifoPop(void* storageBuffer, void * outputBuffer, int size, int fifoSize);
 
 #endif

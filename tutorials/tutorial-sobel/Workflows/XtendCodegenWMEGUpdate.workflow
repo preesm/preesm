@@ -60,7 +60,7 @@
     <dftools:task
         pluginId="org.ietr.preesm.memory.allocation.MemoryAllocatorTask" taskId="Mem Alloc">
         <dftools:data key="variables">
-            <dftools:variable name="Allocator(s)" value="Basic"/>
+            <dftools:variable name="Allocator(s)" value="FirstFit"/>
             <dftools:variable name="Best/First Fit order" value="LargestFirst"/>
             <dftools:variable name="Nb of Shuffling Tested" value="10"/>
             <dftools:variable name="Verbose" value="True"/>
@@ -69,6 +69,14 @@
     <dftools:task
         pluginId="org.ietr.preesm.codegen.xtend.task.CodegenTask" taskId="Codegen Xtend">
         <dftools:data key="variables"/>
+    </dftools:task>
+    <dftools:task
+        pluginId="org.ietr.preesm.memory.exclusiongraph.MemExUpdater" taskId="MemEx Updater">
+        <dftools:data key="variables">
+            <dftools:variable name="Suppr Fork/Join" value="False"/>
+            <dftools:variable name="Update with MemObject lifetime" value="False"/>
+            <dftools:variable name="Verbose" value="True"/>
+        </dftools:data>
     </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="Gantt Plotter"/>
@@ -94,8 +102,6 @@
         targetport="scenario" to="MemEx Builder"/>
     <dftools:dataTransfer from="MemEx Builder" sourceport="MemEx"
         targetport="MemEx" to="Mem Bounds"/>
-    <dftools:dataTransfer from="MemEx Builder" sourceport="MemEx"
-        targetport="MemEx" to="Mem Alloc"/>
     <dftools:dataTransfer from="Mem Alloc" sourceport="MemEx"
         targetport="MemEx" to="Codegen Xtend"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
@@ -108,6 +114,10 @@
         targetport="void" to="LIST scheduler"/>
     <dftools:dataTransfer from="Codegen Xtend" sourceport="void"
         targetport="void" to="Mem Bounds"/>
-    <dftools:dataTransfer from="DAGExporter" sourceport="void"
-        targetport="void" to="Codegen Xtend"/>
+    <dftools:dataTransfer from="MemEx Builder" sourceport="MemEx"
+        targetport="MemEx" to="MemEx Updater"/>
+    <dftools:dataTransfer from="MemEx Updater" sourceport="MemEx"
+        targetport="MemEx" to="Mem Alloc"/>
+    <dftools:dataTransfer from="LIST scheduler" sourceport="DAG"
+        targetport="DAG" to="MemEx Updater"/>
 </dftools:workflow>

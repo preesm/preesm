@@ -3,15 +3,16 @@
    <vertices>
       <vertex id="scenario" x="57" y="310"/>
       <vertex id="Gantt Plotter" x="813" y="341"/>
-      <vertex id="LIST scheduler" x="641" y="186"/>
+      <vertex id="LIST scheduler" x="641" y="184"/>
       <vertex id="srSDF" x="384" y="105"/>
       <vertex id="HierarchyFlattening" x="200" y="220"/>
-      <vertex id="Exporter" x="513" y="116"/>
+      <vertex id="Exporter" x="513" y="105"/>
       <vertex id="Exporter2" x="384" y="220"/>
       <vertex id="DAGExporter" x="813" y="70"/>
       <vertex id="MemEx Builder" x="813" y="206"/>
-      <vertex id="Mem Bounds" x="1017" y="497"/>
-      <vertex id="Mem Alloc" x="1002" y="257"/>
-      <vertex id="Codegen Xtend" x="1123" y="343"/>
+      <vertex id="Mem Bounds" x="1272" y="107"/>
+      <vertex id="Mem Alloc" x="1029" y="250"/>
+      <vertex id="Codegen Xtend" x="1110" y="272"/>
+      <vertex id="MemEx Updater" x="916" y="261"/>
    </vertices>
 </layout>

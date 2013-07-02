@@ -19,9 +19,9 @@
         <data key="kind">sdf</data>
         <data key="parameters"/>
         <data key="variables">
-            <variable name="N" value="16"/>
-            <variable name="xsize" value="352"/>
-            <variable name="ysize" value="288"/>
+            <variable name="N" value="4"/>
+            <variable name="xsize" value="1920"/>
+            <variable name="ysize" value="1080"/>
         </data>
         <node id="Read_YUV">
             <data key="name">Read_YUV</data>

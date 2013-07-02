@@ -11,12 +11,19 @@
 #ifndef COMMUNICATION_H
 #define COMMUNICATION_H
 
-void sendStart(int id);
+#include <pthread.h>
+#include <semaphore.h>
 
-void sendEnd(int id);
+void sendStart(sem_t* sem);
 
-void receiveStart(int id);
+void sendEnd();
 
-void receiveEnd(int id);
+void sendReserve(sem_t* sem);
+
+void receiveStart();
+
+void receiveEnd(sem_t* sem);
+
+void receiveRelease(sem_t* sem);
 
 #endif

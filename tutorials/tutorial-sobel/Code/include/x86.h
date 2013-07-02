@@ -13,6 +13,7 @@
 
 #include <string.h>
 #include <pthread.h>
+#include <semaphore.h>
 
 #include "communication.h"
 #include "fifo.h"
@@ -25,5 +26,8 @@
 typedef unsigned char uchar;
 
 void *computationThread_Core0(void *arg);
+void *computationThread_Core1(void *arg);
+void *computationThread_Core2(void *arg);
+void *computationThread_Core3(void *arg);
 
 #endif

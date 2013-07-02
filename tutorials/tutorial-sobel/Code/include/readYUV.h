@@ -11,7 +11,8 @@
 #ifndef READ_YUV_H
 #define READ_YUV_H
 
-#define PATH "./akiyo_cif.yuv"
+//#define PATH "./akiyo_cif.yuv"
+#define PATH "D:/Softwares/BBB/BigBuckBunny_1920_1080_24fps.yuv"
 #define NB_FRAME 300
 
 void initReadYUV(int xSize, int ySize);
