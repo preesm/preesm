@@ -116,7 +116,8 @@ class CPrinter extends DefaultPrinter {
 	
 	override printDeclarationsHeader(List<Variable> list) '''
 	// Core Global Declaration
-	extern pthread_barrier_t init_barrier;
+	extern pthread_barrier_t iter_barrier;
+	
 	'''
 	
 	override printBufferDeclaration(Buffer buffer) '''
@@ -141,16 +142,11 @@ class CPrinter extends DefaultPrinter {
 		«ENDIF»
 	'''
 	
-	override printCoreInitBlockFooter(CallBlock callBlock) '''
-	
-	«"\t"» // Init barrier
-		pthread_barrier_wait(&init_barrier);
-	'''
-	
 	override printCoreLoopBlockHeader(LoopBlock block2) '''
 		
 		«"\t"»// Begin the execution loop 
 			while(1){
+				pthread_barrier_wait(&iter_barrier);
 				
 	'''
 	
@@ -160,12 +156,7 @@ class CPrinter extends DefaultPrinter {
 	}
 	'''	
 	override printFifoCall(FifoCall fifoCall) {
-		var result = new String
-		switch fifoCall.operation {
-			case FifoOperation::INIT: result = "fifo_new"
-			case FifoOperation::POP: result = "fifo_pop"
-			case FifoOperation::PUSH: result = "fifo_push"
-		}
+		var result = "fifo"+fifoCall.operation.toString.toLowerCase.toFirstUpper
 	
 		result = result +
 			'''(«fifoCall.storageBuffer.name»,'''
@@ -174,7 +165,7 @@ class CPrinter extends DefaultPrinter {
 			'''
 		} else {
 			var buffer = fifoCall.parameters.head as Buffer
-			'''«buffer.doSwitch», «buffer.size»*sizeof(«buffer.type»));
+			'''«buffer.doSwitch», «buffer.size»*sizeof(«buffer.type»),sizeof(«fifoCall.storageBuffer.type»)*«fifoCall.storageBuffer.size»);
 			'''
 		}
 	}

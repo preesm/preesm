@@ -1367,6 +1367,7 @@ public class CodegenModelGenerator {
 		// Add the Fifo call to the loop of its coreBlock
 		operatorBlock.getLoopBlock().getCodeElts().add(fifoCall);
 		dagVertexCalls.put(dagVertex, fifoCall);
+		buffer.getUsers().add(operatorBlock);
 
 		// Create the init call (only the first time te fifo is encountered)
 		if (fifoCall.getOperation().equals(FifoOperation.POP)) {
