@@ -36,68 +36,48 @@
 package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
 import org.eclipse.emf.common.notify.Notification;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-import org.ietr.preesm.codegen.xtend.model.codegen.Block;
-import org.ietr.preesm.codegen.xtend.model.codegen.Buffer;
+
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
-import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
+import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
+import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
- * <em><b>Sub Buffer</b></em>'. <!-- end-user-doc -->
+ * <em><b>Shared Memory Communication</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
  * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SubBufferImpl#getContainer
- * <em>Container</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SubBufferImpl#getOffset
- * <em>Offset</em>}</li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SharedMemoryCommunicationImpl#getSemaphore
+ * <em>Semaphore</em>}</li>
  * </ul>
  * </p>
  * 
  * @generated
  */
-public class SubBufferImpl extends BufferImpl implements SubBuffer {
+public class SharedMemoryCommunicationImpl extends CommunicationImpl implements
+		SharedMemoryCommunication {
 	/**
-	 * The cached value of the '{@link #getContainer() <em>Container</em>}'
+	 * The cached value of the '{@link #getSemaphore() <em>Semaphore</em>}'
 	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @see #getContainer()
+	 * @see #getSemaphore()
 	 * @generated
 	 * @ordered
 	 */
-	protected Buffer container;
-
-	/**
-	 * The default value of the '{@link #getOffset() <em>Offset</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getOffset()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final int OFFSET_EDEFAULT = 0;
-
-	/**
-	 * The cached value of the '{@link #getOffset() <em>Offset</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getOffset()
-	 * @generated
-	 * @ordered
-	 */
-	protected int offset = OFFSET_EDEFAULT;
+	protected Semaphore semaphore;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
-	protected SubBufferImpl() {
+	protected SharedMemoryCommunicationImpl() {
 		super();
 	}
 
@@ -108,7 +88,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return CodegenPackage.Literals.SUB_BUFFER;
+		return CodegenPackage.Literals.SHARED_MEMORY_COMMUNICATION;
 	}
 
 	/**
@@ -116,18 +96,20 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	 * 
 	 * @generated
 	 */
-	public Buffer getContainer() {
-		if (container != null && container.eIsProxy()) {
-			InternalEObject oldContainer = (InternalEObject) container;
-			container = (Buffer) eResolveProxy(oldContainer);
-			if (container != oldContainer) {
+	public Semaphore getSemaphore() {
+		if (semaphore != null && semaphore.eIsProxy()) {
+			InternalEObject oldSemaphore = (InternalEObject) semaphore;
+			semaphore = (Semaphore) eResolveProxy(oldSemaphore);
+			if (semaphore != oldSemaphore) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							CodegenPackage.SUB_BUFFER__CONTAINER, oldContainer,
-							container));
+					eNotify(new ENotificationImpl(
+							this,
+							Notification.RESOLVE,
+							CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE,
+							oldSemaphore, semaphore));
 			}
 		}
-		return container;
+		return semaphore;
 	}
 
 	/**
@@ -135,56 +117,22 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	 * 
 	 * @generated
 	 */
-	public Buffer basicGetContainer() {
-		return container;
+	public Semaphore basicGetSemaphore() {
+		return semaphore;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * 
+	 * @generated
 	 */
-	public void setContainer(Buffer newContainer) {
-		Buffer oldContainer = container;
-		container = newContainer;
+	public void setSemaphore(Semaphore newSemaphore) {
+		Semaphore oldSemaphore = semaphore;
+		semaphore = newSemaphore;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.SUB_BUFFER__CONTAINER, oldContainer,
-					container));
-		if (getCreator() != null) {
-			newContainer.getUsers().add(getCreator());
-		}
-	}
-
-	@Override
-	public void setCreator(Block newCreator) {
-		super.setCreator(newCreator);
-		Buffer container = getContainer();
-		if (container != null) {
-			container.getUsers().add(newCreator);
-		}
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public int getOffset() {
-		return offset;
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public void setOffset(int newOffset) {
-		int oldOffset = offset;
-		offset = newOffset;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.SUB_BUFFER__OFFSET, oldOffset, offset));
+					CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE,
+					oldSemaphore, semaphore));
 	}
 
 	/**
@@ -195,12 +143,10 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case CodegenPackage.SUB_BUFFER__CONTAINER:
+		case CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE:
 			if (resolve)
-				return getContainer();
-			return basicGetContainer();
-		case CodegenPackage.SUB_BUFFER__OFFSET:
-			return getOffset();
+				return getSemaphore();
+			return basicGetSemaphore();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -213,11 +159,8 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case CodegenPackage.SUB_BUFFER__CONTAINER:
-			setContainer((Buffer) newValue);
-			return;
-		case CodegenPackage.SUB_BUFFER__OFFSET:
-			setOffset((Integer) newValue);
+		case CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE:
+			setSemaphore((Semaphore) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -231,11 +174,8 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case CodegenPackage.SUB_BUFFER__CONTAINER:
-			setContainer((Buffer) null);
-			return;
-		case CodegenPackage.SUB_BUFFER__OFFSET:
-			setOffset(OFFSET_EDEFAULT);
+		case CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE:
+			setSemaphore((Semaphore) null);
 			return;
 		}
 		super.eUnset(featureID);
@@ -249,28 +189,10 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case CodegenPackage.SUB_BUFFER__CONTAINER:
-			return container != null;
-		case CodegenPackage.SUB_BUFFER__OFFSET:
-			return offset != OFFSET_EDEFAULT;
+		case CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE:
+			return semaphore != null;
 		}
 		return super.eIsSet(featureID);
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public String toString() {
-		if (eIsProxy())
-			return super.toString();
-
-		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (offset: ");
-		result.append(offset);
-		result.append(')');
-		return result.toString();
-	}
-} // SubBufferImpl
+} // SharedMemoryCommunicationImpl

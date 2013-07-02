@@ -86,6 +86,12 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Direction;
  * <li>
  * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getNodes
  * <em>Nodes</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getReceiveRelease
+ * <em>Receive Release</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getSendReserve
+ * <em>Send Reserve</em>}</li>
  * </ul>
  * </p>
  * 
@@ -212,6 +218,27 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * @ordered
 	 */
 	protected EList<CommunicationNode> nodes;
+
+	/**
+	 * The cached value of the '{@link #getReceiveRelease()
+	 * <em>Receive Release</em>}' reference. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @see #getReceiveRelease()
+	 * @generated
+	 * @ordered
+	 */
+	protected Communication receiveRelease;
+
+	/**
+	 * The cached value of the '{@link #getSendReserve() <em>Send Reserve</em>}'
+	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #getSendReserve()
+	 * @generated
+	 * @ordered
+	 */
+	protected Communication sendReserve;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -528,6 +555,90 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
+	 * @generated
+	 */
+	public Communication getReceiveRelease() {
+		if (receiveRelease != null && receiveRelease.eIsProxy()) {
+			InternalEObject oldReceiveRelease = (InternalEObject) receiveRelease;
+			receiveRelease = (Communication) eResolveProxy(oldReceiveRelease);
+			if (receiveRelease != oldReceiveRelease) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							CodegenPackage.COMMUNICATION__RECEIVE_RELEASE,
+							oldReceiveRelease, receiveRelease));
+			}
+		}
+		return receiveRelease;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public Communication basicGetReceiveRelease() {
+		return receiveRelease;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public void setReceiveRelease(Communication newReceiveRelease) {
+		Communication oldReceiveRelease = receiveRelease;
+		receiveRelease = newReceiveRelease;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					CodegenPackage.COMMUNICATION__RECEIVE_RELEASE,
+					oldReceiveRelease, receiveRelease));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public Communication getSendReserve() {
+		if (sendReserve != null && sendReserve.eIsProxy()) {
+			InternalEObject oldSendReserve = (InternalEObject) sendReserve;
+			sendReserve = (Communication) eResolveProxy(oldSendReserve);
+			if (sendReserve != oldSendReserve) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							CodegenPackage.COMMUNICATION__SEND_RESERVE,
+							oldSendReserve, sendReserve));
+			}
+		}
+		return sendReserve;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public Communication basicGetSendReserve() {
+		return sendReserve;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public void setSendReserve(Communication newSendReserve) {
+		Communication oldSendReserve = sendReserve;
+		sendReserve = newSendReserve;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					CodegenPackage.COMMUNICATION__SEND_RESERVE, oldSendReserve,
+					sendReserve));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * 
 	 */
 	public CoreBlock getCoreContainer() {
@@ -594,6 +705,14 @@ public class CommunicationImpl extends CallImpl implements Communication {
 			return getId();
 		case CodegenPackage.COMMUNICATION__NODES:
 			return getNodes();
+		case CodegenPackage.COMMUNICATION__RECEIVE_RELEASE:
+			if (resolve)
+				return getReceiveRelease();
+			return basicGetReceiveRelease();
+		case CodegenPackage.COMMUNICATION__SEND_RESERVE:
+			if (resolve)
+				return getSendReserve();
+			return basicGetSendReserve();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -636,6 +755,12 @@ public class CommunicationImpl extends CallImpl implements Communication {
 			getNodes().addAll(
 					(Collection<? extends CommunicationNode>) newValue);
 			return;
+		case CodegenPackage.COMMUNICATION__RECEIVE_RELEASE:
+			setReceiveRelease((Communication) newValue);
+			return;
+		case CodegenPackage.COMMUNICATION__SEND_RESERVE:
+			setSendReserve((Communication) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -675,6 +800,12 @@ public class CommunicationImpl extends CallImpl implements Communication {
 		case CodegenPackage.COMMUNICATION__NODES:
 			getNodes().clear();
 			return;
+		case CodegenPackage.COMMUNICATION__RECEIVE_RELEASE:
+			setReceiveRelease((Communication) null);
+			return;
+		case CodegenPackage.COMMUNICATION__SEND_RESERVE:
+			setSendReserve((Communication) null);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -705,6 +836,10 @@ public class CommunicationImpl extends CallImpl implements Communication {
 			return id != ID_EDEFAULT;
 		case CodegenPackage.COMMUNICATION__NODES:
 			return nodes != null && !nodes.isEmpty();
+		case CodegenPackage.COMMUNICATION__RECEIVE_RELEASE:
+			return receiveRelease != null;
+		case CodegenPackage.COMMUNICATION__SEND_RESERVE:
+			return sendReserve != null;
 		}
 		return super.eIsSet(featureID);
 	}

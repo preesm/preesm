@@ -118,6 +118,10 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 			return createFifoCall();
 		case CodegenPackage.COMMUNICATION_NODE:
 			return createCommunicationNode();
+		case CodegenPackage.SEMAPHORE:
+			return createSemaphore();
+		case CodegenPackage.SHARED_MEMORY_COMMUNICATION:
+			return createSharedMemoryCommunication();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName()
 					+ "' is not a valid classifier");
@@ -306,6 +310,26 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	public CommunicationNode createCommunicationNode() {
 		CommunicationNodeImpl communicationNode = new CommunicationNodeImpl();
 		return communicationNode;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public Semaphore createSemaphore() {
+		SemaphoreImpl semaphore = new SemaphoreImpl();
+		return semaphore;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public SharedMemoryCommunication createSharedMemoryCommunication() {
+		SharedMemoryCommunicationImpl sharedMemoryCommunication = new SharedMemoryCommunicationImpl();
+		return sharedMemoryCommunication;
 	}
 
 	/**

@@ -124,21 +124,4 @@ public interface SubBuffer extends Buffer {
 	 */
 	void setOffset(int value);
 
-	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator
-	 * <em>Creator</em>}' reference. <!-- begin-user-doc --> If the
-	 * {@link SubBuffer} already has a {@link #getContainer() container}, the
-	 * new creator will be added to the {@link #getUsers() users} list of the
-	 * container. (If an old creator is replaced, it will not be removed from
-	 * the users list of the container)<!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Creator</em>' reference.
-	 * @see #getCreator()
-	 * @generated
-	 */
-	@Override
-	public void setCreator(Block value);
-
 } // SubBuffer

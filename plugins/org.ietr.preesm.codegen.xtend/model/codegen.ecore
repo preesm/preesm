@@ -65,6 +65,10 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="nodes" lowerBound="1" upperBound="-1"
         eType="#//CommunicationNode" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="receiveRelease" eType="#//Communication"
+        transient="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sendReserve" eType="#//Communication"
+        transient="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="Direction">
     <eLiterals name="SEND"/>
@@ -73,6 +77,8 @@
   <eClassifiers xsi:type="ecore:EEnum" name="Delimiter">
     <eLiterals name="START"/>
     <eLiterals name="END" value="1"/>
+    <eLiterals name="RESERVE" value="2"/>
+    <eLiterals name="RELEASE" value="3"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="CoreBlock" eSuperTypes="#//Block">
     <eStructuralFeatures xsi:type="ecore:EReference" name="loopBlock" lowerBound="1"
@@ -140,5 +146,10 @@
   <eClassifiers xsi:type="ecore:EClass" name="CommunicationNode">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Semaphore" eSuperTypes="#//Variable"/>
+  <eClassifiers xsi:type="ecore:EClass" name="SharedMemoryCommunication" eSuperTypes="#//Communication">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="semaphore" lowerBound="1"
+        eType="#//Semaphore"/>
   </eClassifiers>
 </ecore:EPackage>

@@ -71,6 +71,12 @@ import org.eclipse.emf.common.util.EList;
  * <li>
  * {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getNodes
  * <em>Nodes</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveRelease
+ * <em>Receive Release</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getSendReserve
+ * <em>Send Reserve</em>}</li>
  * </ul>
  * </p>
  * 
@@ -344,6 +350,66 @@ public interface Communication extends Call {
 	 * @generated
 	 */
 	EList<CommunicationNode> getNodes();
+
+	/**
+	 * Returns the value of the '<em><b>Receive Release</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Receive Release</em>' reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Receive Release</em>' reference.
+	 * @see #setReceiveRelease(Communication)
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCommunication_ReceiveRelease()
+	 * @model transient="true"
+	 * @generated
+	 */
+	Communication getReceiveRelease();
+
+	/**
+	 * Sets the value of the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveRelease
+	 * <em>Receive Release</em>}' reference. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Receive Release</em>' reference.
+	 * @see #getReceiveRelease()
+	 * @generated
+	 */
+	void setReceiveRelease(Communication value);
+
+	/**
+	 * Returns the value of the '<em><b>Send Reserve</b></em>' reference. <!--
+	 * begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Send Reserve</em>' reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Send Reserve</em>' reference.
+	 * @see #setSendReserve(Communication)
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCommunication_SendReserve()
+	 * @model transient="true"
+	 * @generated
+	 */
+	Communication getSendReserve();
+
+	/**
+	 * Sets the value of the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getSendReserve
+	 * <em>Send Reserve</em>}' reference. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Send Reserve</em>' reference.
+	 * @see #getSendReserve()
+	 * @generated
+	 */
+	void setSendReserve(Communication value);
 
 	/**
 	 * <!-- begin-user-doc --> This method browse the {@link #eContainer()}

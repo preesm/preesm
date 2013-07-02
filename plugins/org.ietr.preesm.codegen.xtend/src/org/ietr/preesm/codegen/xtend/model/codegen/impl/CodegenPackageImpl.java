@@ -64,6 +64,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation;
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
+import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
@@ -201,6 +203,20 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * @generated
 	 */
 	private EClass communicationNodeEClass = null;
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	private EClass semaphoreEClass = null;
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	private EClass sharedMemoryCommunicationEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -600,6 +616,25 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	public EReference getCommunication_ReceiveRelease() {
+		return (EReference) communicationEClass.getEStructuralFeatures().get(9);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EReference getCommunication_SendReserve() {
+		return (EReference) communicationEClass.getEStructuralFeatures()
+				.get(10);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	public EClass getCoreBlock() {
 		return coreBlockEClass;
 	}
@@ -818,6 +853,34 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	public EClass getSemaphore() {
+		return semaphoreEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EClass getSharedMemoryCommunication() {
+		return sharedMemoryCommunicationEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EReference getSharedMemoryCommunication_Semaphore() {
+		return (EReference) sharedMemoryCommunicationEClass
+				.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	public EEnum getDirection() {
 		return directionEEnum;
 	}
@@ -919,6 +982,8 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		createEReference(communicationEClass, COMMUNICATION__RECEIVE_END);
 		createEAttribute(communicationEClass, COMMUNICATION__ID);
 		createEReference(communicationEClass, COMMUNICATION__NODES);
+		createEReference(communicationEClass, COMMUNICATION__RECEIVE_RELEASE);
+		createEReference(communicationEClass, COMMUNICATION__SEND_RESERVE);
 
 		coreBlockEClass = createEClass(CORE_BLOCK);
 		createEReference(coreBlockEClass, CORE_BLOCK__LOOP_BLOCK);
@@ -952,6 +1017,12 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		communicationNodeEClass = createEClass(COMMUNICATION_NODE);
 		createEAttribute(communicationNodeEClass, COMMUNICATION_NODE__NAME);
 		createEAttribute(communicationNodeEClass, COMMUNICATION_NODE__TYPE);
+
+		semaphoreEClass = createEClass(SEMAPHORE);
+
+		sharedMemoryCommunicationEClass = createEClass(SHARED_MEMORY_COMMUNICATION);
+		createEReference(sharedMemoryCommunicationEClass,
+				SHARED_MEMORY_COMMUNICATION__SEMAPHORE);
 
 		// Create enums
 		directionEEnum = createEEnum(DIRECTION);
@@ -1004,6 +1075,9 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		callBlockEClass.getESuperTypes().add(this.getBlock());
 		specialCallEClass.getESuperTypes().add(this.getCall());
 		fifoCallEClass.getESuperTypes().add(this.getCall());
+		semaphoreEClass.getESuperTypes().add(this.getVariable());
+		sharedMemoryCommunicationEClass.getESuperTypes().add(
+				this.getCommunication());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(blockEClass, Block.class, "Block", !IS_ABSTRACT,
@@ -1145,6 +1219,16 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 				null, "nodes", null, 1, -1, Communication.class, !IS_TRANSIENT,
 				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCommunication_ReceiveRelease(),
+				this.getCommunication(), null, "receiveRelease", null, 0, 1,
+				Communication.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+		initEReference(getCommunication_SendReserve(), this.getCommunication(),
+				null, "sendReserve", null, 0, 1, Communication.class,
+				IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
 
 		addEOperation(communicationEClass, this.getCoreBlock(),
 				"getCoreContainer", 1, 1, IS_UNIQUE, IS_ORDERED);
@@ -1271,6 +1355,18 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
 
+		initEClass(semaphoreEClass, Semaphore.class, "Semaphore", !IS_ABSTRACT,
+				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(sharedMemoryCommunicationEClass,
+				SharedMemoryCommunication.class, "SharedMemoryCommunication",
+				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getSharedMemoryCommunication_Semaphore(),
+				this.getSemaphore(), null, "semaphore", null, 1, 1,
+				SharedMemoryCommunication.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
 		// Initialize enums and add enum literals
 		initEEnum(directionEEnum, Direction.class, "Direction");
 		addEEnumLiteral(directionEEnum, Direction.SEND);
@@ -1279,6 +1375,8 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		initEEnum(delimiterEEnum, Delimiter.class, "Delimiter");
 		addEEnumLiteral(delimiterEEnum, Delimiter.START);
 		addEEnumLiteral(delimiterEEnum, Delimiter.END);
+		addEEnumLiteral(delimiterEEnum, Delimiter.RESERVE);
+		addEEnumLiteral(delimiterEEnum, Delimiter.RELEASE);
 
 		initEEnum(specialTypeEEnum, SpecialType.class, "SpecialType");
 		addEEnumLiteral(specialTypeEEnum, SpecialType.FORK);

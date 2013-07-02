@@ -74,7 +74,23 @@ public enum Delimiter implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	END(1, "END", "END");
+	END(1, "END", "END"), /**
+	 * The '<em><b>RESERVE</b></em>' literal object. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #RESERVE_VALUE
+	 * @generated
+	 * @ordered
+	 */
+	RESERVE(2, "RESERVE", "RESERVE"), /**
+	 * The '<em><b>RELEASE</b></em>' literal
+	 * object. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #RELEASE_VALUE
+	 * @generated
+	 * @ordered
+	 */
+	RELEASE(3, "RELEASE", "RELEASE");
 
 	/**
 	 * The '<em><b>START</b></em>' literal value. <!-- begin-user-doc -->
@@ -107,13 +123,43 @@ public enum Delimiter implements Enumerator {
 	public static final int END_VALUE = 1;
 
 	/**
+	 * The '<em><b>RESERVE</b></em>' literal value. <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of '<em><b>RESERVE</b></em>' literal object isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @see #RESERVE
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int RESERVE_VALUE = 2;
+
+	/**
+	 * The '<em><b>RELEASE</b></em>' literal value. <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of '<em><b>RELEASE</b></em>' literal object isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @see #RELEASE
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int RELEASE_VALUE = 3;
+
+	/**
 	 * An array of all the '<em><b>Delimiter</b></em>' enumerators. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	private static final Delimiter[] VALUES_ARRAY = new Delimiter[] { START,
-			END, };
+			END, RESERVE, RELEASE, };
 
 	/**
 	 * A public read-only list of all the '<em><b>Delimiter</b></em>'
@@ -168,6 +214,10 @@ public enum Delimiter implements Enumerator {
 			return START;
 		case END_VALUE:
 			return END;
+		case RESERVE_VALUE:
+			return RESERVE;
+		case RELEASE_VALUE:
+			return RELEASE;
 		}
 		return null;
 	}

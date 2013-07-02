@@ -697,13 +697,31 @@ public interface CodegenPackage extends EPackage {
 	int COMMUNICATION__NODES = CALL_FEATURE_COUNT + 8;
 
 	/**
+	 * The feature id for the '<em><b>Receive Release</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int COMMUNICATION__RECEIVE_RELEASE = CALL_FEATURE_COUNT + 9;
+
+	/**
+	 * The feature id for the '<em><b>Send Reserve</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int COMMUNICATION__SEND_RESERVE = CALL_FEATURE_COUNT + 10;
+
+	/**
 	 * The number of structural features of the '<em>Communication</em>' class.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int COMMUNICATION_FEATURE_COUNT = CALL_FEATURE_COUNT + 9;
+	int COMMUNICATION_FEATURE_COUNT = CALL_FEATURE_COUNT + 11;
 
 	/**
 	 * The meta object id for the '
@@ -1198,6 +1216,219 @@ public interface CodegenPackage extends EPackage {
 
 	/**
 	 * The meta object id for the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SemaphoreImpl
+	 * <em>Semaphore</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.SemaphoreImpl
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getSemaphore()
+	 * @generated
+	 */
+	int SEMAPHORE = 18;
+
+	/**
+	 * The feature id for the '<em><b>Comment</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SEMAPHORE__COMMENT = VARIABLE__COMMENT;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SEMAPHORE__NAME = VARIABLE__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SEMAPHORE__TYPE = VARIABLE__TYPE;
+
+	/**
+	 * The feature id for the '<em><b>Creator</b></em>' container reference.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SEMAPHORE__CREATOR = VARIABLE__CREATOR;
+
+	/**
+	 * The feature id for the '<em><b>Users</b></em>' reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SEMAPHORE__USERS = VARIABLE__USERS;
+
+	/**
+	 * The number of structural features of the '<em>Semaphore</em>' class. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SEMAPHORE_FEATURE_COUNT = VARIABLE_FEATURE_COUNT + 0;
+
+	/**
+	 * The meta object id for the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SharedMemoryCommunicationImpl
+	 * <em>Shared Memory Communication</em>}' class. <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.SharedMemoryCommunicationImpl
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getSharedMemoryCommunication()
+	 * @generated
+	 */
+	int SHARED_MEMORY_COMMUNICATION = 19;
+
+	/**
+	 * The feature id for the '<em><b>Parameters</b></em>' reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SHARED_MEMORY_COMMUNICATION__PARAMETERS = COMMUNICATION__PARAMETERS;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SHARED_MEMORY_COMMUNICATION__NAME = COMMUNICATION__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Direction</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SHARED_MEMORY_COMMUNICATION__DIRECTION = COMMUNICATION__DIRECTION;
+
+	/**
+	 * The feature id for the '<em><b>Delimiter</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SHARED_MEMORY_COMMUNICATION__DELIMITER = COMMUNICATION__DELIMITER;
+
+	/**
+	 * The feature id for the '<em><b>Data</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SHARED_MEMORY_COMMUNICATION__DATA = COMMUNICATION__DATA;
+
+	/**
+	 * The feature id for the '<em><b>Send Start</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SHARED_MEMORY_COMMUNICATION__SEND_START = COMMUNICATION__SEND_START;
+
+	/**
+	 * The feature id for the '<em><b>Send End</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SHARED_MEMORY_COMMUNICATION__SEND_END = COMMUNICATION__SEND_END;
+
+	/**
+	 * The feature id for the '<em><b>Receive Start</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SHARED_MEMORY_COMMUNICATION__RECEIVE_START = COMMUNICATION__RECEIVE_START;
+
+	/**
+	 * The feature id for the '<em><b>Receive End</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SHARED_MEMORY_COMMUNICATION__RECEIVE_END = COMMUNICATION__RECEIVE_END;
+
+	/**
+	 * The feature id for the '<em><b>Id</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SHARED_MEMORY_COMMUNICATION__ID = COMMUNICATION__ID;
+
+	/**
+	 * The feature id for the '<em><b>Nodes</b></em>' containment reference
+	 * list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SHARED_MEMORY_COMMUNICATION__NODES = COMMUNICATION__NODES;
+
+	/**
+	 * The feature id for the '<em><b>Receive Release</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SHARED_MEMORY_COMMUNICATION__RECEIVE_RELEASE = COMMUNICATION__RECEIVE_RELEASE;
+
+	/**
+	 * The feature id for the '<em><b>Send Reserve</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SHARED_MEMORY_COMMUNICATION__SEND_RESERVE = COMMUNICATION__SEND_RESERVE;
+
+	/**
+	 * The feature id for the '<em><b>Semaphore</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SHARED_MEMORY_COMMUNICATION__SEMAPHORE = COMMUNICATION_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '
+	 * <em>Shared Memory Communication</em>' class. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SHARED_MEMORY_COMMUNICATION_FEATURE_COUNT = COMMUNICATION_FEATURE_COUNT + 1;
+
+	/**
+	 * The meta object id for the '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Direction
 	 * <em>Direction</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -1205,7 +1436,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDirection()
 	 * @generated
 	 */
-	int DIRECTION = 18;
+	int DIRECTION = 20;
 
 	/**
 	 * The meta object id for the '
@@ -1216,7 +1447,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDelimiter()
 	 * @generated
 	 */
-	int DELIMITER = 19;
+	int DELIMITER = 21;
 
 	/**
 	 * The meta object id for the '
@@ -1228,7 +1459,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getSpecialType()
 	 * @generated
 	 */
-	int SPECIAL_TYPE = 20;
+	int SPECIAL_TYPE = 22;
 
 	/**
 	 * The meta object id for the '
@@ -1240,7 +1471,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getFifoOperation()
 	 * @generated
 	 */
-	int FIFO_OPERATION = 21;
+	int FIFO_OPERATION = 23;
 
 	/**
 	 * Returns the meta object for class '
@@ -1633,6 +1864,30 @@ public interface CodegenPackage extends EPackage {
 	EReference getCommunication_Nodes();
 
 	/**
+	 * Returns the meta object for the reference '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveRelease
+	 * <em>Receive Release</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference '<em>Receive Release</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Communication#getReceiveRelease()
+	 * @see #getCommunication()
+	 * @generated
+	 */
+	EReference getCommunication_ReceiveRelease();
+
+	/**
+	 * Returns the meta object for the reference '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication#getSendReserve
+	 * <em>Send Reserve</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference '<em>Send Reserve</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Communication#getSendReserve()
+	 * @see #getCommunication()
+	 * @generated
+	 */
+	EReference getCommunication_SendReserve();
+
+	/**
 	 * Returns the meta object for class '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
 	 * <em>Core Block</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1911,6 +2166,41 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getCommunicationNode_Type();
+
+	/**
+	 * Returns the meta object for class '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
+	 * <em>Semaphore</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for class '<em>Semaphore</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
+	 * @generated
+	 */
+	EClass getSemaphore();
+
+	/**
+	 * Returns the meta object for class '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
+	 * <em>Shared Memory Communication</em>}'. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @return the meta object for class '<em>Shared Memory Communication</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
+	 * @generated
+	 */
+	EClass getSharedMemoryCommunication();
+
+	/**
+	 * Returns the meta object for the reference '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication#getSemaphore
+	 * <em>Semaphore</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference '<em>Semaphore</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication#getSemaphore()
+	 * @see #getSharedMemoryCommunication()
+	 * @generated
+	 */
+	EReference getSharedMemoryCommunication_Semaphore();
 
 	/**
 	 * Returns the meta object for enum '
@@ -2287,6 +2577,24 @@ public interface CodegenPackage extends EPackage {
 		EReference COMMUNICATION__NODES = eINSTANCE.getCommunication_Nodes();
 
 		/**
+		 * The meta object literal for the '<em><b>Receive Release</b></em>'
+		 * reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference COMMUNICATION__RECEIVE_RELEASE = eINSTANCE
+				.getCommunication_ReceiveRelease();
+
+		/**
+		 * The meta object literal for the '<em><b>Send Reserve</b></em>'
+		 * reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference COMMUNICATION__SEND_RESERVE = eINSTANCE
+				.getCommunication_SendReserve();
+
+		/**
 		 * The meta object literal for the '
 		 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CoreBlockImpl
 		 * <em>Core Block</em>}' class. <!-- begin-user-doc --> <!--
@@ -2520,6 +2828,40 @@ public interface CodegenPackage extends EPackage {
 		 */
 		EAttribute COMMUNICATION_NODE__TYPE = eINSTANCE
 				.getCommunicationNode_Type();
+
+		/**
+		 * The meta object literal for the '
+		 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SemaphoreImpl
+		 * <em>Semaphore</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc
+		 * -->
+		 * 
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.SemaphoreImpl
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getSemaphore()
+		 * @generated
+		 */
+		EClass SEMAPHORE = eINSTANCE.getSemaphore();
+
+		/**
+		 * The meta object literal for the '
+		 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SharedMemoryCommunicationImpl
+		 * <em>Shared Memory Communication</em>}' class. <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.SharedMemoryCommunicationImpl
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getSharedMemoryCommunication()
+		 * @generated
+		 */
+		EClass SHARED_MEMORY_COMMUNICATION = eINSTANCE
+				.getSharedMemoryCommunication();
+
+		/**
+		 * The meta object literal for the '<em><b>Semaphore</b></em>' reference
+		 * feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference SHARED_MEMORY_COMMUNICATION__SEMAPHORE = eINSTANCE
+				.getSharedMemoryCommunication_Semaphore();
 
 		/**
 		 * The meta object literal for the '
