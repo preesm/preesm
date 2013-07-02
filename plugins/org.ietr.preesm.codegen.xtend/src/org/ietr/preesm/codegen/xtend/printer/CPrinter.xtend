@@ -50,6 +50,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.Communication
 import org.ietr.preesm.codegen.xtend.model.codegen.Constant
+import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
+import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 
 /**
  * This printer is currently used to print C code only for X86 processor with
@@ -76,6 +78,8 @@ class CPrinter extends DefaultPrinter {
 			 * @date «new Date»
 			 */
 			
+			#include <pthread.h>
+			#include <semaphore.h>
 			#include "../include/x86.h"
 			
 			
@@ -111,10 +115,8 @@ class CPrinter extends DefaultPrinter {
 	'''
 	
 	override printDeclarationsHeader(List<Variable> list) '''
-	«IF !list.empty»
-		// Core Global Declaration
-		
-	«ENDIF»
+	// Core Global Declaration
+	extern pthread_barrier_t init_barrier;
 	'''
 	
 	override printBufferDeclaration(Buffer buffer) '''
@@ -137,6 +139,12 @@ class CPrinter extends DefaultPrinter {
 			// Initialisation(s)
 			
 		«ENDIF»
+	'''
+	
+	override printCoreInitBlockFooter(CallBlock callBlock) '''
+	
+	«"\t"» // Init barrier
+		pthread_barrier_wait(&init_barrier);
 	'''
 	
 	override printCoreLoopBlockHeader(LoopBlock block2) '''
@@ -228,19 +236,31 @@ class CPrinter extends DefaultPrinter {
 		}
 	}
 	
-	override printCommunication(Communication communication) '''
+	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
 	«/*Since everything is already in shared memory, communications are simple synchronizations here*/
 	»«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«
-		communication.id»/*ID*/); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.data.doSwitch» 
+		IF communication.semaphore != null»&«
+		communication.semaphore.name»/*ID*/«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.data.doSwitch» 
 	'''
 	
 	override printFunctionCall(FunctionCall functionCall) '''
 	«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 	'''
 	
-	override printConstant(Constant constant) '''«constant.value»/*«constant.name»*/'''
+	override printConstant(Constant constant) '''«constant.value»«IF !constant.name.nullOrEmpty»/*«constant.name»*/«ENDIF»'''
 
 	override printBuffer(Buffer buffer) '''«buffer.name»'''
 	
 	override printSubBuffer(SubBuffer buffer) {printBuffer(buffer)}
+	
+	override printSemaphore(Semaphore semaphore) '''&«semaphore.name»'''
+	
+	override printSemaphoreDefinition(Semaphore semaphore) '''
+	sem_t «semaphore.name»;
+	'''
+	
+	override printSemaphoreDeclaration(Semaphore semaphore) '''
+	extern sem_t «semaphore.name»; 
+	'''
+	
 }

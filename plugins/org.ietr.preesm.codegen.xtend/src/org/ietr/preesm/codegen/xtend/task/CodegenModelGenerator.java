@@ -1196,14 +1196,14 @@ public class CodegenModelGenerator {
 		if (semaphore == null) {
 			semaphore = CodegenFactory.eINSTANCE.createSemaphore();
 			semaphore.setCreator(operatorBlock);
-			semaphore.setName("SEM_COM_" + newComm.getId());
+			semaphore.setName("sem_" + newComm.getId()+"_"+((ss_re)?"SSRE":"RRSR"));
 			FunctionCall initSem = CodegenFactory.eINSTANCE
 					.createFunctionCall();
 			initSem.addParameter(semaphore);
 
 			Constant cstShared = CodegenFactory.eINSTANCE.createConstant();
 			cstShared.setType("int");
-			cstShared.setValue(1);
+			cstShared.setValue(0);
 			initSem.addParameter(cstShared);
 			cstShared.setCreator(operatorBlock);
 
@@ -1220,6 +1220,7 @@ public class CodegenModelGenerator {
 			cstInitVal.setCreator(operatorBlock);
 
 			initSem.setName("sem_init");
+			initSem.setActorName(newComm.getData().getComment());
 
 			operatorBlock.getInitBlock().getCodeElts().add(initSem);
 		}

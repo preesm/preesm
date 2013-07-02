@@ -47,6 +47,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 import java.util.List
+import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
+import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 
 /**
  * This {@link DevelopperPrinter} is a dummy implementation of the 
@@ -112,6 +114,14 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printLoopBlockHeader(LoopBlock block) '''<Loop_Block_Head>'''
 	
 	override printRoundBuffer(SpecialCall call) '''<RoundBuffer>'''
+	
+	override printSemaphore(Semaphore semaphore) '''<Semaphore>'''
+	
+	override printSemaphoreDeclaration(Semaphore semaphore) '''<Semaphore_Declaration>'''
+	
+	override printSemaphoreDefinition(Semaphore semaphore) '''<Semaphore_Definition>'''
+	
+	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''<Shared_Memory_Communication>'''
 
 	override printSpecialCall(SpecialCall specialCall) '''<Special_Call>'''
 	
@@ -120,5 +130,4 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printSubBufferDeclaration(SubBuffer buffer) '''<Sub_Buffer_Declaration>'''
 
 	override printSubBufferDefinition(SubBuffer buffer) '''<Sub_Buffer_Definition>'''
-
 }

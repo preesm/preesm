@@ -47,6 +47,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 import java.util.List
+import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
+import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 
 /**
  * This {@link DefaultPrinter} is a dummy implementation of the 
@@ -58,9 +60,7 @@ import java.util.List
  */
 class DefaultPrinter extends CodegenAbstractPrinter {
 	
-	override printBroadcast(SpecialCall call) {
-		return null
-	}
+	override printBroadcast(SpecialCall call) ''''''
 
 	override printBuffer(Buffer buffer) ''''''
 
@@ -102,23 +102,25 @@ class DefaultPrinter extends CodegenAbstractPrinter {
 
 	override printFifoCall(FifoCall fifoCall) ''''''
 	
-	override printFork(SpecialCall call) {
-		return null
-	}
+	override printFork(SpecialCall call) ''''''
 
 	override printFunctionCall(FunctionCall functionCall) ''''''
 	
-	override printJoin(SpecialCall call) {
-		return null
-	}
+	override printJoin(SpecialCall call) ''''''
 
 	override printLoopBlockFooter(LoopBlock block) ''''''
 
 	override printLoopBlockHeader(LoopBlock block) ''''''
 	
-	override printRoundBuffer(SpecialCall call) {
-		return null
-	}
+	override printRoundBuffer(SpecialCall call) ''''''
+	
+	override printSemaphore(Semaphore semaphore) ''''''
+	
+	override printSemaphoreDeclaration(Semaphore semaphore) ''''''
+	
+	override printSemaphoreDefinition(Semaphore semaphore) ''''''
+	
+	override printSharedMemoryCommunication(SharedMemoryCommunication communication) ''''''
 
 	override printSpecialCall(SpecialCall specialCall) ''''''
 
