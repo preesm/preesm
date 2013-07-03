@@ -135,6 +135,7 @@ public class SystemCPrinterVisitor implements
 		this.outputPath = outputPath;
 	}
 
+	@SuppressWarnings("unused")
 	private String toActorName(String name) {
 		String newName = new String();
 		newName = name.substring(0, 1).toUpperCase() + name.substring(1);

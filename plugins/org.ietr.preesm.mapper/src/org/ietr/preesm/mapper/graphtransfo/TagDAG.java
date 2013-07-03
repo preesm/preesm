@@ -304,6 +304,7 @@ public class TagDAG {
 	 * 
 	 * @throws InvalidExpressionException
 	 */
+	@SuppressWarnings("unchecked")
 	public void addAggregateFromSDF(MapperDAGEdge edge, PreesmScenario scenario)
 			throws InvalidExpressionException {
 

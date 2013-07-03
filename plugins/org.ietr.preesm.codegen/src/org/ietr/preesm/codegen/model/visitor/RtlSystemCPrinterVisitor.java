@@ -398,6 +398,7 @@ public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 		return "";
 	}
 
+	@SuppressWarnings("unused")
 	private boolean isPipelineEndVertex(SDFAbstractVertex v) {
 		for (SDFEdge outEdge : ((SDFGraph) v.getBase()).outgoingEdgesOf(v)) {
 			if (outEdge.getTarget() instanceof SDFSinkInterfaceVertex) {
