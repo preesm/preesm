@@ -1,7 +1,5 @@
 package org.ietr.preesm.memory.allocation;
 
-import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 
@@ -18,16 +16,6 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 public class BasicAllocator extends MemoryAllocator {
 
 	/**
-	 * Constructor of the class
-	 * 
-	 * @param graph
-	 *            the graph whose edges are to allocate
-	 */
-	public BasicAllocator(DirectedAcyclicGraph graph) {
-		super(graph);
-	}
-
-	/**
 	 * Constructor of the MemoryAllocator
 	 * 
 	 * @param memEx
@@ -41,6 +29,8 @@ public class BasicAllocator extends MemoryAllocator {
 	 * Each edge of the graph is given a dedicated memory space.
 	 */
 	public void allocate() {
+		clear();
+		
 		int offset = 0;
 		if (this.graph != null && inputExclusionGraph == null) {
 

@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.workflow.WorkflowException;
 
@@ -27,16 +26,6 @@ import org.jgrapht.graph.SimpleGraph;
  * 
  */
 public class CustomAllocator extends MemoryAllocator {
-
-	/**
-	 * Constructor of the allocator.
-	 * 
-	 * @param graph
-	 *            the graph whose edges are to allocate in memory
-	 */
-	public CustomAllocator(DirectedAcyclicGraph graph) {
-		super(graph);
-	}
 
 	/**
 	 * Constructor of the allocator taking a Memory Exclusion Graph Node as a
@@ -93,6 +82,8 @@ public class CustomAllocator extends MemoryAllocator {
 	 * weight(elt) := vert<sub>i</sub>.weight + vert<sub>j</sub>.weight + ...
 	 */
 	public void allocate() {
+		clear();
+		
 		// Logger logger = WorkflowLogger.getLogger();
 		// (1)
 		MemoryExclusionGraph exclusionGraph;

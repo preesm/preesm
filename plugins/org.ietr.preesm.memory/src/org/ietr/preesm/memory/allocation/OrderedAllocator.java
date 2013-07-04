@@ -6,7 +6,6 @@ import java.util.List;
 
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
-import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
 import net.sf.dftools.workflow.WorkflowException;
 
@@ -54,21 +53,6 @@ public abstract class OrderedAllocator extends MemoryAllocator {
 	 * {@link MemoryExclusionGraph}.
 	 */
 	protected Order order;
-
-	/**
-	 * Constructor of the allocator
-	 * 
-	 * @param graph
-	 *            the graph whose edges are to allocate
-	 */
-	public OrderedAllocator(DirectedAcyclicGraph graph) {
-		super(graph);
-		nbShuffle = 10;
-		policy = Policy.best;
-		lists = new ArrayList<ArrayList<MemoryExclusionVertex>>(nbShuffle);
-		listsSize = new ArrayList<Integer>(nbShuffle);
-		order = Order.SHUFFLE;
-	}
 
 	/**
 	 * Constructor of the allocator

@@ -2,13 +2,9 @@ package org.ietr.preesm.memory.allocation;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-
-import net.sf.dftools.algorithm.model.dag.DAGEdge;
-import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
@@ -31,16 +27,6 @@ public class BestFitAllocator extends OrderedAllocator {
 	/**
 	 * Constructor of the allocator
 	 * 
-	 * @param graph
-	 *            the graph whose edges are to allocate
-	 */
-	public BestFitAllocator(DirectedAcyclicGraph graph) {
-		super(graph);
-	}
-
-	/**
-	 * Constructor of the allocator
-	 * 
 	 * @param memEx
 	 *            The exclusion graph whose vertices are to allocate
 	 */
@@ -58,10 +44,7 @@ public class BestFitAllocator extends OrderedAllocator {
 	 */
 	protected int allocateInOrder(List<MemoryExclusionVertex> vertexList) {
 		// clear all previous allocation
-		memExNodeAllocation = new HashMap<MemoryExclusionVertex, Integer>();
-		edgeAllocation = new HashMap<DAGEdge, Integer>();
-		inputExclusionGraph.setPropertyValue(
-				MemoryExclusionGraph.DAG_EDGE_ALLOCATION, edgeAllocation);
+		clear();
 
 		// Allocate vertices in the list order
 		for (MemoryExclusionVertex vertex : vertexList) {

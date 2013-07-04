@@ -50,6 +50,48 @@ public abstract class MemoryAllocator {
 	protected HashMap<DAGEdge, Integer> edgeAllocation;
 
 	/**
+	 * An allocation is a map of fifo associated to an integer which represents
+	 * their offset in a monolithic memory.<br>
+	 * <br>
+	 * <table border>
+	 * <tr>
+	 * <td>FIFO<sub>size</sub></td>
+	 * <td>Offset</td>
+	 * </tr>
+	 * <tr>
+	 * <td>FIFO_Head_B_end->A_init<sub>100</sub></td>
+	 * <td>0</td>
+	 * </tr>
+	 * <tr>
+	 * <td>FIFO_Body_C_end->B_init<sub>200</sub></td>
+	 * <td>100</td>
+	 * </tr>
+	 * </table>
+	 */
+	protected HashMap<MemoryExclusionVertex, Integer> fifoAllocation;
+
+	/**
+	 * An allocation is a map of actor working memory associated to an integer
+	 * which represents their offset in a monolithic memory.<br>
+	 * <br>
+	 * <table border>
+	 * <tr>
+	 * <td>MObject<sub>size</sub></td>
+	 * <td>Offset</td>
+	 * </tr>
+	 * <tr>
+	 * <td>A<sub>100</sub></td>
+	 * <td>0</td>
+	 * </tr>
+	 * <tr>
+	 * <td>B<sub>200</sub></td>
+	 * <td>100</td>
+	 * </tr>
+	 * </table>
+	 */
+	protected HashMap<MemoryExclusionVertex, Integer> workingMemAllocation;
+
+	/**
 	 * The SDF graph whose edges (memory transfers between actors) are to
 	 * allocate.<br>
 	 * This graph should not be modified. Make a local copy if needed.
@@ -87,19 +129,18 @@ public abstract class MemoryAllocator {
 	protected HashMap<MemoryExclusionVertex, Integer> memExNodeAllocation;
 
 	protected MemoryExclusionGraph inputExclusionGraph;
-
+	
+	
 	/**
-	 * Constructor of the MemoryAllocator
-	 * 
-	 * @param graph
-	 *            The graph to analyze
+	 * This method clear the attributes of the allocator from any trace of a previous allocation.
 	 */
-	protected MemoryAllocator(DirectedAcyclicGraph graph) {
-		this.graph = graph;
-		edgeAllocation = new HashMap<DAGEdge, Integer>();
-
-		memExNodeAllocation = null;
-		inputExclusionGraph = null;
+	public void clear(){
+		edgeAllocation.clear();
+		fifoAllocation.clear();
+		workingMemAllocation.clear();
+		memExNodeAllocation.clear();
+		inputExclusionGraph.setPropertyValue(
+				MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE,	0);
 	}
 
 	/**
@@ -111,6 +152,8 @@ public abstract class MemoryAllocator {
 	protected MemoryAllocator(MemoryExclusionGraph memEx) {
 		this.graph = null;
 		edgeAllocation = new HashMap<DAGEdge, Integer>();
+		fifoAllocation = new HashMap<MemoryExclusionVertex, Integer>();
+		workingMemAllocation = new HashMap<MemoryExclusionVertex, Integer>();
 
 		memExNodeAllocation = new HashMap<MemoryExclusionVertex, Integer>();
 		inputExclusionGraph = memEx;
@@ -149,7 +192,14 @@ public abstract class MemoryAllocator {
 		// in order to make sure that this does not kill the perf.
 
 		memExNodeAllocation.put(vertex, offset);
-		edgeAllocation.put(vertex.getEdge(), offset);
+		
+		if (vertex.getEdge() != null) {
+			edgeAllocation.put(vertex.getEdge(), offset);
+		} else if(vertex.getSink().equals(vertex.getSource())){
+			workingMemAllocation.put(vertex, offset);
+		} else if(vertex.getSource().startsWith("FIFO_")){
+			fifoAllocation.put(vertex, offset);			
+		}
 
 		vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
 				offset);
