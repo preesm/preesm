@@ -5,9 +5,7 @@ import java.util.Map;
 
 import net.sf.dftools.algorithm.model.PropertyBean;
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
-import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
-import net.sf.dftools.workflow.WorkflowException;
 
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
@@ -92,13 +90,6 @@ public abstract class MemoryAllocator {
 	protected HashMap<MemoryExclusionVertex, Integer> workingMemAllocation;
 
 	/**
-	 * The SDF graph whose edges (memory transfers between actors) are to
-	 * allocate.<br>
-	 * This graph should not be modified. Make a local copy if needed.
-	 */
-	protected final DirectedAcyclicGraph graph;
-
-	/**
 	 * An allocation is a map of {@link MemoryExclusionVertex memory objects}
 	 * associated to an integer which represents their offset in a monolithic
 	 * memory.<br>
@@ -129,18 +120,18 @@ public abstract class MemoryAllocator {
 	protected HashMap<MemoryExclusionVertex, Integer> memExNodeAllocation;
 
 	protected MemoryExclusionGraph inputExclusionGraph;
-	
-	
+
 	/**
-	 * This method clear the attributes of the allocator from any trace of a previous allocation.
+	 * This method clear the attributes of the allocator from any trace of a
+	 * previous allocation.
 	 */
-	public void clear(){
+	public void clear() {
 		edgeAllocation.clear();
 		fifoAllocation.clear();
 		workingMemAllocation.clear();
 		memExNodeAllocation.clear();
 		inputExclusionGraph.setPropertyValue(
-				MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE,	0);
+				MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE, 0);
 	}
 
 	/**
@@ -150,7 +141,6 @@ public abstract class MemoryAllocator {
 	 *            The exclusion graph to analyze
 	 */
 	protected MemoryAllocator(MemoryExclusionGraph memEx) {
-		this.graph = null;
 		edgeAllocation = new HashMap<DAGEdge, Integer>();
 		fifoAllocation = new HashMap<MemoryExclusionVertex, Integer>();
 		workingMemAllocation = new HashMap<MemoryExclusionVertex, Integer>();
@@ -192,13 +182,13 @@ public abstract class MemoryAllocator {
 		// in order to make sure that this does not kill the perf.
 
 		memExNodeAllocation.put(vertex, offset);
-		
+
 		if (vertex.getEdge() != null) {
 			edgeAllocation.put(vertex.getEdge(), offset);
-		} else if(vertex.getSink().equals(vertex.getSource())){
+		} else if (vertex.getSink().equals(vertex.getSource())) {
 			workingMemAllocation.put(vertex, offset);
-		} else if(vertex.getSource().startsWith("FIFO_")){
-			fifoAllocation.put(vertex, offset);			
+		} else if (vertex.getSource().startsWith("FIFO_")) {
+			fifoAllocation.put(vertex, offset);
 		}
 
 		vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
@@ -226,20 +216,6 @@ public abstract class MemoryAllocator {
 	public final HashMap<MemoryExclusionVertex, Integer> checkAllocation() {
 		HashMap<MemoryExclusionVertex, Integer> conflictingElements;
 		conflictingElements = new HashMap<MemoryExclusionVertex, Integer>();
-
-		// If this allocator did not build the exclusion graph, build it
-		if (this.inputExclusionGraph == null && graph != null) {
-			try {
-				inputExclusionGraph = new MemoryExclusionGraph();
-				this.inputExclusionGraph.buildGraph(graph);
-			} catch (InvalidExpressionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (WorkflowException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 
 		// Check that no edge of the exclusion graph is violated
 		for (DefaultEdge edge : inputExclusionGraph.edgeSet()) {

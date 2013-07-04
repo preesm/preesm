@@ -5,9 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
-import net.sf.dftools.workflow.WorkflowException;
-
 import org.ietr.preesm.memory.bounds.OstergardSolver;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
@@ -82,25 +79,11 @@ public class ImprovedCustomAllocator extends MemoryAllocator {
 	 */
 	public void allocate() {
 		clear();
-		
+
 		// Logger logger = WorkflowLogger.getLogger();
 		// (1)
-		MemoryExclusionGraph exclusionGraph;
-		if (inputExclusionGraph == null) {
-			exclusionGraph = new MemoryExclusionGraph();
-			try {
-				// logger.log(Level.INFO, "1 - Building Graph");
-				exclusionGraph.buildGraph(graph);
-				inputExclusionGraph = (MemoryExclusionGraph) exclusionGraph
-						.clone();
-			} catch (InvalidExpressionException e) {
-				e.printStackTrace();
-			} catch (WorkflowException e) {
-				e.printStackTrace();
-			}
-		} else {
-			exclusionGraph = (MemoryExclusionGraph) inputExclusionGraph.clone();
-		}
+		MemoryExclusionGraph exclusionGraph = (MemoryExclusionGraph) inputExclusionGraph
+				.clone();
 
 		// (2)
 		// logger.log(Level.INFO, "2 - Get Complementary");

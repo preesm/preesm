@@ -6,8 +6,6 @@ import java.util.List;
 
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
-import net.sf.dftools.workflow.WorkflowException;
 
 import org.ietr.preesm.memory.bounds.AbstractMaximumWeightCliqueSolver;
 import org.ietr.preesm.memory.bounds.HeuristicSolver;
@@ -108,19 +106,6 @@ public abstract class OrderedAllocator extends MemoryAllocator {
 	 * allocation will be lost.
 	 */
 	public void allocateLargestFirst() {
-		// Build the MemoryExclusionGraph if necessary
-		if (inputExclusionGraph == null) {
-			inputExclusionGraph = new MemoryExclusionGraph();
-			try {
-				inputExclusionGraph.buildGraph(graph);
-			} catch (InvalidExpressionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (WorkflowException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 
 		ArrayList<MemoryExclusionVertex> list = new ArrayList<MemoryExclusionVertex>(
 				inputExclusionGraph.vertexSet());
@@ -209,19 +194,6 @@ public abstract class OrderedAllocator extends MemoryAllocator {
 		Policy backupPolicy = this.policy;
 		setPolicy(null);
 
-		// Build the MemoryExclusionGraph if necessary
-		if (inputExclusionGraph == null) {
-			inputExclusionGraph = new MemoryExclusionGraph();
-			try {
-				inputExclusionGraph.buildGraph(graph);
-			} catch (InvalidExpressionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (WorkflowException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 		// Allocate the lists
 		lists = new ArrayList<ArrayList<MemoryExclusionVertex>>(nbShuffle);
 		listsSize = new ArrayList<Integer>(nbShuffle);
@@ -265,20 +237,6 @@ public abstract class OrderedAllocator extends MemoryAllocator {
 	 *            should be used or an approximation.
 	 */
 	public void allocateStableSetOrder(boolean exactStableSet) {
-		// Build the MemoryExclusionGraph if necessary
-		if (inputExclusionGraph == null) {
-			inputExclusionGraph = new MemoryExclusionGraph();
-			try {
-				inputExclusionGraph.buildGraph(graph);
-			} catch (InvalidExpressionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (WorkflowException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
 		ArrayList<MemoryExclusionVertex> list = getStableSetOrderedList(exactStableSet);
 		allocateInOrder(list);
 	}

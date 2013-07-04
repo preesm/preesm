@@ -5,9 +5,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
-import net.sf.dftools.workflow.WorkflowException;
-
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 
@@ -36,20 +33,6 @@ public class DeGreefAllocator extends MemoryAllocator {
 	public void allocate() {
 		// clear all previous allocation
 		clear();
-
-		// Build the MemoryExclusionGraph if necessary
-		if (inputExclusionGraph == null) {
-			inputExclusionGraph = new MemoryExclusionGraph();
-			try {
-				inputExclusionGraph.buildGraph(graph);
-			} catch (InvalidExpressionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (WorkflowException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 
 		ArrayList<IntegerAndVertex> nonAllocatedVertices;
 		nonAllocatedVertices = new ArrayList<IntegerAndVertex>();

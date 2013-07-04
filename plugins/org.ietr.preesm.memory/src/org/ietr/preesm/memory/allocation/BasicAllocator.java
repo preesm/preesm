@@ -30,14 +30,8 @@ public class BasicAllocator extends MemoryAllocator {
 	 */
 	public void allocate() {
 		clear();
-		
-		int offset = 0;
-		if (this.graph != null && inputExclusionGraph == null) {
 
-			// Karol: I think we should forbid the allocation without an
-			// exclusion graph
-			throw new RuntimeException("Allocation without a MemEx.");
-		}
+		int offset = 0;
 
 		if (inputExclusionGraph != null) {
 			for (MemoryExclusionVertex vertex : inputExclusionGraph.vertexSet()) {
