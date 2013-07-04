@@ -150,6 +150,10 @@ public abstract class MemoryAllocator {
 
 		inputExclusionGraph.setPropertyValue(
 				MemoryExclusionGraph.DAG_EDGE_ALLOCATION, edgeAllocation);
+		inputExclusionGraph.setPropertyValue(
+				MemoryExclusionGraph.DAG_FIFO_ALLOCATION, fifoAllocation);
+		inputExclusionGraph.setPropertyValue(
+				MemoryExclusionGraph.WORKING_MEM_ALLOCATION, workingMemAllocation);
 	}
 
 	/**

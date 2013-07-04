@@ -70,7 +70,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 * This Map is used as a reference of dataTypes size when creating an vertex
 	 * from a DAGEdge
 	 */
-	static private Map<String, DataType> _dataTypes = new HashMap<String, DataType>();
+	static public Map<String, DataType> _dataTypes = new HashMap<String, DataType>();
 
 	/**
 	 * This method is used to associate a map of data types to the

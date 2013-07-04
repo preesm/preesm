@@ -57,9 +57,13 @@ import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
 import net.sf.dftools.architecture.slam.ComponentInstance;
 import net.sf.dftools.workflow.WorkflowException;
 
+import org.ietr.preesm.core.types.BufferAggregate;
+import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
@@ -92,6 +96,10 @@ public class MemoryExclusionGraph extends
 	 * {@link DAGEdge}.
 	 */
 	public static final String DAG_EDGE_ALLOCATION = "dag_edges_allocation";
+
+	public static final String DAG_FIFO_ALLOCATION = "fifo_allocation";
+
+	public static final String WORKING_MEM_ALLOCATION = "working_mem_allocation";
 
 	/**
 	 * Property to store an {@link Integer} corresponding to the amount of
@@ -451,18 +459,20 @@ public class MemoryExclusionGraph extends
 			incoming.add(new HashSet<MemoryExclusionVertex>());
 		}
 
-		/*
-		 * Scan of the DAG in order to: - create Exclusion Graph nodes. - add
-		 * exclusion between consecutive Memory Transfer
-		 */
+		// Scan of the DAG in order to:
+		// - create Exclusion Graph nodes.
+		// - add exclusion between consecutive Memory Transfer
 		for (DAGVertex vertexDAG : dagVertices) // For each vertex of the DAG
 		{
-			// DAGVertex vertexDAG = iterDAGVertices.next(); // Retrieve the
-			// vertex
-			// to process
+			// Processing is done in the following order:
+			// 1. Working Memory specific Processing
+			// 2. Outgoing Edges processing
+
+			// Retrieve the vertex to process
 			int vertexID = (Integer) vertexDAG.getPropertyBean().getValue(
 					localOrdering); // Retrieve the vertex unique ID
 
+			// 1. Working Memory specific Processing
 			// If the current vertex has some working memory, create the
 			// associated MemoryExclusionGraphVertex
 			Integer wMem = (Integer) vertexDAG.getCorrespondingSDFVertex()
@@ -534,6 +544,126 @@ public class MemoryExclusionGraph extends
 			predecessors.get(vertexID).addAll(incoming.get(vertexID));
 			verticesPredecessors.put(vertexDAG.getName(),
 					predecessors.get(vertexID));
+		}
+
+		// Add the memory objects corresponding to the fifos.
+		buildFifoMemoryObjects(dag);
+	}
+
+	/**
+	 * Build the memory objects corresponding to the fifos of the input
+	 * {@link DirectedAcyclicGraph}. The new memory objects are added to the
+	 * {@link MemoryExclusionGraph}. This method creates 1 or 2
+	 * {@link MemoryExclusionVertex} for each pair of init/end {@link DAGVertex}
+	 * encountered in the graph.
+	 * 
+	 * @param dag
+	 *            the dag containing the fifos.
+	 */
+	protected void buildFifoMemoryObjects(DirectedAcyclicGraph dag) {
+		// Scan the dag vertices
+		for (DAGVertex vertex : dag.vertexSet()) {
+			String vertKind = vertex.getPropertyBean().getValue("kind")
+					.toString();
+
+			// Process Init vertices only
+			if (vertKind.equals("dag_init_vertex")) {
+
+				DAGVertex dagInitVertex = vertex;
+
+				// Retrieve the corresponding EndVertex
+				SDFInitVertex sdfInitVertex = (SDFInitVertex) vertex
+						.getPropertyBean().getValue(DAGVertex.SDF_VERTEX);
+				SDFEndVertex sdfEndVertex = (SDFEndVertex) sdfInitVertex
+						.getEndReference();
+				DAGVertex dagEndVertex = dag.getVertex(sdfEndVertex.getName());
+
+				// Create the Head Memory Object
+				// Get the typeSize
+				MemoryExclusionVertex headMemoryNode;
+				int typeSize = 1; // (size of a token (from the scenario)
+				{
+					// TODO: Support the supprImplodeExplode option
+					if (dag.outgoingEdgesOf(dagInitVertex).size() != 1) {
+						throw new RuntimeException(
+								"Init DAG vertex "
+										+ dagInitVertex
+										+ " has several outgoing edges.\n"
+										+ "This is not supported by the MemEx builder.\n"
+										+ "Set \"ImplodeExplodeSuppr\" and \"Suppr Fork/Join\""
+										+ " options to false in the workflow tasks"
+										+ " to get rid of this error.");
+					}
+					DAGEdge outgoingEdge = dag.outgoingEdgesOf(dagInitVertex)
+							.iterator().next();
+					BufferAggregate buffers = (BufferAggregate) outgoingEdge
+							.getPropertyBean().getValue(
+									BufferAggregate.propertyBeanName);
+					if (buffers.size() != 1) {
+						throw new RuntimeException(
+								"DAGEdge "
+										+ outgoingEdge
+										+ " is equivalent to several SDFEdges.\n"
+										+ "This is not supported by the MemEx builder.\n"
+										+ "Please contact Preesm developers.");
+					}
+					DataType type = MemoryExclusionVertex._dataTypes
+							.get(buffers.get(0).getDataType());
+					if (type != null) {
+						typeSize = type.getSize();
+					}
+					headMemoryNode = new MemoryExclusionVertex("FIFO_Head_"
+							+ dagEndVertex.getName(), dagInitVertex.getName(),
+							buffers.get(0).getSize() * typeSize);
+				}
+				// Add the head node to the MEG
+				this.addVertex(headMemoryNode);
+
+				// Compute the list of all edges between init and end
+				Set<DAGEdge> between;
+				{
+					Set<DAGEdge> endPredecessors = dag
+							.getPredecessorEdgesOf(dagEndVertex);
+					Set<DAGEdge> initSuccessors = dag
+							.getSuccessorEdgesOf(vertex);
+					between = (new HashSet<DAGEdge>(initSuccessors));
+					between.retainAll(endPredecessors);
+				}
+
+				// Add exclusions between the head node and ALL MemoryObjects
+				// that do not correspond to edges in the between list.
+				for (MemoryExclusionVertex memObject : this.vertexSet()) {
+					DAGEdge correspondingEdge = memObject.getEdge();
+					if (memObject != headMemoryNode
+							&& (correspondingEdge == null || !between
+									.contains(correspondingEdge))) {
+						this.addEdge(headMemoryNode, memObject);
+					}
+				}
+
+				// No need to add exclusion between the head MObj and the
+				// outgoing edge of the init or the incoming edge of the end.
+				// (unless of course the init and the end have an empty
+				// "between" list, but this will be handled by the previous
+				// loop.)
+
+				// Create the Memory Object for the remaining of the FIFO (if
+				// any)
+				int fifoDepth = sdfInitVertex.getInitSize();
+				if (fifoDepth > headMemoryNode.getWeight() / typeSize) {
+					MemoryExclusionVertex fifoMemoryNode = new MemoryExclusionVertex(
+							"FIFO_Body_" + dagEndVertex.getName(),
+							dagInitVertex.getName(), fifoDepth * typeSize
+									- headMemoryNode.getWeight());
+					// Add to the graph and exclude with everyone
+					this.addVertex(fifoMemoryNode);
+					for (MemoryExclusionVertex mObj : this.vertexSet()) {
+						if (mObj != fifoMemoryNode) {
+							this.addEdge(fifoMemoryNode, mObj);
+						}
+					}
+				}
+			}
 		}
 	}
 
