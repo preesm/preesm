@@ -37,6 +37,7 @@
 package org.ietr.preesm.codegen.xtend.task;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -75,6 +76,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.IDLPrototypeFactory;
@@ -757,7 +759,9 @@ public class CodegenModelGenerator {
 
 	/**
 	 * Generate the {@link Buffer} definition. This method sets the
-	 * {@link Buffer#setCreator(Block) Creator} attributes.
+	 * {@link Buffer#setCreator(Block) Creator} attributes. Also re-order the
+	 * buffer definitions list so that containers are always defined before
+	 * content.
 	 * 
 	 */
 	protected void generateBufferDefinitions() {
@@ -789,6 +793,42 @@ public class CodegenModelGenerator {
 		for (Buffer buffer : srSDFEdgeBuffers.values()) {
 			buffer.setCreator(mainOperatorBlock);
 		}
+
+		ECollections.sort(mainOperatorBlock.getDefinitions(),
+				new Comparator<Variable>() {
+
+					@Override
+					public int compare(Variable o1, Variable o2) {
+						if (o1 instanceof Buffer && o2 instanceof Buffer) {
+							int sublevelO1 = 0;
+							if (o1 instanceof SubBuffer) {
+								Buffer b = (Buffer) o1;
+								while (b instanceof SubBuffer) {
+									sublevelO1++;
+									b = ((SubBuffer) b).getContainer();
+								}
+							}
+
+							int sublevelO2 = 0;
+							if (o2 instanceof SubBuffer) {
+								Buffer b = (Buffer) o2;
+								while (b instanceof SubBuffer) {
+									sublevelO2++;
+									b = ((SubBuffer) b).getContainer();
+								}
+							}
+
+							return sublevelO1 - sublevelO2;
+						}
+						if (o1 instanceof Buffer) {
+							return 1;
+						}
+						if (o2 instanceof Buffer) {
+							return -1;
+						}
+						return 0;
+					}
+				});
 	}
 
 	/**
