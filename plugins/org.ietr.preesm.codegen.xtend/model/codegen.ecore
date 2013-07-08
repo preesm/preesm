@@ -77,8 +77,6 @@
   <eClassifiers xsi:type="ecore:EEnum" name="Delimiter">
     <eLiterals name="START"/>
     <eLiterals name="END" value="1"/>
-    <eLiterals name="RESERVE" value="2"/>
-    <eLiterals name="RELEASE" value="3"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="CoreBlock" eSuperTypes="#//Block">
     <eStructuralFeatures xsi:type="ecore:EReference" name="loopBlock" lowerBound="1"

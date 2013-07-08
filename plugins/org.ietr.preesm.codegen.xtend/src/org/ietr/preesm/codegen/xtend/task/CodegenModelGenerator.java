@@ -1187,45 +1187,25 @@ public class CodegenModelGenerator {
 		insertCommunication(operatorBlock, dagVertex, newCommZoneComplement);
 
 		// No semaphore here, semaphore are only for SS->RE and RE->SR
-
-		// Create the corresponding SR or RR
-		SharedMemoryCommunication newCommZoneReleaseReserve = CodegenFactory.eINSTANCE
-				.createSharedMemoryCommunication();
-		newCommZoneReleaseReserve.setDirection(dir);
-		newCommZoneReleaseReserve.setDelimiter((delimiter
-				.equals(Delimiter.START)) ? Delimiter.RESERVE
-				: Delimiter.RELEASE);
-		newCommZoneReleaseReserve.setData(buffer);
-		newCommZoneReleaseReserve.setName(((newComm.getDirection()
-				.equals(Direction.SEND)) ? "SR" : "RR") + commName);
-		for (ComponentInstance comp : routeStep.getNodes()) {
-			CommunicationNode comNode = CodegenFactory.eINSTANCE
-					.createCommunicationNode();
-			comNode.setName(comp.getInstanceName());
-			comNode.setType(comp.getComponent().getVlnv().getName());
-			newCommZoneReleaseReserve.getNodes().add(comNode);
-		}
-
-		// Find corresponding communications (SS/SE/RS/RE)
-		registerCommunication(newCommZoneReleaseReserve, dagEdge, dagVertex);
-
-		// Insert the new communication to the loop of the codeblock
-		insertCommunication(operatorBlock, dagVertex, newCommZoneReleaseReserve);
-
-		// Generate semaphore for RR->SR
-		generateSemaphore(operatorBlock, newCommZoneReleaseReserve);
 	}
 
+	/**
+	 * Generate the semaphore associated to the given
+	 * {@link SharedMemoryCommunication}.
+	 * 
+	 * @param operatorBlock
+	 *            the {@link CoreBlock} on which the
+	 *            {@link SharedMemoryCommunication} is executed
+	 * @param newComm
+	 *            the {@link SharedMemoryCommunication}
+	 */
 	protected void generateSemaphore(CoreBlock operatorBlock,
 			SharedMemoryCommunication newComm) {
 		boolean ss_re = ((newComm.getDirection().equals(Direction.SEND) && newComm
 				.getDelimiter().equals(Delimiter.START)) || (newComm
 				.getDirection().equals(Direction.RECEIVE) && newComm
 				.getDelimiter().equals(Delimiter.END)));
-		boolean rr_sr = ((newComm.getDirection().equals(Direction.SEND) && newComm
-				.getDelimiter().equals(Delimiter.RESERVE)) || (newComm
-				.getDirection().equals(Direction.RECEIVE) && newComm
-				.getDelimiter().equals(Delimiter.RELEASE)));
+
 		// For SS->RE
 
 		// First check if a semaphore was already created for corresponding
@@ -1234,11 +1214,6 @@ public class CodegenModelGenerator {
 		if (ss_re) {
 			correspondingComm.add(newComm.getReceiveEnd());
 			correspondingComm.add(newComm.getSendStart());
-		}
-
-		if (rr_sr) {
-			correspondingComm.add(newComm.getReceiveRelease());
-			correspondingComm.add(newComm.getSendReserve());
 		}
 
 		Semaphore semaphore = null;
@@ -1273,9 +1248,7 @@ public class CodegenModelGenerator {
 			if (ss_re) {
 				cstInitVal.setValue(0);
 			}
-			if (rr_sr) {
-				cstInitVal.setValue(1);
-			}
+
 			cstInitVal.setName("init_val");
 			initSem.addParameter(cstInitVal);
 			cstInitVal.setCreator(operatorBlock);
@@ -1868,10 +1841,9 @@ public class CodegenModelGenerator {
 	 * before calling this method.<br>
 	 * <br>
 	 * In the current version, Send primitives are inserted as follow:<br>
-	 * <code>(SendReserve)-(ProducingActor)-(SendStart)-(SendEnd)</code><br>
+	 * <code>(ProducingActor)-(SendStart)-(SendEnd)</code><br>
 	 * and Receive primitives as follow:<br>
-	 * <code>(ReceiveStart)-(ReceiveEnd)-(ConsumingActor)-(ReceiveRelease)</code>
-	 * <br>
+	 * <code>(ReceiveStart)-(ReceiveEnd)-(ConsumingActor)</code> <br>
 	 * The SendEnd and ReceiveStart placed like this do not enable the
 	 * reception/sending for the next iteration. <br>
 	 * {@link #futureInsertCommunication(CoreBlock, DAGVertex, Communication)
@@ -2013,61 +1985,6 @@ public class CodegenModelGenerator {
 				}
 				// DO NOT save the SE and RS in the dagVertexCall.
 			}
-
-			// For SR and RR
-			if ((newComm.getDelimiter().equals(Delimiter.RESERVE) && newComm
-					.getDirection().equals(Direction.SEND))
-					|| (newComm.getDelimiter().equals(Delimiter.RELEASE) && newComm
-							.getDirection().equals(Direction.RECEIVE))) {
-				// DO the insertion
-				if (newComm.getDelimiter().equals(Delimiter.RESERVE)) {
-
-					// If there is a multi-step comm, the SR must be
-					// inserted as follow: (SR)-(RS)-(RE)-(SS)-(SE)-(RR)
-					if (prodOrConsumerCall instanceof Communication
-							&& ((Communication) prodOrConsumerCall)
-									.getDelimiter().equals(Delimiter.END)
-							&& ((Communication) prodOrConsumerCall)
-									.getDirection().equals(Direction.RECEIVE)) {
-						operatorBlock.getLoopBlock().getCodeElts()
-								.add(index - 2, newComm);
-					} else {
-						// this is not a multistep comm
-						// Insert the SR before the producer preceding the SS
-						operatorBlock.getLoopBlock().getCodeElts()
-								.add(index - 1, newComm);
-					}
-				} else {
-
-					// If this is not a multistep com
-					if (prodOrConsumerindex != -1) {
-						// Insert the RR after the consumer following the RE
-						operatorBlock.getLoopBlock().getCodeElts()
-								.add(prodOrConsumerindex + 1, newComm);
-					} else {
-						// In a multistep com, the SS consumer will not be
-						// inserted
-						// yet so the RR must be inserted after the RE.
-						operatorBlock.getLoopBlock().getCodeElts()
-								.add(index + 1, newComm);
-					}
-				}
-				// DO NOT save the SE, SR and RS, RS in the dagVertexCall.
-
-			}
-
-			// For SRel and RRes
-			if ((newComm.getDelimiter().equals(Delimiter.RELEASE) && newComm
-					.getDirection().equals(Direction.SEND))
-					|| (newComm.getDelimiter().equals(Delimiter.RESERVE) && newComm
-							.getDirection().equals(Direction.RECEIVE))) {
-				// NOPE ! Those operation do not exist !
-				throw new CodegenException(newComm.getDirection().toString()
-						+ newComm.getDelimiter().toString()
-						+ " communication do not exist and cannot be inserted."
-						+ "Only SendStart, SendEnd, SendReserve and "
-						+ "ReceiveStart, ReceiveEnd, ReceiveRelease exist.");
-			}
 		}
 	}
 
@@ -2152,16 +2069,12 @@ public class CodegenModelGenerator {
 					newCommmunication.setSendStart(com);
 				if (com.getDelimiter().equals(Delimiter.END))
 					newCommmunication.setSendEnd(com);
-				if (com.getDelimiter().equals(Delimiter.RESERVE))
-					newCommmunication.setSendReserve(com);
 			}
 			if (com.getDirection().equals(Direction.RECEIVE)) {
 				if (com.getDelimiter().equals(Delimiter.START))
 					newCommmunication.setReceiveStart(com);
 				if (com.getDelimiter().equals(Delimiter.END))
 					newCommmunication.setReceiveEnd(com);
-				if (com.getDelimiter().equals(Delimiter.RELEASE))
-					newCommmunication.setReceiveRelease(com);
 			}
 		}
 
@@ -2173,15 +2086,11 @@ public class CodegenModelGenerator {
 					com.setSendStart(newCommmunication);
 				if (newCommmunication.getDelimiter().equals(Delimiter.END))
 					com.setSendEnd(newCommmunication);
-				if (newCommmunication.getDelimiter().equals(Delimiter.RESERVE))
-					com.setSendReserve(newCommmunication);
 			} else {
 				if (newCommmunication.getDelimiter().equals(Delimiter.START))
 					com.setReceiveStart(newCommmunication);
 				if (newCommmunication.getDelimiter().equals(Delimiter.END))
 					com.setReceiveEnd(newCommmunication);
-				if (newCommmunication.getDelimiter().equals(Delimiter.RELEASE))
-					com.setReceiveRelease(newCommmunication);
 			}
 		}
 	}

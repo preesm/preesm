@@ -27,4 +27,12 @@
          </inputs>
       </task>
    </extension>
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated codegen -->
+      <package
+            uri="http://codegen/1.0"
+            class="org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage"
+            genModel="model/codegen.genmodel"/>
+   </extension>
+
 </plugin>

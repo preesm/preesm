@@ -1389,8 +1389,6 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		initEEnum(delimiterEEnum, Delimiter.class, "Delimiter");
 		addEEnumLiteral(delimiterEEnum, Delimiter.START);
 		addEEnumLiteral(delimiterEEnum, Delimiter.END);
-		addEEnumLiteral(delimiterEEnum, Delimiter.RESERVE);
-		addEEnumLiteral(delimiterEEnum, Delimiter.RELEASE);
 
 		initEEnum(specialTypeEEnum, SpecialType.class, "SpecialType");
 		addEEnumLiteral(specialTypeEEnum, SpecialType.FORK);
