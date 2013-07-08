@@ -10,17 +10,29 @@
 #include <string.h>
 #include "../include/fifo.h"
 
-void fifoInit(void* storageBuffer, int size, int nbTokens){
-    memset(storageBuffer,0,size*nbTokens);
+
+
+
+void fifoInit(void* headBuffer, int headSize, void* bodyBuffer, int bodySize) {
+    memset(headBuffer,0,headSize);
+    if(bodyBuffer != NULL) {
+        memset(bodyBuffer,0,bodySize);
+    }
 }
 
 
-void fifoPush(void* storageBuffer, void * inputBuffer, int inputSize, int fifoSize){
-    memcpy(storageBuffer+(fifoSize-inputSize),inputBuffer,inputSize);
+void fifoPush(void * inputBuffer, void* headBuffer, int headSize, void* bodyBuffer, int bodySize){
+    if(bodyBuffer != NULL){
+        memcpy(headBuffer,bodyBuffer,headSize);
+        memcpy(bodyBuffer, (char *)bodyBuffer+headSize, bodySize-headSize);
+        memcpy((char *)bodyBuffer+bodySize-headSize,  inputBuffer, headSize);
+    } else {
+        memcpy(headBuffer,inputBuffer,headSize);
+    }
+    //memcpy(headBuffer, headBuffer+outputSize, fifoSize-outputSize);
+    //memset(headBuffer+fifoSize-outputSize, 0, outputSize); // Useless
 }
 
-void fifoPop(void* storageBuffer, void * outputBuffer, int outputSize, int fifoSize){
-    memcpy(outputBuffer, storageBuffer, outputSize);
-    memcpy(storageBuffer, storageBuffer+outputSize, fifoSize-outputSize);
-    memset(storageBuffer+fifoSize-outputSize, 0, outputSize); // Useless
+void fifoPop(void * outputBuffer, void* headBuffer, int headSize, void* bodyBuffer, int bodySize){
+    memcpy(outputBuffer, headBuffer, headSize);
 }

@@ -7,11 +7,17 @@
     </files>
     <constraints excelUrl="">
         <constraintGroup>
-            <operator name="Core0"/>
+            <operator name="Core3"/>
             <task name="MergeY"/>
             <task name="SplitY"/>
-            <task name="Read_YUV"/>
             <task name="SobelY"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="MergeY"/>
+            <task name="SplitY"/>
+            <task name="display_pic"/>
+            <task name="display_res"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core2"/>
@@ -20,15 +26,10 @@
             <task name="SobelY"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core1"/>
-            <task name="display_pic"/>
-            <task name="display_res"/>
-            <task name="SobelY"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core3"/>
+            <operator name="Core0"/>
             <task name="MergeY"/>
             <task name="SplitY"/>
+            <task name="Read_YUV"/>
             <task name="SobelY"/>
         </constraintGroup>
     </constraints>

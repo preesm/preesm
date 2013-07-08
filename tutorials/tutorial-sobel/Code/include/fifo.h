@@ -11,10 +11,10 @@
 #ifndef FIFO_H
 #define FIFO_H
 
-void fifoInit(void* storageBuffer, int size, int nbTokens);
+void fifoInit(void* headBuffer, int headSize, void* bodyBuffer, int bodySize);
 
-void fifoPush(void* storageBuffer, void * inputBuffer, int size, int fifoSize);
+void fifoPush(void * inputBuffer, void* headBuffer, int headSize, void* bodyBuffer, int bodySize);
 
-void fifoPop(void* storageBuffer, void * outputBuffer, int size, int fifoSize);
+void fifoPop(void * outputBuffer, void* headBuffer, int headSize, void* bodyBuffer, int bodySize);
 
 #endif

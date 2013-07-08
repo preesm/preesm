@@ -18,8 +18,8 @@
         <data key="name">top_display</data>
         <data key="kind">sdf</data>
         <data key="variables">
-            <variable name="ysize" value="1080"/>
-            <variable name="xsize" value="1920"/>
+            <variable name="ysize" value="288"/>
+            <variable name="xsize" value="352"/>
             <variable name="N" value="4"/>
         </data>
         <node id="Read_YUV">
@@ -28,8 +28,8 @@
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
             <data key="arguments">
-                <argument name="xSize" value="1920"/>
-                <argument name="ySize" value="1080"/>
+                <argument name="xSize" value="352"/>
+                <argument name="ySize" value="288"/>
             </data>
         </node>
         <node id="display_pic">
@@ -39,8 +39,8 @@
             <data key="nbRepeat">1</data>
             <data key="arguments">
                 <argument name="index" value="0"/>
-                <argument name="ysize" value="1080"/>
-                <argument name="xsize" value="1920"/>
+                <argument name="ysize" value="288"/>
+                <argument name="xsize" value="352"/>
             </data>
         </node>
         <node id="SobelY">
@@ -49,8 +49,8 @@
             <data key="kind">vertex</data>
             <data key="nbRepeat">4</data>
             <data key="arguments">
-                <argument name="xSize" value="1920"/>
-                <argument name="ySize" value="272"/>
+                <argument name="xSize" value="352"/>
+                <argument name="ySize" value="74"/>
             </data>
         </node>
         <node id="display_res">
@@ -60,8 +60,8 @@
             <data key="nbRepeat">1</data>
             <data key="arguments">
                 <argument name="index" value="1"/>
-                <argument name="ysize" value="1080"/>
-                <argument name="xsize" value="1920"/>
+                <argument name="ysize" value="288"/>
+                <argument name="xsize" value="352"/>
             </data>
         </node>
         <node id="Br_U">
@@ -86,8 +86,8 @@
             <data key="nbRepeat">1</data>
             <data key="arguments">
                 <argument name="nbSlice" value="4"/>
-                <argument name="xSize" value="1920"/>
-                <argument name="ySize" value="1080"/>
+                <argument name="xSize" value="352"/>
+                <argument name="ySize" value="288"/>
             </data>
         </node>
         <node id="MergeY">
@@ -97,91 +97,91 @@
             <data key="nbRepeat">1</data>
             <data key="arguments">
                 <argument name="nbSlice" value="4"/>
-                <argument name="xSize" value="1920"/>
-                <argument name="ySize" value="1080"/>
+                <argument name="xSize" value="352"/>
+                <argument name="ySize" value="288"/>
             </data>
         </node>
         <edge source="Read_YUV" sourceport="u" target="Br_U" targetport="u">
-            <data key="edge_cons">518400</data>
+            <data key="edge_cons">25344</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">518400</data>
+            <data key="edge_prod">25344</data>
             <data key="data_type">uchar</data>
             <data key="Weight"/>
         </edge>
         <edge source="Br_U" sourceport="u" target="display_res" targetport="u">
-            <data key="edge_cons">518400</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">518400</data>
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">25344</data>
+            <data key="edge_prod">25344</data>
             <data key="data_type">uchar</data>
             <data key="Weight"/>
         </edge>
         <edge source="Br_U" sourceport="u" target="display_pic" targetport="u">
-            <data key="edge_cons">518400</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">518400</data>
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">25344</data>
+            <data key="edge_prod">25344</data>
             <data key="data_type">uchar</data>
             <data key="Weight"/>
         </edge>
         <edge source="Read_YUV" sourceport="v" target="Br_V" targetport="v">
-            <data key="edge_cons">518400</data>
+            <data key="edge_cons">25344</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">518400</data>
+            <data key="edge_prod">25344</data>
             <data key="data_type">uchar</data>
             <data key="Weight"/>
         </edge>
         <edge source="Br_V" sourceport="v" target="display_res" targetport="v">
-            <data key="edge_cons">518400</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">518400</data>
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">25344</data>
+            <data key="edge_prod">25344</data>
             <data key="data_type">uchar</data>
             <data key="Weight"/>
         </edge>
         <edge source="Read_YUV" sourceport="y" target="Br_Y" targetport="y">
-            <data key="edge_cons">2073600</data>
+            <data key="edge_cons">101376</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">2073600</data>
+            <data key="edge_prod">101376</data>
             <data key="data_type">uchar</data>
             <data key="Weight"/>
         </edge>
         <edge source="Br_Y" sourceport="y" target="display_pic" targetport="y">
-            <data key="edge_cons">2073600</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">2073600</data>
+            <data key="edge_cons">101376</data>
+            <data key="edge_delay">101376</data>
+            <data key="edge_prod">101376</data>
             <data key="data_type">uchar</data>
             <data key="Weight"/>
         </edge>
         <edge source="Br_V" sourceport="v" target="display_pic" targetport="v">
-            <data key="edge_cons">518400</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">518400</data>
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">25344</data>
+            <data key="edge_prod">25344</data>
             <data key="data_type">uchar</data>
             <data key="Weight"/>
         </edge>
         <edge source="Br_Y" sourceport="y" target="SplitY" targetport="input">
-            <data key="edge_cons">2073600</data>
+            <data key="edge_cons">101376</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">2073600</data>
+            <data key="edge_prod">101376</data>
             <data key="data_type">uchar</data>
             <data key="Weight"/>
         </edge>
         <edge source="SplitY" sourceport="output" target="SobelY" targetport="input">
-            <data key="edge_cons">522240</data>
+            <data key="edge_cons">26048</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">2088960</data>
+            <data key="edge_prod">104192</data>
             <data key="data_type">uchar</data>
             <data key="Weight"/>
         </edge>
         <edge source="SobelY" sourceport="output" target="MergeY" targetport="input">
-            <data key="edge_cons">2088960</data>
+            <data key="edge_cons">104192</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">522240</data>
+            <data key="edge_prod">26048</data>
             <data key="data_type">uchar</data>
             <data key="Weight"/>
         </edge>
         <edge source="MergeY" sourceport="output" target="display_res" targetport="y">
-            <data key="edge_cons">2073600</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">2073600</data>
+            <data key="edge_cons">101376</data>
+            <data key="edge_delay">101376</data>
+            <data key="edge_prod">101376</data>
             <data key="data_type">uchar</data>
             <data key="Weight"/>
         </edge>
