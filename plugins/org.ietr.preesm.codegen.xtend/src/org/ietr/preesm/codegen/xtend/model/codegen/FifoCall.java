@@ -49,8 +49,11 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getFifoTail
  * <em>Fifo Tail</em>}</li>
  * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getStorageBuffer
- * <em>Storage Buffer</em>}</li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getHeadBuffer
+ * <em>Head Buffer</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getBodyBuffer
+ * <em>Body Buffer</em>}</li>
  * </ul>
  * </p>
  * 
@@ -163,24 +166,54 @@ public interface FifoCall extends Call {
 	 * <!-- end-user-doc -->
 	 * 
 	 * @return the value of the '<em>Storage Buffer</em>' reference.
-	 * @see #setStorageBuffer(Buffer)
+	 * @see #setHeadBuffer(Buffer)
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFifoCall_StorageBuffer()
 	 * @model
 	 * @generated
 	 */
-	Buffer getStorageBuffer();
+	Buffer getHeadBuffer();
 
 	/**
 	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getStorageBuffer
-	 * <em>Storage Buffer</em>}' reference. <!-- begin-user-doc --> <!--
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getHeadBuffer
+	 * <em>Head Buffer</em>}' reference. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
 	 * @param value
-	 *            the new value of the '<em>Storage Buffer</em>' reference.
-	 * @see #getStorageBuffer()
+	 *            the new value of the '<em>Head Buffer</em>' reference.
+	 * @see #getHeadBuffer()
 	 * @generated
 	 */
-	void setStorageBuffer(Buffer value);
+	void setHeadBuffer(Buffer value);
+
+	/**
+	 * Returns the value of the '<em><b>Body Buffer</b></em>' reference. <!--
+	 * begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Body Buffer</em>' reference isn't clear, there
+	 * really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Body Buffer</em>' reference.
+	 * @see #setBodyBuffer(Buffer)
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFifoCall_BodyBuffer()
+	 * @model
+	 * @generated
+	 */
+	Buffer getBodyBuffer();
+
+	/**
+	 * Sets the value of the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getBodyBuffer
+	 * <em>Body Buffer</em>}' reference. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Body Buffer</em>' reference.
+	 * @see #getBodyBuffer()
+	 * @generated
+	 */
+	void setBodyBuffer(Buffer value);
 
 } // FifoCall

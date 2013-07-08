@@ -134,16 +134,16 @@ class XMLPrinter extends DefaultPrinter {
 		</threadDeclaration>
 	'''
 
-	override printDeclarationsHeader(List<Variable> list) {
-		return "\t\r\n" //printEmptyHeaderWithNIndentation(1)
-	}
-
-	override printDefinitionsHeader(List<Variable> list) '''
+	override printDeclarationsHeader(List<Variable> list) '''
 		<bufferContainer>
 			
 	'''
+	
+	override printDefinitionsHeader(List<Variable> list) {
+		return "\t\r\n" //printEmptyHeaderWithNIndentation(1)
+	}
 
-	override printDeclarationsFooter(List<Variable> list) '''
+	override printDefinitionsFooter(List<Variable> list) '''
 		</bufferContainer>
 	'''
 
@@ -178,20 +178,29 @@ class XMLPrinter extends DefaultPrinter {
 				case FifoOperation::PUSH: "push"
 			}
 		»">
-			<variable name="&amp;«fifoCall.storageBuffer.name»"/>
+			<variable name="&amp;«fifoCall.headBuffer.name»"/>
+			«IF fifoCall.bodyBuffer != null»
+				<variable name="&amp;«fifoCall.bodyBuffer.name»"/>
+			«ENDIF»
 			«IF fifoCall.operation != FifoOperation::INIT»
 				«fifoCall.parameters.head.doSwitch»
 				<constant name="nb_token" type="int" value="«(fifoCall.parameters.head as Buffer).size»"/>
-			«ELSE»
-			<constant name="size" type="string" value="sizeof(«fifoCall.storageBuffer.type»)"/>
+			«ENDIF»
+			<constant name="size" type="string" value="sizeof(«fifoCall.headBuffer.type»)"/>
+			«{
+			var const = CodegenFactory::eINSTANCE.createConstant
+			const.name = "head_size"
+			const.type = "int"
+			const.value = fifoCall.headBuffer.size
+			const
+			}.doSwitch»
 			«{
 			var const = CodegenFactory::eINSTANCE.createConstant
 			const.name = "fifo_size"
 			const.type = "int"
-			const.value = fifoCall.storageBuffer.size
+			const.value = fifoCall.headBuffer.size + (if(fifoCall.bodyBuffer==null)0 else fifoCall.bodyBuffer.size)
 			const
 			}.doSwitch»
-			«ENDIF»
 		</userFunctionCall>
 	'''
 

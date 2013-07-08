@@ -193,7 +193,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	public Block getCreator() {
 		if (eContainerFeatureID() != CodegenPackage.VARIABLE__CREATOR)
 			return null;
-		return (Block) eContainer();
+		return (Block) eInternalContainer();
 	}
 
 	/**

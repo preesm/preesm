@@ -797,8 +797,17 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
-	public EReference getFifoCall_StorageBuffer() {
+	public EReference getFifoCall_HeadBuffer() {
 		return (EReference) fifoCallEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EReference getFifoCall_BodyBuffer() {
+		return (EReference) fifoCallEClass.getEStructuralFeatures().get(4);
 	}
 
 	/**
@@ -1009,7 +1018,8 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		createEAttribute(fifoCallEClass, FIFO_CALL__OPERATION);
 		createEReference(fifoCallEClass, FIFO_CALL__FIFO_HEAD);
 		createEReference(fifoCallEClass, FIFO_CALL__FIFO_TAIL);
-		createEReference(fifoCallEClass, FIFO_CALL__STORAGE_BUFFER);
+		createEReference(fifoCallEClass, FIFO_CALL__HEAD_BUFFER);
+		createEReference(fifoCallEClass, FIFO_CALL__BODY_BUFFER);
 
 		commentableEClass = createEClass(COMMENTABLE);
 		createEAttribute(commentableEClass, COMMENTABLE__COMMENT);
@@ -1331,8 +1341,12 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 				"fifoTail", null, 0, 1, FifoCall.class, IS_TRANSIENT,
 				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getFifoCall_StorageBuffer(), this.getBuffer(), null,
-				"storageBuffer", null, 0, 1, FifoCall.class, !IS_TRANSIENT,
+		initEReference(getFifoCall_HeadBuffer(), this.getBuffer(), null,
+				"headBuffer", null, 0, 1, FifoCall.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getFifoCall_BodyBuffer(), this.getBuffer(), null,
+				"bodyBuffer", null, 0, 1, FifoCall.class, !IS_TRANSIENT,
 				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 

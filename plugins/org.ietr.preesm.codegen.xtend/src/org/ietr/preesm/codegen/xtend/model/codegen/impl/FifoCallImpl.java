@@ -60,8 +60,11 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation;
  * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FifoCallImpl#getFifoTail
  * <em>Fifo Tail</em>}</li>
  * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FifoCallImpl#getStorageBuffer
- * <em>Storage Buffer</em>}</li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FifoCallImpl#getHeadBuffer
+ * <em>Head Buffer</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FifoCallImpl#getBodyBuffer
+ * <em>Body Buffer</em>}</li>
  * </ul>
  * </p>
  * 
@@ -109,15 +112,24 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	protected FifoCall fifoTail;
 
 	/**
-	 * The cached value of the '{@link #getStorageBuffer()
-	 * <em>Storage Buffer</em>}' reference. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * The cached value of the '{@link #getHeadBuffer() <em>Head Buffer</em>}'
+	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @see #getStorageBuffer()
+	 * @see #getHeadBuffer()
 	 * @generated
 	 * @ordered
 	 */
-	protected Buffer storageBuffer;
+	protected Buffer headBuffer;
+
+	/**
+	 * The cached value of the '{@link #getBodyBuffer() <em>Body Buffer</em>}'
+	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #getBodyBuffer()
+	 * @generated
+	 * @ordered
+	 */
+	protected Buffer bodyBuffer;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -248,18 +260,18 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	 * 
 	 * @generated
 	 */
-	public Buffer getStorageBuffer() {
-		if (storageBuffer != null && storageBuffer.eIsProxy()) {
-			InternalEObject oldStorageBuffer = (InternalEObject) storageBuffer;
-			storageBuffer = (Buffer) eResolveProxy(oldStorageBuffer);
-			if (storageBuffer != oldStorageBuffer) {
+	public Buffer getHeadBuffer() {
+		if (headBuffer != null && headBuffer.eIsProxy()) {
+			InternalEObject oldHeadBuffer = (InternalEObject) headBuffer;
+			headBuffer = (Buffer) eResolveProxy(oldHeadBuffer);
+			if (headBuffer != oldHeadBuffer) {
 				if (eNotificationRequired())
 					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							CodegenPackage.FIFO_CALL__STORAGE_BUFFER,
-							oldStorageBuffer, storageBuffer));
+							CodegenPackage.FIFO_CALL__HEAD_BUFFER,
+							oldHeadBuffer, headBuffer));
 			}
 		}
-		return storageBuffer;
+		return headBuffer;
 	}
 
 	/**
@@ -267,8 +279,8 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	 * 
 	 * @generated
 	 */
-	public Buffer basicGetStorageBuffer() {
-		return storageBuffer;
+	public Buffer basicGetHeadBuffer() {
+		return headBuffer;
 	}
 
 	/**
@@ -276,13 +288,55 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	 * 
 	 * @generated
 	 */
-	public void setStorageBuffer(Buffer newStorageBuffer) {
-		Buffer oldStorageBuffer = storageBuffer;
-		storageBuffer = newStorageBuffer;
+	public void setHeadBuffer(Buffer newHeadBuffer) {
+		Buffer oldHeadBuffer = headBuffer;
+		headBuffer = newHeadBuffer;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.FIFO_CALL__STORAGE_BUFFER, oldStorageBuffer,
-					storageBuffer));
+					CodegenPackage.FIFO_CALL__HEAD_BUFFER, oldHeadBuffer,
+					headBuffer));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public Buffer getBodyBuffer() {
+		if (bodyBuffer != null && bodyBuffer.eIsProxy()) {
+			InternalEObject oldBodyBuffer = (InternalEObject) bodyBuffer;
+			bodyBuffer = (Buffer) eResolveProxy(oldBodyBuffer);
+			if (bodyBuffer != oldBodyBuffer) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							CodegenPackage.FIFO_CALL__BODY_BUFFER,
+							oldBodyBuffer, bodyBuffer));
+			}
+		}
+		return bodyBuffer;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public Buffer basicGetBodyBuffer() {
+		return bodyBuffer;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public void setBodyBuffer(Buffer newBodyBuffer) {
+		Buffer oldBodyBuffer = bodyBuffer;
+		bodyBuffer = newBodyBuffer;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					CodegenPackage.FIFO_CALL__BODY_BUFFER, oldBodyBuffer,
+					bodyBuffer));
 	}
 
 	/**
@@ -303,10 +357,14 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 			if (resolve)
 				return getFifoTail();
 			return basicGetFifoTail();
-		case CodegenPackage.FIFO_CALL__STORAGE_BUFFER:
+		case CodegenPackage.FIFO_CALL__HEAD_BUFFER:
 			if (resolve)
-				return getStorageBuffer();
-			return basicGetStorageBuffer();
+				return getHeadBuffer();
+			return basicGetHeadBuffer();
+		case CodegenPackage.FIFO_CALL__BODY_BUFFER:
+			if (resolve)
+				return getBodyBuffer();
+			return basicGetBodyBuffer();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -328,8 +386,11 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 		case CodegenPackage.FIFO_CALL__FIFO_TAIL:
 			setFifoTail((FifoCall) newValue);
 			return;
-		case CodegenPackage.FIFO_CALL__STORAGE_BUFFER:
-			setStorageBuffer((Buffer) newValue);
+		case CodegenPackage.FIFO_CALL__HEAD_BUFFER:
+			setHeadBuffer((Buffer) newValue);
+			return;
+		case CodegenPackage.FIFO_CALL__BODY_BUFFER:
+			setBodyBuffer((Buffer) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -352,8 +413,11 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 		case CodegenPackage.FIFO_CALL__FIFO_TAIL:
 			setFifoTail((FifoCall) null);
 			return;
-		case CodegenPackage.FIFO_CALL__STORAGE_BUFFER:
-			setStorageBuffer((Buffer) null);
+		case CodegenPackage.FIFO_CALL__HEAD_BUFFER:
+			setHeadBuffer((Buffer) null);
+			return;
+		case CodegenPackage.FIFO_CALL__BODY_BUFFER:
+			setBodyBuffer((Buffer) null);
 			return;
 		}
 		super.eUnset(featureID);
@@ -373,8 +437,10 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 			return fifoHead != null;
 		case CodegenPackage.FIFO_CALL__FIFO_TAIL:
 			return fifoTail != null;
-		case CodegenPackage.FIFO_CALL__STORAGE_BUFFER:
-			return storageBuffer != null;
+		case CodegenPackage.FIFO_CALL__HEAD_BUFFER:
+			return headBuffer != null;
+		case CodegenPackage.FIFO_CALL__BODY_BUFFER:
+			return bodyBuffer != null;
 		}
 		return super.eIsSet(featureID);
 	}

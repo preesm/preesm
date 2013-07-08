@@ -62,7 +62,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	public static CodegenFactory init() {
 		try {
 			CodegenFactory theCodegenFactory = (CodegenFactory) EPackage.Registry.INSTANCE
-					.getEFactory("http://codegen/1.0");
+					.getEFactory(CodegenPackage.eNS_URI);
 			if (theCodegenFactory != null) {
 				return theCodegenFactory;
 			}

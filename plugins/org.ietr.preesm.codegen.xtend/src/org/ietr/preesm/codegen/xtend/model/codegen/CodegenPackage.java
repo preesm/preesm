@@ -1158,13 +1158,22 @@ public interface CodegenPackage extends EPackage {
 	int FIFO_CALL__FIFO_TAIL = CALL_FEATURE_COUNT + 2;
 
 	/**
-	 * The feature id for the '<em><b>Storage Buffer</b></em>' reference. <!--
+	 * The feature id for the '<em><b>Head Buffer</b></em>' reference. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int FIFO_CALL__STORAGE_BUFFER = CALL_FEATURE_COUNT + 3;
+	int FIFO_CALL__HEAD_BUFFER = CALL_FEATURE_COUNT + 3;
+
+	/**
+	 * The feature id for the '<em><b>Body Buffer</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int FIFO_CALL__BODY_BUFFER = CALL_FEATURE_COUNT + 4;
 
 	/**
 	 * The number of structural features of the '<em>Fifo Call</em>' class. <!--
@@ -1173,7 +1182,7 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int FIFO_CALL_FEATURE_COUNT = CALL_FEATURE_COUNT + 4;
+	int FIFO_CALL_FEATURE_COUNT = CALL_FEATURE_COUNT + 5;
 
 	/**
 	 * The meta object id for the '
@@ -2098,15 +2107,27 @@ public interface CodegenPackage extends EPackage {
 
 	/**
 	 * Returns the meta object for the reference '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getStorageBuffer
-	 * <em>Storage Buffer</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getHeadBuffer
+	 * <em>Head Buffer</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @return the meta object for the reference '<em>Storage Buffer</em>'.
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getStorageBuffer()
+	 * @return the meta object for the reference '<em>Head Buffer</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getHeadBuffer()
 	 * @see #getFifoCall()
 	 * @generated
 	 */
-	EReference getFifoCall_StorageBuffer();
+	EReference getFifoCall_HeadBuffer();
+
+	/**
+	 * Returns the meta object for the reference '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getBodyBuffer
+	 * <em>Body Buffer</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference '<em>Body Buffer</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getBodyBuffer()
+	 * @see #getFifoCall()
+	 * @generated
+	 */
+	EReference getFifoCall_BodyBuffer();
 
 	/**
 	 * Returns the meta object for class '
@@ -2771,13 +2792,20 @@ public interface CodegenPackage extends EPackage {
 		EReference FIFO_CALL__FIFO_TAIL = eINSTANCE.getFifoCall_FifoTail();
 
 		/**
-		 * The meta object literal for the '<em><b>Storage Buffer</b></em>'
+		 * The meta object literal for the '<em><b>Head Buffer</b></em>'
 		 * reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
 		 * 
 		 * @generated
 		 */
-		EReference FIFO_CALL__STORAGE_BUFFER = eINSTANCE
-				.getFifoCall_StorageBuffer();
+		EReference FIFO_CALL__HEAD_BUFFER = eINSTANCE.getFifoCall_HeadBuffer();
+
+		/**
+		 * The meta object literal for the '<em><b>Body Buffer</b></em>'
+		 * reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference FIFO_CALL__BODY_BUFFER = eINSTANCE.getFifoCall_BodyBuffer();
 
 		/**
 		 * The meta object literal for the '

@@ -915,7 +915,7 @@
     </children>
     <styles xmi:type="notation:ConnectorStyle" xmi:id="_GvDuEawpEeKnJ9Ri7qUrHQ" lineColor="4210752"/>
     <styles xmi:type="notation:FontStyle" xmi:id="_GvDuEqwpEeKnJ9Ri7qUrHQ" fontColor="4210752" fontName="Segoe UI" fontHeight="10"/>
-    <element xmi:type="ecore:EReference" href="codegen.ecore#//FifoCall/storageBuffer"/>
+    <element xmi:type="ecore:EReference" href="codegen.ecore#//FifoCall/headBuffer"/>
     <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_GvDuE6wpEeKnJ9Ri7qUrHQ" points="[-24, 0, 190, 292]$[-263, 0, -49, 292]$[-263, -292, -49, 0]$[-233, -292, -19, 0]"/>
     <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_GvHYcKwpEeKnJ9Ri7qUrHQ" id="(0.1388888888888889,0.19607843137254902)"/>
     <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_GvHYcawpEeKnJ9Ri7qUrHQ" id="(0.19607843137254902,0.27450980392156865)"/>
@@ -990,5 +990,19 @@
     <styles xmi:type="notation:FontStyle" xmi:id="_2GofYuLzEeKlV8_qJRqOqg" fontColor="4210752" fontName="Segoe UI" fontHeight="10"/>
     <element xmi:type="ecore:EReference" href="codegen.ecore#//Communication/sendReserve"/>
     <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_2GofY-LzEeKlV8_qJRqOqg" points="[105, 4, 105, 4]$[105, 4, 105, 4]"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_wMp7cOU8EeKcUOQFYwaBfQ" type="3002" source="_1Vxw4KviEeKnJ9Ri7qUrHQ" target="_nfeuYJuaEeKpdeZtHB9wCw">
+    <children xmi:type="notation:Node" xmi:id="_wMrwoOU8EeKcUOQFYwaBfQ" type="4011">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_wMrwoeU8EeKcUOQFYwaBfQ" x="-10" y="-10"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_wMsXsOU8EeKcUOQFYwaBfQ" type="4012">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_wMsXseU8EeKcUOQFYwaBfQ" x="10" y="10"/>
+    </children>
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_wMp7ceU8EeKcUOQFYwaBfQ" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_wMp7cuU8EeKcUOQFYwaBfQ" fontColor="4210752" fontName="Segoe UI" fontHeight="10"/>
+    <element xmi:type="ecore:EReference" href="codegen.ecore#//FifoCall/bodyBuffer"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_wMp7c-U8EeKcUOQFYwaBfQ" points="[-33, -8, 209, 280]$[-257, -8, -15, 280]$[-257, -288, -15, 0]$[-242, -288, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_wMx3QOU8EeKcUOQFYwaBfQ" id="(0.18888888888888888,0.5098039215686274)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_ySxTYOU8EeKcUOQFYwaBfQ" id="(0.00980392156862745,0.6666666666666666)"/>
   </edges>
 </notation:Diagram>

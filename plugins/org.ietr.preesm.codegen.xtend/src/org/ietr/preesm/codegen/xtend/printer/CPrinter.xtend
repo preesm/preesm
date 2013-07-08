@@ -156,18 +156,18 @@ class CPrinter extends DefaultPrinter {
 	}
 	'''	
 	override printFifoCall(FifoCall fifoCall) {
-		var result = "fifo"+fifoCall.operation.toString.toLowerCase.toFirstUpper
-	
-		result = result +
-			'''(«fifoCall.storageBuffer.name»,'''
-		result = result + if( fifoCall.operation == FifoOperation::INIT) {
-			'''sizeof(«fifoCall.storageBuffer.type»), «fifoCall.storageBuffer.size»);
-			'''
-		} else {
+		var result = "fifo" + fifoCall.operation.toString.toLowerCase.toFirstUpper + "("
+
+		if (fifoCall.operation != FifoOperation::INIT) {
 			var buffer = fifoCall.parameters.head as Buffer
-			'''«buffer.doSwitch», «buffer.size»*sizeof(«buffer.type»),sizeof(«fifoCall.storageBuffer.type»)*«fifoCall.storageBuffer.size»);
-			'''
+			result = result + '''«buffer.doSwitch», '''
 		}
+
+		result = result +
+			'''«fifoCall.headBuffer.name», «fifoCall.headBuffer.size»*sizeof(«fifoCall.headBuffer.type»), '''
+		result = result + '''«IF fifoCall.bodyBuffer != null»«fifoCall.bodyBuffer.name», «fifoCall.bodyBuffer.size»*sizeof(«fifoCall.
+			bodyBuffer.type»)«ELSE»NULL, 0«ENDIF»);
+			'''
 	}
 	
 	override printFork(SpecialCall call) '''

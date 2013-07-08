@@ -132,8 +132,8 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 		//
 		// The Coreblock is structured as follow:
 		// CoreBlock
-		// - DefinitionBlock
 		// - DeclarationBlock
+		// - DefinitionBlock
 		// - CoreInitBlock
 		// - CoreLoopBlock
 		//
@@ -169,26 +169,6 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 		var String indentation
 		var boolean hasNewLine
 
-		// Visit Definitions
-		{
-			setState(PrinterState::PRINTING_DEFINITIONS);
-			val definitionsHeader = printDefinitionsHeader(coreBlock.definitions)
-			result.append(definitionsHeader, indentationCoreBlock)
-			if (definitionsHeader.length > 0) {
-				indentation = result.lastLineIndentation
-				result = result.trimLastEOL
-				hasNewLine = result.endWithEOL
-			} else {
-				indentation = indentationCoreBlock
-				hasNewLine = false
-			}
-			result.append(coreBlock.definitions.map[doSwitch].join(''), indentation)
-			if (hasNewLine) {
-				result.newLineIfNotEmpty()
-				result.append(indentationCoreBlock)
-			}
-			result.append(printDefinitionsFooter(coreBlock.definitions), indentationCoreBlock)
-		}
 
 		// Visit Declarations
 		{
@@ -211,6 +191,27 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 				result.append(indentationCoreBlock)
 			}
 			result.append(printDeclarationsFooter(coreBlock.declarations), indentationCoreBlock)
+		}
+		
+		// Visit Definitions
+		{
+			setState(PrinterState::PRINTING_DEFINITIONS);
+			val definitionsHeader = printDefinitionsHeader(coreBlock.definitions)
+			result.append(definitionsHeader, indentationCoreBlock)
+			if (definitionsHeader.length > 0) {
+				indentation = result.lastLineIndentation
+				result = result.trimLastEOL
+				hasNewLine = result.endWithEOL
+			} else {
+				indentation = indentationCoreBlock
+				hasNewLine = false
+			}
+			result.append(coreBlock.definitions.map[doSwitch].join(''), indentation)
+			if (hasNewLine) {
+				result.newLineIfNotEmpty()
+				result.append(indentationCoreBlock)
+			}
+			result.append(printDefinitionsFooter(coreBlock.definitions), indentationCoreBlock)
 		}
 
 		// Visit init block
