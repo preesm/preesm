@@ -49,6 +49,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 import java.util.List
 import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
+import org.ietr.preesm.codegen.xtend.model.codegen.Block
 
 /**
  * This {@link DefaultPrinter} is a dummy implementation of the 
@@ -59,6 +60,12 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
  * @author kdesnos
  */
 class DefaultPrinter extends CodegenAbstractPrinter {
+	
+	/**
+	 * Default implementation: does nothing.
+	 * @see CodegenAbstractPrinter#preProcessing(List)
+	 */
+	override preProcessing(List<Block> blocks) {}
 	
 	override printBroadcast(SpecialCall call) ''''''
 
@@ -129,5 +136,4 @@ class DefaultPrinter extends CodegenAbstractPrinter {
 	override printSubBufferDeclaration(SubBuffer buffer) ''''''
 
 	override printSubBufferDefinition(SubBuffer buffer) ''''''
-
 }

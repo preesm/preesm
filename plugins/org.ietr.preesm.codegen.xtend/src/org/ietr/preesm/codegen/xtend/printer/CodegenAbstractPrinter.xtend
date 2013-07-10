@@ -55,6 +55,7 @@ import org.ietr.preesm.codegen.xtend.task.CodegenException
 import java.util.List
 import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
+import org.ietr.preesm.codegen.xtend.model.codegen.Block
 
 enum PrinterState {
 	PRINTING_DEFINITIONS,
@@ -66,7 +67,9 @@ enum PrinterState {
 
 /**
  * The {@link CodegenPrinterVisitor} is used to visit a {@link CodegenPackage
- * Codegen model}.
+ * Codegen model}. To use a printer, the following function calls should be used:<br>
+ * 1. Call {@link #preProcessing(List)} on a {@link List} containing all printed {@link Block blocks}.<br>
+ * 2. Call {@link #doSwitch()} on each {@link Block} to print.
  * 
  * @author kdesnos
  * 
@@ -118,8 +121,8 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	override caseCommunication(Communication communication) {
 		printCommunication(communication);
 	}
-	
-	override caseSharedMemoryCommunication(SharedMemoryCommunication communication){
+
+	override caseSharedMemoryCommunication(SharedMemoryCommunication communication) {
 		printSharedMemoryCommunication(communication);
 	}
 
@@ -169,7 +172,6 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 		var String indentation
 		var boolean hasNewLine
 
-
 		// Visit Declarations
 		{
 			setState(PrinterState::PRINTING_DECLARATIONS);
@@ -192,7 +194,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 			}
 			result.append(printDeclarationsFooter(coreBlock.declarations), indentationCoreBlock)
 		}
-		
+
 		// Visit Definitions
 		{
 			setState(PrinterState::PRINTING_DEFINITIONS);
@@ -408,6 +410,13 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 			"Object " + object + " is not supported by the printer" + this + "in its current state. "
 		);
 	}
+	
+	/**
+	 * Get the current {@link PrinterState} of the printer
+	 */
+	def getState() {
+		state
+	}
 
 	override caseFifoCall(FifoCall fifoCall) {
 		printFifoCall(fifoCall)
@@ -429,7 +438,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 
 		result.join('')
 	}
-	
+
 	override caseSemaphore(Semaphore semaphore) {
 		if (state.equals(PrinterState::PRINTING_DEFINITIONS))
 			return printSemaphoreDefinition(semaphore)
@@ -459,6 +468,20 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 
 		return printSubBuffer(subBuffer)
 	}
+
+	/**
+	 * Method called before printing a set of {@link Block blocks}. This method
+	 * can perform some printer specific modification on the blocks passed as
+	 * parameters. For example, it can be used to insert instrumentation
+	 * primitives in the code. This method will NOT print the code of the
+	 * {@link Block blocks}, use {@link #doSwitch()} on each {@link Block} to
+	 * print after the pre-processing to do so.
+	 * 
+	 * @param blocks
+	 * 				The list of {@link Block blocks} that will be printer by the
+	 * 				printer
+	 */
+	def void preProcessing(List<Block> blocks);
 
 	/**
 	 * Method called to print a {@link SpecialCall} with
@@ -792,7 +815,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printRoundBuffer(SpecialCall call)
-	
+
 	/**
 	 * Method called to print a {@link Semaphore} outside the
 	 * {@link CoreBlock#getDefinitions() definition} or the
@@ -804,7 +827,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printSemaphore(Semaphore semaphore)
-	
+
 	/**
 	 * Method called to print a {@link Semaphore} within the
 	 * {@link CoreBlock#getDeclarations() declaration} {@link CallBlock} of a
@@ -815,7 +838,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printSemaphoreDeclaration(Semaphore semaphore)
-	
+
 	/**
 	 * Method called to print a {@link Semaphore} within the
 	 * {@link CoreBlock#getDefinitions() definition} {@link CallBlock} of a
@@ -826,8 +849,8 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printSemaphoreDefinition(Semaphore semaphore)
-	
-		/**
+
+	/**
 	 * ethod called to print a {@link SharedMemoryCommunication}.
 	 * 
 	 * @param communication
