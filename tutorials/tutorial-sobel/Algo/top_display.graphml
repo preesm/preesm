@@ -19,9 +19,9 @@
         <data key="kind">sdf</data>
         <data key="parameters"/>
         <data key="variables">
-            <variable name="N" value="4"/>
-            <variable name="xsize" value="352"/>
-            <variable name="ysize" value="288"/>
+            <variable name="N" value="8"/>
+            <variable name="xsize" value="1920"/>
+            <variable name="ysize" value="1080"/>
         </data>
         <node id="Read_YUV">
             <data key="name">Read_YUV</data>
@@ -101,7 +101,7 @@
         </node>
         <edge source="Read_YUV" sourceport="u" target="Br_U" targetport="u">
             <data key="edge_prod">xsize/2*ysize/2</data>
-            <data key="edge_delay">0</data>
+            <data key="edge_delay">xsize/2*ysize/2</data>
             <data key="edge_cons">xsize/2*ysize/2</data>
             <data key="data_type">uchar</data>
         </edge>
@@ -119,7 +119,7 @@
         </edge>
         <edge source="Read_YUV" sourceport="v" target="Br_V" targetport="v">
             <data key="edge_prod">xsize/2*ysize/2</data>
-            <data key="edge_delay">0</data>
+            <data key="edge_delay">xsize/2*ysize/2</data>
             <data key="edge_cons">xsize/2*ysize/2</data>
             <data key="data_type">uchar</data>
         </edge>
@@ -130,12 +130,6 @@
             <data key="data_type">uchar</data>
         </edge>
         <edge source="Read_YUV" sourceport="y" target="Br_Y" targetport="y">
-            <data key="edge_prod">xsize*ysize</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">xsize*ysize</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="Br_Y" sourceport="y" target="display_pic" targetport="y">
             <data key="edge_prod">xsize*ysize</data>
             <data key="edge_delay">xsize*ysize</data>
             <data key="edge_cons">xsize*ysize</data>
@@ -166,6 +160,12 @@
             <data key="data_type">uchar</data>
         </edge>
         <edge source="MergeY" sourceport="output" target="display_res" targetport="y">
+            <data key="edge_prod">xsize*ysize</data>
+            <data key="edge_delay">xsize*ysize</data>
+            <data key="edge_cons">xsize*ysize</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="Br_Y" sourceport="y" target="display_pic" targetport="y">
             <data key="edge_prod">xsize*ysize</data>
             <data key="edge_delay">xsize*ysize</data>
             <data key="edge_cons">xsize*ysize</data>

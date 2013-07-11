@@ -17,6 +17,7 @@
 
 #include "communication.h"
 #include "fifo.h"
+#include "dump.h"
 
 #include "readYUV.h"
 #include "displayYUV.h"

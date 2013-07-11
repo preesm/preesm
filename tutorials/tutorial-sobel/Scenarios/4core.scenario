@@ -7,35 +7,36 @@
     </files>
     <constraints excelUrl="">
         <constraintGroup>
-            <operator name="Core0"/>
-            <task name="MergeY"/>
+            <operator name="Core3"/>
             <task name="SplitY"/>
-            <task name="Read_YUV"/>
-            <task name="display_pic"/>
-            <task name="display_res"/>
             <task name="SobelY"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core1"/>
+            <task name="display_pic"/>
+            <task name="display_res"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="Read_YUV"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core3"/>
+            <task name="MergeY"/>
+            <task name="SobelY"/>
         </constraintGroup>
     </constraints>
     <relativeconstraints excelUrl=""/>
     <timings excelUrl="">
-        <timing opname="x86" time="250" vertexname="display_pic"/>
-        <timing opname="x86" time="250" vertexname="display_res"/>
-        <timing opname="x86" time="5" vertexname="SplitY"/>
-        <timing opname="x86" time="45" vertexname="Read_YUV"/>
-        <timing opname="x86" time="4" vertexname="MergeY"/>
-        <timing opname="x86" time="138" vertexname="SobelY"/>
+        <timing opname="x86" time="146" vertexname="MergeY"/>
+        <timing opname="x86" time="25285" vertexname="Read_YUV"/>
+        <timing opname="x86" time="5649" vertexname="SobelY"/>
+        <timing opname="x86" time="149" vertexname="SplitY"/>
+        <timing opname="x86" time="5756" vertexname="display_pic"/>
+        <timing opname="x86" time="5756" vertexname="display_res"/>
     </timings>
     <simuParams>
-        <mainCore>Core0</mainCore>
+        <mainCore>Core2</mainCore>
         <mainComNode>shared_mem</mainComNode>
         <averageDataSize>1000</averageDataSize>
         <dataTypes>
@@ -43,7 +44,10 @@
             <dataType name="uchar" size="1"/>
         </dataTypes>
         <specialVertexOperators>
+            <specialVertexOperator path="Core3"/>
             <specialVertexOperator path="Core0"/>
+            <specialVertexOperator path="Core2"/>
+            <specialVertexOperator path="Core1"/>
         </specialVertexOperators>
     </simuParams>
     <variables excelUrl=""/>

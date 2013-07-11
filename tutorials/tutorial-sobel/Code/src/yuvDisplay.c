@@ -121,25 +121,25 @@ void yuvDisplay(int id, unsigned char *y, unsigned char *u, unsigned char *v)
 
     SDL_UnlockYUVOverlay(overlay);
 
-    yuvRefreshDisplay();
+    yuvRefreshDisplay(id);
 }
-void yuvRefreshDisplay()
+void yuvRefreshDisplay(int id)
 {
     SDL_Event event;
     SDL_Rect video_rect;
-    int id = 0;
+    //int id = 0;
     //= {display.overlays[1]->w*1,0,display.overlays[1]->w, display.overlays[1]->h};
 
-    while(display.overlays[id] != NULL && id<FRAME_NB_MAX)
-    {
+    //while(display.overlays[id] != NULL && id<FRAME_NB_MAX)
+    //{
         video_rect.x = display.overlays[id]->w*id;
         video_rect.y = 0;
         video_rect.w = display.overlays[id]->w;
         video_rect.h = display.overlays[id]->h;
 
         SDL_DisplayYUVOverlay(display.overlays[id], &video_rect);
-        id++;
-    }
+        //id++;
+    //}
 
 
     /* Grab all the events off the queue. */

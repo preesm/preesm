@@ -30,6 +30,12 @@ void sobel(int xSize, int ySize, unsigned char *input, unsigned char *output){
             output[j*xSize + i] = (abs(gx) + abs(gy))/8;
         }
     }
+
+    // Fill the left and right sides
+    for(j=0; j<ySize ; j++){
+        output[j*xSize] = 0;
+        output[(j+1)*xSize-1] = 0;
+    }
 }
 
 

@@ -68,7 +68,9 @@
     </dftools:task>
     <dftools:task
         pluginId="org.ietr.preesm.codegen.xtend.task.CodegenTask" taskId="Codegen Xtend">
-        <dftools:data key="variables"/>
+        <dftools:data key="variables">
+            <dftools:variable name="Printer" value="C"/>
+        </dftools:data>
     </dftools:task>
     <dftools:task
         pluginId="org.ietr.preesm.memory.exclusiongraph.MemExUpdater" taskId="MemEx Updater">

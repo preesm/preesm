@@ -65,7 +65,7 @@
                 slam:componentType="Operator" slam:refinement=""/>
             <slam:componentDescription slam:componentRef="SHARED_MEM"
                 slam:componentType="contentionComNode"
-                slam:refinement="" slam:speed="10000000"/>
+                slam:refinement="" slam:speed="1000000000"/>
         </slam:componentDescriptions>
         <slam:linkDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
             <slam:linkDescription slam:directedLink="undirected"

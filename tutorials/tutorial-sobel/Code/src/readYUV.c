@@ -55,12 +55,11 @@ void initReadYUV(int xSize, int ySize) {
 
    ======================================================================*/
 void readYUV(int xSize, int ySize, unsigned char *y, unsigned char *u, unsigned char *v) {
-       
 
-    if(ftell(ptfile)>=NB_FRAME*(xSize*ySize + xSize*ySize/2)){
+    if( ftell(ptfile)/(xSize*ySize + xSize*ySize/2) >=NB_FRAME){
         rewind(ptfile);
         tick = clock()-tick;
-        printf("\nMain: %d frames in %f - %f fps\n", NB_FRAME ,tick/(float)CLOCKS_PER_SEC, NB_FRAME/(float)tick*(float)CLOCKS_PER_SEC);
+        printf("\nMain: %d frames in %f - %f fps\n", NB_FRAME-1 ,tick/(float)CLOCKS_PER_SEC, (NB_FRAME-1.0)/(float)tick*(float)CLOCKS_PER_SEC);
         tick = clock();
     }
     fread(y, sizeof(char), xSize * ySize, ptfile);
