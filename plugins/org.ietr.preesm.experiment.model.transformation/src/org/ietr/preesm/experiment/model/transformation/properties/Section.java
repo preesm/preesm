@@ -37,15 +37,19 @@ import com.singularsys.jep.ParseException;
  */
 public class Section extends GFPropertySection implements ITabbedPropertyConstants{
 	
-	private Text txtExpression;
-
 	private CLabel lblName;
 	private CLabel lblNameObj;
 	private CLabel lblExpression;
 	private CLabel lblValue;
 	private CLabel lblValueObj;
 	private CLabel lblMessage;
-	private CLabel lblAllExpression;
+	private CLabel lblFullExpression;
+	
+	/**
+	 * A text expression can be as an expression: value numbers, trigonometric functions,
+	 *  expression of condition "if (cond, true value, false value)"
+	 */
+	private Text txtExpression;
 	
 	private Jep jep;
 	
@@ -58,9 +62,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 		Composite composite = factory.createFlatFormComposite(parent);
 		FormData data;
 		
-		/**
-		 * NAME
-		 */
+		/**** NAME ****/
 		lblNameObj = factory.createCLabel(composite, " ");
 		data = new FormData();
 		data.left = new FormAttachment(0, STANDARD_LABEL_WIDTH);
@@ -73,10 +75,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 		data.right = new FormAttachment(lblNameObj, -HSPACE);
 		lblName.setLayoutData(data);
 		
-
-		/**
-		 * EXPRESION
-		 */
+		/**** EXPRESION ****/
 		txtExpression = factory.createText(composite, "");
 		data = new FormData();
 		data.left = new FormAttachment(0, STANDARD_LABEL_WIDTH);
@@ -92,29 +91,24 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 		data.top = new FormAttachment(lblName);
 		lblExpression.setLayoutData(data);
 	
-		/**
-		 * ALL EXPRESSION
-		 */
-		lblAllExpression = factory.createCLabel(composite, " ");
+		/**** FULL EXPRESSION ****/
+		lblFullExpression = factory.createCLabel(composite, " ");
 		data = new FormData();
 		data.left = new FormAttachment(0, STANDARD_LABEL_WIDTH);
 		data.right = new FormAttachment(100, 0);
 		data.top = new FormAttachment(lblExpression);
-		lblAllExpression.setLayoutData(data);
+		lblFullExpression.setLayoutData(data);
 		
-		/**
-		 * MESSAGE
-		 */
+		
+		/**** MESSAGE ****/
 		lblMessage = factory.createCLabel(composite, "Expression valid.");
 		data = new FormData();
 		data.left = new FormAttachment(0, STANDARD_LABEL_WIDTH);
 		data.right = new FormAttachment(100, 0);
-		data.top = new FormAttachment(lblAllExpression);
+		data.top = new FormAttachment(lblFullExpression);
 		lblMessage.setLayoutData(data);
 		
-		/**
-		 * VALUE
-		 */
+		/**** VALUE ****/
 		lblValueObj = factory.createCLabel(composite, " ");
 		data = new FormData();
 		data.left = new FormAttachment(0, STANDARD_LABEL_WIDTH);
@@ -149,11 +143,12 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 							((Parameter) bo).getExpression().setExpressionString(txtExpression.getText());
 							txtExpression.setText(txtExpression.getText());
 
-							((Parameter) bo).getExpression().setAllExpression(((Parameter) bo).getName()+"="+dependencyAll(((Parameter) bo)));
+							//The recursive function is called
+							((Parameter) bo).getExpression().setAllExpression(((Parameter) bo).getName()+"="+fullExpression(((Parameter) bo)));
 
 							evaluate(((Parameter) bo));
 
-							lblAllExpression.setText(((Parameter) bo).getExpression().getAllExpression());
+							lblFullExpression.setText(((Parameter) bo).getExpression().getAllExpression());
 						}//Parameter
 
 						if(bo instanceof OutputPort){
@@ -161,16 +156,18 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 							txtExpression.setText(txtExpression.getText());
 							
 							if(((OutputPort) bo).eContainer() instanceof SourceInterface){
-								((OutputPort) bo).getExpression().setAllExpression(((SourceInterface) ((OutputPort) bo).eContainer()).getName()+"="+dependencyAll(((OutputPort) bo)));
+								//The recursive function is called
+								((OutputPort) bo).getExpression().setAllExpression(((SourceInterface) ((OutputPort) bo).eContainer()).getName()+"="+fullExpression(((OutputPort) bo)));
 							}
 							
 							if(((OutputPort) bo).eContainer() instanceof Actor){
-								((OutputPort) bo).getExpression().setAllExpression(((OutputPort) bo).getName()+"="+dependencyAll(((OutputPort) bo)));
+								//The recursive function is called
+								((OutputPort) bo).getExpression().setAllExpression(((OutputPort) bo).getName()+"="+fullExpression(((OutputPort) bo)));
 							}
 							
 							evaluate(((OutputPort) bo));
 
-							lblAllExpression.setText(((OutputPort) bo).getExpression().getAllExpression());
+							lblFullExpression.setText(((OutputPort) bo).getExpression().getAllExpression());
 						}//OutputPort
 						
 						if(bo instanceof InputPort){
@@ -179,16 +176,18 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 							txtExpression.setText(txtExpression.getText());
 							
 							if(((InputPort) bo).eContainer() instanceof SinkInterface){
-								((InputPort) bo).getExpression().setAllExpression(((SinkInterface) ((InputPort) bo).eContainer()).getName()+"="+dependencyAll(((InputPort) bo)));
+								//The recursive function is called
+								((InputPort) bo).getExpression().setAllExpression(((SinkInterface) ((InputPort) bo).eContainer()).getName()+"="+fullExpression(((InputPort) bo)));
 							}
 							
 							if(((InputPort) bo).eContainer() instanceof Actor){
-								((InputPort) bo).getExpression().setAllExpression(((InputPort) bo).getName()+"="+dependencyAll(((InputPort) bo)));
+								//The recursive function is called
+								((InputPort) bo).getExpression().setAllExpression(((InputPort) bo).getName()+"="+fullExpression(((InputPort) bo)));
 							}
 							
 							evaluate(((InputPort) bo));
 
-							lblAllExpression.setText(((InputPort) bo).getExpression().getAllExpression());
+							lblFullExpression.setText(((InputPort) bo).getExpression().getAllExpression());
 						}//InputPort
 						
 						if(bo instanceof Delay){
@@ -196,11 +195,12 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 								((Delay) bo).getExpression().setExpressionString(txtExpression.getText());
 								txtExpression.setText(txtExpression.getText());
 		
-								((Delay) bo).getExpression().setAllExpression(((Fifo) ((Delay) bo).eContainer()).getId()+"="+dependencyAll(((Delay) bo)));
+								//The recursive function is called
+								((Delay) bo).getExpression().setAllExpression(((Fifo) ((Delay) bo).eContainer()).getId()+"="+fullExpression(((Delay) bo)));
 		
 								evaluate(((Delay) bo));
 		
-								lblAllExpression.setText(((Delay) bo).getExpression().getAllExpression());
+								lblFullExpression.setText(((Delay) bo).getExpression().getAllExpression());
 							}
 						}//Delay
 					}
@@ -223,11 +223,12 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 						((Parameter) bo).getExpression().setExpressionString(txtExpression.getText());
 						txtExpression.setText(txtExpression.getText());
 
-						((Parameter) bo).getExpression().setAllExpression(((Parameter) bo).getName()+"="+dependencyAll(((Parameter) bo)));
+						//The recursive function is called
+						((Parameter) bo).getExpression().setAllExpression(((Parameter) bo).getName()+"="+fullExpression(((Parameter) bo)));
 
 						evaluate(((Parameter) bo));
 
-						lblAllExpression.setText(((Parameter) bo).getExpression().getAllExpression());
+						lblFullExpression.setText(((Parameter) bo).getExpression().getAllExpression());
 					}//Parameter
 
 					if(bo instanceof OutputPort){
@@ -235,16 +236,18 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 						txtExpression.setText(txtExpression.getText());
 						
 						if(((OutputPort) bo).eContainer() instanceof SourceInterface){
-							((OutputPort) bo).getExpression().setAllExpression(((SourceInterface) ((OutputPort) bo).eContainer()).getName()+"="+dependencyAll(((OutputPort) bo)));
+							//The recursive function is called
+							((OutputPort) bo).getExpression().setAllExpression(((SourceInterface) ((OutputPort) bo).eContainer()).getName()+"="+fullExpression(((OutputPort) bo)));
 						}
 						
 						if(((OutputPort) bo).eContainer() instanceof Actor){
-							((OutputPort) bo).getExpression().setAllExpression(((OutputPort) bo).getName()+"="+dependencyAll(((OutputPort) bo)));
+							//The recursive function is called
+							((OutputPort) bo).getExpression().setAllExpression(((OutputPort) bo).getName()+"="+fullExpression(((OutputPort) bo)));
 						}
 						
 						evaluate(((OutputPort) bo));
 
-						lblAllExpression.setText(((OutputPort) bo).getExpression().getAllExpression());
+						lblFullExpression.setText(((OutputPort) bo).getExpression().getAllExpression());
 					}//OutputPort
 					
 					if(bo instanceof InputPort){
@@ -253,16 +256,18 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 						txtExpression.setText(txtExpression.getText());
 						
 						if(((InputPort) bo).eContainer() instanceof SinkInterface){
-							((InputPort) bo).getExpression().setAllExpression(((SinkInterface) ((InputPort) bo).eContainer()).getName()+"="+dependencyAll(((InputPort) bo)));
+							//The recursive function is called
+							((InputPort) bo).getExpression().setAllExpression(((SinkInterface) ((InputPort) bo).eContainer()).getName()+"="+fullExpression(((InputPort) bo)));
 						}
 						
 						if(((InputPort) bo).eContainer() instanceof Actor){
-							((InputPort) bo).getExpression().setAllExpression(((InputPort) bo).getName()+"="+dependencyAll(((InputPort) bo)));
+							//The recursive function is called
+							((InputPort) bo).getExpression().setAllExpression(((InputPort) bo).getName()+"="+fullExpression(((InputPort) bo)));
 						}
 						
 						evaluate(((InputPort) bo));
 
-						lblAllExpression.setText(((InputPort) bo).getExpression().getAllExpression());
+						lblFullExpression.setText(((InputPort) bo).getExpression().getAllExpression());
 					}//InputPort
 					
 					if(bo instanceof Delay){
@@ -270,11 +275,12 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 							((Delay) bo).getExpression().setExpressionString(txtExpression.getText());
 							txtExpression.setText(txtExpression.getText());
 	
-							((Delay) bo).getExpression().setAllExpression(((Fifo) ((Delay) bo).eContainer()).getId()+"="+dependencyAll(((Delay) bo)));
+							//The recursive function is called
+							((Delay) bo).getExpression().setAllExpression(((Fifo) ((Delay) bo).eContainer()).getId()+"="+fullExpression(((Delay) bo)));
 	
 							evaluate(((Delay) bo));
 	
-							lblAllExpression.setText(((Delay) bo).getExpression().getAllExpression());
+							lblFullExpression.setText(((Delay) bo).getExpression().getAllExpression());
 						}
 					}//Delay
 				}
@@ -305,11 +311,12 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 				String expression = ((Parameter) bo).getExpression().getExpressionString();
 				txtExpression.setText(expression == "" ? "0" : expression);
 				
-				((Parameter) bo).getExpression().setAllExpression(((Parameter) bo).getName()+"="+dependencyAll(((Parameter) bo)));
+				//The recursive function is called
+				((Parameter) bo).getExpression().setAllExpression(((Parameter) bo).getName()+"="+fullExpression(((Parameter) bo)));
 				
 				evaluate(((Parameter) bo));
 				
-				lblAllExpression.setText(((Parameter) bo).getExpression().getAllExpression());
+				lblFullExpression.setText(((Parameter) bo).getExpression().getAllExpression());
 			} // Parameter
 			
 			if(bo instanceof OutputPort){
@@ -323,7 +330,8 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 					String expression = ((OutputPort) bo).getExpression().getExpressionString();
 					txtExpression.setText(expression == "" ? "0" : expression);
 
-					((OutputPort) bo).getExpression().setAllExpression(((SourceInterface) ((OutputPort) bo).eContainer()).getName()+"="+dependencyAll(((OutputPort) bo)));
+					//The recursive function is called
+					((OutputPort) bo).getExpression().setAllExpression(((SourceInterface) ((OutputPort) bo).eContainer()).getName()+"="+fullExpression(((OutputPort) bo)));
 					
 				}else{
 					String name = ((OutputPort) bo).getName();
@@ -334,11 +342,12 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 					String expression = ((OutputPort) bo).getExpression().getExpressionString();
 					txtExpression.setText(expression == "" ? "0" : expression);
 					
-					((OutputPort) bo).getExpression().setAllExpression(((OutputPort) bo).getName()+"="+dependencyAll(((OutputPort) bo)));
+					//The recursive function is called
+					((OutputPort) bo).getExpression().setAllExpression(((OutputPort) bo).getName()+"="+fullExpression(((OutputPort) bo)));
 				}
 				
 				evaluate((OutputPort) bo);
-				lblAllExpression.setText(((OutputPort) bo).getExpression().getAllExpression());
+				lblFullExpression.setText(((OutputPort) bo).getExpression().getAllExpression());
 			}//OutputPort
 			
 			
@@ -353,7 +362,8 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 					String expression = ((InputPort) bo).getExpression().getExpressionString();
 					txtExpression.setText(expression == "" ? "0" : expression);
 
-					((InputPort) bo).getExpression().setAllExpression(((SinkInterface) ((InputPort) bo).eContainer()).getName()+"="+dependencyAll(((InputPort) bo)));
+					//The recursive function is called
+					((InputPort) bo).getExpression().setAllExpression(((SinkInterface) ((InputPort) bo).eContainer()).getName()+"="+fullExpression(((InputPort) bo)));
 					
 				}else{
 					String name = ((InputPort) bo).getName();
@@ -364,11 +374,12 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 					String expression = ((InputPort) bo).getExpression().getExpressionString();
 					txtExpression.setText(expression == "" ? "0" : expression);
 					
-					((InputPort) bo).getExpression().setAllExpression(((InputPort) bo).getName()+"="+dependencyAll(((InputPort) bo)));
+					//The recursive function is called
+					((InputPort) bo).getExpression().setAllExpression(((InputPort) bo).getName()+"="+fullExpression(((InputPort) bo)));
 				}
 				
 				evaluate((InputPort) bo);
-				lblAllExpression.setText(((InputPort) bo).getExpression().getAllExpression());
+				lblFullExpression.setText(((InputPort) bo).getExpression().getAllExpression());
 				
 			}//InputPort
 			
@@ -384,25 +395,27 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 					txtExpression.setText(expression == "" ? "0" : expression);
 					txtExpression.setEnabled(false);
 					
-					((InterfaceActor) bo).getOutputPorts().get(0).getExpression().setAllExpression(((InterfaceActor) bo).getName()+"="+dependencyAll(((InterfaceActor) bo)));
+					//The recursive function is called
+					((InterfaceActor) bo).getOutputPorts().get(0).getExpression().setAllExpression(((InterfaceActor) bo).getName()+"="+fullExpression(((InterfaceActor) bo)));
 				}
 				if(bo instanceof SinkInterface){
 					expression = ((InterfaceActor) bo).getInputPorts().get(0).getExpression().getExpressionString();
 					txtExpression.setText(expression == "" ? "0" : expression);
 					txtExpression.setEnabled(false);
 					
-					((InterfaceActor) bo).getInputPorts().get(0).getExpression().setAllExpression(((InterfaceActor) bo).getName()+"="+dependencyAll(((InterfaceActor) bo)));
+					//The recursive function is called
+					((InterfaceActor) bo).getInputPorts().get(0).getExpression().setAllExpression(((InterfaceActor) bo).getName()+"="+fullExpression(((InterfaceActor) bo)));
 				}
 
 				evaluate(((InterfaceActor) bo));
 				
 				if(bo instanceof SourceInterface){
 					expression = ((InterfaceActor) bo).getOutputPorts().get(0).getExpression().getAllExpression();
-					lblAllExpression.setText(expression == "" ? "0" : expression);
+					lblFullExpression.setText(expression == "" ? "0" : expression);
 				}
 				if(bo instanceof SinkInterface){
 					expression = ((InterfaceActor) bo).getInputPorts().get(0).getExpression().getAllExpression();
-					lblAllExpression.setText(expression == "" ? "0" : expression);
+					lblFullExpression.setText(expression == "" ? "0" : expression);
 				}
 				
 			}//InterfaceActor
@@ -418,10 +431,11 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 					String expression = ((Delay) bo).getExpression().getExpressionString();
 					txtExpression.setText(expression == "" ? "0" : expression);
 					
-					((Delay) bo).getExpression().setAllExpression(name+"="+dependencyAll(((Delay) bo)));
+					//The recursive function is called
+					((Delay) bo).getExpression().setAllExpression(name+"="+fullExpression(((Delay) bo)));
 					
 					evaluate(((Delay) bo));
-					lblAllExpression.setText(((Delay) bo).getExpression().getAllExpression());
+					lblFullExpression.setText(((Delay) bo).getExpression().getAllExpression());
 				}
 			}//Delay
 			
@@ -430,11 +444,12 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 	
 	
 	/**
-	 * 
-	 * @param obj
-	 * @return
+	 * Generates the full expression of the object passed as an argument.
+	 * The full expression is formed by valid values and the direct dependencies of the object.
+	 * @param obj The object that possesses an expression.
+	 * @return a string that is the full expression of the object passed as an argument.
 	 */
-	public String dependencyAll(EObject obj){
+	public String fullExpression(EObject obj){
 		
 		if(obj instanceof Parameter){
 			
@@ -453,7 +468,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 						Parameter p = (Parameter) port.getIncomingDependency().getSetter();	
 						
 						if(((Parameter) obj).getExpression().getExpressionString().contains(p.getName())){
-							allExpression = allExpression.replace(p.getName(), "("+dependencyAll(p)+")");
+							allExpression = allExpression.replace(p.getName(), "("+fullExpression(p)+")");
 						}
 					}
 				}
@@ -482,7 +497,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 							Parameter p = (Parameter) port.getIncomingDependency().getSetter(); 
 
 							if(((OutputPort) obj).getExpression().getExpressionString().contains(p.getName())){
-								allExpression = allExpression.replace(p.getName(), "("+dependencyAll(p)+")");
+								allExpression = allExpression.replace(p.getName(), "("+fullExpression(p)+")");
 							}
 						}
 					}
@@ -505,7 +520,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 							Parameter p = (Parameter) port.getIncomingDependency().getSetter(); 
 
 							if(((OutputPort) obj).getExpression().getExpressionString().contains(p.getName())){
-								allExpression = allExpression.replace(p.getName(), "("+dependencyAll(p)+")");
+								allExpression = allExpression.replace(p.getName(), "("+fullExpression(p)+")");
 							}
 						}
 						
@@ -533,7 +548,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 							Parameter p = (Parameter) port.getIncomingDependency().getSetter(); 
 
 							if(((InputPort) obj).getExpression().getExpressionString().contains(p.getName())){
-								allExpression = allExpression.replace(p.getName(), "("+dependencyAll(p)+")");
+								allExpression = allExpression.replace(p.getName(), "("+fullExpression(p)+")");
 							}
 						}
 					}
@@ -556,7 +571,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 							Parameter p = (Parameter) port.getIncomingDependency().getSetter(); 
 
 							if(((InputPort) obj).getExpression().getExpressionString().contains(p.getName())){
-								allExpression = allExpression.replace(p.getName(), "("+dependencyAll(p)+")");
+								allExpression = allExpression.replace(p.getName(), "("+fullExpression(p)+")");
 							}
 						}
 						
@@ -586,7 +601,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 							Parameter p = (Parameter) port.getIncomingDependency().getSetter(); 
 
 							if(((SourceInterface) obj).getOutputPorts().get(0).getExpression().getExpressionString().contains(p.getName())){
-								allExpression = allExpression.replace(p.getName(), "("+dependencyAll(p)+")");
+								allExpression = allExpression.replace(p.getName(), "("+fullExpression(p)+")");
 							}
 						}
 						
@@ -612,7 +627,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 							Parameter p = (Parameter) port.getIncomingDependency().getSetter(); 
 
 							if(((SinkInterface) obj).getInputPorts().get(0).getExpression().getExpressionString().contains(p.getName())){
-								allExpression = allExpression.replace(p.getName(), "("+dependencyAll(p)+")");
+								allExpression = allExpression.replace(p.getName(), "("+fullExpression(p)+")");
 							}
 						}
 						
@@ -639,7 +654,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 					if(port.getIncomingDependency().getSetter() instanceof Parameter){
 						Parameter p = (Parameter) port.getIncomingDependency().getSetter();	
 						if(((Delay) obj).getExpression().getExpressionString().contains(p.getName())){
-							allExpression = allExpression.replace(p.getName(), "("+dependencyAll(p)+")");
+							allExpression = allExpression.replace(p.getName(), "("+fullExpression(p)+")");
 						}
 					}
 				}
@@ -652,16 +667,15 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 		return "error";
 	}
 	
+	
+	
 	/**
-	 * 
+	 * Parsea and evalua the expression of the EObjetc passed as argument.
+	 * @param obj The object that possesses an expression to evaluate.
 	 */
 	public void evaluate(EObject obj){
 		
 		try {
-
-			/**
-			 * Parse and evaluate
-			 */
 
 			lblMessage.setText("Valid expression");
 
