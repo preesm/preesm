@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <graph edgedefault="directed">
+        <data key="name">NewGraph</data>
+        <node id="P1" kind="param"/>
+        <node id="P2" kind="param"/>
+        <node id="P3" kind="param"/>
+        <node id="P4" kind="param"/>
+        <node id="srcTest" kind="src">
+            <port kind="output" name=""/>
+        </node>
+        <node id="SrcInterfaceName" kind="src">
+            <port kind="output" name=""/>
+        </node>
+        <node id="SnkInterfaceName" kind="snk">
+            <port kind="input" name=""/>
+        </node>
+        <edge kind="dependency" source="P1" target="srcTest"/>
+        <edge kind="dependency" source="P2" target="P1"/>
+        <edge kind="dependency" source="P3" target="P2"/>
+        <edge kind="dependency" source="P2" target="srcTest"/>
+        <edge kind="dependency" source="P4" target="P1"/>
+    </graph>
+</graphml>
