@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import net.sf.dftools.architecture.slam.Design;
@@ -164,6 +165,24 @@ public class CodegenTask extends AbstractTaskImplementation {
 				} catch (CoreException e1) {
 					e1.printStackTrace();
 				}
+			}
+
+			// Print secondary files
+			for (Entry<String, CharSequence> entry : printer
+					.createSecondaryFiles(codeBlocks).entrySet()) {
+				IFile iFile = workspace.getRoot().getFile(
+						new Path(codegenPath + entry.getKey()));
+				try {
+					if (!iFile.exists()) {
+						iFile.create(null, false, new NullProgressMonitor());
+					}
+					iFile.setContents(new ByteArrayInputStream(entry.getValue()
+							.toString().getBytes()), true, false,
+							new NullProgressMonitor());
+				} catch (CoreException e1) {
+					e1.printStackTrace();
+				}
+
 			}
 		}
 

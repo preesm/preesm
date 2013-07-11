@@ -50,6 +50,7 @@ import java.util.List
 import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.Block
+import java.util.HashMap
 
 /**
  * This {@link DefaultPrinter} is a dummy implementation of the 
@@ -60,6 +61,14 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Block
  * @author kdesnos
  */
 class DefaultPrinter extends CodegenAbstractPrinter {
+	
+	/**
+	 * Default implementation: does nothing.
+	 * @see CodegenAbstractPrinter#createSecondaryFiles(List)
+	 */
+	override createSecondaryFiles(List<Block> blocks) {
+		return new HashMap<String,CharSequence>
+	}
 	
 	/**
 	 * Default implementation: does nothing.
@@ -136,4 +145,5 @@ class DefaultPrinter extends CodegenAbstractPrinter {
 	override printSubBufferDeclaration(SubBuffer buffer) ''''''
 
 	override printSubBufferDefinition(SubBuffer buffer) ''''''
+	
 }

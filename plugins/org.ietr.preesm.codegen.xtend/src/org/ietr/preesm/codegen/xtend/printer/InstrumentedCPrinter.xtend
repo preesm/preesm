@@ -53,6 +53,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 /**
  * This printer currently prints instrumented C code for X86 cores with all
  * communications made in the shared memory.
+ * 
+ * @author kdesnos
  */
 class InstrumentedCPrinter extends CPrinter {
 
@@ -70,6 +72,11 @@ class InstrumentedCPrinter extends CPrinter {
 	 * This map associates each codeElt to its ID 
 	 */
 	var codeEltID = new HashMap<CodeElt,Integer>()
+	
+	/**
+	 * Map associating actor names to their different IDs 
+	 */
+	var actorIDs = new HashMap<String, List<Integer>>()
 
 	/**
 	 * Add instrumentation code to the {@link Block blocks}.<br>
@@ -99,9 +106,6 @@ class InstrumentedCPrinter extends CPrinter {
 
 		// Map associating each ID with the name of what is measures
 		var globalFunctionID = new HashMap<Integer, String>()
-
-		// Map associating actor names to their different IDs
-		var actorIDs = new HashMap<String, List<Integer>>()
 
 		for (Block block : blocks) {
 			if (dumpTimedBuffer.creator == null) {
@@ -152,7 +156,7 @@ class InstrumentedCPrinter extends CPrinter {
 				val elt = coreLoop.codeElts.get(i)
 				val functionID = switch elt {
 					FunctionCall case true:
-						elt.actorName
+						elt.name
 					SpecialCall case true:
 						elt.name
 					SharedMemoryCommunication case true:
@@ -202,24 +206,6 @@ class InstrumentedCPrinter extends CPrinter {
 		int idx;
 		«super.printDefinitionsFooter(list)»
 	'''
-
-	/*override printCoreLoopBlockHeader(LoopBlock block2) '''
-		«{  var result = new StringConcatenation
-			result.append(super.printCoreLoopBlockHeader(block2))
-			result.trimLastEOL
-		}»
-				«IF dumpTimedBuffer.creator == block2.eContainer» 
-						writeTime(«dumpTimedBuffer.doSwitch»,«{
-							val const = CodegenFactory::eINSTANCE.createConstant
-							const.name = "nbDump"
-							const.type = "int"
-							const.value = dumpTimedBuffer.size
-							const
-						}.doSwitch», «nbExec.doSwitch»);
-				«ENDIF»
-				pthread_barrier_wait(&iter_barrier);
-				
-	'''*/
 	
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
 				pthread_barrier_wait(&iter_barrier);
@@ -271,4 +257,30 @@ class InstrumentedCPrinter extends CPrinter {
 	«IF (state == PrinterState::PRINTING_LOOP_BLOCK) && codeEltID.get(fifoCall) != null»*(«nbExec.doSwitch»+«codeEltID.get(fifoCall)») = 0;«ENDIF»
 	«super.printFifoCall(fifoCall)»
 	'''
+	
+	override createSecondaryFiles(List<Block> blocks) {
+		var result = new HashMap<String,CharSequence>
+		result.put("analysis.csv", printAnalysisCsvFile)
+		result
+	}
+	
+	def printAnalysisCsvFile()'''
+	«FOR entry : actorIDs.entrySet»
+	«entry.key»;"=MOYENNE(«FOR id : entry.value SEPARATOR ';'»«(id).intToColumn»«actorIDs.size + 3»:«(id).intToColumn»65536«ENDFOR»)"
+	«ENDFOR»
+	'''
+	
+	def intToColumn(int i){
+		val alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		var result = ""
+		var digit = 0
+		var rest = i
+		do {
+			digit = (rest-1)%26
+			rest = (rest-digit)/26  
+			result = alphabet.charAt(digit) + result
+		} while(rest>0)
+		result
+	}
+	
 }

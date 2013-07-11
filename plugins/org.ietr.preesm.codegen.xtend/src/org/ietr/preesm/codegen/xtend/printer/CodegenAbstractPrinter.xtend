@@ -56,6 +56,7 @@ import java.util.List
 import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.Block
+import java.util.Map
 
 enum PrinterState {
 	PRINTING_DEFINITIONS,
@@ -410,7 +411,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 			"Object " + object + " is not supported by the printer" + this + "in its current state. "
 		);
 	}
-	
+
 	/**
 	 * Get the current {@link PrinterState} of the printer
 	 */
@@ -482,6 +483,20 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * 				printer
 	 */
 	def void preProcessing(List<Block> blocks);
+
+	/**
+	 * This method is called after all the {@link Block blocks} have been 
+	 * printed by the printer to give the opportunity to print secondary
+	 * files. (eg. project files, main files, ...).<br>
+	 * This method returns a {@link Map} where each {@link Entry} associates 
+	 * a {@link String} to a {@link CharSequence} respectively corresponding
+	 * to a file name (including the extension) and the its content.
+	 * 
+	 * @param blocks
+	 *   	The list of {@link Block blocks} that were printed by the
+	 * 		printer
+	 */
+	def Map<String, CharSequence> createSecondaryFiles(List<Block> blocks);
 
 	/**
 	 * Method called to print a {@link SpecialCall} with
