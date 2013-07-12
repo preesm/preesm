@@ -131,7 +131,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 			
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if(e.keyCode == 13){
+				if(e.keyCode == 13){ //If you press the enter key
 					
 					PictogramElement pe = getSelectedPictogramElement();
 					if (pe != null) {
@@ -149,7 +149,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 							evaluate(((Parameter) bo));
 
 							lblFullExpression.setText(((Parameter) bo).getExpression().getAllExpression());
-						}//Parameter
+						}//end Parameter
 
 						if(bo instanceof OutputPort){
 							((OutputPort) bo).getExpression().setExpressionString(txtExpression.getText());
@@ -168,7 +168,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 							evaluate(((OutputPort) bo));
 
 							lblFullExpression.setText(((OutputPort) bo).getExpression().getAllExpression());
-						}//OutputPort
+						}//end OutputPort
 						
 						if(bo instanceof InputPort){
 							System.out.println("INPUT PORT DE FOCO");
@@ -188,7 +188,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 							evaluate(((InputPort) bo));
 
 							lblFullExpression.setText(((InputPort) bo).getExpression().getAllExpression());
-						}//InputPort
+						}//end InputPort
 						
 						if(bo instanceof Delay){
 							if(((Delay) bo).eContainer() instanceof Fifo){
@@ -202,7 +202,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 		
 								lblFullExpression.setText(((Delay) bo).getExpression().getAllExpression());
 							}
-						}//Delay
+						}//end Delay
 					}
 				}
 			}
@@ -229,7 +229,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 						evaluate(((Parameter) bo));
 
 						lblFullExpression.setText(((Parameter) bo).getExpression().getAllExpression());
-					}//Parameter
+					}//end Parameter
 
 					if(bo instanceof OutputPort){
 						((OutputPort) bo).getExpression().setExpressionString(txtExpression.getText());
@@ -248,7 +248,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 						evaluate(((OutputPort) bo));
 
 						lblFullExpression.setText(((OutputPort) bo).getExpression().getAllExpression());
-					}//OutputPort
+					}//end OutputPort
 					
 					if(bo instanceof InputPort){
 						System.out.println("INPUT PORT DE FOCO");
@@ -268,7 +268,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 						evaluate(((InputPort) bo));
 
 						lblFullExpression.setText(((InputPort) bo).getExpression().getAllExpression());
-					}//InputPort
+					}//end InputPort
 					
 					if(bo instanceof Delay){
 						if(((Delay) bo).eContainer() instanceof Fifo){
@@ -282,7 +282,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 	
 							lblFullExpression.setText(((Delay) bo).getExpression().getAllExpression());
 						}
-					}//Delay
+					}//end Delay
 				}
 			}
 
@@ -292,7 +292,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 		
 	}
 
-	
+
 	@Override
 	public void refresh() {
 		jep = new Jep();
@@ -317,7 +317,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 				evaluate(((Parameter) bo));
 				
 				lblFullExpression.setText(((Parameter) bo).getExpression().getAllExpression());
-			} // Parameter
+			}//end Parameter
 			
 			if(bo instanceof OutputPort){
 				txtExpression.setEnabled(true);
@@ -348,7 +348,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 				
 				evaluate((OutputPort) bo);
 				lblFullExpression.setText(((OutputPort) bo).getExpression().getAllExpression());
-			}//OutputPort
+			}//end OutputPort
 			
 			
 			if(bo instanceof InputPort){
@@ -381,7 +381,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 				evaluate((InputPort) bo);
 				lblFullExpression.setText(((InputPort) bo).getExpression().getAllExpression());
 				
-			}//InputPort
+			}//end InputPort
 			
 			if(bo instanceof InterfaceActor){
 			
@@ -418,7 +418,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 					lblFullExpression.setText(expression == "" ? "0" : expression);
 				}
 				
-			}//InterfaceActor
+			}//end InterfaceActor
 
 			if(bo instanceof Delay){
 				
@@ -437,7 +437,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 					evaluate(((Delay) bo));
 					lblFullExpression.setText(((Delay) bo).getExpression().getAllExpression());
 				}
-			}//Delay
+			}//end Delay
 			
 		}
 	}
@@ -453,9 +453,9 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 		
 		if(obj instanceof Parameter){
 			
-			if(((Parameter) obj).getConfigInputPorts().isEmpty()){ //if there is not dependency
+			if(((Parameter) obj).getConfigInputPorts().isEmpty()){ //if there are not dependencies.
 				return ((Parameter) obj).getExpression().getExpressionString();
-			}else{ //if there is dependency...
+			}else{ //if there are dependencies...
 				
 				if(((Parameter) obj).getExpression().getAllExpression() == "0"){
 					((Parameter) obj).getExpression().setAllExpression(((Parameter) obj).getName()+"="+((Parameter) obj).getExpression().getExpressionString());
@@ -468,6 +468,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 						Parameter p = (Parameter) port.getIncomingDependency().getSetter();	
 						
 						if(((Parameter) obj).getExpression().getExpressionString().contains(p.getName())){
+							//It creates the full expression.
 							allExpression = allExpression.replace(p.getName(), "("+fullExpression(p)+")");
 						}
 					}
@@ -475,8 +476,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 				
 				return allExpression;
 			}
-			//return ((Parameter) obj).getExpression().getExpressionString();
-		}// Parameter
+		}//end Parameter
 		
 		
 		if(obj instanceof OutputPort){
@@ -497,13 +497,14 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 							Parameter p = (Parameter) port.getIncomingDependency().getSetter(); 
 
 							if(((OutputPort) obj).getExpression().getExpressionString().contains(p.getName())){
+								//It creates the full expression.
 								allExpression = allExpression.replace(p.getName(), "("+fullExpression(p)+")");
 							}
 						}
 					}
 					return allExpression;
 				}
-			}// OutputPort - SourfeInterface
+			}//OutputPort - SourfeInterface
 			
 			if(obj.eContainer() instanceof Actor){
 				
@@ -520,6 +521,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 							Parameter p = (Parameter) port.getIncomingDependency().getSetter(); 
 
 							if(((OutputPort) obj).getExpression().getExpressionString().contains(p.getName())){
+								//It creates the full expression.
 								allExpression = allExpression.replace(p.getName(), "("+fullExpression(p)+")");
 							}
 						}
@@ -529,7 +531,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 				}
 			} // OutputPort - Actor
 			
-		}// OutputPort
+		}//end OutputPort
 		
 		if(obj instanceof InputPort){
 			
@@ -548,6 +550,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 							Parameter p = (Parameter) port.getIncomingDependency().getSetter(); 
 
 							if(((InputPort) obj).getExpression().getExpressionString().contains(p.getName())){
+								//It creates the full expression.
 								allExpression = allExpression.replace(p.getName(), "("+fullExpression(p)+")");
 							}
 						}
@@ -571,6 +574,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 							Parameter p = (Parameter) port.getIncomingDependency().getSetter(); 
 
 							if(((InputPort) obj).getExpression().getExpressionString().contains(p.getName())){
+								//It creates the full expression.
 								allExpression = allExpression.replace(p.getName(), "("+fullExpression(p)+")");
 							}
 						}
@@ -580,7 +584,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 				}
 
 			}//InputPort - Actor
-		}//InputPort
+		}//end InputPort
 		
 		
 		if(obj instanceof InterfaceActor){
@@ -601,6 +605,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 							Parameter p = (Parameter) port.getIncomingDependency().getSetter(); 
 
 							if(((SourceInterface) obj).getOutputPorts().get(0).getExpression().getExpressionString().contains(p.getName())){
+								//It creates the full expression.
 								allExpression = allExpression.replace(p.getName(), "("+fullExpression(p)+")");
 							}
 						}
@@ -609,7 +614,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 					return allExpression;
 				}
 				
-			}// InterfaceActor - SourceInterface
+			}//InterfaceActor - SourceInterface
 			
 			if(obj instanceof SinkInterface){
 
@@ -627,6 +632,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 							Parameter p = (Parameter) port.getIncomingDependency().getSetter(); 
 
 							if(((SinkInterface) obj).getInputPorts().get(0).getExpression().getExpressionString().contains(p.getName())){
+								//It creates the full expression.
 								allExpression = allExpression.replace(p.getName(), "("+fullExpression(p)+")");
 							}
 						}
@@ -637,13 +643,13 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 				
 			}// InterfaceActor - SinkInterface
 			
-		}//InterfaceActor
+		}//end InterfaceActor
 		
 		if(obj instanceof Delay){
 			
-			if(((Delay) obj).getConfigInputPorts().isEmpty()){ //if theres is not dependency
+			if(((Delay) obj).getConfigInputPorts().isEmpty()){ ////if there are not dependencies.
 				return ((Delay) obj).getExpression().getExpressionString();
-			}else{ //if there is dependency...
+			}else{ ////if there are dependencies...
 				
 				if(((Delay) obj).getExpression().getAllExpression() == "0"){
 					((Delay) obj).getExpression().setAllExpression(((Fifo) ((Delay) obj).eContainer()).getId()+"="+((Delay) obj).getExpression().getExpressionString());
@@ -654,20 +660,16 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 					if(port.getIncomingDependency().getSetter() instanceof Parameter){
 						Parameter p = (Parameter) port.getIncomingDependency().getSetter();	
 						if(((Delay) obj).getExpression().getExpressionString().contains(p.getName())){
+							//It creates the full expression.
 							allExpression = allExpression.replace(p.getName(), "("+fullExpression(p)+")");
 						}
 					}
 				}
 				return allExpression;
 			}
-
-		}// Dalay
-		
-		
+		}//end Dalay
 		return "error";
 	}
-	
-	
 	
 	/**
 	 * Parsea and evalua the expression of the EObjetc passed as argument.
@@ -685,7 +687,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 				lblValueObj.setText(res.toString().substring(0, res.toString().indexOf(".")));
 				
 				((Parameter) obj).getExpression().setValueString(String.valueOf(res));
-			}//Parameter
+			}//end Parameter
 		
 			if(obj instanceof InterfaceActor){
 			
@@ -708,19 +710,17 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 					((InterfaceActor) obj).getInputPorts().get(0).getExpression().setValueString(String.valueOf(res));
 				}//InterfaceActor - SinkInterface
 				
-			} //InterfaceActor
+			}//end InterfaceActor
 			 		
 			if(obj instanceof OutputPort){
-				
 				jep.parse(((OutputPort) obj).getExpression().getAllExpression());
 				Object res = jep.evaluate();
 				lblValueObj.setText(res.toString().substring(0, res.toString().indexOf(".")));
 				
 				((OutputPort) obj).getExpression().setValueString(String.valueOf(res));
 				
-			} //OutputPort
+			}//end OutputPort
 
-			
 			if(obj instanceof InputPort){
 				jep.parse(((InputPort) obj).getExpression().getAllExpression());
 				Object res = jep.evaluate();
@@ -728,16 +728,15 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 				
 				((InputPort) obj).getExpression().setValueString(String.valueOf(res));
 				
-			} //InputPort
+			}//end InputPort
 			
 			if(obj instanceof Delay){
 				jep.parse(((Delay) obj).getExpression().getAllExpression().substring(((Delay) obj).getExpression().getAllExpression().indexOf("=")+1));
 				Object res = jep.evaluate();
-				System.out.println("RES: "+res.toString());
 				lblValueObj.setText(res.toString().substring(0, res.toString().indexOf(".")));
 				
 				((Delay) obj).getExpression().setValueString(String.valueOf(res));
-			} //Delay
+			}//end Delay
 
 		}catch (EvaluationException e) {
 			lblMessage.setText("Not valid expression");
