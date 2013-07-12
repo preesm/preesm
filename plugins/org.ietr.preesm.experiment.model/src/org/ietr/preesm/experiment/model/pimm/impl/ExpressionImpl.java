@@ -3,8 +3,10 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 
@@ -24,6 +26,7 @@ import com.singularsys.jep.ParseException;
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl#getExpressionString <em>Expression String</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl#getValueString <em>Value String</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl#getAllExpression <em>All Expression</em>}</li>
  * </ul>
  * </p>
  *
@@ -68,6 +71,25 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 	 * @ordered
 	 */
 	protected String valueString = VALUE_STRING_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getAllExpression() <em>All Expression</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getAllExpression()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String ALL_EXPRESSION_EDEFAULT = "0";
+	/**
+	 * The cached value of the '{@link #getAllExpression() <em>All Expression</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getAllExpression()
+	 * @generated
+	 * @ordered
+	 */
+	protected String allExpression = ALL_EXPRESSION_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -128,6 +150,38 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 		valueString = newValueString;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.EXPRESSION__VALUE_STRING, oldValueString, valueString));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String getAllExpression() {
+		return allExpression;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setAllExpression(String newAllExpression) {
+		String oldAllExpression = allExpression;
+		allExpression = newAllExpression;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.EXPRESSION__ALL_EXPRESSION, oldAllExpression, allExpression));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public int evaluate(EObject obj, EList<?> listExpression) {
+		// TODO: implement this method
+		// Ensure that you remove @generated or mark it @generated NOT
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -213,6 +267,8 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 				return getExpressionString();
 			case PiMMPackage.EXPRESSION__VALUE_STRING:
 				return getValueString();
+			case PiMMPackage.EXPRESSION__ALL_EXPRESSION:
+				return getAllExpression();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -230,6 +286,9 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 				return;
 			case PiMMPackage.EXPRESSION__VALUE_STRING:
 				setValueString((String)newValue);
+				return;
+			case PiMMPackage.EXPRESSION__ALL_EXPRESSION:
+				setAllExpression((String)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -249,6 +308,9 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 			case PiMMPackage.EXPRESSION__VALUE_STRING:
 				setValueString(VALUE_STRING_EDEFAULT);
 				return;
+			case PiMMPackage.EXPRESSION__ALL_EXPRESSION:
+				setAllExpression(ALL_EXPRESSION_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -265,6 +327,8 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 				return EXPRESSION_STRING_EDEFAULT == null ? expressionString != null : !EXPRESSION_STRING_EDEFAULT.equals(expressionString);
 			case PiMMPackage.EXPRESSION__VALUE_STRING:
 				return VALUE_STRING_EDEFAULT == null ? valueString != null : !VALUE_STRING_EDEFAULT.equals(valueString);
+			case PiMMPackage.EXPRESSION__ALL_EXPRESSION:
+				return ALL_EXPRESSION_EDEFAULT == null ? allExpression != null : !ALL_EXPRESSION_EDEFAULT.equals(allExpression);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -283,6 +347,8 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 		result.append(expressionString);
 		result.append(", valueString: ");
 		result.append(valueString);
+		result.append(", allExpression: ");
+		result.append(allExpression);
 		result.append(')');
 		return result.toString();
 	}

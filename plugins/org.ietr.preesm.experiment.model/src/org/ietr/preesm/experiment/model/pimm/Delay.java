@@ -32,7 +32,7 @@ public interface Delay extends Parameterizable {
 	 * @return the value of the '<em>Expression</em>' containment reference.
 	 * @see #setExpression(Expression)
 	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDelay_Expression()
-	 * @model containment="true"
+	 * @model containment="true" required="true"
 	 * @generated
 	 */
 	Expression getExpression();

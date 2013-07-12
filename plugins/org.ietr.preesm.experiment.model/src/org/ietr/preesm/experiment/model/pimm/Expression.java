@@ -2,6 +2,7 @@
  */
 package org.ietr.preesm.experiment.model.pimm;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 
 
@@ -15,6 +16,7 @@ import org.eclipse.emf.ecore.EObject;
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Expression#getExpressionString <em>Expression String</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Expression#getValueString <em>Value String</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.Expression#getAllExpression <em>All Expression</em>}</li>
  * </ul>
  * </p>
  *
@@ -79,12 +81,39 @@ public interface Expression extends EObject {
 	void setValueString(String value);
 
 	/**
+	 * Returns the value of the '<em><b>All Expression</b></em>' attribute.
+	 * The default value is <code>"0"</code>.
 	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>All Expression</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
 	 * <!-- end-user-doc -->
-	 * @model
+	 * @return the value of the '<em>All Expression</em>' attribute.
+	 * @see #setAllExpression(String)
+	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getExpression_AllExpression()
+	 * @model default="0"
 	 * @generated
 	 */
-	int evaluate(String str);
+	String getAllExpression();
+
+	/**
+	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Expression#getAllExpression <em>All Expression</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>All Expression</em>' attribute.
+	 * @see #getAllExpression()
+	 * @generated
+	 */
+	void setAllExpression(String value);
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model unique="false" listExpressionMany="false"
+	 * @generated
+	 */
+	int evaluate(EObject obj, EList<?> listExpression);
 
 	
 } // Expression
