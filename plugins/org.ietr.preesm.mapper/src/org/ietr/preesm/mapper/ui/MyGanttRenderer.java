@@ -190,7 +190,7 @@ public class MyGanttRenderer extends GanttRenderer {
 
 					// Testing width and displaying
 					if (!subtip.isEmpty()) {
-						g2.drawString(tip, (int) translatedValue0 + 5,
+						g2.drawString(subtip, (int) translatedValue0 + 5,
 								(int) rectStart
 										+ g2.getFontMetrics().getHeight());
 					}

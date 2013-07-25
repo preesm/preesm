@@ -69,7 +69,7 @@ public class MapperGanttToolTipGenerator implements CategoryToolTipGenerator {
 			long startTime = currentTask.getDuration().getStart().getTime();
 			long endTime = currentTask.getDuration().getEnd().getTime();
 
-			tooltip = currentTask.getDescription() + "\r\n" + "("
+			tooltip = currentTask.getDescription() + "("
 					+ startTime + "-" + endTime + "-" + (endTime - startTime)
 					+ ")";
 		}
