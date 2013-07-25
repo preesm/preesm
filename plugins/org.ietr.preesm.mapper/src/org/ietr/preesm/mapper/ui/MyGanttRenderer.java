@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or (c) or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Francois Nezan, Mickael Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.mapper.ui;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
@@ -136,43 +137,8 @@ public class MyGanttRenderer extends GanttRenderer {
 			// DRAW THE BARS...
 			RoundRectangle2D bar = null;
 
-			if (plot.getOrientation() == PlotOrientation.HORIZONTAL) {
-				bar = new RoundRectangle2D.Double(translatedValue0, rectStart,
-						rectLength, rectBreadth, 10.0, 10.0);
-			} else if (plot.getOrientation() == PlotOrientation.VERTICAL) {
-				bar = new RoundRectangle2D.Double(rectStart, translatedValue0,
-						rectBreadth, rectLength, 10.0, 10.0);
-			}
-
-			RoundRectangle2D completeBar = null;
-			RoundRectangle2D incompleteBar = null;
-			Number percent = dataset.getPercentComplete(row, column,
-					subinterval);
-			double start = getStartPercent();
-			double end = getEndPercent();
-			if (percent != null) {
-				double p = percent.doubleValue();
-				if (plot.getOrientation() == PlotOrientation.HORIZONTAL) {
-					completeBar = new RoundRectangle2D.Double(translatedValue0,
-							rectStart + start * rectBreadth, rectLength * p,
-							rectBreadth * (end - start), 10.0, 10.0);
-					incompleteBar = new RoundRectangle2D.Double(
-							translatedValue0 + rectLength * p, rectStart
-									+ start * rectBreadth,
-							rectLength * (1 - p), rectBreadth * (end - start),
-							10.0, 10.0);
-				} else if (plot.getOrientation() == PlotOrientation.VERTICAL) {
-					completeBar = new RoundRectangle2D.Double(rectStart + start
-							* rectBreadth, translatedValue0 + rectLength
-							* (1 - p), rectBreadth * (end - start), rectLength
-							* p, 10.0, 10.0);
-					incompleteBar = new RoundRectangle2D.Double(rectStart
-							+ start * rectBreadth, translatedValue0,
-							rectBreadth * (end - start), rectLength * (1 - p),
-							10.0, 10.0);
-				}
-
-			}
+			bar = new RoundRectangle2D.Double(translatedValue0, rectStart,
+					rectLength, rectBreadth, 10.0, 10.0);
 
 			/* Paint seriesPaint = */getItemPaint(row, column);
 
@@ -180,24 +146,38 @@ public class MyGanttRenderer extends GanttRenderer {
 				if (((TaskSeriesCollection) dataset).getSeries(0)
 						.getItemCount() > column)
 					if (((TaskSeriesCollection) dataset).getSeries(0)
-							.get(column).getSubtaskCount() > subinterval)
+							.get(column).getSubtaskCount() > subinterval) {
 						g2.setPaint(getRandomBrightColor(((TaskSeriesCollection) dataset)
 								.getSeries(0).get(column)
 								.getSubtask(subinterval).getDescription()));
+
+					}
 			g2.fill(bar);
-			if (completeBar != null) {
-				g2.setPaint(getCompletePaint());
-				g2.fill(completeBar);
-			}
-			if (incompleteBar != null) {
-				g2.setPaint(getIncompletePaint());
-				g2.fill(incompleteBar);
-			}
+
 			if (isDrawBarOutline()
 					&& state.getBarWidth() > BAR_OUTLINE_WIDTH_THRESHOLD) {
 				g2.setStroke(getItemStroke(row, column));
 				g2.setPaint(getItemOutlinePaint(row, column));
 				g2.draw(bar);
+			}
+
+			// Displaying the tooltip inside the bar if enough space is available
+			if (getToolTipGenerator(row, column) != null) {
+				// Getting the string to display
+				String tip = getToolTipGenerator(row, column).generateToolTip(
+						dataset, subinterval, column);
+
+				// Setting font and color
+				Font font = new Font("Garamond", Font.BOLD | Font.ITALIC, 12);
+				g2.setFont(font);
+				g2.setColor(Color.WHITE);
+
+				// Testing width and displaying
+				if (rectLength > g2.getFontMetrics().getStringBounds(tip, g2)
+						.getWidth() + 10) {
+					g2.drawString(tip, (int) translatedValue0 + 5,
+							(int) rectStart + g2.getFontMetrics().getHeight());
+				}
 			}
 
 			// collect entity and tool tip information...
