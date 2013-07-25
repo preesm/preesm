@@ -134,7 +134,7 @@ public class OutputPortImpl extends PortImpl implements OutputPort {
 	 * <!-- end-user-doc -->
 	 */
 	public Expression getExpression() {
-		//TODO View because it automatically creates the instance of expression.
+		//TODO View because it automatically NO creates the instance of expression.
 		if (expression == null) {
 			expression = new ExpressionImpl();
 		}else{

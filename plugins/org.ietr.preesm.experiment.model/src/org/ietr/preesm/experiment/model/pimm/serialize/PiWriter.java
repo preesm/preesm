@@ -156,7 +156,6 @@ public class PiWriter {
 	 * @return
 	 */
 	protected Element createKeyElt(Key key) {
-
 		// Check if the element already has a Key list
 		if (elementKeys.get(key.getApplyTo()) == null) {
 			// If not, create the Key list for this element and add it to

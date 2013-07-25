@@ -128,6 +128,10 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 				return createConfigOutputInterfaceAdapter();
 			}
 			@Override
+			public Adapter caseConfigInputInterface(ConfigInputInterface object) {
+				return createConfigInputInterfaceAdapter();
+			}
+			@Override
 			public Adapter caseRefinement(Refinement object) {
 				return createRefinementAdapter();
 			}
@@ -150,10 +154,6 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 			@Override
 			public Adapter caseExpression(Expression object) {
 				return createExpressionAdapter();
-			}
-			@Override
-			public Adapter caseConfigInputInterface(ConfigInputInterface object) {
-				return createConfigInputInterfaceAdapter();
 			}
 			@Override
 			public Adapter defaultCase(EObject object) {

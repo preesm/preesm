@@ -67,12 +67,12 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 			case PiMMPackage.SOURCE_INTERFACE: return createSourceInterface();
 			case PiMMPackage.SINK_INTERFACE: return createSinkInterface();
 			case PiMMPackage.CONFIG_OUTPUT_INTERFACE: return createConfigOutputInterface();
+			case PiMMPackage.CONFIG_INPUT_INTERFACE: return createConfigInputInterface();
 			case PiMMPackage.REFINEMENT: return createRefinement();
 			case PiMMPackage.PARAMETER: return createParameter();
 			case PiMMPackage.DEPENDENCY: return createDependency();
 			case PiMMPackage.DELAY: return createDelay();
 			case PiMMPackage.EXPRESSION: return createExpression();
-			case PiMMPackage.CONFIG_INPUT_INTERFACE: return createConfigInputInterface();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}

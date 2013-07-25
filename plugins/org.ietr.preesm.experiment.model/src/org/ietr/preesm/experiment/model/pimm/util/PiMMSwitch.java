@@ -186,6 +186,16 @@ public class PiMMSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case PiMMPackage.CONFIG_INPUT_INTERFACE: {
+				ConfigInputInterface configInputInterface = (ConfigInputInterface)theEObject;
+				T result = caseConfigInputInterface(configInputInterface);
+				if (result == null) result = caseParameter(configInputInterface);
+				if (result == null) result = caseAbstractVertex(configInputInterface);
+				if (result == null) result = caseISetter(configInputInterface);
+				if (result == null) result = caseParameterizable(configInputInterface);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			case PiMMPackage.REFINEMENT: {
 				Refinement refinement = (Refinement)theEObject;
 				T result = caseRefinement(refinement);
@@ -223,16 +233,6 @@ public class PiMMSwitch<T> extends Switch<T> {
 			case PiMMPackage.EXPRESSION: {
 				Expression expression = (Expression)theEObject;
 				T result = caseExpression(expression);
-				if (result == null) result = defaultCase(theEObject);
-				return result;
-			}
-			case PiMMPackage.CONFIG_INPUT_INTERFACE: {
-				ConfigInputInterface configInputInterface = (ConfigInputInterface)theEObject;
-				T result = caseConfigInputInterface(configInputInterface);
-				if (result == null) result = caseParameter(configInputInterface);
-				if (result == null) result = caseAbstractVertex(configInputInterface);
-				if (result == null) result = caseISetter(configInputInterface);
-				if (result == null) result = caseParameterizable(configInputInterface);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
