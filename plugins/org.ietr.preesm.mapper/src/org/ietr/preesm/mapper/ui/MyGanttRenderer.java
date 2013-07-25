@@ -161,22 +161,39 @@ public class MyGanttRenderer extends GanttRenderer {
 				g2.draw(bar);
 			}
 
-			// Displaying the tooltip inside the bar if enough space is available
+			// Displaying the tooltip inside the bar if enough space is
+			// available
 			if (getToolTipGenerator(row, column) != null) {
 				// Getting the string to display
 				String tip = getToolTipGenerator(row, column).generateToolTip(
 						dataset, subinterval, column);
 
-				// Setting font and color
-				Font font = new Font("Garamond", Font.BOLD | Font.ITALIC, 12);
-				g2.setFont(font);
-				g2.setColor(Color.WHITE);
+				// Truncting the string if it is too long
+				String subtip = "";
+				if (rectLength > 0) {
+					double percent = (g2.getFontMetrics()
+							.getStringBounds(tip, g2).getWidth() + 10)
+							/ rectLength;
 
-				// Testing width and displaying
-				if (rectLength > g2.getFontMetrics().getStringBounds(tip, g2)
-						.getWidth() + 10) {
-					g2.drawString(tip, (int) translatedValue0 + 5,
-							(int) rectStart + g2.getFontMetrics().getHeight());
+					if (percent > 1.0) {
+						subtip = tip.substring(0,
+								(int) (tip.length() / percent));
+					}
+					else if (percent > 0){
+						subtip = tip;
+					}
+
+					// Setting font and color
+					Font font = new Font("Garamond", Font.BOLD, 12);
+					g2.setFont(font);
+					g2.setColor(Color.WHITE);
+
+					// Testing width and displaying
+					if (!subtip.isEmpty()) {
+						g2.drawString(tip, (int) translatedValue0 + 5,
+								(int) rectStart
+										+ g2.getFontMetrics().getHeight());
+					}
 				}
 			}
 

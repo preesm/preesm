@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -69,7 +69,7 @@ public class MapperGanttToolTipGenerator implements CategoryToolTipGenerator {
 			long startTime = currentTask.getDuration().getStart().getTime();
 			long endTime = currentTask.getDuration().getEnd().getTime();
 
-			tooltip = "\"" + currentTask.getDescription() + "\"" + "("
+			tooltip = currentTask.getDescription() + "\r\n" + "("
 					+ startTime + "-" + endTime + "-" + (endTime - startTime)
 					+ ")";
 		}
