@@ -39,9 +39,11 @@ package org.ietr.preesm.mapper.model.property;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.Timing;
@@ -243,6 +245,11 @@ public class VertexInit {
 						}
 					} else if (SpecialVertexManager.isInit(parentVertex)) {
 						time = Timing.DEFAULT_INIT_TIME;
+					} else if (SpecialVertexManager.isEnd(parentVertex)) {
+						time = Timing.DEFAULT_END_TIME;
+					}
+					else{
+						WorkflowLogger.getLogger().log(Level.SEVERE,"Error while setting time on a special vertex.");
 					}
 				}
 			}
