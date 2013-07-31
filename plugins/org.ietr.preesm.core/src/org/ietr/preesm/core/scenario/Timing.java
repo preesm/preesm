@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -50,6 +50,7 @@ public class Timing {
 	public static final int DEFAULT_FORK_TIME = 10;
 	public static final int DEFAULT_JOIN_TIME = 10;
 	public static final int DEFAULT_INIT_TIME = 10;
+	public static final int DEFAULT_END_TIME = 10;
 
 	/**
 	 * related operator
