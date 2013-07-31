@@ -1,7 +1,7 @@
 /*
 	============================================================================
 	Name        : displayYUV.c
-	Author      : mpelcat
+	Author      : mpelcat & kdesnos
 	Version     :
 	Copyright   : Displaying YUV frames one next to another in a row
 	Description :
@@ -17,7 +17,7 @@
 */
 typedef struct YuvDisplay
 {
-    SDL_Overlay* overlays[FRAME_NB_MAX];	// One overlay per frame
+    SDL_Overlay* overlays[NB_DISPLAY];	    // One overlay per frame
     SDL_Surface *screen;					// SDL surface where to display
     int currentXMin;						// Position for next display
     int initialized;                        // Initialization done ?
@@ -47,16 +47,20 @@ void yuvDisplayInit (int id, int xsize, int ysize)
     if(ysize > DISPLAY_H)
     {
         fprintf(stderr, "SDL screen is not high enough for display %d.", id);
+        system("PAUSE");
         exit(1);
     }
-    else if(id >= FRAME_NB_MAX)
+    else if(id >= NB_DISPLAY)
     {
-        fprintf(stderr, "The number of displays is limited to %d.", FRAME_NB_MAX);
+        fprintf(stderr, "The number of displays is limited to %d.", NB_DISPLAY);
+        system("PAUSE");
         exit(1);
     }
     else if(display.currentXMin + xsize > DISPLAY_W)
     {
-        fprintf(stderr, "The number is not wide enough for display %d.", FRAME_NB_MAX);
+        fprintf(stderr, "The number is not wide enough for display %d.", NB_DISPLAY);
+
+        system("PAUSE");
         exit(1);
     }
 
@@ -127,20 +131,13 @@ void yuvRefreshDisplay(int id)
 {
     SDL_Event event;
     SDL_Rect video_rect;
-    //int id = 0;
-    //= {display.overlays[1]->w*1,0,display.overlays[1]->w, display.overlays[1]->h};
 
-    //while(display.overlays[id] != NULL && id<FRAME_NB_MAX)
-    //{
         video_rect.x = display.overlays[id]->w*id;
         video_rect.y = 0;
         video_rect.w = display.overlays[id]->w;
         video_rect.h = display.overlays[id]->h;
 
         SDL_DisplayYUVOverlay(display.overlays[id], &video_rect);
-        //id++;
-    //}
-
 
     /* Grab all the events off the queue. */
     while (SDL_PollEvent(&event))

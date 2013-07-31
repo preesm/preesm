@@ -2,8 +2,8 @@
 	============================================================================
 	Name        : sobel.c
 	Author      : kdesnos
-	Version     :
-	Copyright   :
+	Version     : 1.0
+	Copyright   : CECILL-C
 	Description :
 	============================================================================
 */
@@ -15,9 +15,6 @@
 
 void sobel(int xSize, int ySize, unsigned char *input, unsigned char *output){
     int i,j;
-
-    // Copy input to output buffer before applying the filter
-    //memcpy(output, input, xSize*ySize*sizeof(unsigned char));
 
     // Apply the filter
     for(j=1; j<ySize-1; j++){

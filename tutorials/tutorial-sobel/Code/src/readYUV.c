@@ -2,8 +2,9 @@
 	============================================================================
 	Name        : readYUV.c
 	Author      : kdesnos
-	Version     :
-	Copyright   :
+    Author      : mpelcat
+	Version     : 1.0
+	Copyright   : CECILL-C
 	Description :
 	============================================================================
 */
@@ -32,6 +33,7 @@ void initReadYUV(int xSize, int ySize) {
     if((ptfile = fopen(PATH, "rb")) == NULL )
         {
             fprintf(stderr,"ERROR: Task read cannot open yuv_file '%s'\n", PATH);
+            system("PAUSE");
             return;
         }
 
@@ -42,6 +44,7 @@ void initReadYUV(int xSize, int ySize) {
         if(fsize < NB_FRAME*(xSize*ySize + xSize*ySize/2))
         {
             fprintf(stderr,"ERROR: Task read yuv_file incorrect size");
+            system("PAUSE");
             return;
         }
 

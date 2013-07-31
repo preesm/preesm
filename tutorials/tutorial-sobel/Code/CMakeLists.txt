@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 2.6)
 # This CMake create a workspace containing the following projects
 # 
 # Programs
-#  - main.exe
+#  - sobel.exe
 
 # IDE dependent config
 if(${CMAKE_GENERATOR} MATCHES "Visual Studio 9 2008")
@@ -14,7 +14,7 @@ if(${CMAKE_GENERATOR} MATCHES "Visual Studio 9 2008")
 	add_definitions( -D_CRT_SECURE_NO_WARNINGS )
 endif()
 
-project(MAIN)
+project(Sobel)
 set(LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(CMAKE_C_FLAGS "-std=c99") 
 
@@ -55,7 +55,7 @@ if(NOT THREADS_FOUND)
 endif()
 
 # *******************************************
-# **************** Main.exe  ****************
+# **************** Sobel.exe  ****************
 # *******************************************
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${THREADS_PTHREADS_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${SDLIMAGE_INCLUDE_DIR})
 file(
@@ -64,8 +64,8 @@ file(
 	./src/*.c
 	./src/*.h
 	./generated/*.c
-	./generated/*.h
+	./include/*.h
 )
 
-add_executable( main ${source_files} ${header_files})
-target_link_libraries(main ${CMAKE_THREAD_LIBS_INIT} ${SDL_LIBRARY} ${SDL_IMAGE})
+add_executable( sobel ${source_files} ${header_files})
+target_link_libraries(sobel ${CMAKE_THREAD_LIBS_INIT} ${SDL_LIBRARY} ${SDL_IMAGE})

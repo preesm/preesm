@@ -5,10 +5,19 @@ mkdir VS_main
 cd VS_main
 mkdir Debug
 mkdir Release
+pushd .
 
-copy ..\..\lib\pthread-2.8.0\lib\pthreadVC2.dll .\Debug\pthreadVC2.dll /Y
-copy ..\..\lib\SDL-1.2.14\lib\SDL.dll .\Debug\SDL.dll /Y
+cd ..\..\lib\SDL-*
+cd .\lib\
+copy .\SDL.dll  ..\..\..\bin\VS_main\Debug\SDL.dll /Y
+copy .\SDL.dll  ..\..\..\bin\VS_main\Release\SDL.dll /Y
 
+cd ..\..\pthread-*
+cd .\lib\
+copy .\pthreadVC2.dll ..\..\..\bin\VS_main\Debug\pthreadVC2.dll /Y
+copy .\pthreadVC2.dll ..\..\..\bin\VS_main\Release\pthreadVC2.dll /Y
+
+popd
 cmake ..\..\ -G "Visual Studio 9 2008"
 
 pause

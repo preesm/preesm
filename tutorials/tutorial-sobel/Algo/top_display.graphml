@@ -19,9 +19,11 @@
         <data key="kind">sdf</data>
         <data key="parameters"/>
         <data key="variables">
-            <variable name="N" value="8"/>
-            <variable name="xsize" value="1920"/>
-            <variable name="ysize" value="1080"/>
+            <variable name="N" value="16"/>
+            <variable name="stage1" value="1"/>
+            <variable name="stage2" value="1"/>
+            <variable name="xsize" value="352"/>
+            <variable name="ysize" value="288"/>
         </data>
         <node id="Read_YUV">
             <data key="name">Read_YUV</data>
@@ -32,8 +34,8 @@
                 <argument name="ySize" value="ysize"/>
             </data>
         </node>
-        <node id="display_pic">
-            <data key="name">display_pic</data>
+        <node id="display">
+            <data key="name">display</data>
             <data key="kind">vertex</data>
             <data key="graph_desc">../Code/IDL/displayPic.idl</data>
             <data key="arguments">
@@ -42,8 +44,8 @@
                 <argument name="ysize" value="ysize"/>
             </data>
         </node>
-        <node id="SobelY">
-            <data key="name">SobelY</data>
+        <node id="Sobel">
+            <data key="name">Sobel</data>
             <data key="kind">vertex</data>
             <data key="graph_desc">../Code/IDL/sobel.idl</data>
             <data key="arguments">
@@ -51,36 +53,8 @@
                 <argument name="ySize" value="ysize/N+2"/>
             </data>
         </node>
-        <node id="display_res">
-            <data key="name">display_res</data>
-            <data key="kind">vertex</data>
-            <data key="graph_desc">../Code/IDL/displayPic.idl</data>
-            <data key="arguments">
-                <argument name="index" value="1"/>
-                <argument name="xsize" value="xsize"/>
-                <argument name="ysize" value="ysize"/>
-            </data>
-        </node>
-        <node id="Br_U">
-            <data key="name">Br_U</data>
-            <data key="kind">Broadcast</data>
-            <data key="graph_desc"/>
-            <data key="arguments"/>
-        </node>
-        <node id="Br_V">
-            <data key="name">Br_V</data>
-            <data key="kind">Broadcast</data>
-            <data key="graph_desc"/>
-            <data key="arguments"/>
-        </node>
-        <node id="Br_Y">
-            <data key="name">Br_Y</data>
-            <data key="kind">Broadcast</data>
-            <data key="graph_desc"/>
-            <data key="arguments"/>
-        </node>
-        <node id="SplitY">
-            <data key="name">SplitY</data>
+        <node id="Split">
+            <data key="name">Split</data>
             <data key="kind">vertex</data>
             <data key="graph_desc">../Code/IDL/split.idl</data>
             <data key="arguments">
@@ -89,8 +63,8 @@
                 <argument name="ySize" value="ysize"/>
             </data>
         </node>
-        <node id="MergeY">
-            <data key="name">MergeY</data>
+        <node id="Merge">
+            <data key="name">Merge</data>
             <data key="kind">vertex</data>
             <data key="graph_desc">../Code/IDL/merge.idl</data>
             <data key="arguments">
@@ -99,76 +73,40 @@
                 <argument name="ySize" value="ysize"/>
             </data>
         </node>
-        <edge source="Read_YUV" sourceport="u" target="Br_U" targetport="u">
-            <data key="edge_prod">xsize/2*ysize/2</data>
-            <data key="edge_delay">xsize/2*ysize/2</data>
-            <data key="edge_cons">xsize/2*ysize/2</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="Br_U" sourceport="u" target="display_res" targetport="u">
-            <data key="edge_prod">xsize/2*ysize/2</data>
-            <data key="edge_delay">xsize/2*ysize/2</data>
-            <data key="edge_cons">xsize/2*ysize/2</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="Br_U" sourceport="u" target="display_pic" targetport="u">
-            <data key="edge_prod">xsize/2*ysize/2</data>
-            <data key="edge_delay">xsize/2*ysize/2</data>
-            <data key="edge_cons">xsize/2*ysize/2</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="Read_YUV" sourceport="v" target="Br_V" targetport="v">
-            <data key="edge_prod">xsize/2*ysize/2</data>
-            <data key="edge_delay">xsize/2*ysize/2</data>
-            <data key="edge_cons">xsize/2*ysize/2</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="Br_V" sourceport="v" target="display_res" targetport="v">
-            <data key="edge_prod">xsize/2*ysize/2</data>
-            <data key="edge_delay">xsize/2*ysize/2</data>
-            <data key="edge_cons">xsize/2*ysize/2</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="Read_YUV" sourceport="y" target="Br_Y" targetport="y">
+        <edge source="Read_YUV" sourceport="y" target="Split" targetport="input">
             <data key="edge_prod">xsize*ysize</data>
-            <data key="edge_delay">xsize*ysize</data>
+            <data key="edge_delay">xsize*ysize*stage1</data>
             <data key="edge_cons">xsize*ysize</data>
             <data key="data_type">uchar</data>
         </edge>
-        <edge source="Br_V" sourceport="v" target="display_pic" targetport="v">
+        <edge source="Merge" sourceport="output" target="display" targetport="y">
+            <data key="edge_prod">xsize*ysize</data>
+            <data key="edge_delay">xsize*ysize*stage2</data>
+            <data key="edge_cons">xsize*ysize</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="Read_YUV" sourceport="u" target="display" targetport="u">
             <data key="edge_prod">xsize/2*ysize/2</data>
-            <data key="edge_delay">xsize/2*ysize/2</data>
+            <data key="edge_delay">xsize/2*ysize/2*stage1+xsize/2*ysize/2*stage2</data>
             <data key="edge_cons">xsize/2*ysize/2</data>
             <data key="data_type">uchar</data>
         </edge>
-        <edge source="Br_Y" sourceport="y" target="SplitY" targetport="input">
-            <data key="edge_prod">xsize*ysize</data>
+        <edge source="Read_YUV" sourceport="v" target="display" targetport="v">
+            <data key="edge_prod">xsize/2*ysize/2</data>
+            <data key="edge_delay">xsize/2*ysize/2*stage1+xsize/2*ysize/2*stage2</data>
+            <data key="edge_cons">xsize/2*ysize/2</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="Sobel" sourceport="output" target="Merge" targetport="input">
+            <data key="edge_prod">xsize*(ysize/N+2)</data>
             <data key="edge_delay">0</data>
-            <data key="edge_cons">xsize*ysize</data>
+            <data key="edge_cons">N*xsize*(ysize/N+2)</data>
             <data key="data_type">uchar</data>
         </edge>
-        <edge source="SplitY" sourceport="output" target="SobelY" targetport="input">
-            <data key="edge_prod">xsize*ysize+2*N*xsize</data>
+        <edge source="Split" sourceport="output" target="Sobel" targetport="input">
+            <data key="edge_prod">N*xsize*(ysize/N+2)</data>
             <data key="edge_delay">0</data>
-            <data key="edge_cons">xsize*ysize/N+2*xsize</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="SobelY" sourceport="output" target="MergeY" targetport="input">
-            <data key="edge_prod">xsize*ysize/N+2*xsize</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">xsize*ysize+2*N*xsize</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="MergeY" sourceport="output" target="display_res" targetport="y">
-            <data key="edge_prod">xsize*ysize</data>
-            <data key="edge_delay">xsize*ysize</data>
-            <data key="edge_cons">xsize*ysize</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="Br_Y" sourceport="y" target="display_pic" targetport="y">
-            <data key="edge_prod">xsize*ysize</data>
-            <data key="edge_delay">xsize*ysize</data>
-            <data key="edge_cons">xsize*ysize</data>
+            <data key="edge_cons">xsize*(ysize/N+2)</data>
             <data key="data_type">uchar</data>
         </edge>
     </graph>

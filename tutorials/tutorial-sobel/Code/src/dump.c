@@ -2,8 +2,8 @@
 	============================================================================
 	Name        : dump.c
 	Author      : kdesnos
-	Version     :
-	Copyright   :
+	Version     : 1.0
+	Copyright   : CECILL-C
 	Description :
 	============================================================================
 */
@@ -26,15 +26,16 @@ void initNbExec(int* nbExec, int nbDump){
 
     if((ptfile = fopen(DUMP_FILE, "a+")) == NULL )
     {
-        fprintf(stderr,"ERROR: Task read cannot open yuv_file '%s'\n", DUMP_FILE);
-        return;
+        fprintf(stderr,"ERROR: Cannot open dump file '%s'\n", DUMP_FILE);
+        system("PAUSE");
+        exit(1);
     }
 
     // Go to the end:
     fseek (ptfile , 0 , SEEK_END);
 
     //printf(";;");
-    for(i=1; i<nbDump-1; i++){
+    for(i=1; i<nbDump; i++){
         *(nbExec+i) = 1;
         fprintf(ptfile,"%d;",i);
     }
@@ -53,7 +54,7 @@ void writeTime(long* dumpBuffer, int nbDump, int* nbExec){
             float res;
             nbEx = (nbEx != 0)? 1/nbEx : 0;
             res = ((float)dumpBuffer[i]-(float)dumpBuffer[i-1]) * nbEx;
-            fprintf(ptfile,"%.2f;",res*1000 );
+            fprintf(ptfile,"%.2f;",res*CLOCKS_PER_SEC );
         }
         fprintf(ptfile,"\n");
         fflush(ptfile);
@@ -64,7 +65,7 @@ void writeTime(long* dumpBuffer, int nbDump, int* nbExec){
             dumpBuffer[i] = dumpBuffer[i]-dumpBuffer[i-1];
             // We consider that all measures below 5 ms are not precise enough
             nbExecBefore = *(nbExec+i);
-            if(dumpBuffer[i] < 150) {
+            if(dumpBuffer[i] < 150*1000/CLOCKS_PER_SEC) {
                 *(nbExec+i) = ceil(*(nbExec+i) * 1.5);
                 if(*(nbExec+i) > 131072) {
                     *(nbExec+i) = 131072;
@@ -80,11 +81,11 @@ void writeTime(long* dumpBuffer, int nbDump, int* nbExec){
         if(changed == 0) {
             stable = 1;
             //printf(";;");
-            for(i=1;i<nbDump-1;i++){
+            for(i=1;i<nbDump;i++){
                 fprintf(ptfile,"%d;",*(nbExec+i));
             }
             fprintf(ptfile,"\n");
             fflush(ptfile);
         }
-    }    
+    }
 }

@@ -1,11 +1,11 @@
 /*
-	============================================================================
-	Name        : sobel.c
-	Author      : kdesnos
-	Version     :
-	Copyright   :
-	Description :
-	============================================================================
+============================================================================
+Name        : splitMerge.c
+Author      : kdesnos
+Version     : 1.0
+Copyright   : CECILL-C
+Description :
+============================================================================
 */
 
 #include <string.h>
@@ -14,9 +14,8 @@
 #include "splitMerge.h"
 
 void split(int nbSlice, int xSize, int ySize, unsigned char *input, unsigned char *output){
-       int i,j;
+    int i,j;
     int sliceSize =  xSize*ySize/nbSlice;
-
     // Fill first and last line with 0
     memset(output,0,xSize);
     // First Slice
@@ -25,13 +24,11 @@ void split(int nbSlice, int xSize, int ySize, unsigned char *input, unsigned cha
     if (nbSlice > 1){
         memcpy(output +  xSize + sliceSize , input + sliceSize, xSize);
     }
-
     // Slice other than first and last
     for(i=1; i<nbSlice-1; i++){
         int destIndex = i*(sliceSize+2*xSize);
         memcpy(output + destIndex, input+i*sliceSize-xSize, sliceSize+2*xSize);
     }
-    
     // Last Slice
     i = nbSlice-1;
     if(nbSlice > 1){
@@ -47,11 +44,10 @@ void split(int nbSlice, int xSize, int ySize, unsigned char *input, unsigned cha
 void merge(int nbSlice, int xSize, int ySize, unsigned char *input, unsigned char *output){
     int i;
     int sliceSize =  xSize*ySize/nbSlice;
-
+    // Copy the slice content except the first and last lines
     for(i = 0; i< nbSlice; i++){
         int idx = i*(sliceSize+2*xSize);
-            memcpy(output+i*sliceSize, input+idx+xSize, sliceSize);
+        memcpy(output+i*sliceSize, input+idx+xSize, sliceSize);
     }
-    
 }
 
