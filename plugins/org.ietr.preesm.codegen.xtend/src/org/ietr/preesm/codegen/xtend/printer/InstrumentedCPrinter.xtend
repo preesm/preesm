@@ -266,7 +266,7 @@ class InstrumentedCPrinter extends CPrinter {
 	
 	def printAnalysisCsvFile()'''
 	«FOR entry : actorIDs.entrySet»
-	«entry.key»;"=MOYENNE(«FOR id : entry.value SEPARATOR ';'»«(id).intToColumn»«actorIDs.size + 3»:«(id).intToColumn»65536«ENDFOR»)"
+	«entry.key»;"=AVERAGE(«FOR id : entry.value SEPARATOR ';'»«(id).intToColumn»«actorIDs.size + 3»:«(id).intToColumn»65536«ENDFOR»)"
 	«ENDFOR»
 	'''
 	
