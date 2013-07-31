@@ -158,6 +158,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
 				((OrderedAllocator) allocator).setPolicy(Policy.average);
 				log += " avg: " + allocator.getMemorySize() + ")";
 				csv += allocator.getMemorySize() + ";";
+				((OrderedAllocator) allocator).setPolicy(Policy.best);
 			}
 
 			logger.log(Level.INFO, log);
