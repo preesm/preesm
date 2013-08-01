@@ -153,7 +153,8 @@ public abstract class MemoryAllocator {
 		inputExclusionGraph.setPropertyValue(
 				MemoryExclusionGraph.DAG_FIFO_ALLOCATION, fifoAllocation);
 		inputExclusionGraph.setPropertyValue(
-				MemoryExclusionGraph.WORKING_MEM_ALLOCATION, workingMemAllocation);
+				MemoryExclusionGraph.WORKING_MEM_ALLOCATION,
+				workingMemAllocation);
 	}
 
 	/**
@@ -218,6 +219,11 @@ public abstract class MemoryAllocator {
 	 *         follow the rules.
 	 */
 	public final HashMap<MemoryExclusionVertex, Integer> checkAllocation() {
+		if (memExNodeAllocation == null) {
+			throw new RuntimeException(
+					"Cannot check memory allocation because no allocation was performed.");
+		}
+
 		HashMap<MemoryExclusionVertex, Integer> conflictingElements;
 		conflictingElements = new HashMap<MemoryExclusionVertex, Integer>();
 
@@ -228,21 +234,25 @@ public abstract class MemoryAllocator {
 			MemoryExclusionVertex target = inputExclusionGraph
 					.getEdgeTarget(edge);
 
-			int sourceOffset;
-			int targetOffset;
+			Integer sourceOffset;
+			Integer targetOffset;
 
 			// If an allocation was created only based on a memory exclusion
 			// graph, the edge attribute of MemoryExclusionGraphNodes will be
 			// null and
 			// allocation table won't be valid.
-			if (memExNodeAllocation != null) {
-				sourceOffset = memExNodeAllocation.get(source);
-				targetOffset = memExNodeAllocation.get(target);
-			} else {
-				sourceOffset = edgeAllocation.get(source.getEdge());
-				targetOffset = edgeAllocation.get(target.getEdge());
-			}
 
+			sourceOffset = memExNodeAllocation.get(source);
+			targetOffset = memExNodeAllocation.get(target);
+
+			if (sourceOffset == null) {
+				throw new RuntimeException("Allocation check failed because "
+						+ source + " memory object was not allocated.");
+			}
+			if (targetOffset == null) {
+				throw new RuntimeException("Allocation check failed because "
+						+ target + " memory object was not allocated.");
+			}
 			// If the memory element share memory space
 			if ((sourceOffset < (targetOffset + target.getWeight()))
 					&& ((sourceOffset + source.getWeight()) > targetOffset)) {

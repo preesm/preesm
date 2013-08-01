@@ -137,11 +137,19 @@ public abstract class OrderedAllocator extends MemoryAllocator {
 		// Create a List of MemEx Vertices
 		List<MemoryExclusionVertex> memExVertices = new ArrayList<MemoryExclusionVertex>(
 				inputExclusionGraph.vertexSet());
-
 		// scan the dag vertices to retrieve the MemEx vertices in Scheduling
 		// order
 		List<MemoryExclusionVertex> memExVerticesInSchedulingOrder = new ArrayList<MemoryExclusionVertex>(
 				inputExclusionGraph.vertexSet().size());
+
+		/** Begin by putting all FIFO related Memory objects (if any) */
+		for (MemoryExclusionVertex vertex : inputExclusionGraph.vertexSet()) {
+			if (vertex.getSource().startsWith("FIFO_Head_")
+					|| vertex.getSource().startsWith("FIFO_Body_")) {
+				memExVerticesInSchedulingOrder.add(vertex);
+			}
+		}
+
 		for (DAGVertex vertex : dagVertices) {
 			/** 1- Retrieve the Working Memory MemEx Vertex (if any) */
 			{

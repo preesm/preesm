@@ -137,9 +137,13 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
 			allocator.allocate();
 			tFinish = System.currentTimeMillis();
 
-			if (!allocator.checkAllocation().isEmpty()) {
-				throw new WorkflowException(
-						"The obtained allocation was not valid. The allocator is not working.");
+			try {
+				if (!allocator.checkAllocation().isEmpty()) {
+					throw new WorkflowException(
+							"The obtained allocation was not valid. The allocator is not working.");
+				}
+			} catch (RuntimeException e) {
+				throw new WorkflowException(e.getMessage());
 			}
 
 			csv += "" + allocator.getMemorySize() + ";" + (tFinish - tStart)
@@ -165,7 +169,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
 		}
 
 		System.out.println(csv);
-		Map<String,Object> output = new HashMap<String, Object>();
+		Map<String, Object> output = new HashMap<String, Object>();
 		output.put("MemEx", memEx);
 		return output;
 	}
