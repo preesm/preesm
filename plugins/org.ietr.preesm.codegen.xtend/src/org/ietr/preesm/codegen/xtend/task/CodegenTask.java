@@ -30,10 +30,11 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
-import org.ietr.preesm.codegen.xtend.printer.CPrinter;
 import org.ietr.preesm.codegen.xtend.printer.CodegenAbstractPrinter;
-import org.ietr.preesm.codegen.xtend.printer.InstrumentedCPrinter;
 import org.ietr.preesm.codegen.xtend.printer.XMLPrinter;
+import org.ietr.preesm.codegen.xtend.printer.c.C6678CPrinter;
+import org.ietr.preesm.codegen.xtend.printer.c.CPrinter;
+import org.ietr.preesm.codegen.xtend.printer.c.instrumented.InstrumentedCPrinter;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
@@ -42,6 +43,7 @@ public class CodegenTask extends AbstractTaskImplementation {
 	public static final String PARAM_PRINTER = "Printer";
 	public static final String VALUE_PRINTER_XML = "XML";
 	public static final String VALUE_PRINTER_C = "C";
+	public static final String VALUE_PRINTER_C6678 = "C6678";
 	public static final String VALUE_PRINTER_INSTRUMENTED_C = "InstrumentedC";
 	public static final String VALUE_PRINTER_IR = "IR";
 	public static final String VALUE_PRINTER_DEFAULT = "? C {"
@@ -111,6 +113,10 @@ public class CodegenTask extends AbstractTaskImplementation {
 		switch (selectedPrinter) {
 		case VALUE_PRINTER_C:
 			printer = new CPrinter();
+			extension = ".c";
+			break;
+		case VALUE_PRINTER_C6678:
+			printer = new C6678CPrinter();
 			extension = ".c";
 			break;
 		case VALUE_PRINTER_INSTRUMENTED_C:
