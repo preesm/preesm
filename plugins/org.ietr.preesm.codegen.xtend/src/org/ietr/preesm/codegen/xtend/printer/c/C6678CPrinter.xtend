@@ -33,9 +33,9 @@ class C6678CPrinter extends CPrinter {
 		 */
 		
 		#include "cores.h"
-		#include "../utils.h"
-		#include "../communication.h"
-		#include "../fifo.h"
+		#include "utils.h"
+		#include "communication.h"
+		#include "fifo.h"
 		
 		
 	'''
