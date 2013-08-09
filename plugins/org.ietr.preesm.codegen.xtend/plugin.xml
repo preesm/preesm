@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="printers" name="Printers" schema="schema/printers.exsd"/>
    <extension
          point="net.sf.dftools.workflow.tasks">
       <task
@@ -34,5 +35,43 @@
             class="org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage"
             genModel="model/codegen.genmodel"/>
    </extension>
-
+   <extension
+         point="org.ietr.preesm.codegen.xtend.printers">
+      <printers
+            language="XML">
+         <printer
+               class="org.ietr.preesm.codegen.xtend.printer.XMLPrinter">
+            <core_type
+                  type="x86">
+            </core_type>
+            <core_type
+                  type="c6678">
+            </core_type>
+         </printer>
+      </printers>
+      <printers
+            language="C">
+         <printer
+               class="org.ietr.preesm.codegen.xtend.printer.c.CPrinter">
+            <core_type
+                  type="x86">
+            </core_type>
+         </printer>
+         <printer
+               class="org.ietr.preesm.codegen.xtend.printer.c.C6678CPrinter">
+            <core_type
+                  type="c6678">
+            </core_type>
+         </printer>
+      </printers>
+      <printers
+            language="InstrumentedC">
+         <printer
+               class="org.ietr.preesm.codegen.xtend.printer.c.instrumented.InstrumentedCPrinter">
+            <core_type
+                  type="x86">
+            </core_type>
+         </printer>
+      </printers>
+   </extension>
 </plugin>
