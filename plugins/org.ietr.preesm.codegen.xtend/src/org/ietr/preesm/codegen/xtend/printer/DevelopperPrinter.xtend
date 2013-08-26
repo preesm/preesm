@@ -65,17 +65,17 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	
 	/**
 	 * Default implementation: does nothing.
-	 * @see CodegenAbstractPrinter#createSecondaryFiles(List)
+	 * @see CodegenAbstractPrinter#createSecondaryFiles(List, List)
 	 */
-	override createSecondaryFiles(List<Block> blocks) {
+	override createSecondaryFiles(List<Block> printerBlocks, List<Block> allBlocks) {
 		return new HashMap<String,CharSequence>
 	}
 	
 	/**
 	 * Default implementation: does nothing.
-	 * @see CodegenAbstractPrinter#preProcessing(List)
+	 * @see CodegenAbstractPrinter#preProcessing(List,List)
 	 */
-	override preProcessing(List<Block> blocks) {}
+	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {}
 	
 	override printBroadcast(SpecialCall call) '''<Broadcast>'''
 	

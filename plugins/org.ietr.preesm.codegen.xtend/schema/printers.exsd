@@ -6,7 +6,7 @@
          <meta.schema plugin="org.ietr.preesm.codegen.xtend" id="printers" name="Printers"/>
       </appinfo>
       <documentation>
-         [Enter description of this extension point.]
+         The printers extension point allows a plugin to register a new printer for the Xtend codegen.
       </documentation>
    </annotation>
 
@@ -15,6 +15,9 @@
          <appinfo>
             <meta.element />
          </appinfo>
+         <documentation>
+            Implement here printers that can be used by the Xtend Codegen
+         </documentation>
       </annotation>
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
@@ -48,6 +51,11 @@
    </element>
 
    <element name="printers">
+      <annotation>
+         <documentation>
+            Printers specify a language and one or several Printers that can be used to print this language.
+         </documentation>
+      </annotation>
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
             <element ref="printer"/>
@@ -64,6 +72,11 @@ Example: XML, C, InstrumentedC
    </element>
 
    <element name="core_type">
+      <annotation>
+         <documentation>
+            A core_type specifies a type of core that a given printer supports
+         </documentation>
+      </annotation>
       <complexType>
          <attribute name="type" type="string" use="required">
             <annotation>
@@ -77,6 +90,11 @@ Examples: x86, c6678,...
    </element>
 
    <element name="printer">
+      <annotation>
+         <documentation>
+            A printer is associated to a class that extends the CodegenAbstractPrinter class. This printer can be used to print code in a registered language for a set of registered core_type.
+         </documentation>
+      </annotation>
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
             <element ref="core_type"/>
@@ -91,6 +109,13 @@ Examples: x86, c6678,...
                </appinfo>
             </annotation>
          </attribute>
+         <attribute name="extension" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -99,7 +124,7 @@ Examples: x86, c6678,...
          <meta.section type="since"/>
       </appinfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         0.8.0
       </documentation>
    </annotation>
 
@@ -108,27 +133,36 @@ Examples: x86, c6678,...
          <meta.section type="examples"/>
       </appinfo>
       <documentation>
-         [Enter extension point usage example here.]
+         Hereafter is an example of an XML printer registration:
+&lt;extension
+      point=&quot;org.ietr.preesm.codegen.xtend.printers&quot;&gt;
+   &lt;printers
+         language=&quot;XML&quot;&gt;
+      &lt;printer
+            class=&quot;org.ietr.preesm.codegen.xtend.printer.XMLPrinter&quot;
+            extension=&quot;.xml&quot;&gt;
+         &lt;core_type
+               type=&quot;x86&quot;&gt;
+         &lt;/core_type&gt;
+         &lt;core_type
+               type=&quot;c6678&quot;&gt;
+         &lt;/core_type&gt;
+      &lt;/printer&gt;
+   &lt;/printers&gt;
+&lt;/extension&gt;
+The declared printer is implemented by the XMLPrinter class and supports both x86 anc c6678 cores.
       </documentation>
    </annotation>
+
+
 
    <annotation>
       <appinfo>
-         <meta.section type="apiinfo"/>
+         <meta.section type="copyright"/>
       </appinfo>
       <documentation>
-         [Enter API information here.]
+         Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan, Karol Desnos, Julien Heulot
       </documentation>
    </annotation>
-
-   <annotation>
-      <appinfo>
-         <meta.section type="implementation"/>
-      </appinfo>
-      <documentation>
-         [Enter information about supplied implementation of this extension point.]
-      </documentation>
-   </annotation>
-
 
 </schema>

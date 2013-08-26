@@ -13,17 +13,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
-import org.ietr.preesm.codegen.xtend.task.CodegenException
 
 class C6678CPrinter extends CPrinter {
-	override caseCoreBlock(CoreBlock coreBlock) {
-		if (coreBlock.coreType != "c6678") {
-			throw new CodegenException("Core "+ coreBlock.name +
-				 " has an unsupported type " +	coreBlock.coreType + 
-				 " for the " + this.class.name + " printer")
-		}
-		super.caseCoreBlock(coreBlock)
-	}
 	
 	override printCoreBlockHeader(CoreBlock block) '''
 		/** 
@@ -89,11 +80,11 @@ class C6678CPrinter extends CPrinter {
 	
 	override printSemaphore(Semaphore semaphore) ''''''
 	
-	override preProcessing(List<Block> blocks) {
-		super.preProcessing(blocks)
+	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {
+		super.preProcessing(printerBlocks, allBlocks)
 
 		/** Remove semaphore init */
-		for (block : blocks) {
+		for (block : printerBlocks) {
 			(block as CoreBlock).initBlock.codeElts.removeAll(
 				((block as CoreBlock).initBlock.codeElts.filter[
 					(it instanceof FunctionCall && (it as FunctionCall).name.startsWith("sem_init"))]))

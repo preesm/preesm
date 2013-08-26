@@ -40,7 +40,8 @@
       <printers
             language="XML">
          <printer
-               class="org.ietr.preesm.codegen.xtend.printer.XMLPrinter">
+               class="org.ietr.preesm.codegen.xtend.printer.XMLPrinter"
+               extension=".xml">
             <core_type
                   type="x86">
             </core_type>
@@ -52,13 +53,15 @@
       <printers
             language="C">
          <printer
-               class="org.ietr.preesm.codegen.xtend.printer.c.CPrinter">
+               class="org.ietr.preesm.codegen.xtend.printer.c.CPrinter"
+               extension=".c">
             <core_type
                   type="x86">
             </core_type>
          </printer>
          <printer
-               class="org.ietr.preesm.codegen.xtend.printer.c.C6678CPrinter">
+               class="org.ietr.preesm.codegen.xtend.printer.c.C6678CPrinter"
+               extension=".c">
             <core_type
                   type="c6678">
             </core_type>
@@ -67,7 +70,8 @@
       <printers
             language="InstrumentedC">
          <printer
-               class="org.ietr.preesm.codegen.xtend.printer.c.instrumented.InstrumentedCPrinter">
+               class="org.ietr.preesm.codegen.xtend.printer.c.instrumented.InstrumentedCPrinter"
+               extension=".c">
             <core_type
                   type="x86">
             </core_type>

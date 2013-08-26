@@ -478,11 +478,14 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * {@link Block blocks}, use {@link #doSwitch()} on each {@link Block} to
 	 * print after the pre-processing to do so.
 	 * 
-	 * @param blocks
+	 * @param printerBlocks
 	 * 				The list of {@link Block blocks} that will be printer by the
 	 * 				printer
+	 * @param allBlocks
+	 * 				The list of all {@link Block blocks} printed during a workflow execution. 
+	 * 				This list includes all printerBlocks
 	 */
-	def void preProcessing(List<Block> blocks);
+	def void preProcessing(List<Block> printerBlocks, List<Block> allBlocks);
 
 	/**
 	 * This method is called after all the {@link Block blocks} have been 
@@ -492,11 +495,14 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * a {@link String} to a {@link CharSequence} respectively corresponding
 	 * to a file name (including the extension) and the its content.
 	 * 
-	 * @param blocks
+	 * @param printerBlocks
 	 *   	The list of {@link Block blocks} that were printed by the
 	 * 		printer
+	 * @param allBlocks
+	 *		The list of all {@link Block blocks} printed during a workflow execution. 
+	 *		This list includes all printerBlocks
 	 */
-	def Map<String, CharSequence> createSecondaryFiles(List<Block> blocks);
+	def Map<String, CharSequence> createSecondaryFiles(List<Block> printerBlocks, List<Block> allBlocks);
 
 	/**
 	 * Method called to print a {@link SpecialCall} with

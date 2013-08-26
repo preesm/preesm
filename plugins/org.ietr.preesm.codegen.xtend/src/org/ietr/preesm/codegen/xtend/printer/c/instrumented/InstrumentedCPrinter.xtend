@@ -90,8 +90,8 @@ class InstrumentedCPrinter extends CPrinter {
 	 * 			List of the blocks printed by the printer. (will be 
 	 * 			modified)
 	 */
-	override preProcessing(List<Block> blocks) {
-		super.preProcessing(blocks)
+	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {
+		super.preProcessing(printerBlocks, allBlocks)
 
 		// Create the Buffers
 		dumpTimedBuffer = CodegenFactory::eINSTANCE.createBuffer
@@ -109,7 +109,7 @@ class InstrumentedCPrinter extends CPrinter {
 		// Map associating each ID with the name of what is measures
 		var globalFunctionID = new HashMap<Integer, String>()
 
-		for (Block block : blocks) {
+		for (Block block : printerBlocks) {
 			if (dumpTimedBuffer.creator == null) {
 				dumpTimedBuffer.creator = block
 				nbExec.creator = block
@@ -201,7 +201,7 @@ class InstrumentedCPrinter extends CPrinter {
 				const.value = globalID
 				const
 			})
-		(blocks.head as CoreBlock).initBlock.codeElts.add(initCall)
+		(printerBlocks.head as CoreBlock).initBlock.codeElts.add(initCall)
 	}
 	
 	override printDefinitionsFooter(List<Variable> list) '''
@@ -260,7 +260,7 @@ class InstrumentedCPrinter extends CPrinter {
 	«super.printFifoCall(fifoCall)»
 	'''
 	
-	override createSecondaryFiles(List<Block> blocks) {
+	override createSecondaryFiles(List<Block> printerBlocks, List<Block> allBlocks) {
 		var result = new HashMap<String,CharSequence>
 		result.put("analysis.csv", printAnalysisCsvFile)
 		result

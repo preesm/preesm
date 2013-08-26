@@ -62,15 +62,6 @@ import org.ietr.preesm.codegen.xtend.task.CodegenException
  */
 class CPrinter extends DefaultPrinter {
 
-	override caseCoreBlock(CoreBlock coreBlock) {
-		/*if (coreBlock.coreType != "x86") {
-			throw new CodegenException("Core "+ coreBlock.name +
-				 " has an unsupported type " +	coreBlock.coreType + 
-				 " for the " + this.class.name + " printer")
-		}*/
-		super.caseCoreBlock(coreBlock)
-	}
-
 	override printCoreBlockHeader(CoreBlock block) '''
 			/** 
 			 * @file «block.name».c
