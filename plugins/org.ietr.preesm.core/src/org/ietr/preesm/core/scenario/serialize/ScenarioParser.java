@@ -66,8 +66,10 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
+import org.ietr.preesm.core.scenario.MemCopySpeed;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.core.scenario.TimingManager;
 import org.ietr.preesm.core.types.DataType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -549,6 +551,9 @@ public class ScenarioParser {
 					if (timing != null)
 						scenario.getTimingManager().addTiming(timing);
 				}
+				else if (type.equals("memcpyspeed")) {
+					retrieveMemcpySpeed(scenario.getTimingManager(), elt);
+				}
 			}
 
 			node = node.getNextSibling();
@@ -585,9 +590,40 @@ public class ScenarioParser {
 					timing = new Timing(opdefname, vertex.getName(), time);
 				}
 			}
-
 		}
 
 		return timing;
+	}
+
+	/**
+	 * Retrieves one memcopy speed composed of integer setup time and timeperunit
+	 */
+	private void retrieveMemcpySpeed(TimingManager timingManager, Element timingElt) {
+
+		if (algo != null) {
+
+			String type = timingElt.getTagName();
+			if(type.equals("memcpyspeed")) {
+				String opdefname = timingElt.getAttribute("opname");
+				String sSetupTime = timingElt.getAttribute("setuptime");
+				String sTimePerUnit = timingElt.getAttribute("timeperunit");
+				int timePerUnit, setupTime;
+
+				try {
+					setupTime = Integer.parseInt(sSetupTime);
+					timePerUnit = Integer.parseInt(sTimePerUnit);
+				} catch (NumberFormatException e) {
+					setupTime = -1;
+					timePerUnit = -1;
+				}
+
+				if (scenario.getOperatorDefinitionIds().contains(
+								opdefname) && setupTime >= 0 && timePerUnit >= 0) {
+					MemCopySpeed speed = new MemCopySpeed(opdefname, setupTime, timePerUnit);
+					timingManager.putMemcpySpeed(speed);
+				}
+			}
+
+		}
 	}
 }

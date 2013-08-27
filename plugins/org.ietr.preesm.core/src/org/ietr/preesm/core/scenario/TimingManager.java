@@ -37,7 +37,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.scenario;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
@@ -69,9 +71,25 @@ public class TimingManager {
 	 * Path to a file containing timings
 	 */
 	private String excelFileURL = "";
+	
+	/**
+	 * Storing setup time and speed of memcpy for each type of operator
+	 */
+	private Map<String,MemCopySpeed> memcpySpeeds;
+
+	/**
+	 * Default value for a memcpy setup time
+	 */
+	private final static int DEFAULTMEMCPYSETUPTIME = 0;
+
+	/**
+	 * Default value for a memcpy speed
+	 */
+	private final static int DEFAULTMEMCPYTIMEPERUNIT = 1;
 
 	public TimingManager() {
 		timings = new ArrayList<Timing>();
+		memcpySpeeds = new HashMap<String,MemCopySpeed>();
 		defaultTiming = new Timing("default", "default",
 				Timing.DEFAULT_TASK_TIME);
 	}
@@ -236,5 +254,38 @@ public class TimingManager {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * For a type of operator, sets a memcopy setup time and speed
+	 */
+	public void putMemcpySpeed(MemCopySpeed speed){
+		memcpySpeeds.put(speed.getOperatorDef(), speed);
+	}
+
+	/**
+	 * For a type of operator, gets a memcopy setup time
+	 */
+	public int getMemcpySetupTime(String operatorDef){
+		return memcpySpeeds.get(operatorDef).getSetupTime();
+	}
+
+	/**
+	 * For a type of operator, gets a memcopy speed
+	 */
+	public int getMemcpyTimePerUnit(String operatorDef){
+		return memcpySpeeds.get(operatorDef).getTimePerUnit();
+	}
+	
+	public Map<String,MemCopySpeed> getMemcpySpeeds(){
+		return memcpySpeeds;
+	}
+	
+	public boolean hasMemCpySpeed(String operatorDef){
+		return memcpySpeeds.keySet().contains(operatorDef);
+	}
+	
+	public void setDefaultMemCpySpeed(String operatorDef){
+		putMemcpySpeed(new MemCopySpeed(operatorDef, DEFAULTMEMCPYSETUPTIME, DEFAULTMEMCPYTIMEPERUNIT));
 	}
 }

@@ -290,6 +290,10 @@ public class ScenarioWriter {
 		for (Timing timing : scenario.getTimingManager().getTimings()) {
 			addTiming(timings, timing);
 		}
+
+		for (String opDef : scenario.getTimingManager().getMemcpySpeeds().keySet()) {
+			addMemcpySpeed(timings, opDef, scenario.getTimingManager().getMemcpySetupTime(opDef), scenario.getTimingManager().getMemcpyTimePerUnit(opDef));
+		}
 	}
 
 	private void addTiming(Element parent, Timing timing) {
@@ -299,5 +303,14 @@ public class ScenarioWriter {
 		timingelt.setAttribute("vertexname", timing.getSdfVertexId());
 		timingelt.setAttribute("opname", timing.getOperatorDefinitionId());
 		timingelt.setAttribute("time", Integer.toString(timing.getTime()));
+	}
+
+	private void addMemcpySpeed(Element parent, String opDef, int memcpySetupTime, int memcpyTimePerUnit) {
+
+		Element timingelt = dom.createElement("memcpyspeed");
+		parent.appendChild(timingelt);
+		timingelt.setAttribute("opname", opDef);
+		timingelt.setAttribute("setuptime", Integer.toString(memcpySetupTime));
+		timingelt.setAttribute("timeperunit", Integer.toString(memcpyTimePerUnit));
 	}
 }

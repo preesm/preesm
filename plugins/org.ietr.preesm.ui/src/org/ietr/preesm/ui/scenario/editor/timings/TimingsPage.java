@@ -124,11 +124,116 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		createTimingsSection(managedForm, Messages.getString("Timings.title"),
 				Messages.getString("Timings.description"));
 
+		// Data type section
+		createMemcopySpeedsSection(managedForm,
+				Messages.getString("Timings.MemcopySpeeds.title"),
+				Messages.getString("Timings.MemcopySpeeds.description"));
+		
 		managedForm.refresh();
 		managedForm.reflow(true);
 
 	}
 
+
+
+	/**
+	 * Creates the section editing memcopy speeds
+	 */
+	private void createMemcopySpeedsSection(IManagedForm managedForm, String title,
+			String desc) {
+
+		// Creates the section
+		managedForm.getForm().setLayout(new FillLayout());
+		Composite container = createSection(managedForm, title, desc, 1,
+				new GridData(GridData.FILL_HORIZONTAL
+						| GridData.VERTICAL_ALIGN_BEGINNING));
+		FormToolkit toolkit = managedForm.getToolkit();
+
+		addMemcopySpeedsTable(container, toolkit);
+	}
+
+	/**
+	 * Adds a table to edit memcopy speeds
+	 */
+	protected void addMemcopySpeedsTable(Composite parent, FormToolkit toolkit) {
+
+		Composite tablecps = toolkit.createComposite(parent);
+		tablecps.setVisible(true);
+
+		final TableViewer tableViewer = new TableViewer(tablecps, SWT.BORDER
+				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
+
+		Table table = tableViewer.getTable();
+		table.setLayout(new GridLayout());
+		table.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
+		// table.setSize(100, 100);
+		table.setHeaderVisible(true);
+		table.setLinesVisible(true);
+
+		tableViewer.setContentProvider(new MemCopySpeedContentProvider());
+
+		final MemCopySpeedLabelProvider labelProvider = new MemCopySpeedLabelProvider(
+				scenario, tableViewer, this);
+		tableViewer.setLabelProvider(labelProvider);
+
+		// Create columns
+		final TableColumn column1 = new TableColumn(table, SWT.NONE, 0);
+		column1.setText(Messages.getString("Timings.MemcopySpeeds.opDefColumn"));
+
+		final TableColumn column2 = new TableColumn(table, SWT.NONE, 1);
+		column2.setText(Messages.getString("Timings.MemcopySpeeds.setupTimeColumn"));
+
+		final TableColumn column3 = new TableColumn(table, SWT.NONE, 2);
+		column3.setText(Messages.getString("Timings.MemcopySpeeds.timePerUnitColumn"));
+
+		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
+			public void doubleClick(DoubleClickEvent e) {
+				labelProvider.handleDoubleClick((IStructuredSelection) e
+						.getSelection());
+				// Force the "file has changed" property of scenario.
+				// Timing changes will have no effects if the scenario
+				// is not saved.
+				firePropertyChange(PROP_DIRTY);
+			}
+		});
+
+		final Table tref = table;
+		final Composite comp = tablecps;
+
+		// Setting the column width
+		tablecps.addControlListener(new ControlAdapter() {
+			public void controlResized(ControlEvent e) {
+				Rectangle area = comp.getClientArea();
+				Point size = tref.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+				ScrollBar vBar = tref.getVerticalBar();
+				int width = area.width - tref.computeTrim(0, 0, 0, 0).width - 2;
+				if (size.y > area.height + tref.getHeaderHeight()) {
+					Point vBarSize = vBar.getSize();
+					width -= vBarSize.x;
+				}
+				Point oldSize = tref.getSize();
+				if (oldSize.x > area.width) {
+					column1.setWidth(width / 4 - 1);
+					column2.setWidth((width - column1.getWidth())/2);
+					column3.setWidth((width - column1.getWidth())/2);
+					tref.setSize(area.width, area.height);
+				} else {
+					tref.setSize(area.width, area.height);
+					column1.setWidth(width / 4 - 1);
+					column2.setWidth((width - column1.getWidth())/2);
+					column3.setWidth((width - column1.getWidth())/2);
+				}
+			}
+		});
+
+		tableViewer.setInput(scenario);
+		GridData gd = new GridData(GridData.FILL_HORIZONTAL
+				| GridData.VERTICAL_ALIGN_BEGINNING);
+		gd.heightHint = 400;
+		gd.widthHint = 250;
+		tablecps.setLayoutData(gd);
+	}
+	
 	/**
 	 * Creates the section editing timings
 	 */
@@ -275,8 +380,11 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		});
 
 		tableViewer.setInput(scenario);
-		tablecps.setLayoutData(new GridData(GridData.FILL_HORIZONTAL
-				| GridData.FILL_VERTICAL));
+		GridData gd = new GridData(GridData.FILL_HORIZONTAL
+				| GridData.VERTICAL_ALIGN_BEGINNING);
+		gd.heightHint = 400;
+		gd.widthHint = 400;
+		tablecps.setLayoutData(gd);
 
 		// Tree is refreshed in case of algorithm modifications
 		parent.addPaintListener(new PaintListener() {
