@@ -47,7 +47,7 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 public class TLevelIterator extends ImplementationIterator {
 
 	public TLevelIterator(MapperDAG dag, boolean directOrder) {
-		super(dag, directOrder);
+		super(null, dag, directOrder);
 	}
 
 	@Override

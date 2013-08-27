@@ -28,7 +28,7 @@ public class BLevelVisitor implements
 		IGraphVisitor<MapperDAG, MapperDAGVertex, MapperDAGEdge> {
 
 	/**
-	 * Visiting a graph in topological order to assign t-levels
+	 * Visiting a graph in topological order to assign b-levels
 	 */
 	@Override
 	public void visit(MapperDAG dag) {
@@ -55,11 +55,11 @@ public class BLevelVisitor implements
 		VertexTiming timing = dagVertex.getTiming();
 		
 		if(dagVertex.outgoingEdges().isEmpty()){
-			timing.setBLevel(0l);
+			timing.setBLevel(timing.getCost());
 			return;
 		}
 		
-		// Synchronized vertices are taken into account to compute t-level
+		// Synchronized vertices are taken into account to compute b-level
 		List<MapperDAGVertex> synchroVertices = timing.getVertices((MapperDAG)dagVertex.getBase());
 		Map<MapperDAGVertex, MapperDAGEdge> successors = new HashMap<MapperDAGVertex, MapperDAGEdge>();
 		

@@ -168,9 +168,17 @@ public class MapperDAGVertex extends DAGVertex {
 		String toString = "";
 		if (this.getMapping().hasEffectiveComponent()) {
 			// If the vertex is mapped, displays its component and rank
-			toString = getName() + "("
-					+ this.getMapping().getEffectiveComponent().toString()
-					+ "," + this.getTiming().getTotalOrder(this) + ")";
+			toString = getName() + "(";
+			if (this.getMapping().getEffectiveComponent() != null)
+				toString += this.getMapping().getEffectiveComponent()
+						.toString();
+			if (this.getTiming() != null) {
+				//toString += "," + this.getTiming().getTotalOrder(this);
+				toString += "," + this.getTiming().getTLevel();
+				toString += "," + this.getTiming().getBLevel();
+				toString += "," + this.getTiming().getCost();
+			}
+			toString += ")";
 		} else {
 			// If the vertex is not mapped, displays its weight
 			toString = getName() + "(" + this.getNbRepeat() + ")";

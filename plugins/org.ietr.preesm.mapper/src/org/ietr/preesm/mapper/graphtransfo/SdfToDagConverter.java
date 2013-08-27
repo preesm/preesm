@@ -208,6 +208,8 @@ public class SdfToDagConverter {
 	 */
 	public static void addInitialTimingProperties(MapperDAG dag,
 			Design architecture, PreesmScenario scenario) {
+		
+		// New timing objects are created they are not initialized here
 		for(DAGVertex v : dag.vertexSet()){
 			dag.getTimings().dedicate((MapperDAGVertex)v);
 		}
@@ -250,13 +252,12 @@ public class SdfToDagConverter {
 					Timing timing = listiterator.next();
 					currentVertexInit.addTiming(timing);
 				}
-			} else {
+			} else if (!SpecialVertexManager.isSpecial(currentVertex)) {
 				for (ComponentInstance op : DesignTools
 						.getOperatorInstances(architecture)) {
 					Timing time = new Timing(op.getComponent().getVlnv()
 							.getName(), currentVertex
-							.getCorrespondingSDFVertex().getId(), 1);
-					time.setTime(Timing.DEFAULT_TASK_TIME);
+							.getCorrespondingSDFVertex().getId(), Timing.DEFAULT_TASK_TIME);
 					currentVertexInit.addTiming(time);
 				}
 			}
@@ -269,7 +270,6 @@ public class SdfToDagConverter {
 	 * 
 	 * @return The DAG with initial properties
 	 */
-	@SuppressWarnings("unchecked")
 	public static void addInitialEdgeProperties(MapperDAG dag,
 			Design architecture, PreesmScenario scenario) {
 

@@ -36,33 +36,47 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.mapper.tools;
 
+import java.util.logging.Level;
+
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
+import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 /**
- * Iterates the graph in ascending or descending BLevel order
+ * Iterates the graph in ascending or descending BLevel order. Uses abc
+ * implementation to retrieve b levels.
  * 
  * @author mpelcat
  */
 public class BLevelIterator extends ImplementationIterator {
 
-	public BLevelIterator(MapperDAG implementation, boolean directOrder) {
-		super(implementation, directOrder);
+	public BLevelIterator(IAbc abc, MapperDAG dag, boolean directOrder) {
+		super(abc, dag, directOrder);
 	}
 
 	@Override
 	public int compare(MapperDAGVertex arg0, MapperDAGVertex arg1) {
 
-		long TLevelDifference = (arg0.getTiming().getBLevel() - arg1
+		if(abc != null){
+			arg0 = abc.translateInImplementationVertex(arg0);
+			arg1 = abc.translateInImplementationVertex(arg1);
+		}
+		
+		if(!arg0.getTiming().hasBLevel() || !arg1.getTiming().hasBLevel()){
+			WorkflowLogger.getLogger().log(Level.SEVERE, "B Level Iterator problem");
+		}
+			
+		long bLevelDifference = (arg0.getTiming().getBLevel() - arg1
 				.getTiming().getBLevel());
 
 		if (!directOrder)
-			TLevelDifference = -TLevelDifference;
+			bLevelDifference = -bLevelDifference;
 
-		if (TLevelDifference == 0)
-			TLevelDifference++;
+		if (bLevelDifference == 0)
+			bLevelDifference++;
 
-		return (int) TLevelDifference;
+		return (int) bLevelDifference;
 	}
-
 }

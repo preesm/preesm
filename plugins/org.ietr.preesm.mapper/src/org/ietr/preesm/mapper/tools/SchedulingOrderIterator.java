@@ -56,7 +56,7 @@ public class SchedulingOrderIterator extends ImplementationIterator {
 	public SchedulingOrderIterator(MapperDAG implementation, IAbc abc,
 			boolean directOrder) {
 		this.abc = abc;
-		super.initParams(implementation, directOrder);
+		super.initParams(null, implementation, directOrder);
 	}
 
 	/*

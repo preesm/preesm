@@ -166,7 +166,7 @@ public class VertexInit {
 
 	/**
 	 * Returns the timing of the operation = number of repetitions * scenario
-	 * time
+	 * time. Special vertices have specific time computation
 	 */
 	public int getTime(ComponentInstance operator) {
 
@@ -174,12 +174,13 @@ public class VertexInit {
 
 		if (operator != DesignTools.NO_COMPONENT_INSTANCE) {
 
-			Timing returntiming = getTiming(operator.getComponent().getVlnv()
-					.getName());
 
-			if (returntiming != Timing.UNAVAILABLE) {
-
-				if (!SpecialVertexManager.isSpecial(parentVertex)) {
+			if (!SpecialVertexManager.isSpecial(parentVertex)) {
+				// Non special vertex timings are retrieved from scenario
+				Timing returntiming = getTiming(operator.getComponent().getVlnv()
+						.getName());
+				
+				if (returntiming != Timing.UNAVAILABLE) {
 					if (returntiming.getTime() != 0) {
 						// The basic timing is multiplied by the number of
 						// repetitions
@@ -187,70 +188,71 @@ public class VertexInit {
 					} else {
 						time = Timing.DEFAULT_TASK_TIME;
 					}
+				}
+			} else {
+				// Special vertex timings are computed
+				if (SpecialVertexManager.isBroadCast(parentVertex)) {
+					// Broadcast time is calculated from its output size
+					// if a memory copy speed is set in the operator
+					time = Timing.DEFAULT_BROADCAST_TIME;
+
+					String stringCopySpeed = DesignTools.getParameter(operator,
+							DesignTools.OPERATOR_COPY_SPEED);
+					float dataCopySpeed = 0;
+
+					if (stringCopySpeed != null) {
+						dataCopySpeed = Float.valueOf(stringCopySpeed);
+					}
+
+					if (dataCopySpeed > 0) {
+						// Calculating the sum of output data sizes
+						int inputDataSize = getVertexInputBuffersSize(parentVertex);
+						int outputDataSize = getVertexOutputBuffersSize(parentVertex);
+
+						// A broadcast with different sizes in inputs and
+						// output creates a memory copy with a given speed
+						if (inputDataSize < outputDataSize
+								&& outputDataSize > 0) {
+							time = (int) Math.ceil(outputDataSize
+									/ dataCopySpeed);
+						} else {
+							time = Timing.DEFAULT_BROADCAST_TIME;
+						}
+					}
+				} else if (SpecialVertexManager.isFork(parentVertex)) {
+					time = Timing.DEFAULT_FORK_TIME;
+				} else if (SpecialVertexManager.isJoin(parentVertex)) {
+					// Join time is calculated from its input size
+					// if a memory copy speed is set in the operator
+					time = Timing.DEFAULT_BROADCAST_TIME;
+
+					String stringCopySpeed = DesignTools.getParameter(operator,
+							DesignTools.OPERATOR_COPY_SPEED);
+					float dataCopySpeed = 0;
+
+					if (stringCopySpeed != null) {
+						dataCopySpeed = Float.valueOf(stringCopySpeed);
+					}
+
+					if (dataCopySpeed > 0) {
+						// Calculating the sum of input data sizes
+						// A join creates a memory copy with a given speed
+						int inputDataSize = getVertexInputBuffersSize(parentVertex);
+
+						if (inputDataSize > 0) {
+							time = (int) Math.ceil(inputDataSize
+									/ dataCopySpeed);
+						} else {
+							time = Timing.DEFAULT_JOIN_TIME;
+						}
+					}
+				} else if (SpecialVertexManager.isInit(parentVertex)) {
+					time = Timing.DEFAULT_INIT_TIME;
+				} else if (SpecialVertexManager.isEnd(parentVertex)) {
+					time = Timing.DEFAULT_END_TIME;
 				} else {
-					if (SpecialVertexManager.isBroadCast(parentVertex)) {
-						// Broadcast time is calculated from its output size
-						// if a memory copy speed is set in the operator
-						time = Timing.DEFAULT_BROADCAST_TIME;
-
-						String stringCopySpeed = DesignTools.getParameter(
-								operator, DesignTools.OPERATOR_COPY_SPEED);
-						float dataCopySpeed = 0;
-
-						if (stringCopySpeed != null) {
-							dataCopySpeed = Float.valueOf(stringCopySpeed);
-						}
-
-						if (dataCopySpeed > 0) {
-							// Calculating the sum of output data sizes
-							int inputDataSize = getVertexInputBuffersSize(parentVertex);
-							int outputDataSize = getVertexOutputBuffersSize(parentVertex);
-
-							// A broadcast with different sizes in inputs and
-							// output creates a memory copy with a given speed
-							if (inputDataSize < outputDataSize
-									&& outputDataSize > 0) {
-								time = (int) Math.ceil(outputDataSize
-										/ dataCopySpeed);
-							} else {
-								time = Timing.DEFAULT_BROADCAST_TIME;
-							}
-						}
-					} else if (SpecialVertexManager.isFork(parentVertex)) {
-						time = Timing.DEFAULT_FORK_TIME;
-					} else if (SpecialVertexManager.isJoin(parentVertex)) {
-						// Join time is calculated from its input size
-						// if a memory copy speed is set in the operator
-						time = Timing.DEFAULT_BROADCAST_TIME;
-
-						String stringCopySpeed = DesignTools.getParameter(
-								operator, DesignTools.OPERATOR_COPY_SPEED);
-						float dataCopySpeed = 0;
-
-						if (stringCopySpeed != null) {
-							dataCopySpeed = Float.valueOf(stringCopySpeed);
-						}
-
-						if (dataCopySpeed > 0) {
-							// Calculating the sum of input data sizes
-							// A join creates a memory copy with a given speed
-							int inputDataSize = getVertexInputBuffersSize(parentVertex);
-
-							if (inputDataSize > 0) {
-								time = (int) Math.ceil(inputDataSize
-										/ dataCopySpeed);
-							} else {
-								time = Timing.DEFAULT_JOIN_TIME;
-							}
-						}
-					} else if (SpecialVertexManager.isInit(parentVertex)) {
-						time = Timing.DEFAULT_INIT_TIME;
-					} else if (SpecialVertexManager.isEnd(parentVertex)) {
-						time = Timing.DEFAULT_END_TIME;
-					}
-					else{
-						WorkflowLogger.getLogger().log(Level.SEVERE,"Error while setting time on a special vertex.");
-					}
+					WorkflowLogger.getLogger().log(Level.SEVERE,
+							"Error while setting time on a special vertex.");
 				}
 			}
 		}
@@ -319,11 +321,9 @@ public class VertexInit {
 			if (pred == null) {
 				return false;
 			} else if (SpecialVertexManager.isSpecial(pred)) {
-				predMapable |= pred.getInit().isPredMapable(
-						operator);
+				predMapable |= pred.getInit().isPredMapable(operator);
 			} else {
-				predMapable |= pred.getInit().isMapable(
-						operator);
+				predMapable |= pred.getInit().isMapable(operator);
 			}
 		}
 
@@ -342,11 +342,9 @@ public class VertexInit {
 			if (succ == null) {
 				return false;
 			} else if (SpecialVertexManager.isSpecial(succ)) {
-				succMapable |= succ.getInit().isSuccMapable(
-						operator);
+				succMapable |= succ.getInit().isSuccMapable(operator);
 			} else {
-				succMapable |= succ.getInit().isMapable(
-						operator);
+				succMapable |= succ.getInit().isMapable(operator);
 			}
 		}
 

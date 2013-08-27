@@ -44,6 +44,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
 
+import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
@@ -51,7 +52,8 @@ import org.jgrapht.traverse.AbstractGraphIterator;
 
 /**
  * Iterates the graph in ascending or descending order using the given compare
- * function that respects topological order
+ * function that respects topological order. If an ABC is given, the implementation iterator
+ * makes it available for the compare method
  * 
  * @author mpelcat
  */
@@ -64,7 +66,15 @@ public abstract class ImplementationIterator extends
 	 */
 	private int currentIndex = -1;
 
+	/**
+	 * Iteration in ascending or descending iteration order
+	 */
 	protected boolean directOrder;
+
+	/**
+	 * ABC made available for the compare method
+	 */
+	protected IAbc abc = null;
 
 	/**
 	 * Ordered vertex list parsed by the iterator
@@ -75,13 +85,14 @@ public abstract class ImplementationIterator extends
 		super();
 	}
 
-	public ImplementationIterator(MapperDAG dag, boolean directOrder) {
+	public ImplementationIterator(IAbc abc, MapperDAG dag, boolean directOrder) {
 		super();
-		initParams(dag, directOrder);
+		initParams(abc, dag, directOrder);
 	}
 
-	public void initParams(MapperDAG dag, boolean directOrder) {
+	public void initParams(IAbc abc, MapperDAG dag, boolean directOrder) {
 		this.directOrder = directOrder;
+		this.abc = abc;
 		createOrderedList(dag);
 		currentIndex = 0;
 	}

@@ -170,6 +170,17 @@ public interface IAbc extends IMapperAbc {
 	public void resetImplementation();
 
 	/**
+	 * Gets internal implementation graph.
+	 * Use only for debug!
+	 */
+	public MapperDAG getImplementation();
+	
+	/**
+	 * Returns the implementation vertex corresponding to the DAG vertex
+	 */
+	public MapperDAGVertex translateInImplementationVertex(MapperDAGVertex vertex);
+
+	/**
 	 * Unmaps all vertices in both DAG and implementation
 	 */
 	public void resetDAG();

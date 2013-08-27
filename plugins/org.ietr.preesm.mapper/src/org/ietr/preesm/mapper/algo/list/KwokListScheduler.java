@@ -136,6 +136,14 @@ public class KwokListScheduler {
 						long test = listImplementationCost(dag, currentvertex,
 								currentoperator, archisimu,
 								minimizeVStartorOpEnd);
+						
+						// To debug list scheduling
+						/*IEditorInput input = new StatEditorInput(archisimu, archisimu.getScenario(), null);
+
+						// Run statistic editor
+						PlatformUI.getWorkbench().getDisplay()
+								.asyncExec(new EditorRunnable(input));*/
+						
 						// test the earliest ready operator
 						if (test < time) {
 							chosenoperator = currentoperator;

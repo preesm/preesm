@@ -116,6 +116,14 @@ public abstract class AbstractAbc implements IAbc {
 	protected PreesmScenario scenario;
 
 	/**
+	 * Gets internal implementation graph.
+	 * Use only for debug!
+	 */
+	public MapperDAG getImplementation() {
+		return implementation;
+	}
+	
+	/**
 	 * Gets a new architecture simulator from a simulator type
 	 */
 	public static IAbc getInstance(AbcParameters params, MapperDAG dag,
@@ -477,7 +485,7 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Returns the implementation vertex corresponding to the DAG vertex
 	 */
-	protected final MapperDAGVertex translateInImplementationVertex(
+	public final MapperDAGVertex translateInImplementationVertex(
 			MapperDAGVertex vertex) {
 
 		MapperDAGVertex internalVertex = implementation

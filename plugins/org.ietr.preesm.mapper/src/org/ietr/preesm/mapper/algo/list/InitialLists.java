@@ -249,7 +249,7 @@ public class InitialLists {
 		abc.updateTimings();
 
 		// This step takes time because the whole graph b levels are calculated.
-		BLevelIterator iterator = new BLevelIterator(dag, false);
+		BLevelIterator iterator = new BLevelIterator(abc, dag, false);
 
 		// The DAG is entirely read in b-level order by the iterator to find the
 		// Critical Path
@@ -340,7 +340,7 @@ public class InitialLists {
 
 		// Variables
 		MapperDAGVertex currentvertex = null;
-		BLevelIterator iterator = new BLevelIterator(dag, false);
+		BLevelIterator iterator = new BLevelIterator(abc, dag, false);
 
 		// Class the OBN into the lists (CPN and Blocking node)
 		while (iterator.hasNext()) {
@@ -388,7 +388,7 @@ public class InitialLists {
 		WorkflowLogger.getLogger().log(Level.INFO,
 				"Adding OBN actors to CPN and IBN actors in CPN dominant list");
 		addCPNobn(dag, cpnDominant, simu);
-
+		
 		for (DAGVertex v : dag.vertexSet()) {
 			if (!(criticalPath.contains(v))) {
 				blockingNodes.add((MapperDAGVertex) v);
