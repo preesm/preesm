@@ -270,6 +270,7 @@ public class SdfToDagConverter {
 	 * 
 	 * @return The DAG with initial properties
 	 */
+	@SuppressWarnings("unchecked")
 	public static void addInitialEdgeProperties(MapperDAG dag,
 			Design architecture, PreesmScenario scenario) {
 
