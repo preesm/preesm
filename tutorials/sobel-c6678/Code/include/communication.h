@@ -34,4 +34,10 @@ void receiveStart();
  */
 void receiveEnd(Uint16 coreID);
 
+/**
+ * Barrier used to synchronize all the 8 cores of the DSP.
+ * The communication must be initialized in order to use this method.
+ */
+void busy_barrier();
+
 #endif

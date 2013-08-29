@@ -15,12 +15,6 @@
 #include "utils.h"
 #include "communication.h"
 
-#pragma DATA_SECTION(barrier, ".mySharedMem")
-Char barrier = 0x00;
-
-#pragma DATA_SECTION(isEnded, ".mySharedMem")
-Bool isEnded[1] = { FALSE };
-
 void set_MPAX(int index, Uint32 bAddr, Uint32 rAddr, Uint8 segSize,
 		Bool cacheable) {
 
@@ -44,31 +38,4 @@ void set_MPAX(int index, Uint32 bAddr, Uint32 rAddr, Uint8 segSize,
 
 	CSL_XMC_setXMPAXH(index, &mpaxh);
 	CSL_XMC_setXMPAXL(index, &mpaxl);
-}
-
-void busy_barrier() {
-	Uint8 status;
-	Char procNumber = MultiProc_self();
-
-	do {
-		status = CSL_semAcquireDirect(2);
-	} while (status == 0);
-
-
-	barrier |= (1 << procNumber);
-	CSL_semReleaseSemaphore(2);
-
-	if (procNumber == 0) {
-		while (barrier != (Char) 0xFF) {
-			Task_sleep(1);
-		}
-		barrier = (Char)0x00;
-		sendStart(1);
-		receiveEnd(7);
-	} else {
-		receiveEnd(procNumber-1);
-		sendStart((procNumber+1)%8);
-
-	}
-
 }

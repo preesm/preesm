@@ -12,6 +12,11 @@
 #include <xdc/runtime/System.h>
 #include "communication.h"
 #include <ti/sysbios/BIOS.h>
+#include <ti/csl/csl_cacheAux.h>
+#include <ti/csl/csl_semAux.h>
+#include <ti/ipc/MultiProc.h>
+#include <ti/sysbios/knl/Task.h>
+
 // 8 local semaphore for each core (1 useless)
 Semaphore_Handle interCoreSem[8];
 
@@ -20,6 +25,9 @@ Semaphore_Handle interCoreSem[8];
 
 /* Notify event number that the app uses */
 #define EVENTID         10
+
+#pragma DATA_SECTION(barrier, ".MSMCSRAM")
+Char barrier = 0x00;
 
 Void callbackInterCoreCom(UInt16 procId, UInt16 lineId, UInt32 eventId,
 		UArg arg, UInt32 payload) {
@@ -72,4 +80,32 @@ void communicationInit() {
 
 void receiveStart(){}
 void sendEnd(){}
+
+void busy_barrier() {
+	Uint8 status;
+	Char procNumber = MultiProc_self();
+
+	do {
+		status = CSL_semAcquireDirect(2);
+	} while (status == 0);
+
+	CACHE_invL2(&barrier, 1, CACHE_WAIT);
+	barrier |= (1 << procNumber);
+	CACHE_wbInvL2(&barrier, 1, CACHE_WAIT);
+	CSL_semReleaseSemaphore(2);
+
+	if (procNumber == 0) {
+		while (barrier != (Char) 0xFF) {
+			Task_sleep(1);
+			CACHE_invL2(&barrier, 1, CACHE_WAIT);
+		}
+		barrier = (Char)0x00;
+		sendStart(1);
+		receiveEnd(7);
+	} else {
+		receiveEnd(procNumber-1);
+		sendStart((procNumber+1)%8);
+
+	}
+}
 

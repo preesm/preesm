@@ -30,20 +30,11 @@ metaonly module Platform inherits xdc.platform.IPlatform {
                         access: "RWX",
                      }
                 ],
-                ["MSMCSRAM_NO_CACHE", 
+                ["SHARED_NO_CACHE", 
                      {
-                        name: "MSMCSRAM_NO_CACHE",
-                        base: 0xa1000000,                    
-                        len: 0x00300000,                    
-                        space: "code/data",
-                        access: "RWX",
-                     }
-                ],
-                ["DDR3", 
-                     {
-                        name: "DDR3",
+                        name: "SHARED_NO_CACHE",
                         base: 0x80000000,                    
-                        len: 0x20000000,                    
+                        len: 0x80000000,                    
                         space: "code/data",
                         access: "RWX",
                      }

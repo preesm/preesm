@@ -24,8 +24,6 @@ extern Bool isEnded[1];
 
 void set_MPAX(int index, Uint32 bAddr, Uint32 rAddr, Uint8 segSize, Bool cacheable);
 
-void busy_barrier();
-
 int endExecution();
 
 #endif

@@ -32,37 +32,37 @@ Void tsk0_func(UArg arg0, UArg arg1) {
 #endif
 
 #ifdef CORE2
-		case 2:
+	case 2:
 		core2();
 		break;
 #endif
 
 #ifdef CORE3
-		case 3:
+	case 3:
 		core3();
 		break;
 #endif
 
 #ifdef CORE4
-		case 4:
+	case 4:
 		core4();
 		break;
 #endif
 
 #ifdef CORE5
-		case 5:
+	case 5:
 		core5();
 		break;
 #endif
 
 #ifdef CORE6
-		case 6:
+	case 6:
 		core6();
 		break;
 #endif
 
 #ifdef CORE7
-		case 7:
+	case 7:
 		core7();
 		break;
 #endif
@@ -83,15 +83,21 @@ Int main(Int argc, Char* argv[]) {
 	// Because MSMC memory cannot be non-cacheable, a new entry is added to
 	// the memory map as follows:
 	//     name            origin    length
-	// MSMCSRAM_NO_CACHE     a1000000   00300000
+	// SHARED_NO_CACHE     80000000   80000000
 	// Cache is disabled for this new memory range
 	// Then a new section is created for this memory range (cf .cfg). Memory
-	// translation is then used to make this region fall into the MSMCSRAM.
-	// "translate" 2MB (0x14) from 0xa1000000 to 0x00c100000 using the MPAX number 3
-	set_MPAX(3, 0xa1000, 0x00c100, 0x14, 0);
-	// "translate" 1MB (0x13) from 0xa1200000 to 0x00c3ff000 using the MPAX number 4
-	set_MPAX(4, 0xa1000, 0x00c300, 0x13, 0);
+	// translation is then used to make the region beginning fall into the
+	// MSMCSRAM. The rest naturally falls into DDR3.
+	// "translate" 2MB (0x14) from 0x80000000 to 0x00c100000 using the MPAX number 3
+	set_MPAX(3, 0x80000, 0x00c100, 0x14, 0);
+	// "translate" 1MB (0x13) from 0x80020000 to 0x00c3ff000 using the MPAX number 4
+	set_MPAX(4, 0x80020, 0x00c300, 0x13, 0);
 
+	// Disable caching from 0x80000000 to 0xFFFFFFFF
+	int index;
+	for (index = 0x80; index <= 0xFF; index++) {
+		CACHE_disableCaching(index);
+	}
 
 	BIOS_start();
 
