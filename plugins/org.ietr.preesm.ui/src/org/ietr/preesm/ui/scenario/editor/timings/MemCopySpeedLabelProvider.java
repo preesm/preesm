@@ -93,7 +93,7 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
 			} else if (columnIndex == 1) {
 				text = Integer.toString(speed.getSetupTime());
 			} else if (columnIndex == 2) {
-				text = Integer.toString(speed.getTimePerUnit());
+				text = Float.toString(speed.getTimePerUnit());
 			}
 		}
 
@@ -126,20 +126,40 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
 
 	public void handleDoubleClick(IStructuredSelection selection) {
 
-		IInputValidator validator = new IInputValidator() {
+		IInputValidator intValidator = new IInputValidator() {
 
 			public String isValid(String newText) {
 				String message = null;
-				int size = 0;
+				int val = 0;
 
 				try {
-					size = Integer.valueOf(newText);
+					val = Integer.valueOf(newText);
 				} catch (NumberFormatException e) {
-					size = 0;
+					val = 0;
 				}
 
-				if (size == 0)
-					message = "invalid time";
+				if (val <= 0)
+					message = "invalid positive integer";
+
+				return message;
+			}
+
+		};
+		
+		IInputValidator floatValidator = new IInputValidator() {
+
+			public String isValid(String newText) {
+				String message = null;
+				float val = 0;
+
+				try {
+					val = Float.valueOf(newText);
+				} catch (NumberFormatException e) {
+					val = 0;
+				}
+
+				if (val <= 0)
+					message = "invalid positive float";
 
 				return message;
 			}
@@ -160,7 +180,7 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
 
 			InputDialog dialogSetupTime = new InputDialog(PlatformUI
 					.getWorkbench().getActiveWorkbenchWindow().getShell(),
-					title, message, initSetupTime, validator);
+					title, message, initSetupTime, intValidator);
 
 			title = Messages
 					.getString("Timings.MemcopySpeeds.dialog.timePerUnitTitle");
@@ -170,7 +190,7 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
 					
 			InputDialog dialogTimePerUnit = new InputDialog(PlatformUI
 					.getWorkbench().getActiveWorkbenchWindow().getShell(),
-					title, message, initTimePerUnit, validator);
+					title, message, initTimePerUnit, floatValidator);
 
 			if (dialogSetupTime.open() == Window.OK) {
 				if (dialogTimePerUnit.open() == Window.OK) {
@@ -178,7 +198,7 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
 					String valueTimePerUnit = dialogTimePerUnit.getValue();
 
 					speed.setSetupTime(Integer.valueOf(valueSetupTime));
-					speed.setTimePerUnit(Integer.valueOf(valueTimePerUnit));
+					speed.setTimePerUnit(Float.valueOf(valueTimePerUnit));
 					scenario.getTimingManager().putMemcpySpeed(speed);
 
 					tableViewer.refresh();

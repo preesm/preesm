@@ -35,11 +35,6 @@ public class DesignTools {
 	public static String OPERATOR_BASE_ADDRESS = "BaseAddress";
 
 	/**
-	 * Key of instance parameter used to store a property used in Preesm
-	 */
-	public static String OPERATOR_COPY_SPEED = "CopySpeed";
-
-	/**
 	 * Comparing two components using their names
 	 */
 	public static class ComponentInstanceComparator implements

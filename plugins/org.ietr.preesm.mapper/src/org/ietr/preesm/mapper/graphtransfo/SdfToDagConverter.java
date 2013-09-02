@@ -74,6 +74,7 @@ import org.ietr.preesm.mapper.model.MapperEdgeFactory;
 import org.ietr.preesm.mapper.model.MapperVertexFactory;
 import org.ietr.preesm.mapper.model.property.EdgeInit;
 import org.ietr.preesm.mapper.model.property.VertexInit;
+import org.ietr.preesm.mapper.model.special.TransferVertex;
 import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
 
 /**
@@ -157,6 +158,7 @@ public class SdfToDagConverter {
 
 		addInitialVertexProperties(dag, architecture, scenario);
 		addInitialEdgeProperties(dag, architecture, scenario);
+		addInitialSpecialVertexProperties(dag, architecture, scenario);
 		addInitialConstraintsProperties(dag, architecture, scenario);
 		addInitialRelativeConstraintsProperties(dag, architecture, scenario);
 		addInitialTimingProperties(dag, architecture, scenario);
@@ -215,6 +217,33 @@ public class SdfToDagConverter {
 		}
 	}
 	
+	private static int getVertexInputBuffersSize(MapperDAGVertex v) {
+		int inputDataSize = 0;
+
+		for (DAGEdge e : v.incomingEdges()) {
+			MapperDAGEdge me = (MapperDAGEdge) e;
+			if (!(me.getSource() instanceof TransferVertex)) {
+				inputDataSize += me.getInit().getDataSize();
+			}
+		}
+
+		return inputDataSize;
+	}
+
+	private static int getVertexOutputBuffersSize(MapperDAGVertex v) {
+		int outputDataSize = 0;
+
+		for (DAGEdge e : v.outgoingEdges()) {
+			MapperDAGEdge me = (MapperDAGEdge) e;
+			if (!(me.getTarget() instanceof TransferVertex)) {
+				outputDataSize += me.getInit().getDataSize();
+			}
+		}
+
+		return outputDataSize;
+
+	}
+	
 	/**
 	 * Retrieves the vertex timings and adds them to the DAG initial properties
 	 * 
@@ -247,12 +276,20 @@ public class SdfToDagConverter {
 			// Iterating over timings for each DAG vertex
 			Iterator<Timing> listiterator = timelist.iterator();
 
-			if (timelist.size() != 0) {
+			// Special vertices time computation is delayed until edge sizes are initialized
+			if(SpecialVertexManager.isSpecial(currentVertex)){
+			}
+			// If there is no time defined
+			else if (timelist.size() != 0) {
 				while (listiterator.hasNext()) {
 					Timing timing = listiterator.next();
+					
+					// Importing timings from scenario
 					currentVertexInit.addTiming(timing);
 				}
-			} else if (!SpecialVertexManager.isSpecial(currentVertex)) {
+			// If the vertex is not special and has no defined timings
+			} else {
+				// Default timings are given
 				for (ComponentInstance op : DesignTools
 						.getOperatorInstances(architecture)) {
 					Timing time = new Timing(op.getComponent().getVlnv()
@@ -265,6 +302,46 @@ public class SdfToDagConverter {
 		}
 	}
 
+	/**
+	 * Retrieves the vertex timings and adds them to the DAG initial properties
+	 * 
+	 * @return The DAG with initial properties
+	 */
+	public static void addInitialSpecialVertexProperties(MapperDAG dag,
+			Design architecture, PreesmScenario scenario) {
+
+		// Iterating over dag vertices
+		TopologicalDAGIterator dagiterator = new TopologicalDAGIterator(dag);
+
+		while (dagiterator.hasNext()) {
+			MapperDAGVertex currentVertex = (MapperDAGVertex) dagiterator
+					.next();
+
+			// Special vertices have timings computed from data copy speed
+			if(SpecialVertexManager.isSpecial(currentVertex)){
+				VertexInit currentVertexInit = currentVertex
+						.getInit();
+				
+				for(String opDef : scenario.getTimingManager().getMemcpySpeeds().keySet()){
+					int sut = scenario.getTimingManager().getMemcpySetupTime(opDef);
+					float tpu = scenario.getTimingManager().getMemcpyTimePerUnit(opDef);
+					Timing timing = new Timing(opDef, currentVertex
+							.getCorrespondingSDFVertex().getId());
+
+					// Depending on the type of vertex, time is given by the size of output or input buffers
+					if(SpecialVertexManager.isFork(currentVertex) || SpecialVertexManager.isJoin(currentVertex) || SpecialVertexManager.isEnd(currentVertex)){
+						timing.setTime(sut + (int)(tpu * getVertexInputBuffersSize(currentVertex)));
+					}
+					else if(SpecialVertexManager.isBroadCast(currentVertex)|| SpecialVertexManager.isInit(currentVertex)){
+						timing.setTime(sut + (int)(tpu * getVertexOutputBuffersSize(currentVertex)));
+					}
+					
+					currentVertexInit.addTiming(timing);
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Retrieves the edge weights and adds them to the DAG initial properties
 	 * 
@@ -285,10 +362,6 @@ public class SdfToDagConverter {
 			EdgeInit currentEdgeInit = currentEdge
 					.getInit();
 
-			// Old version using directly the weights set by the SDF4J sdf2dag
-			/*
-			 * int weight = currentEdge.getWeight().intValue();
-			 */
 			int weight = 0;
 
 			// Calculating the edge weight for simulation:
@@ -317,7 +390,8 @@ public class SdfToDagConverter {
 	}
 
 	/**
-	 * Retrieves the constraints and adds them to the DAG initial properties
+	 * Retrieves the constraints and adds them to the DAG initial properties.
+	 * Also imports timings
 	 */
 	public static void addInitialConstraintsProperties(MapperDAG dag,
 			Design architecture, PreesmScenario scenario) {
@@ -353,6 +427,8 @@ public class SdfToDagConverter {
 								mv.getInit().addOperator(
 										currentIOp);
 
+								// Initializes a default timing that may be erased
+								// when timings are imported
 								Timing newTiming = new Timing(currentIOp
 										.getComponent().getVlnv().getName(),
 										mv.getName());

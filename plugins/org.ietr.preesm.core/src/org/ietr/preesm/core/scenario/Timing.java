@@ -36,6 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario;
 
+import java.util.logging.Level;
+
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 /**
  * A timing links a SDF vertex and an operator definition to a time. Ids are
  * used to make the scenario independent from model implementations.
@@ -46,11 +50,7 @@ public class Timing {
 
 	public static final Timing UNAVAILABLE = null;
 	public static final int DEFAULT_TASK_TIME = 100;
-	public static final int DEFAULT_BROADCAST_TIME = 10;
-	public static final int DEFAULT_FORK_TIME = 10;
-	public static final int DEFAULT_JOIN_TIME = 10;
-	public static final int DEFAULT_INIT_TIME = 10;
-	public static final int DEFAULT_END_TIME = 10;
+	public static final int DEFAULT_SPECIAL_VERTEX_TIME = 10;
 
 	/**
 	 * related operator
@@ -107,9 +107,19 @@ public class Timing {
 		return sdfVertexId;
 	}
 
+	/**
+	 * The given time is set if it is strictly positive. Otherwise, 1 is set.
+	 * 
+	 * @param time
+	 */
 	public void setTime(int time) {
-
-		this.time = time;
+		if(time > 0){
+			this.time = time;
+		}
+		else{
+			WorkflowLogger.getLogger().log(Level.WARNING,"Trying to set a non strictly positive time for vertex " + sdfVertexId);
+			this.time = 1;
+		}
 	}
 
 	@Override

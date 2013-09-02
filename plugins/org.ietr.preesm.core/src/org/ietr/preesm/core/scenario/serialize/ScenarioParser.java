@@ -607,11 +607,12 @@ public class ScenarioParser {
 				String opdefname = timingElt.getAttribute("opname");
 				String sSetupTime = timingElt.getAttribute("setuptime");
 				String sTimePerUnit = timingElt.getAttribute("timeperunit");
-				int timePerUnit, setupTime;
+				int setupTime;
+				float timePerUnit;
 
 				try {
 					setupTime = Integer.parseInt(sSetupTime);
-					timePerUnit = Integer.parseInt(sTimePerUnit);
+					timePerUnit = Float.parseFloat(sTimePerUnit);
 				} catch (NumberFormatException e) {
 					setupTime = -1;
 					timePerUnit = -1;

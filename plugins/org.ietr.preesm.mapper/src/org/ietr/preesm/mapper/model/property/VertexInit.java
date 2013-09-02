@@ -65,7 +65,7 @@ public class VertexInit {
 	private MapperDAGVertex parentVertex;
 
 	/**
-	 * Timings on available operators
+	 * Timings for the given vertex on available operators
 	 */
 	private List<Timing> timings;
 
@@ -75,7 +75,7 @@ public class VertexInit {
 	private List<ComponentInstance> operators;
 
 	/**
-	 * Number of repetitions that ponderates the timing
+	 * Number of repetitions that may ponderate the timing
 	 */
 	private int nbRepeat;
 
@@ -174,12 +174,13 @@ public class VertexInit {
 
 		if (operator != DesignTools.NO_COMPONENT_INSTANCE) {
 
+			// Non special vertex timings are retrieved from scenario
+			// Special vertex timings were computed from scenario
+			Timing returntiming = getTiming(operator.getComponent().getVlnv()
+					.getName());
 
 			if (!SpecialVertexManager.isSpecial(parentVertex)) {
-				// Non special vertex timings are retrieved from scenario
-				Timing returntiming = getTiming(operator.getComponent().getVlnv()
-						.getName());
-				
+
 				if (returntiming != Timing.UNAVAILABLE) {
 					if (returntiming.getTime() != 0) {
 						// The basic timing is multiplied by the number of
@@ -190,101 +191,20 @@ public class VertexInit {
 					}
 				}
 			} else {
-				// Special vertex timings are computed
-				if (SpecialVertexManager.isBroadCast(parentVertex)) {
-					// Broadcast time is calculated from its output size
-					// if a memory copy speed is set in the operator
-					time = Timing.DEFAULT_BROADCAST_TIME;
-
-					String stringCopySpeed = DesignTools.getParameter(operator,
-							DesignTools.OPERATOR_COPY_SPEED);
-					float dataCopySpeed = 0;
-
-					if (stringCopySpeed != null) {
-						dataCopySpeed = Float.valueOf(stringCopySpeed);
+				// Special vertex timings are retrieved
+				if (returntiming != Timing.UNAVAILABLE) {
+					if (returntiming.getTime() != 0) {
+						time = returntiming.getTime();
+					} else {
+						time = Timing.DEFAULT_SPECIAL_VERTEX_TIME;
 					}
-
-					if (dataCopySpeed > 0) {
-						// Calculating the sum of output data sizes
-						int inputDataSize = getVertexInputBuffersSize(parentVertex);
-						int outputDataSize = getVertexOutputBuffersSize(parentVertex);
-
-						// A broadcast with different sizes in inputs and
-						// output creates a memory copy with a given speed
-						if (inputDataSize < outputDataSize
-								&& outputDataSize > 0) {
-							time = (int) Math.ceil(outputDataSize
-									/ dataCopySpeed);
-						} else {
-							time = Timing.DEFAULT_BROADCAST_TIME;
-						}
-					}
-				} else if (SpecialVertexManager.isFork(parentVertex)) {
-					time = Timing.DEFAULT_FORK_TIME;
-				} else if (SpecialVertexManager.isJoin(parentVertex)) {
-					// Join time is calculated from its input size
-					// if a memory copy speed is set in the operator
-					time = Timing.DEFAULT_BROADCAST_TIME;
-
-					String stringCopySpeed = DesignTools.getParameter(operator,
-							DesignTools.OPERATOR_COPY_SPEED);
-					float dataCopySpeed = 0;
-
-					if (stringCopySpeed != null) {
-						dataCopySpeed = Float.valueOf(stringCopySpeed);
-					}
-
-					if (dataCopySpeed > 0) {
-						// Calculating the sum of input data sizes
-						// A join creates a memory copy with a given speed
-						int inputDataSize = getVertexInputBuffersSize(parentVertex);
-
-						if (inputDataSize > 0) {
-							time = (int) Math.ceil(inputDataSize
-									/ dataCopySpeed);
-						} else {
-							time = Timing.DEFAULT_JOIN_TIME;
-						}
-					}
-				} else if (SpecialVertexManager.isInit(parentVertex)) {
-					time = Timing.DEFAULT_INIT_TIME;
-				} else if (SpecialVertexManager.isEnd(parentVertex)) {
-					time = Timing.DEFAULT_END_TIME;
 				} else {
-					WorkflowLogger.getLogger().log(Level.SEVERE,
-							"Error while setting time on a special vertex.");
+					time = Timing.DEFAULT_SPECIAL_VERTEX_TIME;
 				}
 			}
 		}
 
 		return time;
-	}
-
-	private int getVertexInputBuffersSize(MapperDAGVertex v) {
-		int inputDataSize = 0;
-
-		for (DAGEdge e : parentVertex.incomingEdges()) {
-			MapperDAGEdge me = (MapperDAGEdge) e;
-			if (!(me.getSource() instanceof TransferVertex)) {
-				inputDataSize += me.getInit().getDataSize();
-			}
-		}
-
-		return inputDataSize;
-	}
-
-	private int getVertexOutputBuffersSize(MapperDAGVertex v) {
-		int outputDataSize = 0;
-
-		for (DAGEdge e : v.outgoingEdges()) {
-			MapperDAGEdge me = (MapperDAGEdge) e;
-			if (!(me.getTarget() instanceof TransferVertex)) {
-				outputDataSize += me.getInit().getDataSize();
-			}
-		}
-
-		return outputDataSize;
-
 	}
 
 	public Timing getTiming(String operatordefId) {

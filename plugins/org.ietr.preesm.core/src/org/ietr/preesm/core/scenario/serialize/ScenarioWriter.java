@@ -305,12 +305,12 @@ public class ScenarioWriter {
 		timingelt.setAttribute("time", Integer.toString(timing.getTime()));
 	}
 
-	private void addMemcpySpeed(Element parent, String opDef, int memcpySetupTime, int memcpyTimePerUnit) {
+	private void addMemcpySpeed(Element parent, String opDef, int memcpySetupTime, float memcpyTimePerUnit) {
 
 		Element timingelt = dom.createElement("memcpyspeed");
 		parent.appendChild(timingelt);
 		timingelt.setAttribute("opname", opDef);
 		timingelt.setAttribute("setuptime", Integer.toString(memcpySetupTime));
-		timingelt.setAttribute("timeperunit", Integer.toString(memcpyTimePerUnit));
+		timingelt.setAttribute("timeperunit", Float.toString(memcpyTimePerUnit));
 	}
 }

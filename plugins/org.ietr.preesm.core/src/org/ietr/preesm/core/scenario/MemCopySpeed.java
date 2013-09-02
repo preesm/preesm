@@ -48,9 +48,9 @@ public class MemCopySpeed {
 	
 	private int setupTime;
 	
-	private int timePerUnit;
+	private float timePerUnit;
 
-	public MemCopySpeed(String operatorDef, int setupTime, int timePerUnit) {
+	public MemCopySpeed(String operatorDef, int setupTime, float timePerUnit) {
 		super();
 		this.operatorDef = operatorDef;
 		this.setupTime = setupTime;
@@ -65,7 +65,7 @@ public class MemCopySpeed {
 		return setupTime;
 	}
 
-	public int getTimePerUnit() {
+	public float getTimePerUnit() {
 		return timePerUnit;
 	}
 
@@ -77,7 +77,7 @@ public class MemCopySpeed {
 		this.setupTime = setupTime;
 	}
 
-	public void setTimePerUnit(Integer timePerUnit) {
+	public void setTimePerUnit(Float timePerUnit) {
 		this.timePerUnit = timePerUnit;
 	}
 }

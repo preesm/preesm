@@ -273,7 +273,7 @@ public class TimingManager {
 	/**
 	 * For a type of operator, gets a memcopy speed
 	 */
-	public int getMemcpyTimePerUnit(String operatorDef){
+	public float getMemcpyTimePerUnit(String operatorDef){
 		return memcpySpeeds.get(operatorDef).getTimePerUnit();
 	}
 	
