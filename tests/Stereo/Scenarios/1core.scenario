@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/stereo/Algo/stereo_top.graphml"/>
+        <architecture url="/stereo/Archi/1CoreX86.slam"/>
+        <codegenDirectory url="/stereo/Code/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="Cost_Parallel_Work/AggregateCost"/>
+            <task name="Census_R"/>
+            <task name="Cost_Parallel_Work/offsetGen"/>
+            <task name="Cost_Parallel_Work/disparitySelect"/>
+            <task name="Cost_Parallel_Work/CostConstruction"/>
+            <task name="Census_L"/>
+            <task name="Cost_Parallel_Work/computeVertWeights"/>
+            <task name="RGB2Gray_R"/>
+            <task name="Read_PPM0"/>
+            <task name="Read_PPM1"/>
+            <task name="Cost_Parallel_Work/computeHorWeights"/>
+            <task name="Cost_Parallel_Work/disparityGen"/>
+            <task name="Display_rgb1"/>
+            <task name="Display_rgb0"/>
+            <task name="Cost_Parallel_Work"/>
+            <task name="RGB2Gray_L"/>
+        </constraintGroup>
+    </constraints>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl="">
+        <memcpyspeed opname="x86" setuptime="0" timeperunit="1"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="char" size="1"/>
+            <dataType name="int" size="4"/>
+            <dataType name="uchar" size="1"/>
+            <dataType name="float" size="4"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+    </simuParams>
+    <variables excelUrl=""/>
+</scenario>

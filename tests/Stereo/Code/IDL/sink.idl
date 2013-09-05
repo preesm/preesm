@@ -1,0 +1,7 @@
+
+module sink {
+	typedef long parameter ;
+	interface loop {
+		void sink (in char input);
+	} ;
+} ;

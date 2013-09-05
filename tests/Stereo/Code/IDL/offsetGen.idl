@@ -1,0 +1,7 @@
+
+module offsetGen {
+	typedef long parameter ;
+	interface loop {
+		void offsetGen (in parameter nbIterations, out long offsets);
+	} ;
+} ;

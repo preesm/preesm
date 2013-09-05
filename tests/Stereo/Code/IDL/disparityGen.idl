@@ -1,0 +1,7 @@
+
+module disparityGen {
+	typedef long parameter ;
+	interface loop {
+		void disparityGen (in parameter minDisparity, in parameter maxDisparity, out char disparities);
+	} ;
+} ;

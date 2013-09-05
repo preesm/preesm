@@ -1,0 +1,10 @@
+
+module readPPM {
+	typedef long parameter ;
+	interface init {
+		void readPPMInit (in parameter id, in parameter height , in parameter width);
+	} ;
+	interface loop {
+		void readPPM (in parameter id ,in parameter height , in parameter width, out char r , out char g , out char b);
+	} ;
+} ;

@@ -1,0 +1,7 @@
+
+module census {
+	typedef long parameter ;
+	interface loop {
+		void census (in parameter height , in parameter width, in float gray, out char cen);
+	} ;
+} ;
