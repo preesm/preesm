@@ -22,7 +22,7 @@
             <variable name="height" value="375"/>
             <variable name="maxDisparity" value="60"/>
             <variable name="minDisparity" value="0"/>
-            <variable name="nbIterations" value="4"/>
+            <variable name="nbIterations" value="5"/>
             <variable name="truncValue" value="12"/>
             <variable name="width" value="450"/>
         </data>
@@ -130,6 +130,15 @@
             <data key="kind">Broadcast</data>
             <data key="graph_desc"/>
             <data key="arguments"/>
+        </node>
+        <node id="medianFilter">
+            <data key="name">medianFilter</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/medianFilter.idl</data>
+            <data key="arguments">
+                <argument name="height" value="height"/>
+                <argument name="width" value="width"/>
+            </data>
         </node>
         <edge source="Read_PPM0" sourceport="g" target="RGB2Gray_L" targetport="g">
             <data key="edge_prod">height*width</data>
@@ -256,13 +265,6 @@
             <data key="edge_cons">height*width*3</data>
             <data key="data_type">uchar</data>
         </edge>
-        <edge source="Cost_Parallel_Work" sourceport="raw_disparity"
-            target="lum2rgb2" targetport="i">
-            <data key="edge_prod">height*width</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">height*width</data>
-            <data key="data_type">uchar</data>
-        </edge>
         <edge source="lum2rgb2" sourceport="o" target="Display_rgb1" targetport="r">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
@@ -276,6 +278,20 @@
             <data key="data_type">uchar</data>
         </edge>
         <edge source="lum2rgb2" sourceport="o" target="Display_rgb1" targetport="b">
+            <data key="edge_prod">height*width</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="Cost_Parallel_Work" sourceport="raw_disparity"
+            target="medianFilter" targetport="rawDisparity">
+            <data key="edge_prod">height*width</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="medianFilter" sourceport="filteredDisparity"
+            target="lum2rgb2" targetport="i">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>

@@ -4,6 +4,8 @@
 
 #define min(x,y) (((x)<(y))?(x):(y))
 #define max(x,y) (((x)<(y))?(y):(x))
+float left[375*450], right[375*450];
+float top[375*450], down[375*450];
 
 void aggregateCost (int height , int width, int nbIterations, float *disparityError, int *offsets, float *hWeights, float *vWeights, float *aggregatedDisparity){
     int offsetIdx;
@@ -26,9 +28,6 @@ void aggregateCost (int height , int width, int nbIterations, float *disparityEr
 		// Even iteration from disparityError and Odd from aggregated Disparity
 		float *src = (offsetIdx%2 == 0)? disparityError: aggregatedDisparity; 
 		float *dest = (offsetIdx%2 == 0)? aggregatedDisparity: disparityError; 
-
-		// Distance coeff
-		const float distanceCoeff = (float)offset/36.0;
 
         // Scan the image pixels
 		for(j=0; j<height; j++){

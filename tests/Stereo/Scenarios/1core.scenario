@@ -23,11 +23,28 @@
             <task name="Display_rgb1"/>
             <task name="Display_rgb0"/>
             <task name="Cost_Parallel_Work"/>
+            <task name="medianFilter"/>
             <task name="RGB2Gray_L"/>
         </constraintGroup>
     </constraints>
     <relativeconstraints excelUrl=""/>
     <timings excelUrl="">
+        <timing opname="x86" time="1" vertexname="offsetGen"/>
+        <timing opname="x86" time="1565" vertexname="disparitySelect"/>
+        <timing opname="x86" time="93285" vertexname="medianFilter"/>
+        <timing opname="x86" time="833" vertexname="RGB2Gray_L"/>
+        <timing opname="x86" time="833" vertexname="RGB2Gray_R"/>
+        <timing opname="x86" time="24142" vertexname="Display_rgb0"/>
+        <timing opname="x86" time="24142" vertexname="Display_rgb1"/>
+        <timing opname="x86" time="5107" vertexname="Read_PPM0"/>
+        <timing opname="x86" time="5107" vertexname="Read_PPM1"/>
+        <timing opname="x86" time="11000" vertexname="Census_L"/>
+        <timing opname="x86" time="11000" vertexname="Census_R"/>
+        <timing opname="x86" time="23807" vertexname="AggregateCost"/>
+        <timing opname="x86" time="17071" vertexname="computeHorWeights"/>
+        <timing opname="x86" time="8776" vertexname="CostConstruction"/>
+        <timing opname="x86" time="17071" vertexname="computeVertWeights"/>
+        <timing opname="x86" time="1" vertexname="disparityGen"/>
         <memcpyspeed opname="x86" setuptime="0" timeperunit="1"/>
     </timings>
     <simuParams>

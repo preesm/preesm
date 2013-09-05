@@ -9,6 +9,7 @@
 */
 
 #include "displayRGB.h"
+#include "readPPM.h"
 #include <SDL.h>
 #include <time.h>
 
@@ -30,8 +31,6 @@ RGBDisplay display = { INIT_OVERLAY, NULL, 0, 0 };
 
 void displayRGBInit (int id, int height, int width)
 {
-    printf("displayRGBInit()\n");
-
     if(display.initialized==0)
     {
         display.currentXMin = 0;
@@ -98,7 +97,10 @@ void displayRGB(int id, unsigned char *r, unsigned char *g, unsigned char *b)
 	int idxPxl;
     int rgb = 0;
 
-	printf("displayRGB()\n");
+	if(id==1){
+		writePPM(375, 450, r);
+	}
+
      if (SDL_LockSurface(overlay) < 0)
     {
         fprintf(stderr, "Can't lock screen: %s\n", SDL_GetError());

@@ -2,7 +2,7 @@
 #include <math.h>
 #include "computeWeights.h"
 
-#define R_gamaC (float) 0.0625 /*(1.0)/16.0 */
+#define R_gamaC (float) 1.0/16.0 /*(1.0)/16.0 */
 #define min(x,y) (((x)<(y))?(x):(y))
 #define max(x,y) (((x)<(y))?(y):(x))
 

@@ -25,12 +25,12 @@ int main(void)
     pthread_t threadCore6;
     pthread_t threadCore7;
 
-    pthread_barrier_init(&iter_barrier, NULL, 1);
+    pthread_barrier_init(&iter_barrier, NULL, 4);
 
     pthread_create(&threadCore0, NULL, computationThread_Core0, NULL);
-    //pthread_create(&threadCore1, NULL, computationThread_Core1, NULL);
-    //pthread_create(&threadCore2, NULL, computationThread_Core2, NULL);
-    //pthread_create(&threadCore3, NULL, computationThread_Core3, NULL);
+    pthread_create(&threadCore1, NULL, computationThread_Core1, NULL);
+    pthread_create(&threadCore2, NULL, computationThread_Core2, NULL);
+    pthread_create(&threadCore3, NULL, computationThread_Core3, NULL);
     //pthread_create(&threadCore4, NULL, computationThread_Core4, NULL);
     //pthread_create(&threadCore5, NULL, computationThread_Core5, NULL);
     //pthread_create(&threadCore6, NULL, computationThread_Core6, NULL);

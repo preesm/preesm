@@ -22,9 +22,32 @@
    ======================================================================*/
 #define NB_PATH 2
 char* paths[] = {"./im0.ppm","./im1.ppm"};
+char* outPath = "./out.ppm";
 static FILE * ptfile[NB_PATH] ;
 clock_t tick;
 long imageStartPosition[NB_PATH];
+
+void writePPM(int height, int width, unsigned char *gray){
+	FILE * outFile;
+	int i;
+	if((outFile = fopen(outPath, "wb+")) == NULL )
+    {
+        fprintf(stderr,"ERROR: Task read cannot create/open ppm_file '%s'\n", outPath);
+        system("PAUSE");
+        return;
+    }
+	
+	fprintf(outFile,"P6\n");
+	fprintf(outFile,"%d %d\n",width,height);
+	fprintf(outFile,"255\n");
+	for(i=0; i<height*width;i++){
+		fwrite(gray+i,sizeof(char),1,outFile); 
+		fwrite(gray+i,sizeof(char),1,outFile); 
+		fwrite(gray+i,sizeof(char),1,outFile); 
+	}
+
+	fclose(outFile);
+}
 
 void readPPMInit(int id,int height, int width) {
     char magicNumber[3];
@@ -96,7 +119,11 @@ void readPPM(int id,int height, int width, unsigned char *r, unsigned char *g, u
     int rgb;
     unsigned char *readBuffer;
 
-    printf("readPPM()\n");
+	if(id == 1){
+		tick = clock()-tick;
+		printf("\nMain: Processed in %f => %f fps\n",tick/(float)CLOCKS_PER_SEC,1/(float)tick*(float)CLOCKS_PER_SEC);
+		tick = clock();
+	}
 
     fseek(ptfile[id],imageStartPosition[id], SEEK_SET);
 

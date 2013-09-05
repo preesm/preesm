@@ -20,4 +20,6 @@ void readPPMInit(int id, int height, int width);
 
 void readPPM(int id,int height, int width, unsigned char *r, unsigned char *g, unsigned char *b);
 
+void writePPM(int height, int width, unsigned char *gray);
+
 #endif

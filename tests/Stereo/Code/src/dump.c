@@ -16,6 +16,7 @@
 #include "../include/dump.h"
 
 static FILE *ptfile;
+static int *bckupNbExec;
 
 void dumpTime(int id,long* dumpBuffer){
     dumpBuffer[id] = clock();
@@ -23,6 +24,9 @@ void dumpTime(int id,long* dumpBuffer){
 
 void initNbExec(int* nbExec, int nbDump){
     int i = 0;
+
+	bckupNbExec = malloc(nbDump*sizeof(int));
+	memset(bckupNbExec,0,nbDump*sizeof(int));
 
     if((ptfile = fopen(DUMP_FILE, "a+")) == NULL )
     {
@@ -47,6 +51,8 @@ void writeTime(long* dumpBuffer, int nbDump, int* nbExec){
     static int stable = 0;
     int i ;
     int changed = 0;
+	int nbNotReady = 0;
+	
     if(stable != 0) {
         printf("--\n");
         for(i=1;i< nbDump;i++){
@@ -65,7 +71,7 @@ void writeTime(long* dumpBuffer, int nbDump, int* nbExec){
             dumpBuffer[i] = dumpBuffer[i]-dumpBuffer[i-1];
             // We consider that all measures below 5 ms are not precise enough
             nbExecBefore = *(nbExec+i);
-            if(dumpBuffer[i] < 150*1000/CLOCKS_PER_SEC) {
+            if(dumpBuffer[i] < 10*1000/CLOCKS_PER_SEC) {
                 *(nbExec+i) = ceil(*(nbExec+i) * 1.5);
                 if(*(nbExec+i) > 131072) {
                     *(nbExec+i) = 131072;
@@ -76,11 +82,20 @@ void writeTime(long* dumpBuffer, int nbDump, int* nbExec){
             }
             if(nbExecBefore != *(nbExec+i)){
                 changed |= 1;
-            }
+				nbNotReady++;
+
+			} else {
+				if(*(nbExec+i)!=0){
+				bckupNbExec[i] = *(nbExec+i);
+				*(nbExec+i) = 0;
+				}
+			}
         }
+		printf("Ready: %d/%d\n",nbDump-nbNotReady,nbDump);
         if(changed == 0) {
             stable = 1;
-            //printf(";;");
+			memcpy(nbExec,bckupNbExec,nbDump*sizeof(int));
+			free(bckupNbExec);
             for(i=1;i<nbDump;i++){
                 fprintf(ptfile,"%d;",*(nbExec+i));
             }

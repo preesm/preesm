@@ -1,6 +1,6 @@
 
 #include "offsetGen.h"
-
+#include <math.h>
 
 void offsetGen (int nbIterations, int *offsets){
 	int i;
@@ -8,6 +8,6 @@ void offsetGen (int nbIterations, int *offsets){
 	for(i=0; i< nbIterations; i++){
 		offsets[i] = 2*sum + 1;
 		sum += offsets[i];
-		offsets[i] %= 33;  
+		offsets[i] %= 32;  
 	}
 }
