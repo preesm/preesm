@@ -88,14 +88,14 @@ class CPrinter extends DefaultPrinter {
 	'''
 	
 	override printSubBufferDefinition(SubBuffer buffer) '''
-	«buffer.type» *const «buffer.name» = («buffer.type»*) «var offset = 0»«
+	«buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0»«
 	{offset = buffer.offset
 	 var b = buffer.container;
 	 while(b instanceof SubBuffer){
 	 	offset = offset + (b as SubBuffer).offset
 	  	b = (b as SubBuffer).container
 	  }
-	 b}.name»+«offset»;  // «buffer.comment» size:= «buffer.size»*«buffer.type»
+	 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.size»*«buffer.type»
 	'''
 	
 	override printDefinitionsFooter(List<Variable> list) '''
@@ -107,6 +107,7 @@ class CPrinter extends DefaultPrinter {
 	override printDeclarationsHeader(List<Variable> list) '''
 	// Core Global Declaration
 	extern pthread_barrier_t iter_barrier;
+	extern int stopThreads;
 	
 	'''
 	
@@ -137,6 +138,9 @@ class CPrinter extends DefaultPrinter {
 		«"\t"»// Begin the execution loop 
 			while(1){
 				pthread_barrier_wait(&iter_barrier);
+				if(stopThreads){
+					pthread_exit(NULL);
+				}
 				
 	'''
 	

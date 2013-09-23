@@ -32,6 +32,7 @@ class C6678CPrinter extends CPrinter {
 	'''
 	
 	override printBufferDefinition(Buffer buffer) '''
+	// Won't work if the shared memory is >= 512 MB 
 	#pragma DATA_SECTION(«buffer.name», ".mySharedMem")
 	«super.printBufferDefinition(buffer)»
 	'''
