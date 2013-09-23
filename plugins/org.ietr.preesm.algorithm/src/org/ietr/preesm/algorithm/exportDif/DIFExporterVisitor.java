@@ -174,7 +174,7 @@ public class DIFExporterVisitor implements
 		// Retrieve execution time
 		// Only the execution runtime for cores with type x86 will be taken
 		// into account
-		int time = scenario.getTimingManager().getTimingOrDefault(
+		long time = scenario.getTimingManager().getTimingOrDefault(
 				vertex.getId(), "x86");
 		attributesMap.put("exec_time", time);
 		attributesMap.put("hierarchical", false);
