@@ -9,6 +9,9 @@ void census(int height, int width, float *gray, unsigned char *cen){
     // Scan the pixels of the grey image
     // except the 1 pixel-wide band around the image.
     for(j=1; j<height-1; j++){
+		// 1st and last pixels of the line are 0
+		cen[j*width] = 0;
+		cen[(j+1)*width-1] = 0;
         for(i=1; i<width-1; i++){
             unsigned char signature = 0x00;
             int bit = 7;
@@ -33,4 +36,8 @@ void census(int height, int width, float *gray, unsigned char *cen){
             cen[j*width+i] = signature;
         }
     }
+
+	// Fill the 1st and last lines with 0
+	memset(cen,0,width*sizeof(char));
+	memset(cen+(height-1)*width,0,width*sizeof(char));
 }

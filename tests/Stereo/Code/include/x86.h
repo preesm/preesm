@@ -19,7 +19,7 @@
 #include "fifo.h"
 #include "dump.h"
 
-#include "readPPM.h"
+#include "ppm.h"
 #include "displayRGB.h"
 #include "rgb2Gray.h"
 #include "census.h"
@@ -29,6 +29,8 @@
 #include "aggregateCost.h"
 #include "computeWeights.h"
 #include "disparitySelect.h"
+#include "medianFilter.h"
+#include "splitMerge.h"
 
 #include "sink.h"
 

@@ -12,6 +12,7 @@
 #include <windows.h>
 
 pthread_barrier_t iter_barrier;
+int stopThreads;
 
 
 int main(void)
@@ -25,6 +26,7 @@ int main(void)
     pthread_t threadCore6;
     pthread_t threadCore7;
 
+	stopThreads = 0;
     pthread_barrier_init(&iter_barrier, NULL, 4);
 
     pthread_create(&threadCore0, NULL, computationThread_Core0, NULL);
@@ -37,6 +39,12 @@ int main(void)
     //pthread_create(&threadCore7, NULL, computationThread_Core7, NULL);
 
     pthread_join(threadCore0,NULL);
-    system("PAUSE");
+	pthread_join(threadCore1,NULL);
+	pthread_join(threadCore2,NULL);
+	pthread_join(threadCore3,NULL);
+	//pthread_join(threadCore4,NULL);
+	//pthread_join(threadCore5,NULL);
+	//pthread_join(threadCore6,NULL);
+	//pthread_join(threadCore7,NULL);
     exit(0);
 }

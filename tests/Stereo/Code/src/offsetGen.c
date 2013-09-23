@@ -2,6 +2,7 @@
 #include "offsetGen.h"
 #include <math.h>
 
+
 void offsetGen (int nbIterations, int *offsets){
 	int i;
 	int sum = 0;

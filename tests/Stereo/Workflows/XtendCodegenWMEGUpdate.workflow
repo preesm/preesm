@@ -4,12 +4,13 @@
     <dftools:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="Gantt Plotter">
         <dftools:data key="variables"/>
     </dftools:task>
-    <dftools:task
-        pluginId="org.ietr.preesm.plugin.mapper.listscheduling" taskId="LIST scheduler">
+    <dftools:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="LIST scheduler">
         <dftools:data key="variables">
             <dftools:variable name="balanceLoads" value="true"/>
             <dftools:variable name="displaySolutions" value="true"/>
             <dftools:variable name="edgeSchedType" value="Simple"/>
+            <dftools:variable name="fastLocalSearchTime" value="10"/>
+            <dftools:variable name="fastTime" value="100"/>
             <dftools:variable name="simulatorType" value="LooselyTimed"/>
         </dftools:data>
     </dftools:task>

@@ -9,9 +9,11 @@
 */
 
 #include "displayRGB.h"
-#include "readPPM.h"
 #include <SDL.h>
+#include <pthread.h>
 #include <time.h>
+
+extern int stopThreads;
 
 /**
 * Structure representing one display
@@ -97,16 +99,12 @@ void displayRGB(int id, unsigned char *r, unsigned char *g, unsigned char *b)
 	int idxPxl;
     int rgb = 0;
 
-	if(id==1){
-		writePPM(375, 450, r);
-	}
-
      if (SDL_LockSurface(overlay) < 0)
     {
         fprintf(stderr, "Can't lock screen: %s\n", SDL_GetError());
         system("PAUSE");
     }
-    
+
     for(idxPxl = 0; idxPxl < 3*overlay->h*overlay->w; idxPxl++){
         switch(rgb){
         case 0:
@@ -127,6 +125,7 @@ void displayRGB(int id, unsigned char *r, unsigned char *g, unsigned char *b)
 }
 void refreshDisplayRGB(int id)
 {
+
     SDL_Event event;
     SDL_Rect video_rect;
 
@@ -146,7 +145,7 @@ void refreshDisplayRGB(int id)
         switch (event.type)
         {
         case SDL_QUIT:
-            exit(0);
+            stopThreads = 1;
             break;
         default:
             break;

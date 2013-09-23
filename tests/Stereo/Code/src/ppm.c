@@ -1,15 +1,14 @@
 /*
 	============================================================================
-	Name        : readPPM.c
+	Name        : ppm.c
 	Author      : kdesnos
-    Author      : mpelcat
 	Version     : 1.0
 	Copyright   : CECILL-C
 	Description :
 	============================================================================
 */
 
-#include "readPPM.h"
+#include "ppm.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -36,14 +35,14 @@ void writePPM(int height, int width, unsigned char *gray){
         system("PAUSE");
         return;
     }
-	
+
 	fprintf(outFile,"P6\n");
 	fprintf(outFile,"%d %d\n",width,height);
 	fprintf(outFile,"255\n");
 	for(i=0; i<height*width;i++){
-		fwrite(gray+i,sizeof(char),1,outFile); 
-		fwrite(gray+i,sizeof(char),1,outFile); 
-		fwrite(gray+i,sizeof(char),1,outFile); 
+		fwrite(gray+i,sizeof(char),1,outFile);
+		fwrite(gray+i,sizeof(char),1,outFile);
+		fwrite(gray+i,sizeof(char),1,outFile);
 	}
 
 	fclose(outFile);
@@ -145,4 +144,6 @@ void readPPM(int id,int height, int width, unsigned char *r, unsigned char *g, u
         }
         rgb = (rgb + 1)%3;
     }
+
+	free(readBuffer);
 }

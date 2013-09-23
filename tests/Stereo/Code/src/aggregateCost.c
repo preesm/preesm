@@ -4,8 +4,6 @@
 
 #define min(x,y) (((x)<(y))?(x):(y))
 #define max(x,y) (((x)<(y))?(y):(x))
-float left[375*450], right[375*450];
-float top[375*450], down[375*450];
 
 void aggregateCost (int height , int width, int nbIterations, float *disparityError, int *offsets, float *hWeights, float *vWeights, float *aggregatedDisparity){
     int offsetIdx;
