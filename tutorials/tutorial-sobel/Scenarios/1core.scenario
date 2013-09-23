@@ -2,37 +2,25 @@
 <scenario>
     <files>
         <algorithm url="/tutorial-sobel/Algo/top_display.graphml"/>
-        <architecture url="/tutorial-sobel/Archi/4CoreX86.slam"/>
+        <architecture url="/tutorial-sobel/Archi/1CoreX86.slam"/>
         <codegenDirectory url="/tutorial-sobel/Code/generated"/>
     </files>
     <constraints excelUrl="">
+        <constraintGroup/>
+        <constraintGroup/>
         <constraintGroup>
             <operator name="Core0"/>
-            <task name="MergeY"/>
-            <task name="SplitY"/>
             <task name="Read_YUV"/>
-            <task name="display_pic"/>
-            <task name="display_res"/>
-            <task name="SobelY"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
+            <task name="display"/>
         </constraintGroup>
-        <constraintGroup>
-            <operator name="Core1"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core2"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core3"/>
-        </constraintGroup>
+        <constraintGroup/>
     </constraints>
     <relativeconstraints excelUrl=""/>
     <timings excelUrl="">
-        <timing opname="x86" time="250" vertexname="display_pic"/>
-        <timing opname="x86" time="250" vertexname="display_res"/>
-        <timing opname="x86" time="5" vertexname="SplitY"/>
-        <timing opname="x86" time="45" vertexname="Read_YUV"/>
-        <timing opname="x86" time="4" vertexname="MergeY"/>
-        <timing opname="x86" time="138" vertexname="SobelY"/>
+        <timing opname="x86" time="100" vertexname="Read_YUV"/>
     </timings>
     <simuParams>
         <mainCore>Core0</mainCore>

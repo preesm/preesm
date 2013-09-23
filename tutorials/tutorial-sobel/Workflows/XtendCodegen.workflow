@@ -51,13 +51,6 @@
         </dftools:data>
     </dftools:task>
     <dftools:task
-        pluginId="org.ietr.preesm.memory.bounds.MemoryBoundsEstimator" taskId="Mem Bounds">
-        <dftools:data key="variables">
-            <dftools:variable name="Solver" value="? C {Heuristic, Ostergard, Yamaguchi}"/>
-            <dftools:variable name="Verbose" value="? C {True, False}"/>
-        </dftools:data>
-    </dftools:task>
-    <dftools:task
         pluginId="org.ietr.preesm.memory.allocation.MemoryAllocatorTask" taskId="Mem Alloc">
         <dftools:data key="variables">
             <dftools:variable name="Allocator(s)" value="Basic"/>
@@ -68,7 +61,9 @@
     </dftools:task>
     <dftools:task
         pluginId="org.ietr.preesm.codegen.xtend.task.CodegenTask" taskId="Codegen Xtend">
-        <dftools:data key="variables"/>
+        <dftools:data key="variables">
+            <dftools:variable name="Printer" value="C"/>
+        </dftools:data>
     </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="Gantt Plotter"/>
@@ -78,8 +73,6 @@
         targetport="architecture" to="LIST scheduler"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="LIST scheduler"/>
-    <dftools:dataTransfer from="scenario" sourceport="SDF"
-        targetport="SDF" to="HierarchyFlattening"/>
     <dftools:dataTransfer from="HierarchyFlattening" sourceport="SDF"
         targetport="SDF" to="srSDF"/>
     <dftools:dataTransfer from="srSDF" sourceport="SDF" targetport="SDF" to="Exporter"/>
@@ -93,8 +86,6 @@
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="MemEx Builder"/>
     <dftools:dataTransfer from="MemEx Builder" sourceport="MemEx"
-        targetport="MemEx" to="Mem Bounds"/>
-    <dftools:dataTransfer from="MemEx Builder" sourceport="MemEx"
         targetport="MemEx" to="Mem Alloc"/>
     <dftools:dataTransfer from="Mem Alloc" sourceport="MemEx"
         targetport="MemEx" to="Codegen Xtend"/>
@@ -104,10 +95,6 @@
         targetport="architecture" to="Codegen Xtend"/>
     <dftools:dataTransfer from="LIST scheduler" sourceport="DAG"
         targetport="DAG" to="Codegen Xtend"/>
-    <dftools:dataTransfer from="Exporter" sourceport="void"
-        targetport="void" to="LIST scheduler"/>
-    <dftools:dataTransfer from="Codegen Xtend" sourceport="void"
-        targetport="void" to="Mem Bounds"/>
-    <dftools:dataTransfer from="DAGExporter" sourceport="void"
-        targetport="void" to="Codegen Xtend"/>
+    <dftools:dataTransfer from="scenario" sourceport="SDF"
+        targetport="SDF" to="HierarchyFlattening"/>
 </dftools:workflow>

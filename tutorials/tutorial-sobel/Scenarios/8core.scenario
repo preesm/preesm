@@ -3,42 +3,11 @@
     <files>
         <algorithm url="/tutorial-sobel/Algo/top_display.graphml"/>
         <architecture url="/tutorial-sobel/Archi/8CoreX86.slam"/>
-        <codegenDirectory url="/sobel-example/Code/generated"/>
+        <codegenDirectory url="/tutorial-sobel/Code/generated"/>
     </files>
     <constraints excelUrl="">
         <constraintGroup>
-            <operator name="Core2"/>
-            <task name="Read_YUV"/>
-            <task name="Split"/>
-            <task name="Sobel"/>
-            <task name="Merge"/>
-        </constraintGroup>
-        <constraintGroup/>
-        <constraintGroup>
-            <operator name="Core7"/>
-            <task name="Read_YUV"/>
-            <task name="Split"/>
-            <task name="Sobel"/>
-            <task name="Merge"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core1"/>
-            <task name="Read_YUV"/>
-            <task name="Split"/>
-            <task name="Sobel"/>
-            <task name="Merge"/>
-        </constraintGroup>
-        <constraintGroup>
             <operator name="Core5"/>
-            <task name="Read_YUV"/>
-            <task name="Split"/>
-            <task name="Sobel"/>
-            <task name="Merge"/>
-        </constraintGroup>
-        <constraintGroup/>
-        <constraintGroup/>
-        <constraintGroup>
-            <operator name="Core6"/>
             <task name="Read_YUV"/>
             <task name="Split"/>
             <task name="Sobel"/>
@@ -65,6 +34,37 @@
             <task name="Sobel"/>
             <task name="Merge"/>
             <task name="display"/>
+        </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup>
+            <operator name="Core2"/>
+            <task name="Read_YUV"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
+        </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup>
+            <operator name="Core6"/>
+            <task name="Read_YUV"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="Read_YUV"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
+        </constraintGroup>
+        <constraintGroup/>
+        <constraintGroup>
+            <operator name="Core7"/>
+            <task name="Read_YUV"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
         </constraintGroup>
     </constraints>
     <relativeconstraints excelUrl=""/>
