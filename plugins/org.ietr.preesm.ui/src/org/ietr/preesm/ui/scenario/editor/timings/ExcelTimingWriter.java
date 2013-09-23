@@ -129,7 +129,7 @@ public class ExcelTimingWriter extends ExcelWriter{
 				for (SDFAbstractVertex vertex : vSet) {
 					String vertexName = vertex.getName();
 
-					int time = scenario.getTimingManager().getTimingOrDefault(
+					long time = scenario.getTimingManager().getTimingOrDefault(
 							vertex.getName(), opDefId);
 
 					WritableCell opCell = (WritableCell) sheet

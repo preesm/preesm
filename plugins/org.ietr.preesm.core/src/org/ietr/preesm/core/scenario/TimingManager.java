@@ -80,12 +80,12 @@ public class TimingManager {
 	/**
 	 * Default value for a memcpy setup time
 	 */
-	private final static int DEFAULTMEMCPYSETUPTIME = 0;
+	private final static long DEFAULTMEMCPYSETUPTIME = 1;
 
 	/**
 	 * Default value for a memcpy speed
 	 */
-	private final static int DEFAULTMEMCPYTIMEPERUNIT = 1;
+	private final static float DEFAULTMEMCPYTIMEPERUNIT = 1.0f;
 
 	public TimingManager() {
 		timings = new ArrayList<Timing>();
@@ -108,7 +108,7 @@ public class TimingManager {
 	}
 
 	public void setTiming(String sdfVertexId, String operatorDefinitionId,
-			int time) {
+			long time) {
 
 		addTiming(sdfVertexId, operatorDefinitionId).setTime(time);
 	}
@@ -167,7 +167,7 @@ public class TimingManager {
 	 */
 	public Timing generateVertexTimingFromHierarchy(
 			SDFAbstractVertex sdfVertex, String opDefId) {
-		int maxTime = 0;
+		long maxTime = 0;
 		SDFGraph graphDescription = (SDFGraph) sdfVertex.getGraphDescription();
 
 		for (SDFAbstractVertex vertex : graphDescription.vertexSet()) {
@@ -206,7 +206,7 @@ public class TimingManager {
 	 * Looks for a timing entered in scenario editor. If there is none, returns
 	 * a default value
 	 */
-	public int getTimingOrDefault(String sdfVertexId,
+	public long getTimingOrDefault(String sdfVertexId,
 			String operatorDefinitionId) {
 		Timing val = null;
 
@@ -266,12 +266,12 @@ public class TimingManager {
 	/**
 	 * For a type of operator, gets a memcopy setup time
 	 */
-	public int getMemcpySetupTime(String operatorDef){
+	public long getMemcpySetupTime(String operatorDef){
 		return memcpySpeeds.get(operatorDef).getSetupTime();
 	}
 
 	/**
-	 * For a type of operator, gets a memcopy speed
+	 * For a type of operator, gets the INVERSED memcopy speed (time per memory unit
 	 */
 	public float getMemcpyTimePerUnit(String operatorDef){
 		return memcpySpeeds.get(operatorDef).getTimePerUnit();

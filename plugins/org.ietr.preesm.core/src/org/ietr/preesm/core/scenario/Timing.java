@@ -49,8 +49,8 @@ import net.sf.dftools.workflow.tools.WorkflowLogger;
 public class Timing {
 
 	public static final Timing UNAVAILABLE = null;
-	public static final int DEFAULT_TASK_TIME = 100;
-	public static final int DEFAULT_SPECIAL_VERTEX_TIME = 10;
+	public static final long DEFAULT_TASK_TIME = 100;
+	public static final long DEFAULT_SPECIAL_VERTEX_TIME = 10;
 
 	/**
 	 * related operator
@@ -60,7 +60,7 @@ public class Timing {
 	/**
 	 * Definition of the timing
 	 */
-	private int time;
+	private long time;
 
 	/**
 	 * related Graph
@@ -74,7 +74,7 @@ public class Timing {
 		this.sdfVertexId = sdfVertexId;
 	}
 
-	public Timing(String operatorId, String sdfVertexId, int time) {
+	public Timing(String operatorId, String sdfVertexId, long time) {
 		this(operatorId, sdfVertexId);
 		this.time = time;
 	}
@@ -98,7 +98,7 @@ public class Timing {
 		return operatorDefinitionId;
 	}
 
-	public int getTime() {
+	public long getTime() {
 
 		return time;
 	}
@@ -112,7 +112,7 @@ public class Timing {
 	 * 
 	 * @param time
 	 */
-	public void setTime(int time) {
+	public void setTime(long time) {
 		if(time > 0){
 			this.time = time;
 		}

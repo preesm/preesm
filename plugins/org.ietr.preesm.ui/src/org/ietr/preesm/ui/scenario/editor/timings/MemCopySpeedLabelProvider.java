@@ -91,9 +91,9 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
 			if (columnIndex == 0) {
 				text = speed.getOperatorDef();
 			} else if (columnIndex == 1) {
-				text = Integer.toString(speed.getSetupTime());
+				text = Long.toString(speed.getSetupTime());
 			} else if (columnIndex == 2) {
-				text = Float.toString(speed.getTimePerUnit());
+				text = Float.toString(1.0f/speed.getTimePerUnit());
 			}
 		}
 
@@ -176,7 +176,7 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
 					+ speed.getOperatorDef();
 
 			String initSetupTime = String.valueOf(speed.getSetupTime());
-			String initTimePerUnit = String.valueOf(speed.getTimePerUnit());
+			String initSpeed = String.valueOf(1.0/speed.getTimePerUnit());
 
 			InputDialog dialogSetupTime = new InputDialog(PlatformUI
 					.getWorkbench().getActiveWorkbenchWindow().getShell(),
@@ -190,15 +190,16 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
 					
 			InputDialog dialogTimePerUnit = new InputDialog(PlatformUI
 					.getWorkbench().getActiveWorkbenchWindow().getShell(),
-					title, message, initTimePerUnit, floatValidator);
+					title, message, initSpeed, floatValidator);
 
 			if (dialogSetupTime.open() == Window.OK) {
 				if (dialogTimePerUnit.open() == Window.OK) {
 					String valueSetupTime = dialogSetupTime.getValue();
 					String valueTimePerUnit = dialogTimePerUnit.getValue();
 
-					speed.setSetupTime(Integer.valueOf(valueSetupTime));
-					speed.setTimePerUnit(Float.valueOf(valueTimePerUnit));
+					speed.setSetupTime(Long.valueOf(valueSetupTime));
+					// Careful! We store the time per memory unit, that is the inverse of the speed.
+					speed.setTimePerUnit(1.0f/Float.valueOf(valueTimePerUnit));
 					scenario.getTimingManager().putMemcpySpeed(speed);
 
 					tableViewer.refresh();

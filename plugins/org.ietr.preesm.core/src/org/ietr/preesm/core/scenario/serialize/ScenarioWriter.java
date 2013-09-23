@@ -302,15 +302,15 @@ public class ScenarioWriter {
 		parent.appendChild(timingelt);
 		timingelt.setAttribute("vertexname", timing.getSdfVertexId());
 		timingelt.setAttribute("opname", timing.getOperatorDefinitionId());
-		timingelt.setAttribute("time", Integer.toString(timing.getTime()));
+		timingelt.setAttribute("time", Long.toString(timing.getTime()));
 	}
 
-	private void addMemcpySpeed(Element parent, String opDef, int memcpySetupTime, float memcpyTimePerUnit) {
+	private void addMemcpySpeed(Element parent, String opDef, long memcpySetupTime, float memcpyTimePerUnit) {
 
 		Element timingelt = dom.createElement("memcpyspeed");
 		parent.appendChild(timingelt);
 		timingelt.setAttribute("opname", opDef);
-		timingelt.setAttribute("setuptime", Integer.toString(memcpySetupTime));
+		timingelt.setAttribute("setuptime", Long.toString(memcpySetupTime));
 		timingelt.setAttribute("timeperunit", Float.toString(memcpyTimePerUnit));
 	}
 }

@@ -100,10 +100,10 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 				text = vertex.getName();
 			else if (columnIndex == 1 && scenario != null
 					&& currentOpDefId != null) {
-				int time = scenario.getTimingManager().getTimingOrDefault(
+				long time = scenario.getTimingManager().getTimingOrDefault(
 						vertex.getName(), currentOpDefId);
 
-				text = Integer.toString(time);
+				text = Long.toString(time);
 			}
 		}
 
