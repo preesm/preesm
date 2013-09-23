@@ -1,3 +1,14 @@
+/*
+	============================================================================
+	Name        : computeWeights.c
+	Author      : kdesnos
+	Author      : JZHAHG
+	Version     : 1.0
+	Copyright   : CeCILL-C, IETR, INSA Rennes
+	Description : Computation of the weights associated to the pixel of an rgb 
+	              image.
+	============================================================================
+*/
 
 #include <math.h>
 #include "computeWeights.h"
@@ -6,7 +17,8 @@
 #define min(x,y) (((x)<(y))?(x):(y))
 #define max(x,y) (((x)<(y))?(y):(x))
 
-void computeWeights (int height , int width, int horOrVert,int *offset, unsigned char *rgbL, float *weights)
+void computeWeights (int height , int width, int horOrVert,
+					 int *offset, unsigned char *rgbL, float *weights)
 {
     int i, j;
 

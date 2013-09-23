@@ -1,3 +1,13 @@
+/*
+	============================================================================
+	Name        : census.c
+	Author      : kdesnos
+	Author      : JZHAHG
+	Version     : 1.0
+	Copyright   : CeCILL-C, IETR, INSA Rennes
+	Description : Computation of the census corresponding to an input gray image
+	============================================================================
+*/
 
 #include "census.h"
 
