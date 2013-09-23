@@ -152,7 +152,7 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 						((PreesmScenario) outputs.get("scenario"))
 								.getTimingManager().setTiming(sdfV.getName(),
 										op.getComponent().getVlnv().getName(),
-										Integer.parseInt(timeStr));
+										Long.parseLong(timeStr));
 					}
 				}
 

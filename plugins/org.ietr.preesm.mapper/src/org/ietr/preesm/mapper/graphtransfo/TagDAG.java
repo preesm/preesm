@@ -249,11 +249,11 @@ public class TagDAG {
 				ComponentInstance effectiveOperator = currentVertex
 						.getMapping()
 						.getEffectiveOperator();
-				int singleRepeatTime = currentVertex.getInit()
+				long singleRepeatTime = currentVertex.getInit()
 						.getTime(effectiveOperator);
 				int nbRepeat = currentVertex.getInit()
 						.getNbRepeat();
-				int totalTime = nbRepeat * singleRepeatTime;
+				long totalTime = nbRepeat * singleRepeatTime;
 				bean.setValue(ImplementationPropertyNames.Task_duration,
 						totalTime);
 

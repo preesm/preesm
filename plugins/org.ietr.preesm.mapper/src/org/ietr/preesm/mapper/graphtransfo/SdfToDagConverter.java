@@ -323,17 +323,17 @@ public class SdfToDagConverter {
 						.getInit();
 				
 				for(String opDef : scenario.getTimingManager().getMemcpySpeeds().keySet()){
-					int sut = scenario.getTimingManager().getMemcpySetupTime(opDef);
+					long sut = scenario.getTimingManager().getMemcpySetupTime(opDef);
 					float tpu = scenario.getTimingManager().getMemcpyTimePerUnit(opDef);
 					Timing timing = new Timing(opDef, currentVertex
 							.getCorrespondingSDFVertex().getId());
 
 					// Depending on the type of vertex, time is given by the size of output or input buffers
 					if(SpecialVertexManager.isFork(currentVertex) || SpecialVertexManager.isJoin(currentVertex) || SpecialVertexManager.isEnd(currentVertex)){
-						timing.setTime(sut + (int)(tpu * getVertexInputBuffersSize(currentVertex)));
+						timing.setTime(sut + (long)(tpu * getVertexInputBuffersSize(currentVertex)));
 					}
 					else if(SpecialVertexManager.isBroadCast(currentVertex)|| SpecialVertexManager.isInit(currentVertex)){
-						timing.setTime(sut + (int)(tpu * getVertexOutputBuffersSize(currentVertex)));
+						timing.setTime(sut + (long)(tpu * getVertexOutputBuffersSize(currentVertex)));
 					}
 					
 					currentVertexInit.addTiming(timing);

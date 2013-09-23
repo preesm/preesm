@@ -39,18 +39,13 @@ package org.ietr.preesm.mapper.model.property;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 
-import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.architecture.slam.ComponentInstance;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.mapper.abc.SpecialVertexManager;
-import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 /**
  * Properties of a mapped vertex set when converting dag to mapper dag
@@ -168,9 +163,9 @@ public class VertexInit {
 	 * Returns the timing of the operation = number of repetitions * scenario
 	 * time. Special vertices have specific time computation
 	 */
-	public int getTime(ComponentInstance operator) {
+	public long getTime(ComponentInstance operator) {
 
-		int time = 0;
+		long time = 0;
 
 		if (operator != DesignTools.NO_COMPONENT_INSTANCE) {
 
