@@ -3,8 +3,8 @@
 	Name        : ppm.c
 	Author      : kdesnos
 	Version     : 1.0
-	Copyright   : CECILL-C
-	Description :
+	Copyright   : CECILL-C, IETR, INSA Rennes
+	Description : Actor code to read/write a ppm file from the hard drive
 	============================================================================
 */
 

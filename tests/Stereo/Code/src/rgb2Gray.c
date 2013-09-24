@@ -1,3 +1,12 @@
+/*
+	============================================================================
+	Name        : rgb2Gray.c
+	Author      : kdesnos
+	Version     : 1.0
+	Copyright   : CECILL-C, IETR, INSA Rennes
+	Description : Transformation of an RGB image into a gray-level image.
+	============================================================================
+*/
 
 #include "rgb2Gray.h"
 

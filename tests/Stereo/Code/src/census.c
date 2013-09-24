@@ -10,6 +10,7 @@
 */
 
 #include "census.h"
+#include <string.h>
 
 
 void census(int height, int width, float *gray, unsigned char *cen){

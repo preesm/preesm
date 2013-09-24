@@ -1,3 +1,13 @@
+/*
+	============================================================================
+	Name        : offsetGen.h
+	Author      : kdesnos
+	Version     : 1.0
+	Copyright   : CeCILL-C, IETR, INSA Rennes
+	Description : Generation of an array of the offsets used in the 
+	              computation of the depth map.
+	============================================================================
+*/
 
 #include "offsetGen.h"
 #include <math.h>

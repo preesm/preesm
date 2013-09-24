@@ -1,7 +1,17 @@
+/*
+	============================================================================
+	Name        : costConstruction.c
+	Author      : kdesnos
+	Author      : JZHAHG
+	Version     : 1.0
+	Copyright   : CeCILL-C, IETR, INSA Rennes
+	Description : Computation of the costs associated to the pixels of the 
+	              stereo pair for a given disparity
+	============================================================================
+*/
 
 #include "costConstruction.h"
 #include <math.h>
-#include <stdio.h>
 
 #define min(x,y) (((x)<(y))?(x):(y))
 

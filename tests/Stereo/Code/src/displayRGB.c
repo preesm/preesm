@@ -2,9 +2,9 @@
 	============================================================================
 	Name        : displayRGB.c
 	Author      : mpelcat & kdesnos
-	Version     :
-	Copyright   : Displaying RGB frames one next to another in a row
-	Description :
+	Version     : 1.0
+	Copyright   : CeCILL-C, IETR, INSA Rennes
+	Description : Displaying RGB frames one next to another in a row
 	============================================================================
 */
 

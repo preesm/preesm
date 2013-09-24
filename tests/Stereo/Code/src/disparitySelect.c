@@ -1,3 +1,13 @@
+/*
+	============================================================================
+	Name        : disparitySelect.c
+	Author      : kdesnos
+	Version     : 1.0
+	Copyright   : CeCILL-C, IETR, INSA Rennes
+	Description : Iterative selection of the disparity with the lowest cost for 
+	              each pixel in order to construct the depth map.
+	============================================================================
+*/
 
 #include "disparitySelect.h"
 #include <string.h>
@@ -6,9 +16,11 @@
 #define max(x,y) (((x)<(y))?(y):(x))
 
 void disparitySelect (int height, int width, int nbDisparities,
-                      int *iter, unsigned char *disparity, float *aggregatedDisparity,
+                      int *iter, unsigned char *disparity, 
+					  float *aggregatedDisparity,
                       float *bestCostFeed, unsigned char *currentResult,
-                      int *nextIter, unsigned char *result, float *backBestCost)
+                      int *nextIter, unsigned char *result,
+					  float *backBestCost)
 {
     int i,j;
 

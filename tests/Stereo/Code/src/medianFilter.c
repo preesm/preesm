@@ -1,3 +1,12 @@
+/*
+	============================================================================
+	Name        : medianFilter.h
+	Author      : kdesnos
+	Version     : 1.0
+	Copyright   : CeCILL-C, IETR, INSA Rennes
+	Description : Application of a 3x3 median filter to an image.
+	============================================================================
+*/
 
 #include "medianFilter.h"
 #define min(x,y) (((x)<(y))?(x):(y))
