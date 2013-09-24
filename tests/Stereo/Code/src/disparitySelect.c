@@ -15,7 +15,7 @@
 #define min(x,y) (((x)<(y))?(x):(y))
 #define max(x,y) (((x)<(y))?(y):(x))
 
-void disparitySelect (int height, int width, int nbDisparities,
+void disparitySelect (int height, int width, int nbDisparities, int scale, 
                       int *iter, unsigned char *disparity, 
 					  float *aggregatedDisparity,
                       float *bestCostFeed, unsigned char *currentResult,
@@ -44,7 +44,7 @@ void disparitySelect (int height, int width, int nbDisparities,
 				// disparity as the best, else, keep te current.
                 result[j*width+i] =
 					(aggregatedDisparity[j*width+i]<bestCostFeed[j*width+i])?
-						4*(*disparity) : currentResult[j*width+i];
+						scale*(*disparity) : currentResult[j*width+i];
 				
                 backBestCost[j*width+i] = min(aggregatedDisparity[j*width+i],bestCostFeed[j*width+i]);
 			

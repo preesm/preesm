@@ -24,6 +24,7 @@
             <parameter name="truncValue"/>
             <parameter name="width"/>
             <parameter name="nbIterations"/>
+            <parameter name="scale"/>
         </data>
         <data key="variables"/>
         <node id="CostConstruction">
@@ -150,6 +151,7 @@
             <data key="arguments">
                 <argument name="height" value="height"/>
                 <argument name="nbDisparities" value="maxDisparity-minDisparity"/>
+                <argument name="scale" value="scale"/>
                 <argument name="width" value="width"/>
             </data>
         </node>

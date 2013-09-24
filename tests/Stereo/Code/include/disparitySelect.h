@@ -26,6 +26,9 @@
 * @param[in] nbDisparities
 *        The total number of iterative calls to this function. (Used to compute
 *        the nextIter output parameter)?
+* @param[in] scale
+*        Disparities are multiplied by this scale before they are written in 
+*        the result array.
 * @param[in] iter
 *        Indicate that the current call is the (iter)nth call to this function.
 * @param[in] disparity
@@ -45,7 +48,7 @@
 * @param[out] backBestCost
 *        Array of the the lowest costs. (size=height*width)
 */
-void disparitySelect (int height, int width, int nbDisparities,
+void disparitySelect (int height, int width, int nbDisparities, int scale,
                       int *iter, unsigned char *disparity, 
 					  float *aggregatedDisparity,
                       float *bestCostFeed, unsigned char *currentResult,

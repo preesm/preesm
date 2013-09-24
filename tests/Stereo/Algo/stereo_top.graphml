@@ -24,6 +24,7 @@
             <variable name="minDisparity" value="0"/>
             <variable name="nbIterations" value="5"/>
             <variable name="nbSlice" value="15"/>
+            <variable name="scale" value="4"/>
             <variable name="truncValue" value="12"/>
             <variable name="width" value="450"/>
         </data>
@@ -116,6 +117,7 @@
                 <argument name="maxDisparity" value="maxDisparity"/>
                 <argument name="minDisparity" value="minDisparity"/>
                 <argument name="nbIterations" value="nbIterations"/>
+                <argument name="scale" value="scale"/>
                 <argument name="truncValue" value="truncValue"/>
                 <argument name="width" value="width"/>
             </data>
@@ -168,7 +170,7 @@
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
-            <data key="data_type">char</data>
+            <data key="data_type">uchar</data>
         </edge>
         <edge source="RGB2Gray_L" sourceport="gray" target="Census_L" targetport="gray">
             <data key="edge_prod">height*width</data>
@@ -257,12 +259,6 @@
             <data key="edge_cons">nbSlice*(height*width/nbSlice+2*width)</data>
             <data key="data_type">uchar</data>
         </edge>
-        <edge source="Merge" sourceport="output" target="lum2rgb2" targetport="i">
-            <data key="edge_prod">height*width</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">height*width</data>
-            <data key="data_type">uchar</data>
-        </edge>
         <edge source="Read_PPM0" sourceport="r" target="Display_rgb0" targetport="r">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
@@ -328,6 +324,12 @@
             <data key="data_type">uchar</data>
         </edge>
         <edge source="lum2rgb2" sourceport="o" target="WritePPM" targetport="pixels">
+            <data key="edge_prod">height*width</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="Merge" sourceport="output" target="lum2rgb2" targetport="i">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
