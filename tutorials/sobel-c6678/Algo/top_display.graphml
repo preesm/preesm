@@ -20,8 +20,8 @@
         <data key="parameters"/>
         <data key="variables">
             <variable name="N" value="16"/>
-            <variable name="stage1" value="1"/>
-            <variable name="stage2" value="1"/>
+            <variable name="stage1" value="0"/>
+            <variable name="stage2" value="0"/>
             <variable name="xsize" value="352"/>
             <variable name="ysize" value="288"/>
         </data>
@@ -75,13 +75,13 @@
         </node>
         <edge source="Read_YUV" sourceport="y" target="Split" targetport="input">
             <data key="edge_prod">xsize*ysize</data>
-            <data key="edge_delay">xsize*ysize*stage1</data>
+            <data key="edge_delay">0</data>
             <data key="edge_cons">xsize*ysize</data>
             <data key="data_type">uchar</data>
         </edge>
         <edge source="Merge" sourceport="output" target="display" targetport="y">
             <data key="edge_prod">xsize*ysize</data>
-            <data key="edge_delay">xsize*ysize*stage2</data>
+            <data key="edge_delay">0</data>
             <data key="edge_cons">xsize*ysize</data>
             <data key="data_type">uchar</data>
         </edge>
@@ -99,13 +99,13 @@
         </edge>
         <edge source="Sobel" sourceport="output" target="Merge" targetport="input">
             <data key="edge_prod">xsize*(ysize/N+2)</data>
-            <data key="edge_delay">0</data>
+            <data key="edge_delay">N*xsize*(ysize/N+2)*stage2</data>
             <data key="edge_cons">N*xsize*(ysize/N+2)</data>
             <data key="data_type">uchar</data>
         </edge>
         <edge source="Split" sourceport="output" target="Sobel" targetport="input">
             <data key="edge_prod">N*xsize*(ysize/N+2)</data>
-            <data key="edge_delay">0</data>
+            <data key="edge_delay">N*xsize*(ysize/N+2)*stage1</data>
             <data key="edge_cons">xsize*(ysize/N+2)</data>
             <data key="data_type">uchar</data>
         </edge>

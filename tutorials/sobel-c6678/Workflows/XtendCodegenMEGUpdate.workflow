@@ -5,11 +5,13 @@
         <dftools:data key="variables"/>
     </dftools:task>
     <dftools:task
-        pluginId="org.ietr.preesm.plugin.mapper.DynamicQueuingTransformation" taskId="LIST scheduler">
+        pluginId="org.ietr.preesm.plugin.mapper.listscheduling" taskId="LIST scheduler">
         <dftools:data key="variables">
             <dftools:variable name="balanceLoads" value="true"/>
             <dftools:variable name="displaySolutions" value="true"/>
             <dftools:variable name="edgeSchedType" value="Simple"/>
+            <dftools:variable name="fastLocalSearchTime" value="10"/>
+            <dftools:variable name="fastTime" value="100"/>
             <dftools:variable name="iterationNr" value="0"/>
             <dftools:variable name="iterationPeriod" value="0"/>
             <dftools:variable name="listType" value="optimised"/>

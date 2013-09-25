@@ -15,7 +15,7 @@
 */
 void yuvDisplayInit (int id, int xsize, int ysize)
 {
-	System_printf("yuvDisplayInit\n");
+	//System_printf("yuvDisplayInit\n");
 
 }
 /**
@@ -28,7 +28,7 @@ void yuvDisplayInit (int id, int xsize, int ysize)
 */
 void yuvDisplay(int id, unsigned char *y, unsigned char *u, unsigned char *v)
 {
-	System_printf("yuvDisplay\n");
+	//System_printf("yuvDisplay\n");
 
 }
 void yuvRefreshDisplay(int id)

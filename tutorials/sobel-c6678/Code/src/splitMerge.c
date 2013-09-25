@@ -17,8 +17,6 @@ void split(int nbSlice, int xSize, int ySize, unsigned char *input, unsigned cha
     int i;
     int sliceSize =  xSize*ySize/nbSlice;
 
-    System_printf("split\n");
-
     // Fill first and last line with 0
     memset(output,0,xSize);
     // First Slice
@@ -48,7 +46,6 @@ void merge(int nbSlice, int xSize, int ySize, unsigned char *input, unsigned cha
     int i;
     int sliceSize =  xSize*ySize/nbSlice;
 
-    System_printf("merge\n");
     // Copy the slice content except the first and last lines
     for(i = 0; i< nbSlice; i++){
         int idx = i*(sliceSize+2*xSize);

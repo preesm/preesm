@@ -16,7 +16,6 @@
 
 void sobel(int xSize, int ySize, unsigned char *input, unsigned char *output){
     int i,j;
-    System_printf("Sobel\n");
     // Apply the filter
     for(j=1; j<ySize-1; j++){
         for(i=1; i<xSize-1; i++){
