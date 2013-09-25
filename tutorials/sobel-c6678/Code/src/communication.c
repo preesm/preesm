@@ -100,6 +100,7 @@ void busy_barrier() {
 			CACHE_invL2(&barrier, 1, CACHE_WAIT);
 		}
 		barrier = (Char)0x00;
+		CACHE_wbInvL2(&barrier, 1, CACHE_WAIT);
 		sendStart(1);
 		receiveEnd(7);
 	} else {
