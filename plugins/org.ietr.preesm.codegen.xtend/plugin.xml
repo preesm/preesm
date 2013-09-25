@@ -76,6 +76,13 @@
                   type="x86">
             </core_type>
          </printer>
+         <printer
+               class="org.ietr.preesm.codegen.xtend.printer.c.instrumented.InstrumentedC6678CPrinter"
+               extension=".c">
+            <core_type
+                  type="c6678">
+            </core_type>
+         </printer>
       </printers>
    </extension>
 </plugin>

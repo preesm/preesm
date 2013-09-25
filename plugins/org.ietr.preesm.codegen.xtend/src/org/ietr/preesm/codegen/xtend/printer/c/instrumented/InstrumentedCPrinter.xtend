@@ -63,17 +63,17 @@ class InstrumentedCPrinter extends CPrinter {
 	/**
 	 * Buffer storing the timing dumped by the actors
 	 */
-	Buffer dumpTimedBuffer
+	protected Buffer dumpTimedBuffer
 	
 	/**
 	 * Buffer storing the number of execution of the actors
 	 */
-	Buffer nbExec
+	protected Buffer nbExec
 	
 	/**
 	 * This map associates each codeElt to its ID 
 	 */
-	var codeEltID = new HashMap<CodeElt,Integer>()
+	protected var codeEltID = new HashMap<CodeElt,Integer>()
 	
 	/**
 	 * Map associating actor names to their different IDs 
