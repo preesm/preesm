@@ -11,6 +11,9 @@
 #include "../src/c6678.h"
 
 typedef unsigned char uchar;
+
+// SET Cacheable to 1 to activate caches
+// 0 otherwise
 #define CACHEABLE 1
 
 
