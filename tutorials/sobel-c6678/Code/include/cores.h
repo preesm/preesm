@@ -11,6 +11,8 @@
 #include "../src/c6678.h"
 
 typedef unsigned char uchar;
+#define CACHEABLE 1
+
 
 #define CORE0
 void core0(void);
