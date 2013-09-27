@@ -1195,6 +1195,9 @@ public class CodegenModelGenerator {
 
 		// Insert the new communication to the loop of the codeblock
 		insertCommunication(operatorBlock, dagVertex, newComm);
+		
+		// Register the dag buffer to the core
+		registerCallVariableToCoreBlock(operatorBlock, newComm);
 
 		// Set the semaphore for the new Comm. (this may be a share memory comm
 		// specific feature)
