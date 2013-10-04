@@ -1,0 +1,4 @@
+Les projets testcross et testdata sont similaires, testcross est plus orientée vers l'application de base.
+
+Les 2 librairies libCom et libLoad doivent être ajoutées au workspace à pour compiler les 2 projets test.
+A moins de changer l'inclusion dans ces projets.
