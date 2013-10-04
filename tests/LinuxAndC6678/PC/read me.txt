@@ -1,0 +1,5 @@
+Le projet CodingData sert à encoder une image "brut" (.data) pour l'application de base.
+
+Le projet Show est un afficheur de fichier image "brut" ou autre (.jpeg, .png...) évitant l'utilisation de gimp.
+
+Le projet socket est l'interface PC envoyant, recevant et affichant l'image à traiter par la carte.
