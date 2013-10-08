@@ -30,7 +30,7 @@ public class Writing implements Runnable{
 		try{
 			for(;;){
 	        	/* Opening files */
-	            image = new FileInputStream(new File("coded_saturne.data"));
+	            image = new FileInputStream(new File("coded.data"));
 	            
 	            /* Reading file */
 	            while (image.read(buffer)>=0){

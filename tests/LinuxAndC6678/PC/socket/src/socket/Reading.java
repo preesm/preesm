@@ -54,11 +54,11 @@ public class Reading implements Runnable{
 		        socket = server.accept();
 		        System.out.println("A client is connected on port "+server.getLocalPort());
 		        DataInputStream dis = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-		        DataInputStream dis1 = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+		        //DataInputStream dis1 = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
 
 		        /* Communication on port PORT_OUT */
 		        
-		        nbProc = dis1.read();
+		        nbProc = dis.read(); dis.read(); dis.read(); dis.read();
 		        title ="Result with "+nbProc+" Core";
 		        if(nbProc>1){title+="s";}
 		        System.out.println(title);
@@ -70,9 +70,9 @@ public class Reading implements Runnable{
 		            	dis.read(buffer, read, available);		//reading faster than sending so read block by block
 		            	read += available;
 		        	}
-		            System.out.println("received "+read+"/"+size);
+		            System.out.println("received "+read+"/"+size +"\r");
 		        }
-		        System.out.println("Image received");
+		        System.out.println("\nImage received");
 		        
 		        /* Socket2 closing */
 		        socket.close();
