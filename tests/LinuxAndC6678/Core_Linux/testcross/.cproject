@@ -20,23 +20,23 @@
 					<folderInfo id="cdt.managedbuild.config.gnu.cross.exe.debug.998135974." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.cross.exe.debug.832341972" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.exe.debug">
 							<option id="cdt.managedbuild.option.gnu.cross.prefix.76974555" name="Prefix" superClass="cdt.managedbuild.option.gnu.cross.prefix" value="c6x-uclinux-" valueType="string"/>
-							<option id="cdt.managedbuild.option.gnu.cross.path.112213124" name="Path" superClass="cdt.managedbuild.option.gnu.cross.path" value="/home/ronan/linux-c6x/opt/gcc-c6x/bin" valueType="string"/>
+							<option id="cdt.managedbuild.option.gnu.cross.path.112213124" name="Path" superClass="cdt.managedbuild.option.gnu.cross.path" value="/home/kdesnos/my-linux-c6x/opt/gcc-c6x/bin" valueType="string"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.447770324" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
 							<builder buildPath="${workspace_loc:/testcross/Debug}" id="cdt.managedbuild.builder.gnu.cross.30619098" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
 							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.781769846" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1036553934" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.debugging.level.88929735" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.include.paths.386380884" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/home/ronan/linux-c6x/projects/syslink"/>
+									<listOptionValue builtIn="false" value="/home/kdesnos/my-linux-c6x/projects/syslink"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libCom}&quot;"/>
-									<listOptionValue builtIn="false" value="/home/ronan/linux-c6x/Build/syslink_evmc6678.el/ti/syslink"/>
+									<listOptionValue builtIn="false" value="/home/kdesnos/my-linux-c6x/Build/syslink_evmc6678.el/ti/syslink"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libLoad}&quot;"/>
 									<listOptionValue builtIn="false" value="/opt/ti/ipc_1_23_01_26/packages"/>
-									<listOptionValue builtIn="false" value="/home/ronan/linux-c6x/projects/syslink/ti/syslink/inc"/>
-									<listOptionValue builtIn="false" value="/home/ronan/linux-c6x/projects/syslink/ti/syslink/inc/usr"/>
-									<listOptionValue builtIn="false" value="/home/ronan/linux-c6x/projects/syslink/ti/syslink/inc/usr/Linux"/>
+									<listOptionValue builtIn="false" value="/home/kdesnos/my-linux-c6x/projects/syslink/ti/syslink/inc"/>
+									<listOptionValue builtIn="false" value="/home/kdesnos/my-linux-c6x/projects/syslink/ti/syslink/inc/usr"/>
+									<listOptionValue builtIn="false" value="/home/kdesnos/my-linux-c6x/projects/syslink/ti/syslink/inc/usr/Linux"/>
 								</option>
-								<option id="gnu.c.compiler.option.include.files.1993598233" name="Include files (-include)" superClass="gnu.c.compiler.option.include.files" valueType="includeFiles"/>
+								<option id="gnu.c.compiler.option.include.files.1993598233" name="Include files (-include)" superClass="gnu.c.compiler.option.include.files"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1645895857" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.352674961" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
@@ -45,8 +45,8 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.1039952579" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker">
 								<option id="gnu.c.link.option.paths.833713758" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="/home/ronan/linux-c6x/Build/syslink_evmc6678.el_hardfp/ti/syslink/lib"/>
-									<listOptionValue builtIn="false" value="/home/ronan/WORKSPACE"/>
+									<listOptionValue builtIn="false" value="/home/kdesnos/my-linux-c6x/Build/syslink_evmc6678.el_hardfp/ti/syslink/lib"/>
+									<listOptionValue builtIn="false" value="/home/kdesnos/workspace_v5_2"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libCom/Debug}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libLoad/Debug}&quot;"/>
 								</option>
@@ -60,7 +60,7 @@
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
 								</inputType>
-								<outputType id="cdt.managedbuild.tool.gnu.c.linker.output.1459970435" outputPrefix="/srv/nfs/rootfs-keystone/" superClass="cdt.managedbuild.tool.gnu.c.linker.output"/>
+								<outputType id="cdt.managedbuild.tool.gnu.c.linker.output.1459970435" outputPrefix="/srv/nfs/prog/" superClass="cdt.managedbuild.tool.gnu.c.linker.output"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.linker.299521890" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker"/>
 							<tool id="cdt.managedbuild.tool.gnu.cross.archiver.1179716304" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver"/>
