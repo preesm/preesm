@@ -47,9 +47,9 @@ Void APPNotify_callbackFxn(UInt16 procId, UInt16 lineId, UInt32 eventNo,
 		UArg arg, UInt32 payload) {
 	Semaphore_post((Semaphore_Object*) arg);
 }
-#pragma DATA_SECTION(image_in, ".image")
+#pragma DATA_SECTION(image_in, ".mySharedMem")
 unsigned char image_in[300 * 400 * 3];
-#pragma DATA_SECTION(image_out, ".image")
+#pragma DATA_SECTION(image_out, ".mySharedMem")
 unsigned char image_out[300 * 400 * 3];
 
 /*
@@ -79,6 +79,8 @@ unsigned char image_out[300 * 400 * 3];
 	initReceiveData();
 	initSendData();
 
+	for(i=0;i<40 ;i++){
+		System_printf("iter: %d\n",i);
 	/* Receive data */
 	receiveData(300 * 400 * 3, image_in);
 
@@ -92,6 +94,7 @@ unsigned char image_out[300 * 400 * 3];
 
 	/* Send data */
 	sendData(data_size, image_out);
+	}
 
 	closeHeap(heapHandle);
 

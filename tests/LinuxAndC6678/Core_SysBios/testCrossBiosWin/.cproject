@@ -69,7 +69,7 @@
 								<option id="com.ti.rtsc.buildDefinitions.XDC_3.16.tool.XDC_PATH.106981274" name="Package repositories (--xdcpath)" superClass="com.ti.rtsc.buildDefinitions.XDC_3.16.tool.XDC_PATH" valueType="stringList">
 									<listOptionValue builtIn="false" value="&quot;${IPC_CG_ROOT}/packages&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${BIOS_CG_ROOT}/packages&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;D:\VirtualMachines\Shared\my-linux-c6x\Build\syslink_evmc6678.el&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\VMs\Shared\my-linux-c6x\Build\syslink_evmc6678.el&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/packages}&quot;"/>
 								</option>
 								<option id="com.ti.rtsc.buildDefinitions.XDC_3.16.tool.COMPILE_OPTIONS.675281564" name="Additional compiler options (--compileOptions)" superClass="com.ti.rtsc.buildDefinitions.XDC_3.16.tool.COMPILE_OPTIONS" value="&quot;-g --optimize_with_debug&quot;" valueType="string"/>
