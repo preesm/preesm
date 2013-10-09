@@ -79,6 +79,8 @@ import org.ietr.preesm.experiment.ui.pimm.features.LayoutInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.LayoutParameterFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.LayoutPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.MoveAbstractActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.MoveDownActorPortFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.MoveUpActorPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.OpenRefinementFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.ReconnectionFifoFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.RenameAbstractVertexFeature;
@@ -176,6 +178,8 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
 		if (obj instanceof Port) {
 			features.add(new RenameActorPortFeature(this));
+			features.add(new MoveUpActorPortFeature(this));
+			features.add(new MoveDownActorPortFeature(this));
 		}
 
 		if (obj instanceof Fifo) {
