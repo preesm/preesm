@@ -1,0 +1,10 @@
+
+module receiveData {
+	typedef long parameter ;
+	interface init {
+		void initReceiveData ();
+	} ;
+	interface loop {
+		void receiveData (in parameter size , out char data);
+	} ;
+} ;

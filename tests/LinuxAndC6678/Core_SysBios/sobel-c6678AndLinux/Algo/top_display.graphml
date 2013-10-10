@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="model" attr.type="string" for="graph"/>
+    <key attr.name="name" attr.type="string" for="node"/>
+    <key attr.name="kind" attr.type="string" for="node"/>
+    <key attr.name="port_direction" attr.type="string" for="node"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="nbRepeat" attr.type="int" for="node"/>
+    <key attr.name="edge_cons" attr.type="string" for="edge"/>
+    <key attr.name="edge_delay" attr.type="string" for="edge"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge"/>
+    <key attr.name="data_type" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">top_display</data>
+        <data key="kind">sdf</data>
+        <data key="parameters"/>
+        <data key="variables">
+            <variable name="height" value="400"/>
+            <variable name="width" value="300*3"/>
+        </data>
+        <node id="ReceiveData">
+            <data key="name">ReceiveData</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/receiveData.idl</data>
+            <data key="arguments">
+                <argument name="size" value="height*width"/>
+            </data>
+        </node>
+        <node id="SendData">
+            <data key="name">SendData</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/sendData.idl</data>
+            <data key="arguments">
+                <argument name="size" value="height*width"/>
+            </data>
+        </node>
+        <edge source="ReceiveData" sourceport="data" target="SendData" targetport="data">
+            <data key="edge_prod">height*width</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width</data>
+            <data key="data_type">uchar</data>
+        </edge>
+    </graph>
+</graphml>

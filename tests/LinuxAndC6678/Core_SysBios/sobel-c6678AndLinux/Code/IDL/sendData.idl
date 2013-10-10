@@ -1,0 +1,10 @@
+
+module sendData {
+	typedef long parameter ;
+	interface init {
+		void initSendData ();
+	} ;
+	interface loop {
+		void sendData (in parameter size , in char data);
+	} ;
+} ;
