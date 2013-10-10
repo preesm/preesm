@@ -180,6 +180,9 @@ int main(int argc, char ** argv) {
 	while (nbRepeat != 0) {
 		nbRepeat = (nbRepeat >= 0) ? nbRepeat - 1 : -1;
 		if (!erreur) {
+			int imgReceived = 0;
+			int imgSent = 0;
+
 			/* Sockets creation */
 			sock1 = socket(AF_INET, SOCK_STREAM, 0);
 			sock2 = socket(AF_INET, SOCK_STREAM, 0);
@@ -188,27 +191,35 @@ int main(int argc, char ** argv) {
 			sin1.sin_addr.s_addr = inet_addr(addressW);
 			sin1.sin_family = AF_INET;
 			sin1.sin_port = htons(PORT_IN);
+			while (imgReceived == 0) {
+				/* Communication on socket1 */
+				if (connect(sock1, (SOCKADDR*) &sin1,
+						sizeof(sin1)) != SOCKET_ERROR) {
+					Osal_printf("Connected to %s on port %d\n",
+							inet_ntoa(sin1.sin_addr), htons(sin1.sin_port));
 
-			/* Communication on socket1 */
-			if (connect(sock1, (SOCKADDR*) &sin1, sizeof(sin1)) != SOCKET_ERROR) {
-				Osal_printf("Connected to %s on port %d\n",
-						inet_ntoa(sin1.sin_addr), htons(sin1.sin_port));
+					/* Receiving information from server */
 
-				/* Receiving information from server */
+					/* Receive image size */
+					if (recv(sock1, &image_size, sizeof(int), MSG_WAITALL)
+							!= 0) {
+						image_size = htonl(image_size);
+						Osal_printf("Image size: %d\n", image_size);
+					}
+					/* Receive an image */
+					if ((i = recv(sock1, image_in, image_size, MSG_WAITALL))) {
+						Osal_printf("Image received %d bytes\n", i);
+					}
 
-				/* Receive image size */
-				if (recv(sock1, &image_size, sizeof(int), MSG_WAITALL) != 0) {
-					image_size = htonl(image_size);
-					Osal_printf("Image size: %d\n", image_size);
+					imgReceived = 1;
+
+				} else {
+					imgReceived = 0;
+					Osal_printf(
+							"Error when trying to connect server with socket1 (%d)\n",
+							htons(sin1.sin_port));
+
 				}
-				/* Receive an image */
-				if ((i = recv(sock1, image_in, image_size, MSG_WAITALL))) {
-					Osal_printf("Image received %d bytes\n", i);
-				}
-
-			} else {
-				Osal_printf(
-						"Error when trying to connect server with socket1\n");
 			}
 
 			/* Socket1 closing */
@@ -229,7 +240,7 @@ int main(int argc, char ** argv) {
 			sprintf(fileName[0], "/LogFiles/Core%d.log", Cores[0]);
 			file = fopen(fileName[0], "w+");
 			/* Receive data from Core i */
-			recvQ(messageQ[0], image_out , dataSize[0]);
+			recvQ(messageQ[0], image_out, dataSize[0]);
 			/* Print value in a file */
 			if (file != NULL) {
 				printValue(file, image_out, 0 * dataSize[0],
@@ -242,18 +253,23 @@ int main(int argc, char ** argv) {
 			sin2.sin_family = AF_INET;
 			sin2.sin_port = htons(PORT_OUT);
 
-			/* Communication on socket2 */
-			if (connect(sock2, (SOCKADDR*) &sin2, sizeof(sin2)) != SOCKET_ERROR) {
-				Osal_printf("Connected to %s on port %d\n",
-						inet_ntoa(sin2.sin_addr), htons(sin2.sin_port));
-				//send(sock2, &MessageQApp_numProcs, sizeof(int), MSG_WAITALL);
+			while (imgSent == 0) {
+				/* Communication on socket2 */
+				if (connect(sock2, (SOCKADDR*) &sin2,
+						sizeof(sin2)) != SOCKET_ERROR) {
+					Osal_printf("Connected to %s on port %d\n",
+							inet_ntoa(sin2.sin_addr), htons(sin2.sin_port));
+					//send(sock2, &MessageQApp_numProcs, sizeof(int), MSG_WAITALL);
 
-				/* Send result to sever */
-				send(sock2, image_out, image_size, 0);
-				Osal_printf("Image processed sent %d\n", image_size);
-			} else {
-				Osal_printf(
-						"Error when trying to connect server with socket2\n");
+					/* Send result to sever */
+					send(sock2, image_out, image_size, 0);
+					imgSent = 1;
+					Osal_printf("Image processed sent %d\n", image_size);
+				} else {
+					Osal_printf(
+							"Error when trying to connect server with socket2\n");
+					imgSent = 0;
+				}
 			}
 
 			/* Socket2 closing */
@@ -263,10 +279,10 @@ int main(int argc, char ** argv) {
 	}
 
 	/* MessageQ closing */
-		Osal_printf("closing %s\n", REMOTE_Q_NAME[0]);
-		closeQueue(remoteQueueId[0]);
-		Osal_printf("deleting %s\n", MESSAGE_Q_NAME[0]);
-		deleteQueue(messageQ[0]);
+	Osal_printf("closing %s\n", REMOTE_Q_NAME[0]);
+	closeQueue(remoteQueueId[0]);
+	Osal_printf("deleting %s\n", MESSAGE_Q_NAME[0]);
+	deleteQueue(messageQ[0]);
 
 	deleteHeap(heapHandle, heapSize);
 
