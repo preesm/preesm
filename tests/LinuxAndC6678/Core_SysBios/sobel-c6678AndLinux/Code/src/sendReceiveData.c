@@ -32,13 +32,7 @@ void initSendData() {
 
 void receiveData(int size, unsigned char *data) {
 
-	//Int rank = -1;
 	int data_size;
-	//-- long alloc;
-
-	/* Receive data */
-	//--recvQ(messageQ, &rank, sizeof(int));
-	//-- recvQ(messageQ, &alloc, sizeof(long));
 
 	recvQ(messageQ, &data_size, sizeof(int));
 	if (data_size != size) {
@@ -49,7 +43,6 @@ void receiveData(int size, unsigned char *data) {
 	}
 	System_printf("data_size: %d\n", data_size);
 
-	//-- *data = (unsigned char *) alloc + rank * data_size;
 	recvQ(messageQ, data, data_size);
 
 	//deleteQueue(messageQ);

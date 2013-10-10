@@ -19,8 +19,8 @@
         <data key="kind">sdf</data>
         <data key="parameters"/>
         <data key="variables">
-            <variable name="height" value="400"/>
-            <variable name="width" value="300*3"/>
+            <variable name="height" value="352*1.5"/>
+            <variable name="width" value="288"/>
         </data>
         <node id="ReceiveData">
             <data key="name">ReceiveData</data>
