@@ -1,7 +1,7 @@
 #include <xdc/runtime/System.h>
 #include <stdio.h>
 
-#include "receiveData.h"
+#include "sendReceiveData.h"
 #include "com.h"
 #include <ti/ipc/MessageQ.h>
 

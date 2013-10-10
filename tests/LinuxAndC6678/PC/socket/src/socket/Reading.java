@@ -2,9 +2,7 @@ package socket;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -47,6 +45,9 @@ public class Reading implements Runnable{
 	}
 	
 	public void run(){
+		fen = new Fenetre();
+        pan = new Panneau();
+        
 		try{
 			for(;;){
 				server = new ServerSocket(port, 5);
@@ -58,10 +59,8 @@ public class Reading implements Runnable{
 
 		        /* Communication on port PORT_OUT */
 		        
-		        nbProc = dis.read(); dis.read(); dis.read(); dis.read();
-		        title ="Result with "+nbProc+" Core";
-		        if(nbProc>1){title+="s";}
-		        System.out.println(title);
+		        //nbProc = dis.read(); dis.read(); dis.read(); dis.read();
+		        title ="Result with 7 Cores";
 		        		        		        
 		        	/* Receiving processed image */
 		        while(read < size){
@@ -81,10 +80,9 @@ public class Reading implements Runnable{
 		        
 		        result = new FileOutputStream(new File("uncoded.data"));
 				/* Display processed image */
-		        fen = new Fenetre();
-		        pan = new Panneau();
-		    	fen.getValue(title, WIDTH, HEIGHT);
-		    	pan.getValue(picture, buffer, WIDTH, HEIGHT);
+		        
+		    	fen.setAttributes(title, WIDTH, HEIGHT);
+		    	pan.setAttributes(picture, buffer, WIDTH, HEIGHT);
 		    	fen.init();
 		    	fen.setContentPane(pan);
 		    	fen.setVisible(true);		         

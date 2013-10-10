@@ -15,7 +15,7 @@ public class Panneau extends JPanel{
 	int Width;
 	int Height;
 	
-	public void getValue(BufferedImage picture, byte[] buff, int w, int h){
+	public void setAttributes(BufferedImage picture, byte[] buff, int w, int h){
 		pictureOut=picture;
 		buffer=buff;
 		Width=w;
