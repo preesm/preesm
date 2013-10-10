@@ -9,5 +9,7 @@
 #define C6678_H_
 
 #include "sendReceiveData.h"
+#include "sobel.h"
+#include "splitMerge.h"
 
 #endif /* C6678_H_ */

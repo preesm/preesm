@@ -21,17 +21,17 @@ typedef unsigned char uchar;
 void core0(void);
 #define CORE1
 void core1(void);
-//#define CORE2
+#define CORE2
 void core2(void);
-//#define CORE3
+#define CORE3
 void core3(void);
-//#define CORE4
+#define CORE4
 void core4(void);
-//#define CORE5
+#define CORE5
 void core5(void);
-//#define CORE6
+#define CORE6
 void core6(void);
-//#define CORE7
+#define CORE7
 void core7(void);
 
 

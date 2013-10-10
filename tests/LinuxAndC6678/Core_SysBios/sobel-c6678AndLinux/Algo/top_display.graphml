@@ -19,15 +19,16 @@
         <data key="kind">sdf</data>
         <data key="parameters"/>
         <data key="variables">
-            <variable name="height" value="352*1.5"/>
-            <variable name="width" value="288"/>
+            <variable name="N" value="8"/>
+            <variable name="height" value="288"/>
+            <variable name="width" value="352"/>
         </data>
         <node id="ReceiveData">
             <data key="name">ReceiveData</data>
             <data key="kind">vertex</data>
             <data key="graph_desc">../Code/IDL/receiveData.idl</data>
             <data key="arguments">
-                <argument name="size" value="height*width"/>
+                <argument name="size" value="height*width*1.5"/>
             </data>
         </node>
         <node id="SendData">
@@ -35,13 +36,96 @@
             <data key="kind">vertex</data>
             <data key="graph_desc">../Code/IDL/sendData.idl</data>
             <data key="arguments">
-                <argument name="size" value="height*width"/>
+                <argument name="size" value="height*width*1.5"/>
             </data>
         </node>
-        <edge source="ReceiveData" sourceport="data" target="SendData" targetport="data">
+        <node id="ForkYUV">
+            <data key="name">ForkYUV</data>
+            <data key="kind">fork</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+        </node>
+        <node id="JoinYUV">
+            <data key="name">JoinYUV</data>
+            <data key="kind">join</data>
+            <data key="graph_desc"/>
+            <data key="arguments"/>
+        </node>
+        <node id="Sobel">
+            <data key="name">Sobel</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/sobel.idl</data>
+            <data key="arguments">
+                <argument name="height" value="height/N+2"/>
+                <argument name="width" value="width"/>
+            </data>
+        </node>
+        <node id="Split">
+            <data key="name">Split</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/split.idl</data>
+            <data key="arguments">
+                <argument name="height" value="height"/>
+                <argument name="nbSlice" value="N"/>
+                <argument name="width" value="width"/>
+            </data>
+        </node>
+        <node id="Merge">
+            <data key="name">Merge</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/merge.idl</data>
+            <data key="arguments">
+                <argument name="height" value="height"/>
+                <argument name="nbSlice" value="N"/>
+                <argument name="width" value="width"/>
+            </data>
+        </node>
+        <edge source="ReceiveData" sourceport="data" target="ForkYUV" targetport="in">
+            <data key="edge_prod">height*width*1.5</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width*1.5</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="JoinYUV" sourceport="out" target="SendData" targetport="data">
+            <data key="edge_prod">height*width*1.5</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width*1.5</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="ForkYUV" sourceport="y" target="Split" targetport="input">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="Split" sourceport="output" target="Sobel" targetport="input">
+            <data key="edge_prod">N*width*(height/N+2)</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">width*(height/N+2)</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="Merge" sourceport="output" target="JoinYUV" targetport="y">
+            <data key="edge_prod">height*width</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="Sobel" sourceport="output" target="Merge" targetport="input">
+            <data key="edge_prod">width*(height/N+2)</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">N*width*(height/N+2)</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="ForkYUV" sourceport="u" target="JoinYUV" targetport="u">
+            <data key="edge_prod">height*width/4</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width/4</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="ForkYUV" sourceport="v" target="JoinYUV" targetport="v">
+            <data key="edge_prod">height*width/4</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width/4</data>
             <data key="data_type">uchar</data>
         </edge>
     </graph>

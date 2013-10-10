@@ -6,34 +6,55 @@
         <codegenDirectory url="/sobel-c6678AndLinux/Code/generated"/>
     </files>
     <constraints excelUrl="">
+        <constraintGroup/>
         <constraintGroup>
-            <operator name="Core1"/>
-            <task name="SendData"/>
-            <task name="ReceiveData"/>
+            <operator name="Core7"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core5"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core6"/>
-        </constraintGroup>
-        <constraintGroup/>
-        <constraintGroup>
-            <operator name="Core4"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core3"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core7"/>
+            <operator name="Core1"/>
+            <task name="Split"/>
+            <task name="SendData"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
+            <task name="ReceiveData"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core2"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core4"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
         </constraintGroup>
     </constraints>
     <relativeconstraints excelUrl=""/>
     <timings excelUrl="">
-        <memcpyspeed opname="c6678" setuptime="1" timeperunit="0.47846892"/>
+        <memcpyspeed opname="c6678" setuptime="1" timeperunit="3.3333334E-5"/>
     </timings>
     <simuParams>
         <mainCore>Core1</mainCore>
@@ -44,13 +65,7 @@
             <dataType name="uchar" size="1"/>
         </dataTypes>
         <specialVertexOperators>
-            <specialVertexOperator path="Core7"/>
-            <specialVertexOperator path="Core4"/>
-            <specialVertexOperator path="Core3"/>
-            <specialVertexOperator path="Core6"/>
-            <specialVertexOperator path="Core5"/>
             <specialVertexOperator path="Core0"/>
-            <specialVertexOperator path="Core2"/>
             <specialVertexOperator path="Core1"/>
         </specialVertexOperators>
     </simuParams>

@@ -1,7 +1,7 @@
 package socket;
 import java.net.ServerSocket;
 import java.net.Socket;
-public class Serveur {
+public class Server {
 	public static final int WIDTH = 400;
 	public static final int HEIGHT = 300;
     public static final int PORT_IN = 2013;

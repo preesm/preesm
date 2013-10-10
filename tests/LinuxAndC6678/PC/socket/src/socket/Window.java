@@ -4,7 +4,7 @@ import javax.swing.JFrame;
 
 @SuppressWarnings("serial")
 
-public class Fenetre extends JFrame{
+public class Window extends JFrame{
 
 	String TITLE = new String("");
 	int WIDTH, HEIGHT;

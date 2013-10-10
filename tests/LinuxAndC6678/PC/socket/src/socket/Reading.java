@@ -18,8 +18,8 @@ public class Reading implements Runnable{
 	private int nbProc;
 	private int available;
 	private byte[] buffer;
-	private Fenetre fen;
-	private Panneau pan;
+	private Window fen;
+	private Pannel pan;
 	private String title;
 	private int HEIGHT, WIDTH;
 	private BufferedImage picture;
@@ -45,8 +45,8 @@ public class Reading implements Runnable{
 	}
 	
 	public void run(){
-		fen = new Fenetre();
-        pan = new Panneau();
+		fen = new Window();
+        pan = new Pannel();
         
 		try{
 			for(;;){

@@ -9,7 +9,7 @@ import javax.swing.JPanel;
   
 @SuppressWarnings("serial")
 
-public class Panneau extends JPanel{
+public class Pannel extends JPanel{
 	BufferedImage pictureOut;
 	byte[] buffer;
 	int Width;
