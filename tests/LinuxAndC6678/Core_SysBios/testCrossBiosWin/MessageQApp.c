@@ -27,7 +27,7 @@
 #include <stdio.h>
 #include "com.h"
 #include "application.h"
-#include "receiveData.h"
+#include "sendReceiveData.h"
 
 #define HEAP_NAME  		"HeapMemMP"
 #define BUFFER_SIZE_MAX 400*300*3
