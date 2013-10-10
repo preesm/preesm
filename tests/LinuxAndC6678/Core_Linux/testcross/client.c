@@ -77,6 +77,14 @@ typedef struct sockaddr SOCKADDR;
 #define PORT_OUT 567
 #define BUFFER_SIZE_MAX 400*300*3
 
+#define SILENT 1
+
+#if SILENT==0
+#define PRINTF Osal_printf
+#else
+#define PRINTF(a,...)
+#endif
+
 static unsigned char image_in[BUFFER_SIZE_MAX];
 static unsigned char image_out[BUFFER_SIZE_MAX];
 
@@ -127,26 +135,28 @@ int main(int argc, char ** argv) {
 	//unsigned long bufferAlloc = 2;
 
 	file = fopen("./config.ini", "r");
-	rewind(file);
+	//rewind(file);
 	if (file == NULL) {
 		Osal_printf("Error while opening configuration file\n");
 	} else {
-		Osal_printf("Success while opening configuration file\n");
+		PRINTF("Success while opening configuration file\n");
 		i = readAddress(addressW, file);
-		Osal_printf("Address Windows: %s", addressW);
+		PRINTF("Address Windows: %s\n", addressW);
 		heapSize = readHeap(file);
-		Osal_printf("Heap size = 0x%x\n", heapSize);
+		PRINTF("Heap size = 0x%x\n", heapSize);
 		nbRepeat = readNbRepeat(file);
-		Osal_printf("Nb of repetition %d\n", nbRepeat);
+		PRINTF("Nb of repetition %d\n", nbRepeat);
 		rewind(file);
 	}
 	fclose(file);
 
-	Osal_printf("MessageQApp sample application\n");
+#define end
+#ifdef end
+	PRINTF("MessageQApp sample application\n");
 	MessageQApp_numProcs = 7;
 
 	SysLink_setup();
-	Osal_printf("Syslink Initialized\n");
+	PRINTF("Syslink Initialized\n");
 
 	/* If there is more than 2 arguments, select cores in an order defined by user */
 	/* Else select from Core1 to Core7 by default */
@@ -157,9 +167,9 @@ int main(int argc, char ** argv) {
 
 	/* Run cores */
 	for (i = 0; i < MessageQApp_numProcs; i++) {
-		Osal_printf("Starting procId %d \n", Cores[i]);
+		PRINTF("Starting procId %d \n", Cores[i]);
 		status = ProcMgrApp_startup(Cores[i]);
-		Osal_printf("status [%d]\n", status);
+		PRINTF("status [%d]\n", status);
 	}
 
 	/* MessageQ creation with core 1*/
@@ -170,7 +180,7 @@ int main(int argc, char ** argv) {
 	messageQ[0] = createQueue(MESSAGE_Q_NAME[0]);
 	remoteQueueId[0] = openQueue(REMOTE_Q_NAME[0]);
 
-	Osal_printf("Cores number : %d\n", MessageQApp_numProcs);
+	PRINTF("Cores number : %d\n", MessageQApp_numProcs);
 
 	/*******************************************************/
 
@@ -178,6 +188,7 @@ int main(int argc, char ** argv) {
 
 	/*******************************************************/
 	while (nbRepeat != 0) {
+		PRINTF("Remaining %d\n", nbRepeat);
 		nbRepeat = (nbRepeat >= 0) ? nbRepeat - 1 : -1;
 		if (!erreur) {
 			int imgReceived = 0;
@@ -195,7 +206,7 @@ int main(int argc, char ** argv) {
 				/* Communication on socket1 */
 				if (connect(sock1, (SOCKADDR*) &sin1,
 						sizeof(sin1)) != SOCKET_ERROR) {
-					Osal_printf("Connected to %s on port %d\n",
+					PRINTF("Connected to %s on port %d\n",
 							inet_ntoa(sin1.sin_addr), htons(sin1.sin_port));
 
 					/* Receiving information from server */
@@ -204,19 +215,20 @@ int main(int argc, char ** argv) {
 					if (recv(sock1, &image_size, sizeof(int), MSG_WAITALL)
 							!= 0) {
 						image_size = htonl(image_size);
-						Osal_printf("Image size: %d\n", image_size);
+						PRINTF("Image size: %d\n", image_size);
 					}
 					/* Receive an image */
 					if ((i = recv(sock1, image_in, image_size, MSG_WAITALL))) {
-						Osal_printf("Image received %d bytes\n", i);
+						PRINTF("Image received %d bytes\n", i);
 					}
 
 					imgReceived = 1;
 
 				} else {
 					imgReceived = 0;
-					Osal_printf(
-							"Error when trying to connect server with socket1 (%d)\n",
+					usleep(1);
+					PRINTF(
+							"Connect to server with socket1 (%d) failed\n",
 							htons(sin1.sin_port));
 
 				}
@@ -224,7 +236,7 @@ int main(int argc, char ** argv) {
 
 			/* Socket1 closing */
 			closesocket(sock1);
-			Osal_printf("Connection on port %d closed\n", htons(sin1.sin_port));
+			PRINTF("Connection on port %d closed\n", htons(sin1.sin_port));
 
 			// Send data to core 1
 			dataSize[0] = image_size;
@@ -257,31 +269,33 @@ int main(int argc, char ** argv) {
 				/* Communication on socket2 */
 				if (connect(sock2, (SOCKADDR*) &sin2,
 						sizeof(sin2)) != SOCKET_ERROR) {
-					Osal_printf("Connected to %s on port %d\n",
+					PRINTF("Connected to %s on port %d\n",
 							inet_ntoa(sin2.sin_addr), htons(sin2.sin_port));
 					//send(sock2, &MessageQApp_numProcs, sizeof(int), MSG_WAITALL);
 
 					/* Send result to sever */
 					send(sock2, image_out, image_size, 0);
 					imgSent = 1;
-					Osal_printf("Image processed sent %d\n", image_size);
+					PRINTF("Image processed sent %d\n", image_size);
 				} else {
-					Osal_printf(
-							"Error when trying to connect server with socket2\n");
+					usleep(1);
+					PRINTF(
+							"Connection to server with socket2 (%d) failed\n",
+							htons(sin2.sin_port));
 					imgSent = 0;
 				}
 			}
 
 			/* Socket2 closing */
 			closesocket(sock2);
-			Osal_printf("Connection on port %d closed\n", htons(sin2.sin_port));
+			PRINTF("Connection on port %d closed\n", htons(sin2.sin_port));
 		}
 	}
 
 	/* MessageQ closing */
-	Osal_printf("closing %s\n", REMOTE_Q_NAME[0]);
+	PRINTF("closing %s\n", REMOTE_Q_NAME[0]);
 	closeQueue(remoteQueueId[0]);
-	Osal_printf("deleting %s\n", MESSAGE_Q_NAME[0]);
+	PRINTF("deleting %s\n", MESSAGE_Q_NAME[0]);
 	deleteQueue(messageQ[0]);
 
 	deleteHeap(heapHandle, heapSize);
@@ -291,7 +305,9 @@ int main(int argc, char ** argv) {
 	}
 
 	SysLink_destroy();
-	Osal_printf("Fini!\n");
+
+#endif
+	Osal_printf("Done\n");
 
 #if defined (WIN32)
 	WSACleanup();

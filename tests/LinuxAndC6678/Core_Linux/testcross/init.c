@@ -7,12 +7,13 @@
 
 #include "init.h"
 
+
 #ifndef NULL
 #define NULL 0
 #endif
 
 int readNbRepeat(FILE* f) {
-	int readChar;
+	int readChar = 0;
 	int result = 0;
 //    int i = 0;
 	char tmp[100];
@@ -29,6 +30,7 @@ int readNbRepeat(FILE* f) {
 				}
 				fgets(tmp, 100, f);
 				result = strtol(tmp, NULL, 10);
+
 			}
 		}
 	}
@@ -36,7 +38,7 @@ int readNbRepeat(FILE* f) {
 }
 
 int readSize(FILE* f) {
-	int readChar;
+	int readChar = 0;
 	int Size = 1;
 	int res = 0;
 	char tmp[100];
@@ -72,7 +74,7 @@ int readSize(FILE* f) {
 }
 
 int readHeap(FILE* f) {
-	int readChar;
+	int readChar = 0;
 	int Size = 0;
 	int res = 0;
 	char tmp[100];
@@ -96,32 +98,9 @@ int readHeap(FILE* f) {
 	return res;
 }
 
-int readBuffer(long alloc, FILE* f) {
-	char c;
-	char tmp[100];
-	alloc = 0;
-	rewind(f);
-	while (c != EOF) {
-		c = fgetc(f);
-		if (c == ';') {
-			fgets(tmp, 100, f);
-		} else if (c == 'b') {
-			fgets(tmp, 6, f);
-			if (strncmp(tmp, "uffer", 6) == 0) {
-				while (c != '=') {
-					c = fgetc(f);
-				}
-				fgets(tmp, 100, f);
-				alloc = strtoll(tmp, NULL, 16);
-				printf("%lx\n", alloc);
-			}
-		}
-	}
-	return 1;
-}
 
 int readAddress(char * res, FILE* f) {
-	int readChar;
+	int readChar = 0;
 //    int i = 0;
 	char tmp[100];
 	rewind(f);
@@ -136,6 +115,7 @@ int readAddress(char * res, FILE* f) {
 					readChar = fgetc(f);
 				}
 				fgets(res, 15, f);
+				res[15] = '\0';
 			}
 		}
 	}

@@ -19,9 +19,6 @@ int readSize(FILE* f);
 /* Read heap size in file .ini */
 int readHeap(FILE* f);
 
-/* Read buffer location for processing */
-int readBuffer(long b, FILE* f);		//Re-written in client.c
-
 /* Read address for socket communication */
 int readAddress(char * res, FILE* f);
 

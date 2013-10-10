@@ -37,6 +37,7 @@
 									<listOptionValue builtIn="false" value="/home/kdesnos/my-linux-c6x/projects/syslink/ti/syslink/inc/usr/Linux"/>
 								</option>
 								<option id="gnu.c.compiler.option.include.files.1993598233" name="Include files (-include)" superClass="gnu.c.compiler.option.include.files"/>
+								<option id="gnu.c.compiler.option.preprocessor.preprocess.599911141" name="Preprocess only (-E)" superClass="gnu.c.compiler.option.preprocessor.preprocess" value="false" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1645895857" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.352674961" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">

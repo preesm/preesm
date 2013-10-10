@@ -41,7 +41,7 @@ void receiveData(int size, unsigned char *data) {
 				size, data_size);
 		System_abort("Expected size is different from received size.\n");
 	}
-	System_printf("data_size: %d\n", data_size);
+	//System_printf("data_size: %d\n", data_size);
 
 	recvQ(messageQ, data, data_size);
 

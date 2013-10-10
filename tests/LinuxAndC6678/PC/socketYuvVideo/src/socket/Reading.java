@@ -50,7 +50,7 @@ public class Reading implements Runnable{
 			for(;;){
 				read = 0;
 				server = new ServerSocket(port, 5);
-		        System.out.println("\nServer is listening on port "+server.getLocalPort());
+		        System.out.println("Server is listening on port "+server.getLocalPort());
 		        socket = server.accept();
 		        System.out.println("A client is connected on port "+server.getLocalPort());
 		        DataInputStream dis = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
@@ -68,9 +68,9 @@ public class Reading implements Runnable{
 		            	dis.read(buffer, read, available);		//reading faster than sending so read block by block
 		            	read += available;
 		        	}
-		            System.out.println("received "+read+"/"+frameSize +"\r");
+		            //System.out.println("received "+read+"/"+frameSize +"\r");
 		        }
-		        System.out.println("\nImage received");
+		        System.out.println("Image received");
 		        
 		        /* Socket2 closing */
 		        socket.close();

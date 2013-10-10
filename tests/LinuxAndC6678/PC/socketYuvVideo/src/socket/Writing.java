@@ -40,7 +40,7 @@ public class Writing implements Runnable{
 	            }
 				/* Socket1 Configuration */
 		    	server = new ServerSocket(port, 5);
-		        System.out.println("\nServer is listening on port "+server.getLocalPort());
+		        System.out.println("Server is listening on port "+server.getLocalPort());
 		        socket = server.accept();
 		        System.out.println("A client is connected on port "+server.getLocalPort());
 		        DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
@@ -50,7 +50,7 @@ public class Writing implements Runnable{
 		        	/* Sending image size */
 		        dos.writeInt(frameSize);
 		        dos.flush();
-		        System.out.println("Image size sent");
+		        //System.out.println("Image size sent");
 		                                
 		        	/* Sending image */
 		        dos.write(buffer,currentFrame*frameSize,frameSize);
