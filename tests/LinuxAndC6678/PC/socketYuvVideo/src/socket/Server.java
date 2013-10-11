@@ -21,13 +21,15 @@ public class Server {
     	ServerSocket socketServer2 = null;
         Socket socketOfServer2 = null;
         
-        Writing w = new Writing(socketServer1,socketOfServer1,PORT_IN,FRAME_SIZE,NB_FRAMES, buffer);
-        Thread t1 = new Thread(w);        
-        t1.start();
-        
         Reading r = new Reading(socketServer2,socketOfServer2,PORT_OUT,WIDTH,HEIGHT,buffer1);
         Thread t2 = new Thread(r);
         t2.start();
+        
+        Writing w = new Writing(socketServer1,socketOfServer1,PORT_IN,FRAME_SIZE,NB_FRAMES, buffer, r);
+        Thread t1 = new Thread(w);        
+        t1.start();
+        
+    
         
     }
 }

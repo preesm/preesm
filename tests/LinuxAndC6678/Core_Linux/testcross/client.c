@@ -88,13 +88,6 @@ typedef struct sockaddr SOCKADDR;
 static unsigned char image_in[BUFFER_SIZE_MAX];
 static unsigned char image_out[BUFFER_SIZE_MAX];
 
-void printValue(FILE * file, unsigned char image[], int start, int end) {
-	int i;
-	for (i = start; i < end; i++) {
-		fprintf(file, "0x%x\n", image[i]);
-	}
-}
-
 /***********************************************************/
 
 /******************** From messageQAppOS.c *****************/
@@ -102,40 +95,30 @@ void printValue(FILE * file, unsigned char image[], int start, int end) {
 /***********************************************************/
 
 int main(int argc, char ** argv) {
-#if defined (WIN32)
-	WSADATA WSAData;
-	int erreur = WSAStartup(MAKEWORD(2,2), &WSAData);
-#else
-	int erreur = 0;
-#endif
+
 	Int status = 0;
 	int image_size;
-	int dataSize[7];
+	int dataSize;
 	int nbRepeat;
 	UInt32 i = 0;
 	UInt16 Cores[7];
 	UInt16 MessageQApp_numProcs = 0;
 	char addressW[16]; //windows address
-	char MESSAGE_Q_NAME[8][16];
-	char REMOTE_Q_NAME[8][16];
-	LocalQueue messageQ[8];
-	RemoteQueue remoteQueueId[8];
+	char MESSAGE_Q_NAME[16];
+	char REMOTE_Q_NAME[16];
+	LocalQueue messageQ;
+	RemoteQueue remoteQueueId;
 	Heap heapHandle;
 	SOCKET sock1;
 	SOCKADDR_IN sin1;
 	SOCKET sock2;
 	SOCKADDR_IN sin2;
-	char fileName[7][10];
 	FILE * file = NULL;
-	char s[20];
-	//long alloc;
-	char c;
 
 	int heapSize = 0;
 	//unsigned long bufferAlloc = 2;
 
 	file = fopen("./config.ini", "r");
-	//rewind(file);
 	if (file == NULL) {
 		Osal_printf("Error while opening configuration file\n");
 	} else {
@@ -175,10 +158,10 @@ int main(int argc, char ** argv) {
 	/* MessageQ creation with core 1*/
 	heapHandle = createHeap(0, heapSize, HEAP_NAME);
 
-	sprintf(MESSAGE_Q_NAME[0], "Core0 to Core%d", Cores[0]);
-	sprintf(REMOTE_Q_NAME[0], "Core%d to Core0", Cores[0]);
-	messageQ[0] = createQueue(MESSAGE_Q_NAME[0]);
-	remoteQueueId[0] = openQueue(REMOTE_Q_NAME[0]);
+	sprintf(MESSAGE_Q_NAME, "Core0 to Core%d", Cores[0]);
+	sprintf(REMOTE_Q_NAME, "Core%d to Core0", Cores[0]);
+	messageQ = createQueue(MESSAGE_Q_NAME);
+	remoteQueueId = openQueue(REMOTE_Q_NAME);
 
 	PRINTF("Cores number : %d\n", MessageQApp_numProcs);
 
@@ -187,116 +170,98 @@ int main(int argc, char ** argv) {
 	/*********************** Sockets ***********************/
 
 	/*******************************************************/
-	while (nbRepeat != 0) {
-		PRINTF("Remaining %d\n", nbRepeat);
-		nbRepeat = (nbRepeat >= 0) ? nbRepeat - 1 : -1;
-		if (!erreur) {
-			int imgReceived = 0;
-			int imgSent = 0;
+	int connectedSocket1 = 0;
+	int connectedSocket2 = 0;
 
-			/* Sockets creation */
-			sock1 = socket(AF_INET, SOCK_STREAM, 0);
-			sock2 = socket(AF_INET, SOCK_STREAM, 0);
+	/* Sockets creation */
+	sock1 = socket(AF_INET, SOCK_STREAM, 0);
+	sock2 = socket(AF_INET, SOCK_STREAM, 0);
 
-			/* Configuration socket1 */
-			sin1.sin_addr.s_addr = inet_addr(addressW);
-			sin1.sin_family = AF_INET;
-			sin1.sin_port = htons(PORT_IN);
-			while (imgReceived == 0) {
-				/* Communication on socket1 */
-				if (connect(sock1, (SOCKADDR*) &sin1,
-						sizeof(sin1)) != SOCKET_ERROR) {
-					PRINTF("Connected to %s on port %d\n",
-							inet_ntoa(sin1.sin_addr), htons(sin1.sin_port));
+	/* Configuration socket1 */
+	sin1.sin_addr.s_addr = inet_addr(addressW);
+	sin1.sin_family = AF_INET;
+	sin1.sin_port = htons(PORT_IN);
+	while (connectedSocket1 == 0) {
+		/* Communication on socket1 */
+		if (connect(sock1, (SOCKADDR*) &sin1, sizeof(sin1)) != SOCKET_ERROR) {
+			PRINTF("Connected to %s on port %d\n",
+					inet_ntoa(sin1.sin_addr), htons(sin1.sin_port));
 
-					/* Receiving information from server */
+			connectedSocket1 = 1;
 
-					/* Receive image size */
-					if (recv(sock1, &image_size, sizeof(int), MSG_WAITALL)
-							!= 0) {
-						image_size = htonl(image_size);
-						PRINTF("Image size: %d\n", image_size);
-					}
-					/* Receive an image */
-					if ((i = recv(sock1, image_in, image_size, MSG_WAITALL))) {
-						PRINTF("Image received %d bytes\n", i);
-					}
+		} else {
+			connectedSocket1 = 0;
+			PRINTF(
+					"Connect to server with socket1 (%d) failed\n",
+					htons(sin1.sin_port));
 
-					imgReceived = 1;
-
-				} else {
-					imgReceived = 0;
-					usleep(1);
-					PRINTF(
-							"Connect to server with socket1 (%d) failed\n",
-							htons(sin1.sin_port));
-
-				}
-			}
-
-			/* Socket1 closing */
-			closesocket(sock1);
-			PRINTF("Connection on port %d closed\n", htons(sin1.sin_port));
-
-			// Send data to core 1
-			dataSize[0] = image_size;
-
-			/* Send data to Core i */
-			//-sendQ(remoteQueueId[i], &i,sizeof(int));	//rank of core
-			//-- sendQ(remoteQueueId[i], &alloc, sizeof(long));
-			sendQ(remoteQueueId[0], &dataSize[0], sizeof(int));
-			sendQ(remoteQueueId[0], image_in + 0 * dataSize[0], dataSize[0]);
-
-			/* Receive data from core 1 */
-
-			sprintf(fileName[0], "/LogFiles/Core%d.log", Cores[0]);
-			file = fopen(fileName[0], "w+");
-			/* Receive data from Core i */
-			recvQ(messageQ[0], image_out, dataSize[0]);
-			/* Print value in a file */
-			if (file != NULL) {
-				printValue(file, image_out, 0 * dataSize[0],
-						(0 + 1) * dataSize[0]);
-				fclose(file);
-			}
-
-			/* Configuration socket2 */
-			sin2.sin_addr.s_addr = inet_addr(addressW);
-			sin2.sin_family = AF_INET;
-			sin2.sin_port = htons(PORT_OUT);
-
-			while (imgSent == 0) {
-				/* Communication on socket2 */
-				if (connect(sock2, (SOCKADDR*) &sin2,
-						sizeof(sin2)) != SOCKET_ERROR) {
-					PRINTF("Connected to %s on port %d\n",
-							inet_ntoa(sin2.sin_addr), htons(sin2.sin_port));
-					//send(sock2, &MessageQApp_numProcs, sizeof(int), MSG_WAITALL);
-
-					/* Send result to sever */
-					send(sock2, image_out, image_size, 0);
-					imgSent = 1;
-					PRINTF("Image processed sent %d\n", image_size);
-				} else {
-					usleep(1);
-					PRINTF(
-							"Connection to server with socket2 (%d) failed\n",
-							htons(sin2.sin_port));
-					imgSent = 0;
-				}
-			}
-
-			/* Socket2 closing */
-			closesocket(sock2);
-			PRINTF("Connection on port %d closed\n", htons(sin2.sin_port));
 		}
 	}
 
+	/* Configuration socket2 */
+	sin2.sin_addr.s_addr = inet_addr(addressW);
+	sin2.sin_family = AF_INET;
+	sin2.sin_port = htons(PORT_OUT);
+
+	while (connectedSocket2 == 0) {
+		/* Communication on socket2 */
+		if (connect(sock2, (SOCKADDR*) &sin2, sizeof(sin2)) != SOCKET_ERROR) {
+			PRINTF("Connected to %s on port %d\n",
+					inet_ntoa(sin2.sin_addr), htons(sin2.sin_port));
+
+			connectedSocket2 = 1;
+		} else {
+			PRINTF(
+					"Connection to server with socket2 (%d) failed\n",
+					htons(sin2.sin_port));
+			connectedSocket2 = 0;
+		}
+	}
+
+	while (nbRepeat != 0) {
+		PRINTF("Remaining %d\n", nbRepeat);
+		nbRepeat = (nbRepeat >= 0) ? nbRepeat - 1 : -1;
+
+		/* Receiving information from server */
+
+		/* Receive image size */
+		if (recv(sock1, &image_size, sizeof(int), MSG_WAITALL) != 0) {
+			image_size = htonl(image_size);
+			PRINTF("Image size: %d\n", image_size);
+		}
+		/* Receive an image */
+		if ((i = recv(sock1, image_in, image_size, MSG_WAITALL))) {
+			PRINTF("Image received %d bytes\n", i);
+		}
+
+		// Send data to core 1
+		dataSize = image_size;
+
+		/* Send data to Core i */
+		sendQ(remoteQueueId, &dataSize, sizeof(int));
+		sendQ(remoteQueueId, image_in, dataSize);
+
+		/* Receive data from core 1 */
+		recvQ(messageQ, image_out, dataSize);
+
+		/* Send result to sever */
+		send(sock2, image_out, image_size, 0);
+		PRINTF("Image processed sent %d\n", image_size);
+
+	}
+
+	/* Socket1 closing */
+	closesocket(sock1);
+	PRINTF("Connection on port %d closed\n", htons(sin1.sin_port));
+	/* Socket2 closing */
+	closesocket(sock2);
+	PRINTF("Connection on port %d closed\n", htons(sin2.sin_port));
+
 	/* MessageQ closing */
-	PRINTF("closing %s\n", REMOTE_Q_NAME[0]);
-	closeQueue(remoteQueueId[0]);
-	PRINTF("deleting %s\n", MESSAGE_Q_NAME[0]);
-	deleteQueue(messageQ[0]);
+	PRINTF("closing %s\n", REMOTE_Q_NAME);
+	closeQueue(remoteQueueId);
+	PRINTF("deleting %s\n", MESSAGE_Q_NAME);
+	deleteQueue(messageQ);
 
 	deleteHeap(heapHandle, heapSize);
 
@@ -308,10 +273,6 @@ int main(int argc, char ** argv) {
 
 #endif
 	Osal_printf("Done\n");
-
-#if defined (WIN32)
-	WSACleanup();
-#endif
 
 	return EXIT_SUCCESS;
 }
