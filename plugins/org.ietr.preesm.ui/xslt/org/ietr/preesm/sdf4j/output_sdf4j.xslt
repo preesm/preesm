@@ -141,6 +141,18 @@
                 <xsl:variable name="dataType" select="parameters/parameter[@name = 'data type']/@value"/>
                 <xsl:value-of select="$dataType"/>
             </data>
+			
+			<xsl:if test="parameters/parameter[@name = 'target port modifier']/@value">
+			<data key="target_port_modifier">
+                <xsl:value-of select="parameters/parameter[@name = 'target port modifier']/@value"/>
+            </data>
+			</xsl:if>
+			
+			<xsl:if test="parameters/parameter[@name = 'source port modifier']/@value">
+			<data key="source_port_modifier">
+                <xsl:value-of select="parameters/parameter[@name = 'source port modifier']/@value"/>
+            </data>
+			</xsl:if>
         </edge>
     </xsl:template>
     

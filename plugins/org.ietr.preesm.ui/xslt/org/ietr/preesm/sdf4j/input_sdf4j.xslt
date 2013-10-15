@@ -230,6 +230,16 @@
                     <xsl:attribute name="name">data type</xsl:attribute>
                     <xsl:attribute name="value" select="graphml:data[@key = 'data_type']/text()"/>
                 </xsl:element>
+				
+				<xsl:element name="parameter">
+                    <xsl:attribute name="name">target port modifier</xsl:attribute>
+                    <xsl:attribute name="value" select="graphml:data[@key = 'target_port_modifier']/text()"/>
+                </xsl:element>
+				
+				<xsl:element name="parameter">
+                    <xsl:attribute name="name">source port modifier</xsl:attribute>
+                    <xsl:attribute name="value" select="graphml:data[@key = 'source_port_modifier']/text()"/>
+                </xsl:element>
             </xsl:element>
         </xsl:element>
     </xsl:template>
