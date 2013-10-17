@@ -3,6 +3,7 @@ package org.ietr.preesm.memory.allocation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
@@ -10,6 +11,7 @@ import net.sf.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.preesm.memory.bounds.AbstractMaximumWeightCliqueSolver;
 import org.ietr.preesm.memory.bounds.HeuristicSolver;
 import org.ietr.preesm.memory.bounds.OstergardSolver;
+import org.ietr.preesm.memory.exclusiongraph.MemExBroadcastMerger;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.jgrapht.graph.DefaultEdge;
@@ -118,6 +120,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
 	 * scheduling order. If the policy of the allocator is changed, the
 	 * resulting allocation will be lost.
 	 */
+	@SuppressWarnings("unchecked")
 	public void allocateSchedulingOrder() {
 		// If the exclusion graph is not built, it means that is does not come
 		// from the MemEx Updater, and we can do nothing
@@ -178,8 +181,16 @@ public abstract class OrderedAllocator extends MemoryAllocator {
 							memExVerticesInSchedulingOrder.add(memExVertices
 									.get(index));
 						} else {
-							throw new RuntimeException("Missing MemEx Vertex: "
-									+ edgeVertex);
+							// Ignore the issue if the object was merged by a
+							// MemExBroadcastMerger
+							if (!((Set<MemoryExclusionVertex>) inputExclusionGraph
+									.getPropertyBean()
+									.getValue(
+											MemExBroadcastMerger.MERGED_OBJECT_PROPERTY))
+									.contains(edgeVertex)) {
+								throw new RuntimeException(
+										"Missing MemEx Vertex: " + edgeVertex);
+							}
 						}
 					}
 				}

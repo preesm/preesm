@@ -42,6 +42,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -101,6 +102,8 @@ public class MemoryExclusionGraph extends
 	public static final String DAG_FIFO_ALLOCATION = "fifo_allocation";
 
 	public static final String WORKING_MEM_ALLOCATION = "working_mem_allocation";
+
+	public static final String SOURCE_DAG = "source_dag";
 
 	/**
 	 * Property to store an {@link Integer} corresponding to the amount of
@@ -421,6 +424,9 @@ public class MemoryExclusionGraph extends
 
 		// Add the memory objects corresponding to the fifos.
 		buildFifoMemoryObjects(dag);
+
+		// Save the dag in the properties
+		this.setPropertyValue(SOURCE_DAG, dag);
 	}
 
 	/**
@@ -1359,5 +1365,27 @@ public class MemoryExclusionGraph extends
 			}
 
 		}
+	}
+
+	/**
+	 * This method returns the local copy of the {@link MemoryExclusionVertex}
+	 * that is {@link MemoryExclusionVertex}{@link #equals(Object)} to the
+	 * {@link MemoryExclusionVertex} passed as a parameter.
+	 * 
+	 * @param memObject
+	 *            a {@link MemoryExclusionVertex} searched in the
+	 *            {@link MemoryExclusionGraph}
+	 * @return an equal {@link MemoryExclusionVertex} from the
+	 *         {@link #vertexSet()}, null if there is no such vertex.
+	 */
+	public MemoryExclusionVertex getVertex(MemoryExclusionVertex memObject) {
+		Iterator<MemoryExclusionVertex> iter = this.vertexSet().iterator();
+		while (iter.hasNext()) {
+			MemoryExclusionVertex vertex = iter.next();
+			if (vertex.equals(memObject)) {
+				return vertex;
+			}
+		}
+		return null;
 	}
 }

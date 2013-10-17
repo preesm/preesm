@@ -47,6 +47,8 @@ import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.preesm.memory.allocation.MemoryAllocatorTask;
+import org.ietr.preesm.memory.exclusiongraph.MemExBroadcastMerger;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.jgrapht.graph.DefaultEdge;
@@ -107,6 +109,26 @@ public class MemoryBoundsEstimator extends AbstractTaskImplementation {
 		}
 
 		MemoryExclusionGraph memEx = (MemoryExclusionGraph) inputs.get("MemEx");
+		
+		// Check if the broadcast were merged in the past
+		String merged = memEx.getPropertyStringValue(MemoryAllocatorTask.BROADCAST_MERGED_PROPERTY);
+		MemExBroadcastMerger merger = null;
+		if(merged!=null && merged.equalsIgnoreCase("true")){
+			int nbBefore = memEx.vertexSet().size();
+			if(verbose){
+				logger.log(Level.INFO,
+						"Merging broadcast edges (when possible).");
+			}
+			merger = new MemExBroadcastMerger(memEx);
+			int nbBroadcast = merger.merge();
+			
+			if (verbose) {
+				logger.log(Level.INFO, "Merging broadcast: " + nbBroadcast
+						+ " were mergeable for a total of "
+						+ (nbBefore - memEx.vertexSet().size())
+						+ " memory objects.");
+			}
+		}
 
 		double density = memEx.edgeSet().size()
 				/ (memEx.vertexSet().size() * (memEx.vertexSet().size() - 1) / 2.0);
@@ -148,6 +170,11 @@ public class MemoryBoundsEstimator extends AbstractTaskImplementation {
 		logger.log(Level.INFO, "Bound_Max = " + maxBound + " Bound_Min = "
 				+ minBound);
 		System.out.println(minBound+";");
+		
+		// unmerge
+		if(merger != null){
+			merger.unmerge();
+		}
 
 		// Generate output
 		Map<String, Object> output = new HashMap<String, Object>();
