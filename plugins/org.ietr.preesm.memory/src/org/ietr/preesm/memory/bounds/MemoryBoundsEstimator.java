@@ -89,7 +89,7 @@ public class MemoryBoundsEstimator extends AbstractTaskImplementation {
 		// Check Workflow element parameters
 		String valueVerbose = parameters.get(PARAM_VERBOSE);
 		boolean verbose;
-		verbose = valueVerbose.equals(VALUE_VERBOSE_TRUE);
+		verbose = valueVerbose.contains(VALUE_VERBOSE_TRUE);
 
 		String valueSolver = parameters.get(PARAM_SOLVER);
 		if (verbose) {
@@ -113,7 +113,7 @@ public class MemoryBoundsEstimator extends AbstractTaskImplementation {
 		// Check if the broadcast were merged in the past
 		String merged = memEx.getPropertyStringValue(MemoryAllocatorTask.BROADCAST_MERGED_PROPERTY);
 		MemExBroadcastMerger merger = null;
-		if(merged!=null && merged.equalsIgnoreCase("true")){
+		if(merged!=null && merged.equalsIgnoreCase("true") && !valueVerbose.contains("NO_MERGE")){
 			int nbBefore = memEx.vertexSet().size();
 			if(verbose){
 				logger.log(Level.INFO,

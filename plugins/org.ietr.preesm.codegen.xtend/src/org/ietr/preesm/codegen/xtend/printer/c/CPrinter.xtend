@@ -53,6 +53,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 import org.ietr.preesm.codegen.xtend.printer.DefaultPrinter
 import org.ietr.preesm.codegen.xtend.task.CodegenException
+import java.util.ArrayList
 
 /**
  * This printer is currently used to print C code only for X86 processor with
@@ -62,6 +63,12 @@ import org.ietr.preesm.codegen.xtend.task.CodegenException
  */
 class CPrinter extends DefaultPrinter {
 
+	/** 
+	 * Temporary global var to ignore the automatic suppression of memcpy
+	 * whose target and destination are identical. 
+	 */
+	val IGNORE_USELESS_MEMCPY = false
+	
 	override printCoreBlockHeader(CoreBlock block) '''
 			/** 
 			 * @file «block.name».c
@@ -176,28 +183,45 @@ class CPrinter extends DefaultPrinter {
 	override printBroadcast(SpecialCall call) '''
 	// Broadcast «call.name»«var input = call.inputBuffers.head»«var index = 0»
 	{
-		«FOR output : call.outputBuffers»«var outputIdx = 0»
+	«FOR output : call.outputBuffers»«var outputIdx = 0»
 		«FOR nbIter : 0..output.size/input.size+1/*Worst case is output.size exec of the loop */»
 			«IF outputIdx < output.size /* Execute loop core until all output for current buffer are produced */»
-				memcpy(«output.doSwitch»+«outputIdx», «input.doSwitch»+«index», «val value = Math::min(output.size-outputIdx,input.size-index)»«value»*sizeof(«output.type»));«
+				«val value = Math::min(output.size-outputIdx,input.size-index)»«
+				printMemcpy(output,outputIdx,input,index,value,output.type)»«
 				{index=(index+value)%input.size;outputIdx=(outputIdx+value); ""}»
 			«ENDIF»
 		«ENDFOR»
-		«ENDFOR»
+	«ENDFOR»
 	}
 	'''
 	
+    
+	
 	override printRoundBuffer(SpecialCall call) '''
-	// RoundBuffer «call.name»«var output = call.outputBuffers.head»«var index = 0»
+	// RoundBuffer «call.name»«var output = call.outputBuffers.head»«var index = 0»«var inputIdx = 0»
+	«/*Compute a list of useful memcpy (the one writing the outputed value) */
+	var copiedInBuffers = {var totalSize = call.inputBuffers.fold(0)[res, buf | res+buf.size]
+		 var lastInputs = new ArrayList
+		 inputIdx = totalSize
+		 var i = call.inputBuffers.size	- 1	 
+		 while(totalSize-inputIdx < output.size){
+		 	inputIdx = inputIdx - call.inputBuffers.get(i).size
+		 	lastInputs.add(0,call.inputBuffers.get(i))
+		 	i=i-1
+		 }
+		 inputIdx = inputIdx %  output.size
+		 lastInputs
+		 }»
 	{
-		«FOR input : call.inputBuffers»«var inputIdx = 0»
+	«FOR input : copiedInBuffers»
 		«FOR nbIter : 0..input.size/output.size+1/*Worst number the loop exec */»
 			«IF inputIdx < input.size /* Execute loop core until all input for current buffer are produced */»
-				memcpy(«output.doSwitch»+«index», «input.doSwitch»+«inputIdx», «val value = Math::min(input.size-inputIdx,output.size-index)»«value»*sizeof(«input.type»));«
+				«val value = Math::min(input.size-inputIdx,output.size-index)»«
+				printMemcpy(output,index,input,inputIdx,value,input.type)»«
 				{index=(index+value)%output.size;inputIdx=(inputIdx+value); ""}»
 			«ENDIF»
 		«ENDFOR»
-		«ENDFOR»
+	«ENDFOR»
 	}
 	'''
 	
@@ -209,6 +233,52 @@ class CPrinter extends DefaultPrinter {
 		«ENDFOR»
 	}
 	'''
+	
+	/**
+	 * Print a memcpy call in the generated code. Unless
+	 * {@link #IGNORE_USELESS_MEMCPY} is set to <code>true</code>, this method
+	 * checks if the destination and the source of the memcpy are superimposed.
+	 * In such case, the memcpy is useless and nothing is printed.
+	 * 
+	 * @param output
+	 *            the destination {@link Buffer}
+	 * @param outOffset
+	 *            the offset in the destination {@link Buffer}
+	 * @param input
+	 *            the source {@link Buffer}
+	 * @param inOffset
+	 *            the offset in the source {@link Buffer}
+	 * @param size
+	 *            the amount of memory to copy
+	 * @param type
+	 *            the type of objects copied
+	 * @return a {@link CharSequence} containing the memcpy call (if any)
+	 */
+	def printMemcpy(Buffer output, int outOffset, Buffer input, int inOffset, int size, String type) {
+
+		// Retrieve the container buffer of the input and output as well
+		// as their offset in this buffer
+		var totalOffsetOut = outOffset
+		var bOutput = output
+		while (bOutput instanceof SubBuffer) {
+			totalOffsetOut = totalOffsetOut + (bOutput as SubBuffer).offset
+			bOutput = (bOutput as SubBuffer).container
+		}
+		
+		var totalOffsetIn = inOffset
+		var bInput = input
+		while (bInput instanceof SubBuffer) {
+			totalOffsetIn = totalOffsetIn + (bInput as SubBuffer).offset
+			bInput = (bInput as SubBuffer).container
+		}
+		
+		// If the Buffer and offsets are identical, there is nothing to print
+		if(IGNORE_USELESS_MEMCPY && bInput == bOutput && totalOffsetIn == totalOffsetOut){
+			''''''
+		} else {
+			'''memcpy(«output.doSwitch»+«outOffset», «input.doSwitch»+«inOffset», «size»*sizeof(«type»));'''
+		}	
+	}
 	
 	override caseCommunication(Communication communication) {
 		

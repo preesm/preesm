@@ -358,10 +358,11 @@ public class MemExBroadcastMerger {
 			}
 		}
 
-		// Merge the last object with the output (even if it has be
-		// merged before)
-		mergeableMemObjects.remove(lastMemObject);
-		{
+		// If the last object is mergeable, merge the last object with the 
+		// output (even if it has be merged before)
+
+		if(mergeableMemObjects.contains(lastMemObject)){
+			mergeableMemObjects.remove(lastMemObject);
 			// Check if the inMemObject was merged
 			boolean mergedLastMemObject = false;
 
