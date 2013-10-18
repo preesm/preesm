@@ -752,8 +752,8 @@ public class MemoryExclusionGraph extends
 								+ " has no TaskStartTime property. Maybe the DAG was not sheduled.");
 			}
 
-			Object duration = target.getPropertyBean().getValue("duration",
-					Integer.class);
+			Object duration = target.getPropertyBean().getValue(
+					ImplementationPropertyNames.Task_duration, Long.class);
 			if (duration == null) {
 				throw new RuntimeException(
 						"Cannot get lifetime of a memory object "
@@ -763,7 +763,7 @@ public class MemoryExclusionGraph extends
 			}
 
 			return new AbstractMap.SimpleEntry<Long, Long>((Long) birth,
-					(Long) death + (Integer) duration);
+					(Long) death + (Long) duration);
 		}
 
 		// Else the memEx vertex corresponds to a working memory
@@ -778,8 +778,8 @@ public class MemoryExclusionGraph extends
 
 			Object birth = dagVertex.getPropertyBean().getValue(
 					"TaskStartTime", Long.class);
-			Object duration = dagVertex.getPropertyBean().getValue("duration",
-					Integer.class);
+			Object duration = dagVertex.getPropertyBean().getValue(
+					ImplementationPropertyNames.Task_duration, Long.class);
 
 			if (birth == null || duration == null) {
 				throw new RuntimeException(
@@ -789,7 +789,7 @@ public class MemoryExclusionGraph extends
 			}
 
 			return new AbstractMap.SimpleEntry<Long, Long>((Long) birth,
-					(Long) birth + (Integer) duration);
+					(Long) birth + (Long) duration);
 
 		}
 
@@ -829,7 +829,7 @@ public class MemoryExclusionGraph extends
 				}
 
 				Object duration = dagInitVertex.getPropertyBean().getValue(
-						"duration", Integer.class);
+						ImplementationPropertyNames.Task_duration, Long.class);
 				if (duration == null) {
 					throw new RuntimeException(
 							"Cannot get lifetime of a memory object "
@@ -839,7 +839,7 @@ public class MemoryExclusionGraph extends
 				}
 
 				return new AbstractMap.SimpleEntry<Long, Long>((Long) death
-						+ (Integer) duration, (Long) birth);
+						+ (Long) duration, (Long) birth);
 			}
 		}
 
