@@ -4,13 +4,17 @@
     <dftools:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="Gantt Plotter">
         <dftools:data key="variables"/>
     </dftools:task>
-    <dftools:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="LIST scheduler">
+    <dftools:task
+        pluginId="org.ietr.preesm.plugin.mapper.listscheduling" taskId="LIST scheduler">
         <dftools:data key="variables">
             <dftools:variable name="balanceLoads" value="true"/>
             <dftools:variable name="displaySolutions" value="true"/>
             <dftools:variable name="edgeSchedType" value="Simple"/>
             <dftools:variable name="fastLocalSearchTime" value="10"/>
             <dftools:variable name="fastTime" value="100"/>
+            <dftools:variable name="iterationNr" value="0"/>
+            <dftools:variable name="iterationPeriod" value="0"/>
+            <dftools:variable name="listType" value="optimised"/>
             <dftools:variable name="simulatorType" value="LooselyTimed"/>
         </dftools:data>
     </dftools:task>
@@ -54,8 +58,8 @@
     <dftools:task
         pluginId="org.ietr.preesm.memory.bounds.MemoryBoundsEstimator" taskId="Mem Bounds">
         <dftools:data key="variables">
-            <dftools:variable name="Solver" value="? C {Heuristic, Ostergard, Yamaguchi}"/>
-            <dftools:variable name="Verbose" value="? C {True, False}"/>
+            <dftools:variable name="Solver" value="Heuristic"/>
+            <dftools:variable name="Verbose" value="False"/>
         </dftools:data>
     </dftools:task>
     <dftools:task
@@ -63,7 +67,8 @@
         <dftools:data key="variables">
             <dftools:variable name="Allocator(s)" value="FirstFit"/>
             <dftools:variable name="Best/First Fit order" value="LargestFirst"/>
-            <dftools:variable name="Nb of Shuffling Tested" value="10"/>
+            <dftools:variable name="Merge broadcasts" value="False"/>
+            <dftools:variable name="Nb of Shuffling Tested" value="100"/>
             <dftools:variable name="Verbose" value="True"/>
         </dftools:data>
     </dftools:task>
@@ -103,8 +108,6 @@
         targetport="DAG" to="MemEx Builder"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="MemEx Builder"/>
-    <dftools:dataTransfer from="MemEx Builder" sourceport="MemEx"
-        targetport="MemEx" to="Mem Bounds"/>
     <dftools:dataTransfer from="Mem Alloc" sourceport="MemEx"
         targetport="MemEx" to="Codegen Xtend"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
@@ -123,4 +126,6 @@
         targetport="MemEx" to="Mem Alloc"/>
     <dftools:dataTransfer from="LIST scheduler" sourceport="DAG"
         targetport="DAG" to="MemEx Updater"/>
+    <dftools:dataTransfer from="Mem Alloc" sourceport="MemEx"
+        targetport="MemEx" to="Mem Bounds"/>
 </dftools:workflow>

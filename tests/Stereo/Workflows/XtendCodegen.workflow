@@ -4,7 +4,8 @@
     <dftools:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="Gantt Plotter">
         <dftools:data key="variables"/>
     </dftools:task>
-    <dftools:task pluginId="org.ietr.preesm.plugin.mapper.fast" taskId="LIST scheduler">
+    <dftools:task
+        pluginId="org.ietr.preesm.plugin.mapper.listscheduling" taskId="LIST scheduler">
         <dftools:data key="variables">
             <dftools:variable name="balanceLoads" value="true"/>
             <dftools:variable name="displaySolutions" value="true"/>
@@ -66,6 +67,7 @@
         <dftools:data key="variables">
             <dftools:variable name="Allocator(s)" value="Basic"/>
             <dftools:variable name="Best/First Fit order" value="LargestFirst"/>
+            <dftools:variable name="Merge broadcasts" value="False"/>
             <dftools:variable name="Nb of Shuffling Tested" value="10"/>
             <dftools:variable name="Verbose" value="True"/>
         </dftools:data>

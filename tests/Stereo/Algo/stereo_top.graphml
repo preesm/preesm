@@ -61,7 +61,7 @@
         <node id="Display_rgb1">
             <data key="name">Display_rgb1</data>
             <data key="kind">vertex</data>
-            <data key="graph_desc">../Code/IDL/displayRGB.idl</data>
+            <data key="graph_desc">../Code/IDL/displayLum.idl</data>
             <data key="arguments">
                 <argument name="height" value="height"/>
                 <argument name="index" value="1"/>
@@ -171,36 +171,42 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">uchar</data>
+            <data key="target_port_modifier">pure_in</data>
         </edge>
         <edge source="RGB2Gray_L" sourceport="gray" target="Census_L" targetport="gray">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">float</data>
+            <data key="target_port_modifier">pure_in</data>
         </edge>
         <edge source="RGB2Gray_R" sourceport="gray" target="Census_R" targetport="gray">
             <data key="edge_prod">width*height</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">width*height</data>
             <data key="data_type">float</data>
+            <data key="target_port_modifier">pure_in</data>
         </edge>
         <edge source="Read_PPM0" sourceport="r" target="r_g_b_2_rgb" targetport="r">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">uchar</data>
+            <data key="target_port_modifier">pure_in</data>
         </edge>
         <edge source="Read_PPM0" sourceport="g" target="r_g_b_2_rgb" targetport="g">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">uchar</data>
+            <data key="target_port_modifier">pure_in</data>
         </edge>
         <edge source="Read_PPM0" sourceport="b" target="r_g_b_2_rgb" targetport="b">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">uchar</data>
+            <data key="target_port_modifier">pure_in</data>
         </edge>
         <edge source="r_g_b_2_rgb" sourceport="rgb"
             target="Cost_Parallel_Work" targetport="rgbL">
@@ -209,35 +215,26 @@
             <data key="edge_cons">height*width*3</data>
             <data key="data_type">uchar</data>
         </edge>
-        <edge source="lum2rgb2" sourceport="o" target="Display_rgb1" targetport="r">
+        <edge source="lum2rgb2" sourceport="o" target="Display_rgb1" targetport="lum">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">uchar</data>
-        </edge>
-        <edge source="lum2rgb2" sourceport="o" target="Display_rgb1" targetport="g">
-            <data key="edge_prod">height*width</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">height*width</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="lum2rgb2" sourceport="o" target="Display_rgb1" targetport="b">
-            <data key="edge_prod">height*width</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">height*width</data>
-            <data key="data_type">uchar</data>
+            <data key="target_port_modifier">pure_in</data>
         </edge>
         <edge source="Read_PPM0" sourceport="g" target="RGB2Gray_L" targetport="g">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">uchar</data>
+            <data key="target_port_modifier">pure_in</data>
         </edge>
         <edge source="Read_PPM0" sourceport="b" target="RGB2Gray_L" targetport="b">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">uchar</data>
+            <data key="target_port_modifier">pure_in</data>
         </edge>
         <edge source="Cost_Parallel_Work" sourceport="raw_disparity"
             target="Split" targetport="input">
@@ -264,18 +261,21 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">uchar</data>
+            <data key="target_port_modifier">pure_in</data>
         </edge>
         <edge source="Read_PPM0" sourceport="g" target="Display_rgb0" targetport="g">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">uchar</data>
+            <data key="target_port_modifier">pure_in</data>
         </edge>
         <edge source="Read_PPM0" sourceport="b" target="Display_rgb0" targetport="b">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">uchar</data>
+            <data key="target_port_modifier">pure_in</data>
         </edge>
         <edge source="RGB2Gray_L" sourceport="gray"
             target="Cost_Parallel_Work" targetport="grayL">
@@ -283,6 +283,7 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">float</data>
+            <data key="target_port_modifier">pure_in</data>
         </edge>
         <edge source="Census_L" sourceport="cen"
             target="Cost_Parallel_Work" targetport="cenL">
@@ -297,6 +298,7 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">float</data>
+            <data key="target_port_modifier">pure_in</data>
         </edge>
         <edge source="Census_R" sourceport="cen"
             target="Cost_Parallel_Work" targetport="cenR">
@@ -328,6 +330,7 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">uchar</data>
+            <data key="target_port_modifier">pure_in</data>
         </edge>
         <edge source="Merge" sourceport="output" target="lum2rgb2" targetport="i">
             <data key="edge_prod">height*width</data>

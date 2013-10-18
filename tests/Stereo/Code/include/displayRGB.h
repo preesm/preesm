@@ -18,7 +18,7 @@
 
 /**
 * Function used to display an RGB image
-* 
+*
 * @param id
 *        The id of the displayed frame in the window.
 * @param r
@@ -29,6 +29,16 @@
 *        Array containing the blue component of the displayed image.
 */
 void displayRGB(int id, unsigned char *r, unsigned char *g, unsigned char *b);
+
+/**
+* Identical to display RGB, but receive only one component.
+*
+* @param id
+*        The id of the displayed frame in the window.
+* @param lum
+*        Array containing the lum component of the displayed image.
+*/
+void displayLum(int id, unsigned char *lum);
 
 /**
 * Function used to initialize a frame in the SDL window.

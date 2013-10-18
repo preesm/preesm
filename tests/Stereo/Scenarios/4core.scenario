@@ -7,16 +7,16 @@
     </files>
     <constraints excelUrl="">
         <constraintGroup>
-            <operator name="Core2"/>
-            <task name="Census_R"/>
+            <operator name="Core3"/>
             <task name="Cost_Parallel_Work/AggregateCost"/>
+            <task name="Census_R"/>
             <task name="Cost_Parallel_Work/offsetGen"/>
             <task name="Cost_Parallel_Work/disparitySelect"/>
             <task name="Cost_Parallel_Work/CostConstruction"/>
             <task name="Census_L"/>
             <task name="Cost_Parallel_Work/computeVertWeights"/>
-            <task name="Read_PPM0"/>
             <task name="RGB2Gray_R"/>
+            <task name="Read_PPM0"/>
             <task name="Read_PPM1"/>
             <task name="Split"/>
             <task name="Cost_Parallel_Work/computeHorWeights"/>
@@ -28,16 +28,16 @@
             <task name="RGB2Gray_L"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core3"/>
-            <task name="Census_R"/>
+            <operator name="Core2"/>
             <task name="Cost_Parallel_Work/AggregateCost"/>
+            <task name="Census_R"/>
             <task name="Cost_Parallel_Work/offsetGen"/>
             <task name="Cost_Parallel_Work/disparitySelect"/>
             <task name="Cost_Parallel_Work/CostConstruction"/>
             <task name="Census_L"/>
             <task name="Cost_Parallel_Work/computeVertWeights"/>
-            <task name="Read_PPM0"/>
             <task name="RGB2Gray_R"/>
+            <task name="Read_PPM0"/>
             <task name="Read_PPM1"/>
             <task name="Split"/>
             <task name="Cost_Parallel_Work/computeHorWeights"/>
@@ -50,15 +50,15 @@
         </constraintGroup>
         <constraintGroup>
             <operator name="Core1"/>
-            <task name="Census_R"/>
             <task name="Cost_Parallel_Work/AggregateCost"/>
+            <task name="Census_R"/>
             <task name="Cost_Parallel_Work/offsetGen"/>
             <task name="Cost_Parallel_Work/disparitySelect"/>
             <task name="Cost_Parallel_Work/CostConstruction"/>
             <task name="Census_L"/>
             <task name="Cost_Parallel_Work/computeVertWeights"/>
-            <task name="Read_PPM0"/>
             <task name="RGB2Gray_R"/>
+            <task name="Read_PPM0"/>
             <task name="Read_PPM1"/>
             <task name="Split"/>
             <task name="Cost_Parallel_Work/computeHorWeights"/>
@@ -71,15 +71,15 @@
         </constraintGroup>
         <constraintGroup>
             <operator name="Core0"/>
-            <task name="Cost_Parallel_Work/AggregateCost"/>
             <task name="Census_R"/>
+            <task name="Cost_Parallel_Work/AggregateCost"/>
             <task name="Cost_Parallel_Work/offsetGen"/>
             <task name="Cost_Parallel_Work/disparitySelect"/>
             <task name="Cost_Parallel_Work/CostConstruction"/>
             <task name="Census_L"/>
             <task name="Cost_Parallel_Work/computeVertWeights"/>
-            <task name="RGB2Gray_R"/>
             <task name="Read_PPM0"/>
+            <task name="RGB2Gray_R"/>
             <task name="Read_PPM1"/>
             <task name="Split"/>
             <task name="Cost_Parallel_Work/computeHorWeights"/>
@@ -113,7 +113,7 @@
         <timing opname="x86" time="1868" vertexname="medianFilter"/>
         <timing opname="x86" time="9" vertexname="Split"/>
         <timing opname="x86" time="9" vertexname="Merge"/>
-        <memcpyspeed opname="x86" setuptime="0" timeperunit="1"/>
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="2.8571429E-5"/>
     </timings>
     <simuParams>
         <mainCore>Core0</mainCore>
