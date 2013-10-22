@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <time.h>
+#include "clock.h"
 
 /*========================================================================
 
@@ -21,7 +21,6 @@
 
    ======================================================================*/
 static FILE *ptfile ;
-clock_t tick;
 
 /*========================================================================
 
@@ -31,25 +30,33 @@ clock_t tick;
 void initReadYUV(int xSize, int ySize) {
     int fsize;
     if((ptfile = fopen(PATH, "rb")) == NULL )
-        {
-            fprintf(stderr,"ERROR: Task read cannot open yuv_file '%s'\n", PATH);
-            system("PAUSE");
-            return;
-        }
+    {
+        fprintf(stderr,"ERROR: Task read cannot open yuv_file '%s'\n", PATH);
+        system("PAUSE");
+        return;
+    }
 
-        // Obtain file size:
-        fseek (ptfile , 0 , SEEK_END);
-        fsize = ftell (ptfile);
-        rewind (ptfile);
-        if(fsize < NB_FRAME*(xSize*ySize + xSize*ySize/2))
-        {
-            fprintf(stderr,"ERROR: Task read yuv_file incorrect size");
-            system("PAUSE");
-            return;
-        }
+#ifdef VERBOSE
+    printf("Opened file '%s'\n", PATH);
+#endif
 
-        // Set initial clock
-        tick = clock();
+    // Obtain file size:
+    fseek (ptfile , 0 , SEEK_END);
+    fsize = ftell (ptfile);
+    rewind (ptfile);
+    if(fsize < NB_FRAME*(xSize*ySize + xSize*ySize/2))
+    {
+        fprintf(stderr,"ERROR: Task read yuv_file incorrect size");
+        system("PAUSE");
+        return;
+    }
+
+#ifdef VERBOSE
+    printf("Correct size for yuv_file '%s'\n", PATH);
+#endif
+
+    // Set initial clock
+    startTiming(0);
 }
 
 /*========================================================================
@@ -60,10 +67,11 @@ void initReadYUV(int xSize, int ySize) {
 void readYUV(int xSize, int ySize, unsigned char *y, unsigned char *u, unsigned char *v) {
 
     if( ftell(ptfile)/(xSize*ySize + xSize*ySize/2) >=NB_FRAME){
+    	unsigned int time = 0;
         rewind(ptfile);
-        tick = clock()-tick;
-        printf("\nMain: %d frames in %f - %f fps\n", NB_FRAME-1 ,tick/(float)CLOCKS_PER_SEC, (NB_FRAME-1.0)/(float)tick*(float)CLOCKS_PER_SEC);
-        tick = clock();
+        time = stopTiming(0);
+        printf("\nMain: %d frames in %d us - %f fps\n", NB_FRAME-1 ,time, (NB_FRAME-1.0)/(float)time*1000000);
+        startTiming(0);
     }
     fread(y, sizeof(char), xSize * ySize, ptfile);
     fread(u, sizeof(char), xSize * ySize / 4, ptfile);

@@ -8,9 +8,7 @@
 	============================================================================
 */
 
-
-#include "../include/communication.h"
-#include <stdio.h>
+#include "x86.h"
 
 void sendStart(sem_t* sem){
     sem_post(sem);

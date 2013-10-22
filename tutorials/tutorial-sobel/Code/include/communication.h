@@ -13,9 +13,6 @@
 #ifndef COMMUNICATION_H
 #define COMMUNICATION_H
 
-#include <pthread.h>
-#include <semaphore.h>
-
 /**
 * Non-blocking function called by the sender to signal that a buffer is ready
 * to be sent.

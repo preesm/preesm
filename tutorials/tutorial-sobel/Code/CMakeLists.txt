@@ -16,7 +16,7 @@ endif()
 
 project(Sobel)
 set(LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
-set(CMAKE_C_FLAGS "-std=c99") 
+set(CMAKE_C_FLAGS "-std=c99 -DX8_CORES") 
 
 # *******************************************
 # ************** SDL LIBRARY ****************
@@ -47,8 +47,8 @@ if (WIN32)
 # pthread included AFTER Sdl to avoid unnecessary warnings
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/lib/cmake_modules/")
 set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/lib/pthread-2.8.0/")
-endif()
 Find_Package ( THREADS REQUIRED )
+endif()
 
 if(NOT THREADS_FOUND)
 	MESSAGE(FATAL_ERROR "Pthread not found !")

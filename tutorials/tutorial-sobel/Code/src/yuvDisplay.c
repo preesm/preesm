@@ -10,7 +10,6 @@
 
 #include "displayYUV.h"
 #include <SDL.h>
-#include <time.h>
 
 extern int stopThreads;
 
@@ -65,6 +64,11 @@ void yuvDisplayInit (int id, int xsize, int ysize)
         system("PAUSE");
         exit(1);
     }
+
+
+#ifdef VERBOSE
+    printf("SDL screen height OK, width OK, number of displays OK.\n", id);
+#endif
 
     if(display.initialized==0)
     {

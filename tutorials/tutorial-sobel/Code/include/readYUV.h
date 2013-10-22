@@ -11,8 +11,8 @@
 #ifndef READ_YUV_H
 #define READ_YUV_H
 
-#define PATH "./akiyo_cif.yuv"
-//#define PATH "D:/Temp/BigBuckBunny_1920_1080_24fps.yuv"
+//#define PATH "/home/mpelcat/Temp/akiyo_cif.yuv"
+#define PATH "Z:/Temp/akiyo_cif.yuv"
 
 #define NB_FRAME 300
 
