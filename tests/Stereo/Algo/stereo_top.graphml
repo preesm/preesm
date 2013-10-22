@@ -215,13 +215,6 @@
             <data key="edge_cons">height*width*3</data>
             <data key="data_type">uchar</data>
         </edge>
-        <edge source="lum2rgb2" sourceport="o" target="Display_rgb1" targetport="lum">
-            <data key="edge_prod">height*width</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">height*width</data>
-            <data key="data_type">uchar</data>
-            <data key="target_port_modifier">pure_in</data>
-        </edge>
         <edge source="Read_PPM0" sourceport="g" target="RGB2Gray_L" targetport="g">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
@@ -333,6 +326,12 @@
             <data key="target_port_modifier">pure_in</data>
         </edge>
         <edge source="Merge" sourceport="output" target="lum2rgb2" targetport="i">
+            <data key="edge_prod">height*width</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="lum2rgb2" sourceport="o" target="Display_rgb1" targetport="lum">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
