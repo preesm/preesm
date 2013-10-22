@@ -11,8 +11,8 @@
 #ifndef READ_YUV_H
 #define READ_YUV_H
 
-//#define PATH "/home/mpelcat/Temp/akiyo_cif.yuv"
-#define PATH "Z:/Temp/akiyo_cif.yuv"
+#define PATH "/home/mpelcat/Temp/akiyo_cif.yuv"
+//#define PATH "Z:/Temp/akiyo_cif.yuv"
 
 #define NB_FRAME 300
 
