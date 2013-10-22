@@ -116,6 +116,17 @@ class C6678CPrinter extends CPrinter {
 		«ENDIF»
 	'''
 	
+	override printMemcpy(Buffer output, int outOffset, Buffer input, int inOffset, int size, String type) {
+
+		// Cast pointers into char pointers for non-aligned memory access
+		var result = super.printMemcpy(output, outOffset, input, inOffset, size, type).toString;
+
+		var regex = "(memcpy\\()(.*?)[,](.*?)[,](.*?[;])"
+		result = result.replaceAll(regex, "$1(char*)($2),(char*)($3),$4")
+			
+		result;
+	}
+	
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
 		«IF communication.direction == Direction::SEND && communication.delimiter == Delimiter::START»
 		CACHE_wbInvL2(«communication.data.doSwitch», «communication.data.size»*sizeof(«communication.data.type»), CACHE_WAIT);

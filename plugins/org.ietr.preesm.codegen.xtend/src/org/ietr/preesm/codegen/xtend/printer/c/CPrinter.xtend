@@ -67,7 +67,7 @@ class CPrinter extends DefaultPrinter {
 	 * Temporary global var to ignore the automatic suppression of memcpy
 	 * whose target and destination are identical. 
 	 */
-	val IGNORE_USELESS_MEMCPY = false
+	protected val IGNORE_USELESS_MEMCPY = false
 	
 	override printCoreBlockHeader(CoreBlock block) '''
 			/** 
@@ -175,7 +175,7 @@ class CPrinter extends DefaultPrinter {
 	// Fork «call.name»«var input = call.inputBuffers.head»«var index = 0»
 	{
 		«FOR output : call.outputBuffers»
-			memcpy(«output.doSwitch», «input.doSwitch»+«index», «output.size»*sizeof(«output.type»));«{index=(output.size+index); ""}»
+			«printMemcpy(output,0,input,index,output.size,output.type)»«{index=(output.size+index); ""}»
 		«ENDFOR»
 	}
 	'''
@@ -229,7 +229,7 @@ class CPrinter extends DefaultPrinter {
 	// Join «call.name»«var output = call.outputBuffers.head»«var index = 0»
 	{
 		«FOR input : call.inputBuffers»
-			memcpy(«output.doSwitch»+«index», «input.doSwitch», «input.size»*sizeof(«input.type»));«{index=(input.size+index); ""}»
+			«printMemcpy(output,index,input,0,input.size,input.type)»«{index=(input.size+index); ""}»
 		«ENDFOR»
 	}
 	'''

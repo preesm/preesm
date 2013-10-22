@@ -182,4 +182,15 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 	override printInstrumentedCall(CodeElt elt, CharSequence superPrint)'''
 		«superPrint»
 	'''
+	
+	override printMemcpy(Buffer output, int outOffset, Buffer input, int inOffset, int size, String type) {
+
+		// Cast pointers into char pointers for non-aligned memory access
+		var result = super.printMemcpy(output, outOffset, input, inOffset, size, type).toString;
+
+		var regex = "(memcpy\\()(.*?)[,](.*?)[,](.*?[;])"
+		result = result.replaceAll(regex, "$1(char*)($2),(char*)($3),$4")
+			
+		result;
+	}
 }
