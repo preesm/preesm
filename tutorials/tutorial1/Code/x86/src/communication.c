@@ -4,7 +4,7 @@
 	Author      : kdesnos
 	Version     : 1.0
 	Copyright   : CECILL-C
-	Description : 
+	Description : sending and receiving data via shared memory
 	============================================================================
 */
 

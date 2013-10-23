@@ -2,9 +2,9 @@
 	============================================================================
 	Name        : main.c
 	Author      : kdesnos
-	Version     :
+	Version     : 1.0
 	Copyright   : CECILL-C
-	Description :
+	Description : Launching the threads of the application
 	============================================================================
 */
 

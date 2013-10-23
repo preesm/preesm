@@ -1,32 +1,46 @@
 /*
 	============================================================================
 	Name        : communication.h
-	Author      : mpelcat
-	Version     :
-	Copyright   : file enabling generic point-to-point communication
-	Description :
+	Author      : kdesnos
+	Version     : 1.0
+	Copyright   : CECILL-C
+	Description : Communication primitive for Preesm Codegen.
+                  Currently, primitives were tested only for x86, shared_mem
+                  communications.
 	============================================================================
 */
 
-#ifndef _OS_LIB_COM
-#define _OS_LIB_COM
+#ifndef COMMUNICATION_H
+#define COMMUNICATION_H
 
-#define MEDIUM_SEND 0
-#define MEDIUM_RCV 1
-#define TCP 100
+/**
+* Non-blocking function called by the sender to signal that a buffer is ready
+* to be sent.
+* 
+* @param sem
+*        the semaphore used to signal that a data is available.
+*/
+void sendStart(sem_t* sem);
 
-typedef struct {
-	void* medium;
-}Medium;
+/**
+* Blocking function (not for shared_mem communication) called by the sender to
+* signal that communication is completed.
+*/
+void sendEnd();
 
-#ifdef _MVS
+/**
+* Non-blocking function called by the receiver begin receiving the
+* data. (not implemented with shared memory communications).
+*/
+void receiveStart();
 
-int sendData(int I_param, short I_senderID, short I_receiverID, void *PV_buffer, int I_size_of_data);
-int receiveData(int I_param, short I_senderID, short I_receiverID, void *PV_buffer, int I_size_of_data);
-void comInit (int direction, short SenderId, short ReceiverId);
-void comInits(short myId);
-
-#endif
-
+/**
+* Blocking function called by the sender to wait for the received data 
+* availability.
+*
+* @param sem
+*        the semaphore used to signal that a data is available.
+*/
+void receiveEnd(sem_t* sem);
 
 #endif

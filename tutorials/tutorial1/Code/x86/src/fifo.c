@@ -2,9 +2,10 @@
 	============================================================================
 	Name        : fifo.c
 	Author      : kdesnos
-	Version     :
+	Version     : 1.0
 	Copyright   : CECILL-C
-	Description :
+	Description : FIFO primitive for Preesm Codegen.
+                  Currently, primitives were tested only for x86 with shared_mem.
 	============================================================================
 */
 #include <string.h>

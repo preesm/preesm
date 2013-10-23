@@ -2,9 +2,9 @@
 	============================================================================
 	Name        : testComSources.c
 	Author      : mpelcat
-	Version     :
-	Copyright   : Dummy functions called by the communication tester project
-	Description :
+	Version     : 1.0
+	Copyright   : CECILL-C
+	Description : Dummy functions called by the communication tester project
 	============================================================================
  */
 
