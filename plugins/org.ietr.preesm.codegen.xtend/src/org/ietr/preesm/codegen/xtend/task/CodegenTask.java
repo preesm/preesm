@@ -190,12 +190,14 @@ public class CodegenTask extends AbstractTaskImplementation {
 			IFolder f = workspace.getRoot().getFolder(new Path(codegenPath));
 			File folder = new File(f.getRawLocation().toOSString());
 			File fList[] = folder.listFiles();
-			// Searches .extension
-			for (int i = 0; i < fList.length; i++) {
-				String pes = fList[i].getName();
-				if (pes.endsWith(extension)) {
-					// and deletes
-					fList[i].delete();
+			if(fList != null){
+				// Searches .extension
+				for (int i = 0; i < fList.length; i++) {
+					String pes = fList[i].getName();
+					if (pes.endsWith(extension)) {
+						// and deletes
+						fList[i].delete();
+					}
 				}
 			}
 
