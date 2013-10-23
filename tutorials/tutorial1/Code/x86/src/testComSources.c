@@ -45,6 +45,7 @@ void circular6_init(char* i1,char* o1, int size){
 
 void sensor(char* o1, char* o2, char* o3, int size){
 	//printf("sensor");
+	// Generating dummy data
 	int i = 0;
 
 	for(i=0;i<size;i++){
@@ -56,6 +57,7 @@ void sensor(char* o1, char* o2, char* o3, int size){
 
 void sensor2(char* o1, int size){
 	//printf("sensor");
+	// Generating dummy data
 	int i = 0;
 
 	for(i=0;i<size;i++){
@@ -120,6 +122,7 @@ void circular6(char* i1, char* o1, int size){
 
 void actuator(char* i1,char* i2,char* i3, int size){
 	//printf("actuator");
+	// Testing dummy data
 	int i = 0;
 	int bSuccess = 1;
 

@@ -186,15 +186,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\tcp.c"
+				RelativePath="..\src\fifo.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\main.c"
 				>
 			</File>
 			<File
 				RelativePath="..\src\testComSources.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\tutorial1.c"
 				>
 			</File>
 		</Filter>
@@ -204,19 +204,19 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\include\communication.h"
+				RelativePath="..\src\communication.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\tcp.h"
+				RelativePath="..\src\dump.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\testcomSources.h"
+				RelativePath="..\src\fifo.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\x86.h"
+				RelativePath="..\src\x86.h"
 				>
 			</File>
 		</Filter>

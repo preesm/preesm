@@ -53,8 +53,8 @@
                 <argument name="size" value="size"/>
             </data>
         </node>
-        <node id="2InputParallelTest">
-            <data key="name">2InputParallelTest</data>
+        <node id="X2InputParallelTest">
+            <data key="name">X2InputParallelTest</data>
             <data key="kind">vertex</data>
             <data key="graph_desc">../Code/IDL/ParallelTest2Input.idl</data>
             <data key="arguments">
@@ -110,13 +110,13 @@
             <data key="data_type">char</data>
         </edge>
         <edge source="Sensor" sourceport="o3"
-            target="2InputParallelTest" targetport="i2">
+            target="X2InputParallelTest" targetport="i2">
             <data key="edge_prod">size</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">size</data>
             <data key="data_type">char</data>
         </edge>
-        <edge source="2InputParallelTest" sourceport="o1"
+        <edge source="X2InputParallelTest" sourceport="o1"
             target="ParallelTest1" targetport="i1">
             <data key="edge_prod">size</data>
             <data key="edge_delay">0</data>
@@ -143,7 +143,7 @@
             <data key="data_type">char</data>
         </edge>
         <edge source="Sensor2" sourceport="o1"
-            target="2InputParallelTest" targetport="i1">
+            target="X2InputParallelTest" targetport="i1">
             <data key="edge_prod">size</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">size</data>

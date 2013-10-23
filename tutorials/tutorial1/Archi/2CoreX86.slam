@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
     <spirit:vendor>ietr</spirit:vendor>
-    <spirit:name>8CoreX86</spirit:name>
+    <spirit:name>4CoreX86</spirit:name>
     <spirit:library>preesm</spirit:library>
     <spirit:version>1</spirit:version>
     <spirit:componentInstances>
@@ -18,22 +18,22 @@
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
         <spirit:componentInstance>
-            <spirit:instanceName>tcp</spirit:instanceName>
-            <spirit:componentRef spirit:library="" spirit:name="TCP"
-                spirit:vendor="" spirit:version=""/>
+            <spirit:instanceName>shared_mem</spirit:instanceName>
+            <spirit:componentRef spirit:library=""
+                spirit:name="SHARED_MEM" spirit:vendor="" spirit:version=""/>
             <spirit:configurableElementValues/>
         </spirit:componentInstance>
     </spirit:componentInstances>
     <spirit:interconnections>
         <spirit:interconnection>
-            <spirit:name>w1aab2b1</spirit:name>
-            <spirit:activeInterface spirit:busRef="eth" spirit:componentRef="Core0"/>
-            <spirit:activeInterface spirit:busRef="eth" spirit:componentRef="tcp"/>
+            <spirit:name>2</spirit:name>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Core1"/>
         </spirit:interconnection>
         <spirit:interconnection>
-            <spirit:name>w1aab2b7</spirit:name>
-            <spirit:activeInterface spirit:busRef="eth" spirit:componentRef="tcp"/>
-            <spirit:activeInterface spirit:busRef="eth" spirit:componentRef="Core1"/>
+            <spirit:name>1</spirit:name>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="Core0"/>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
         </spirit:interconnection>
     </spirit:interconnections>
     <spirit:hierConnections/>
@@ -41,15 +41,14 @@
         <slam:componentDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
             <slam:componentDescription slam:componentRef="x86"
                 slam:componentType="Operator" slam:refinement=""/>
-            <slam:componentDescription slam:componentRef="TCP"
-                slam:componentType="contentionComNode"
-                slam:refinement="" slam:speed="1"/>
+            <slam:componentDescription slam:componentRef="SHARED_MEM"
+                slam:componentType="parallelComNode" slam:refinement="" slam:speed="1000000000"/>
         </slam:componentDescriptions>
         <slam:linkDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
             <slam:linkDescription slam:directedLink="undirected"
-                slam:linkType="DataLink" slam:referenceId="w1aab2b1"/>
+                slam:linkType="DataLink" slam:referenceId="2"/>
             <slam:linkDescription slam:directedLink="undirected"
-                slam:linkType="DataLink" slam:referenceId="w1aab2b7"/>
+                slam:linkType="DataLink" slam:referenceId="1"/>
         </slam:linkDescriptions>
         <slam:designDescription xmlns:slam="http://sourceforge.net/projects/dftools/slam">
             <slam:parameters/>
