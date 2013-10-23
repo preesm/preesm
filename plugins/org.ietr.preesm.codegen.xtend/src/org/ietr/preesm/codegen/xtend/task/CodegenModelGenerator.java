@@ -51,6 +51,7 @@ import net.sf.dftools.algorithm.model.AbstractGraph;
 import net.sf.dftools.algorithm.model.AbstractVertex;
 import net.sf.dftools.algorithm.model.CodeRefinement;
 import net.sf.dftools.algorithm.model.CodeRefinement.Language;
+import net.sf.dftools.algorithm.model.IInterface;
 import net.sf.dftools.algorithm.model.dag.DAGEdge;
 import net.sf.dftools.algorithm.model.dag.DAGVertex;
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
@@ -720,7 +721,7 @@ public class CodegenModelGenerator {
 							+ " has no loop interface in its IDL refinement.");
 				}
 				FunctionCall functionCall = generateFunctionCall(dagVertex,
-						loopPrototype);
+						loopPrototype, false);
 
 				registerCallVariableToCoreBlock(operatorBlock, functionCall);
 				// Add the function call to the operatorBlock
@@ -735,7 +736,7 @@ public class CodegenModelGenerator {
 				Prototype initPrototype = prototypes.getInitPrototype();
 				if (initPrototype != null) {
 					FunctionCall functionCall = generateFunctionCall(dagVertex,
-							initPrototype);
+							initPrototype, true);
 
 					registerCallVariableToCoreBlock(operatorBlock, functionCall);
 					// Add the function call to the operatorBlock
@@ -959,6 +960,9 @@ public class CodegenModelGenerator {
 	 *            {@link FunctionCall}.
 	 * @param prototype
 	 *            the prototype whose {@link Variable variables} are retrieved
+	 * @param isInit
+	 *            Whethet the given prototype is an Init or a loop call. (We do
+	 *            not check missing arguments in the IDL for init Calls)
 	 * @throws CodegenException
 	 *             Exception is thrown if:
 	 *             <ul>
@@ -970,10 +974,12 @@ public class CodegenModelGenerator {
 	 *             {@link DAGVertex}</li>
 	 *             <li>There is a mismatch between Parameters declared in the
 	 *             IDL and in the {@link SDFGraph}</li>
+	 *             <li>There is a missing argument in the IDL Loop
+	 *             {@link Prototype}</li>
 	 *             </ul>
 	 */
 	protected List<Variable> generateCallVariables(DAGVertex dagVertex,
-			Prototype prototype) throws CodegenException {
+			Prototype prototype, boolean isInit) throws CodegenException {
 		// Retrieve the sdf vertex and the refinement.
 		SDFVertex sdfVertex = (SDFVertex) dagVertex.getPropertyBean().getValue(
 				DAGVertex.SDF_VERTEX, SDFVertex.class);
@@ -1086,6 +1092,28 @@ public class CodegenModelGenerator {
 								+ "There is something wrong in the Memory Allocation task.");
 			}
 			variableList.put(prototype.getArguments().get(arg), var);
+		}
+
+		// Check that all incoming DAGEdge exist in the function call
+		if (!isInit) {
+			for (IInterface port : sdfVertex.getInterfaces()) {
+				boolean found = false;
+				for (CodeGenArgument arguments : prototype.getArguments()
+						.keySet()) {
+					if (port.getName().equals(arguments.getName())) {
+						found = true;
+						break;
+					}
+				}
+				if (found == false) {
+					throw new CodegenException(
+							"SDF port \""
+									+ port.getName()
+									+ "\" of actor \""
+									+ sdfVertex
+									+ "\" has no corresponding parameter in the associated IDL.");
+				}
+			}
 		}
 
 		// Retrieve the Variables corresponding to the Parameters of the
@@ -1500,6 +1528,11 @@ public class CodegenModelGenerator {
 	 * @param prototype
 	 *            the {@link Prototype IDL prototype} of the
 	 *            {@link FunctionCall} to generate.
+	 * @param isInit
+	 *            Indicicate whether this function call corresponds to an
+	 *            initialization call (in such case,
+	 *            {@link #generateCallVariables(DAGVertex, Prototype, boolean)}
+	 *            does not need to check for missing parameter in the prototype.
 	 * @return The {@link FunctionCall} corresponding to the {@link DAGVertex
 	 *         actor} firing.
 	 * @throws CodegenException
@@ -1507,7 +1540,7 @@ public class CodegenModelGenerator {
 	 * 
 	 */
 	protected FunctionCall generateFunctionCall(DAGVertex dagVertex,
-			Prototype prototype) throws CodegenException {
+			Prototype prototype, boolean isInit) throws CodegenException {
 		// Create the corresponding FunctionCall
 		FunctionCall func = CodegenFactory.eINSTANCE.createFunctionCall();
 		func.setName(prototype.getFunctionName());
@@ -1515,7 +1548,8 @@ public class CodegenModelGenerator {
 
 		// Retrieve the Arguments that must correspond to the incoming data
 		// fifos
-		List<Variable> callVars = generateCallVariables(dagVertex, prototype);
+		List<Variable> callVars = generateCallVariables(dagVertex, prototype,
+				isInit);
 		// Put Variables in the function call
 		for (Variable var : callVars) {
 			func.addParameter(var);
