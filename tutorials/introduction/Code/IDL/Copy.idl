@@ -1,0 +1,6 @@
+module Copy {
+	typedef long parameter ;
+	interface loop {
+		 void copy( in char i1, out char o1, in parameter size);
+	};
+};

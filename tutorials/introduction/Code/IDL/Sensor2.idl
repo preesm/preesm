@@ -1,0 +1,6 @@
+module Sensor2 {
+	typedef long parameter ;
+    interface loop{
+         void sensor2(out char o1, in parameter size);
+    };
+}; 

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="model" attr.type="string" for="graph"/>
+    <key attr.name="name" attr.type="string" for="node"/>
+    <key attr.name="kind" attr.type="string" for="node"/>
+    <key attr.name="port_direction" attr.type="string" for="node"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="nbRepeat" attr.type="int" for="node"/>
+    <key attr.name="edge_cons" attr.type="string" for="edge"/>
+    <key attr.name="edge_delay" attr.type="string" for="edge"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge"/>
+    <key attr.name="data_type" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">TestCom</data>
+        <data key="kind">sdf</data>
+        <data key="parameters"/>
+        <data key="variables">
+            <variable name="size" value="100"/>
+        </data>
+        <node id="Sensor">
+            <data key="name">Sensor</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Sensor.idl</data>
+            <data key="arguments">
+                <argument name="size" value="size"/>
+            </data>
+        </node>
+        <node id="Gen_int">
+            <data key="name">Gen_int</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Gen_int.idl</data>
+            <data key="arguments">
+                <argument name="size" value="size"/>
+            </data>
+        </node>
+        <node id="Copy">
+            <data key="name">Copy</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Copy.idl</data>
+            <data key="arguments">
+                <argument name="size" value="size"/>
+            </data>
+        </node>
+        <node id="Actuator">
+            <data key="name">Actuator</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Actuator.idl</data>
+            <data key="arguments">
+                <argument name="size" value="size"/>
+            </data>
+        </node>
+        <node id="X2InputParallelTest">
+            <data key="name">X2InputParallelTest</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/ParallelTest2Input.idl</data>
+            <data key="arguments">
+                <argument name="size" value="size"/>
+            </data>
+        </node>
+        <node id="ParallelTest1">
+            <data key="name">ParallelTest1</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/ParallelTest.idl</data>
+            <data key="arguments">
+                <argument name="size" value="size"/>
+            </data>
+        </node>
+        <node id="ParallelTest2">
+            <data key="name">ParallelTest2</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/ParallelTest.idl</data>
+            <data key="arguments">
+                <argument name="size" value="size"/>
+            </data>
+        </node>
+        <node id="Sensor2">
+            <data key="name">Sensor2</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/Sensor2.idl</data>
+            <data key="arguments">
+                <argument name="size" value="size"/>
+            </data>
+        </node>
+        <edge source="Sensor" sourceport="o1" target="Gen_int" targetport="i1">
+            <data key="edge_prod">size</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">size</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Gen_int" sourceport="o1" target="Copy" targetport="i1">
+            <data key="edge_prod">size</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">size</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Copy" sourceport="o1" target="Actuator" targetport="i1">
+            <data key="edge_prod">size</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">size</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Gen_int" sourceport="o2" target="Actuator" targetport="i2">
+            <data key="edge_prod">size</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">size</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Sensor" sourceport="o3"
+            target="X2InputParallelTest" targetport="i2">
+            <data key="edge_prod">size</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">size</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="X2InputParallelTest" sourceport="o1"
+            target="ParallelTest1" targetport="i1">
+            <data key="edge_prod">size</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">size</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Sensor" sourceport="o2" target="Gen_int" targetport="i2">
+            <data key="edge_prod">size</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">size</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="ParallelTest2" sourceport="o1" target="Actuator" targetport="i3">
+            <data key="edge_prod">size</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">size</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="ParallelTest1" sourceport="o1"
+            target="ParallelTest2" targetport="i1">
+            <data key="edge_prod">size</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">size</data>
+            <data key="data_type">char</data>
+        </edge>
+        <edge source="Sensor2" sourceport="o1"
+            target="X2InputParallelTest" targetport="i1">
+            <data key="edge_prod">size</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">size</data>
+            <data key="data_type">char</data>
+        </edge>
+    </graph>
+</graphml>
