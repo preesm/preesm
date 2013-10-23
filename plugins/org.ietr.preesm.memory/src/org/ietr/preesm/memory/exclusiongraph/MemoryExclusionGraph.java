@@ -356,6 +356,11 @@ public class MemoryExclusionGraph extends
 				MemoryExclusionVertex workingMemoryNode = new MemoryExclusionVertex(
 						vertexDAG.getName(), vertexDAG.getName(), wMem);
 				this.addVertex(workingMemoryNode);
+				// Currently, there is no special alignment for working memory.
+				// So we always assume a unitary typesize.
+				workingMemoryNode.setPropertyValue(
+						MemoryExclusionVertex.TYPE_SIZE, 1);
+
 				// Add Exclusions with all non-predecessors of the current
 				// vertex
 				HashSet<MemoryExclusionVertex> inclusions = predecessors
@@ -494,6 +499,8 @@ public class MemoryExclusionGraph extends
 					headMemoryNode = new MemoryExclusionVertex("FIFO_Head_"
 							+ dagEndVertex.getName(), dagInitVertex.getName(),
 							buffers.get(0).getSize() * typeSize);
+					headMemoryNode.setPropertyValue(
+							MemoryExclusionVertex.TYPE_SIZE, typeSize);
 				}
 				// Add the head node to the MEG
 				this.addVertex(headMemoryNode);
@@ -534,6 +541,9 @@ public class MemoryExclusionGraph extends
 							"FIFO_Body_" + dagEndVertex.getName(),
 							dagInitVertex.getName(), fifoDepth * typeSize
 									- headMemoryNode.getWeight());
+					fifoMemoryNode.setPropertyValue(
+							MemoryExclusionVertex.TYPE_SIZE, typeSize);
+
 					// Add to the graph and exclude with everyone
 					this.addVertex(fifoMemoryNode);
 					for (MemoryExclusionVertex mObj : this.vertexSet()) {

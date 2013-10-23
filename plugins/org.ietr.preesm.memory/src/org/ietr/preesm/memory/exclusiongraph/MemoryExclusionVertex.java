@@ -38,6 +38,7 @@ package org.ietr.preesm.memory.exclusiongraph;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.dftools.algorithm.model.AbstractEdge;
@@ -118,6 +119,19 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 * edge in the dag, i.e. a transfer between actors)
 	 */
 	private DAGEdge edge;
+
+	/**
+	 * {@link MemoryExclusionVertex} property associated to a {@link List} of
+	 * {@link Integer} that represent the space between successive "subbuffers"
+	 * of a {@link MemoryExclusionVertex}.
+	 */
+	public static final String INTER_BUFFER_SPACES = "inter_buffer_spaces";
+
+	/**
+	 * Property used with fifo {@link MemoryExclusionVertex memory objects} to
+	 * relate the size of one token in the fifo.
+	 */
+	public static final String TYPE_SIZE = "type_size";
 
 	/**
 	 * Constructor of the class

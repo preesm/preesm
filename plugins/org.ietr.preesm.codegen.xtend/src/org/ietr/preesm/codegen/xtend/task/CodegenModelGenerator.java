@@ -1195,7 +1195,7 @@ public class CodegenModelGenerator {
 
 		// Insert the new communication to the loop of the codeblock
 		insertCommunication(operatorBlock, dagVertex, newComm);
-		
+
 		// Register the dag buffer to the core
 		registerCallVariableToCoreBlock(operatorBlock, newComm);
 
@@ -1759,7 +1759,16 @@ public class CodegenModelGenerator {
 				.getValue(BufferAggregate.propertyBeanName,
 						BufferAggregate.class);
 
+		// Retrieve the corresponding memory object from the MEG
+		MemoryExclusionVertex memObject;
+		memObject = memEx.getVertex(new MemoryExclusionVertex(dagEdge));
+		@SuppressWarnings("unchecked")
+		List<Integer> interSubbufferSpace = (List<Integer>) memObject
+				.getPropertyBean().getValue(
+						MemoryExclusionVertex.INTER_BUFFER_SPACES, List.class);
+
 		Integer aggregateOffset = new Integer(0);
+		int idx = 0;
 		for (BufferProperties subBufferProperties : buffers) {
 			SubBuffer subBuff = CodegenFactory.eINSTANCE.createSubBuffer();
 			// Old naming techniques with complete path to port. (too long, kept
@@ -1776,6 +1785,12 @@ public class CodegenModelGenerator {
 
 			// Check for duplicates
 			name = generateUniqueBufferName(name);
+
+			// If an interSubbufferSpace was defined, add it
+			if (interSubbufferSpace != null) {
+				aggregateOffset += interSubbufferSpace.get(idx);
+			}
+			idx++;
 
 			subBuff.setName(name);
 			subBuff.setContainer(parentBuffer);
