@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenario>
     <files>
-        <algorithm url="/tutorial1/Algo/TestCom.graphml"/>
-        <architecture url="/tutorial1/Archi/2CoreX86.slam"/>
-        <codegenDirectory url="/tutorial1/Code/x86/generated"/>
+        <algorithm url="/introduction/Algo/TestCom.graphml"/>
+        <architecture url="/introduction/Archi/2CoreX86.slam"/>
+        <codegenDirectory url="/introduction/Code/generated"/>
     </files>
     <constraints excelUrl="">
+        <constraintGroup>
+            <task name="Sensor2"/>
+            <task name="ParallelTest1"/>
+            <task name="Actuator"/>
+            <task name="ParallelTest2"/>
+            <task name="Sensor"/>
+            <task name="Gen_int"/>
+            <task name="Copy"/>
+        </constraintGroup>
         <constraintGroup>
             <task name="Sensor2"/>
             <task name="ParallelTest1"/>
@@ -29,7 +38,6 @@
         <constraintGroup/>
         <constraintGroup/>
         <constraintGroup/>
-        <constraintGroup/>
         <constraintGroup>
             <operator name="Core0"/>
             <task name="Sensor2"/>
@@ -42,15 +50,7 @@
             <task name="Copy"/>
         </constraintGroup>
         <constraintGroup/>
-        <constraintGroup>
-            <task name="Sensor2"/>
-            <task name="ParallelTest1"/>
-            <task name="Actuator"/>
-            <task name="ParallelTest2"/>
-            <task name="Sensor"/>
-            <task name="Gen_int"/>
-            <task name="Copy"/>
-        </constraintGroup>
+        <constraintGroup/>
     </constraints>
     <relativeconstraints excelUrl=""/>
     <timings excelUrl="">
