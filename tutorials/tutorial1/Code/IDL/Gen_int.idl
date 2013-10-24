@@ -1,6 +1,0 @@
-module Gen_int {
-	typedef long parameter ;
-	interface loop {
-		 void gen_int( in char i1,  in char i2, out char o1, out char o2, in parameter size);
-	};
-};

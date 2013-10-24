@@ -1,6 +1,0 @@
-module ParallelTest2Input {
-	typedef long parameter ;
-	interface loop {
-		 void parallel2( in char i1, in char i2, out char o1, in parameter size);
-	};
-};
