@@ -16,7 +16,7 @@ endif()
 
 project(Sobel)
 set(LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
-set(CMAKE_C_FLAGS "-std=c99 -DX8_CORES") 
+set(CMAKE_C_FLAGS "-std=c99 -DX1_CORE") 
 
 # *******************************************
 # ************** SDL LIBRARY ****************

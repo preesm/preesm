@@ -2,4 +2,8 @@
 
 mkdir bin
 cd bin
-ccmake ..
+mkdir make
+cd make
+# Generating the Makefile
+# Run ccmake gui to debug cmake problems
+cmake ../..
