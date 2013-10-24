@@ -7,15 +7,7 @@
     </files>
     <constraints excelUrl="">
         <constraintGroup>
-            <operator name="Core7"/>
-            <task name="Read_YUV"/>
-            <task name="Split"/>
-            <task name="Sobel"/>
-            <task name="Merge"/>
-            <task name="display"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core6"/>
+            <operator name="Core4"/>
             <task name="Read_YUV"/>
             <task name="Split"/>
             <task name="Sobel"/>
@@ -31,15 +23,7 @@
             <task name="display"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core1"/>
-            <task name="Read_YUV"/>
-            <task name="Split"/>
-            <task name="Sobel"/>
-            <task name="Merge"/>
-            <task name="display"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core2"/>
+            <operator name="Core6"/>
             <task name="Read_YUV"/>
             <task name="Split"/>
             <task name="Sobel"/>
@@ -55,7 +39,23 @@
             <task name="display"/>
         </constraintGroup>
         <constraintGroup>
-            <operator name="Core4"/>
+            <operator name="Core2"/>
+            <task name="Read_YUV"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
+            <task name="display"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="Read_YUV"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
+            <task name="display"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core7"/>
             <task name="Read_YUV"/>
             <task name="Split"/>
             <task name="Sobel"/>

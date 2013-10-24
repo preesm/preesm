@@ -82,7 +82,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
 	static final public String PARAM_MERGE_BROADCAST = "Merge broadcasts";
 	static final public String BROADCAST_MERGED_PROPERTY = "broadcast_merged";
 
-	static final public String PARAM_ALIGNMENT = "Data alignement";
+	static final public String PARAM_ALIGNMENT = "Data alignment";
 	static final public String VALUE_ALIGNEMENT_NONE = "None";
 	static final public String VALUE_ALIGNEMENT_DATA = "Data";
 	static final public String VALUE_ALIGNEMENT_FIXED = "Fixed:=";

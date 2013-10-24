@@ -6,20 +6,7 @@
         <codegenDirectory url="/tutorial-sobel/Code/generated"/>
     </files>
     <constraints excelUrl="">
-        <constraintGroup>
-            <operator name="Core1"/>
-            <task name="Read_YUV"/>
-            <task name="Split"/>
-            <task name="Sobel"/>
-            <task name="Merge"/>
-        </constraintGroup>
-        <constraintGroup>
-            <operator name="Core3"/>
-            <task name="Read_YUV"/>
-            <task name="Split"/>
-            <task name="Sobel"/>
-            <task name="Merge"/>
-        </constraintGroup>
+        <constraintGroup/>
         <constraintGroup>
             <operator name="Core2"/>
             <task name="Read_YUV"/>
@@ -28,6 +15,14 @@
             <task name="Merge"/>
         </constraintGroup>
         <constraintGroup/>
+        <constraintGroup/>
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="Read_YUV"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
+        </constraintGroup>
         <constraintGroup>
             <operator name="Core0"/>
             <task name="Read_YUV"/>
@@ -36,12 +31,22 @@
             <task name="Merge"/>
             <task name="display"/>
         </constraintGroup>
-        <constraintGroup/>
-        <constraintGroup/>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="Read_YUV"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
+        </constraintGroup>
     </constraints>
     <relativeconstraints excelUrl=""/>
     <timings excelUrl="">
-        <timing opname="x86" time="100" vertexname="Read_YUV"/>
+        <timing opname="x86" time="71" vertexname="Read_YUV"/>
+        <timing opname="x86" time="6" vertexname="Merge"/>
+        <timing opname="x86" time="177" vertexname="Sobel"/>
+        <timing opname="x86" time="6" vertexname="Split"/>
+        <timing opname="x86" time="292" vertexname="display"/>
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="5.0E-5"/>
     </timings>
     <simuParams>
         <mainCore>Core0</mainCore>
@@ -52,7 +57,10 @@
             <dataType name="uchar" size="1"/>
         </dataTypes>
         <specialVertexOperators>
+            <specialVertexOperator path="Core3"/>
             <specialVertexOperator path="Core0"/>
+            <specialVertexOperator path="Core2"/>
+            <specialVertexOperator path="Core1"/>
         </specialVertexOperators>
     </simuParams>
     <variables excelUrl=""/>

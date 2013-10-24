@@ -7,7 +7,6 @@
     </files>
     <constraints excelUrl="">
         <constraintGroup/>
-        <constraintGroup/>
         <constraintGroup>
             <operator name="Core0"/>
             <task name="Read_YUV"/>
@@ -17,10 +16,12 @@
             <task name="display"/>
         </constraintGroup>
         <constraintGroup/>
+        <constraintGroup/>
     </constraints>
     <relativeconstraints excelUrl=""/>
     <timings excelUrl="">
         <timing opname="x86" time="100" vertexname="Read_YUV"/>
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="2.8571429E-5"/>
     </timings>
     <simuParams>
         <mainCore>Core0</mainCore>
