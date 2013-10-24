@@ -82,7 +82,7 @@ class ComTrackingPrinter extends DefaultPrinter {
 	ENDIF»(«
 	communication.sendStart.coreContainer.name»->«
 	communication.receiveStart.coreContainer.name») com «
-	communication.id»
+	communication.id» «communication.data.name»
 	«ENDIF»
 	'''
 
