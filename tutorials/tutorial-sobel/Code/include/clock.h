@@ -1,6 +1,6 @@
 /*
 	============================================================================
-	Name        : communication.h
+	Name        : clock.h
 	Author      : mpelcat
 	Version     : 1.0
 	Copyright   : CECILL-C

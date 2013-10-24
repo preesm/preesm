@@ -3,8 +3,8 @@
 	Name        : displayYUV.c
 	Author      : mpelcat & kdesnos
 	Version     :
-	Copyright   : Displaying YUV frames one next to another in a row
-	Description :
+	Copyright   : CECILL-C
+	Description : Displaying YUV frames one next to another in a row
 	============================================================================
 */
 

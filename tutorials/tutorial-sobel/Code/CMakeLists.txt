@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 2.6)
 # This CMake create a workspace containing the following projects
 # 
 # Programs
-#  - sobel.exe
+#  - sobel
 
 # IDE dependent config
 if(${CMAKE_GENERATOR} MATCHES "Visual Studio 9 2008")

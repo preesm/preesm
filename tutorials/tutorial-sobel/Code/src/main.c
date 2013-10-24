@@ -3,7 +3,7 @@
 	Name        : main.c
 	Author      : kdesnos
 	Version     :
-	Copyright   :
+	Copyright   : CECILL-C
 	Description :
 	============================================================================
 */

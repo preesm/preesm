@@ -3,7 +3,7 @@
 	Name        : fifo.c
 	Author      : kdesnos
 	Version     :
-	Copyright   :
+	Copyright   : CECILL-C
 	Description :
 	============================================================================
 */
