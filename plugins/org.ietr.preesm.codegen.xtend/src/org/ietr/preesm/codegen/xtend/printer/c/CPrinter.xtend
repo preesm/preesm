@@ -76,8 +76,6 @@ class CPrinter extends DefaultPrinter {
 			 * @date «new Date»
 			 */
 			
-			#include <pthread.h>
-			#include <semaphore.h>
 			#include "../include/x86.h"
 			
 			

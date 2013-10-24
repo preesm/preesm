@@ -200,6 +200,10 @@ public class CodegenTask extends AbstractTaskImplementation {
 					}
 				}
 			}
+			else{
+				throw new WorkflowException(
+						"The code generation directory was not found.");
+			}
 
 			// Do the pre-processing
 			printer.preProcessing(printerAndBlocks.getValue(), codeBlocks);

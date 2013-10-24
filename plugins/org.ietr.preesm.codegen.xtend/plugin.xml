@@ -84,5 +84,18 @@
             </core_type>
          </printer>
       </printers>
+      <printers
+            language="ComTracking">
+         <printer
+               class="org.ietr.preesm.codegen.xtend.printer.ComTrackingPrinter"
+               extension=".txt">
+            <core_type
+                  type="x86">
+            </core_type>
+            <core_type
+                  type="c6678">
+            </core_type>
+         </printer>
+      </printers>
    </extension>
 </plugin>
