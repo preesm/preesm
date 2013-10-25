@@ -534,8 +534,7 @@ public class CodegenModelGenerator {
 		// 1 - Iterate on the actors of the DAG
 		// 1.0 - Identify the core used.
 		// 1.1 - Construct the "loop" & "init" of each core.
-		// 2 - Generate communication calls
-		// 3 - Put the buffer declaration in their right place
+		// 2 - Put the buffer declaration in their right place
 
 		// 0 - Create the Buffers of the MemEx
 		generateBuffers();
@@ -620,11 +619,13 @@ public class CodegenModelGenerator {
 					break;
 
 				case VertexType.TYPE_SEND:
-					// Do nothing here, communication are generated later
+					generateCommunication(operatorBlock, vert,
+							VertexType.TYPE_SEND);
 					break;
 
 				case VertexType.TYPE_RECEIVE:
-					// Do nothing here, communication are generated later
+					generateCommunication(operatorBlock, vert,
+							VertexType.TYPE_RECEIVE);
 					break;
 				default:
 					throw new CodegenException("Vertex " + vert
@@ -633,40 +634,7 @@ public class CodegenModelGenerator {
 			}
 		}
 
-		// 2 - Generate communication calls
-		for (DAGVertex vert : vertexInSchedulingOrder) {
-
-			// Retrieve the vertex, component and coreblock
-			ComponentInstance operator = (ComponentInstance) vert
-					.getPropertyBean().getValue(
-							ImplementationPropertyNames.Vertex_Operator,
-							ComponentInstance.class);
-			CoreBlock operatorBlock = coreBlocks.get(operator);
-
-			switch (((VertexType) vert.getPropertyBean().getValue(
-					ImplementationPropertyNames.Vertex_vertexType,
-					VertexType.class)).toString()) {
-
-			case VertexType.TYPE_TASK:
-				// Nothing to do
-				break;
-
-			case VertexType.TYPE_SEND:
-				generateCommunication(operatorBlock, vert, VertexType.TYPE_SEND);
-				break;
-
-			case VertexType.TYPE_RECEIVE:
-				generateCommunication(operatorBlock, vert,
-						VertexType.TYPE_RECEIVE);
-				break;
-			default:
-				throw new CodegenException("Vertex " + vert
-						+ " has an unknown kind: " + vert.getKind());
-
-			}
-		}
-
-		// 3 - Put the buffer definition in their right place
+		// 2 - Put the buffer definition in their right place
 		generateBufferDefinitions();
 
 		return new HashSet<Block>(coreBlocks.values());
@@ -1261,84 +1229,6 @@ public class CodegenModelGenerator {
 	}
 
 	/**
-	 * Generate the semaphore associated to the given
-	 * {@link SharedMemoryCommunication}.
-	 * 
-	 * @param operatorBlock
-	 *            the {@link CoreBlock} on which the
-	 *            {@link SharedMemoryCommunication} is executed
-	 * @param newComm
-	 *            the {@link SharedMemoryCommunication}
-	 */
-	protected void generateSemaphore(CoreBlock operatorBlock,
-			SharedMemoryCommunication newComm) {
-		boolean ss_re = ((newComm.getDirection().equals(Direction.SEND) && newComm
-				.getDelimiter().equals(Delimiter.START)) || (newComm
-				.getDirection().equals(Direction.RECEIVE) && newComm
-				.getDelimiter().equals(Delimiter.END)));
-
-		// For SS->RE
-
-		// First check if a semaphore was already created for corresponding
-		// calls.
-		Set<Communication> correspondingComm = new HashSet<Communication>();
-		if (ss_re) {
-			correspondingComm.add(newComm.getReceiveEnd());
-			correspondingComm.add(newComm.getSendStart());
-		}
-
-		Semaphore semaphore = null;
-
-		for (Communication comm : correspondingComm) {
-			if (comm instanceof SharedMemoryCommunication) {
-				semaphore = ((SharedMemoryCommunication) comm).getSemaphore();
-			}
-			if (semaphore != null) {
-				break;
-			}
-		}
-
-		// If no semaphore was found, create one
-		if (semaphore == null) {
-			semaphore = CodegenFactory.eINSTANCE.createSemaphore();
-			semaphore.setCreator(operatorBlock);
-			semaphore.setName("sem_" + newComm.getId() + "_"
-					+ ((ss_re) ? "SSRE" : "RRSR"));
-			FunctionCall initSem = CodegenFactory.eINSTANCE
-					.createFunctionCall();
-			initSem.addParameter(semaphore);
-
-			Constant cstShared = CodegenFactory.eINSTANCE.createConstant();
-			cstShared.setType("int");
-			cstShared.setValue(0);
-			initSem.addParameter(cstShared);
-			cstShared.setCreator(operatorBlock);
-
-			Constant cstInitVal = CodegenFactory.eINSTANCE.createConstant();
-			cstInitVal.setType("int");
-			if (ss_re) {
-				cstInitVal.setValue(0);
-			}
-
-			cstInitVal.setName("init_val");
-			initSem.addParameter(cstInitVal);
-			cstInitVal.setCreator(operatorBlock);
-
-			initSem.setName("sem_init");
-			initSem.setActorName(newComm.getData().getComment());
-
-			operatorBlock.getInitBlock().getCodeElts().add(initSem);
-		}
-
-		// Put the semaphore in the com
-		newComm.setSemaphore(semaphore);
-
-		// Register the core of the current block as a semaphore user
-		semaphore.getUsers().add(operatorBlock);
-
-	}
-
-	/**
 	 * Generate the {@link FifoCall} that corresponds to the {@link DAGVertex}
 	 * passed as a parameter and add it to the {@link CoreBlock#getLoopBlock()
 	 * loop block} of the given {@link CoreBlock}. Also generate the
@@ -1556,6 +1446,84 @@ public class CodegenModelGenerator {
 		}
 
 		return func;
+	}
+
+	/**
+	 * Generate the semaphore associated to the given
+	 * {@link SharedMemoryCommunication}.
+	 * 
+	 * @param operatorBlock
+	 *            the {@link CoreBlock} on which the
+	 *            {@link SharedMemoryCommunication} is executed
+	 * @param newComm
+	 *            the {@link SharedMemoryCommunication}
+	 */
+	protected void generateSemaphore(CoreBlock operatorBlock,
+			SharedMemoryCommunication newComm) {
+		boolean ss_re = ((newComm.getDirection().equals(Direction.SEND) && newComm
+				.getDelimiter().equals(Delimiter.START)) || (newComm
+				.getDirection().equals(Direction.RECEIVE) && newComm
+				.getDelimiter().equals(Delimiter.END)));
+
+		// For SS->RE
+
+		// First check if a semaphore was already created for corresponding
+		// calls.
+		Set<Communication> correspondingComm = new HashSet<Communication>();
+		if (ss_re) {
+			correspondingComm.add(newComm.getReceiveEnd());
+			correspondingComm.add(newComm.getSendStart());
+		}
+
+		Semaphore semaphore = null;
+
+		for (Communication comm : correspondingComm) {
+			if (comm instanceof SharedMemoryCommunication) {
+				semaphore = ((SharedMemoryCommunication) comm).getSemaphore();
+			}
+			if (semaphore != null) {
+				break;
+			}
+		}
+
+		// If no semaphore was found, create one
+		if (semaphore == null) {
+			semaphore = CodegenFactory.eINSTANCE.createSemaphore();
+			semaphore.setCreator(operatorBlock);
+			semaphore.setName("sem_" + newComm.getId() + "_"
+					+ ((ss_re) ? "SSRE" : "RRSR"));
+			FunctionCall initSem = CodegenFactory.eINSTANCE
+					.createFunctionCall();
+			initSem.addParameter(semaphore);
+
+			Constant cstShared = CodegenFactory.eINSTANCE.createConstant();
+			cstShared.setType("int");
+			cstShared.setValue(0);
+			initSem.addParameter(cstShared);
+			cstShared.setCreator(operatorBlock);
+
+			Constant cstInitVal = CodegenFactory.eINSTANCE.createConstant();
+			cstInitVal.setType("int");
+			if (ss_re) {
+				cstInitVal.setValue(0);
+			}
+
+			cstInitVal.setName("init_val");
+			initSem.addParameter(cstInitVal);
+			cstInitVal.setCreator(operatorBlock);
+
+			initSem.setName("sem_init");
+			initSem.setActorName(newComm.getData().getComment());
+
+			operatorBlock.getInitBlock().getCodeElts().add(initSem);
+		}
+
+		// Put the semaphore in the com
+		newComm.setSemaphore(semaphore);
+
+		// Register the core of the current block as a semaphore user
+		semaphore.getUsers().add(operatorBlock);
+
 	}
 
 	/**
@@ -1926,6 +1894,79 @@ public class CodegenModelGenerator {
 	}
 
 	/**
+	 * Insert the {@link Communication} calls in the {@link LoopBlock} of the
+	 * given {@link CoreBlock}.
+	 * 
+	 * @param operatorBlock
+	 *            the {@link CoreBlock} on which the communication is executed.
+	 * @param dagVertex
+	 *            the {@link DAGVertex} corresponding to the given
+	 *            {@link Communication}.
+	 * @param newComm
+	 *            the {@link Communication} {@link Call} to insert.
+	 * 
+	 * @throws CodegenException
+	 *             if the newComm is a SendRelease or a ReceiveReserve.
+	 */
+	protected void insertCommunication(CoreBlock operatorBlock,
+			DAGVertex dagVertex, Communication newComm) throws CodegenException {
+
+		// Do this only for SS and RE
+		if ((newComm.getDelimiter().equals(Delimiter.START) && newComm
+				.getDirection().equals(Direction.SEND))
+				|| (newComm.getDelimiter().equals(Delimiter.END) && newComm
+						.getDirection().equals(Direction.RECEIVE))) {
+
+			// Do the insertion
+			operatorBlock.getLoopBlock().getCodeElts().add(newComm);
+
+			// Save the communication in the dagVertexCalls map only if it
+			// is a
+			// SS or a ER
+			if ((newComm.getDelimiter().equals(Delimiter.START) && newComm
+					.getDirection().equals(Direction.SEND))
+					|| (newComm.getDelimiter().equals(Delimiter.END) && newComm
+							.getDirection().equals(Direction.RECEIVE))) {
+				dagVertexCalls.put(dagVertex, newComm);
+			}
+
+		} else {
+			// Code reached for RS, SE, RR and SR
+			// Retrieve the corresponding ReceiveEnd or SendStart
+			Call zoneReference = null;
+			if (newComm.getDirection().equals(Direction.SEND)) {
+				zoneReference = newComm.getSendStart();
+			}
+			if (newComm.getDirection().equals(Direction.RECEIVE)) {
+				zoneReference = newComm.getReceiveEnd();
+			}
+
+			// Get the index for the zone complement
+			int index = operatorBlock.getLoopBlock().getCodeElts()
+					.indexOf(zoneReference);
+
+			// For SE and RS
+			if ((newComm.getDelimiter().equals(Delimiter.START) && newComm
+					.getDirection().equals(Direction.RECEIVE))
+					|| (newComm.getDelimiter().equals(Delimiter.END) && newComm
+							.getDirection().equals(Direction.SEND))) {
+
+				// DO the insertion
+				if (newComm.getDelimiter().equals(Delimiter.START)) {
+					// Insert the RS before the RE
+					operatorBlock.getLoopBlock().getCodeElts()
+							.add(index, newComm);
+				} else {
+					// Insert the SE after the SS
+					operatorBlock.getLoopBlock().getCodeElts()
+							.add(index + 1, newComm);
+				}
+				// DO NOT save the SE and RS in the dagVertexCall.
+			}
+		}
+	}
+
+	/**
 	 * Insert the {@link Communication} in the {@link LoopBlock} of the
 	 * {@link CoreBlock} passed as a parameter. All {@link DAGVertex} consuming
 	 * or producing data handled by the {@link Communication} must have been
@@ -1953,7 +1994,8 @@ public class CodegenModelGenerator {
 	 * @throws CodegenException
 	 *             if the newComm is a SendRelease or a ReceiveReserve.
 	 */
-	protected void insertCommunication(CoreBlock operatorBlock,
+	@Deprecated
+	protected void oldInsertCommunication(CoreBlock operatorBlock,
 			DAGVertex dagVertex, Communication newComm) throws CodegenException {
 
 		// Retrieve the vertex that must be before/after the communication.
