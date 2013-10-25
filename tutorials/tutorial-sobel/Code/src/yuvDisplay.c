@@ -8,7 +8,7 @@
 	============================================================================
 */
 
-#include "displayYUV.h"
+#include "yuvDisplay.h"
 #include <SDL.h>
 
 extern int stopThreads;

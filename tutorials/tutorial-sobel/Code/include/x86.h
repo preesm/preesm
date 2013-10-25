@@ -35,8 +35,8 @@
 #include "fifo.h"
 #include "dump.h"
 
-#include "readYUV.h"
-#include "displayYUV.h"
+#include "yuvRead.h"
+#include "yuvDisplay.h"
 #include "sobel.h"
 #include "splitMerge.h"
 

@@ -9,7 +9,7 @@
 	============================================================================
 */
 
-#include "readYUV.h"
+#include "yuvRead.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
