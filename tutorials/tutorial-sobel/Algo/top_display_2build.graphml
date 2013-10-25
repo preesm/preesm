@@ -19,9 +19,6 @@
         <data key="kind">sdf</data>
         <data key="parameters"/>
         <data key="variables">
-            <variable name="N" value="16"/>
-            <variable name="stage1" value="1"/>
-            <variable name="stage2" value="1"/>
             <variable name="xsize" value="352"/>
             <variable name="ysize" value="288"/>
         </data>

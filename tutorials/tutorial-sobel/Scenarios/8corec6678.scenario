@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/tutorial-sobel/Algo/top_display.graphml"/>
+        <architecture url="/tutorial-sobel/Archi/8CoreC6678.slam"/>
+        <codegenDirectory url="/tutorial-sobel/Code6678/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core2"/>
+            <task name="Read_YUV"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
+            <task name="display"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="Read_YUV"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
+            <task name="display"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core5"/>
+            <task name="Read_YUV"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
+            <task name="display"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core7"/>
+            <task name="Read_YUV"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
+            <task name="display"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="Read_YUV"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
+            <task name="display"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core4"/>
+            <task name="Read_YUV"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
+            <task name="display"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core6"/>
+            <task name="Read_YUV"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
+            <task name="display"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="Read_YUV"/>
+            <task name="Split"/>
+            <task name="Sobel"/>
+            <task name="Merge"/>
+            <task name="display"/>
+        </constraintGroup>
+    </constraints>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl="">
+        <timing opname="c6678" time="49160" vertexname="Merge"/>
+        <timing opname="c6678" time="51235" vertexname="Read_YUV"/>
+        <timing opname="c6678" time="205" vertexname="display"/>
+        <timing opname="c6678" time="592228" vertexname="Sobel"/>
+        <timing opname="c6678" time="51642" vertexname="Split"/>
+        <memcpyspeed opname="c6678" setuptime="1" timeperunit="0.47846892"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="char" size="1"/>
+            <dataType name="uchar" size="1"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core7"/>
+            <specialVertexOperator path="Core4"/>
+            <specialVertexOperator path="Core3"/>
+            <specialVertexOperator path="Core6"/>
+            <specialVertexOperator path="Core5"/>
+            <specialVertexOperator path="Core0"/>
+            <specialVertexOperator path="Core2"/>
+            <specialVertexOperator path="Core1"/>
+        </specialVertexOperators>
+    </simuParams>
+    <variables excelUrl=""/>
+</scenario>
