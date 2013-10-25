@@ -1,0 +1,7 @@
+
+module Merge {
+	typedef long parameter ;
+	interface loop {
+		void merge (in parameter nbSlice, in parameter xSize, in parameter ySize, in char input , out char output) ;
+	} ;
+} ;
