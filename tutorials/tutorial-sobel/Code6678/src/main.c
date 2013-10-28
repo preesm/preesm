@@ -15,6 +15,7 @@
 #include "cores.h"
 #include <ti/csl/csl_cacheAux.h>
 #include "communication.h"
+#include "cache.h"
 
 Void tsk0_func(UArg arg0, UArg arg1) {
 

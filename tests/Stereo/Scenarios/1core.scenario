@@ -50,7 +50,7 @@
         <timing opname="x86" time="1" vertexname="disparityGen"/>
         <timing opname="x86" time="9" vertexname="Split"/>
         <timing opname="x86" time="9" vertexname="Merge"/>
-        <memcpyspeed opname="x86" setuptime="0" timeperunit="1"/>
+        <memcpyspeed opname="c6678" setuptime="1" timeperunit="5.0E-5"/>
     </timings>
     <simuParams>
         <mainCore>Core0</mainCore>

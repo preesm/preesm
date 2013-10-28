@@ -12,11 +12,6 @@
 
 typedef unsigned char uchar;
 
-// SET Cacheable to 1 to activate caches
-// 0 otherwise
-#define CACHEABLE 1
-
-
 #define CORE0
 void core0(void);
 #define CORE1

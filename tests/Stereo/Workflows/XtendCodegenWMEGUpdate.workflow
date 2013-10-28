@@ -68,7 +68,7 @@
             <dftools:variable name="Allocator(s)" value="FirstFit"/>
             <dftools:variable name="Best/First Fit order" value="LargestFirst"/>
             <dftools:variable name="Data alignment" value="Data"/>
-            <dftools:variable name="Merge broadcasts" value="False"/>
+            <dftools:variable name="Merge broadcasts" value="True"/>
             <dftools:variable name="Nb of Shuffling Tested" value="100"/>
             <dftools:variable name="Verbose" value="True"/>
         </dftools:data>
