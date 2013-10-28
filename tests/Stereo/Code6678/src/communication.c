@@ -15,7 +15,9 @@
 #include <xdc/runtime/System.h>
 #include "communication.h"
 #include <ti/sysbios/BIOS.h>
+#include <ti/csl/csl_cache.h>
 #include <ti/csl/csl_cacheAux.h>
+#include <ti/csl/csl_sem.h>
 #include <ti/csl/csl_semAux.h>
 #include <ti/ipc/MultiProc.h>
 #include <ti/sysbios/knl/Task.h>
