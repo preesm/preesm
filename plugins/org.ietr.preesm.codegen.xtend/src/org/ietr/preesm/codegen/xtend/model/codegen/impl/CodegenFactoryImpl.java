@@ -144,6 +144,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 			return createSpecialTypeFromString(eDataType, initialValue);
 		case CodegenPackage.FIFO_OPERATION:
 			return createFifoOperationFromString(eDataType, initialValue);
+		case CodegenPackage.PORT_DIRECTION:
+			return createPortDirectionFromString(eDataType, initialValue);
 		default:
 			throw new IllegalArgumentException("The datatype '"
 					+ eDataType.getName() + "' is not a valid classifier");
@@ -166,6 +168,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 			return convertSpecialTypeToString(eDataType, instanceValue);
 		case CodegenPackage.FIFO_OPERATION:
 			return convertFifoOperationToString(eDataType, instanceValue);
+		case CodegenPackage.PORT_DIRECTION:
+			return convertPortDirectionToString(eDataType, instanceValue);
 		default:
 			throw new IllegalArgumentException("The datatype '"
 					+ eDataType.getName() + "' is not a valid classifier");
@@ -428,6 +432,31 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * @generated
 	 */
 	public String convertFifoOperationToString(EDataType eDataType,
+			Object instanceValue) {
+		return instanceValue == null ? null : instanceValue.toString();
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public PortDirection createPortDirectionFromString(EDataType eDataType,
+			String initialValue) {
+		PortDirection result = PortDirection.get(initialValue);
+		if (result == null)
+			throw new IllegalArgumentException("The value '" + initialValue
+					+ "' is not a valid enumerator of '" + eDataType.getName()
+					+ "'");
+		return result;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public String convertPortDirectionToString(EDataType eDataType,
 			Object instanceValue) {
 		return instanceValue == null ? null : instanceValue.toString();
 	}

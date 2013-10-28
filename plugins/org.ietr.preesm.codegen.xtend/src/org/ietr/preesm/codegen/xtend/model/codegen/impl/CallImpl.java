@@ -35,14 +35,19 @@
  */
 package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
+import java.util.Collection;
+
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
+import org.eclipse.emf.ecore.util.EDataTypeEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.ietr.preesm.codegen.xtend.model.codegen.Call;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
+import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
 
 /**
@@ -56,6 +61,12 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
  * <em>Parameters</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getName
  * <em>Name</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getEReference0
+ * <em>EReference0</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getParameterDirections
+ * <em>Parameter Directions</em>}</li>
  * </ul>
  * </p>
  * 
@@ -91,6 +102,27 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 	 * @ordered
 	 */
 	protected String name = NAME_EDEFAULT;
+
+	/**
+	 * The cached value of the '{@link #getEReference0() <em>EReference0</em>}'
+	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #getEReference0()
+	 * @generated
+	 * @ordered
+	 */
+	protected Call eReference0;
+
+	/**
+	 * The cached value of the '{@link #getParameterDirections()
+	 * <em>Parameter Directions</em>}' attribute list. <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @see #getParameterDirections()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<PortDirection> parameterDirections;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -149,10 +181,20 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * 
+	 * @generated
 	 */
-	public void addParameter(Variable variable) {
-		getParameters().add(variable);
+	public Call getEReference0() {
+		if (eReference0 != null && eReference0.eIsProxy()) {
+			InternalEObject oldEReference0 = (InternalEObject) eReference0;
+			eReference0 = (Call) eResolveProxy(oldEReference0);
+			if (eReference0 != oldEReference0) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							CodegenPackage.CALL__EREFERENCE0, oldEReference0,
+							eReference0));
+			}
+		}
+		return eReference0;
 	}
 
 	/**
@@ -160,7 +202,55 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 	 * 
 	 * @generated
 	 */
+	public Call basicGetEReference0() {
+		return eReference0;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public void setEReference0(Call newEReference0) {
+		Call oldEReference0 = eReference0;
+		eReference0 = newEReference0;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					CodegenPackage.CALL__EREFERENCE0, oldEReference0,
+					eReference0));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EList<PortDirection> getParameterDirections() {
+		if (parameterDirections == null) {
+			parameterDirections = new EDataTypeEList<PortDirection>(
+					PortDirection.class, this,
+					CodegenPackage.CALL__PARAMETER_DIRECTIONS);
+		}
+		return parameterDirections;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * 
+	 */
+	public void addParameter(Variable variable, PortDirection direction) {
+		getParameters().add(variable);
+		getParameterDirections().add(direction);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * 
+	 */
 	public void removeParameter(Variable variable) {
+		// Must remove the port direction
 		// TODO: implement this method
 		// Ensure that you remove @generated or mark it @generated NOT
 		throw new UnsupportedOperationException();
@@ -178,6 +268,12 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 			return getParameters();
 		case CodegenPackage.CALL__NAME:
 			return getName();
+		case CodegenPackage.CALL__EREFERENCE0:
+			if (resolve)
+				return getEReference0();
+			return basicGetEReference0();
+		case CodegenPackage.CALL__PARAMETER_DIRECTIONS:
+			return getParameterDirections();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -187,11 +283,20 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 	 * 
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 		case CodegenPackage.CALL__NAME:
 			setName((String) newValue);
+			return;
+		case CodegenPackage.CALL__EREFERENCE0:
+			setEReference0((Call) newValue);
+			return;
+		case CodegenPackage.CALL__PARAMETER_DIRECTIONS:
+			getParameterDirections().clear();
+			getParameterDirections().addAll(
+					(Collection<? extends PortDirection>) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -207,6 +312,12 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 		switch (featureID) {
 		case CodegenPackage.CALL__NAME:
 			setName(NAME_EDEFAULT);
+			return;
+		case CodegenPackage.CALL__EREFERENCE0:
+			setEReference0((Call) null);
+			return;
+		case CodegenPackage.CALL__PARAMETER_DIRECTIONS:
+			getParameterDirections().clear();
 			return;
 		}
 		super.eUnset(featureID);
@@ -225,6 +336,11 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 		case CodegenPackage.CALL__NAME:
 			return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT
 					.equals(name);
+		case CodegenPackage.CALL__EREFERENCE0:
+			return eReference0 != null;
+		case CodegenPackage.CALL__PARAMETER_DIRECTIONS:
+			return parameterDirections != null
+					&& !parameterDirections.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
@@ -242,6 +358,8 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (name: ");
 		result.append(name);
+		result.append(", parameterDirections: ");
+		result.append(parameterDirections);
 		result.append(')');
 		return result.toString();
 	}

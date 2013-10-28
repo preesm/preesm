@@ -46,11 +46,12 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
+import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
-import org.ietr.preesm.codegen.xtend.printer.c.CPrinter
 import org.ietr.preesm.codegen.xtend.printer.PrinterState
+import org.ietr.preesm.codegen.xtend.printer.c.CPrinter
 
 /**
  * This printer currently prints instrumented C code for X86 cores with all
@@ -130,9 +131,9 @@ class InstrumentedCPrinter extends CPrinter {
 						const.type = "int"
 						const.value = globalID
 						const
-					})
+					}, PortDirection.NONE)
 				globalID = globalID + 1
-				dumpCall.addParameter(dumpTimedBuffer)
+				dumpCall.addParameter(dumpTimedBuffer, PortDirection.NONE)
 				coreLoop.codeElts.add(0, dumpCall)
 			}
 
@@ -150,8 +151,8 @@ class InstrumentedCPrinter extends CPrinter {
 						const.type = "int"
 						const.value = globalID
 						const
-					})
-				dumpCall.addParameter(dumpTimedBuffer)
+					}, PortDirection.NONE)
+				dumpCall.addParameter(dumpTimedBuffer, PortDirection.NONE)
 				coreLoop.codeElts.add(i + 1, dumpCall)
 
 				// Retrieve the function ID
@@ -192,7 +193,7 @@ class InstrumentedCPrinter extends CPrinter {
 		// Create the init method
 		var initCall = CodegenFactory.eINSTANCE.createFunctionCall;
 		initCall.name = "initNbExec"
-		initCall.addParameter(nbExec)
+		initCall.addParameter(nbExec, PortDirection.NONE)
 		initCall.addParameter(
 			{
 				var const = CodegenFactory::eINSTANCE.createConstant
@@ -200,7 +201,7 @@ class InstrumentedCPrinter extends CPrinter {
 				const.type = "int"
 				const.value = globalID
 				const
-			})
+			}, PortDirection.NONE)
 		(printerBlocks.head as CoreBlock).initBlock.codeElts.add(initCall)
 	}
 	

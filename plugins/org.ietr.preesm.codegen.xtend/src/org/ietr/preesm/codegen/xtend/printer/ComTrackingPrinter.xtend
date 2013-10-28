@@ -35,23 +35,10 @@
  */
 package org.ietr.preesm.codegen.xtend.printer
 
-import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
-import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.Communication
-import org.ietr.preesm.codegen.xtend.model.codegen.Constant
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
-import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
-import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
-import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
-import org.ietr.preesm.codegen.xtend.model.codegen.Variable
-import java.util.List
-import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
-import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
-import org.ietr.preesm.codegen.xtend.model.codegen.Block
-import java.util.HashMapimport org.ietr.preesm.codegen.xtend.model.codegen.Direction
 import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter
+import org.ietr.preesm.codegen.xtend.model.codegen.Direction
+import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 
 /**
  * This {@link ComTrackingPrinter} is a dummy implementation of the 

@@ -36,6 +36,7 @@
 package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
 import java.util.Collection;
+
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
@@ -52,6 +53,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode;
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter;
 import org.ietr.preesm.codegen.xtend.model.codegen.Direction;
+import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -345,7 +347,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 					CodegenPackage.COMMUNICATION__DATA, oldData, data));
 		this.getParameters().clear();
 		if (newData != null) {
-			this.addParameter(newData);
+			this.addParameter(newData, PortDirection.NONE);
 		}
 	}
 

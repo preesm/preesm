@@ -193,13 +193,31 @@ public interface CodegenPackage extends EPackage {
 	int CALL__NAME = CODE_ELT_FEATURE_COUNT + 1;
 
 	/**
+	 * The feature id for the '<em><b>EReference0</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int CALL__EREFERENCE0 = CODE_ELT_FEATURE_COUNT + 2;
+
+	/**
+	 * The feature id for the '<em><b>Parameter Directions</b></em>' attribute
+	 * list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int CALL__PARAMETER_DIRECTIONS = CODE_ELT_FEATURE_COUNT + 3;
+
+	/**
 	 * The number of structural features of the '<em>Call</em>' class. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int CALL_FEATURE_COUNT = CODE_ELT_FEATURE_COUNT + 2;
+	int CALL_FEATURE_COUNT = CODE_ELT_FEATURE_COUNT + 4;
 
 	/**
 	 * The meta object id for the '
@@ -568,6 +586,24 @@ public interface CodegenPackage extends EPackage {
 	int FUNCTION_CALL__NAME = CALL__NAME;
 
 	/**
+	 * The feature id for the '<em><b>EReference0</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int FUNCTION_CALL__EREFERENCE0 = CALL__EREFERENCE0;
+
+	/**
+	 * The feature id for the '<em><b>Parameter Directions</b></em>' attribute
+	 * list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int FUNCTION_CALL__PARAMETER_DIRECTIONS = CALL__PARAMETER_DIRECTIONS;
+
+	/**
 	 * The feature id for the '<em><b>Actor Name</b></em>' attribute. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -614,6 +650,24 @@ public interface CodegenPackage extends EPackage {
 	 * @ordered
 	 */
 	int COMMUNICATION__NAME = CALL__NAME;
+
+	/**
+	 * The feature id for the '<em><b>EReference0</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int COMMUNICATION__EREFERENCE0 = CALL__EREFERENCE0;
+
+	/**
+	 * The feature id for the '<em><b>Parameter Directions</b></em>' attribute
+	 * list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int COMMUNICATION__PARAMETER_DIRECTIONS = CALL__PARAMETER_DIRECTIONS;
 
 	/**
 	 * The feature id for the '<em><b>Direction</b></em>' attribute. <!--
@@ -970,6 +1024,24 @@ public interface CodegenPackage extends EPackage {
 	int ACTOR_CALL__NAME = CALL__NAME;
 
 	/**
+	 * The feature id for the '<em><b>EReference0</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int ACTOR_CALL__EREFERENCE0 = CALL__EREFERENCE0;
+
+	/**
+	 * The feature id for the '<em><b>Parameter Directions</b></em>' attribute
+	 * list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int ACTOR_CALL__PARAMETER_DIRECTIONS = CALL__PARAMETER_DIRECTIONS;
+
+	/**
 	 * The number of structural features of the '<em>Actor Call</em>' class.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -1066,6 +1138,24 @@ public interface CodegenPackage extends EPackage {
 	int SPECIAL_CALL__NAME = CALL__NAME;
 
 	/**
+	 * The feature id for the '<em><b>EReference0</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SPECIAL_CALL__EREFERENCE0 = CALL__EREFERENCE0;
+
+	/**
+	 * The feature id for the '<em><b>Parameter Directions</b></em>' attribute
+	 * list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SPECIAL_CALL__PARAMETER_DIRECTIONS = CALL__PARAMETER_DIRECTIONS;
+
+	/**
 	 * The feature id for the '<em><b>Type</b></em>' attribute. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -1129,6 +1219,24 @@ public interface CodegenPackage extends EPackage {
 	 * @ordered
 	 */
 	int FIFO_CALL__NAME = CALL__NAME;
+
+	/**
+	 * The feature id for the '<em><b>EReference0</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int FIFO_CALL__EREFERENCE0 = CALL__EREFERENCE0;
+
+	/**
+	 * The feature id for the '<em><b>Parameter Directions</b></em>' attribute
+	 * list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int FIFO_CALL__PARAMETER_DIRECTIONS = CALL__PARAMETER_DIRECTIONS;
 
 	/**
 	 * The feature id for the '<em><b>Operation</b></em>' attribute. <!--
@@ -1319,6 +1427,24 @@ public interface CodegenPackage extends EPackage {
 	int SHARED_MEMORY_COMMUNICATION__NAME = COMMUNICATION__NAME;
 
 	/**
+	 * The feature id for the '<em><b>EReference0</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SHARED_MEMORY_COMMUNICATION__EREFERENCE0 = COMMUNICATION__EREFERENCE0;
+
+	/**
+	 * The feature id for the '<em><b>Parameter Directions</b></em>' attribute
+	 * list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SHARED_MEMORY_COMMUNICATION__PARAMETER_DIRECTIONS = COMMUNICATION__PARAMETER_DIRECTIONS;
+
+	/**
 	 * The feature id for the '<em><b>Direction</b></em>' attribute. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -1483,6 +1609,18 @@ public interface CodegenPackage extends EPackage {
 	int FIFO_OPERATION = 23;
 
 	/**
+	 * The meta object id for the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
+	 * <em>Port Direction</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getPortDirection()
+	 * @generated
+	 */
+	int PORT_DIRECTION = 24;
+
+	/**
 	 * Returns the meta object for class '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Block <em>Block</em>}
 	 * '. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1588,6 +1726,32 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getCall_Name();
+
+	/**
+	 * Returns the meta object for the reference '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getEReference0
+	 * <em>EReference0</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference '<em>EReference0</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Call#getEReference0()
+	 * @see #getCall()
+	 * @generated
+	 */
+	EReference getCall_EReference0();
+
+	/**
+	 * Returns the meta object for the attribute list '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getParameterDirections
+	 * <em>Parameter Directions</em>}'. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute list '
+	 *         <em>Parameter Directions</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Call#getParameterDirections()
+	 * @see #getCall()
+	 * @generated
+	 */
+	EAttribute getCall_ParameterDirections();
 
 	/**
 	 * Returns the meta object for class '
@@ -2268,6 +2432,17 @@ public interface CodegenPackage extends EPackage {
 	EEnum getFifoOperation();
 
 	/**
+	 * Returns the meta object for enum '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
+	 * <em>Port Direction</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for enum '<em>Port Direction</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
+	 * @generated
+	 */
+	EEnum getPortDirection();
+
+	/**
 	 * Returns the factory that creates the instances of the model. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -2373,6 +2548,24 @@ public interface CodegenPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute CALL__NAME = eINSTANCE.getCall_Name();
+
+		/**
+		 * The meta object literal for the '<em><b>EReference0</b></em>'
+		 * reference feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference CALL__EREFERENCE0 = eINSTANCE.getCall_EReference0();
+
+		/**
+		 * The meta object literal for the '<em><b>Parameter Directions</b></em>
+		 * ' attribute list feature. <!-- begin-user-doc --> <!-- end-user-doc
+		 * -->
+		 * 
+		 * @generated
+		 */
+		EAttribute CALL__PARAMETER_DIRECTIONS = eINSTANCE
+				.getCall_ParameterDirections();
 
 		/**
 		 * The meta object literal for the '
@@ -2938,6 +3131,18 @@ public interface CodegenPackage extends EPackage {
 		 * @generated
 		 */
 		EEnum FIFO_OPERATION = eINSTANCE.getFifoOperation();
+
+		/**
+		 * The meta object literal for the '
+		 * {@link org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
+		 * <em>Port Direction</em>}' enum. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getPortDirection()
+		 * @generated
+		 */
+		EEnum PORT_DIRECTION = eINSTANCE.getPortDirection();
 
 	}
 

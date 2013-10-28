@@ -36,6 +36,7 @@
 
 package org.ietr.preesm.codegen.xtend.task;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -102,6 +103,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation;
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
 import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
@@ -946,8 +948,10 @@ public class CodegenModelGenerator {
 	 *             {@link Prototype}</li>
 	 *             </ul>
 	 */
-	protected List<Variable> generateCallVariables(DAGVertex dagVertex,
-			Prototype prototype, boolean isInit) throws CodegenException {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	protected Entry<List<Variable>, List<PortDirection>> generateCallVariables(
+			DAGVertex dagVertex, Prototype prototype, boolean isInit)
+			throws CodegenException {
 		// Retrieve the sdf vertex and the refinement.
 		SDFVertex sdfVertex = (SDFVertex) dagVertex.getPropertyBean().getValue(
 				DAGVertex.SDF_VERTEX, SDFVertex.class);
@@ -956,17 +960,22 @@ public class CodegenModelGenerator {
 		// The integer is only used to order the variable and is retrieved
 		// from the prototype
 		TreeMap<Integer, Variable> variableList = new TreeMap<Integer, Variable>();
+		TreeMap<Integer, PortDirection> directionList = new TreeMap<Integer, PortDirection>();
 
 		// Retrieve the Variable corresponding to the arguments of the prototype
 		for (CodeGenArgument arg : prototype.getArguments().keySet()) {
+			PortDirection dir = null;
+
 			// Check that the Actor has the right ports
 			SDFInterfaceVertex port;
 			switch (arg.getDirection()) {
 			case CodeGenArgument.OUTPUT:
 				port = sdfVertex.getSink(arg.getName());
+				dir = PortDirection.OUTPUT;
 				break;
 			case CodeGenArgument.INPUT:
 				port = sdfVertex.getSource(arg.getName());
+				dir = PortDirection.INPUT;
 				break;
 			default:
 				port = null;
@@ -1059,7 +1068,9 @@ public class CodegenModelGenerator {
 								+ " is not present in the input MemEx.\n"
 								+ "There is something wrong in the Memory Allocation task.");
 			}
+
 			variableList.put(prototype.getArguments().get(arg), var);
+			directionList.put(prototype.getArguments().get(arg), dir);
 		}
 
 		// Check that all incoming DAGEdge exist in the function call
@@ -1107,6 +1118,8 @@ public class CodegenModelGenerator {
 			}
 			constant.setType("long");
 			variableList.put(prototype.getParameters().get(param), constant);
+			directionList.put(prototype.getParameters().get(param),
+					PortDirection.NONE);
 
 			// // Retrieve the variable from its context (i.e. from its original
 			// // (sub)graph)
@@ -1123,7 +1136,9 @@ public class CodegenModelGenerator {
 			// }
 		}
 
-		return new ArrayList<Variable>(variableList.values());
+		return new AbstractMap.SimpleEntry(new ArrayList<Variable>(
+				variableList.values()), new ArrayList<PortDirection>(
+				directionList.values()));
 	}
 
 	/**
@@ -1271,10 +1286,13 @@ public class CodegenModelGenerator {
 
 		// Get buffer used by the FifoCall (in/out)
 		Set<DAGEdge> edges;
+		PortDirection dir;
 		if (fifoCall.getOperation().equals(FifoOperation.POP)) {
 			edges = dag.outgoingEdgesOf(dagVertex);
+			dir = PortDirection.OUTPUT;
 		} else {
 			edges = dag.incomingEdgesOf(dagVertex);
+			dir = PortDirection.INPUT;
 		}
 		// There might be more than one edge, if one is connected to a
 		// send/receive
@@ -1314,7 +1332,7 @@ public class CodegenModelGenerator {
 				throw new CodegenException("DAGEdge " + edge
 						+ " was not allocated in memory.");
 			}
-			fifoCall.addParameter(buffer);
+			fifoCall.addParameter(buffer, dir);
 		}
 
 		// Retrieve the internal buffer
@@ -1438,11 +1456,12 @@ public class CodegenModelGenerator {
 
 		// Retrieve the Arguments that must correspond to the incoming data
 		// fifos
-		List<Variable> callVars = generateCallVariables(dagVertex, prototype,
-				isInit);
+		Entry<List<Variable>, List<PortDirection>> callVars = generateCallVariables(
+				dagVertex, prototype, isInit);
 		// Put Variables in the function call
-		for (Variable var : callVars) {
-			func.addParameter(var);
+		for (int idx = 0; idx < callVars.getKey().size(); idx++) {
+			func.addParameter(callVars.getKey().get(idx), callVars.getValue()
+					.get(idx));
 		}
 
 		return func;
@@ -1494,12 +1513,12 @@ public class CodegenModelGenerator {
 					+ ((ss_re) ? "SSRE" : "RRSR"));
 			FunctionCall initSem = CodegenFactory.eINSTANCE
 					.createFunctionCall();
-			initSem.addParameter(semaphore);
+			initSem.addParameter(semaphore, PortDirection.NONE);
 
 			Constant cstShared = CodegenFactory.eINSTANCE.createConstant();
 			cstShared.setType("int");
 			cstShared.setValue(0);
-			initSem.addParameter(cstShared);
+			initSem.addParameter(cstShared, PortDirection.NONE);
 			cstShared.setCreator(operatorBlock);
 
 			Constant cstInitVal = CodegenFactory.eINSTANCE.createConstant();
@@ -1509,7 +1528,7 @@ public class CodegenModelGenerator {
 			}
 
 			cstInitVal.setName("init_val");
-			initSem.addParameter(cstInitVal);
+			initSem.addParameter(cstInitVal, PortDirection.NONE);
 			cstInitVal.setCreator(operatorBlock);
 
 			initSem.setName("sem_init");

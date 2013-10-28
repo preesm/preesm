@@ -112,8 +112,7 @@ public class CodegenTask extends AbstractTaskImplementation {
 		}
 
 		// Fill a map associating printers with printed files
-		Map<IConfigurationElement, List<Block>> registeredPrintersAndBlocks 
-						= new HashMap<IConfigurationElement, List<Block>>();
+		Map<IConfigurationElement, List<Block>> registeredPrintersAndBlocks = new HashMap<IConfigurationElement, List<Block>>();
 
 		// 1. Get the printers of the desired "language"
 		Set<IConfigurationElement> usablePrinters = new HashSet<IConfigurationElement>();
@@ -149,7 +148,8 @@ public class CodegenTask extends AbstractTaskImplementation {
 					}
 				}
 				if (foundPrinter != null) {
-					List<Block> blocks = registeredPrintersAndBlocks.get(foundPrinter);
+					List<Block> blocks = registeredPrintersAndBlocks
+							.get(foundPrinter);
 					if (blocks == null) {
 						blocks = new ArrayList<Block>();
 						registeredPrintersAndBlocks.put(foundPrinter, blocks);
@@ -171,8 +171,7 @@ public class CodegenTask extends AbstractTaskImplementation {
 		// - Erase file with the same extension from the destination directory
 		// - Do the pre-processing
 		// - Save the printers in a map
-		Map<IConfigurationElement, CodegenAbstractPrinter> realPrinters
-					= new HashMap<IConfigurationElement,CodegenAbstractPrinter>();
+		Map<IConfigurationElement, CodegenAbstractPrinter> realPrinters = new HashMap<IConfigurationElement, CodegenAbstractPrinter>();
 		for (Entry<IConfigurationElement, List<Block>> printerAndBlocks : registeredPrintersAndBlocks
 				.entrySet()) {
 			String extension = printerAndBlocks.getKey().getAttribute(
@@ -190,7 +189,7 @@ public class CodegenTask extends AbstractTaskImplementation {
 			IFolder f = workspace.getRoot().getFolder(new Path(codegenPath));
 			File folder = new File(f.getRawLocation().toOSString());
 			File fList[] = folder.listFiles();
-			if(fList != null){
+			if (fList != null) {
 				// Searches .extension
 				for (int i = 0; i < fList.length; i++) {
 					String pes = fList[i].getName();
@@ -199,8 +198,7 @@ public class CodegenTask extends AbstractTaskImplementation {
 						fList[i].delete();
 					}
 				}
-			}
-			else{
+			} else {
 				throw new WorkflowException(
 						"The code generation directory was not found.");
 			}
@@ -215,8 +213,8 @@ public class CodegenTask extends AbstractTaskImplementation {
 				.entrySet()) {
 			String extension = printerAndBlocks.getKey().getAttribute(
 					"extension");
-			CodegenAbstractPrinter printer = realPrinters.get(printerAndBlocks.getKey());
-			
+			CodegenAbstractPrinter printer = realPrinters.get(printerAndBlocks
+					.getKey());
 
 			for (Block b : printerAndBlocks.getValue()) {
 				IFile iFile = workspace.getRoot().getFile(

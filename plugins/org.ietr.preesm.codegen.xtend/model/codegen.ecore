@@ -14,6 +14,7 @@
   <eClassifiers xsi:type="ecore:EClass" name="Call" abstract="true" eSuperTypes="#//CodeElt">
     <eOperations name="addParameter">
       <eParameters name="variable" eType="#//Variable"/>
+      <eParameters name="direction" eType="#//PortDirection"/>
     </eOperations>
     <eOperations name="removeParameter">
       <eParameters name="variable" eType="#//Variable"/>
@@ -21,6 +22,9 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
         eType="#//Variable" changeable="false"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="EReference0" eType="#//Call"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="parameterDirections" unique="false"
+        upperBound="-1" eType="#//PortDirection"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Variable" abstract="true" eSuperTypes="#//Commentable">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
@@ -150,5 +154,10 @@
   <eClassifiers xsi:type="ecore:EClass" name="SharedMemoryCommunication" eSuperTypes="#//Communication">
     <eStructuralFeatures xsi:type="ecore:EReference" name="semaphore" lowerBound="1"
         eType="#//Semaphore"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="PortDirection">
+    <eLiterals name="INPUT"/>
+    <eLiterals name="OUTPUT" value="1"/>
+    <eLiterals name="NONE" value="2"/>
   </eClassifiers>
 </ecore:EPackage>

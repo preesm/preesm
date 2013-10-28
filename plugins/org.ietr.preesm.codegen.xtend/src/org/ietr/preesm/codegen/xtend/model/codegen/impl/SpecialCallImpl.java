@@ -43,6 +43,7 @@ import org.eclipse.emf.ecore.util.EObjectEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
+import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType;
 
@@ -219,7 +220,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 */
 	public void addInputBuffer(Buffer buffer) {
 		getInputBuffers().add(buffer);
-		getParameters().add(buffer);
+		addParameter(buffer, PortDirection.INPUT);
 	}
 
 	/**
@@ -229,7 +230,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 */
 	public void addOutputBuffer(Buffer buffer) {
 		getOutputBuffers().add(buffer);
-		getParameters().add(buffer);
+		addParameter(buffer, PortDirection.OUTPUT);
 	}
 
 	/**
@@ -239,7 +240,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 */
 	public void removeInputBuffer(Buffer buffer) {
 		getInputBuffers().remove(buffer);
-		getParameters().remove(buffer);
+		removeParameter(buffer);
 	}
 
 	/**
@@ -249,7 +250,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 */
 	public void removeOutputBuffer(Buffer buffer) {
 		getOutputBuffers().remove(buffer);
-		getParameters().remove(buffer);
+		removeParameter(buffer);
 	}
 
 	/**

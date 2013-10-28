@@ -64,6 +64,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation;
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
 import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
@@ -247,6 +248,13 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	private EEnum fifoOperationEEnum = null;
 
 	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	private EEnum portDirectionEEnum = null;
+
+	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
 	 * {@link org.eclipse.emf.ecore.EPackage.Registry EPackage.Registry} by the
 	 * package package URI value.
@@ -393,6 +401,24 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 */
 	public EAttribute getCall_Name() {
 		return (EAttribute) callEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EReference getCall_EReference0() {
+		return (EReference) callEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EAttribute getCall_ParameterDirections() {
+		return (EAttribute) callEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
@@ -926,6 +952,15 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	public EEnum getPortDirection() {
+		return portDirectionEEnum;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	public CodegenFactory getCodegenFactory() {
 		return (CodegenFactory) getEFactoryInstance();
 	}
@@ -961,6 +996,8 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		callEClass = createEClass(CALL);
 		createEReference(callEClass, CALL__PARAMETERS);
 		createEAttribute(callEClass, CALL__NAME);
+		createEReference(callEClass, CALL__EREFERENCE0);
+		createEAttribute(callEClass, CALL__PARAMETER_DIRECTIONS);
 
 		variableEClass = createEClass(VARIABLE);
 		createEAttribute(variableEClass, VARIABLE__NAME);
@@ -1039,6 +1076,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		delimiterEEnum = createEEnum(DELIMITER);
 		specialTypeEEnum = createEEnum(SPECIAL_TYPE);
 		fifoOperationEEnum = createEEnum(FIFO_OPERATION);
+		portDirectionEEnum = createEEnum(PORT_DIRECTION);
 	}
 
 	/**
@@ -1125,11 +1163,21 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		initEAttribute(getCall_Name(), ecorePackage.getEString(), "name", null,
 				1, 1, Call.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCall_EReference0(), this.getCall(), null,
+				"EReference0", null, 0, 1, Call.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getCall_ParameterDirections(), this.getPortDirection(),
+				"parameterDirections", null, 0, -1, Call.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
+				!IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		EOperation op = addEOperation(callEClass, null, "addParameter", 0, 1,
 				IS_UNIQUE, IS_ORDERED);
 		addEParameter(op, this.getVariable(), "variable", 0, 1, IS_UNIQUE,
 				IS_ORDERED);
+		addEParameter(op, this.getPortDirection(), "direction", 0, 1,
+				IS_UNIQUE, IS_ORDERED);
 
 		op = addEOperation(callEClass, null, "removeParameter", 0, 1,
 				IS_UNIQUE, IS_ORDERED);
@@ -1400,6 +1448,11 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		addEEnumLiteral(fifoOperationEEnum, FifoOperation.PUSH);
 		addEEnumLiteral(fifoOperationEEnum, FifoOperation.POP);
 		addEEnumLiteral(fifoOperationEEnum, FifoOperation.INIT);
+
+		initEEnum(portDirectionEEnum, PortDirection.class, "PortDirection");
+		addEEnumLiteral(portDirectionEEnum, PortDirection.INPUT);
+		addEEnumLiteral(portDirectionEEnum, PortDirection.OUTPUT);
+		addEEnumLiteral(portDirectionEEnum, PortDirection.NONE);
 
 		// Create resource
 		createResource(eNS_URI);
