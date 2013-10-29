@@ -8,8 +8,8 @@
 #ifndef C6678_H_
 #define C6678_H_
 
-#include "displayYUV.h"
-#include "readYUV.h"
+#include "yuvDisplay.h"
+#include "yuvRead.h"
 #include "sobel.h"
 #include "splitMerge.h"
 

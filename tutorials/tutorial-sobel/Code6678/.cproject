@@ -96,7 +96,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="packages" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="yuv2dat|packages" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -145,7 +145,7 @@
 								<option id="com.ti.ccstudio.buildDefinitions.C6000_7.3.compilerID.ABI.1628617296" name="Application binary interface (coffabi, eabi) (--abi)" superClass="com.ti.ccstudio.buildDefinitions.C6000_7.3.compilerID.ABI" value="com.ti.ccstudio.buildDefinitions.C6000_7.3.compilerID.ABI.eabi" valueType="enumerated"/>
 								<option id="com.ti.ccstudio.buildDefinitions.C6000_7.3.compilerID.SINGLE_INLINE.771176767" name="Inline functions only called once. (--single_inline)" superClass="com.ti.ccstudio.buildDefinitions.C6000_7.3.compilerID.SINGLE_INLINE" value="false" valueType="boolean"/>
 								<option id="com.ti.ccstudio.buildDefinitions.C6000_7.3.compilerID.OPT_FOR_SPEED.246828726" name="Optimize for speed (--opt_for_speed, -mf)" superClass="com.ti.ccstudio.buildDefinitions.C6000_7.3.compilerID.OPT_FOR_SPEED" value="com.ti.ccstudio.buildDefinitions.C6000_7.3.compilerID.OPT_FOR_SPEED._none" valueType="enumerated"/>
-								<option id="com.ti.ccstudio.buildDefinitions.C6000_7.3.compilerID.OPT_LEVEL.release.374567526" superClass="com.ti.ccstudio.buildDefinitions.C6000_7.3.compilerID.OPT_LEVEL.release" value="com.ti.ccstudio.buildDefinitions.C6000_7.3.compilerID.OPT_LEVEL.3" valueType="enumerated"/>
+								<option id="com.ti.ccstudio.buildDefinitions.C6000_7.3.compilerID.OPT_LEVEL.release.374567526" name="Optimization level (--opt_level, -O)" superClass="com.ti.ccstudio.buildDefinitions.C6000_7.3.compilerID.OPT_LEVEL.release" value="com.ti.ccstudio.buildDefinitions.C6000_7.3.compilerID.OPT_LEVEL.3" valueType="enumerated"/>
 								<inputType id="com.ti.ccstudio.buildDefinitions.C6000_7.3.compiler.inputType__C_SRCS.797277793" name="C Sources" superClass="com.ti.ccstudio.buildDefinitions.C6000_7.3.compiler.inputType__C_SRCS"/>
 								<inputType id="com.ti.ccstudio.buildDefinitions.C6000_7.3.compiler.inputType__CPP_SRCS.733815641" name="C++ Sources" superClass="com.ti.ccstudio.buildDefinitions.C6000_7.3.compiler.inputType__CPP_SRCS"/>
 								<inputType id="com.ti.ccstudio.buildDefinitions.C6000_7.3.compiler.inputType__ASM_SRCS.2074052980" name="Assembly Sources" superClass="com.ti.ccstudio.buildDefinitions.C6000_7.3.compiler.inputType__ASM_SRCS"/>
@@ -180,7 +180,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="packages" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="yuv2dat|packages" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

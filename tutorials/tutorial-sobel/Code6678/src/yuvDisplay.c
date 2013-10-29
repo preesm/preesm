@@ -1,6 +1,6 @@
 
 
-#include "displayYUV.h"
+#include "yuvDisplay.h"
 #include <time.h>
 #include <xdc/runtime/System.h>
 

@@ -81,6 +81,7 @@ Void tsk0_func(UArg arg0, UArg arg1) {
 
 Int main(Int argc, Char* argv[]) {
 
+	/*
 	// Because MSMC memory cannot be non-cacheable, a new entry is added to
 	// the memory map as follows:
 	//     name            origin    length
@@ -101,6 +102,7 @@ Int main(Int argc, Char* argv[]) {
 			CACHE_disableCaching(index);
 		}
 	}
+	*/
 
 	BIOS_start();
 

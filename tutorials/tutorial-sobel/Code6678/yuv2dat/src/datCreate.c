@@ -30,7 +30,7 @@ int createDatFile(char* filePath, int size){
 	//unsigned char temp[LINESIZE];
 	if((ptDatFile = fopen(filePath, "w")) != NULL )
     {
-        fprintf (ptDatFile, "1651 6 0 0 %d\n", size);
+        fprintf (ptDatFile, "1651 6 0 0 %x\n", size);
 
 		#ifdef VERBOSE
 			printf("Opened file '%s'\n", filePath);
