@@ -1,7 +1,0 @@
-
-module Split {
-	typedef long parameter ;
-	interface loop {
-		void split (in parameter nbSlice, in parameter xSize, in parameter ySize, in char input , out char output) ;
-	} ;
-} ;

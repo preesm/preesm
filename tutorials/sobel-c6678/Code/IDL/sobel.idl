@@ -1,7 +1,0 @@
-
-module Sobel {
-	typedef long parameter ;
-	interface loop {
-		void sobel (in parameter xSize, in parameter ySize, in char input , out char output) ;
-	} ;
-} ;
