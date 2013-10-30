@@ -15,7 +15,7 @@
 // This memory should be loaded by the Load function of CCS
 // Forcing in DDR3
 #pragma DATA_SECTION(input_sequence, ".myInputVideoMem");
-unsigned char input_sequence [PICSIZE*NB_FRAMES];
+static unsigned char input_sequence [PICSIZE*NB_FRAMES];
 
 int currentFrameIndex;
 
