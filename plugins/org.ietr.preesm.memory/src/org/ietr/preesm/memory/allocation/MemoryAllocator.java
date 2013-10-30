@@ -102,65 +102,66 @@ public abstract class MemoryAllocator {
 	 */
 	public static int alignSubBuffers(MemoryExclusionGraph meg, int alignment) {
 		int addedSpace = 0;
+		if (alignment != -1) {
+			// Scan the vertices of the graph
+			for (MemoryExclusionVertex memObj : meg.vertexSet()) {
+				// Check alignment of DAGEdge (that may involve subbuffers)
+				// other memory objects can be ignored in this method.
+				DAGEdge edge = memObj.getEdge();
+				if (edge != null) {
 
-		// Scan the vertices of the graph
-		for (MemoryExclusionVertex memObj : meg.vertexSet()) {
-			// Check alignment of DAGEdge (that may involve subbuffers)
-			// other memory objects can be ignored in this method.
-			DAGEdge edge = memObj.getEdge();
-			if (edge != null) {
+					BufferAggregate buffers = (BufferAggregate) edge
+							.getPropertyBean().getValue(
+									BufferAggregate.propertyBeanName);
+					Iterator<BufferProperties> iter = buffers.iterator();
 
-				BufferAggregate buffers = (BufferAggregate) edge
-						.getPropertyBean().getValue(
-								BufferAggregate.propertyBeanName);
-				Iterator<BufferProperties> iter = buffers.iterator();
+					List<Integer> interBufferSpaces = new ArrayList<Integer>();
+					int largestTypeSize = 1;
+					int internalOffset = 0;
+					while (iter.hasNext()) {
+						BufferProperties properties = iter.next();
+						String dataType = properties.getDataType();
+						DataType type = MemoryExclusionVertex._dataTypes
+								.get(dataType);
+						int typeSize = type.getSize();
+						largestTypeSize = Math.max(typeSize, largestTypeSize);
+						int interSpace = 0;
 
-				List<Integer> interBufferSpaces = new ArrayList<Integer>();
-				int largestTypeSize = 1;
-				int internalOffset = 0;
-				while (iter.hasNext()) {
-					BufferProperties properties = iter.next();
-					String dataType = properties.getDataType();
-					DataType type = MemoryExclusionVertex._dataTypes
-							.get(dataType);
-					int typeSize = type.getSize();
-					largestTypeSize = Math.max(typeSize, largestTypeSize);
-					int interSpace = 0;
-
-					// Data alignment case
-					// If the subbuffer is not aligned, add an interspace.
-					if (alignment == 0 && internalOffset % typeSize != 0) {
-						interSpace = typeSize - (internalOffset % typeSize);
-					}
-
-					// Fixed alignment
-					// If the subbuffer is not aligned, add an interspace.
-					if (alignment > 0) {
-						int align = lcm(typeSize, alignment);
-						if (internalOffset % align != 0) {
-							interSpace = align - (internalOffset % align);
+						// Data alignment case
+						// If the subbuffer is not aligned, add an interspace.
+						if (alignment == 0 && internalOffset % typeSize != 0) {
+							interSpace = typeSize - (internalOffset % typeSize);
 						}
+
+						// Fixed alignment
+						// If the subbuffer is not aligned, add an interspace.
+						if (alignment > 0) {
+							int align = lcm(typeSize, alignment);
+							if (internalOffset % align != 0) {
+								interSpace = align - (internalOffset % align);
+							}
+						}
+
+						interBufferSpaces.add(interSpace);
+						internalOffset += interSpace + typeSize
+								* properties.getSize();
 					}
 
-					interBufferSpaces.add(interSpace);
-					internalOffset += interSpace + typeSize
-							* properties.getSize();
+					// Update the size of the memObject and add the interbuffer
+					// space if it does not contain with 0.
+					if (internalOffset - memObj.getWeight() > 0) {
+						memObj.setPropertyValue(
+								MemoryExclusionVertex.INTER_BUFFER_SPACES,
+								interBufferSpaces);
+						addedSpace += internalOffset - memObj.getWeight();
+						memObj.setWeight(internalOffset);
+					}
+					// Backup the largest typeSize contained in the aggregate.
+					// This information will be used to align the memObject
+					// during allocation
+					memObj.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE,
+							largestTypeSize);
 				}
-
-				// Update the size of the memObject and add the interbuffer
-				// space if it does not contain with 0.
-				if (internalOffset - memObj.getWeight() > 0) {
-					memObj.setPropertyValue(
-							MemoryExclusionVertex.INTER_BUFFER_SPACES,
-							interBufferSpaces);
-					addedSpace += internalOffset - memObj.getWeight();
-					memObj.setWeight(internalOffset);
-				}
-				// Backup the largest typeSize contained in the aggregate.
-				// This information will be used to align the memObject
-				// during allocation
-				memObj.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE,
-						largestTypeSize);
 			}
 		}
 		return addedSpace;

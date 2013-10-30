@@ -97,5 +97,15 @@
             </core_type>
          </printer>
       </printers>
+      <printers
+            language="DynamicAllocC">
+         <printer
+               class="org.ietr.preesm.codegen.xtend.printer.c.DynamicAllocCPrinter"
+               extension=".c">
+            <core_type
+                  type="x86">
+            </core_type>
+         </printer>
+      </printers>
    </extension>
 </plugin>
