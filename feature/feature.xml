@@ -2,8 +2,9 @@
 <feature
       id="org.ietr.preesm.feature"
       label="Preesm Feature"
-      version="0.7.0.v20130512"
-      provider-name="IETR/INSA">
+      version="1.0.0.rc1-v20131030"
+      provider-name="IETR/INSA"
+      os="linux,win32">
 
    <description url="http://preesm.sf.net">
       PREESM provides a complete framework for fast prototyping. PREESM
@@ -95,20 +96,6 @@ terms.
          unpack="false"/>
 
    <plugin
-         id="org.ietr.preesm.plugin.codegen"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.ietr.preesm.plugin.mapper"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.ietr.preesm.ui"
          download-size="0"
          install-size="0"
@@ -131,6 +118,48 @@ terms.
 
    <plugin
          id="org.ietr.preesm.memory"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.ietr.preesm.codegen"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.ietr.preesm.codegen.xtend"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.ietr.preesm.experiment.model"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.ietr.preesm.experiment.model.transformation"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.ietr.preesm.experiment.ui.pimm"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.ietr.preesm.mapper"
          download-size="0"
          install-size="0"
          version="0.0.0"
