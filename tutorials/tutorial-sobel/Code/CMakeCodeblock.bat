@@ -8,8 +8,8 @@ pushd .
 
 cd ..\..\lib\SDL-*
 cd .\lib\
-copy .\SDL.dll  ..\..\..\bin\CB_main\SDL.dll /Y
-copy .\SDL.dll  ..\..\..\bin\CB_main_Release\SDL.dll /Y
+copy x86\SDL.dll  ..\..\..\bin\CB_main\SDL.dll /Y
+copy x86\SDL.dll  ..\..\..\bin\CB_main_Release\SDL.dll /Y
 
 cd ..\..\pthread-*
 cd .\lib\

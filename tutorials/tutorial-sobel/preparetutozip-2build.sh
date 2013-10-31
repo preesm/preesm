@@ -19,7 +19,7 @@ cd ..
 # excluding elements from the zip without deleting them
 zip -r $archivename-2build $archivename -x *preparetutozip*.sh* \
 *.svn* *Code/lib/pthread* *Code/lib/SDL* *.yuv* *.dat* *Code/bin* \
-*.save* *Algo/top_display_2build.graphml* *.scenario* \
+*.save* *Algo/top_display_2build.graphml* *4core.scenario* *8core.scenario* *8corec6678.scenario* \
 *Archi/4CoreX86.slam* *Archi/8CoreX86.slam* *Archi/8CoreC6678.slam* *Code6678* *Code/src/sobel.c* \
 *Code/src/splitMerge.c*  *Code/include/sobel.h* *Code/include/splitMerge.h* \
 *Code/IDL/merge.idl* *Code/IDL/sobel.idl* *Code/IDL/split.idl*

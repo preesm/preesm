@@ -9,8 +9,8 @@ pushd .
 
 cd ..\..\lib\SDL-*
 cd .\lib\
-copy .\SDL.dll  ..\..\..\bin\VS_main\Debug\SDL.dll /Y
-copy .\SDL.dll  ..\..\..\bin\VS_main\Release\SDL.dll /Y
+copy x86\SDL.dll  ..\..\..\bin\VS_main\Debug\SDL.dll /Y
+copy x86\SDL.dll  ..\..\..\bin\VS_main\Release\SDL.dll /Y
 
 cd ..\..\pthread-*
 cd .\lib\
