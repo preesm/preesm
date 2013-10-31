@@ -36,6 +36,7 @@
 package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
@@ -142,15 +143,45 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
+	 * @generated
+	 */
+	public NotificationChain basicSetContainer(Buffer newContainer,
+			NotificationChain msgs) {
+		Buffer oldContainer = container;
+		container = newContainer;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this,
+					Notification.SET, CodegenPackage.SUB_BUFFER__CONTAINER,
+					oldContainer, newContainer);
+			if (msgs == null)
+				msgs = notification;
+			else
+				msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 */
 	public void setContainer(Buffer newContainer) {
-		Buffer oldContainer = container;
-		container = newContainer;
-		if (eNotificationRequired())
+		if (newContainer != container) {
+			NotificationChain msgs = null;
+			if (container != null)
+				msgs = ((InternalEObject) container).eInverseRemove(this,
+						CodegenPackage.BUFFER__CHILDRENS, Buffer.class, msgs);
+			if (newContainer != null)
+				msgs = ((InternalEObject) newContainer).eInverseAdd(this,
+						CodegenPackage.BUFFER__CHILDRENS, Buffer.class, msgs);
+			msgs = basicSetContainer(newContainer, msgs);
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired()) {
 			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.SUB_BUFFER__CONTAINER, oldContainer,
-					container));
+					CodegenPackage.SUB_BUFFER__CONTAINER, newContainer,
+					newContainer));
+		}
 		if (getCreator() != null) {
 			newContainer.getUsers().add(getCreator());
 		}
@@ -185,6 +216,39 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET,
 					CodegenPackage.SUB_BUFFER__OFFSET, oldOffset, offset));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public NotificationChain eInverseAdd(InternalEObject otherEnd,
+			int featureID, NotificationChain msgs) {
+		switch (featureID) {
+		case CodegenPackage.SUB_BUFFER__CONTAINER:
+			if (container != null)
+				msgs = ((InternalEObject) container).eInverseRemove(this,
+						CodegenPackage.BUFFER__CHILDRENS, Buffer.class, msgs);
+			return basicSetContainer((Buffer) otherEnd, msgs);
+		}
+		return super.eInverseAdd(otherEnd, featureID, msgs);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public NotificationChain eInverseRemove(InternalEObject otherEnd,
+			int featureID, NotificationChain msgs) {
+		switch (featureID) {
+		case CodegenPackage.SUB_BUFFER__CONTAINER:
+			return basicSetContainer(null, msgs);
+		}
+		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
 
 	/**

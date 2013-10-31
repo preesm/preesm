@@ -35,6 +35,8 @@
  */
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
+import org.eclipse.emf.common.util.EList;
+
 /**
  * <!-- begin-user-doc --> A {@link Buffer} is a {@link Variable} that
  * represents an set of object of a given {@link #getType() type}. It can be
@@ -47,6 +49,8 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  * <ul>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getSize <em>
  * Size</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getChildrens
+ * <em>Childrens</em>}</li>
  * </ul>
  * </p>
  * 
@@ -83,5 +87,26 @@ public interface Buffer extends Variable {
 	 * @generated
 	 */
 	void setSize(int value);
+
+	/**
+	 * Returns the value of the '<em><b>Childrens</b></em>' reference list. The
+	 * list contents are of type
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer}. It is
+	 * bidirectional and its opposite is '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getContainer
+	 * <em>Container</em>}'. <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Childrens</em>' reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Childrens</em>' reference list.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBuffer_Childrens()
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getContainer
+	 * @model opposite="container"
+	 * @generated
+	 */
+	EList<SubBuffer> getChildrens();
 
 } // Buffer

@@ -93,7 +93,7 @@ class DynamicAllocCPrinter extends CPrinter {
 		IF call.parameters.size > 0»
 			«FOR i : 0 .. call.parameters.size -1 »
 				«IF call.parameterDirections.get(i) == PortDirection.OUTPUT»
-					«call.parameters.get(i).doSwitch» = malloc(«(call.parameters.get(i) as Buffer).size»*sizeof(«(call.parameters.get(i) as Buffer).type»));
+					«call.parameters.get(i).doSwitch» = («(call.parameters.get(i) as Buffer).type»*) malloc(«(call.parameters.get(i) as Buffer).size»*sizeof(«(call.parameters.get(i) as Buffer).type»));
 				«ENDIF»
 			«ENDFOR»
 		«ENDIF»
@@ -111,11 +111,11 @@ class DynamicAllocCPrinter extends CPrinter {
 	override printFifoCall(FifoCall fifoCall) '''
 		«IF fifoCall.operation == FifoOperation.INIT»
 			«IF fifoCall.bodyBuffer != null»
-				«fifoCall.bodyBuffer.doSwitch» = malloc(«fifoCall.bodyBuffer.size»*sizeof(«fifoCall.bodyBuffer.type»));
+				«fifoCall.bodyBuffer.doSwitch» = («fifoCall.bodyBuffer.type»*) malloc(«fifoCall.bodyBuffer.size»*sizeof(«fifoCall.bodyBuffer.type»));
 			«ENDIF»
 		«ENDIF»
 		«IF fifoCall.operation == FifoOperation.PUSH || fifoCall.operation == FifoOperation.INIT»
-			«fifoCall.headBuffer.doSwitch» = malloc(«fifoCall.headBuffer.size»*sizeof(«fifoCall.headBuffer.type»));
+			«fifoCall.headBuffer.doSwitch» = («fifoCall.headBuffer.type»*) malloc(«fifoCall.headBuffer.size»*sizeof(«fifoCall.headBuffer.type»));
 		«ENDIF»
 		«printCallWithMallocFree(fifoCall,super.printFifoCall(fifoCall))»
 		«IF fifoCall.operation == FifoOperation.POP»

@@ -489,6 +489,15 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	public EReference getBuffer_Childrens() {
+		return (EReference) bufferEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	public EClass getSubBuffer() {
 		return subBufferEClass;
 	}
@@ -1007,6 +1016,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
 		bufferEClass = createEClass(BUFFER);
 		createEAttribute(bufferEClass, BUFFER__SIZE);
+		createEReference(bufferEClass, BUFFER__CHILDRENS);
 
 		subBufferEClass = createEClass(SUB_BUFFER);
 		createEReference(subBufferEClass, SUB_BUFFER__CONTAINER);
@@ -1210,13 +1220,19 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		initEAttribute(getBuffer_Size(), ecorePackage.getEInt(), "size", null,
 				1, 1, Buffer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getBuffer_Childrens(), this.getSubBuffer(),
+				this.getSubBuffer_Container(), "childrens", null, 0, -1,
+				Buffer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
 		initEClass(subBufferEClass, SubBuffer.class, "SubBuffer", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getSubBuffer_Container(), this.getBuffer(), null,
-				"container", null, 1, 1, SubBuffer.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getSubBuffer_Container(), this.getBuffer(),
+				this.getBuffer_Childrens(), "container", null, 1, 1,
+				SubBuffer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 		initEAttribute(getSubBuffer_Offset(), ecorePackage.getEInt(), "offset",
 				null, 1, 1, SubBuffer.class, !IS_TRANSIENT, !IS_VOLATILE,
 				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,

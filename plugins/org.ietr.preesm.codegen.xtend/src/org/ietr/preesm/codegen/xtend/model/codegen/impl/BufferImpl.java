@@ -35,14 +35,21 @@
  */
 package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
+import java.util.Collection;
 import org.eclipse.emf.common.notify.Notification;
 
+import org.eclipse.emf.common.notify.NotificationChain;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 
+import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
+import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
+import org.eclipse.emf.ecore.util.InternalEList;
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
+import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -53,6 +60,9 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
  * <li>
  * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferImpl#getSize
  * <em>Size</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferImpl#getChildrens
+ * <em>Childrens</em>}</li>
  * </ul>
  * </p>
  * 
@@ -78,6 +88,16 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * @ordered
 	 */
 	protected int size = SIZE_EDEFAULT;
+
+	/**
+	 * The cached value of the '{@link #getChildrens() <em>Childrens</em>}'
+	 * reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #getChildrens()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<SubBuffer> childrens;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -125,11 +145,60 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * 
 	 * @generated
 	 */
+	public EList<SubBuffer> getChildrens() {
+		if (childrens == null) {
+			childrens = new EObjectWithInverseResolvingEList<SubBuffer>(
+					SubBuffer.class, this, CodegenPackage.BUFFER__CHILDRENS,
+					CodegenPackage.SUB_BUFFER__CONTAINER);
+		}
+		return childrens;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public NotificationChain eInverseAdd(InternalEObject otherEnd,
+			int featureID, NotificationChain msgs) {
+		switch (featureID) {
+		case CodegenPackage.BUFFER__CHILDRENS:
+			return ((InternalEList<InternalEObject>) (InternalEList<?>) getChildrens())
+					.basicAdd(otherEnd, msgs);
+		}
+		return super.eInverseAdd(otherEnd, featureID, msgs);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public NotificationChain eInverseRemove(InternalEObject otherEnd,
+			int featureID, NotificationChain msgs) {
+		switch (featureID) {
+		case CodegenPackage.BUFFER__CHILDRENS:
+			return ((InternalEList<?>) getChildrens()).basicRemove(otherEnd,
+					msgs);
+		}
+		return super.eInverseRemove(otherEnd, featureID, msgs);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 		case CodegenPackage.BUFFER__SIZE:
 			return getSize();
+		case CodegenPackage.BUFFER__CHILDRENS:
+			return getChildrens();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -139,11 +208,16 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * 
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 		case CodegenPackage.BUFFER__SIZE:
 			setSize((Integer) newValue);
+			return;
+		case CodegenPackage.BUFFER__CHILDRENS:
+			getChildrens().clear();
+			getChildrens().addAll((Collection<? extends SubBuffer>) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -160,6 +234,9 @@ public class BufferImpl extends VariableImpl implements Buffer {
 		case CodegenPackage.BUFFER__SIZE:
 			setSize(SIZE_EDEFAULT);
 			return;
+		case CodegenPackage.BUFFER__CHILDRENS:
+			getChildrens().clear();
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -174,6 +251,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
 		switch (featureID) {
 		case CodegenPackage.BUFFER__SIZE:
 			return size != SIZE_EDEFAULT;
+		case CodegenPackage.BUFFER__CHILDRENS:
+			return childrens != null && !childrens.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

@@ -380,13 +380,22 @@ public interface CodegenPackage extends EPackage {
 	int BUFFER__SIZE = VARIABLE_FEATURE_COUNT + 0;
 
 	/**
+	 * The feature id for the '<em><b>Childrens</b></em>' reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int BUFFER__CHILDRENS = VARIABLE_FEATURE_COUNT + 1;
+
+	/**
 	 * The number of structural features of the '<em>Buffer</em>' class. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int BUFFER_FEATURE_COUNT = VARIABLE_FEATURE_COUNT + 1;
+	int BUFFER_FEATURE_COUNT = VARIABLE_FEATURE_COUNT + 2;
 
 	/**
 	 * The meta object id for the '
@@ -453,6 +462,15 @@ public interface CodegenPackage extends EPackage {
 	 * @ordered
 	 */
 	int SUB_BUFFER__SIZE = BUFFER__SIZE;
+
+	/**
+	 * The feature id for the '<em><b>Childrens</b></em>' reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SUB_BUFFER__CHILDRENS = BUFFER__CHILDRENS;
 
 	/**
 	 * The feature id for the '<em><b>Container</b></em>' reference. <!--
@@ -1836,6 +1854,18 @@ public interface CodegenPackage extends EPackage {
 	EAttribute getBuffer_Size();
 
 	/**
+	 * Returns the meta object for the reference list '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getChildrens
+	 * <em>Childrens</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference list '<em>Childrens</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getChildrens()
+	 * @see #getBuffer()
+	 * @generated
+	 */
+	EReference getBuffer_Childrens();
+
+	/**
 	 * Returns the meta object for class '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 	 * <em>Sub Buffer</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2630,6 +2660,14 @@ public interface CodegenPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute BUFFER__SIZE = eINSTANCE.getBuffer_Size();
+
+		/**
+		 * The meta object literal for the '<em><b>Childrens</b></em>' reference
+		 * list feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference BUFFER__CHILDRENS = eINSTANCE.getBuffer_Childrens();
 
 		/**
 		 * The meta object literal for the '
