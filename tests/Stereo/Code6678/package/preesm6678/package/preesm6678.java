@@ -196,7 +196,7 @@ public class preesm6678
         po = (Proto.Obj)om.findStrict("preesm6678.Platform.Instance", "preesm6678");
         po.init("preesm6678.Platform.Instance", om.findStrict("xdc.platform.IPlatform.Instance", "preesm6678"));
                 po.addFld("$hostonly", $$T_Num, 1, "r");
-        po.addFld("codeMemory", $$T_Str, "L2SRAM", "wh");
+        po.addFld("codeMemory", $$T_Str, "MSMCSRAM", "wh");
         po.addFld("dataMemory", $$T_Str, "L2SRAM", "wh");
         po.addFld("stackMemory", $$T_Str, "L2SRAM", "wh");
                 fxn = Global.get(cap, "getCpuDataSheet");
@@ -212,7 +212,7 @@ public class preesm6678
         po = (Proto.Obj)om.findStrict("preesm6678.Platform$$Params", "preesm6678");
         po.init("preesm6678.Platform.Params", om.findStrict("xdc.platform.IPlatform$$Params", "preesm6678"));
                 po.addFld("$hostonly", $$T_Num, 1, "r");
-        po.addFld("codeMemory", $$T_Str, "L2SRAM", "wh");
+        po.addFld("codeMemory", $$T_Str, "MSMCSRAM", "wh");
         po.addFld("dataMemory", $$T_Str, "L2SRAM", "wh");
         po.addFld("stackMemory", $$T_Str, "L2SRAM", "wh");
         po = (Proto.Obj)om.findStrict("preesm6678.Platform$$Object", "preesm6678");
@@ -320,7 +320,7 @@ public class preesm6678
         }//isCFG
         Global.callFxn("module$meta$init", (Scriptable)om.findStrict("preesm6678.Platform", "preesm6678"));
         vo = (Value.Obj)om.findStrict("preesm6678.Platform", "preesm6678");
-        Global.put(vo, "CPU", Global.callFxn("create", (Scriptable)om.find("ti.platforms.generic.Platform"), "CPU", Global.newObject("clockRate", 1000L, "catalogName", "ti.catalog.c6000", "deviceName", "TMS320C6678", "customMemoryMap", Global.newArray(new Object[]{Global.newArray(new Object[]{"MSMCSRAM", Global.newObject("name", "MSMCSRAM", "base", 0x0C000000L, "len", 0x00100000L, "space", "code/data", "access", "RWX")}), Global.newArray(new Object[]{"L2SRAM", Global.newObject("name", "L2SRAM", "base", 0x00800000L, "len", 0x00080000L, "space", "code/data", "access", "RWX")}), Global.newArray(new Object[]{"DDR3", Global.newObject("name", "DDR3", "base", 0x80000000L, "len", 0x80000000L, "space", "code/data", "access", "RWX")})}), "l2Mode", "0k", "l1PMode", "32k", "l1DMode", "32k")));
+        Global.put(vo, "CPU", Global.callFxn("create", (Scriptable)om.find("ti.platforms.generic.Platform"), "CPU", Global.newObject("clockRate", 1000L, "catalogName", "ti.catalog.c6000", "deviceName", "TMS320C6678", "customMemoryMap", Global.newArray(new Object[]{Global.newArray(new Object[]{"MSMCSRAM", Global.newObject("name", "MSMCSRAM", "base", 0x0C000000L, "len", 0x00400000L, "space", "code/data", "access", "RWX")}), Global.newArray(new Object[]{"L2SRAM", Global.newObject("name", "L2SRAM", "base", 0x00800000L, "len", 0x00040000L, "space", "code/data", "access", "RWX")}), Global.newArray(new Object[]{"DDR3", Global.newObject("name", "DDR3", "base", 0x80000000L, "len", 0x80000000L, "space", "code/data", "access", "RWX")})}), "l2Mode", "256k", "l1PMode", "32k", "l1DMode", "32k")));
         Global.callFxn("init", pkgV);
         ((Value.Obj)om.getv("preesm6678.Platform")).bless();
         ((Value.Arr)om.findStrict("$packages", "preesm6678")).add(pkgV);

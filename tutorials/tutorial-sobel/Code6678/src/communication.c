@@ -16,6 +16,7 @@
 #include <ti/csl/csl_semAux.h>
 #include <ti/ipc/MultiProc.h>
 #include <ti/sysbios/knl/Task.h>
+#include "cache.h"
 
 // 8 local semaphore for each core (1 useless)
 Semaphore_Handle interCoreSem[8];
@@ -89,18 +90,18 @@ void busy_barrier() {
 		status = CSL_semAcquireDirect(2);
 	} while (status == 0);
 
-	CACHE_invL2(&barrier, 1, CACHE_WAIT);
+	cache_inv(&barrier, 1);
 	barrier |= (1 << procNumber);
-	CACHE_wbInvL2(&barrier, 1, CACHE_WAIT);
+	cache_wbInvL2(&barrier, 1);
 	CSL_semReleaseSemaphore(2);
 
 	if (procNumber == 0) {
 		while (barrier != (Char) 0xFF) {
 			Task_sleep(1);
-			CACHE_invL2(&barrier, 1, CACHE_WAIT);
+			cache_invL2(&barrier, 1);
 		}
 		barrier = (Char)0x00;
-		CACHE_wbInvL2(&barrier, 1, CACHE_WAIT);
+		cache_wbInvL2(&barrier, 1);
 		sendStart(1);
 		receiveEnd(7);
 	} else {

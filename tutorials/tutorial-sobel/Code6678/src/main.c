@@ -90,10 +90,9 @@ Int main(Int argc, Char* argv[]) {
 	// Then a new section is created for this memory range (cf .cfg). Memory
 	// translation is then used to make the region beginning fall into the
 	// MSMCSRAM. The rest naturally falls into DDR3.
-	// "translate" 2MB (0x14) from 0x80000000 to 0x00c100000 using the MPAX number 3
-	set_MPAX(3, 0x80000, 0x00c100, 0x14, CACHEABLE);
-	// "translate" 1MB (0x13) from 0x80020000 to 0x00c3ff000 using the MPAX number 4
-	set_MPAX(4, 0x80020, 0x00c300, 0x13, CACHEABLE);
+	// "translate" 2MB (0x14) from 0x80000000 to 0x00c200000 using the MPAX number 3
+	set_MPAX(3, 0x80000, 0x00c200, 0x14, CACHEABLE);
+	*/
 
 	// Disable caching from 0x80000000 to 0xFFFFFFFF
 	if(!CACHEABLE){
@@ -102,7 +101,7 @@ Int main(Int argc, Char* argv[]) {
 			CACHE_disableCaching(index);
 		}
 	}
-	*/
+
 
 	BIOS_start();
 

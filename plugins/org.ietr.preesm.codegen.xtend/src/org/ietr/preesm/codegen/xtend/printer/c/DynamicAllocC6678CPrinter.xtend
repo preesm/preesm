@@ -132,13 +132,13 @@ class DynamicAllocC6678CPrinter extends C6678CPrinter {
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
 		«IF communication.direction == Direction::SEND && communication.delimiter == Delimiter::START»
 			«FOR subbuffer : (communication.data as Buffer).childrens»
-				cache_wbInv(«subbuffer.doSwitch», «subbuffer.size»*sizeof(«subbuffer.type»)); //<=============
+				cache_wbInv(«subbuffer.doSwitch», «subbuffer.size»*sizeof(«subbuffer.type»));
 			«ENDFOR»
 		«ENDIF»
 		«super.printSharedMemoryCommunication(communication).toString.replaceAll("(cache_.*?;)","// $1")»
 		«IF communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END»
 			«FOR subbuffer : (communication.data as Buffer).childrens»
-				cache_inv(«subbuffer.doSwitch», «subbuffer.size»*sizeof(«subbuffer.type»)); //<=============
+				cache_inv(«subbuffer.doSwitch», «subbuffer.size»*sizeof(«subbuffer.type»));
 			«ENDFOR»
 		«ENDIF»	
 	'''

@@ -1,5 +1,5 @@
 #
-_XDCBUILDCOUNT = 3
+_XDCBUILDCOUNT = 4
 ifneq (,$(findstring path,$(_USEXDCENV_)))
 override XDCPATH = 
 override XDCROOT = C:/ti/xdctools_3_23_04_60

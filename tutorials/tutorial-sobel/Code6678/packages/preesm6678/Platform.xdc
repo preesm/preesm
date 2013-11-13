@@ -16,7 +16,7 @@ metaonly module Platform inherits xdc.platform.IPlatform {
                      {
                         name: "MSMCSRAM",
                         base: 0x0c000000,                    
-                        len: 0x00100000,                    
+                        len: 0x00200000,                    
                         space: "code/data",
                         access: "RWX",
                      }
