@@ -211,15 +211,15 @@ class CPrinter extends DefaultPrinter {
 		 lastInputs
 		 }»
 	{
-	«FOR input : copiedInBuffers»
-		«FOR nbIter : 0..input.size/output.size+1/*Worst number the loop exec */»
-			«IF inputIdx < input.size /* Execute loop core until all input for current buffer are produced */»
-				«val value = Math::min(input.size-inputIdx,output.size-index)»«
-				printMemcpy(output,index,input,inputIdx,value,input.type)»«
-				{index=(index+value)%output.size;inputIdx=(inputIdx+value); ""}»
-			«ENDIF»
+		«FOR input : copiedInBuffers»
+			«FOR nbIter : 0..input.size/output.size+1/*Worst number the loop exec */»
+				«IF inputIdx < input.size /* Execute loop core until all input for current buffer are produced */»
+					«val value = Math::min(input.size-inputIdx,output.size-index)»«
+					printMemcpy(output,index,input,inputIdx,value,input.type)»«
+					{index=(index+value)%output.size;inputIdx=(inputIdx+value); ""}»
+				«ENDIF»
+			«ENDFOR»
 		«ENDFOR»
-	«ENDFOR»
 	}
 	'''
 	
