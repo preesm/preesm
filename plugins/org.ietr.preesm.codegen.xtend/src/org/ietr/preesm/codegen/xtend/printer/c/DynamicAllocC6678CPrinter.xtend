@@ -42,7 +42,7 @@ class DynamicAllocC6678CPrinter extends C6678CPrinter {
 
 	override printBufferDefinition(Buffer buffer) '''
 		#pragma DATA_SECTION(«buffer.name»,".MSMCSRAM");
-		#pragma DATA_ALIGN(«buffer.name», 64);
+		#pragma DATA_ALIGN(«buffer.name», 128);
 		«buffer.type» far *«buffer.name»; // «buffer.comment» size:= «buffer.size»*«buffer.type»
 	'''
 	
@@ -78,8 +78,7 @@ class DynamicAllocC6678CPrinter extends C6678CPrinter {
 		IF call.parameters.size > 0»
 			«FOR i : 0 .. call.parameters.size -1 »
 				«IF call.parameterDirections.get(i) == PortDirection.OUTPUT»
-					«call.parameters.get(i).doSwitch» = («(call.parameters.get(i) as Buffer).type»*) HeapMemMP_alloc(sharedHeap,«(call.parameters.get(i) as Buffer).size»*sizeof(«(call.parameters.get(i) as Buffer).type»), 128);
-					cache_wb(&«call.parameters.get(i).doSwitch», 1);
+					«printMalloc(call.parameters.get(i) as Buffer)»
 				«ENDIF»
 			«ENDFOR»
 		«ENDIF»
@@ -88,8 +87,7 @@ class DynamicAllocC6678CPrinter extends C6678CPrinter {
 		IF call.parameters.size > 0»
 			«FOR i : 0 .. call.parameters.size -1 »
 				«IF call.parameterDirections.get(i) == PortDirection.INPUT»
-					HeapMemMP_free(sharedHeap,«call.parameters.get(i).doSwitch», «(call.parameters.get(i) as Buffer).size»*sizeof(«(call.parameters.get(i) as Buffer).type»));
-					cache_inv(&«call.parameters.get(i).doSwitch», 1);
+					«printFree(call.parameters.get(i) as Buffer)»
 				«ENDIF»
 			«ENDFOR»
 		«ENDIF»
@@ -98,18 +96,15 @@ class DynamicAllocC6678CPrinter extends C6678CPrinter {
 	override printFifoCall(FifoCall fifoCall) '''
 		«IF fifoCall.operation == FifoOperation.INIT»
 			«IF fifoCall.bodyBuffer != null»
-				«fifoCall.bodyBuffer.doSwitch» = («fifoCall.bodyBuffer.type»*) HeapMemMP_alloc(sharedHeap, «fifoCall.bodyBuffer.size»*sizeof(«fifoCall.bodyBuffer.type»), 128);
-				cache_wb(&«fifoCall.bodyBuffer.doSwitch», 1);
+				«printMalloc(fifoCall.bodyBuffer)»
 			«ENDIF»
 		«ENDIF»
 		«IF fifoCall.operation == FifoOperation.PUSH || fifoCall.operation == FifoOperation.INIT»
-			«fifoCall.headBuffer.doSwitch» = («fifoCall.headBuffer.type»*) HeapMemMP_alloc(sharedHeap, «fifoCall.headBuffer.size»*sizeof(«fifoCall.headBuffer.type»), 128);
-			cache_wb(&«fifoCall.headBuffer.doSwitch», 1);
+			«printMalloc(fifoCall.headBuffer)»
 		«ENDIF»
 		«printCallWithMallocFree(fifoCall,super.printFifoCall(fifoCall))»
 		«IF fifoCall.operation == FifoOperation.POP»
-			HeapMemMP_free(sharedHeap, «fifoCall.headBuffer.doSwitch», «fifoCall.headBuffer.size»*sizeof(«fifoCall.headBuffer.type»));
-			cache_inv(&«fifoCall.headBuffer.doSwitch», 1);
+			«printFree(fifoCall.headBuffer)»
 		«ENDIF»
 	'''
 	
@@ -128,6 +123,31 @@ class DynamicAllocC6678CPrinter extends C6678CPrinter {
 	override printJoin(SpecialCall call) '''
 		«printCallWithMallocFree(call,super.printJoin(call))»
 	'''
+	/**
+	 * Methods used to print a Malloc.
+	 * @param buffer 
+	 * 			the {@link Buffer} that is allocated  
+	 * @return the printed code as a {@link CharSequence}.
+ 	 */
+	def printMalloc(Buffer buffer) {
+		'''
+			«buffer.doSwitch» = («buffer.type»*) HeapMemMP_alloc(sharedHeap,«buffer.size»*sizeof(«buffer.type»), 128);
+			cache_wb(&«buffer.doSwitch», 1);
+		'''
+	}
+	
+	/**
+	 * Methods used to print a Free.
+	 * @param buffer 
+	 * 			the {@link Buffer} that freed  
+	 * @return the printed code as a {@link CharSequence}.
+ 	 */
+	def printFree(Buffer buffer) {
+		'''
+			HeapMemMP_free(sharedHeap, «buffer.doSwitch», «buffer.size»*sizeof(«buffer.type»));
+			cache_inv(&«buffer.doSwitch», 1);
+		'''
+	}
 	
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
 		«IF communication.direction == Direction::SEND && communication.delimiter == Delimiter::START»
