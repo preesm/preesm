@@ -20,6 +20,8 @@ The project compilation requires the following libraries:
 
 1. Download the SDL Development libraries corresponding to your IDE. 
    http://www.libsdl.org/download-1.2.php
+   Among the different proposed libraries, make sure you use the "Development libraries"
+
 
 2. Decompress the dowloaded file in the following directory:
    /sobel-example/Code/lib/SDL-1.2.xx/
