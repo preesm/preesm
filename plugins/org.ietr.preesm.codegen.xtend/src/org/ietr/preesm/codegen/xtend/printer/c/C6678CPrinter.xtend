@@ -212,13 +212,15 @@ class C6678CPrinter extends CPrinter {
 	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {
 		super.preProcessing(printerBlocks, allBlocks)
 
-		/** Remove semaphore init */
 		for (block : printerBlocks) {
+			/** Remove semaphore init */
 			(block as CoreBlock).initBlock.codeElts.removeAll(
 				((block as CoreBlock).initBlock.codeElts.filter[
 					(it instanceof FunctionCall && (it as FunctionCall).name.startsWith("sem_init"))]))
-
-		}
-	}
-	
+			/** Remove semaphores */
+			(block as CoreBlock).definitions.removeAll((block as CoreBlock).definitions.filter[it instanceof Semaphore])
+			(block as CoreBlock).declarations.removeAll(
+				(block as CoreBlock).declarations.filter[it instanceof Semaphore])
+		}		
+	}	
 }

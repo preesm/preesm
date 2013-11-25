@@ -82,6 +82,7 @@ class DynamicAllocCPrinter extends CPrinter {
 	/**
 	 * Associates a buffer to all its merged buffers.
 	 */
+	 @Property
 	var mergedMalloc = new HashMap<Buffer,List<Buffer>>
 	
 	/**
@@ -91,6 +92,7 @@ class DynamicAllocCPrinter extends CPrinter {
 	 * effective for these buffers. Extra care must be taken to ensure that only
 	 * one malloc is executed.
 	 */
+	 @Property
 	var mergedFree = new HashMap<Buffer, List<Buffer>>
 	
 	/**
@@ -98,11 +100,13 @@ class DynamicAllocCPrinter extends CPrinter {
 	 * used to ensure that the malloc for this {@link Buffer} is only called
 	 * once.
 	 */
+	 @Property
 	var mergedFreeSemaphore = new HashMap<Buffer,Semaphore>
 	
 	/**
 	 * Associates merged buffers to their allocated buffer.
 	 */
+	 @Property
 	var mergedBuffers = new HashMap<Buffer,Buffer>
 	
 	override printCoreBlockHeader(CoreBlock block) '''

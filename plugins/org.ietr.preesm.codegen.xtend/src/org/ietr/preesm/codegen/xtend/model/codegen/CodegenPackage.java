@@ -1582,6 +1582,81 @@ public interface CodegenPackage extends EPackage {
 
 	/**
 	 * The meta object id for the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.ConstantStringImpl
+	 * <em>Constant String</em>}' class. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.ConstantStringImpl
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getConstantString()
+	 * @generated
+	 */
+	int CONSTANT_STRING = 20;
+
+	/**
+	 * The feature id for the '<em><b>Comment</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int CONSTANT_STRING__COMMENT = VARIABLE__COMMENT;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int CONSTANT_STRING__NAME = VARIABLE__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int CONSTANT_STRING__TYPE = VARIABLE__TYPE;
+
+	/**
+	 * The feature id for the '<em><b>Creator</b></em>' container reference.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int CONSTANT_STRING__CREATOR = VARIABLE__CREATOR;
+
+	/**
+	 * The feature id for the '<em><b>Users</b></em>' reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int CONSTANT_STRING__USERS = VARIABLE__USERS;
+
+	/**
+	 * The feature id for the '<em><b>Value</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int CONSTANT_STRING__VALUE = VARIABLE_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>Constant String</em>'
+	 * class. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int CONSTANT_STRING_FEATURE_COUNT = VARIABLE_FEATURE_COUNT + 1;
+
+	/**
+	 * The meta object id for the '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Direction
 	 * <em>Direction</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -1589,7 +1664,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDirection()
 	 * @generated
 	 */
-	int DIRECTION = 20;
+	int DIRECTION = 21;
 
 	/**
 	 * The meta object id for the '
@@ -1600,7 +1675,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDelimiter()
 	 * @generated
 	 */
-	int DELIMITER = 21;
+	int DELIMITER = 22;
 
 	/**
 	 * The meta object id for the '
@@ -1612,7 +1687,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getSpecialType()
 	 * @generated
 	 */
-	int SPECIAL_TYPE = 22;
+	int SPECIAL_TYPE = 23;
 
 	/**
 	 * The meta object id for the '
@@ -1624,7 +1699,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getFifoOperation()
 	 * @generated
 	 */
-	int FIFO_OPERATION = 23;
+	int FIFO_OPERATION = 24;
 
 	/**
 	 * The meta object id for the '
@@ -1636,7 +1711,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getPortDirection()
 	 * @generated
 	 */
-	int PORT_DIRECTION = 24;
+	int PORT_DIRECTION = 25;
 
 	/**
 	 * Returns the meta object for class '
@@ -2418,6 +2493,29 @@ public interface CodegenPackage extends EPackage {
 	EReference getSharedMemoryCommunication_Semaphore();
 
 	/**
+	 * Returns the meta object for class '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
+	 * <em>Constant String</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for class '<em>Constant String</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
+	 * @generated
+	 */
+	EClass getConstantString();
+
+	/**
+	 * Returns the meta object for the attribute '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.ConstantString#getValue
+	 * <em>Value</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Value</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.ConstantString#getValue()
+	 * @see #getConstantString()
+	 * @generated
+	 */
+	EAttribute getConstantString_Value();
+
+	/**
 	 * Returns the meta object for enum '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Direction
 	 * <em>Direction</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -3121,6 +3219,26 @@ public interface CodegenPackage extends EPackage {
 		 */
 		EReference SHARED_MEMORY_COMMUNICATION__SEMAPHORE = eINSTANCE
 				.getSharedMemoryCommunication_Semaphore();
+
+		/**
+		 * The meta object literal for the '
+		 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.ConstantStringImpl
+		 * <em>Constant String</em>}' class. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.ConstantStringImpl
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getConstantString()
+		 * @generated
+		 */
+		EClass CONSTANT_STRING = eINSTANCE.getConstantString();
+
+		/**
+		 * The meta object literal for the '<em><b>Value</b></em>' attribute
+		 * feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute CONSTANT_STRING__VALUE = eINSTANCE.getConstantString_Value();
 
 		/**
 		 * The meta object literal for the '

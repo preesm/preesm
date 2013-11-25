@@ -1,3 +1,13 @@
+/*
+ ============================================================================
+ Name        : communication.h
+ Author      : kdesnos
+ Version     : 1.0
+ Copyright   : CeCILL-C, IETR, INSA Rennes
+ Description : Communication primitives for Preesm generated C6X code.
+ ============================================================================
+ */
+
 #ifndef COMMUNICATION_H
 #define COMMUNICATION_H
 #include <xdc/std.h>

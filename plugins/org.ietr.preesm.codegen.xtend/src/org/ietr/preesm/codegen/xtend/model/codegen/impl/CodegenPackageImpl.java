@@ -57,6 +57,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Commentable;
 import org.ietr.preesm.codegen.xtend.model.codegen.Communication;
 import org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode;
 import org.ietr.preesm.codegen.xtend.model.codegen.Constant;
+import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString;
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter;
 import org.ietr.preesm.codegen.xtend.model.codegen.Direction;
@@ -218,6 +219,13 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * @generated
 	 */
 	private EClass sharedMemoryCommunicationEClass = null;
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	private EClass constantStringEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -925,6 +933,25 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	public EClass getConstantString() {
+		return constantStringEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EAttribute getConstantString_Value() {
+		return (EAttribute) constantStringEClass.getEStructuralFeatures()
+				.get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	public EEnum getDirection() {
 		return directionEEnum;
 	}
@@ -1081,6 +1108,9 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		createEReference(sharedMemoryCommunicationEClass,
 				SHARED_MEMORY_COMMUNICATION__SEMAPHORE);
 
+		constantStringEClass = createEClass(CONSTANT_STRING);
+		createEAttribute(constantStringEClass, CONSTANT_STRING__VALUE);
+
 		// Create enums
 		directionEEnum = createEEnum(DIRECTION);
 		delimiterEEnum = createEEnum(DELIMITER);
@@ -1136,6 +1166,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		semaphoreEClass.getESuperTypes().add(this.getVariable());
 		sharedMemoryCommunicationEClass.getESuperTypes().add(
 				this.getCommunication());
+		constantStringEClass.getESuperTypes().add(this.getVariable());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(blockEClass, Block.class, "Block", !IS_ABSTRACT,
@@ -1444,6 +1475,14 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 				SharedMemoryCommunication.class, !IS_TRANSIENT, !IS_VOLATILE,
 				IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(constantStringEClass, ConstantString.class,
+				"ConstantString", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getConstantString_Value(), ecorePackage.getEString(),
+				"value", null, 1, 1, ConstantString.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(directionEEnum, Direction.class, "Direction");

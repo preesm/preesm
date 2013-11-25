@@ -2,7 +2,7 @@
  ============================================================================
  Name        : cache.h
  Author      : kdesnos
- Version     : 1.0
+ Version     : 1.1
  Copyright   : CECILL-C
  Description : Parameter to configure the cache.
  ============================================================================
@@ -25,12 +25,14 @@
 #ifndef L2
 #ifndef L1
 // NO cache is activated
+#define CACHE_LINE_SIZE 0
 #define cache_wbInv(buffer,size)
 #define cache_wb(buffer,size)
 #define cache_inv(buffer,size)
 
 #else
 // L1 is activated
+#define CACHE_LINE_SIZE CACHE_L1D_LINESIZE
 #define cache_wbInv(buffer,size) 	cache_wbInvL1D(buffer,size)
 #define cache_wb(buffer,size) 		cache_wbL1D(buffer,size)
 #define cache_inv(buffer,size)		cache_invL1D(buffer,size)
@@ -39,10 +41,12 @@
 #else
 
 // L2 is activated
+#define CACHE_LINE_SIZE CACHE_L2_LINESIZE
 #define cache_wbInv(buffer,size) 	cache_wbInvL2(buffer,size)
 #define cache_wb(buffer,size) 		cache_wbL2(buffer,size)
 #define cache_inv(buffer,size)		cache_invL2(buffer,size)
 #endif
+
 
 // cf Advisory 7 from sprz334f
 

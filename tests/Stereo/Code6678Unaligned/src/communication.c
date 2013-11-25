@@ -1,8 +1,11 @@
 /*
- * communication.c
- *
- *  Created on: 7 août 2013
- *      Author: Karol
+ ============================================================================
+ Name        : communication.c
+ Author      : kdesnos
+ Version     : 1.0
+ Copyright   : CECILL-C
+ Description : Comunication primitives for C6678
+ ============================================================================
  */
 #include <xdc/std.h>
 /*  ----------------------------------- IPC module Headers           */
@@ -17,6 +20,7 @@
 #include <ti/ipc/MultiProc.h>
 #include <ti/sysbios/knl/Task.h>
 #include "cache.h"
+#include "semaphore6678.h"
 
 // 8 local semaphore for each core (1 useless)
 Semaphore_Handle interCoreSem[8];
@@ -24,8 +28,9 @@ Semaphore_Handle interCoreSem[8];
 /* Interrupt line used (0 is default) */
 #define INTERRUPT_LINE  0
 
-/* Notify event number that the app uses */
-#define EVENTID         10
+/* Notify event number that the app uses for send/receive*/
+#define EVENTIDSENDRECEIVE         10
+
 
 #pragma DATA_SECTION(barrier, ".MSMCSRAM")
 Char barrier = 0x00;
@@ -40,7 +45,7 @@ void sendStart(Uint16 coreID) {
 	// The last parameter (TRUE) may cause this function to block.
 	// In such case, maybe the penultimate parameter could be used to signal
 	// that several send are grouped within a single notify event
-	Int status = Notify_sendEvent(coreID, INTERRUPT_LINE, EVENTID, 0, TRUE);
+	Int status = Notify_sendEvent(coreID, INTERRUPT_LINE, EVENTIDSENDRECEIVE, 0, TRUE);
 	if (status < 0) {
 		System_abort("sendEvent failed\n");
 	}
@@ -71,8 +76,19 @@ void communicationInit() {
 	 *  Register the same callback for all remote processor
 	 */
 	for (i = 0; i < 8; i++) {
-		status = Notify_registerEvent(i, INTERRUPT_LINE, EVENTID,
+		status = Notify_registerEvent(i, INTERRUPT_LINE, EVENTIDSENDRECEIVE,
 				(Notify_FnNotifyCbck) callbackInterCoreCom, NULL);
+		if (status < 0) {
+			System_abort("Notify_registerEvent failed\n");
+		}
+	}
+
+	/*
+	 * Register sem_deleteCallback for all remote processors
+	 */
+	for (i = 0; i < 8; i++) {
+		status = Notify_registerEvent(i, INTERRUPT_LINE, EVENTID_SEM_DELETE,
+				(Notify_FnNotifyCbck) sem_destroyCallback, NULL);
 		if (status < 0) {
 			System_abort("Notify_registerEvent failed\n");
 		}

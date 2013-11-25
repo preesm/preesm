@@ -51,6 +51,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.Block
 import java.util.HashMap
+import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
 
 /**
  * This {@link DevelopperPrinter} is a dummy implementation of the 
@@ -96,6 +97,12 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printConstantDeclaration(Constant constant) '''<Constant_Declaration>'''
 
 	override printConstantDefinition(Constant constant) '''<Consant_Definition>'''
+	
+	override printConstantString(ConstantString constant) '''<ConstantString>'''
+
+	override printConstantStringDeclaration(ConstantString constant) '''<ConstantString_Declaration>'''
+
+	override printConstantStringDefinition(ConstantString constant) '''<ConstantString_Definition>'''
 
 	override printCoreBlockFooter(CoreBlock block) '''<Core_Block_Foot>'''
 

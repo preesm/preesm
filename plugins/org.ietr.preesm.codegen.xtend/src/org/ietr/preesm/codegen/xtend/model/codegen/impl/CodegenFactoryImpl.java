@@ -122,6 +122,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 			return createSemaphore();
 		case CodegenPackage.SHARED_MEMORY_COMMUNICATION:
 			return createSharedMemoryCommunication();
+		case CodegenPackage.CONSTANT_STRING:
+			return createConstantString();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName()
 					+ "' is not a valid classifier");
@@ -334,6 +336,16 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	public SharedMemoryCommunication createSharedMemoryCommunication() {
 		SharedMemoryCommunicationImpl sharedMemoryCommunication = new SharedMemoryCommunicationImpl();
 		return sharedMemoryCommunication;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public ConstantString createConstantString() {
+		ConstantStringImpl constantString = new ConstantStringImpl();
+		return constantString;
 	}
 
 	/**

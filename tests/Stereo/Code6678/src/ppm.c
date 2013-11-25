@@ -16,8 +16,18 @@
 
 #include <string.h>
 
-#include "im0.h"
-#include "im1.h"
+/** Input Data in a "NOINIT" section must be loaded separately */
+/** DAT File can be downloaded here:
+ *  http://preesm.sourceforge.net/website/data/uploads/other/im0.dat*/
+#pragma DATA_SECTION(im0_data,".myNoInitMem")
+static const unsigned char im0_data[375*450*3];
+
+/** Input Data in a "NOINIT" section must be loaded separately */
+/** DAT File can be downloaded here:
+ *  http://preesm.sourceforge.net/website/data/uploads/other/im1.dat*/
+#pragma DATA_SECTION(im1_data,".myNoInitMem")
+static const unsigned char im1_data[375*450*3];
+
 #define NB_ITERATION_MEASURED 1
 
 /*========================================================================

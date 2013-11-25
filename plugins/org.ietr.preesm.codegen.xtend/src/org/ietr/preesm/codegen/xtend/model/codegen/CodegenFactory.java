@@ -199,6 +199,15 @@ public interface CodegenFactory extends EFactory {
 	SharedMemoryCommunication createSharedMemoryCommunication();
 
 	/**
+	 * Returns a new object of class '<em>Constant String</em>'. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return a new object of class '<em>Constant String</em>'.
+	 * @generated
+	 */
+	ConstantString createConstantString();
+
+	/**
 	 * Returns the package supported by this factory. <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * 

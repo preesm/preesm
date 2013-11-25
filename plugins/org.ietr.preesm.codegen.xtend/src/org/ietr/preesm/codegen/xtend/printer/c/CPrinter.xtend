@@ -54,6 +54,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 import org.ietr.preesm.codegen.xtend.printer.DefaultPrinter
 import org.ietr.preesm.codegen.xtend.task.CodegenException
 import java.util.ArrayList
+import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
 
 /**
  * This printer is currently used to print C code only for X86 processor with
@@ -301,6 +302,8 @@ class CPrinter extends DefaultPrinter {
 	'''
 	
 	override printConstant(Constant constant) '''«constant.value»«IF !constant.name.nullOrEmpty»/*«constant.name»*/«ENDIF»'''
+	
+	override printConstantString(ConstantString constant) '''"«constant.value»"'''
 
 	override printBuffer(Buffer buffer) '''«buffer.name»'''
 	

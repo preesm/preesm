@@ -57,6 +57,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.Block
 import java.util.Map
+import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
 
 enum PrinterState {
 	PRINTING_DEFINITIONS,
@@ -406,6 +407,16 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 		return printConstant(constant)
 	}
 
+	override caseConstantString(ConstantString constant) {
+		if (state.equals(PrinterState::PRINTING_DEFINITIONS))
+			return printConstantStringDefinition(constant)
+
+		if (state.equals(PrinterState::PRINTING_DECLARATIONS))
+			return printConstantStringDeclaration(constant)
+
+		return printConstantString(constant)
+	}
+
 	override defaultCase(EObject object) {
 		throw new CodegenException(
 			"Object " + object + " is not supported by the printer" + this + "in its current state. "
@@ -616,6 +627,40 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printConstantDefinition(Constant constant)
+	
+	/**
+	 * Method called to print a {@link ConstantString} outside the
+	 * {@link CoreBlock#getDefinitions() definition} or the
+	 * {@link CoreBlock#getDeclarations() declaration} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param constant
+	 *            the {@link ConstantString} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printConstantString(ConstantString constant)
+
+	/**
+	 * Method called to print a {@link ConstantString} within the
+	 * {@link CoreBlock#getDeclarations() declaration} {@link CallBlock} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param constant
+	 *            the {@link ConstantString} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printConstantStringDeclaration(ConstantString constant)
+
+	/**
+	 * Method called to print a {@link ConstantString} within the
+	 * {@link CoreBlock#getDefinitions() definition} {@link LoopBlock} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param constant
+	 *            the {@link ConstantString} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printConstantStringDefinition(ConstantString constant)
 
 	/**
 	 * Method called after printing all code belonging 
