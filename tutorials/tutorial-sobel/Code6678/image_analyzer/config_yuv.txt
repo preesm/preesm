@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.6.0_13" class="java.beans.XMLDecoder"> 
+ <object class="com.ti.dvt.ui.views.core.ImageProp"> 
+  <void property="delegateProp"> 
+   <object class="com.ti.dvt.ui.views.core.YUVProp"> 
+    <void property="ULineStride"> 
+     <int>176</int> 
+    </void> 
+    <void property="UMask"> 
+     <long>255</long> 
+    </void> 
+    <void property="UPixelStride"> 
+     <int>1</int> 
+    </void> 
+    <void property="UStartAddress"> 
+     <string>0x80018C00</string> 
+    </void> 
+    <void property="UVvs"> 
+     <int>2</int> 
+    </void> 
+    <void property="VLineStride"> 
+     <int>176</int> 
+    </void> 
+    <void property="VMask"> 
+     <long>255</long> 
+    </void> 
+    <void property="VPixelStride"> 
+     <int>1</int> 
+    </void> 
+    <void property="VStartAddress"> 
+     <string>0x8001EF00</string> 
+    </void> 
+    <void property="YLineStride"> 
+     <int>352</int> 
+    </void> 
+    <void property="YMask"> 
+     <long>255</long> 
+    </void> 
+    <void property="YPixelStride"> 
+     <int>1</int> 
+    </void> 
+    <void property="YStartAddress"> 
+     <string>0x80000000</string> 
+    </void> 
+    <void property="dataFormat"> 
+     <string>Planar</string> 
+    </void> 
+    <void property="lineCount"> 
+     <int>288</int> 
+    </void> 
+    <void property="pixelCountPerLine"> 
+     <int>352</int> 
+    </void> 
+    <void property="resolution"> 
+     <string>4:2:0</string> 
+    </void> 
+   </object> 
+  </void> 
+  <void property="scrollLock"> 
+   <boolean>true</boolean> 
+  </void> 
+ </object> 
+</java> 
