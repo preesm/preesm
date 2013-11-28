@@ -11,6 +11,8 @@
 #ifndef X86_H
 #define X86_H
 
+#define VERBOSE
+	
 #ifdef _WIN32
 #include <windows.h>
 #include <pthread.h>

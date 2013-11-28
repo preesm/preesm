@@ -24,7 +24,7 @@ set(CMAKE_C_FLAGS "-std=c99 -DX1_CORE")
 # Set variables before finding SDL Library
 # Helps to find where SDL libraries are saved (win32 only)
 if(WIN32)
-	set(ENV{SDLDIR} ${LIBS_DIR}/SDL-*/lib/x86)
+	set(ENV{SDLDIR} ${LIBS_DIR}/SDL-*)
 	#set(ENV{SDLIMAGEDIR} ${LIBS_DIR}/SDL_image-*)
 endif()
 
