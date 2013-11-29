@@ -24,4 +24,10 @@ The project compilation requires the following libraries:
    directory.
 
 3. Copy the content of the decompressed /Pre-built.2/ directory into
-   /sobel-example/Code/lib/pthread-2.8.0/
+   /introduction/Code/lib/pthread-2.8.0/
+   
+   Your directory /introduction/Code/lib/pthread-2.8.0/ should contain:
+   - include/
+   - lib/
+   - README
+   ...
