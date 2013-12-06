@@ -18,7 +18,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.graphiti;bundle-version="0.9.1",
  org.ietr.preesm.experiment.ui.pimm;bundle-version="0.1.0",
  org.eclipse.ui.navigator,
- org.eclipse.ui.ide;bundle-version="3.8.1"
+ org.eclipse.ui.ide;bundle-version="3.8.1",
+ org.eclipse.emf.transaction;bundle-version="1.4.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.ietr.preesm.experiment.model.transformation

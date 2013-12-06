@@ -4,8 +4,6 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EGenericType;
-import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
@@ -747,26 +745,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getExpression_ExpressionString() {
+	public EAttribute getExpression_String() {
 		return (EAttribute)expressionEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getExpression_ValueString() {
-		return (EAttribute)expressionEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getExpression_AllExpression() {
-		return (EAttribute)expressionEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -882,9 +862,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		createEReference(delayEClass, DELAY__EXPRESSION);
 
 		expressionEClass = createEClass(EXPRESSION);
-		createEAttribute(expressionEClass, EXPRESSION__EXPRESSION_STRING);
-		createEAttribute(expressionEClass, EXPRESSION__VALUE_STRING);
-		createEAttribute(expressionEClass, EXPRESSION__ALL_EXPRESSION);
+		createEAttribute(expressionEClass, EXPRESSION__STRING);
 	}
 
 	/**
@@ -1014,16 +992,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEReference(getDelay_Expression(), this.getExpression(), null, "expression", null, 1, 1, Delay.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(expressionEClass, Expression.class, "Expression", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getExpression_ExpressionString(), ecorePackage.getEString(), "expressionString", "0", 0, 1, Expression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getExpression_ValueString(), ecorePackage.getEString(), "valueString", "0", 0, 1, Expression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getExpression_AllExpression(), ecorePackage.getEString(), "allExpression", "0", 0, 1, Expression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getExpression_String(), ecorePackage.getEString(), "string", "0", 1, 1, Expression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		EOperation op = addEOperation(expressionEClass, ecorePackage.getEInt(), "evaluate", 0, 1, !IS_UNIQUE, IS_ORDERED);
-		addEParameter(op, ecorePackage.getEObject(), "obj", 0, 1, IS_UNIQUE, IS_ORDERED);
-		EGenericType g1 = createEGenericType(ecorePackage.getEEList());
-		EGenericType g2 = createEGenericType();
-		g1.getETypeArguments().add(g2);
-		addEParameter(op, g1, "listExpression", 0, 1, IS_UNIQUE, IS_ORDERED);
+		addEOperation(expressionEClass, ecorePackage.getEString(), "evaluate", 1, 1, IS_UNIQUE, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

@@ -19,7 +19,9 @@ import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
+import org.ietr.preesm.experiment.model.pimm.InputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.OutputPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -32,6 +34,7 @@ import org.w3c.dom.Node;
  * Writer for the PiMM Model in the Pi format
  * 
  * @author kdesnos
+ * @author jheulot
  * 
  */
 public class PiWriter {
@@ -305,6 +308,7 @@ public class PiWriter {
 	 */
 	protected void writeDelay(Element fifoElt, Delay delay) {
 		writeDataElt(fifoElt, "delay", null);
+		fifoElt.setAttribute("expr", delay.getExpression().getString());
 		// TODO when delay class will be updated, modify the writer/parser.
 		// Maybe a specific element will be needed to store the Expression
 		// associated to a delay as well as it .h file storing the default value
@@ -477,6 +481,7 @@ public class PiWriter {
 		// Set the kind of the node
 		if (!param.isConfigurationInterface()) {
 			paramElt.setAttribute("kind", "param");
+			paramElt.setAttribute("expr", param.getExpression().getString());
 		} else {
 			paramElt.setAttribute("kind", "cfg_in_iface");
 		}
@@ -515,6 +520,19 @@ public class PiWriter {
 			Element portElt = appendChild(vertexElt, "port");
 			portElt.setAttribute("name", port.getName());
 			portElt.setAttribute("kind", port.getKind());
+			
+			switch(port.getKind()){
+			case "input":
+				portElt.setAttribute("expr", ((InputPort)port).getExpression().getString());
+				break;
+			case "output":
+				portElt.setAttribute("expr", ((OutputPort)port).getExpression().getString());
+				break;
+			case "cfg_input":
+				break;
+			case "cfg_output":
+				break;
+			}
 		}
 	}
 

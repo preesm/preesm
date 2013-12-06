@@ -13,6 +13,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
@@ -30,6 +31,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Parser for the PiMM Model in the Pi format
+ * 
+ * @author kdesnos
+ * @author jheulot
+ * 
+ */
 public class PiParser {
 
 	/**
@@ -314,6 +322,9 @@ public class PiParser {
 			// TODO replace with a parse Delay if delay have their own element
 			// in the future
 			Delay delay = PiMMFactory.eINSTANCE.createDelay();
+			Expression e = PiMMFactory.eINSTANCE.createExpression();
+			e.setString(edgeElt.getAttribute("expr"));
+			delay.setExpression(e);
 			fifo.setDelay(delay);
 		}
 
@@ -458,6 +469,9 @@ public class PiParser {
 	protected AbstractVertex parseParameter(Element nodeElt, Graph graph) {
 		// Instantiate the new Parameter
 		Parameter param = PiMMFactory.eINSTANCE.createParameter();
+		Expression e = PiMMFactory.eINSTANCE.createExpression();
+		e.setString(nodeElt.getAttribute("expr"));
+		param.setExpression(e);
 		param.setConfigurationInterface(false);
 		//param.setLocallyStatic(true);
 		param.setGraphPort(null); // No port of the graph corresponds to this
@@ -500,6 +514,8 @@ public class PiParser {
 	protected void parsePort(Element elt, AbstractVertex vertex) {
 		String portName = elt.getAttribute("name");
 		String portKind = elt.getAttribute("kind");
+		
+		Expression e;
 
 		switch (portKind) {
 		case "input":
@@ -511,7 +527,11 @@ public class PiParser {
 			}
 
 			InputPort iPort = PiMMFactory.eINSTANCE.createInputPort();
+			e = PiMMFactory.eINSTANCE.createExpression();
 			iPort.setName(portName);
+			iPort.setExpression(e);
+			e.setString(elt.getAttribute("expr"));
+									
 			// Do not parse data ports for InterfaceActor since the unique port
 			// is automatically created when the vertex is instantiated
 			if (!(vertex instanceof InterfaceActor)) {
@@ -526,8 +546,13 @@ public class PiParser {
 						+ " cannot belong to the non-actor vertex "
 						+ vertex.getName());
 			}
+
 			OutputPort oPort = PiMMFactory.eINSTANCE.createOutputPort();
+			e = PiMMFactory.eINSTANCE.createExpression();
 			oPort.setName(portName);
+			oPort.setExpression(e);
+			e.setString(elt.getAttribute("expr"));
+			
 			// Do not parse data ports for InterfaceActor since the unique port
 			// is automatically created when the vertex is instantiated
 			if (!(vertex instanceof InterfaceActor)) {

@@ -43,3 +43,5 @@ Export-Package: jscl.math,
  org.ietr.preesm.core.workflow
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
+Import-Package: net.sf.graphiti.model,
+ org.ietr.preesm.experiment.model.pimm

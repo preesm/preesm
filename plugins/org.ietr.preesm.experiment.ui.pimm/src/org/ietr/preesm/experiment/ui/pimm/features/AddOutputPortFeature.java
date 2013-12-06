@@ -10,10 +10,18 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.OutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
+/**
+ * Add Feature for {@link OutputPort}s
+ * 
+ * @author kdesnos
+ * @author jheulot
+ * 
+ */
 public class AddOutputPortFeature extends AbstractAddActorPortFeature {
 
 	public static final IColorConstant OUTPUT_PORT_FOREGROUND = AddActorFeature.ACTOR_FOREGROUND;
@@ -83,7 +91,9 @@ public class AddOutputPortFeature extends AbstractAddActorPortFeature {
 	@Override
 	public Port getNewPort(String portName, Actor actor) {
 		OutputPort newPort = PiMMFactory.eINSTANCE.createOutputPort();
+		Expression expr = PiMMFactory.eINSTANCE.createExpression();
 		newPort.setName(portName);
+		newPort.setExpression(expr);
 		actor.getOutputPorts().add(newPort);
 		return newPort;
 	}

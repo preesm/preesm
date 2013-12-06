@@ -128,22 +128,13 @@ public class InputPortImpl extends PortImpl implements InputPort {
 			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.INPUT_PORT__INCOMING_FIFO, newIncomingFifo, newIncomingFifo));
 	}
 
-	/**
+/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
+	 * @generated
 	 */
 	public Expression getExpression() {
-		if (expression == null) {
-			expression = new ExpressionImpl();
-		}else{
-			InternalEObject oldExpression = (InternalEObject) expression;
-			expression =  (Expression) eResolveProxy(oldExpression);
-			if (expression != oldExpression) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.INPUT_PORT__EXPRESSION, oldExpression, expression));
-			}
-		}
-		return expression;	
+		return expression;
 	}
 
 	/**
@@ -161,17 +152,13 @@ public class InputPortImpl extends PortImpl implements InputPort {
 		return msgs;
 	}
 
-	/**
+/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
+	 * @generated
 	 */
 	public void setExpression(Expression newExpression) {
-		Expression oldExpression = expression;
-		expression = newExpression;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.INPUT_PORT__EXPRESSION, oldExpression, expression));
-		
-		/*if (newExpression != expression) {
+		if (newExpression != expression) {
 			NotificationChain msgs = null;
 			if (expression != null)
 				msgs = ((InternalEObject)expression).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.INPUT_PORT__EXPRESSION, null, msgs);
@@ -182,7 +169,6 @@ public class InputPortImpl extends PortImpl implements InputPort {
 		}
 		else if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.INPUT_PORT__EXPRESSION, newExpression, newExpression));
-		*/
 	}
 
 	/**

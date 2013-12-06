@@ -1,5 +1,6 @@
 package org.ietr.preesm.experiment.ui.pimm.decorators;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -18,6 +19,7 @@ import org.ietr.preesm.experiment.ui.pimm.diagram.PiMMImageProvider;
  * interfaces.</b>
  * 
  * @author kdesnos
+ * @author jheulot
  * 
  */
 public class ParameterDecorators {
@@ -35,19 +37,32 @@ public class ParameterDecorators {
 	public static IDecorator[] getDecorators(Parameter parameter,
 			PictogramElement pe) {
 
+		List<IDecorator> decorators = new ArrayList<IDecorator>();
+		
 		// Check if the parameter belongs to a cycle
-		IDecorator[] cycleDecorator = getCycleDecorators(parameter, pe);
+		IDecorator cycleDecorator = getCycleDecorators(parameter, pe);
 		if (cycleDecorator != null) {
-			return cycleDecorator;
+			decorators.add(cycleDecorator);
 		}
 
-		// Check if the parameter is locally static if
-		IDecorator[] staticDecorator = getLocallyStaticDecorator(parameter, pe);
-		if (staticDecorator != null) {
-			return staticDecorator;
-		}
 
-		return new IDecorator[0];
+		// Check if the parameter expression is correct
+		IDecorator expressionDecorator = getExpressionDecorator(parameter, pe);
+		if (expressionDecorator != null) {
+			decorators.add(expressionDecorator);
+		}else{
+			// Check if the parameter is locally static if
+			IDecorator staticDecorator = getLocallyStaticDecorator(parameter, pe);
+			if (staticDecorator != null) {
+				decorators.add(staticDecorator);
+			}
+		}
+		
+		
+		IDecorator[] result = new IDecorator[decorators.size()];
+		decorators.toArray(result);
+
+		return result;
 	}
 
 	/**
@@ -61,7 +76,7 @@ public class ParameterDecorators {
 	 * @return the {@link IDecorator} if the {@link Parameter#isLocallyStatic()}
 	 *         , else <code>null</code>.
 	 */
-	protected static IDecorator[] getLocallyStaticDecorator(
+	protected static IDecorator getLocallyStaticDecorator(
 			Parameter parameter, PictogramElement pe) {
 		if (!parameter.isLocallyStatic()) {
 			ImageDecorator imageRenderingDecorator = new ImageDecorator(
@@ -73,7 +88,7 @@ public class ParameterDecorators {
 					.setX((pe.getGraphicsAlgorithm().getWidth() / 2) - 5);
 			imageRenderingDecorator.setY(8);
 
-			return new IDecorator[] { imageRenderingDecorator };
+			return imageRenderingDecorator;
 		}
 
 		return null;
@@ -91,7 +106,7 @@ public class ParameterDecorators {
 	 *         <code>null</code> if the {@link Parameter} does not belong nor
 	 *         depends on a {@link Dependency} cycle.
 	 */
-	protected static IDecorator[] getCycleDecorators(Parameter parameter,
+	protected static IDecorator getCycleDecorators(Parameter parameter,
 			PictogramElement pe) {
 		DependencyCycleDetector detector = new DependencyCycleDetector();
 		detector.doSwitch(parameter);
@@ -110,7 +125,7 @@ public class ParameterDecorators {
 							.getWidth() / 2) - 8);
 					imageRenderingDecorator.setY(8);
 
-					return new IDecorator[] { imageRenderingDecorator };
+					return imageRenderingDecorator;
 				}
 
 				// If the parameter is not contained in a detected cycle but
@@ -125,8 +140,32 @@ public class ParameterDecorators {
 						.getWidth() / 2) - 8);
 				imageRenderingDecorator.setY(8);
 
-				return new IDecorator[] { imageRenderingDecorator };
+				return imageRenderingDecorator;
 			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Get {@link IDecorator} indicating that the {@link Parameter} 
+	 * have a invalid expression
+	 * 
+	 * @param param
+	 *            the {@link Parameter} to test
+	 * @param pe
+	 *            the {@link PictogramElement} of the tested {@link Parameter}
+	 * @return the {@link IDecorator} for the {@link Parameter} or
+	 *         <code>null</code> if the {@link Parameter} have a valid expression.
+	 */
+	protected static IDecorator getExpressionDecorator(Parameter param, PictogramElement pe) {		
+		if(((Parameter)param).getExpression().evaluate().contains("Error")){
+			ImageDecorator imageRenderingDecorator = new ImageDecorator(
+					IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
+			imageRenderingDecorator.setMessage("Problems in parameter resolution");
+			imageRenderingDecorator.setX(pe.getGraphicsAlgorithm().getWidth()/2-8);
+			imageRenderingDecorator.setY(8);
+
+			return imageRenderingDecorator;
 		}
 		return null;
 	}

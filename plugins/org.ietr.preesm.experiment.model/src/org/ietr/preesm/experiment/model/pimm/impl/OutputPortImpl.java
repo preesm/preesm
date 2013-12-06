@@ -128,24 +128,15 @@ public class OutputPortImpl extends PortImpl implements OutputPort {
 			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.OUTPUT_PORT__OUTGOING_FIFO, newOutgoingFifo, newOutgoingFifo));
 	}
 
+
+
 	/**
 	 * <!-- begin-user-doc -->
-	 * Returns an expression and if the expression is null creates.
 	 * <!-- end-user-doc -->
+	 * @generated
 	 */
 	public Expression getExpression() {
-		//TODO View because it automatically NO creates the instance of expression.
-		if (expression == null) {
-			expression = new ExpressionImpl();
-		}else{
-			InternalEObject oldExpression = (InternalEObject) expression;
-			expression =  (Expression) eResolveProxy(oldExpression);
-			if (expression != oldExpression) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.OUTPUT_PORT__EXPRESSION, oldExpression, expression));
-			}
-		}
-		return expression;	
+		return expression;
 	}
 
 	/**
@@ -163,19 +154,28 @@ public class OutputPortImpl extends PortImpl implements OutputPort {
 		return msgs;
 	}
 
+
+
+	
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
+	 * @generated
 	 */
 	public void setExpression(Expression newExpression) {
-		Expression oldExpression = expression;
-		expression = newExpression;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.OUTPUT_PORT__EXPRESSION, oldExpression, expression));
-		
+		if (newExpression != expression) {
+			NotificationChain msgs = null;
+			if (expression != null)
+				msgs = ((InternalEObject)expression).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.OUTPUT_PORT__EXPRESSION, null, msgs);
+			if (newExpression != null)
+				msgs = ((InternalEObject)newExpression).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.OUTPUT_PORT__EXPRESSION, null, msgs);
+			msgs = basicSetExpression(newExpression, msgs);
+			if (msgs != null) msgs.dispatch();
+		}
+		else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.OUTPUT_PORT__EXPRESSION, newExpression, newExpression));
 	}
 
-	
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

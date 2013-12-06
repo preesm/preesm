@@ -3,14 +3,14 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
-
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 
 import com.singularsys.jep.EvaluationException;
@@ -24,9 +24,7 @@ import com.singularsys.jep.ParseException;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl#getExpressionString <em>Expression String</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl#getValueString <em>Value String</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl#getAllExpression <em>All Expression</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl#getString <em>String</em>}</li>
  * </ul>
  * </p>
  *
@@ -35,62 +33,23 @@ import com.singularsys.jep.ParseException;
 public class ExpressionImpl extends EObjectImpl implements Expression {
 	
 	/**
-	 * The default value of the '{@link #getExpressionString() <em>Expression String</em>}' attribute.
+	 * The default value of the '{@link #getString() <em>String</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getExpressionString()
+	 * @see #getString()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String EXPRESSION_STRING_EDEFAULT = "0";
+	protected static final String STRING_EDEFAULT = "0";
 	/**
-	 * The cached value of the '{@link #getExpressionString() <em>Expression String</em>}' attribute.
+	 * The cached value of the '{@link #getString() <em>String</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getExpressionString()
+	 * @see #getString()
 	 * @generated
 	 * @ordered
 	 */
-	protected String expressionString = EXPRESSION_STRING_EDEFAULT;
-
-	/**
-	 * The default value of the '{@link #getValueString() <em>Value String</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getValueString()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String VALUE_STRING_EDEFAULT = "0";
-	/**
-	 * The cached value of the '{@link #getValueString() <em>Value String</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getValueString()
-	 * @generated
-	 * @ordered
-	 */
-	protected String valueString = VALUE_STRING_EDEFAULT;
-
-	/**
-	 * The default value of the '{@link #getAllExpression() <em>All Expression</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getAllExpression()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String ALL_EXPRESSION_EDEFAULT = "0";
-	/**
-	 * The cached value of the '{@link #getAllExpression() <em>All Expression</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getAllExpression()
-	 * @generated
-	 * @ordered
-	 */
-	protected String allExpression = ALL_EXPRESSION_EDEFAULT;
-
+	protected String string = STRING_EDEFAULT;
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -115,8 +74,8 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String getExpressionString() {
-		return expressionString;
+	public String getString() {
+		return string;
 	}
 
 	/**
@@ -124,72 +83,11 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setExpressionString(String newExpressionString) {
-		String oldExpressionString = expressionString;
-		expressionString = newExpressionString;
+	public void setString(String newString) {
+		String oldString = string;
+		string = newString;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.EXPRESSION__EXPRESSION_STRING, oldExpressionString, expressionString));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public String getValueString() {
-		return valueString;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setValueString(String newValueString) {
-		String oldValueString = valueString;
-		valueString = newValueString;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.EXPRESSION__VALUE_STRING, oldValueString, valueString));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public String getAllExpression() {
-		return allExpression;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setAllExpression(String newAllExpression) {
-		String oldAllExpression = allExpression;
-		allExpression = newAllExpression;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.EXPRESSION__ALL_EXPRESSION, oldAllExpression, allExpression));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public int evaluate(EObject obj, EList<?> listExpression) {
-		// TODO: implement this method
-		// Ensure that you remove @generated or mark it @generated NOT
-		throw new UnsupportedOperationException();
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 */
-	public int evaluate(String str) {
-		return Integer.parseInt(str);
+			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.EXPRESSION__STRING, oldString, string));
 	}
 
 	/**
@@ -197,61 +95,76 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 	 * Evaluate expression of the class for which it is called.
 	 * <!-- end-user-doc -->
 	 * @return the result of the expression evaluated as an int.
+	 * @throws ParseException 
 	 */
-	public int evaluate() {
-		Float fl = null;
+	public String evaluate(){
+		String allExpression = getString();
 		Jep jep = new Jep();
-		try {
-			jep.parse(getExpressionString());
-			String val = jep.evaluate().toString();
-			fl = Float.valueOf(val);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}catch (EvaluationException e) {
-			e.printStackTrace();
-		}
-		return fl.intValue();
-	}
-
 		
-	/**
-	 * <!-- begin-user-doc -->
-	 * Evaluate expression of the class for which it is called.
-	 * <!-- end-user-doc -->
-	 * @return the result of the expression evaluated as an int.
-	 */
-	public int evaluate(String[] str) {
-	/*	try {
-			// parse each expression 
-			Node[] nodes = new Node[eqns.length];
-			for(int j=0;j<eqns.length;++j) {
-				nodes[j]=jep.parse(eqns[j]);
+		Parameterizable parameterizableObj;
+		if(this.eContainer() instanceof Parameterizable){
+			parameterizableObj = (Parameterizable) this.eContainer();
+		}else if(this.eContainer().eContainer() instanceof Parameterizable){
+			parameterizableObj = (Parameterizable) this.eContainer().eContainer();
+		}else{
+			return "Neither a child of Parameterizable nor a child of a child of Parameterizable";
+		}
+		
+		if(parameterizableObj.getConfigInputPorts().isEmpty()){
+
+		}else{
+			for (ConfigInputPort port : parameterizableObj.getConfigInputPorts()) {
+				if(port.getIncomingDependency() != null
+						&& port.getIncomingDependency().getSetter() instanceof Parameter){
+					Parameter p = (Parameter) port.getIncomingDependency().getSetter();
+					
+					String parameterName;
+					if(parameterizableObj instanceof Parameter || parameterizableObj instanceof Delay)
+						parameterName = p.getName();
+					else
+						parameterName = port.getName();
+					
+					int startingIndex=0;
+					String operators = "*+-/^";
+					while(startingIndex<allExpression.length()){
+						if(allExpression.substring(startingIndex).contains(parameterName)){
+							int index = allExpression.substring(startingIndex).indexOf(parameterName) + startingIndex;
+							
+							// Verify that the parameter is surrounded by operators.
+							if(index == 0 || operators.contains(""+allExpression.charAt(index-1))){
+								if (index+parameterName.length() == allExpression.length() 
+										|| operators.contains(""+allExpression.charAt(index+parameterName.length()))){
+									
+									String evaluatedParam;
+									if(p.isConfigurationInterface())
+										// TODO Handle config input interface
+										evaluatedParam =  "0";
+									else
+										evaluatedParam =  p.getExpression().evaluate();
+									allExpression = allExpression.substring(0, index) 
+											+ allExpression.substring(index).replaceFirst(parameterName, "("+evaluatedParam+")");
+								}
+							}
+							startingIndex = index+1;
+						} else {
+							break;
+						}
+					}
+				}
 			}
-			
-			// Now evaluate them in turn 
-			Object res = null;
-			for(Node n:nodes) { 
-		//		jep.println(n);
-				res = jep.evaluate(n);
-			}
-			txtValue.setText(res.toString() == "" || res.toString() == null ? "0" : res.toString());
-			
-		}catch (EvaluationException ex) {
-			listExpression.clear();
-			listParameter.clear();
-			String msg = ex.getMessage();
-			JOptionPane.showMessageDialog(null, "The expression is not valid.\n"+msg, "ERROR", JOptionPane.WARNING_MESSAGE);
-			txtValue.setText("");
-		} catch (ParseException ex) {
-			//System.out.println("PARSE");
-			listExpression.clear();
-			listParameter.clear();
-			String msg = ex.getMessage();
-			JOptionPane.showMessageDialog(null, "The expression is not valid.\n"+msg, "ERROR", JOptionPane.WARNING_MESSAGE);
-			txtValue.setText("");
-		} 
-		*/
-		return 0;
+		}
+		
+		try {
+			jep.parse(allExpression);
+			return jep.evaluate().toString();
+		} catch (ParseException e) {
+//			e.printStackTrace();
+			return "Parsing Error, check expression syntax"+" : "+allExpression;
+		} catch (EvaluationException e) {
+//			e.printStackTrace();
+			return "Evaluation Error, check parameter dependecies"+" : "+allExpression; 
+		}
+				
 	}
 	
 	
@@ -263,12 +176,8 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case PiMMPackage.EXPRESSION__EXPRESSION_STRING:
-				return getExpressionString();
-			case PiMMPackage.EXPRESSION__VALUE_STRING:
-				return getValueString();
-			case PiMMPackage.EXPRESSION__ALL_EXPRESSION:
-				return getAllExpression();
+			case PiMMPackage.EXPRESSION__STRING:
+				return getString();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -281,14 +190,8 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case PiMMPackage.EXPRESSION__EXPRESSION_STRING:
-				setExpressionString((String)newValue);
-				return;
-			case PiMMPackage.EXPRESSION__VALUE_STRING:
-				setValueString((String)newValue);
-				return;
-			case PiMMPackage.EXPRESSION__ALL_EXPRESSION:
-				setAllExpression((String)newValue);
+			case PiMMPackage.EXPRESSION__STRING:
+				setString((String)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -302,14 +205,8 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case PiMMPackage.EXPRESSION__EXPRESSION_STRING:
-				setExpressionString(EXPRESSION_STRING_EDEFAULT);
-				return;
-			case PiMMPackage.EXPRESSION__VALUE_STRING:
-				setValueString(VALUE_STRING_EDEFAULT);
-				return;
-			case PiMMPackage.EXPRESSION__ALL_EXPRESSION:
-				setAllExpression(ALL_EXPRESSION_EDEFAULT);
+			case PiMMPackage.EXPRESSION__STRING:
+				setString(STRING_EDEFAULT);
 				return;
 		}
 		super.eUnset(featureID);
@@ -323,12 +220,8 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case PiMMPackage.EXPRESSION__EXPRESSION_STRING:
-				return EXPRESSION_STRING_EDEFAULT == null ? expressionString != null : !EXPRESSION_STRING_EDEFAULT.equals(expressionString);
-			case PiMMPackage.EXPRESSION__VALUE_STRING:
-				return VALUE_STRING_EDEFAULT == null ? valueString != null : !VALUE_STRING_EDEFAULT.equals(valueString);
-			case PiMMPackage.EXPRESSION__ALL_EXPRESSION:
-				return ALL_EXPRESSION_EDEFAULT == null ? allExpression != null : !ALL_EXPRESSION_EDEFAULT.equals(allExpression);
+			case PiMMPackage.EXPRESSION__STRING:
+				return STRING_EDEFAULT == null ? string != null : !STRING_EDEFAULT.equals(string);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -343,12 +236,8 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (expressionString: ");
-		result.append(expressionString);
-		result.append(", valueString: ");
-		result.append(valueString);
-		result.append(", allExpression: ");
-		result.append(allExpression);
+		result.append(" (string: ");
+		result.append(string);
 		result.append(')');
 		return result.toString();
 	}

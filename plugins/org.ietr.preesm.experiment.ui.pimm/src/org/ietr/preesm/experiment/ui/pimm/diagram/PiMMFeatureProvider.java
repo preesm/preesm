@@ -8,7 +8,6 @@ import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IDirectEditingFeature;
-import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IMoveAnchorFeature;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
@@ -17,6 +16,7 @@ import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IDirectEditingContext;
@@ -28,6 +28,7 @@ import org.eclipse.graphiti.features.context.IRemoveContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
+import org.eclipse.graphiti.features.impl.DefaultRemoveFeature;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -90,6 +91,14 @@ import org.ietr.preesm.experiment.ui.pimm.features.UpdateAbstractVertexFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.UpdateActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.UpdatePortFeature;
 
+/**
+ * {@link DefaultFeatureProvider} for the {@link Diagram} with type
+ * {@link PiMMFeatureProvider}.
+ * 
+ * @author kdesnos
+ * @author jheulot
+ * 
+ */
 public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
 	public PiMMFeatureProvider(IDiagramTypeProvider dtp) {
@@ -194,12 +203,10 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 	public IDeleteFeature getDeleteFeature(IDeleteContext context) {
 		PictogramElement pe = context.getPictogramElement();
 		Object bo = getBusinessObjectForPictogramElement(pe);
-		IFeatureProvider fpWithRemove = new PiMMFeatureProviderWithRemove(
-				this.getDiagramTypeProvider());
 
 		if (bo instanceof Port) {
 			if (((Port) bo).eContainer() instanceof Actor) {
-				return new DeleteActorPortFeature(fpWithRemove);
+				return new DeleteActorPortFeature(this);
 			}
 			if (((Port) bo).eContainer() instanceof InterfaceActor) {
 				// We do not allow deletion of the port of an InterfaceVertex
@@ -209,27 +216,26 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		}
 
 		if (bo instanceof AbstractActor) {
-			return new DeleteAbstractActorFeature(fpWithRemove);
+			return new DeleteAbstractActorFeature(this);
 		}
 
 		if (bo instanceof Parameter) {
-			return new DeleteParameterizableFeature(fpWithRemove);
+			return new DeleteParameterizableFeature(this);
 		}
 
 		if (bo instanceof Fifo) {
-			return new DeleteFifoFeature(fpWithRemove);
+			return new DeleteFifoFeature(this);
 		}
 
 		if (bo instanceof Dependency) {
-			return new DeleteDependencyFeature(fpWithRemove);
+			return new DeleteDependencyFeature(this);
 		}
 
 		if (bo instanceof Delay) {
-			return new DeleteDelayFeature(fpWithRemove);
+			return new DeleteDelayFeature(this);
 		}
 
-		return new DefaultDeleteFeature(fpWithRemove);// new
-														// CustomDeleteFeature(this);
+		return new DefaultDeleteFeature(this);
 	}
 
 	@Override
@@ -298,10 +304,11 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
 	@Override
 	public IRemoveFeature getRemoveFeature(IRemoveContext context) {
-		return null; // remove disabled for the UI
-		// Since the remove feature is used in the deleteFeature,
-		// it must be providedSomehow. This is the purpose of the
-		// PiMMFeatureProviderWithRemove class.
+		return new DefaultRemoveFeature(this){
+			public boolean isAvailable(IContext context){
+				return false;
+			}
+		}; 
 	}
 
 	/**

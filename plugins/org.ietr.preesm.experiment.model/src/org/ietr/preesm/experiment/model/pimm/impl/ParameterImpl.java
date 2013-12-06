@@ -236,24 +236,13 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.PARAMETER__GRAPH_PORT, oldGraphPort, graphPort));
 	}
 
-	/**
+/**
 	 * <!-- begin-user-doc -->
-	 * Returns an expression and if the expression is null creates.
 	 * <!-- end-user-doc -->
+	 * @generated
 	 */
 	public Expression getExpression() {
-		//TODO View because it automatically creates the instance of expression.
-		if (expression == null) {
-			expression = new ExpressionImpl();
-		}else{
-			InternalEObject oldExpression = (InternalEObject) expression;
-			expression =  (Expression) eResolveProxy(oldExpression);
-			if (expression != oldExpression) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.PARAMETER__EXPRESSION, oldExpression, expression));
-			}
-		}
-		return expression;		
+		return expression;
 	}
 
 	/**
@@ -274,12 +263,20 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
+	 * @generated
 	 */
 	public void setExpression(Expression newExpression) {
-		Expression oldExpression = expression;
-		expression = newExpression;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.PARAMETER__EXPRESSION, oldExpression, expression));
+		if (newExpression != expression) {
+			NotificationChain msgs = null;
+			if (expression != null)
+				msgs = ((InternalEObject)expression).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.PARAMETER__EXPRESSION, null, msgs);
+			if (newExpression != null)
+				msgs = ((InternalEObject)newExpression).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.PARAMETER__EXPRESSION, null, msgs);
+			msgs = basicSetExpression(newExpression, msgs);
+			if (msgs != null) msgs.dispatch();
+		}
+		else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.PARAMETER__EXPRESSION, newExpression, newExpression));
 	}
 
 	/**

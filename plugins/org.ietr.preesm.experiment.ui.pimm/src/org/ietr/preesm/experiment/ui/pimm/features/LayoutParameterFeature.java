@@ -24,6 +24,7 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
  * Layout Feature for {@link Parameter}s
  * 
  * @author kdesnos
+ * @author jheulot
  * 
  */
 public class LayoutParameterFeature extends AbstractLayoutFeature {
@@ -84,11 +85,14 @@ public class LayoutParameterFeature extends AbstractLayoutFeature {
 			}
 		}
 
-		return nameSize.getWidth() + 6;
+		// Set a minimal width of a parameter
+		return Math.max(nameSize.getWidth() + 6, 33);
 	}
 
 	@Override
 	public boolean layout(ILayoutContext context) {
+		boolean anythingChanged=false;
+		
 		// Retrieve the shape and the graphic algorithm
 		ContainerShape containerShape = (ContainerShape) context
 				.getPictogramElement();
@@ -102,10 +106,10 @@ public class LayoutParameterFeature extends AbstractLayoutFeature {
 		if (newWidth != containerGa.getWidth()) {
 			setNewWidth(newWidth, containerGa, childrenShapes);
 
-			return true;
+			anythingChanged = true;
 		}
 
-		return false;
+		return anythingChanged;
 	}
 
 	/**

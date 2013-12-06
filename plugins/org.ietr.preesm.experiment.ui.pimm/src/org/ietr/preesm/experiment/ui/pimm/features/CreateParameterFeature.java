@@ -4,12 +4,20 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Graph;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.experiment.ui.pimm.util.PiMMUtil;
 
+/**
+ * Create Feature for {@link Parameter}s
+ * 
+ * @author kdesnos
+ * @author jheulot
+ * 
+ */
 public class CreateParameterFeature extends AbstractCreateFeature {
 
 	private static final String FEATURE_NAME = "Parameter";
@@ -57,6 +65,8 @@ public class CreateParameterFeature extends AbstractCreateFeature {
 
 		// create Parameter
 		Parameter newParameter = PiMMFactory.eINSTANCE.createParameter();
+		Expression expr = PiMMFactory.eINSTANCE.createExpression();
+		newParameter.setExpression(expr);
 		newParameter.setName(newParameterName);
 		newParameter.setConfigurationInterface(false);
 		// newParameter.setLocallyStatic(true);

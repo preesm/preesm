@@ -1317,31 +1317,13 @@ public interface PiMMPackage extends EPackage {
 	int DELAY_FEATURE_COUNT = PARAMETERIZABLE_FEATURE_COUNT + 1;
 
 	/**
-	 * The feature id for the '<em><b>Expression String</b></em>' attribute.
+	 * The feature id for the '<em><b>String</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int EXPRESSION__EXPRESSION_STRING = 0;
-
-	/**
-	 * The feature id for the '<em><b>Value String</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int EXPRESSION__VALUE_STRING = 1;
-
-	/**
-	 * The feature id for the '<em><b>All Expression</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int EXPRESSION__ALL_EXPRESSION = 2;
+	int EXPRESSION__STRING = 0;
 
 	/**
 	 * The number of structural features of the '<em>Expression</em>' class.
@@ -1350,7 +1332,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int EXPRESSION_FEATURE_COUNT = 3;
+	int EXPRESSION_FEATURE_COUNT = 1;
 
 
 	/**
@@ -1927,37 +1909,15 @@ public interface PiMMPackage extends EPackage {
 	EClass getExpression();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Expression#getExpressionString <em>Expression String</em>}'.
+	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Expression#getString <em>String</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Expression String</em>'.
-	 * @see org.ietr.preesm.experiment.model.pimm.Expression#getExpressionString()
+	 * @return the meta object for the attribute '<em>String</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.Expression#getString()
 	 * @see #getExpression()
 	 * @generated
 	 */
-	EAttribute getExpression_ExpressionString();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Expression#getValueString <em>Value String</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Value String</em>'.
-	 * @see org.ietr.preesm.experiment.model.pimm.Expression#getValueString()
-	 * @see #getExpression()
-	 * @generated
-	 */
-	EAttribute getExpression_ValueString();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Expression#getAllExpression <em>All Expression</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>All Expression</em>'.
-	 * @see org.ietr.preesm.experiment.model.pimm.Expression#getAllExpression()
-	 * @see #getExpression()
-	 * @generated
-	 */
-	EAttribute getExpression_AllExpression();
+	EAttribute getExpression_String();
 
 	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.ConfigInputInterface <em>Config Input Interface</em>}'.
@@ -2466,28 +2426,12 @@ public interface PiMMPackage extends EPackage {
 		EClass EXPRESSION = eINSTANCE.getExpression();
 
 		/**
-		 * The meta object literal for the '<em><b>Expression String</b></em>' attribute feature.
+		 * The meta object literal for the '<em><b>String</b></em>' attribute feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute EXPRESSION__EXPRESSION_STRING = eINSTANCE.getExpression_ExpressionString();
-
-		/**
-		 * The meta object literal for the '<em><b>Value String</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute EXPRESSION__VALUE_STRING = eINSTANCE.getExpression_ValueString();
-
-		/**
-		 * The meta object literal for the '<em><b>All Expression</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute EXPRESSION__ALL_EXPRESSION = eINSTANCE.getExpression_AllExpression();
+		EAttribute EXPRESSION__STRING = eINSTANCE.getExpression_String();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigInputInterfaceImpl <em>Config Input Interface</em>}' class.

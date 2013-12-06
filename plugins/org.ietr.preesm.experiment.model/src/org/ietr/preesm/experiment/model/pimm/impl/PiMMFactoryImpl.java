@@ -27,7 +27,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 */
 	public static PiMMFactory init() {
 		try {
-			PiMMFactory thePiMMFactory = (PiMMFactory)EPackage.Registry.INSTANCE.getEFactory("http://org.ietr.preesm/experiment/model/pimm"); 
+			PiMMFactory thePiMMFactory = (PiMMFactory)EPackage.Registry.INSTANCE.getEFactory(PiMMPackage.eNS_URI);
 			if (thePiMMFactory != null) {
 				return thePiMMFactory;
 			}
