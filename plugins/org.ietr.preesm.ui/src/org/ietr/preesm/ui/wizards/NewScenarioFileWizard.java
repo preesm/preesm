@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -36,6 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.ui.wizards;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
 
 /**
@@ -54,4 +56,17 @@ public class NewScenarioFileWizard extends BasicNewFileResourceWizard {
 		super.initializeDefaultPageImageDescriptor();
 	}
 
+    @Override
+    public boolean performFinish() {
+    	WizardNewFileCreationPage page = (WizardNewFileCreationPage)(getPage("newFilePage1"));
+    	String filename = page.getFileName();
+            
+        if(!filename.endsWith(".scenario")){
+        	filename += ".scenario";
+        	page.setFileName(filename);
+        }
+        
+        final IFile createdFile = page.createNewFile();
+        return createdFile != null;
+    }
 }
