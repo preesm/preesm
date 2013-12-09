@@ -36,10 +36,10 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.ecore.EClass;
-import org.ietr.preesm.experiment.model.pimm.InputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.SinkInterface;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -49,23 +49,23 @@ import org.ietr.preesm.experiment.model.pimm.SinkInterface;
  *
  * @generated
  */
-public class SinkInterfaceImpl extends InterfaceActorImpl implements
-		SinkInterface {
+public class DataOutputInterfaceImpl extends InterfaceActorImpl implements
+		DataOutputInterface {
 	
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 */
-	protected SinkInterfaceImpl() {
+	protected DataOutputInterfaceImpl() {
 		super();
 
 		kind = KIND;
 
 		// Add the unique input port of the Sink Interface
 		// The port intentionally has no name
-		InputPort port = PiMMFactory.eINSTANCE.createInputPort();
+		DataInputPort port = PiMMFactory.eINSTANCE.createDataInputPort();
 		port.setName(null);
-		this.getInputPorts().add(port);
+		this.getDataInputPorts().add(port);
 	}
 
 	/**
@@ -74,7 +74,7 @@ public class SinkInterfaceImpl extends InterfaceActorImpl implements
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return PiMMPackage.Literals.SINK_INTERFACE;
+		return PiMMPackage.Literals.DATA_OUTPUT_INTERFACE;
 	}
 
 } // SinkInterfaceImpl

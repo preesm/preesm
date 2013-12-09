@@ -44,8 +44,8 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.InputPort;
-import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
@@ -72,7 +72,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	 * @generated
 	 * @ordered
 	 */
-	protected OutputPort sourcePort;
+	protected DataOutputPort sourcePort;
 
 	/**
 	 * The cached value of the '{@link #getTargetPort() <em>Target Port</em>}' reference.
@@ -81,7 +81,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	 * @generated
 	 * @ordered
 	 */
-	protected InputPort targetPort;
+	protected DataInputPort targetPort;
 
 	/**
 	 * The cached value of the '{@link #getDelay() <em>Delay</em>}' containment reference.
@@ -124,10 +124,10 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public OutputPort getSourcePort() {
+	public DataOutputPort getSourcePort() {
 		if (sourcePort != null && sourcePort.eIsProxy()) {
 			InternalEObject oldSourcePort = (InternalEObject)sourcePort;
-			sourcePort = (OutputPort)eResolveProxy(oldSourcePort);
+			sourcePort = (DataOutputPort)eResolveProxy(oldSourcePort);
 			if (sourcePort != oldSourcePort) {
 				if (eNotificationRequired())
 					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.FIFO__SOURCE_PORT, oldSourcePort, sourcePort));
@@ -140,17 +140,17 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public OutputPort basicGetSourcePort() {
+	public DataOutputPort basicGetSourcePort() {
 		return sourcePort;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetSourcePort(OutputPort newSourcePort,
-			NotificationChain msgs) {
-		OutputPort oldSourcePort = sourcePort;
+	public NotificationChain basicSetSourcePort(DataOutputPort newSourcePort, NotificationChain msgs) {
+		DataOutputPort oldSourcePort = sourcePort;
 		sourcePort = newSourcePort;
 		if (eNotificationRequired()) {
 			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.FIFO__SOURCE_PORT, oldSourcePort, newSourcePort);
@@ -160,16 +160,17 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setSourcePort(OutputPort newSourcePort) {
+	public void setSourcePort(DataOutputPort newSourcePort) {
 		if (newSourcePort != sourcePort) {
 			NotificationChain msgs = null;
 			if (sourcePort != null)
-				msgs = ((InternalEObject)sourcePort).eInverseRemove(this, PiMMPackage.OUTPUT_PORT__OUTGOING_FIFO, OutputPort.class, msgs);
+				msgs = ((InternalEObject)sourcePort).eInverseRemove(this, PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO, DataOutputPort.class, msgs);
 			if (newSourcePort != null)
-				msgs = ((InternalEObject)newSourcePort).eInverseAdd(this, PiMMPackage.OUTPUT_PORT__OUTGOING_FIFO, OutputPort.class, msgs);
+				msgs = ((InternalEObject)newSourcePort).eInverseAdd(this, PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO, DataOutputPort.class, msgs);
 			msgs = basicSetSourcePort(newSourcePort, msgs);
 			if (msgs != null) msgs.dispatch();
 		}
@@ -181,10 +182,10 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public InputPort getTargetPort() {
+	public DataInputPort getTargetPort() {
 		if (targetPort != null && targetPort.eIsProxy()) {
 			InternalEObject oldTargetPort = (InternalEObject)targetPort;
-			targetPort = (InputPort)eResolveProxy(oldTargetPort);
+			targetPort = (DataInputPort)eResolveProxy(oldTargetPort);
 			if (targetPort != oldTargetPort) {
 				if (eNotificationRequired())
 					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.FIFO__TARGET_PORT, oldTargetPort, targetPort));
@@ -197,17 +198,17 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public InputPort basicGetTargetPort() {
+	public DataInputPort basicGetTargetPort() {
 		return targetPort;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetTargetPort(InputPort newTargetPort,
-			NotificationChain msgs) {
-		InputPort oldTargetPort = targetPort;
+	public NotificationChain basicSetTargetPort(DataInputPort newTargetPort, NotificationChain msgs) {
+		DataInputPort oldTargetPort = targetPort;
 		targetPort = newTargetPort;
 		if (eNotificationRequired()) {
 			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.FIFO__TARGET_PORT, oldTargetPort, newTargetPort);
@@ -217,16 +218,17 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setTargetPort(InputPort newTargetPort) {
+	public void setTargetPort(DataInputPort newTargetPort) {
 		if (newTargetPort != targetPort) {
 			NotificationChain msgs = null;
 			if (targetPort != null)
-				msgs = ((InternalEObject)targetPort).eInverseRemove(this, PiMMPackage.INPUT_PORT__INCOMING_FIFO, InputPort.class, msgs);
+				msgs = ((InternalEObject)targetPort).eInverseRemove(this, PiMMPackage.DATA_INPUT_PORT__INCOMING_FIFO, DataInputPort.class, msgs);
 			if (newTargetPort != null)
-				msgs = ((InternalEObject)newTargetPort).eInverseAdd(this, PiMMPackage.INPUT_PORT__INCOMING_FIFO, InputPort.class, msgs);
+				msgs = ((InternalEObject)newTargetPort).eInverseAdd(this, PiMMPackage.DATA_INPUT_PORT__INCOMING_FIFO, DataInputPort.class, msgs);
 			msgs = basicSetTargetPort(newTargetPort, msgs);
 			if (msgs != null) msgs.dispatch();
 		}
@@ -332,12 +334,12 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 		switch (featureID) {
 			case PiMMPackage.FIFO__SOURCE_PORT:
 				if (sourcePort != null)
-					msgs = ((InternalEObject)sourcePort).eInverseRemove(this, PiMMPackage.OUTPUT_PORT__OUTGOING_FIFO, OutputPort.class, msgs);
-				return basicSetSourcePort((OutputPort)otherEnd, msgs);
+					msgs = ((InternalEObject)sourcePort).eInverseRemove(this, PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO, DataOutputPort.class, msgs);
+				return basicSetSourcePort((DataOutputPort)otherEnd, msgs);
 			case PiMMPackage.FIFO__TARGET_PORT:
 				if (targetPort != null)
-					msgs = ((InternalEObject)targetPort).eInverseRemove(this, PiMMPackage.INPUT_PORT__INCOMING_FIFO, InputPort.class, msgs);
-				return basicSetTargetPort((InputPort)otherEnd, msgs);
+					msgs = ((InternalEObject)targetPort).eInverseRemove(this, PiMMPackage.DATA_INPUT_PORT__INCOMING_FIFO, DataInputPort.class, msgs);
+				return basicSetTargetPort((DataInputPort)otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
@@ -389,10 +391,10 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 			case PiMMPackage.FIFO__SOURCE_PORT:
-				setSourcePort((OutputPort)newValue);
+				setSourcePort((DataOutputPort)newValue);
 				return;
 			case PiMMPackage.FIFO__TARGET_PORT:
-				setTargetPort((InputPort)newValue);
+				setTargetPort((DataInputPort)newValue);
 				return;
 			case PiMMPackage.FIFO__DELAY:
 				setDelay((Delay)newValue);
@@ -409,10 +411,10 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	public void eUnset(int featureID) {
 		switch (featureID) {
 			case PiMMPackage.FIFO__SOURCE_PORT:
-				setSourcePort((OutputPort)null);
+				setSourcePort((DataOutputPort)null);
 				return;
 			case PiMMPackage.FIFO__TARGET_PORT:
-				setTargetPort((InputPort)null);
+				setTargetPort((DataInputPort)null);
 				return;
 			case PiMMPackage.FIFO__DELAY:
 				setDelay((Delay)null);

@@ -44,23 +44,23 @@ import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
-import org.ietr.preesm.experiment.model.pimm.Graph;
-import org.ietr.preesm.experiment.model.pimm.InputPort;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.SinkInterface;
-import org.ietr.preesm.experiment.model.pimm.SourceInterface;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 
 /**
  * The purpose of this {@link Adapter} is to observe the
- * {@link Graph#getVertices()} list of a {@link Graph} to detect the addition,
- * the deletion and the renaming of {@link Graph} interfaces in order to
- * automatically compute the repercussions on {@link Graph#getInputPorts()},
- * {@link Graph#getOutputPorts()} and {@link Graph#getConfigInputPorts()}.
+ * {@link PiGraph#getVertices()} list of a {@link PiGraph} to detect the addition,
+ * the deletion and the renaming of {@link PiGraph} interfaces in order to
+ * automatically compute the repercussions on {@link PiGraph#getInputPorts()},
+ * {@link PiGraph#getOutputPorts()} and {@link PiGraph#getConfigInputPorts()}.
  * 
  * @author kdesnos
  * 
@@ -76,20 +76,20 @@ public class GraphInterfaceObserver extends AdapterImpl {
 
 	/**
 	 * Method called when an Interface is possibly added to the Observed
-	 * {@link Graph}. <br>
+	 * {@link PiGraph}. <br>
 	 * <br>
 	 * This Method create the {@link Port} port corresponding to the added
 	 * {@link InterfaceActor} or {@link Parameter} and add it to the
-	 * {@link Graph#getInputPorts()}, the {@link Graph#getOutputPorts()}, or the
-	 * {@link Graph#getConfigInputPorts()} list of the {@link Graph}.
+	 * {@link PiGraph#getInputPorts()}, the {@link PiGraph#getOutputPorts()}, or the
+	 * {@link PiGraph#getConfigInputPorts()} list of the {@link PiGraph}.
 	 * 
 	 * @param vertex
 	 *            The {@link InterfaceActor} or {@link Parameter} added to the
-	 *            {@link Graph}
+	 *            {@link PiGraph}
 	 * @param graph
-	 *            The {@link Graph}
+	 *            The {@link PiGraph}
 	 */
-	protected void add(AbstractVertex vertex, Graph graph) {
+	protected void add(AbstractVertex vertex, PiGraph graph) {
 
 		// If the added vertex is an Interface of the graph
 		if (vertex instanceof InterfaceActor) {
@@ -107,24 +107,24 @@ public class GraphInterfaceObserver extends AdapterImpl {
 
 	/**
 	 * Create the {@link Port} corresponding to an {@link InterfaceActor} added
-	 * to the {@link Graph}.
+	 * to the {@link PiGraph}.
 	 * 
 	 * @param iActor
-	 *            the {@link InterfaceActor} added to the {@link Graph}
+	 *            the {@link InterfaceActor} added to the {@link PiGraph}
 	 * @param graph
-	 *            the observed {@link Graph}
+	 *            the observed {@link PiGraph}
 	 */
-	protected void addInterfaceActor(InterfaceActor iActor, Graph graph) {
+	protected void addInterfaceActor(InterfaceActor iActor, PiGraph graph) {
 		// Create the Associated port and store it in the appropriate List
 		Port port;
 		switch (iActor.getKind()) {
-		case SourceInterface.KIND:
-			port = PiMMFactory.eINSTANCE.createInputPort();
-			graph.getInputPorts().add((InputPort) port);
+		case DataInputInterface.KIND:
+			port = PiMMFactory.eINSTANCE.createDataInputPort();
+			graph.getDataInputPorts().add((DataInputPort) port);
 			break;
-		case SinkInterface.KIND:
-			port = PiMMFactory.eINSTANCE.createOutputPort();
-			graph.getOutputPorts().add((OutputPort) port);
+		case DataOutputInterface.KIND:
+			port = PiMMFactory.eINSTANCE.createDataOutputPort();
+			graph.getDataOutputPorts().add((DataOutputPort) port);
 			break;
 		case ConfigOutputInterface.KIND:
 			port = PiMMFactory.eINSTANCE.createConfigOutputPort();
@@ -142,14 +142,14 @@ public class GraphInterfaceObserver extends AdapterImpl {
 
 	/**
 	 * Create the {@link Port} corresponding to an interface {@link Parameter}
-	 * added to the {@link Graph}.
+	 * added to the {@link PiGraph}.
 	 * 
 	 * @param param
-	 *            the {@link Parameter} added to the {@link Graph}
+	 *            the {@link Parameter} added to the {@link PiGraph}
 	 * @param graph
-	 *            the observed {@link Graph}
+	 *            the observed {@link PiGraph}
 	 */
-	protected void addParamInterfaceActor(Parameter param, Graph graph) {
+	protected void addParamInterfaceActor(Parameter param, PiGraph graph) {
 		ConfigInputPort port = PiMMFactory.eINSTANCE.createConfigInputPort();
 		port.setName(param.getName());
 		graph.getConfigInputPorts().add(port);
@@ -164,11 +164,11 @@ public class GraphInterfaceObserver extends AdapterImpl {
 
 		// Check if the vertices or Parameters are concerned by this
 		// notification
-		if (notification.getNotifier() instanceof Graph
-				&& (notification.getFeatureID(null) == PiMMPackage.GRAPH__VERTICES || notification
-						.getFeatureID(null) == PiMMPackage.GRAPH__PARAMETERS)) {
+		if (notification.getNotifier() instanceof PiGraph
+				&& (notification.getFeatureID(null) == PiMMPackage.PI_GRAPH__VERTICES || notification
+						.getFeatureID(null) == PiMMPackage.PI_GRAPH__PARAMETERS)) {
 
-			Graph graph = (Graph) notification.getNotifier();
+			PiGraph graph = (PiGraph) notification.getNotifier();
 
 			switch (notification.getEventType()) {
 			case Notification.ADD: {
@@ -212,20 +212,20 @@ public class GraphInterfaceObserver extends AdapterImpl {
 
 	/**
 	 * Method called when an Interface is possibly removed to the Observed
-	 * {@link Graph}. <br>
+	 * {@link PiGraph}. <br>
 	 * <br>
 	 * This Method remove the {@link Port} port corresponding to the removed
 	 * {@link InterfaceActor} or {@link Parameter} and from the
-	 * {@link Graph#getInputPorts()}, the {@link Graph#getOutputPorts()}, or the
-	 * {@link Graph#getConfigInputPorts()} list of the {@link Graph}.
+	 * {@link PiGraph#getInputPorts()}, the {@link PiGraph#getOutputPorts()}, or the
+	 * {@link PiGraph#getConfigInputPorts()} list of the {@link PiGraph}.
 	 * 
 	 * @param vertex
 	 *            The {@link InterfaceActor} or {@link Parameter} removed from
-	 *            the {@link Graph}
+	 *            the {@link PiGraph}
 	 * @param graph
-	 *            The {@link Graph}
+	 *            The {@link PiGraph}
 	 */
-	protected void remove(AbstractVertex vertex, Graph graph) {
+	protected void remove(AbstractVertex vertex, PiGraph graph) {
 
 		if (vertex instanceof InterfaceActor) {
 			removeInterfaceActor((InterfaceActor) vertex, graph);
@@ -241,31 +241,31 @@ public class GraphInterfaceObserver extends AdapterImpl {
 
 	/**
 	 * Remove the {@link Port} corresponding to an {@link InterfaceActor}
-	 * removed to the {@link Graph}.
+	 * removed to the {@link PiGraph}.
 	 * 
 	 * @param iActor
-	 *            the {@link InterfaceActor} removed from the {@link Graph}
+	 *            the {@link InterfaceActor} removed from the {@link PiGraph}
 	 * @param graph
-	 *            the observed {@link Graph}
+	 *            the observed {@link PiGraph}
 	 */
-	protected void removeInterfaceActor(InterfaceActor iActor, Graph graph) {
+	protected void removeInterfaceActor(InterfaceActor iActor, PiGraph graph) {
 		// We remove from both list, but only one will actually remove
 		// something.
-		graph.getInputPorts().remove(iActor.getGraphPort());
-		graph.getOutputPorts().remove(iActor.getGraphPort());
+		graph.getDataInputPorts().remove(iActor.getGraphPort());
+		graph.getDataOutputPorts().remove(iActor.getGraphPort());
 		return;
 	}
 
 	/**
 	 * Remove the {@link Port} corresponding to an Interface {@link Parameter}
-	 * removed from the {@link Graph}.
+	 * removed from the {@link PiGraph}.
 	 * 
 	 * @param param
-	 *            the Interface {@link Parameter} removed from the {@link Graph}
+	 *            the Interface {@link Parameter} removed from the {@link PiGraph}
 	 * @param graph
-	 *            the observed {@link Graph}
+	 *            the observed {@link PiGraph}
 	 */
-	protected void removeParamInterfaceActor(Parameter param, Graph graph) {
+	protected void removeParamInterfaceActor(Parameter param, PiGraph graph) {
 		graph.getConfigInputPorts().remove(param.getGraphPort());
 	}
 }

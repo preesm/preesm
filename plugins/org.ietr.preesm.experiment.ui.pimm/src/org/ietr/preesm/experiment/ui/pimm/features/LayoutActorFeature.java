@@ -60,8 +60,8 @@ import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
-import org.ietr.preesm.experiment.model.pimm.InputPort;
-import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 
 /**
@@ -176,10 +176,10 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 							cfgOutputsHeight += size.getHeight();
 							break;
 
-						case PiMMPackage.INPUT_PORT:
+						case PiMMPackage.DATA_INPUT_PORT:
 							inputsHeight += size.getHeight();
 							break;
-						case PiMMPackage.OUTPUT_PORT:
+						case PiMMPackage.DATA_OUTPUT_PORT:
 							outputsHeight += size.getHeight();
 							break;
 						}
@@ -358,7 +358,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 			if (getBusinessObjectForPictogramElement(anchor) instanceof ConfigInputPort) {
 				inputs.add(nbConfigInput, (BoxRelativeAnchor) anchor);
 				nbConfigInput++;
-			} else if (getBusinessObjectForPictogramElement(anchor) instanceof InputPort) {
+			} else if (getBusinessObjectForPictogramElement(anchor) instanceof DataInputPort) {
 				inputs.add((BoxRelativeAnchor) anchor);
 			}
 
@@ -367,7 +367,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 				nbConfigOutput++;
 			} // The else is important because a ConfigOutputPort IS an
 				// OutputPort
-			else if (getBusinessObjectForPictogramElement(anchor) instanceof OutputPort) {
+			else if (getBusinessObjectForPictogramElement(anchor) instanceof DataOutputPort) {
 				outputs.add((BoxRelativeAnchor) anchor);
 			}
 		}

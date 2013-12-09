@@ -44,8 +44,8 @@ import org.eclipse.emf.common.util.EList;
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getInputPorts <em>Input Ports</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getOutputPorts <em>Output Ports</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getDataInputPorts <em>Data Input Ports</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getDataOutputPorts <em>Data Output Ports</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.AbstractActor#getConfigOutputPorts <em>Config Output Ports</em>}</li>
  * </ul>
  * </p>
@@ -56,42 +56,36 @@ import org.eclipse.emf.common.util.EList;
  */
 public interface AbstractActor extends AbstractVertex {
 	/**
-	 * Returns the value of the '<em><b>Input Ports</b></em>' containment
-	 * reference list. The list contents are of type
-	 * {@link org.ietr.preesm.experiment.model.pimm.InputPort}. <!--
-	 * begin-user-doc -->
+	 * Returns the value of the '<em><b>Data Input Ports</b></em>' containment reference list.
+	 * The list contents are of type {@link org.ietr.preesm.experiment.model.pimm.DataInputPort}.
+	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Input Ports</em>' containment reference list
-	 * isn't clear, there really should be more of a description here...
+	 * If the meaning of the '<em>Data Input Ports</em>' containment reference list isn't clear,
+	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Input Ports</em>' containment reference
-	 *         list.
-	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getAbstractVertex_InputPorts()
+	 * @return the value of the '<em>Data Input Ports</em>' containment reference list.
+	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getAbstractActor_DataInputPorts()
 	 * @model containment="true"
 	 * @generated
 	 */
-	EList<InputPort> getInputPorts();
+	EList<DataInputPort> getDataInputPorts();
 
 	/**
-	 * Returns the value of the '<em><b>Output Ports</b></em>' containment
-	 * reference list. The list contents are of type
-	 * {@link org.ietr.preesm.experiment.model.pimm.OutputPort}. <!--
-	 * begin-user-doc -->
+	 * Returns the value of the '<em><b>Data Output Ports</b></em>' containment reference list.
+	 * The list contents are of type {@link org.ietr.preesm.experiment.model.pimm.DataOutputPort}.
+	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Output Ports</em>' containment reference list
-	 * isn't clear, there really should be more of a description here...
+	 * If the meaning of the '<em>Data Output Ports</em>' containment reference list isn't clear,
+	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Output Ports</em>' containment reference
-	 *         list.
-	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getAbstractVertex_OutputPorts()
+	 * @return the value of the '<em>Data Output Ports</em>' containment reference list.
+	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getAbstractActor_DataOutputPorts()
 	 * @model containment="true"
 	 * @generated
 	 */
-	EList<OutputPort> getOutputPorts();
+	EList<DataOutputPort> getDataOutputPorts();
 
 	/**
 	 * Returns the value of the '<em><b>Config Output Ports</b></em>' containment reference list.

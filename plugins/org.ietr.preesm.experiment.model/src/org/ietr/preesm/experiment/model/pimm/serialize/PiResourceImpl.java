@@ -42,7 +42,7 @@ import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
-import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 /**
  * This class defines a resource implementation for the PiMM model which is
@@ -75,7 +75,7 @@ public class PiResourceImpl extends ResourceImpl {
 	protected void doSave(OutputStream outputStream, Map<?, ?> options)
 			throws IOException {
 		// Get the unique graph of the resource
-		Graph graph = (Graph) this.getContents().get(0);
+		PiGraph graph = (PiGraph) this.getContents().get(0);
 
 		// Write the Graph to the OutputStream using the Pi format
 		new PiWriter().write(graph, outputStream);
@@ -85,7 +85,7 @@ public class PiResourceImpl extends ResourceImpl {
 	protected void doLoad(InputStream inputStream, Map<?, ?> options)
 			throws IOException {
 		// Parse the Graph from the InputStream using the Pi format
-		Graph graph = new PiParser(uri).parse(inputStream);
+		PiGraph graph = new PiParser(uri).parse(inputStream);
 
 		// If the graph was correctly parsed, add it to the Resource
 		if (graph != null) {

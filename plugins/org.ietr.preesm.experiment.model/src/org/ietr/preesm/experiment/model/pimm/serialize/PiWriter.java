@@ -52,11 +52,11 @@ import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
-import org.ietr.preesm.experiment.model.pimm.InputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -231,7 +231,7 @@ public class PiWriter {
 	}
 
 	/**
-	 * Write the PiMM {@link Graph} to the given {@link OutputStream} using the
+	 * Write the PiMM {@link PiGraph} to the given {@link OutputStream} using the
 	 * Pi format.
 	 * 
 	 * @param graph
@@ -239,7 +239,7 @@ public class PiWriter {
 	 * @param outputStream
 	 *            The written OutputStream
 	 */
-	public void write(Graph graph, OutputStream outputStream) {
+	public void write(PiGraph graph, OutputStream outputStream) {
 		// Create the domDocument
 		domDocument = DomUtil.createDocument(
 				"http://graphml.graphdrawing.org/xmlns", "graphml");
@@ -308,8 +308,8 @@ public class PiWriter {
 		// Write ports of the actor
 		writePorts(vertexElt, actor.getConfigInputPorts());
 		writePorts(vertexElt, actor.getConfigOutputPorts());
-		writePorts(vertexElt, actor.getInputPorts());
-		writePorts(vertexElt, actor.getOutputPorts());
+		writePorts(vertexElt, actor.getDataInputPorts());
+		writePorts(vertexElt, actor.getDataOutputPorts());
 
 	}
 
@@ -445,7 +445,7 @@ public class PiWriter {
 	 * @param graph
 	 *            The serialized Graph
 	 */
-	protected void writeGraph(Element rootElt, Graph graph) {
+	protected void writeGraph(Element rootElt, PiGraph graph) {
 		// Create and add the graphElt to the Document
 		Element graphElt = addGraphElt(rootElt);
 		writeDataElt(graphElt, "name", graph.getName());
@@ -486,10 +486,10 @@ public class PiWriter {
 		// Write ports of the actor
 		switch (vertex.getKind()) {
 		case "src":
-			writePorts(vertexElt, vertex.getOutputPorts());
+			writePorts(vertexElt, vertex.getDataOutputPorts());
 			break;
 		case "snk":
-			writePorts(vertexElt, vertex.getInputPorts());
+			writePorts(vertexElt, vertex.getDataInputPorts());
 			break;
 		default:
 		}
@@ -523,7 +523,7 @@ public class PiWriter {
 	}
 
 	/**
-	 * Fill the {@link Element} with a description of the input {@link Graph}
+	 * Fill the {@link Element} with a description of the input {@link PiGraph}
 	 * 
 	 * @param parentElt
 	 *            The Element to fill (could be removed later if it is always
@@ -531,7 +531,7 @@ public class PiWriter {
 	 * @param graph
 	 *            The serialized Graph
 	 */
-	protected void writePi(Element parentElt, Graph graph) {
+	protected void writePi(Element parentElt, PiGraph graph) {
 		// Add IBSDF Keys - Might not be needed.
 		addKey("parameters", "parameters", "graph", null, null);
 		addKey("variables", "variables", "graph", null, null);
@@ -558,10 +558,10 @@ public class PiWriter {
 			
 			switch(port.getKind()){
 			case "input":
-				portElt.setAttribute("expr", ((InputPort)port).getExpression().getString());
+				portElt.setAttribute("expr", ((DataInputPort)port).getExpression().getString());
 				break;
 			case "output":
-				portElt.setAttribute("expr", ((OutputPort)port).getExpression().getString());
+				portElt.setAttribute("expr", ((DataOutputPort)port).getExpression().getString());
 				break;
 			case "cfg_input":
 				break;

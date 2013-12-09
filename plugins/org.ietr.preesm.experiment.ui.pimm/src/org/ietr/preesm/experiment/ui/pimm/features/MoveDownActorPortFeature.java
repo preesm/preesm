@@ -91,11 +91,11 @@ public class MoveDownActorPortFeature extends AbstractCustomFeature {
 					Actor actor = (Actor)(port.eContainer());
 					String kind = port.getKind();
 					if(kind.compareTo("input") == 0){
-						ret = actor.getInputPorts().size() > 1;
-						ret = ret && actor.getInputPorts().indexOf(port) < actor.getInputPorts().size()-1;
+						ret = actor.getDataInputPorts().size() > 1;
+						ret = ret && actor.getDataInputPorts().indexOf(port) < actor.getDataInputPorts().size()-1;
 					}else if(kind.compareTo("output") == 0){
-						ret = actor.getOutputPorts().size() > 1;
-						ret = ret && actor.getOutputPorts().indexOf(port) < actor.getOutputPorts().size()-1;
+						ret = actor.getDataOutputPorts().size() > 1;
+						ret = ret && actor.getDataOutputPorts().indexOf(port) < actor.getDataOutputPorts().size()-1;
 					}else if(kind.compareTo("cfg_input") == 0){
 						ret = actor.getConfigInputPorts().size() > 1;
 						ret = ret && actor.getConfigInputPorts().indexOf(port) < actor.getConfigInputPorts().size()-1;
@@ -130,11 +130,11 @@ public class MoveDownActorPortFeature extends AbstractCustomFeature {
 
 				// Switch Port into Actor Object
 				if(portKind.compareTo("input") == 0){
-					portToMoveDownIndex = actor.getInputPorts().indexOf(portToMoveDown);
-					portToMoveUp = actor.getInputPorts().get(portToMoveDownIndex+1);
+					portToMoveDownIndex = actor.getDataInputPorts().indexOf(portToMoveDown);
+					portToMoveUp = actor.getDataInputPorts().get(portToMoveDownIndex+1);
 				}else if(portKind.compareTo("output") == 0){
-					portToMoveDownIndex = actor.getOutputPorts().indexOf(portToMoveDown);
-					portToMoveUp = actor.getOutputPorts().get(portToMoveDownIndex+1);
+					portToMoveDownIndex = actor.getDataOutputPorts().indexOf(portToMoveDown);
+					portToMoveUp = actor.getDataOutputPorts().get(portToMoveDownIndex+1);
 				}else if(portKind.compareTo("cfg_input") == 0){
 					portToMoveDownIndex = actor.getConfigInputPorts().indexOf(portToMoveDown);
 					portToMoveUp = actor.getConfigInputPorts().get(portToMoveDownIndex+1);
@@ -167,9 +167,9 @@ public class MoveDownActorPortFeature extends AbstractCustomFeature {
 				this.hasDoneChanges = true;
 				
 				if(portKind.compareTo("input") == 0){
-					actor.getInputPorts().move(portToMoveDownIndex, portToMoveUpIndex);
+					actor.getDataInputPorts().move(portToMoveDownIndex, portToMoveUpIndex);
 				}else if(portKind.compareTo("output") == 0){
-					actor.getOutputPorts().move(portToMoveDownIndex, portToMoveUpIndex);
+					actor.getDataOutputPorts().move(portToMoveDownIndex, portToMoveUpIndex);
 				}else if(portKind.compareTo("cfg_input") == 0){
 					actor.getConfigInputPorts().move(portToMoveDownIndex, portToMoveUpIndex);
 				}else if(portKind.compareTo("cfg_output") == 0){

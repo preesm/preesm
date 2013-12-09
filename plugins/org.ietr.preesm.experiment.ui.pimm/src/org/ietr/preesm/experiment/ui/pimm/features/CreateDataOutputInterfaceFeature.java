@@ -39,33 +39,33 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
-import org.ietr.preesm.experiment.model.pimm.SinkInterface;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.experiment.ui.pimm.util.PiMMUtil;
 
 /**
- * Create feature for {@link SinkInterface}
+ * Create feature for {@link DataOutputInterface}
  * 
  * @author kdesnos
  * 
  */
-public class CreateSinkInterfaceFeature extends AbstractCreateFeature {
+public class CreateDataOutputInterfaceFeature extends AbstractCreateFeature {
 
 	boolean hasDoneChanges = false;
 
-	private static final String FEATURE_NAME = "Sink Interface";
+	private static final String FEATURE_NAME = "Data Output Interface";
 
-	private static final String FEATURE_DESCRIPTION = "Create Sink Interface";
+	private static final String FEATURE_DESCRIPTION = "Create Data Output Interface";
 
 	/**
-	 * the Default constructor of {@link CreateSinkInterfaceFeature}
+	 * the Default constructor of {@link CreateDataOutputInterfaceFeature}
 	 * 
 	 * @param fp
 	 *            the feature provider
 	 */
-	public CreateSinkInterfaceFeature(IFeatureProvider fp) {
+	public CreateDataOutputInterfaceFeature(IFeatureProvider fp) {
 		super(fp, FEATURE_NAME, FEATURE_DESCRIPTION);
 	}
 
@@ -77,7 +77,7 @@ public class CreateSinkInterfaceFeature extends AbstractCreateFeature {
 	@Override
 	public Object[] create(ICreateContext context) {
 		// Retrieve the graph
-		Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
+		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
 
 		// Ask user for SinkInterface name until a valid name is entered.
 		String question = "Enter new Sink Interface name";
@@ -92,8 +92,8 @@ public class CreateSinkInterfaceFeature extends AbstractCreateFeature {
 		}
 
 		// create SinkInterface
-		SinkInterface newSinkInterface = PiMMFactory.eINSTANCE
-				.createSinkInterface();
+		DataOutputInterface newSinkInterface = PiMMFactory.eINSTANCE
+				.createDataOutputInterface();
 		newSinkInterface.setName(newSnkName);
 
 		// Add new SinkInterface to the graph.

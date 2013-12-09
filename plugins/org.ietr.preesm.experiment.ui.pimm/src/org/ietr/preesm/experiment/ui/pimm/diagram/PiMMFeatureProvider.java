@@ -80,8 +80,8 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.SinkInterface;
-import org.ietr.preesm.experiment.model.pimm.SourceInterface;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.ui.pimm.features.AddActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddConfigInputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddConfigInputPortFeature;
@@ -90,19 +90,19 @@ import org.ietr.preesm.experiment.ui.pimm.features.AddConfigOutputPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddDelayFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddDependencyFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddFifoFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.AddInputPortFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.AddOutputPortFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddDataInputPortFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddDataOutputPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddParameterFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.AddSinkInterfaceFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.AddSourceInterfaceFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddDataOutputInterfaceFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddDataInputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateConfigInputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateConfigOutputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateDependencyFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateFifoFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateParameterFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.CreateSinkInterfaceFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.CreateSourceInterfaceFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.CreateDataOutputInterfaceFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.CreateDataInputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteAbstractActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteParameterizableFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteActorPortFeature;
@@ -155,12 +155,12 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 			}
 		}
 
-		if (context.getNewObject() instanceof SourceInterface) {
-			return new AddSourceInterfaceFeature(this);
+		if (context.getNewObject() instanceof DataInputInterface) {
+			return new AddDataInputInterfaceFeature(this);
 		}
 
-		if (context.getNewObject() instanceof SinkInterface) {
-			return new AddSinkInterfaceFeature(this);
+		if (context.getNewObject() instanceof DataOutputInterface) {
+			return new AddDataOutputInterfaceFeature(this);
 		}
 
 		if (context.getNewObject() instanceof ConfigOutputInterface) {
@@ -189,8 +189,8 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 				new CreateParameterFeature(this),
 				new CreateConfigInputInterfaceFeature(this),
 				new CreateConfigOutputInterfaceFeature(this),
-				new CreateSourceInterfaceFeature(this),
-				new CreateSinkInterfaceFeature(this) };
+				new CreateDataInputInterfaceFeature(this),
+				new CreateDataOutputInterfaceFeature(this) };
 	}
 
 	@Override
@@ -209,8 +209,8 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
 		if (obj instanceof Actor) {
 			ICustomFeature[] actorFeatures = new ICustomFeature[] {
-					new AddOutputPortFeature(this),
-					new AddInputPortFeature(this),
+					new AddDataOutputPortFeature(this),
+					new AddDataInputPortFeature(this),
 					new AddConfigInputPortFeature(this),
 					new AddConfigOutputPortFeature(this),
 					new SetActorRefinementFeature(this),

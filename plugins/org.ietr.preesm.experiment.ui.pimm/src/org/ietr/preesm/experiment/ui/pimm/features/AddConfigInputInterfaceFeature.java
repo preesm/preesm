@@ -53,11 +53,11 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 
 /**
- * Add feature to add a new {@link Parameter} to the {@link Graph}
+ * Add feature to add a new {@link Parameter} to the {@link PiGraph}
  * 
  * @author kdesnos
  * 
@@ -123,7 +123,7 @@ public class AddConfigInputInterfaceFeature extends AbstractAddFeature {
 			// if added Parameter has no resource we add it to the
 			// resource of the graph
 			if (addedParam.eResource() == null) {
-				Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
+				PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
 				graph.getParameters().add(addedParam);
 			}
 			link(boxAnchor, addedParam);

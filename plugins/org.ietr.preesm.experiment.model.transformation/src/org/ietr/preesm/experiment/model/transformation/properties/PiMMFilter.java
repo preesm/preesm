@@ -43,11 +43,11 @@ import org.eclipse.graphiti.ui.platform.AbstractPropertySectionFilter;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
-import org.ietr.preesm.experiment.model.pimm.InputPort;
-import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.SinkInterface;
-import org.ietr.preesm.experiment.model.pimm.SourceInterface;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 
 public class PiMMFilter extends AbstractPropertySectionFilter{
 
@@ -77,25 +77,25 @@ public class PiMMFilter extends AbstractPropertySectionFilter{
 			return false;
 		
 		// OutputPort contained in the SourceInterface and Actor
-		if(eObject instanceof OutputPort){
-			if(eObject.eContainer() instanceof SourceInterface)
+		if(eObject instanceof DataOutputPort){
+			if(eObject.eContainer() instanceof DataInputInterface)
 				return true;
 			if(eObject.eContainer() instanceof Actor)
 				return true;
 		}
 		
 		// InputPort contained in the SinkInterface and Actor
-		if(eObject instanceof InputPort){
-			if(eObject.eContainer() instanceof SinkInterface)
+		if(eObject instanceof DataInputPort){
+			if(eObject.eContainer() instanceof DataOutputInterface)
 				return true;
 			if(eObject.eContainer() instanceof Actor)
 				return true;
 		}
 		
-		if(eObject instanceof SinkInterface)
+		if(eObject instanceof DataOutputInterface)
 			return true;
 		
-		if(eObject instanceof SourceInterface)
+		if(eObject instanceof DataInputInterface)
 			return true;
 		
 		if(eObject instanceof Delay)

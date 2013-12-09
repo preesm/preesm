@@ -46,24 +46,24 @@ import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
-import org.ietr.preesm.experiment.model.pimm.InputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
- * Add Feature for {@link InputPort}s
+ * Add Feature for {@link DataInputPort}s
  * 
  * @author kdesnos
  * @author jheulot
  * 
  */
-public class AddInputPortFeature extends AbstractAddActorPortFeature {
+public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
 
-	public static final IColorConstant INPUT_PORT_FOREGROUND = AddActorFeature.ACTOR_FOREGROUND;
-	public static final IColorConstant INPUT_PORT_BACKGROUND = new ColorConstant(
+	public static final IColorConstant DATA_INPUT_PORT_FOREGROUND = AddActorFeature.ACTOR_FOREGROUND;
+	public static final IColorConstant DATA_INPUT_PORT_BACKGROUND = new ColorConstant(
 			182, 215, 122);
-	public static final PortPosition INPUT_PORT_POSITION = PortPosition.LEFT;
-	public static final String INPUT_PORT_KIND = "input";
+	public static final PortPosition DATA_INPUT_PORT_POSITION = PortPosition.LEFT;
+	public static final String DATA_INPUT_PORT_KIND = "input";
 
 	/**
 	 * Default constructor
@@ -71,7 +71,7 @@ public class AddInputPortFeature extends AbstractAddActorPortFeature {
 	 * @param fp
 	 *            the feature provider
 	 */
-	public AddInputPortFeature(IFeatureProvider fp) {
+	public AddDataInputPortFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
@@ -87,7 +87,7 @@ public class AddInputPortFeature extends AbstractAddActorPortFeature {
 
 	@Override
 	public PortPosition getPosition() {
-		return INPUT_PORT_POSITION;
+		return DATA_INPUT_PORT_POSITION;
 	}
 
 	@Override
@@ -96,8 +96,8 @@ public class AddInputPortFeature extends AbstractAddActorPortFeature {
 		IGaService gaService = Graphiti.getGaService();
 		// Create the port GraphicAlgorithm
 		Rectangle rectangle = gaService.createPlainRectangle(containerShape);
-		rectangle.setForeground(manageColor(INPUT_PORT_FOREGROUND));
-		rectangle.setBackground(manageColor(INPUT_PORT_BACKGROUND));
+		rectangle.setForeground(manageColor(DATA_INPUT_PORT_FOREGROUND));
+		rectangle.setBackground(manageColor(DATA_INPUT_PORT_BACKGROUND));
 		rectangle.setLineWidth(1);
 		int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
 		gaService.setSize(rectangle, PORT_ANCHOR_GA_SIZE, PORT_ANCHOR_GA_SIZE);
@@ -127,17 +127,17 @@ public class AddInputPortFeature extends AbstractAddActorPortFeature {
 
 	@Override
 	public Port getNewPort(String portName, Actor actor) {
-		InputPort newPort = PiMMFactory.eINSTANCE.createInputPort();
+		DataInputPort newPort = PiMMFactory.eINSTANCE.createDataInputPort();
 		Expression expr = PiMMFactory.eINSTANCE.createExpression();
 		newPort.setName(portName);
 		newPort.setExpression(expr);
-		actor.getInputPorts().add(newPort);
+		actor.getDataInputPorts().add(newPort);
 		return newPort;
 	}
 
 	@Override
 	public String getPortKind() {
-		return INPUT_PORT_KIND;
+		return DATA_INPUT_PORT_KIND;
 	}
 
 }

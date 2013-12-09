@@ -43,7 +43,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.InputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 
 /**
@@ -53,14 +53,14 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.InputPortImpl#getIncomingFifo <em>Incoming Fifo</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.InputPortImpl#getExpression <em>Expression</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DataInputPortImpl#getIncomingFifo <em>Incoming Fifo</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DataInputPortImpl#getExpression <em>Expression</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class InputPortImpl extends PortImpl implements InputPort {
+public class DataInputPortImpl extends PortImpl implements DataInputPort {
 	/**
 	 * The cached value of the '{@link #getIncomingFifo() <em>Incoming Fifo</em>}' reference.
 	 * <!-- begin-user-doc -->
@@ -86,7 +86,7 @@ public class InputPortImpl extends PortImpl implements InputPort {
 	 * <!-- end-user-doc -->
 	 * 
 	 */
-	protected InputPortImpl() {
+	protected DataInputPortImpl() {
 		super();
 		kind = "input";
 	}
@@ -98,7 +98,7 @@ public class InputPortImpl extends PortImpl implements InputPort {
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return PiMMPackage.Literals.INPUT_PORT;
+		return PiMMPackage.Literals.DATA_INPUT_PORT;
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class InputPortImpl extends PortImpl implements InputPort {
 			incomingFifo = (Fifo)eResolveProxy(oldIncomingFifo);
 			if (incomingFifo != oldIncomingFifo) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.INPUT_PORT__INCOMING_FIFO, oldIncomingFifo, incomingFifo));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.DATA_INPUT_PORT__INCOMING_FIFO, oldIncomingFifo, incomingFifo));
 			}
 		}
 		return incomingFifo;
@@ -136,7 +136,7 @@ public class InputPortImpl extends PortImpl implements InputPort {
 		Fifo oldIncomingFifo = incomingFifo;
 		incomingFifo = newIncomingFifo;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.INPUT_PORT__INCOMING_FIFO, oldIncomingFifo, newIncomingFifo);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_INPUT_PORT__INCOMING_FIFO, oldIncomingFifo, newIncomingFifo);
 			if (msgs == null) msgs = notification; else msgs.add(notification);
 		}
 		return msgs;
@@ -158,7 +158,7 @@ public class InputPortImpl extends PortImpl implements InputPort {
 			if (msgs != null) msgs.dispatch();
 		}
 		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.INPUT_PORT__INCOMING_FIFO, newIncomingFifo, newIncomingFifo));
+			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_INPUT_PORT__INCOMING_FIFO, newIncomingFifo, newIncomingFifo));
 	}
 
 /**
@@ -179,7 +179,7 @@ public class InputPortImpl extends PortImpl implements InputPort {
 		Expression oldExpression = expression;
 		expression = newExpression;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.INPUT_PORT__EXPRESSION, oldExpression, newExpression);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_INPUT_PORT__EXPRESSION, oldExpression, newExpression);
 			if (msgs == null) msgs = notification; else msgs.add(notification);
 		}
 		return msgs;
@@ -194,14 +194,14 @@ public class InputPortImpl extends PortImpl implements InputPort {
 		if (newExpression != expression) {
 			NotificationChain msgs = null;
 			if (expression != null)
-				msgs = ((InternalEObject)expression).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.INPUT_PORT__EXPRESSION, null, msgs);
+				msgs = ((InternalEObject)expression).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.DATA_INPUT_PORT__EXPRESSION, null, msgs);
 			if (newExpression != null)
-				msgs = ((InternalEObject)newExpression).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.INPUT_PORT__EXPRESSION, null, msgs);
+				msgs = ((InternalEObject)newExpression).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.DATA_INPUT_PORT__EXPRESSION, null, msgs);
 			msgs = basicSetExpression(newExpression, msgs);
 			if (msgs != null) msgs.dispatch();
 		}
 		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.INPUT_PORT__EXPRESSION, newExpression, newExpression));
+			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_INPUT_PORT__EXPRESSION, newExpression, newExpression));
 	}
 
 	/**
@@ -212,7 +212,7 @@ public class InputPortImpl extends PortImpl implements InputPort {
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case PiMMPackage.INPUT_PORT__INCOMING_FIFO:
+			case PiMMPackage.DATA_INPUT_PORT__INCOMING_FIFO:
 				if (incomingFifo != null)
 					msgs = ((InternalEObject)incomingFifo).eInverseRemove(this, PiMMPackage.FIFO__TARGET_PORT, Fifo.class, msgs);
 				return basicSetIncomingFifo((Fifo)otherEnd, msgs);
@@ -228,9 +228,9 @@ public class InputPortImpl extends PortImpl implements InputPort {
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case PiMMPackage.INPUT_PORT__INCOMING_FIFO:
+			case PiMMPackage.DATA_INPUT_PORT__INCOMING_FIFO:
 				return basicSetIncomingFifo(null, msgs);
-			case PiMMPackage.INPUT_PORT__EXPRESSION:
+			case PiMMPackage.DATA_INPUT_PORT__EXPRESSION:
 				return basicSetExpression(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
@@ -244,10 +244,10 @@ public class InputPortImpl extends PortImpl implements InputPort {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case PiMMPackage.INPUT_PORT__INCOMING_FIFO:
+			case PiMMPackage.DATA_INPUT_PORT__INCOMING_FIFO:
 				if (resolve) return getIncomingFifo();
 				return basicGetIncomingFifo();
-			case PiMMPackage.INPUT_PORT__EXPRESSION:
+			case PiMMPackage.DATA_INPUT_PORT__EXPRESSION:
 				return getExpression();
 		}
 		return super.eGet(featureID, resolve, coreType);
@@ -261,10 +261,10 @@ public class InputPortImpl extends PortImpl implements InputPort {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case PiMMPackage.INPUT_PORT__INCOMING_FIFO:
+			case PiMMPackage.DATA_INPUT_PORT__INCOMING_FIFO:
 				setIncomingFifo((Fifo)newValue);
 				return;
-			case PiMMPackage.INPUT_PORT__EXPRESSION:
+			case PiMMPackage.DATA_INPUT_PORT__EXPRESSION:
 				setExpression((Expression)newValue);
 				return;
 		}
@@ -279,10 +279,10 @@ public class InputPortImpl extends PortImpl implements InputPort {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case PiMMPackage.INPUT_PORT__INCOMING_FIFO:
+			case PiMMPackage.DATA_INPUT_PORT__INCOMING_FIFO:
 				setIncomingFifo((Fifo)null);
 				return;
-			case PiMMPackage.INPUT_PORT__EXPRESSION:
+			case PiMMPackage.DATA_INPUT_PORT__EXPRESSION:
 				setExpression((Expression)null);
 				return;
 		}
@@ -297,9 +297,9 @@ public class InputPortImpl extends PortImpl implements InputPort {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case PiMMPackage.INPUT_PORT__INCOMING_FIFO:
+			case PiMMPackage.DATA_INPUT_PORT__INCOMING_FIFO:
 				return incomingFifo != null;
-			case PiMMPackage.INPUT_PORT__EXPRESSION:
+			case PiMMPackage.DATA_INPUT_PORT__EXPRESSION:
 				return expression != null;
 		}
 		return super.eIsSet(featureID);

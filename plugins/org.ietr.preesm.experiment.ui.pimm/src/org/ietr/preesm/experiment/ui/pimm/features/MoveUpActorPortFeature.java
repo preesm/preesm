@@ -91,11 +91,11 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
 					Actor actor = (Actor)(port.eContainer());
 					String kind = port.getKind();
 					if(kind.compareTo("input") == 0){
-						ret = actor.getInputPorts().size() > 1;
-						ret = ret && actor.getInputPorts().indexOf(port) > 0;
+						ret = actor.getDataInputPorts().size() > 1;
+						ret = ret && actor.getDataInputPorts().indexOf(port) > 0;
 					}else if(kind.compareTo("output") == 0){
-						ret = actor.getOutputPorts().size() > 1;
-						ret = ret && actor.getOutputPorts().indexOf(port) > 0;
+						ret = actor.getDataOutputPorts().size() > 1;
+						ret = ret && actor.getDataOutputPorts().indexOf(port) > 0;
 					}else if(kind.compareTo("cfg_input") == 0){
 						ret = actor.getConfigInputPorts().size() > 1;
 						ret = ret && actor.getConfigInputPorts().indexOf(port) > 0;
@@ -130,11 +130,11 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
 
 				// Switch Port into Actor Object
 				if(portKind.compareTo("input") == 0){
-					portToMoveUpIndex = actor.getInputPorts().indexOf(portToMoveUp);
-					portToMoveDown = actor.getInputPorts().get(portToMoveUpIndex-1);
+					portToMoveUpIndex = actor.getDataInputPorts().indexOf(portToMoveUp);
+					portToMoveDown = actor.getDataInputPorts().get(portToMoveUpIndex-1);
 				}else if(portKind.compareTo("output") == 0){
-					portToMoveUpIndex = actor.getOutputPorts().indexOf(portToMoveUp);
-					portToMoveDown = actor.getOutputPorts().get(portToMoveUpIndex-1);
+					portToMoveUpIndex = actor.getDataOutputPorts().indexOf(portToMoveUp);
+					portToMoveDown = actor.getDataOutputPorts().get(portToMoveUpIndex-1);
 				}else if(portKind.compareTo("cfg_input") == 0){
 					portToMoveUpIndex = actor.getConfigInputPorts().indexOf(portToMoveUp);
 					portToMoveDown = actor.getConfigInputPorts().get(portToMoveUpIndex-1);
@@ -167,9 +167,9 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
 				this.hasDoneChanges = true;
 				
 				if(portKind.compareTo("input") == 0){
-					actor.getInputPorts().move(portToMoveDownIndex, portToMoveUpIndex);
+					actor.getDataInputPorts().move(portToMoveDownIndex, portToMoveUpIndex);
 				}else if(portKind.compareTo("output") == 0){
-					actor.getOutputPorts().move(portToMoveDownIndex, portToMoveUpIndex);
+					actor.getDataOutputPorts().move(portToMoveDownIndex, portToMoveUpIndex);
 				}else if(portKind.compareTo("cfg_input") == 0){
 					actor.getConfigInputPorts().move(portToMoveDownIndex, portToMoveUpIndex);
 				}else if(portKind.compareTo("cfg_output") == 0){

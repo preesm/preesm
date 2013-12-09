@@ -39,33 +39,33 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
-import org.ietr.preesm.experiment.model.pimm.SourceInterface;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.experiment.ui.pimm.util.PiMMUtil;
 
 /**
- * Create feature for {@link SourceInterface}
+ * Create feature for {@link DataInputInterface}
  * 
  * @author kdesnos
  * 
  */
-public class CreateSourceInterfaceFeature extends AbstractCreateFeature {
+public class CreateDataInputInterfaceFeature extends AbstractCreateFeature {
 
 	boolean hasDoneChanges = false;
 
-	private static final String FEATURE_NAME = "Source Interface";
+	private static final String FEATURE_NAME = "Data Input Interface";
 
-	private static final String FEATURE_DESCRIPTION = "Create Source Interface";
+	private static final String FEATURE_DESCRIPTION = "Create Data Input Interface";
 
 	/**
-	 * the Default constructor of {@link CreateSourceInterfaceFeature}
+	 * the Default constructor of {@link CreateDataInputInterfaceFeature}
 	 * 
 	 * @param fp
 	 *            the feature provider
 	 */
-	public CreateSourceInterfaceFeature(IFeatureProvider fp) {
+	public CreateDataInputInterfaceFeature(IFeatureProvider fp) {
 		super(fp, FEATURE_NAME, FEATURE_DESCRIPTION);
 	}
 
@@ -77,7 +77,7 @@ public class CreateSourceInterfaceFeature extends AbstractCreateFeature {
 	@Override
 	public Object[] create(ICreateContext context) {
 		// Retrieve the graph
-		Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
+		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
 
 		// Ask user for Actor name until a valid name is entered.
 		String question = "Enter new Source Interface name";
@@ -92,8 +92,8 @@ public class CreateSourceInterfaceFeature extends AbstractCreateFeature {
 		}
 
 		// create SourceInterface
-		SourceInterface newSrcInterface = PiMMFactory.eINSTANCE
-				.createSourceInterface();
+		DataInputInterface newSrcInterface = PiMMFactory.eINSTANCE
+				.createDataInputInterface();
 		newSrcInterface.setName(newSrcName);
 
 		// Add new sourceInterface to the graph.

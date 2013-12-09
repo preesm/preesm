@@ -47,9 +47,9 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.Graph;
-import org.ietr.preesm.experiment.model.pimm.InputPort;
-import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.ui.pimm.util.PiMMUtil;
@@ -87,10 +87,10 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 
 		// True if the connection is created between an input and an output port
 		Port target = getPort(context.getTargetAnchor());
-		boolean targetOK = (target != null && target instanceof InputPort);
+		boolean targetOK = (target != null && target instanceof DataInputPort);
 		if (targetOK) {
 			// Check that no Fifo is connected to the ports
-			if (((InputPort) target).getIncomingFifo() != null) {
+			if (((DataInputPort) target).getIncomingFifo() != null) {
 				// Create tooltip message
 				PiMMUtil.setToolTip(getFeatureProvider(), context
 						.getTargetAnchor().getGraphicsAlgorithm(),
@@ -103,7 +103,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 		}
 
 		// False if the target is an outputPort
-		if (target != null && target instanceof OutputPort) {
+		if (target != null && target instanceof DataOutputPort) {
 			// Create tooltip message
 			PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor()
 					.getGraphicsAlgorithm(), getDiagramEditor(),
@@ -156,10 +156,10 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 				new PictogramElement[] { peSource });
 		AbstractAddActorPortFeature addPortFeature = null;
 		if (direction.equals("input")) {
-			addPortFeature = new AddInputPortFeature(getFeatureProvider());
+			addPortFeature = new AddDataInputPortFeature(getFeatureProvider());
 		}
 		if (direction.equals("output")) {
-			addPortFeature = new AddOutputPortFeature(getFeatureProvider());
+			addPortFeature = new AddDataOutputPortFeature(getFeatureProvider());
 		}
 		if (addPortFeature != null) {
 			canCreatePort = addPortFeature.canExecute(sourceContext);
@@ -227,10 +227,10 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 			}
 		}
 
-		if (source != null && target != null && source instanceof OutputPort
-				&& target instanceof InputPort) {
+		if (source != null && target != null && source instanceof DataOutputPort
+				&& target instanceof DataInputPort) {
 			// create new business object
-			Fifo fifo = createFifo((OutputPort) source, (InputPort) target);
+			Fifo fifo = createFifo((DataOutputPort) source, (DataInputPort) target);
 
 			// add connection for business object
 			AddConnectionContext addContext = new AddConnectionContext(
@@ -255,9 +255,9 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 		// Return true if the connection starts at an output port (config or
 		// not)
 		Port source = getPort(context.getSourceAnchor());
-		if (source != null && source instanceof OutputPort) {
+		if (source != null && source instanceof DataOutputPort) {
 			// Check that no Fifo is connected to the ports
-			if (((OutputPort) source).getOutgoingFifo() == null) {
+			if (((DataOutputPort) source).getOutgoingFifo() == null) {
 				// Check if the outputPort is a configurationOutputPort wit no
 				// outgoing dependency
 				if (source instanceof ConfigOutputPort
@@ -282,7 +282,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 		}
 
 		if (source != null
-				&& (source instanceof InputPort || source instanceof ConfigInputPort)) {
+				&& (source instanceof DataInputPort || source instanceof ConfigInputPort)) {
 			// Create tooltip message
 			PiMMUtil.setToolTip(getFeatureProvider(), context.getSourceAnchor()
 					.getGraphicsAlgorithm(), getDiagramEditor(),
@@ -299,21 +299,21 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 
 	/**
 	 * Creates a {@link Fifo} between the two {@link Port}s. Also add the
-	 * created {@link Fifo} to the {@link Graph} of the current {@link Diagram}.
+	 * created {@link Fifo} to the {@link PiGraph} of the current {@link Diagram}.
 	 * 
 	 * @param source
-	 *            the source {@link OutputPort} of the {@link Fifo}
+	 *            the source {@link DataOutputPort} of the {@link Fifo}
 	 * @param target
-	 *            the target {@link InputPort} of the {@link Fifo}
+	 *            the target {@link DataInputPort} of the {@link Fifo}
 	 * @return the created {@link Fifo}
 	 */
-	protected Fifo createFifo(OutputPort source, InputPort target) {
+	protected Fifo createFifo(DataOutputPort source, DataInputPort target) {
 
 		// Refresh to remove all remaining tooltip;
 		getDiagramEditor().refresh();
 
 		// Retrieve the graph
-		Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
+		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
 
 		// Create the Fifo
 		Fifo fifo = PiMMFactory.eINSTANCE.createFifo();

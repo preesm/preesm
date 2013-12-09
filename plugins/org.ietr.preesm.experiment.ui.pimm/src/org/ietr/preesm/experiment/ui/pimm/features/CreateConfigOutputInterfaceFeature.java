@@ -40,7 +40,7 @@ import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
-import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.experiment.ui.pimm.util.PiMMUtil;
@@ -77,7 +77,7 @@ public class CreateConfigOutputInterfaceFeature extends AbstractCreateFeature {
 	@Override
 	public Object[] create(ICreateContext context) {
 		// Retrieve the graph
-		Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
+		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
 
 		// Ask user for ConfigOutputInterface name until a valid name is
 		// entered.

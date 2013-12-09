@@ -52,8 +52,8 @@ import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.SinkInterface;
-import org.ietr.preesm.experiment.model.pimm.SourceInterface;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 
 /**
  * Layout Feature for {@link InterfaceActor} and Config Input Interface (i.e.
@@ -116,11 +116,11 @@ public class LayoutInterfaceFeature extends AbstractLayoutFeature {
 				GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
 				if (ga instanceof Text) {
 					switch (((InterfaceActor) vertex).getKind()) {
-					case SourceInterface.KIND:
+					case DataInputInterface.KIND:
 						ga.setWidth(size.getWidth());
 						Graphiti.getGaService().setLocation(ga, 0, 0);
 						break;
-					case SinkInterface.KIND:
+					case DataOutputInterface.KIND:
 						ga.setWidth(size.getWidth());
 						Graphiti.getGaService().setLocation(ga, 16 + 3, 0);
 						break;

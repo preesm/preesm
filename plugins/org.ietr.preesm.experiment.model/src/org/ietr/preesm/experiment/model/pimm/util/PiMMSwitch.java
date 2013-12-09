@@ -87,12 +87,12 @@ public class PiMMSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case PiMMPackage.GRAPH: {
-				Graph graph = (Graph)theEObject;
-				T result = caseGraph(graph);
-				if (result == null) result = caseAbstractActor(graph);
-				if (result == null) result = caseAbstractVertex(graph);
-				if (result == null) result = caseParameterizable(graph);
+			case PiMMPackage.PI_GRAPH: {
+				PiGraph piGraph = (PiGraph)theEObject;
+				T result = casePiGraph(piGraph);
+				if (result == null) result = caseAbstractActor(piGraph);
+				if (result == null) result = caseAbstractVertex(piGraph);
+				if (result == null) result = caseParameterizable(piGraph);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -111,17 +111,17 @@ public class PiMMSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case PiMMPackage.INPUT_PORT: {
-				InputPort inputPort = (InputPort)theEObject;
-				T result = caseInputPort(inputPort);
-				if (result == null) result = casePort(inputPort);
+			case PiMMPackage.DATA_INPUT_PORT: {
+				DataInputPort dataInputPort = (DataInputPort)theEObject;
+				T result = caseDataInputPort(dataInputPort);
+				if (result == null) result = casePort(dataInputPort);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case PiMMPackage.OUTPUT_PORT: {
-				OutputPort outputPort = (OutputPort)theEObject;
-				T result = caseOutputPort(outputPort);
-				if (result == null) result = casePort(outputPort);
+			case PiMMPackage.DATA_OUTPUT_PORT: {
+				DataOutputPort dataOutputPort = (DataOutputPort)theEObject;
+				T result = caseDataOutputPort(dataOutputPort);
+				if (result == null) result = casePort(dataOutputPort);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -135,7 +135,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 			case PiMMPackage.CONFIG_OUTPUT_PORT: {
 				ConfigOutputPort configOutputPort = (ConfigOutputPort)theEObject;
 				T result = caseConfigOutputPort(configOutputPort);
-				if (result == null) result = caseOutputPort(configOutputPort);
+				if (result == null) result = caseDataOutputPort(configOutputPort);
 				if (result == null) result = caseISetter(configOutputPort);
 				if (result == null) result = casePort(configOutputPort);
 				if (result == null) result = defaultCase(theEObject);
@@ -156,33 +156,23 @@ public class PiMMSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case PiMMPackage.SOURCE_INTERFACE: {
-				SourceInterface sourceInterface = (SourceInterface)theEObject;
-				T result = caseSourceInterface(sourceInterface);
-				if (result == null) result = caseInterfaceActor(sourceInterface);
-				if (result == null) result = caseAbstractActor(sourceInterface);
-				if (result == null) result = caseAbstractVertex(sourceInterface);
-				if (result == null) result = caseParameterizable(sourceInterface);
+			case PiMMPackage.DATA_INPUT_INTERFACE: {
+				DataInputInterface dataInputInterface = (DataInputInterface)theEObject;
+				T result = caseDataInputInterface(dataInputInterface);
+				if (result == null) result = caseInterfaceActor(dataInputInterface);
+				if (result == null) result = caseAbstractActor(dataInputInterface);
+				if (result == null) result = caseAbstractVertex(dataInputInterface);
+				if (result == null) result = caseParameterizable(dataInputInterface);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case PiMMPackage.SINK_INTERFACE: {
-				SinkInterface sinkInterface = (SinkInterface)theEObject;
-				T result = caseSinkInterface(sinkInterface);
-				if (result == null) result = caseInterfaceActor(sinkInterface);
-				if (result == null) result = caseAbstractActor(sinkInterface);
-				if (result == null) result = caseAbstractVertex(sinkInterface);
-				if (result == null) result = caseParameterizable(sinkInterface);
-				if (result == null) result = defaultCase(theEObject);
-				return result;
-			}
-			case PiMMPackage.CONFIG_OUTPUT_INTERFACE: {
-				ConfigOutputInterface configOutputInterface = (ConfigOutputInterface)theEObject;
-				T result = caseConfigOutputInterface(configOutputInterface);
-				if (result == null) result = caseInterfaceActor(configOutputInterface);
-				if (result == null) result = caseAbstractActor(configOutputInterface);
-				if (result == null) result = caseAbstractVertex(configOutputInterface);
-				if (result == null) result = caseParameterizable(configOutputInterface);
+			case PiMMPackage.DATA_OUTPUT_INTERFACE: {
+				DataOutputInterface dataOutputInterface = (DataOutputInterface)theEObject;
+				T result = caseDataOutputInterface(dataOutputInterface);
+				if (result == null) result = caseInterfaceActor(dataOutputInterface);
+				if (result == null) result = caseAbstractActor(dataOutputInterface);
+				if (result == null) result = caseAbstractVertex(dataOutputInterface);
+				if (result == null) result = caseParameterizable(dataOutputInterface);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -193,6 +183,16 @@ public class PiMMSwitch<T> extends Switch<T> {
 				if (result == null) result = caseAbstractVertex(configInputInterface);
 				if (result == null) result = caseISetter(configInputInterface);
 				if (result == null) result = caseParameterizable(configInputInterface);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case PiMMPackage.CONFIG_OUTPUT_INTERFACE: {
+				ConfigOutputInterface configOutputInterface = (ConfigOutputInterface)theEObject;
+				T result = caseConfigOutputInterface(configOutputInterface);
+				if (result == null) result = caseInterfaceActor(configOutputInterface);
+				if (result == null) result = caseAbstractActor(configOutputInterface);
+				if (result == null) result = caseAbstractVertex(configOutputInterface);
+				if (result == null) result = caseParameterizable(configOutputInterface);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -286,17 +286,17 @@ public class PiMMSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Graph</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Pi Graph</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Graph</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Pi Graph</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseGraph(Graph object) {
+	public T casePiGraph(PiGraph object) {
 		return null;
 	}
 
@@ -331,32 +331,32 @@ public class PiMMSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Input Port</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Data Input Port</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Input Port</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Data Input Port</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseInputPort(InputPort object) {
+	public T caseDataInputPort(DataInputPort object) {
 		return null;
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Output Port</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Data Output Port</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Output Port</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Data Output Port</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseOutputPort(OutputPort object) {
+	public T caseDataOutputPort(DataOutputPort object) {
 		return null;
 	}
 
@@ -421,32 +421,32 @@ public class PiMMSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Source Interface</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Data Input Interface</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Source Interface</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Data Input Interface</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseSourceInterface(SourceInterface object) {
+	public T caseDataInputInterface(DataInputInterface object) {
 		return null;
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Sink Interface</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Data Output Interface</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Sink Interface</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Data Output Interface</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseSinkInterface(SinkInterface object) {
+	public T caseDataOutputInterface(DataOutputInterface object) {
 		return null;
 	}
 

@@ -80,8 +80,8 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 				return createAbstractActorAdapter();
 			}
 			@Override
-			public Adapter caseGraph(Graph object) {
-				return createGraphAdapter();
+			public Adapter casePiGraph(PiGraph object) {
+				return createPiGraphAdapter();
 			}
 			@Override
 			public Adapter caseActor(Actor object) {
@@ -92,12 +92,12 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 				return createPortAdapter();
 			}
 			@Override
-			public Adapter caseInputPort(InputPort object) {
-				return createInputPortAdapter();
+			public Adapter caseDataInputPort(DataInputPort object) {
+				return createDataInputPortAdapter();
 			}
 			@Override
-			public Adapter caseOutputPort(OutputPort object) {
-				return createOutputPortAdapter();
+			public Adapter caseDataOutputPort(DataOutputPort object) {
+				return createDataOutputPortAdapter();
 			}
 			@Override
 			public Adapter caseConfigInputPort(ConfigInputPort object) {
@@ -116,20 +116,20 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 				return createInterfaceActorAdapter();
 			}
 			@Override
-			public Adapter caseSourceInterface(SourceInterface object) {
-				return createSourceInterfaceAdapter();
+			public Adapter caseDataInputInterface(DataInputInterface object) {
+				return createDataInputInterfaceAdapter();
 			}
 			@Override
-			public Adapter caseSinkInterface(SinkInterface object) {
-				return createSinkInterfaceAdapter();
-			}
-			@Override
-			public Adapter caseConfigOutputInterface(ConfigOutputInterface object) {
-				return createConfigOutputInterfaceAdapter();
+			public Adapter caseDataOutputInterface(DataOutputInterface object) {
+				return createDataOutputInterfaceAdapter();
 			}
 			@Override
 			public Adapter caseConfigInputInterface(ConfigInputInterface object) {
 				return createConfigInputInterfaceAdapter();
+			}
+			@Override
+			public Adapter caseConfigOutputInterface(ConfigOutputInterface object) {
+				return createConfigOutputInterfaceAdapter();
 			}
 			@Override
 			public Adapter caseRefinement(Refinement object) {
@@ -218,16 +218,16 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.Graph <em>Graph</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.PiGraph <em>Pi Graph</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.ietr.preesm.experiment.model.pimm.Graph
+	 * @see org.ietr.preesm.experiment.model.pimm.PiGraph
 	 * @generated
 	 */
-	public Adapter createGraphAdapter() {
+	public Adapter createPiGraphAdapter() {
 		return null;
 	}
 
@@ -260,30 +260,30 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.InputPort <em>Input Port</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.DataInputPort <em>Data Input Port</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.ietr.preesm.experiment.model.pimm.InputPort
+	 * @see org.ietr.preesm.experiment.model.pimm.DataInputPort
 	 * @generated
 	 */
-	public Adapter createInputPortAdapter() {
+	public Adapter createDataInputPortAdapter() {
 		return null;
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.OutputPort <em>Output Port</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.DataOutputPort <em>Data Output Port</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.ietr.preesm.experiment.model.pimm.OutputPort
+	 * @see org.ietr.preesm.experiment.model.pimm.DataOutputPort
 	 * @generated
 	 */
-	public Adapter createOutputPortAdapter() {
+	public Adapter createDataOutputPortAdapter() {
 		return null;
 	}
 
@@ -344,30 +344,30 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.SourceInterface <em>Source Interface</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.DataInputInterface <em>Data Input Interface</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.ietr.preesm.experiment.model.pimm.SourceInterface
+	 * @see org.ietr.preesm.experiment.model.pimm.DataInputInterface
 	 * @generated
 	 */
-	public Adapter createSourceInterfaceAdapter() {
+	public Adapter createDataInputInterfaceAdapter() {
 		return null;
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.SinkInterface <em>Sink Interface</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.DataOutputInterface <em>Data Output Interface</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.ietr.preesm.experiment.model.pimm.SinkInterface
+	 * @see org.ietr.preesm.experiment.model.pimm.DataOutputInterface
 	 * @generated
 	 */
-	public Adapter createSinkInterfaceAdapter() {
+	public Adapter createDataOutputInterfaceAdapter() {
 		return null;
 	}
 

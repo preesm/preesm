@@ -39,7 +39,7 @@ import java.util.Set;
 
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 /**
  * This validator is used to check whether a vertex in a graph already has a
@@ -50,7 +50,7 @@ import org.ietr.preesm.experiment.model.pimm.Graph;
  */
 public class VertexNameValidator implements IInputValidator {
 
-	protected Graph graph;
+	protected PiGraph graph;
 	protected Set<String> existingNames;
 
 	/**
@@ -62,7 +62,7 @@ public class VertexNameValidator implements IInputValidator {
 	 *            vertex currently renamed, or <code>null</code> if creating a
 	 *            new vertex.
 	 */
-	public VertexNameValidator(Graph graph, AbstractVertex renamedVertex) {
+	public VertexNameValidator(PiGraph graph, AbstractVertex renamedVertex) {
 		this.graph = graph;
 		// Retrieve a list of all the actor and parameter names in the graph
 		existingNames = graph.getVerticesNames();

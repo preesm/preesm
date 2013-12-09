@@ -37,10 +37,10 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.ecore.EClass;
 
-import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.SourceInterface;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -50,21 +50,21 @@ import org.ietr.preesm.experiment.model.pimm.SourceInterface;
  *
  * @generated
  */
-public class SourceInterfaceImpl extends InterfaceActorImpl implements
-		SourceInterface {
+public class DataInputInterfaceImpl extends InterfaceActorImpl implements
+		DataInputInterface {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 */
-	protected SourceInterfaceImpl() {
+	protected DataInputInterfaceImpl() {
 		super();
 		kind = KIND;
 
 		// Add the unique output port of the Source Interface
 		// The port intentionally has no name 
-		OutputPort port = PiMMFactory.eINSTANCE.createOutputPort();
+		DataOutputPort port = PiMMFactory.eINSTANCE.createDataOutputPort();
 		port.setName(null);
-		this.getOutputPorts().add(port);
+		this.getDataOutputPorts().add(port);
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class SourceInterfaceImpl extends InterfaceActorImpl implements
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return PiMMPackage.Literals.SOURCE_INTERFACE;
+		return PiMMPackage.Literals.DATA_INPUT_INTERFACE;
 	}
 
 } // SourceInterfaceImpl

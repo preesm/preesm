@@ -44,8 +44,8 @@ import org.eclipse.graphiti.platform.IPlatformImageConstants;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
-import org.ietr.preesm.experiment.model.pimm.InputPort;
-import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
@@ -100,16 +100,16 @@ public class PortDecorators {
 		
 		BoxRelativeAnchor a = (BoxRelativeAnchor)pe;
 		
-		if(port instanceof InputPort){
-			if(((InputPort)port).getExpression().evaluate().contains("Error")){
+		if(port instanceof DataInputPort){
+			if(((DataInputPort)port).getExpression().evaluate().contains("Error")){
 				imageRenderingDecorator.setX(-5);
 				imageRenderingDecorator.setY((int)(a.getRelativeHeight()*a.getReferencedGraphicsAlgorithm().getHeight())-1);
 
 				return imageRenderingDecorator;
 			}
 		}
-		if(port instanceof OutputPort && !(port instanceof ConfigOutputPort)){			
-			if(((OutputPort)port).getExpression().evaluate().contains("Error")){				
+		if(port instanceof DataOutputPort && !(port instanceof ConfigOutputPort)){			
+			if(((DataOutputPort)port).getExpression().evaluate().contains("Error")){				
 				imageRenderingDecorator.setX(a.getReferencedGraphicsAlgorithm().getWidth()-13);
 				imageRenderingDecorator.setY((int)(a.getRelativeHeight()*a.getReferencedGraphicsAlgorithm().getHeight())-1);
 

@@ -55,7 +55,7 @@ import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 /**
  * Add feature to add a {@link Fifo} to the {@link Diagram}
@@ -88,7 +88,7 @@ public class AddFifoFeature extends AbstractAddFeature {
 		// of the diagram
 		// in a real scenario the business model would have its own resource
 		if (addedFifo.eResource() == null) {
-			Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
+			PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
 			graph.getFifos().add(addedFifo);
 		}
 

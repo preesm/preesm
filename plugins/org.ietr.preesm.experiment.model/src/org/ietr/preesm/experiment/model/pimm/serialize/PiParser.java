@@ -50,17 +50,17 @@ import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
-import org.ietr.preesm.experiment.model.pimm.InputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.SinkInterface;
-import org.ietr.preesm.experiment.model.pimm.SourceInterface;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -113,16 +113,16 @@ public class PiParser {
 	}
 
 	/**
-	 * Parse the PiMM {@link Graph} from the given {@link InputStream} using the
+	 * Parse the PiMM {@link PiGraph} from the given {@link InputStream} using the
 	 * Pi format.
 	 * 
 	 * @param inputStream
 	 *            The Parsed input stream
 	 * @return The parsed Graph or null is something went wrong
 	 */
-	public Graph parse(InputStream inputStream) {
+	public PiGraph parse(InputStream inputStream) {
 		// Instantiate the graph that will be filled with parser informations
-		Graph graph = PiMMFactory.eINSTANCE.createGraph();
+		PiGraph graph = PiMMFactory.eINSTANCE.createPiGraph();
 
 		// Parse the input stream
 		Document document = DomUtil.parseDocument(inputStream);
@@ -147,10 +147,10 @@ public class PiParser {
 	 * @param nodeElt
 	 *            the {@link Element} to parse
 	 * @param graph
-	 *            the deserialized {@link Graph}
+	 *            the deserialized {@link PiGraph}
 	 * @return the created actor
 	 */
-	protected AbstractActor parseActor(Element nodeElt, Graph graph) {
+	protected AbstractActor parseActor(Element nodeElt, PiGraph graph) {
 		// Instantiate the new actor
 		Actor actor = PiMMFactory.eINSTANCE.createActor();
 
@@ -173,11 +173,11 @@ public class PiParser {
 	 *            The node {@link Element} holding the {@link Parameter}
 	 *            properties.
 	 * @param graph
-	 *            the deserialized {@link Graph}.
+	 *            the deserialized {@link PiGraph}.
 	 * @return the {@link AbstractVertex} of the {@link Parameter}.
 	 */
 	protected AbstractVertex parseConfigInputInterface(Element nodeElt,
-			Graph graph) {
+			PiGraph graph) {
 		// Instantiate the new Config Input Interface
 		Parameter param = PiMMFactory.eINSTANCE.createParameter();
 		param.setConfigurationInterface(true);
@@ -198,9 +198,9 @@ public class PiParser {
 	 * @param edgeElt
 	 *            the {@link Element} to parse
 	 * @param graph
-	 *            the deserialized {@link Graph}
+	 *            the deserialized {@link PiGraph}
 	 */
-	protected void parseDependencies(Element edgeElt, Graph graph) {
+	protected void parseDependencies(Element edgeElt, PiGraph graph) {
 		// Instantiate the new Dependency
 		Dependency dependency = PiMMFactory.eINSTANCE.createDependency();
 
@@ -289,7 +289,7 @@ public class PiParser {
 	 * @param graph
 	 *            The deserialized graph
 	 */
-	protected void parseEdge(Element edgeElt, Graph graph) {
+	protected void parseEdge(Element edgeElt, PiGraph graph) {
 		// Identify if the node is an actor or a parameter
 		String edgeKind = edgeElt.getAttribute("kind");
 
@@ -312,9 +312,9 @@ public class PiParser {
 	 * @param nodeElt
 	 *            the {@link Element} to parse
 	 * @param graph
-	 *            the deserialized {@link Graph}
+	 *            the deserialized {@link PiGraph}
 	 */
-	protected void parseFifo(Element edgeElt, Graph graph) {
+	protected void parseFifo(Element edgeElt, PiGraph graph) {
 		// Instantiate the new Fifo
 		Fifo fifo = PiMMFactory.eINSTANCE.createFifo();
 
@@ -337,8 +337,8 @@ public class PiParser {
 		sourcePortName = (sourcePortName == "") ? null : sourcePortName;
 		String targetPortName = edgeElt.getAttribute("targetport");
 		targetPortName = (targetPortName == "") ? null : targetPortName;
-		OutputPort oPort = (OutputPort) source.getPortNamed(sourcePortName);
-		InputPort iPort = (InputPort) target.getPortNamed(targetPortName);
+		DataOutputPort oPort = (DataOutputPort) source.getPortNamed(sourcePortName);
+		DataInputPort iPort = (DataInputPort) target.getPortNamed(targetPortName);
 
 		if (iPort == null) {
 			throw new RuntimeException("Edge target port " + targetPortName
@@ -373,9 +373,9 @@ public class PiParser {
 	 * @param rootElt
 	 *            The root element (that must have a graph child)
 	 * @param graph
-	 *            The deserialized {@link Graph}
+	 *            The deserialized {@link PiGraph}
 	 */
-	protected void parseGraph(Element rootElt, Graph graph) {
+	protected void parseGraph(Element rootElt, PiGraph graph) {
 		// Retrieve the Graph Element
 		NodeList graphElts = rootElt.getElementsByTagName("graph");
 		if (graphElts.getLength() == 0) {
@@ -432,9 +432,9 @@ public class PiParser {
 	 * @param nodeElt
 	 *            The node {@link Element} to parse
 	 * @param graph
-	 *            The deserialized {@link Graph}
+	 *            The deserialized {@link PiGraph}
 	 */
-	protected void parseNode(Element nodeElt, Graph graph) {
+	protected void parseNode(Element nodeElt, PiGraph graph) {
 		// Identify if the node is an actor or a parameter
 		String nodeKind = nodeElt.getAttribute("kind");
 		AbstractVertex vertex;
@@ -498,10 +498,10 @@ public class PiParser {
 	 *            The node {@link Element} holding the {@link Parameter}
 	 *            properties.
 	 * @param graph
-	 *            the deserialized {@link Graph}.
+	 *            the deserialized {@link PiGraph}.
 	 * @return the {@link AbstractVertex} of the {@link Parameter}.
 	 */
-	protected AbstractVertex parseParameter(Element nodeElt, Graph graph) {
+	protected AbstractVertex parseParameter(Element nodeElt, PiGraph graph) {
 		// Instantiate the new Parameter
 		Parameter param = PiMMFactory.eINSTANCE.createParameter();
 		Expression e = PiMMFactory.eINSTANCE.createExpression();
@@ -528,9 +528,9 @@ public class PiParser {
 	 *            The Element to fill (could be removed later if it is always
 	 *            rootElt)
 	 * @param graph
-	 *            The deserialized {@link Graph}
+	 *            The deserialized {@link PiGraph}
 	 */
-	protected void parsePi(Element rootElt, Graph graph) {
+	protected void parsePi(Element rootElt, PiGraph graph) {
 		// TODO parseKeys() (Not sure if it is really necessary to do that)
 
 		// Parse the graph element
@@ -561,7 +561,7 @@ public class PiParser {
 						+ vertex.getName());
 			}
 
-			InputPort iPort = PiMMFactory.eINSTANCE.createInputPort();
+			DataInputPort iPort = PiMMFactory.eINSTANCE.createDataInputPort();
 			e = PiMMFactory.eINSTANCE.createExpression();
 			iPort.setName(portName);
 			iPort.setExpression(e);
@@ -570,7 +570,7 @@ public class PiParser {
 			// Do not parse data ports for InterfaceActor since the unique port
 			// is automatically created when the vertex is instantiated
 			if (!(vertex instanceof InterfaceActor)) {
-				((AbstractActor) vertex).getInputPorts().add(iPort);
+				((AbstractActor) vertex).getDataInputPorts().add(iPort);
 			}
 
 			break;
@@ -582,7 +582,7 @@ public class PiParser {
 						+ vertex.getName());
 			}
 
-			OutputPort oPort = PiMMFactory.eINSTANCE.createOutputPort();
+			DataOutputPort oPort = PiMMFactory.eINSTANCE.createDataOutputPort();
 			e = PiMMFactory.eINSTANCE.createExpression();
 			oPort.setName(portName);
 			oPort.setExpression(e);
@@ -591,7 +591,7 @@ public class PiParser {
 			// Do not parse data ports for InterfaceActor since the unique port
 			// is automatically created when the vertex is instantiated
 			if (!(vertex instanceof InterfaceActor)) {
-				((AbstractActor) vertex).getOutputPorts().add(oPort);
+				((AbstractActor) vertex).getDataOutputPorts().add(oPort);
 			}
 			break;
 		case "cfg_input":
@@ -625,11 +625,11 @@ public class PiParser {
 	 * @param nodeElt
 	 *            the {@link Element} to parse
 	 * @param graph
-	 *            the deserialized {@link Graph}
+	 *            the deserialized {@link PiGraph}
 	 * @return the created {@link ConfigOutputInterface}
 	 */
 	protected AbstractActor parseConfigOutputInterface(Element nodeElt,
-			Graph graph) {
+			PiGraph graph) {
 		// Instantiate the new Interface and its corresponding port
 		ConfigOutputInterface cfgOutIf = PiMMFactory.eINSTANCE
 				.createConfigOutputInterface();
@@ -649,13 +649,13 @@ public class PiParser {
 	 * @param nodeElt
 	 *            the {@link Element} to parse
 	 * @param graph
-	 *            the deserialized {@link Graph}
-	 * @return the created {@link SinkInterface}
+	 *            the deserialized {@link PiGraph}
+	 * @return the created {@link DataOutputInterface}
 	 */
-	protected AbstractActor parseSinkInterface(Element nodeElt, Graph graph) {
+	protected AbstractActor parseSinkInterface(Element nodeElt, PiGraph graph) {
 		// Instantiate the new Interface and its corresponding port
-		SinkInterface snkInterface = PiMMFactory.eINSTANCE
-				.createSinkInterface();
+		DataOutputInterface snkInterface = PiMMFactory.eINSTANCE
+				.createDataOutputInterface();
 
 		// Set the sourceInterface properties
 		snkInterface.setName(nodeElt.getAttribute("id"));
@@ -672,13 +672,13 @@ public class PiParser {
 	 * @param nodeElt
 	 *            the {@link Element} to parse
 	 * @param graph
-	 *            the deserialized {@link Graph}
-	 * @return the created {@link SourceInterface}
+	 *            the deserialized {@link PiGraph}
+	 * @return the created {@link DataInputInterface}
 	 */
-	protected AbstractActor parseSourceInterface(Element nodeElt, Graph graph) {
+	protected AbstractActor parseSourceInterface(Element nodeElt, PiGraph graph) {
 		// Instantiate the new Interface and its corresponding port
-		SourceInterface srcInterface = PiMMFactory.eINSTANCE
-				.createSourceInterface();
+		DataInputInterface srcInterface = PiMMFactory.eINSTANCE
+				.createDataInputInterface();
 
 		// Set the sourceInterface properties
 		srcInterface.setName(nodeElt.getAttribute("id"));

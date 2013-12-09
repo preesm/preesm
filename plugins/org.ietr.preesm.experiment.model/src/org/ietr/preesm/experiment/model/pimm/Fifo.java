@@ -59,7 +59,7 @@ import org.eclipse.emf.ecore.EObject;
 public interface Fifo extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Source Port</b></em>' reference.
-	 * It is bidirectional and its opposite is '{@link org.ietr.preesm.experiment.model.pimm.OutputPort#getOutgoingFifo <em>Outgoing Fifo</em>}'.
+	 * It is bidirectional and its opposite is '{@link org.ietr.preesm.experiment.model.pimm.DataOutputPort#getOutgoingFifo <em>Outgoing Fifo</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Source Port</em>' reference isn't clear,
@@ -67,13 +67,13 @@ public interface Fifo extends EObject {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Source Port</em>' reference.
-	 * @see #setSourcePort(OutputPort)
+	 * @see #setSourcePort(DataOutputPort)
 	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getFifo_SourcePort()
-	 * @see org.ietr.preesm.experiment.model.pimm.OutputPort#getOutgoingFifo
+	 * @see org.ietr.preesm.experiment.model.pimm.DataOutputPort#getOutgoingFifo
 	 * @model opposite="outgoingFifo" required="true"
 	 * @generated
 	 */
-	OutputPort getSourcePort();
+	DataOutputPort getSourcePort();
 
 	/**
 	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Fifo#getSourcePort <em>Source Port</em>}' reference.
@@ -83,11 +83,11 @@ public interface Fifo extends EObject {
 	 * @see #getSourcePort()
 	 * @generated
 	 */
-	void setSourcePort(OutputPort value);
+	void setSourcePort(DataOutputPort value);
 
 	/**
 	 * Returns the value of the '<em><b>Target Port</b></em>' reference.
-	 * It is bidirectional and its opposite is '{@link org.ietr.preesm.experiment.model.pimm.InputPort#getIncomingFifo <em>Incoming Fifo</em>}'.
+	 * It is bidirectional and its opposite is '{@link org.ietr.preesm.experiment.model.pimm.DataInputPort#getIncomingFifo <em>Incoming Fifo</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Target Port</em>' reference isn't clear,
@@ -95,13 +95,13 @@ public interface Fifo extends EObject {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Target Port</em>' reference.
-	 * @see #setTargetPort(InputPort)
+	 * @see #setTargetPort(DataInputPort)
 	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getFifo_TargetPort()
-	 * @see org.ietr.preesm.experiment.model.pimm.InputPort#getIncomingFifo
+	 * @see org.ietr.preesm.experiment.model.pimm.DataInputPort#getIncomingFifo
 	 * @model opposite="incomingFifo" required="true"
 	 * @generated
 	 */
-	InputPort getTargetPort();
+	DataInputPort getTargetPort();
 
 	/**
 	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Fifo#getTargetPort <em>Target Port</em>}' reference.
@@ -111,7 +111,7 @@ public interface Fifo extends EObject {
 	 * @see #getTargetPort()
 	 * @generated
 	 */
-	void setTargetPort(InputPort value);
+	void setTargetPort(DataInputPort value);
 
 	/**
 	 * Returns the value of the '<em><b>Delay</b></em>' containment reference.

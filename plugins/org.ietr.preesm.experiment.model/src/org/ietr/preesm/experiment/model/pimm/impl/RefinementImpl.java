@@ -49,7 +49,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 
@@ -174,7 +174,7 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 					final EList<EObject> contents = resourceRefinement
 							.getContents();
 					for (final EObject object : contents) {
-						if (object instanceof Graph) {
+						if (object instanceof PiGraph) {
 							return (AbstractActor) object;
 						}
 					}

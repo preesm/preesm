@@ -43,7 +43,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 
 /**
@@ -53,14 +53,14 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.OutputPortImpl#getOutgoingFifo <em>Outgoing Fifo</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.OutputPortImpl#getExpression <em>Expression</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DataOutputPortImpl#getOutgoingFifo <em>Outgoing Fifo</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DataOutputPortImpl#getExpression <em>Expression</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class OutputPortImpl extends PortImpl implements OutputPort {
+public class DataOutputPortImpl extends PortImpl implements DataOutputPort {
 	/**
 	 * The cached value of the '{@link #getOutgoingFifo() <em>Outgoing Fifo</em>}' reference.
 	 * <!-- begin-user-doc -->
@@ -86,7 +86,7 @@ public class OutputPortImpl extends PortImpl implements OutputPort {
 	 * <!-- end-user-doc -->
 	 * 
 	 */
-	protected OutputPortImpl() {
+	protected DataOutputPortImpl() {
 		super();
 		kind = "output";
 	}
@@ -98,7 +98,7 @@ public class OutputPortImpl extends PortImpl implements OutputPort {
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return PiMMPackage.Literals.OUTPUT_PORT;
+		return PiMMPackage.Literals.DATA_OUTPUT_PORT;
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class OutputPortImpl extends PortImpl implements OutputPort {
 			outgoingFifo = (Fifo)eResolveProxy(oldOutgoingFifo);
 			if (outgoingFifo != oldOutgoingFifo) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.OUTPUT_PORT__OUTGOING_FIFO, oldOutgoingFifo, outgoingFifo));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO, oldOutgoingFifo, outgoingFifo));
 			}
 		}
 		return outgoingFifo;
@@ -136,7 +136,7 @@ public class OutputPortImpl extends PortImpl implements OutputPort {
 		Fifo oldOutgoingFifo = outgoingFifo;
 		outgoingFifo = newOutgoingFifo;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.OUTPUT_PORT__OUTGOING_FIFO, oldOutgoingFifo, newOutgoingFifo);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO, oldOutgoingFifo, newOutgoingFifo);
 			if (msgs == null) msgs = notification; else msgs.add(notification);
 		}
 		return msgs;
@@ -158,7 +158,7 @@ public class OutputPortImpl extends PortImpl implements OutputPort {
 			if (msgs != null) msgs.dispatch();
 		}
 		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.OUTPUT_PORT__OUTGOING_FIFO, newOutgoingFifo, newOutgoingFifo));
+			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO, newOutgoingFifo, newOutgoingFifo));
 	}
 
 
@@ -181,7 +181,7 @@ public class OutputPortImpl extends PortImpl implements OutputPort {
 		Expression oldExpression = expression;
 		expression = newExpression;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.OUTPUT_PORT__EXPRESSION, oldExpression, newExpression);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_OUTPUT_PORT__EXPRESSION, oldExpression, newExpression);
 			if (msgs == null) msgs = notification; else msgs.add(notification);
 		}
 		return msgs;
@@ -199,14 +199,14 @@ public class OutputPortImpl extends PortImpl implements OutputPort {
 		if (newExpression != expression) {
 			NotificationChain msgs = null;
 			if (expression != null)
-				msgs = ((InternalEObject)expression).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.OUTPUT_PORT__EXPRESSION, null, msgs);
+				msgs = ((InternalEObject)expression).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.DATA_OUTPUT_PORT__EXPRESSION, null, msgs);
 			if (newExpression != null)
-				msgs = ((InternalEObject)newExpression).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.OUTPUT_PORT__EXPRESSION, null, msgs);
+				msgs = ((InternalEObject)newExpression).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.DATA_OUTPUT_PORT__EXPRESSION, null, msgs);
 			msgs = basicSetExpression(newExpression, msgs);
 			if (msgs != null) msgs.dispatch();
 		}
 		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.OUTPUT_PORT__EXPRESSION, newExpression, newExpression));
+			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_OUTPUT_PORT__EXPRESSION, newExpression, newExpression));
 	}
 
 	/**
@@ -217,7 +217,7 @@ public class OutputPortImpl extends PortImpl implements OutputPort {
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case PiMMPackage.OUTPUT_PORT__OUTGOING_FIFO:
+			case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
 				if (outgoingFifo != null)
 					msgs = ((InternalEObject)outgoingFifo).eInverseRemove(this, PiMMPackage.FIFO__SOURCE_PORT, Fifo.class, msgs);
 				return basicSetOutgoingFifo((Fifo)otherEnd, msgs);
@@ -233,9 +233,9 @@ public class OutputPortImpl extends PortImpl implements OutputPort {
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case PiMMPackage.OUTPUT_PORT__OUTGOING_FIFO:
+			case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
 				return basicSetOutgoingFifo(null, msgs);
-			case PiMMPackage.OUTPUT_PORT__EXPRESSION:
+			case PiMMPackage.DATA_OUTPUT_PORT__EXPRESSION:
 				return basicSetExpression(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
@@ -249,10 +249,10 @@ public class OutputPortImpl extends PortImpl implements OutputPort {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case PiMMPackage.OUTPUT_PORT__OUTGOING_FIFO:
+			case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
 				if (resolve) return getOutgoingFifo();
 				return basicGetOutgoingFifo();
-			case PiMMPackage.OUTPUT_PORT__EXPRESSION:
+			case PiMMPackage.DATA_OUTPUT_PORT__EXPRESSION:
 				return getExpression();
 		}
 		return super.eGet(featureID, resolve, coreType);
@@ -266,10 +266,10 @@ public class OutputPortImpl extends PortImpl implements OutputPort {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case PiMMPackage.OUTPUT_PORT__OUTGOING_FIFO:
+			case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
 				setOutgoingFifo((Fifo)newValue);
 				return;
-			case PiMMPackage.OUTPUT_PORT__EXPRESSION:
+			case PiMMPackage.DATA_OUTPUT_PORT__EXPRESSION:
 				setExpression((Expression)newValue);
 				return;
 		}
@@ -284,10 +284,10 @@ public class OutputPortImpl extends PortImpl implements OutputPort {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case PiMMPackage.OUTPUT_PORT__OUTGOING_FIFO:
+			case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
 				setOutgoingFifo((Fifo)null);
 				return;
-			case PiMMPackage.OUTPUT_PORT__EXPRESSION:
+			case PiMMPackage.DATA_OUTPUT_PORT__EXPRESSION:
 				setExpression((Expression)null);
 				return;
 		}
@@ -302,9 +302,9 @@ public class OutputPortImpl extends PortImpl implements OutputPort {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case PiMMPackage.OUTPUT_PORT__OUTGOING_FIFO:
+			case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
 				return outgoingFifo != null;
-			case PiMMPackage.OUTPUT_PORT__EXPRESSION:
+			case PiMMPackage.DATA_OUTPUT_PORT__EXPRESSION:
 				return expression != null;
 		}
 		return super.eIsSet(featureID);

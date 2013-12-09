@@ -56,12 +56,12 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.InputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.SinkInterface;
-import org.ietr.preesm.experiment.model.pimm.SourceInterface;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 
 /**
  * @author Romina Racca
@@ -180,14 +180,14 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 				getDiagramEditor().refreshRenderingDecorators(pe);
 			}//end Parameter
 
-			if(bo instanceof OutputPort){
-				OutputPort oPort = (OutputPort) bo;
+			if(bo instanceof DataOutputPort){
+				DataOutputPort oPort = (DataOutputPort) bo;
 				setNewExpression(oPort.getExpression(), txtExpression.getText());
 				getDiagramEditor().refreshRenderingDecorators((PictogramElement)(pe.eContainer()));
 			}//end OutputPort
 			
-			if(bo instanceof InputPort){
-				InputPort iPort = (InputPort) bo;
+			if(bo instanceof DataInputPort){
+				DataInputPort iPort = (DataInputPort) bo;
 				setNewExpression(iPort.getExpression(), txtExpression.getText());
 				getDiagramEditor().refreshRenderingDecorators((PictogramElement)(pe.eContainer()));
 			}//end InputPort
@@ -237,11 +237,11 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 				e = ((Parameter) bo).getExpression();
 			}//end Parameter
 			
-			if(bo instanceof OutputPort){
-				OutputPort oPort = ((OutputPort) bo);
+			if(bo instanceof DataOutputPort){
+				DataOutputPort oPort = ((DataOutputPort) bo);
 				
-				if(oPort.eContainer() instanceof SourceInterface){
-					name = ((SourceInterface) oPort.eContainer()).getName();					
+				if(oPort.eContainer() instanceof DataInputInterface){
+					name = ((DataInputInterface) oPort.eContainer()).getName();					
 				}else{
 					name = oPort.getName();
 				}
@@ -250,11 +250,11 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 			}//end OutputPort
 			
 			
-			if(bo instanceof InputPort){
-				InputPort iPort = ((InputPort) bo);
+			if(bo instanceof DataInputPort){
+				DataInputPort iPort = ((DataInputPort) bo);
 				
-				if(iPort.eContainer() instanceof SinkInterface){
-					name = ((SinkInterface) iPort.eContainer()).getName();					
+				if(iPort.eContainer() instanceof DataOutputInterface){
+					name = ((DataOutputInterface) iPort.eContainer()).getName();					
 				}else{
 					name = iPort.getName();
 				}
@@ -267,10 +267,10 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 				InterfaceActor iface = ((InterfaceActor) bo);
 				name = iface.getName();
 							
-				if(iface instanceof SourceInterface){
-					e = iface.getOutputPorts().get(0).getExpression();
-				}else if(iface instanceof SinkInterface){
-					e = iface.getInputPorts().get(0).getExpression();
+				if(iface instanceof DataInputInterface){
+					e = iface.getDataOutputPorts().get(0).getExpression();
+				}else if(iface instanceof DataOutputInterface){
+					e = iface.getDataInputPorts().get(0).getExpression();
 				}else{
 					e = null;
 				}

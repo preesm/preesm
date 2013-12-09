@@ -46,24 +46,24 @@ import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
-import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
- * Add Feature for {@link OutputPort}s
+ * Add Feature for {@link DataOutputPort}s
  * 
  * @author kdesnos
  * @author jheulot
  * 
  */
-public class AddOutputPortFeature extends AbstractAddActorPortFeature {
+public class AddDataOutputPortFeature extends AbstractAddActorPortFeature {
 
-	public static final IColorConstant OUTPUT_PORT_FOREGROUND = AddActorFeature.ACTOR_FOREGROUND;
-	public static final IColorConstant OUTPUT_PORT_BACKGROUND = new ColorConstant(
+	public static final IColorConstant DATA_OUTPUT_PORT_FOREGROUND = AddActorFeature.ACTOR_FOREGROUND;
+	public static final IColorConstant DATA_OUTPUT_PORT_BACKGROUND = new ColorConstant(
 			234, 153, 153);
-	public static final PortPosition OUTPUT_PORT_POSITION = PortPosition.RIGHT;
-	public static final String OUTPUT_PORT_KIND = "output";
+	public static final PortPosition DATA_OUTPUT_PORT_POSITION = PortPosition.RIGHT;
+	public static final String DATA_OUTPUT_PORT_KIND = "output";
 
 	/**
 	 * Default constructor
@@ -71,7 +71,7 @@ public class AddOutputPortFeature extends AbstractAddActorPortFeature {
 	 * @param fp
 	 *            the feature provider
 	 */
-	public AddOutputPortFeature(IFeatureProvider fp) {
+	public AddDataOutputPortFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
@@ -87,7 +87,7 @@ public class AddOutputPortFeature extends AbstractAddActorPortFeature {
 
 	@Override
 	public PortPosition getPosition() {
-		return OUTPUT_PORT_POSITION;
+		return DATA_OUTPUT_PORT_POSITION;
 	}
 
 	@Override
@@ -96,8 +96,8 @@ public class AddOutputPortFeature extends AbstractAddActorPortFeature {
 		IGaService gaService = Graphiti.getGaService();
 		// Create the port GraphicAlcorithm
 		Rectangle rectangle = gaService.createPlainRectangle(containerShape);
-		rectangle.setForeground(manageColor(OUTPUT_PORT_FOREGROUND));
-		rectangle.setBackground(manageColor(OUTPUT_PORT_BACKGROUND));
+		rectangle.setForeground(manageColor(DATA_OUTPUT_PORT_FOREGROUND));
+		rectangle.setBackground(manageColor(DATA_OUTPUT_PORT_BACKGROUND));
 		rectangle.setLineWidth(1);
 		gaService.setSize(rectangle, PORT_ANCHOR_GA_SIZE, PORT_ANCHOR_GA_SIZE);
 		return rectangle;
@@ -125,16 +125,16 @@ public class AddOutputPortFeature extends AbstractAddActorPortFeature {
 
 	@Override
 	public Port getNewPort(String portName, Actor actor) {
-		OutputPort newPort = PiMMFactory.eINSTANCE.createOutputPort();
+		DataOutputPort newPort = PiMMFactory.eINSTANCE.createDataOutputPort();
 		Expression expr = PiMMFactory.eINSTANCE.createExpression();
 		newPort.setName(portName);
 		newPort.setExpression(expr);
-		actor.getOutputPorts().add(newPort);
+		actor.getDataOutputPorts().add(newPort);
 		return newPort;
 	}
 
 	@Override
 	public String getPortKind() {
-		return OUTPUT_PORT_KIND;
+		return DATA_OUTPUT_PORT_KIND;
 	}
 }

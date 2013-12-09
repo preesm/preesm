@@ -41,7 +41,7 @@ import java.util.List;
 
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 
 public class DependencyCycleDetector extends PiMMSwitch<Void> {
@@ -127,7 +127,7 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
 	}
 
 	@Override
-	public Void caseGraph(Graph graph) {
+	public Void casePiGraph(PiGraph graph) {
 
 		// Visit parameters until they are all visited
 		ArrayList<Parameter> parameters = new ArrayList<>(graph.getParameters());
@@ -212,7 +212,7 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
 	 * Retrieve the result of the visitor. This method should be called only
 	 * after the visitor was executed using
 	 * {@link DependencyCycleDetector#doSwitch(org.eclipse.emf.ecore.EObject)
-	 * doSwitch(object)} method on a {@link Parameter} or on a {@link Graph}.
+	 * doSwitch(object)} method on a {@link Parameter} or on a {@link PiGraph}.
 	 * 
 	 * @return true if cycles were detected, false else.
 	 */

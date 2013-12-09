@@ -47,8 +47,8 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.InputPort;
-import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
@@ -94,10 +94,10 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
 				new PictogramElement[] { peSource });
 		AbstractAddActorPortFeature addPortFeature = null;
 		if (direction.equals("input")) {
-			addPortFeature = new AddInputPortFeature(getFeatureProvider());
+			addPortFeature = new AddDataInputPortFeature(getFeatureProvider());
 		}
 		if (direction.equals("output")) {
-			addPortFeature = new AddOutputPortFeature(getFeatureProvider());
+			addPortFeature = new AddDataOutputPortFeature(getFeatureProvider());
 		}
 		if (addPortFeature != null) {
 			canCreatePort = addPortFeature.canExecute(sourceContext);
@@ -120,16 +120,16 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
 		Port oldPort = getPort(context.getOldAnchor());
 		if (newPort != null && newPort.getClass().equals(oldPort.getClass())) {
 			// Check that no Fifo is connected to the ports
-			if (newPort instanceof OutputPort) {
-				if (((OutputPort) newPort).getOutgoingFifo() == null) {
+			if (newPort instanceof DataOutputPort) {
+				if (((DataOutputPort) newPort).getOutgoingFifo() == null) {
 					return true;
 				} else {
 					return false;
 				}
 			}
 
-			if (newPort instanceof InputPort) {
-				if (((InputPort) newPort).getIncomingFifo() == null) {
+			if (newPort instanceof DataInputPort) {
+				if (((DataInputPort) newPort).getIncomingFifo() == null) {
 					return true;
 				} else {
 					return false;
@@ -181,13 +181,13 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
 		Port newPort = getPort(context.getNewAnchor());
 		Port oldPort = getPort(context.getOldAnchor());
 
-		if (oldPort instanceof OutputPort) {
-			Fifo fifo = ((OutputPort) oldPort).getOutgoingFifo();
-			fifo.setSourcePort((OutputPort) newPort);
+		if (oldPort instanceof DataOutputPort) {
+			Fifo fifo = ((DataOutputPort) oldPort).getOutgoingFifo();
+			fifo.setSourcePort((DataOutputPort) newPort);
 		}
-		if (oldPort instanceof InputPort) {
-			Fifo fifo = ((InputPort) oldPort).getIncomingFifo();
-			fifo.setTargetPort((InputPort) newPort);
+		if (oldPort instanceof DataInputPort) {
+			Fifo fifo = ((DataInputPort) oldPort).getIncomingFifo();
+			fifo.setTargetPort((DataInputPort) newPort);
 		}
 
 		// Call the move feature of the anchor owner to layout the connection

@@ -61,7 +61,7 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
  *
  * @generated
  */
-public class ConfigOutputPortImpl extends OutputPortImpl implements ConfigOutputPort {
+public class ConfigOutputPortImpl extends DataOutputPortImpl implements ConfigOutputPort {
 	/**
 	 * The cached value of the '{@link #getOutgoingDependencies() <em>Outgoing Dependencies</em>}' reference list.
 	 * <!-- begin-user-doc -->

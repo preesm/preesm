@@ -52,11 +52,11 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
-import org.ietr.preesm.experiment.model.pimm.Graph;
-import org.ietr.preesm.experiment.model.pimm.InputPort;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 
 /**
- * Add feature to add a new {@link ConfigOutInterface} to the {@link Graph}
+ * Add feature to add a new {@link ConfigOutInterface} to the {@link PiGraph}
  * 
  * @author kdesnos
  * 
@@ -83,7 +83,7 @@ public class AddConfigOutputInterfaceFeature extends AbstractAddFeature {
 	public PictogramElement add(IAddContext context) {
 		ConfigOutputInterface cfgOutIf = (ConfigOutputInterface) context
 				.getNewObject();
-		InputPort port = cfgOutIf.getInputPorts().get(0);
+		DataInputPort port = cfgOutIf.getDataInputPorts().get(0);
 		Diagram targetDiagram = (Diagram) context.getTargetContainer();
 
 		// CONTAINER SHAPE WITH ROUNDED RECTANGLE
@@ -124,7 +124,7 @@ public class AddConfigOutputInterfaceFeature extends AbstractAddFeature {
 			// if added SinkInterface has no resource we add it to the
 			// resource of the graph
 			if (cfgOutIf.eResource() == null) {
-				Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
+				PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
 				graph.getVertices().add(cfgOutIf);
 			}
 			link(boxAnchor, port);

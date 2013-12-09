@@ -81,11 +81,11 @@ public class PortNameValidator implements IInputValidator {
 			this.portsNames.add(port.getName());
 		}
 
-		for (Port port : vertex.getInputPorts()) {
+		for (Port port : vertex.getDataInputPorts()) {
 			this.portsNames.add(port.getName());
 		}
 
-		for (Port port : vertex.getOutputPorts()) {
+		for (Port port : vertex.getDataOutputPorts()) {
 			this.portsNames.add(port.getName());
 		}
 

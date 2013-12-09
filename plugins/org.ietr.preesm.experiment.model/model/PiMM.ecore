@@ -9,14 +9,14 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="AbstractActor" abstract="true" eSuperTypes="#//AbstractVertex">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="inputPorts" upperBound="-1"
-        eType="#//InputPort" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="outputPorts" upperBound="-1"
-        eType="#//OutputPort" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dataInputPorts" upperBound="-1"
+        eType="#//DataInputPort" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dataOutputPorts" upperBound="-1"
+        eType="#//DataOutputPort" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="configOutputPorts" upperBound="-1"
         eType="#//ConfigOutputPort" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Graph" eSuperTypes="#//AbstractActor">
+  <eClassifiers xsi:type="ecore:EClass" name="PiGraph" eSuperTypes="#//AbstractActor">
     <eStructuralFeatures xsi:type="ecore:EReference" name="vertices" upperBound="-1"
         eType="#//AbstractActor" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="fifos" upperBound="-1"
@@ -38,13 +38,13 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         changeable="false"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="InputPort" eSuperTypes="#//Port">
+  <eClassifiers xsi:type="ecore:EClass" name="DataInputPort" eSuperTypes="#//Port">
     <eStructuralFeatures xsi:type="ecore:EReference" name="incomingFifo" eType="#//Fifo"
         eOpposite="#//Fifo/targetPort"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
         eType="#//Expression" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="OutputPort" eSuperTypes="#//Port">
+  <eClassifiers xsi:type="ecore:EClass" name="DataOutputPort" eSuperTypes="#//Port">
     <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingFifo" eType="#//Fifo"
         eOpposite="#//Fifo/sourcePort"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
@@ -54,12 +54,12 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="incomingDependency" eType="#//Dependency"
         eOpposite="#//Dependency/getter"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ConfigOutputPort" eSuperTypes="#//OutputPort #//ISetter"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ConfigOutputPort" eSuperTypes="#//DataOutputPort #//ISetter"/>
   <eClassifiers xsi:type="ecore:EClass" name="Fifo">
     <eStructuralFeatures xsi:type="ecore:EReference" name="sourcePort" lowerBound="1"
-        eType="#//OutputPort" eOpposite="#//OutputPort/outgoingFifo"/>
+        eType="#//DataOutputPort" eOpposite="#//DataOutputPort/outgoingFifo"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetPort" lowerBound="1"
-        eType="#//InputPort" eOpposite="#//InputPort/incomingFifo"/>
+        eType="#//DataInputPort" eOpposite="#//DataInputPort/incomingFifo"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="delay" eType="#//Delay"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
@@ -71,10 +71,10 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         changeable="false"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="SourceInterface" eSuperTypes="#//InterfaceActor"/>
-  <eClassifiers xsi:type="ecore:EClass" name="SinkInterface" eSuperTypes="#//InterfaceActor"/>
-  <eClassifiers xsi:type="ecore:EClass" name="ConfigOutputInterface" eSuperTypes="#//InterfaceActor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DataInputInterface" eSuperTypes="#//InterfaceActor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DataOutputInterface" eSuperTypes="#//InterfaceActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="ConfigInputInterface" eSuperTypes="#//Parameter"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ConfigOutputInterface" eSuperTypes="#//InterfaceActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="Refinement">
     <eOperations name="getAbstractActor" eType="#//AbstractActor"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="fileName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>

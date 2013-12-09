@@ -40,7 +40,7 @@ import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.ietr.preesm.experiment.model.pimm.Expression;
-import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
@@ -83,7 +83,7 @@ public class CreateParameterFeature extends AbstractCreateFeature {
 	@Override
 	public Object[] create(ICreateContext context) {
 		// Retrieve the graph
-		Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
+		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
 
 		// Ask user for Parameter name until a valid name is entered.
 		String question = "Enter new parameter name";

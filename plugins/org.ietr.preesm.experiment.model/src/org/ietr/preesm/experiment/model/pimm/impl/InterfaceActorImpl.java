@@ -39,7 +39,7 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -62,7 +62,7 @@ public class InterfaceActorImpl extends AbstractActorImpl implements
 	/**
 	 * The cached value of the '{@link #getGraphPort() <em>Graph Port</em>}' reference.
 	 * <!-- begin-user-doc --> This {@link Port} is the corresponding
-	 * {@link Port} of the {@link Graph} containing this {@link Interface}
+	 * {@link Port} of the {@link PiGraph} containing this {@link Interface}
 	 * instance. <!-- end-user-doc -->
 	 * @see #getGraphPort()
 	 * @generated

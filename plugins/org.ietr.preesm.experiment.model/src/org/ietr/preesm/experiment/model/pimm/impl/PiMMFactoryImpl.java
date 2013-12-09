@@ -89,18 +89,18 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	@Override
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
-			case PiMMPackage.GRAPH: return createGraph();
+			case PiMMPackage.PI_GRAPH: return createPiGraph();
 			case PiMMPackage.ACTOR: return createActor();
-			case PiMMPackage.INPUT_PORT: return createInputPort();
-			case PiMMPackage.OUTPUT_PORT: return createOutputPort();
+			case PiMMPackage.DATA_INPUT_PORT: return createDataInputPort();
+			case PiMMPackage.DATA_OUTPUT_PORT: return createDataOutputPort();
 			case PiMMPackage.CONFIG_INPUT_PORT: return createConfigInputPort();
 			case PiMMPackage.CONFIG_OUTPUT_PORT: return createConfigOutputPort();
 			case PiMMPackage.FIFO: return createFifo();
 			case PiMMPackage.INTERFACE_ACTOR: return createInterfaceActor();
-			case PiMMPackage.SOURCE_INTERFACE: return createSourceInterface();
-			case PiMMPackage.SINK_INTERFACE: return createSinkInterface();
-			case PiMMPackage.CONFIG_OUTPUT_INTERFACE: return createConfigOutputInterface();
+			case PiMMPackage.DATA_INPUT_INTERFACE: return createDataInputInterface();
+			case PiMMPackage.DATA_OUTPUT_INTERFACE: return createDataOutputInterface();
 			case PiMMPackage.CONFIG_INPUT_INTERFACE: return createConfigInputInterface();
+			case PiMMPackage.CONFIG_OUTPUT_INTERFACE: return createConfigOutputInterface();
 			case PiMMPackage.REFINEMENT: return createRefinement();
 			case PiMMPackage.PARAMETER: return createParameter();
 			case PiMMPackage.DEPENDENCY: return createDependency();
@@ -116,9 +116,9 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Graph createGraph() {
-		GraphImpl graph = new GraphImpl();
-		return graph;
+	public PiGraph createPiGraph() {
+		PiGraphImpl piGraph = new PiGraphImpl();
+		return piGraph;
 	}
 
 	/**
@@ -136,9 +136,9 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public InputPort createInputPort() {
-		InputPortImpl inputPort = new InputPortImpl();
-		return inputPort;
+	public DataInputPort createDataInputPort() {
+		DataInputPortImpl dataInputPort = new DataInputPortImpl();
+		return dataInputPort;
 	}
 
 	/**
@@ -146,9 +146,9 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public OutputPort createOutputPort() {
-		OutputPortImpl outputPort = new OutputPortImpl();
-		return outputPort;
+	public DataOutputPort createDataOutputPort() {
+		DataOutputPortImpl dataOutputPort = new DataOutputPortImpl();
+		return dataOutputPort;
 	}
 
 	/**
@@ -196,9 +196,9 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public SourceInterface createSourceInterface() {
-		SourceInterfaceImpl sourceInterface = new SourceInterfaceImpl();
-		return sourceInterface;
+	public DataInputInterface createDataInputInterface() {
+		DataInputInterfaceImpl dataInputInterface = new DataInputInterfaceImpl();
+		return dataInputInterface;
 	}
 
 	/**
@@ -206,9 +206,9 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public SinkInterface createSinkInterface() {
-		SinkInterfaceImpl sinkInterface = new SinkInterfaceImpl();
-		return sinkInterface;
+	public DataOutputInterface createDataOutputInterface() {
+		DataOutputInterfaceImpl dataOutputInterface = new DataOutputInterfaceImpl();
+		return dataOutputInterface;
 	}
 
 	/**

@@ -52,7 +52,7 @@ import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 /**
  * Add Feature to add a {@link Dependency} to the {@link Diagram}
@@ -84,7 +84,7 @@ public class AddDependencyFeature extends AbstractAddFeature {
 		// if added Dependency has no resource we add it to the resource
 		// of the Graph
 		if (addedDependency.eResource() == null) {
-			Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
+			PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
 			graph.getDependencies().add(addedDependency);
 		}
 

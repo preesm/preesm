@@ -55,13 +55,13 @@ public interface PiMMFactory extends EFactory {
 	PiMMFactory eINSTANCE = org.ietr.preesm.experiment.model.pimm.impl.PiMMFactoryImpl.init();
 
 	/**
-	 * Returns a new object of class '<em>Graph</em>'.
+	 * Returns a new object of class '<em>Pi Graph</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Graph</em>'.
+	 * @return a new object of class '<em>Pi Graph</em>'.
 	 * @generated
 	 */
-	Graph createGraph();
+	PiGraph createPiGraph();
 
 	/**
 	 * Returns a new object of class '<em>Actor</em>'.
@@ -73,22 +73,22 @@ public interface PiMMFactory extends EFactory {
 	Actor createActor();
 
 	/**
-	 * Returns a new object of class '<em>Input Port</em>'.
+	 * Returns a new object of class '<em>Data Input Port</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Input Port</em>'.
+	 * @return a new object of class '<em>Data Input Port</em>'.
 	 * @generated
 	 */
-	InputPort createInputPort();
+	DataInputPort createDataInputPort();
 
 	/**
-	 * Returns a new object of class '<em>Output Port</em>'.
+	 * Returns a new object of class '<em>Data Output Port</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Output Port</em>'.
+	 * @return a new object of class '<em>Data Output Port</em>'.
 	 * @generated
 	 */
-	OutputPort createOutputPort();
+	DataOutputPort createDataOutputPort();
 
 	/**
 	 * Returns a new object of class '<em>Config Input Port</em>'.
@@ -127,22 +127,22 @@ public interface PiMMFactory extends EFactory {
 	InterfaceActor createInterfaceActor();
 
 	/**
-	 * Returns a new object of class '<em>Source Interface</em>'.
+	 * Returns a new object of class '<em>Data Input Interface</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Source Interface</em>'.
+	 * @return a new object of class '<em>Data Input Interface</em>'.
 	 * @generated
 	 */
-	SourceInterface createSourceInterface();
+	DataInputInterface createDataInputInterface();
 
 	/**
-	 * Returns a new object of class '<em>Sink Interface</em>'.
+	 * Returns a new object of class '<em>Data Output Interface</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Sink Interface</em>'.
+	 * @return a new object of class '<em>Data Output Interface</em>'.
 	 * @generated
 	 */
-	SinkInterface createSinkInterface();
+	DataOutputInterface createDataOutputInterface();
 
 	/**
 	 * Returns a new object of class '<em>Config Output Interface</em>'.

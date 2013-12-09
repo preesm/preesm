@@ -52,7 +52,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramsFactory;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
-import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 
 public class NewPiMMPage extends WizardNewFileCreationPage {
@@ -88,20 +88,20 @@ public class NewPiMMPage extends WizardNewFileCreationPage {
 		setTitle("Choose file name and parent folder");
 	}
 
-	private Graph createGraph(IPath path) {
+	private PiGraph createGraph(IPath path) {
 		graphName = getFileName();
 		int idx = graphName.indexOf("diagram");
 		if (idx != -1) {
 			graphName = graphName.substring(0, idx - 1);
 		}
 
-		Graph graph = PiMMFactory.eINSTANCE.createGraph();
+		PiGraph graph = PiMMFactory.eINSTANCE.createPiGraph();
 		graph.setName(graphName);
 
 		return graph;
 	}
 
-	private void saveGraph(ResourceSet set, IPath path, Graph graph) {
+	private void saveGraph(ResourceSet set, IPath path, PiGraph graph) {
 		URI uri = URI.createPlatformResourceURI(path.toString(), true);
 
 		// Following lines corresponds to a copy of
@@ -137,7 +137,7 @@ public class NewPiMMPage extends WizardNewFileCreationPage {
 		// create graph
 		IPath piPath = path.append(getFileName()).removeFileExtension()
 				.addFileExtension("pi");
-		Graph graph = createGraph(piPath);
+		PiGraph graph = createGraph(piPath);
 
 		// save graph
 		ResourceSet set = new ResourceSetImpl();

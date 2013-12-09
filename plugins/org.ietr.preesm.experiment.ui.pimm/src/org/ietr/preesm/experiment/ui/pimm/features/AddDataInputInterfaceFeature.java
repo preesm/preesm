@@ -52,38 +52,38 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.ietr.preesm.experiment.model.pimm.Graph;
-import org.ietr.preesm.experiment.model.pimm.OutputPort;
-import org.ietr.preesm.experiment.model.pimm.SourceInterface;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 
 /**
- * Add feature to add a new {@link SourceInterface} to the {@link Graph}
+ * Add feature to add a new {@link DataInputInterface} to the {@link PiGraph}
  * 
  * @author kdesnos
  * 
  */
-public class AddSourceInterfaceFeature extends AbstractAddFeature {
+public class AddDataInputInterfaceFeature extends AbstractAddFeature {
 
-	public static final IColorConstant SRC_TEXT_FOREGROUND = IColorConstant.BLACK;
+	public static final IColorConstant DATA_INPUT_TEXT_FOREGROUND = IColorConstant.BLACK;
 
-	public static final IColorConstant SRC_FOREGROUND = AddInputPortFeature.INPUT_PORT_FOREGROUND;
+	public static final IColorConstant DATA_INPUT_FOREGROUND = AddDataInputPortFeature.DATA_INPUT_PORT_FOREGROUND;
 
-	public static final IColorConstant SRC_BACKGROUND = AddInputPortFeature.INPUT_PORT_BACKGROUND;
+	public static final IColorConstant DATA_INPUT_BACKGROUND = AddDataInputPortFeature.DATA_INPUT_PORT_BACKGROUND;
 
 	/**
-	 * The default constructor of {@link AddSourceInterfaceFeature}
+	 * The default constructor of {@link AddDataInputInterfaceFeature}
 	 * 
 	 * @param fp
 	 *            the feature provider
 	 */
-	public AddSourceInterfaceFeature(IFeatureProvider fp) {
+	public AddDataInputInterfaceFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
 	@Override
 	public PictogramElement add(IAddContext context) {
-		SourceInterface srcInterface = (SourceInterface) context.getNewObject();
-		OutputPort port = srcInterface.getOutputPorts().get(0);
+		DataInputInterface dataInputInterface = (DataInputInterface) context.getNewObject();
+		DataOutputPort port = dataInputInterface.getDataOutputPorts().get(0);
 		Diagram targetDiagram = (Diagram) context.getTargetContainer();
 
 		// CONTAINER SHAPE WITH ROUNDED RECTANGLE
@@ -115,17 +115,17 @@ public class AddSourceInterfaceFeature extends AbstractAddFeature {
 			// create and set graphics algorithm for the anchor
 			roundedRectangle = gaService
 					.createRoundedRectangle(boxAnchor, 5, 5);
-			roundedRectangle.setForeground(manageColor(SRC_FOREGROUND));
-			roundedRectangle.setBackground(manageColor(SRC_BACKGROUND));
+			roundedRectangle.setForeground(manageColor(DATA_INPUT_FOREGROUND));
+			roundedRectangle.setBackground(manageColor(DATA_INPUT_BACKGROUND));
 			roundedRectangle.setLineWidth(2);
 			gaService.setLocationAndSize(roundedRectangle, -width, 0, width,
 					height);
 
 			// if added SourceInterface has no resource we add it to the
 			// resource of the graph
-			if (srcInterface.eResource() == null) {
-				Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
-				graph.getVertices().add(srcInterface);
+			if (dataInputInterface.eResource() == null) {
+				PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
+				graph.getVertices().add(dataInputInterface);
 			}
 			link(boxAnchor, port);
 		}
@@ -135,21 +135,21 @@ public class AddSourceInterfaceFeature extends AbstractAddFeature {
 			// create and set text graphics algorithm
 			// create shape for text
 			Shape shape = peCreateService.createShape(containerShape, false);
-			Text text = gaService.createText(shape, srcInterface.getName());
-			text.setForeground(manageColor(SRC_TEXT_FOREGROUND));
+			Text text = gaService.createText(shape, dataInputInterface.getName());
+			text.setForeground(manageColor(DATA_INPUT_TEXT_FOREGROUND));
 			text.setHorizontalAlignment(Orientation.ALIGNMENT_RIGHT);
 			// vertical alignment has as default value "center"
 			text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
 			text.setHeight(20);
 			text.setWidth(200);
-			link(shape, srcInterface);
+			link(shape, dataInputInterface);
 		}
 		// create link and wire it
-		link(containerShape, srcInterface);
+		link(containerShape, dataInputInterface);
 
 		// Add a ChopBoxAnchor for dependencies
 		ChopboxAnchor cba = peCreateService.createChopboxAnchor(containerShape);
-		link(cba, srcInterface);
+		link(cba, dataInputInterface);
 
 		// Call the layout feature
 		layoutPictogramElement(containerShape);
@@ -160,7 +160,7 @@ public class AddSourceInterfaceFeature extends AbstractAddFeature {
 	@Override
 	public boolean canAdd(IAddContext context) {
 		// Check that the user wants to add an Actor to the Diagram
-		return context.getNewObject() instanceof SourceInterface
+		return context.getNewObject() instanceof DataInputInterface
 				&& context.getTargetContainer() instanceof Diagram;
 	}
 

@@ -51,19 +51,19 @@ import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
-import org.ietr.preesm.experiment.model.pimm.InputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
-import org.ietr.preesm.experiment.model.pimm.SinkInterface;
-import org.ietr.preesm.experiment.model.pimm.SourceInterface;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 
 /**
  * <!-- begin-user-doc -->
@@ -98,7 +98,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass graphEClass = null;
+	private EClass piGraphEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -119,14 +119,14 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass inputPortEClass = null;
+	private EClass dataInputPortEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass outputPortEClass = null;
+	private EClass dataOutputPortEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -161,14 +161,14 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass sourceInterfaceEClass = null;
+	private EClass dataInputInterfaceEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass sinkInterfaceEClass = null;
+	private EClass dataOutputInterfaceEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -337,7 +337,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getAbstractActor_InputPorts() {
+	public EReference getAbstractActor_DataInputPorts() {
 		return (EReference)abstractActorEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -346,7 +346,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getAbstractActor_OutputPorts() {
+	public EReference getAbstractActor_DataOutputPorts() {
 		return (EReference)abstractActorEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -364,8 +364,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getGraph() {
-		return graphEClass;
+	public EClass getPiGraph() {
+		return piGraphEClass;
 	}
 
 	/**
@@ -373,8 +373,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getGraph_Vertices() {
-		return (EReference)graphEClass.getEStructuralFeatures().get(0);
+	public EReference getPiGraph_Vertices() {
+		return (EReference)piGraphEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -382,8 +382,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getGraph_Fifos() {
-		return (EReference)graphEClass.getEStructuralFeatures().get(1);
+	public EReference getPiGraph_Fifos() {
+		return (EReference)piGraphEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -391,8 +391,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getGraph_Parameters() {
-		return (EReference)graphEClass.getEStructuralFeatures().get(2);
+	public EReference getPiGraph_Parameters() {
+		return (EReference)piGraphEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -400,8 +400,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getGraph_Dependencies() {
-		return (EReference)graphEClass.getEStructuralFeatures().get(3);
+	public EReference getPiGraph_Dependencies() {
+		return (EReference)piGraphEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
@@ -463,8 +463,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getInputPort() {
-		return inputPortEClass;
+	public EClass getDataInputPort() {
+		return dataInputPortEClass;
 	}
 
 	/**
@@ -472,8 +472,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getInputPort_IncomingFifo() {
-		return (EReference)inputPortEClass.getEStructuralFeatures().get(0);
+	public EReference getDataInputPort_IncomingFifo() {
+		return (EReference)dataInputPortEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -481,8 +481,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getInputPort_Expression() {
-		return (EReference)inputPortEClass.getEStructuralFeatures().get(1);
+	public EReference getDataInputPort_Expression() {
+		return (EReference)dataInputPortEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -490,8 +490,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getOutputPort() {
-		return outputPortEClass;
+	public EClass getDataOutputPort() {
+		return dataOutputPortEClass;
 	}
 
 	/**
@@ -499,8 +499,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getOutputPort_OutgoingFifo() {
-		return (EReference)outputPortEClass.getEStructuralFeatures().get(0);
+	public EReference getDataOutputPort_OutgoingFifo() {
+		return (EReference)dataOutputPortEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -508,8 +508,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getOutputPort_Expression() {
-		return (EReference)outputPortEClass.getEStructuralFeatures().get(1);
+	public EReference getDataOutputPort_Expression() {
+		return (EReference)dataOutputPortEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -616,8 +616,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getSourceInterface() {
-		return sourceInterfaceEClass;
+	public EClass getDataInputInterface() {
+		return dataInputInterfaceEClass;
 	}
 
 	/**
@@ -625,8 +625,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getSinkInterface() {
-		return sinkInterfaceEClass;
+	public EClass getDataOutputInterface() {
+		return dataOutputInterfaceEClass;
 	}
 
 	/**
@@ -826,15 +826,15 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		createEAttribute(abstractVertexEClass, ABSTRACT_VERTEX__NAME);
 
 		abstractActorEClass = createEClass(ABSTRACT_ACTOR);
-		createEReference(abstractActorEClass, ABSTRACT_ACTOR__INPUT_PORTS);
-		createEReference(abstractActorEClass, ABSTRACT_ACTOR__OUTPUT_PORTS);
+		createEReference(abstractActorEClass, ABSTRACT_ACTOR__DATA_INPUT_PORTS);
+		createEReference(abstractActorEClass, ABSTRACT_ACTOR__DATA_OUTPUT_PORTS);
 		createEReference(abstractActorEClass, ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS);
 
-		graphEClass = createEClass(GRAPH);
-		createEReference(graphEClass, GRAPH__VERTICES);
-		createEReference(graphEClass, GRAPH__FIFOS);
-		createEReference(graphEClass, GRAPH__PARAMETERS);
-		createEReference(graphEClass, GRAPH__DEPENDENCIES);
+		piGraphEClass = createEClass(PI_GRAPH);
+		createEReference(piGraphEClass, PI_GRAPH__VERTICES);
+		createEReference(piGraphEClass, PI_GRAPH__FIFOS);
+		createEReference(piGraphEClass, PI_GRAPH__PARAMETERS);
+		createEReference(piGraphEClass, PI_GRAPH__DEPENDENCIES);
 
 		actorEClass = createEClass(ACTOR);
 		createEReference(actorEClass, ACTOR__REFINEMENT);
@@ -844,13 +844,13 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		createEAttribute(portEClass, PORT__NAME);
 		createEAttribute(portEClass, PORT__KIND);
 
-		inputPortEClass = createEClass(INPUT_PORT);
-		createEReference(inputPortEClass, INPUT_PORT__INCOMING_FIFO);
-		createEReference(inputPortEClass, INPUT_PORT__EXPRESSION);
+		dataInputPortEClass = createEClass(DATA_INPUT_PORT);
+		createEReference(dataInputPortEClass, DATA_INPUT_PORT__INCOMING_FIFO);
+		createEReference(dataInputPortEClass, DATA_INPUT_PORT__EXPRESSION);
 
-		outputPortEClass = createEClass(OUTPUT_PORT);
-		createEReference(outputPortEClass, OUTPUT_PORT__OUTGOING_FIFO);
-		createEReference(outputPortEClass, OUTPUT_PORT__EXPRESSION);
+		dataOutputPortEClass = createEClass(DATA_OUTPUT_PORT);
+		createEReference(dataOutputPortEClass, DATA_OUTPUT_PORT__OUTGOING_FIFO);
+		createEReference(dataOutputPortEClass, DATA_OUTPUT_PORT__EXPRESSION);
 
 		configInputPortEClass = createEClass(CONFIG_INPUT_PORT);
 		createEReference(configInputPortEClass, CONFIG_INPUT_PORT__INCOMING_DEPENDENCY);
@@ -867,13 +867,13 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		createEReference(interfaceActorEClass, INTERFACE_ACTOR__GRAPH_PORT);
 		createEAttribute(interfaceActorEClass, INTERFACE_ACTOR__KIND);
 
-		sourceInterfaceEClass = createEClass(SOURCE_INTERFACE);
+		dataInputInterfaceEClass = createEClass(DATA_INPUT_INTERFACE);
 
-		sinkInterfaceEClass = createEClass(SINK_INTERFACE);
-
-		configOutputInterfaceEClass = createEClass(CONFIG_OUTPUT_INTERFACE);
+		dataOutputInterfaceEClass = createEClass(DATA_OUTPUT_INTERFACE);
 
 		configInputInterfaceEClass = createEClass(CONFIG_INPUT_INTERFACE);
+
+		configOutputInterfaceEClass = createEClass(CONFIG_OUTPUT_INTERFACE);
 
 		refinementEClass = createEClass(REFINEMENT);
 		createEAttribute(refinementEClass, REFINEMENT__FILE_NAME);
@@ -928,18 +928,18 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		// Add supertypes to classes
 		abstractVertexEClass.getESuperTypes().add(this.getParameterizable());
 		abstractActorEClass.getESuperTypes().add(this.getAbstractVertex());
-		graphEClass.getESuperTypes().add(this.getAbstractActor());
+		piGraphEClass.getESuperTypes().add(this.getAbstractActor());
 		actorEClass.getESuperTypes().add(this.getAbstractActor());
-		inputPortEClass.getESuperTypes().add(this.getPort());
-		outputPortEClass.getESuperTypes().add(this.getPort());
+		dataInputPortEClass.getESuperTypes().add(this.getPort());
+		dataOutputPortEClass.getESuperTypes().add(this.getPort());
 		configInputPortEClass.getESuperTypes().add(this.getPort());
-		configOutputPortEClass.getESuperTypes().add(this.getOutputPort());
+		configOutputPortEClass.getESuperTypes().add(this.getDataOutputPort());
 		configOutputPortEClass.getESuperTypes().add(this.getISetter());
 		interfaceActorEClass.getESuperTypes().add(this.getAbstractActor());
-		sourceInterfaceEClass.getESuperTypes().add(this.getInterfaceActor());
-		sinkInterfaceEClass.getESuperTypes().add(this.getInterfaceActor());
-		configOutputInterfaceEClass.getESuperTypes().add(this.getInterfaceActor());
+		dataInputInterfaceEClass.getESuperTypes().add(this.getInterfaceActor());
+		dataOutputInterfaceEClass.getESuperTypes().add(this.getInterfaceActor());
 		configInputInterfaceEClass.getESuperTypes().add(this.getParameter());
+		configOutputInterfaceEClass.getESuperTypes().add(this.getInterfaceActor());
 		parameterEClass.getESuperTypes().add(this.getAbstractVertex());
 		parameterEClass.getESuperTypes().add(this.getISetter());
 		delayEClass.getESuperTypes().add(this.getParameterizable());
@@ -952,15 +952,15 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEAttribute(getAbstractVertex_Name(), ecorePackage.getEString(), "name", null, 1, 1, AbstractVertex.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(abstractActorEClass, AbstractActor.class, "AbstractActor", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getAbstractActor_InputPorts(), this.getInputPort(), null, "inputPorts", null, 0, -1, AbstractActor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getAbstractActor_OutputPorts(), this.getOutputPort(), null, "outputPorts", null, 0, -1, AbstractActor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getAbstractActor_DataInputPorts(), this.getDataInputPort(), null, "dataInputPorts", null, 0, -1, AbstractActor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getAbstractActor_DataOutputPorts(), this.getDataOutputPort(), null, "dataOutputPorts", null, 0, -1, AbstractActor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getAbstractActor_ConfigOutputPorts(), this.getConfigOutputPort(), null, "configOutputPorts", null, 0, -1, AbstractActor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(graphEClass, Graph.class, "Graph", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getGraph_Vertices(), this.getAbstractActor(), null, "vertices", null, 0, -1, Graph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getGraph_Fifos(), this.getFifo(), null, "fifos", null, 0, -1, Graph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getGraph_Parameters(), this.getParameter(), null, "parameters", null, 0, -1, Graph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getGraph_Dependencies(), this.getDependency(), null, "dependencies", null, 0, -1, Graph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(piGraphEClass, PiGraph.class, "PiGraph", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getPiGraph_Vertices(), this.getAbstractActor(), null, "vertices", null, 0, -1, PiGraph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getPiGraph_Fifos(), this.getFifo(), null, "fifos", null, 0, -1, PiGraph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getPiGraph_Parameters(), this.getParameter(), null, "parameters", null, 0, -1, PiGraph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getPiGraph_Dependencies(), this.getDependency(), null, "dependencies", null, 0, -1, PiGraph.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(actorEClass, Actor.class, "Actor", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getActor_Refinement(), this.getRefinement(), null, "refinement", null, 1, 1, Actor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -970,13 +970,13 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEAttribute(getPort_Name(), ecorePackage.getEString(), "name", null, 1, 1, Port.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getPort_Kind(), ecorePackage.getEString(), "kind", null, 1, 1, Port.class, !IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(inputPortEClass, InputPort.class, "InputPort", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getInputPort_IncomingFifo(), this.getFifo(), this.getFifo_TargetPort(), "incomingFifo", null, 0, 1, InputPort.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getInputPort_Expression(), this.getExpression(), null, "expression", null, 1, 1, InputPort.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(dataInputPortEClass, DataInputPort.class, "DataInputPort", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getDataInputPort_IncomingFifo(), this.getFifo(), this.getFifo_TargetPort(), "incomingFifo", null, 0, 1, DataInputPort.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getDataInputPort_Expression(), this.getExpression(), null, "expression", null, 1, 1, DataInputPort.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(outputPortEClass, OutputPort.class, "OutputPort", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getOutputPort_OutgoingFifo(), this.getFifo(), this.getFifo_SourcePort(), "outgoingFifo", null, 0, 1, OutputPort.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getOutputPort_Expression(), this.getExpression(), null, "expression", null, 1, 1, OutputPort.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(dataOutputPortEClass, DataOutputPort.class, "DataOutputPort", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getDataOutputPort_OutgoingFifo(), this.getFifo(), this.getFifo_SourcePort(), "outgoingFifo", null, 0, 1, DataOutputPort.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getDataOutputPort_Expression(), this.getExpression(), null, "expression", null, 1, 1, DataOutputPort.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(configInputPortEClass, ConfigInputPort.class, "ConfigInputPort", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getConfigInputPort_IncomingDependency(), this.getDependency(), this.getDependency_Getter(), "incomingDependency", null, 0, 1, ConfigInputPort.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -984,8 +984,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEClass(configOutputPortEClass, ConfigOutputPort.class, "ConfigOutputPort", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(fifoEClass, Fifo.class, "Fifo", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getFifo_SourcePort(), this.getOutputPort(), this.getOutputPort_OutgoingFifo(), "sourcePort", null, 1, 1, Fifo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getFifo_TargetPort(), this.getInputPort(), this.getInputPort_IncomingFifo(), "targetPort", null, 1, 1, Fifo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getFifo_SourcePort(), this.getDataOutputPort(), this.getDataOutputPort_OutgoingFifo(), "sourcePort", null, 1, 1, Fifo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getFifo_TargetPort(), this.getDataInputPort(), this.getDataInputPort_IncomingFifo(), "targetPort", null, 1, 1, Fifo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getFifo_Delay(), this.getDelay(), null, "delay", null, 0, 1, Fifo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getFifo_Id(), ecorePackage.getEString(), "id", null, 1, 1, Fifo.class, !IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
 
@@ -993,13 +993,13 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEReference(getInterfaceActor_GraphPort(), this.getPort(), null, "graphPort", null, 1, 1, InterfaceActor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getInterfaceActor_Kind(), ecorePackage.getEString(), "kind", null, 1, 1, InterfaceActor.class, !IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(sourceInterfaceEClass, SourceInterface.class, "SourceInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEClass(dataInputInterfaceEClass, DataInputInterface.class, "DataInputInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
-		initEClass(sinkInterfaceEClass, SinkInterface.class, "SinkInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-
-		initEClass(configOutputInterfaceEClass, ConfigOutputInterface.class, "ConfigOutputInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEClass(dataOutputInterfaceEClass, DataOutputInterface.class, "DataOutputInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(configInputInterfaceEClass, ConfigInputInterface.class, "ConfigInputInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(configOutputInterfaceEClass, ConfigOutputInterface.class, "ConfigOutputInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(refinementEClass, Refinement.class, "Refinement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getRefinement_FileName(), ecorePackage.getEString(), "fileName", null, 0, 1, Refinement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

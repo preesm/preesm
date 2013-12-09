@@ -50,11 +50,11 @@ import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
-import org.ietr.preesm.experiment.model.pimm.InputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.OutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
@@ -96,7 +96,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 		Object targetObj = getBusinessObjectForPictogramElement(targetPE);
 
 		// False if the target is a Graph (i.e. the diagram)
-		if (targetObj instanceof Graph) {
+		if (targetObj instanceof PiGraph) {
 			return false;
 		}
 
@@ -161,7 +161,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 
 		// False if the target is an outputPort
 		if (target != null
-				&& (target instanceof OutputPort || target instanceof InputPort)) {
+				&& (target instanceof DataOutputPort || target instanceof DataInputPort)) {
 			// Create tooltip message
 			PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor()
 					.getGraphicsAlgorithm(), getDiagramEditor(),
@@ -189,7 +189,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 
 		Anchor anchor = context.getSourceAnchor();
 		Object obj = getBusinessObjectForPictogramElement(anchor);
-		if (obj instanceof InputPort || obj instanceof ConfigInputPort) {
+		if (obj instanceof DataInputPort || obj instanceof ConfigInputPort) {
 			// Create tooltip message
 			PiMMUtil.setToolTip(getFeatureProvider(), context.getSourceAnchor()
 					.getGraphicsAlgorithm(), getDiagramEditor(),
@@ -197,7 +197,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 			return false;
 		}
 
-		if (obj instanceof OutputPort) {
+		if (obj instanceof DataOutputPort) {
 			// Create tooltip message
 			PiMMUtil.setToolTip(getFeatureProvider(), context.getSourceAnchor()
 					.getGraphicsAlgorithm(), getDiagramEditor(),
@@ -331,7 +331,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 	/**
 	 * Creates a {@link Dependency} between the {@link ISetter} and the
 	 * {@link ConfigInputPort}. Also add the created {@link Dependency} to the
-	 * {@link Graph} of the current {@link Diagram}.
+	 * {@link PiGraph} of the current {@link Diagram}.
 	 * 
 	 * @param setter
 	 *            the source {@link ISetter} of the {@link Dependency}
@@ -345,7 +345,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 		getDiagramEditor().refresh();
 
 		// Retrieve the graph
-		Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
+		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
 
 		// Create the Fifo
 		Dependency dependency = PiMMFactory.eINSTANCE.createDependency();

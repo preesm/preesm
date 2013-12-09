@@ -123,9 +123,9 @@ public class PortEqualityHelper {
 				vertex2.getConfigInputPorts(), result);
 		comparePortLists(vertex1.getConfigOutputPorts(),
 				vertex2.getConfigOutputPorts(), result);
-		comparePortLists(vertex1.getInputPorts(), vertex2.getInputPorts(),
+		comparePortLists(vertex1.getDataInputPorts(), vertex2.getDataInputPorts(),
 				result);
-		comparePortLists(vertex1.getOutputPorts(), vertex2.getOutputPorts(),
+		comparePortLists(vertex1.getDataOutputPorts(), vertex2.getDataOutputPorts(),
 				result);
 
 		return result;

@@ -38,7 +38,7 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 import org.eclipse.emf.ecore.EClass;
 
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
-import org.ietr.preesm.experiment.model.pimm.InputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 
@@ -65,9 +65,9 @@ public class ConfigOutputInterfaceImpl extends InterfaceActorImpl implements Con
 
 		// Add the unique input port of the ConfigOutputInterface
 		// The port intentionally has no name
-		InputPort port = PiMMFactory.eINSTANCE.createInputPort();
+		DataInputPort port = PiMMFactory.eINSTANCE.createDataInputPort();
 		port.setName(null);
-		this.getInputPorts().add(port);
+		this.getDataInputPorts().add(port);
 	}
 
 	/**

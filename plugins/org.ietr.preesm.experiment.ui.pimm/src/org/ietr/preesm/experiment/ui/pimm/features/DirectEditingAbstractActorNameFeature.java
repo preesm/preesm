@@ -44,7 +44,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 
 /**
@@ -95,7 +95,7 @@ public class DirectEditingAbstractActorNameFeature extends AbstractDirectEditing
 
 	@Override
 	public String checkValueValid(String value, IDirectEditingContext context) {
-		Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
+		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
 		PictogramElement pe = context.getPictogramElement();
 		AbstractVertex renamedVertex = (AbstractVertex) getBusinessObjectForPictogramElement(pe);
 		VertexNameValidator validator = new VertexNameValidator(graph,

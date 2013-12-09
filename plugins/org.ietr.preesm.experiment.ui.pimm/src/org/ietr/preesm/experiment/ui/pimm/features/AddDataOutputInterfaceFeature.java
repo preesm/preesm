@@ -52,38 +52,38 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.ietr.preesm.experiment.model.pimm.Graph;
-import org.ietr.preesm.experiment.model.pimm.InputPort;
-import org.ietr.preesm.experiment.model.pimm.SinkInterface;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 
 /**
- * Add feature to add a new {@link SinkInterface} to the {@link Graph}
+ * Add feature to add a new {@link DataOutputInterface} to the {@link PiGraph}
  * 
  * @author kdesnos
  * 
  */
-public class AddSinkInterfaceFeature extends AbstractAddFeature {
+public class AddDataOutputInterfaceFeature extends AbstractAddFeature {
 
-	public static final IColorConstant SNK_TEXT_FOREGROUND = IColorConstant.BLACK;
+	public static final IColorConstant DATA_OUTPUT_TEXT_FOREGROUND = IColorConstant.BLACK;
 
-	public static final IColorConstant SNK_FOREGROUND = AddOutputPortFeature.OUTPUT_PORT_FOREGROUND;
+	public static final IColorConstant DATA_OUTPUT_FOREGROUND = AddDataOutputPortFeature.DATA_OUTPUT_PORT_FOREGROUND;
 
-	public static final IColorConstant SNK_BACKGROUND = AddOutputPortFeature.OUTPUT_PORT_BACKGROUND;
+	public static final IColorConstant DATA_OUTPUT_BACKGROUND = AddDataOutputPortFeature.DATA_OUTPUT_PORT_BACKGROUND;
 
 	/**
-	 * The default constructor of {@link AddSinkInterfaceFeature}
+	 * The default constructor of {@link AddDataOutputInterfaceFeature}
 	 * 
 	 * @param fp
 	 *            the feature provider
 	 */
-	public AddSinkInterfaceFeature(IFeatureProvider fp) {
+	public AddDataOutputInterfaceFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
 	@Override
 	public PictogramElement add(IAddContext context) {
-		SinkInterface snkInterface = (SinkInterface) context.getNewObject();
-		InputPort port = snkInterface.getInputPorts().get(0);
+		DataOutputInterface dataOutputInterface = (DataOutputInterface) context.getNewObject();
+		DataInputPort port = dataOutputInterface.getDataInputPorts().get(0);
 		Diagram targetDiagram = (Diagram) context.getTargetContainer();
 
 		// CONTAINER SHAPE WITH ROUNDED RECTANGLE
@@ -115,16 +115,16 @@ public class AddSinkInterfaceFeature extends AbstractAddFeature {
 			// create and set graphics algorithm for the anchor
 			roundedRectangle = gaService
 					.createRoundedRectangle(boxAnchor, 5, 5);
-			roundedRectangle.setForeground(manageColor(SNK_FOREGROUND));
-			roundedRectangle.setBackground(manageColor(SNK_BACKGROUND));
+			roundedRectangle.setForeground(manageColor(DATA_OUTPUT_FOREGROUND));
+			roundedRectangle.setBackground(manageColor(DATA_OUTPUT_BACKGROUND));
 			roundedRectangle.setLineWidth(2);
 			gaService.setLocationAndSize(roundedRectangle, 0, 0, width, height);
 
 			// if added SinkInterface has no resource we add it to the
 			// resource of the graph
-			if (snkInterface.eResource() == null) {
-				Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
-				graph.getVertices().add(snkInterface);
+			if (dataOutputInterface.eResource() == null) {
+				PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
+				graph.getVertices().add(dataOutputInterface);
 			}
 			link(boxAnchor, port);
 		}
@@ -134,21 +134,21 @@ public class AddSinkInterfaceFeature extends AbstractAddFeature {
 			// create and set text graphics algorithm
 			// create shape for text
 			Shape shape = peCreateService.createShape(containerShape, false);
-			Text text = gaService.createText(shape, snkInterface.getName());
-			text.setForeground(manageColor(SNK_TEXT_FOREGROUND));
+			Text text = gaService.createText(shape, dataOutputInterface.getName());
+			text.setForeground(manageColor(DATA_OUTPUT_TEXT_FOREGROUND));
 			text.setHorizontalAlignment(Orientation.ALIGNMENT_RIGHT);
 			// vertical alignment has as default value "center"
 			text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
 			text.setHeight(20);
 			text.setWidth(200);
-			link(shape, snkInterface);
+			link(shape, dataOutputInterface);
 		}
 		// create link and wire it
-		link(containerShape, snkInterface);
+		link(containerShape, dataOutputInterface);
 
 		// Add a ChopBoxAnchor for dependencies
 		ChopboxAnchor cba = peCreateService.createChopboxAnchor(containerShape);
-		link(cba, snkInterface);
+		link(cba, dataOutputInterface);
 
 		// Call the layout feature
 		layoutPictogramElement(containerShape);
@@ -159,7 +159,7 @@ public class AddSinkInterfaceFeature extends AbstractAddFeature {
 	@Override
 	public boolean canAdd(IAddContext context) {
 		// Check that the user wants to add an SinkInterface to the Diagram
-		return context.getNewObject() instanceof SinkInterface
+		return context.getNewObject() instanceof DataOutputInterface
 				&& context.getTargetContainer() instanceof Diagram;
 	}
 

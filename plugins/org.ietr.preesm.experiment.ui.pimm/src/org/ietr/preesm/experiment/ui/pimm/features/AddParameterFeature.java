@@ -51,7 +51,7 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.ietr.preesm.experiment.model.pimm.Graph;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 
 /**
@@ -117,7 +117,7 @@ public class AddParameterFeature extends AbstractAddFeature {
 			// if added Class has no resource we add it to the resource
 			// of the graph
 			if (addedParameter.eResource() == null) {
-				Graph graph = (Graph) getBusinessObjectForPictogramElement(getDiagram());
+				PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
 				graph.getParameters().add(addedParameter);
 			}
 
