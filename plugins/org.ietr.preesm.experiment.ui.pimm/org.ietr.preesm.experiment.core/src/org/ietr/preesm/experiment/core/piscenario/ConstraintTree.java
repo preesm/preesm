@@ -33,64 +33,20 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.experiment.model.transformation;
+package org.ietr.preesm.experiment.core.piscenario;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
+public class ConstraintTree {
+	private Set<ConstraintTree> children;
+	private Set<String> operatorIds;
+	private String vertexId;
 
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
-import net.sf.dftools.workflow.WorkflowException;
-import net.sf.dftools.workflow.elements.Workflow;
-import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
-
-/**
- * A Test workflow element for PiGraphs
- * @author mpelcat
- * @author jheulot
- *
- */
-public class TaskExpression extends AbstractTaskImplementation{
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+	public ConstraintTree() {
+		children = new HashSet<ConstraintTree>();
+		operatorIds = new HashSet<String>();
+		vertexId = "";
 	}
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
-		// TODO Auto-generated method stub
-		
-		PiGraph piGraph = (PiGraph) inputs.get("PiMM");
-
-		WorkflowLogger.getLogger().log(Level.INFO, "PiMM Stats:");
-		WorkflowLogger.getLogger().log(Level.INFO, "Name         : "+piGraph.getName());
-		WorkflowLogger.getLogger().log(Level.INFO, "Nb Vertices  : "+piGraph.getVertices().size());
-		WorkflowLogger.getLogger().log(Level.INFO, "Nb Fifos     : "+piGraph.getFifos().size());
-		WorkflowLogger.getLogger().log(Level.INFO, "Nb Parameters: "+piGraph.getParameters().size());	
-		
-		return new HashMap<String, Object>();
-	}
-
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String monitorMessage() {
-		return "Display Stats on PiMM.";
-	}
-
-	
 }

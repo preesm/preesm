@@ -33,64 +33,53 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.experiment.model.transformation;
+package org.ietr.preesm.experiment.ui.piscenario;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
-
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
-import net.sf.dftools.workflow.WorkflowException;
-import net.sf.dftools.workflow.elements.Workflow;
-import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.BundleContext;
 
 /**
- * A Test workflow element for PiGraphs
- * @author mpelcat
- * @author jheulot
- *
+ * The activator class controls the plug-in life cycle
  */
-public class TaskExpression extends AbstractTaskImplementation{
+public class Activator extends AbstractUIPlugin {
+
+	// The plug-in ID
+	public static final String PLUGIN_ID = "org.ietr.preesm.experiment.ui.piscenario"; //$NON-NLS-1$
+
+	// The shared instance
+	private static Activator plugin;
+	
+	/**
+	 * The constructor
+	 */
+	public Activator() {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
+	 */
+	public void start(BundleContext context) throws Exception {
+		super.start(context);
+		plugin = this;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
+	 */
+	public void stop(BundleContext context) throws Exception {
+		plugin = null;
+		super.stop(context);
+	}
 
 	/**
-	 * @param args
+	 * Returns the shared instance
+	 *
+	 * @return the shared instance
 	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+	public static Activator getDefault() {
+		return plugin;
 	}
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
-		// TODO Auto-generated method stub
-		
-		PiGraph piGraph = (PiGraph) inputs.get("PiMM");
-
-		WorkflowLogger.getLogger().log(Level.INFO, "PiMM Stats:");
-		WorkflowLogger.getLogger().log(Level.INFO, "Name         : "+piGraph.getName());
-		WorkflowLogger.getLogger().log(Level.INFO, "Nb Vertices  : "+piGraph.getVertices().size());
-		WorkflowLogger.getLogger().log(Level.INFO, "Nb Fifos     : "+piGraph.getFifos().size());
-		WorkflowLogger.getLogger().log(Level.INFO, "Nb Parameters: "+piGraph.getParameters().size());	
-		
-		return new HashMap<String, Object>();
-	}
-
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String monitorMessage() {
-		return "Display Stats on PiMM.";
-	}
-
-	
 }

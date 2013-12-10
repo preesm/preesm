@@ -33,64 +33,43 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.experiment.model.transformation;
+package org.ietr.preesm.experiment.ui.piscenario.wizard;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
-
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
-import net.sf.dftools.workflow.WorkflowException;
-import net.sf.dftools.workflow.elements.Workflow;
-import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
+import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
+import org.ietr.preesm.experiment.core.piscenario.PiScenario;
 
 /**
- * A Test workflow element for PiGraphs
- * @author mpelcat
+ * A wizard to create a new {@link PiScenario} file
  * @author jheulot
  *
  */
-public class TaskExpression extends AbstractTaskImplementation{
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
-		// TODO Auto-generated method stub
-		
-		PiGraph piGraph = (PiGraph) inputs.get("PiMM");
-
-		WorkflowLogger.getLogger().log(Level.INFO, "PiMM Stats:");
-		WorkflowLogger.getLogger().log(Level.INFO, "Name         : "+piGraph.getName());
-		WorkflowLogger.getLogger().log(Level.INFO, "Nb Vertices  : "+piGraph.getVertices().size());
-		WorkflowLogger.getLogger().log(Level.INFO, "Nb Fifos     : "+piGraph.getFifos().size());
-		WorkflowLogger.getLogger().log(Level.INFO, "Nb Parameters: "+piGraph.getParameters().size());	
-		
-		return new HashMap<String, Object>();
-	}
-
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String monitorMessage() {
-		return "Display Stats on PiMM.";
-	}
-
+public class NewPiScenarioFileWizard extends BasicNewFileResourceWizard {
 	
+	@Override
+	public void addPages() {
+		super.addPages();
+		super.setWindowTitle("New PiScenario File");
+	}
+
+	@Override
+	protected void initializeDefaultPageImageDescriptor() {
+		super.initializeDefaultPageImageDescriptor();
+	}
+	
+    @Override
+    public boolean performFinish() {
+    	WizardNewFileCreationPage page = (WizardNewFileCreationPage)(getPage("newFilePage1"));
+    	String filename = page.getFileName();
+            
+        if(!filename.endsWith(".piscenario")){
+        	filename += ".piscenario";
+        	page.setFileName(filename);
+        }
+        
+        final IFile createdFile = page.createNewFile();
+        return createdFile != null;
+    }
+
 }

@@ -13,8 +13,9 @@ import net.sf.dftools.workflow.implement.AbstractScenarioImplementation;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
-import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
+import org.ietr.preesm.experiment.core.piscenario.PiScenario;
+import org.ietr.preesm.experiment.core.piscenario.serialize.PiScenarioParser;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 /**
  * Implementing the new DFTools scenario node behavior for Preesm. This version
@@ -22,12 +23,13 @@ import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
  * with the PiMM type
  * 
  * @author mpelcat
+ * @author jheulot
  * 
  */
 public class PiMMAndSLAMScenarioNode extends AbstractScenarioImplementation {
 
 	/**
-	 * The scenario node in Preesm outputs three elements: PiMM, architecture and
+	 * The {@link PiScenario} node in Preesm outputs three elements: PiMM, architecture and
 	 * scenario
 	 */
 	@Override
@@ -37,27 +39,30 @@ public class PiMMAndSLAMScenarioNode extends AbstractScenarioImplementation {
 		Map<String, Object> outputs = new HashMap<String, Object>();
 
 		// Retrieving the scenario from the given path
-		ScenarioParser scenarioParser = new ScenarioParser();
+		PiScenarioParser piScenarioParser = new PiScenarioParser();
 
 		Path relativePath = new Path(path);
 		IFile file = ResourcesPlugin.getWorkspace().getRoot()
 				.getFile(relativePath);
 
-		PreesmScenario scenario;
+		PiScenario piScenario;
+		PiGraph pigraph;
+		
 		// Retrieving the algorithm
 		try {
-			scenario = scenarioParser.parseXmlFile(file);
+			piScenario = piScenarioParser.parseXmlFile(file);
+			pigraph = PiScenarioParser.getAlgorithm(piScenario.getAlgorithmURL());
 
 		} catch (Exception e) {
 			throw new WorkflowException(e.getMessage());
 		}
 
 		// Retrieving the architecture
-		Design slamDesign = ScenarioParser.parseSlamDesign(scenario
+		Design slamDesign = PiScenarioParser.parseSlamDesign(piScenario
 				.getArchitectureURL());
 
-		outputs.put("scenario", scenario);
-		outputs.put("PiMM", null);
+		outputs.put("piscenario", piScenario);
+		outputs.put("PiMM", pigraph);
 		outputs.put("architecture", slamDesign);
 		return outputs;
 	}

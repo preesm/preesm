@@ -27,6 +27,8 @@ Import-Package: org.eclipse.gef,
  org.eclipse.gef.palette,
  org.eclipse.gef.ui.parts,
  org.eclipse.graphiti.mm.pictograms;version="0.9.1",
- org.eclipse.ui.model
+ org.eclipse.ui.model,
+ org.ietr.preesm.experiment.core.piscenario,
+ org.ietr.preesm.experiment.core.piscenario.serialize
 Bundle-ClassPath: .,
  lib/jep-java-3.4-trial.jar
