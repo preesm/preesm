@@ -46,18 +46,18 @@ import org.eclipse.emf.common.util.EList;
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.Graph#getVertices <em>Vertices</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.Graph#getFifos <em>Fifos</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.Graph#getParameters <em>Parameters</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.Graph#getDependencies <em>Dependencies</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getVertices <em>Vertices</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getFifos <em>Fifos</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getParameters <em>Parameters</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getDependencies <em>Dependencies</em>}</li>
  * </ul>
  * </p>
  *
- * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getGraph()
+ * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiGraph()
  * @model
  * @generated
  */
-public interface Graph extends AbstractActor {
+public interface PiGraph extends AbstractActor {
 	/**
 	 * Returns the value of the '<em><b>Vertices</b></em>' containment reference
 	 * list. The list contents are of type
@@ -66,7 +66,7 @@ public interface Graph extends AbstractActor {
 	 * <p>
 	 * <b>Do not use this method when adding an Interface to the graph</b> (i.e.
 	 * a {@link InterfaceActor} or an interface {@link Parameter}) <br>
-	 * Use {@link Graph#addInterface(AbstractVertex) and
+	 * Use {@link PiGraph#addInterface(AbstractVertex) and
 	 * Graph#removeInterfaceActor(InterfaceActor)} instead.
 	 * </p>
 	 * <p>
@@ -93,7 +93,7 @@ public interface Graph extends AbstractActor {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Fifos</em>' containment reference list.
-	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getGraph_Fifos()
+	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiGraph_Fifos()
 	 * @model containment="true"
 	 * @generated
 	 */
@@ -138,7 +138,7 @@ public interface Graph extends AbstractActor {
 	EList<Dependency> getDependencies();
 
 	/**
-	 * Return the list of the names of all {@link Graph#getVertices()} of the
+	 * Return the list of the names of all {@link PiGraph#getVertices()} of the
 	 * Graph.
 	 * 
 	 * @return the list of names
@@ -146,7 +146,7 @@ public interface Graph extends AbstractActor {
 	public Set<String> getVerticesNames();
 
 	/**
-	 * Return the list of the names of all {@link Graph#getParameters()} of the
+	 * Return the list of the names of all {@link PiGraph#getParameters()} of the
 	 * Graph.
 	 * 
 	 * @return the list of names

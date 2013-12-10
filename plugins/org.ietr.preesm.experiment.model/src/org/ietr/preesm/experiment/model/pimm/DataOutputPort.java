@@ -38,50 +38,50 @@ package org.ietr.preesm.experiment.model.pimm;
 
 /**
  * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Input Port</b></em>'.
+ * A representation of the model object '<em><b>Output Port</b></em>'.
  * <!-- end-user-doc -->
  *
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.InputPort#getIncomingFifo <em>Incoming Fifo</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.InputPort#getExpression <em>Expression</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.DataOutputPort#getOutgoingFifo <em>Outgoing Fifo</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.DataOutputPort#getExpression <em>Expression</em>}</li>
  * </ul>
  * </p>
  *
- * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getInputPort()
+ * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDataOutputPort()
  * @model
  * @generated
  */
-public interface InputPort extends Port {
+public interface DataOutputPort extends Port {
 
 	/**
-	 * Returns the value of the '<em><b>Incoming Fifo</b></em>' reference.
-	 * It is bidirectional and its opposite is '{@link org.ietr.preesm.experiment.model.pimm.Fifo#getTargetPort <em>Target Port</em>}'.
+	 * Returns the value of the '<em><b>Outgoing Fifo</b></em>' reference.
+	 * It is bidirectional and its opposite is '{@link org.ietr.preesm.experiment.model.pimm.Fifo#getSourcePort <em>Source Port</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Incoming Fifo</em>' reference isn't clear,
+	 * If the meaning of the '<em>Outgoing Fifo</em>' reference isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Incoming Fifo</em>' reference.
-	 * @see #setIncomingFifo(Fifo)
-	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getInputPort_IncomingFifo()
-	 * @see org.ietr.preesm.experiment.model.pimm.Fifo#getTargetPort
-	 * @model opposite="targetPort"
+	 * @return the value of the '<em>Outgoing Fifo</em>' reference.
+	 * @see #setOutgoingFifo(Fifo)
+	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDataOutputPort_OutgoingFifo()
+	 * @see org.ietr.preesm.experiment.model.pimm.Fifo#getSourcePort
+	 * @model opposite="sourcePort"
 	 * @generated
 	 */
-	Fifo getIncomingFifo();
+	Fifo getOutgoingFifo();
 
 	/**
-	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.InputPort#getIncomingFifo <em>Incoming Fifo</em>}' reference.
+	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.DataOutputPort#getOutgoingFifo <em>Outgoing Fifo</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Incoming Fifo</em>' reference.
-	 * @see #getIncomingFifo()
+	 * @param value the new value of the '<em>Outgoing Fifo</em>' reference.
+	 * @see #getOutgoingFifo()
 	 * @generated
 	 */
-	void setIncomingFifo(Fifo value);
+	void setOutgoingFifo(Fifo value);
 
 	/**
 	 * Returns the value of the '<em><b>Expression</b></em>' containment reference.
@@ -93,14 +93,14 @@ public interface InputPort extends Port {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Expression</em>' containment reference.
 	 * @see #setExpression(Expression)
-	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getInputPort_Expression()
+	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDataOutputPort_Expression()
 	 * @model containment="true" required="true"
 	 * @generated
 	 */
 	Expression getExpression();
 
 	/**
-	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.InputPort#getExpression <em>Expression</em>}' containment reference.
+	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.DataOutputPort#getExpression <em>Expression</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Expression</em>' containment reference.
@@ -108,4 +108,4 @@ public interface InputPort extends Port {
 	 * @generated
 	 */
 	void setExpression(Expression value);
-} // InputPort
+} // OutputPort

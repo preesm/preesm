@@ -14,6 +14,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.ietr.preesm.experiment.model.pimm,
  org.ietr.preesm.experiment.model.pimm.adapter,
  org.ietr.preesm.experiment.model.pimm.impl,
+ org.ietr.preesm.experiment.model.pimm.serialize,
  org.ietr.preesm.experiment.model.pimm.util
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
