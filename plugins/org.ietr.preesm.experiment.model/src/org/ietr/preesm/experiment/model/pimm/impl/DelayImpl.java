@@ -39,11 +39,11 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
-
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
+import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 
 /**
@@ -74,10 +74,11 @@ public class DelayImpl extends ParameterizableImpl implements Delay{
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @generated
 	 */
 	protected DelayImpl() {
 		super();
+
+		this.setExpression(PiMMFactory.eINSTANCE.createExpression());
 	}
 
 	/**

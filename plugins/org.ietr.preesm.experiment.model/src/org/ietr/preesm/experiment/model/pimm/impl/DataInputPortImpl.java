@@ -38,12 +38,12 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
-
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 
 /**
@@ -89,6 +89,8 @@ public class DataInputPortImpl extends PortImpl implements DataInputPort {
 	protected DataInputPortImpl() {
 		super();
 		kind = "input";
+		
+		this.setExpression(PiMMFactory.eINSTANCE.createExpression());
 	}
 
 	/**

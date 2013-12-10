@@ -45,7 +45,6 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -128,9 +127,7 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
 	@Override
 	public Port getNewPort(String portName, Actor actor) {
 		DataInputPort newPort = PiMMFactory.eINSTANCE.createDataInputPort();
-		Expression expr = PiMMFactory.eINSTANCE.createExpression();
 		newPort.setName(portName);
-		newPort.setExpression(expr);
 		actor.getDataInputPorts().add(newPort);
 		return newPort;
 	}

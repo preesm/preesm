@@ -53,6 +53,7 @@ import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.DependencyCycleDetector;
 
@@ -126,10 +127,11 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
 	 */
 	protected ParameterImpl() {
 		super();
+
+		this.setExpression(PiMMFactory.eINSTANCE.createExpression());
 	}
 
 	/**
