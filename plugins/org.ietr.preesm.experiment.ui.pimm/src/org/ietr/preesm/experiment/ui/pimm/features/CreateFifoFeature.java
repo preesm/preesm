@@ -83,7 +83,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 		// We assume that the canStartConnection is already true
 
 		// Refresh to remove all remaining tooltip;
-		getDiagramEditor().refresh();
+		getDiagramBehavior().refresh();
 
 		// True if the connection is created between an input and an output port
 		Port target = getPort(context.getTargetAnchor());
@@ -94,7 +94,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 				// Create tooltip message
 				PiMMUtil.setToolTip(getFeatureProvider(), context
 						.getTargetAnchor().getGraphicsAlgorithm(),
-						getDiagramEditor(),
+						getDiagramBehavior(),
 						"A port cannot be connected to several FIFOs");
 				return false;
 			}
@@ -106,7 +106,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 		if (target != null && target instanceof DataOutputPort) {
 			// Create tooltip message
 			PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor()
-					.getGraphicsAlgorithm(), getDiagramEditor(),
+					.getGraphicsAlgorithm(), getDiagramBehavior(),
 					"A FIFO cannot end at an output port");
 			return false;
 		}
@@ -115,7 +115,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 		if (target != null && target instanceof ConfigInputPort) {
 			// Create tooltip message
 			PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor()
-					.getGraphicsAlgorithm(), getDiagramEditor(),
+					.getGraphicsAlgorithm(), getDiagramBehavior(),
 					"A FIFO cannot end at an config. input port");
 			return false;
 		}
@@ -246,7 +246,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 	@Override
 	public void endConnecting() {
 		// Refresh to remove all remaining tooltip;
-		getDiagramEditor().refresh();
+		getDiagramBehavior().refresh();
 		super.endConnecting();
 	}
 
@@ -275,7 +275,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 				// Create tooltip message
 				PiMMUtil.setToolTip(getFeatureProvider(), context
 						.getSourceAnchor().getGraphicsAlgorithm(),
-						getDiagramEditor(),
+						getDiagramBehavior(),
 						"A port cannot be connected to several FIFOs");
 				return false;
 			}
@@ -285,7 +285,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 				&& (source instanceof DataInputPort || source instanceof ConfigInputPort)) {
 			// Create tooltip message
 			PiMMUtil.setToolTip(getFeatureProvider(), context.getSourceAnchor()
-					.getGraphicsAlgorithm(), getDiagramEditor(),
+					.getGraphicsAlgorithm(), getDiagramBehavior(),
 					"A FIFO cannot start at an input port");
 			return false;
 		}
@@ -310,7 +310,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 	protected Fifo createFifo(DataOutputPort source, DataInputPort target) {
 
 		// Refresh to remove all remaining tooltip;
-		getDiagramEditor().refresh();
+		getDiagramBehavior().refresh();
 
 		// Retrieve the graph
 		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());

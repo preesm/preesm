@@ -35,16 +35,21 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.ui.pimm.util;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
-import org.eclipse.graphiti.platform.IDiagramEditor;
+import org.eclipse.graphiti.platform.IDiagramBehavior;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.ietr.preesm.experiment.ui.pimm.diagram.PiMMToolBehaviorProvider;
+import org.ietr.preesm.ui.scenario.editor.EditorTools.FileContentProvider;
 
 public class PiMMUtil {
 	/**
@@ -83,6 +88,40 @@ public class PiMMUtil {
 		}
 		return ret;
 	}
+	
+	/**
+	 * Open an input dialog to select a pi file
+	 * @param dialogTitle
+	 *            the dialog title, or <code>null</code> if none
+	 * @param dialogMessage
+	 *            the dialog message, or <code>null</code> if none
+	 * @param initialValue
+	 *            the initial input value, or <code>null</code> if none
+	 *            (equivalent to the empty string)
+	 * @param validator
+	 *            an input validator, or <code>null</code> if none
+	 * @return the string, or <code>null</code> if user cancels
+	 */
+	public static String askRefinement(String dialogTitle, String dialogMessage,
+			String initialValue, IInputValidator validator) {
+		String ret = null;
+		Shell shell = getShell();
+		
+		ElementTreeSelectionDialog inputDialog = new ElementTreeSelectionDialog(shell,
+				WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(),
+				new FileContentProvider("pi"));
+		inputDialog.setAllowMultiple(false);
+		inputDialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
+		inputDialog.setMessage(dialogMessage);
+		inputDialog.setTitle(dialogTitle);
+		
+		int retDialog = inputDialog.open();
+		if (retDialog == Window.OK) {
+			ret = ((IFile)(inputDialog.getResult()[0])).getLocation().lastSegment();
+			
+		}
+		return ret;
+	}
 
 	/**
 	 * Utility method used to set a temporary tooltip message for a given
@@ -98,7 +137,7 @@ public class PiMMUtil {
 	 *            the message to put in the tooltip
 	 */
 	public static void setToolTip(IFeatureProvider fp, GraphicsAlgorithm ga,
-			IDiagramEditor iDiagramEditor, String message) {
+			IDiagramBehavior iDiagramEditor, String message) {
 		IToolBehaviorProvider behaviorProvider = fp.getDiagramTypeProvider()
 				.getCurrentToolBehaviorProvider();
 		((PiMMToolBehaviorProvider) behaviorProvider)

@@ -41,36 +41,35 @@ import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
-import org.ietr.preesm.experiment.ui.pimm.util.PiMMUtil;
 
 /**
- * Custom Feature to set a new {@link Refinement} of an {@link Actor}
+ * Custom Feature to clear the {@link Refinement} of an {@link Actor}
  * 
- * @author kdesnos
+ * @author jheulot
  * 
  */
-public class SetActorRefinementFeature extends AbstractCustomFeature {
+public class ClearActorRefinementFeature extends AbstractCustomFeature {
 
 	protected boolean hasDoneChanges = false;
 
 	/**
-	 * Default Constructor of {@link SetActorRefinementFeature}
+	 * Default Constructor of {@link ClearActorRefinementFeature}
 	 * 
 	 * @param fp
 	 *            the feature provider
 	 */
-	public SetActorRefinementFeature(IFeatureProvider fp) {
+	public ClearActorRefinementFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
 	@Override
 	public String getName() {
-		return "Set Refinement";
+		return "Clear Refinement";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Set/Change the Refinement of an Actor";
+		return "Clear the Refinement of an Actor";
 	}
 
 	@Override
@@ -81,7 +80,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 		PictogramElement[] pes = context.getPictogramElements();
 		if (pes != null && pes.length == 1) {
 			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof Actor) {
+			if (bo instanceof Actor && ((Actor) bo).getRefinement().getFileURI() != null) {
 				ret = true;
 			}
 		}
@@ -99,18 +98,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 				Actor actor = (Actor) bo;
 				Refinement refinement = actor.getRefinement();
 
-				// Ask user for Actor name until a valid name is entered.
-				String question = "Enter new file name";
-				String newFileName = refinement.getFileName();
-
-				newFileName = PiMMUtil.askRefinement("Change file", question,
-						newFileName, null);
-
-				if (newFileName != null
-						&& !newFileName.equals(refinement.getFileName())) {
-					this.hasDoneChanges = true;
-					refinement.setFileName(newFileName);
-				}
+				refinement.setFileName("");
 
 				// Call the layout feature
 				layoutPictogramElement(pes[0]);

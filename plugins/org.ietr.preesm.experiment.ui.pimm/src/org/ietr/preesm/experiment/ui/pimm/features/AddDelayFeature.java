@@ -218,7 +218,7 @@ public class AddDelayFeature extends AbstractCustomFeature {
 
 			// Select the whole fifo
 			// PictogramElement[] pictograms = {preConnection, connection};
-			getDiagramEditor().setPictogramElementForSelection(containerShape);
+			getDiagramBehavior().getDiagramContainer().setPictogramElementForSelection(containerShape);
 		}
 
 	}

@@ -33,63 +33,30 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.experiment.model.transformation;
+package org.ietr.preesm.experiment.model.transformation.properties;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.graphiti.ui.platform.AbstractPropertySectionFilter;
+import org.ietr.preesm.experiment.model.pimm.Actor;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
-
-import net.sf.dftools.workflow.WorkflowException;
-import net.sf.dftools.workflow.elements.Workflow;
-import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
-
-/**
- * A Test workflow element for PiGraphs
- * @author mpelcat
- * @author jheulot
- *
- */
-public class TaskExpression extends AbstractTaskImplementation{
+public class PiMMActorFilter extends AbstractPropertySectionFilter{
 
 	/**
-	 * @param args
+	 * Check the given {@link PictogramElement} for acceptance.
+	 * Returns true, if {@link PictogramElement} is accepted, otherwise false.
 	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
-
 	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
-		// TODO Auto-generated method stub
-		
-		PiGraph piGraph = (PiGraph) inputs.get("PiMM");
+	protected boolean accept(PictogramElement pictogramElement) {
+		EObject eObject = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pictogramElement);
 
-		WorkflowLogger.getLogger().log(Level.INFO, "PiMM Stats:");
-		WorkflowLogger.getLogger().log(Level.INFO, "Name         : "+piGraph.getName());
-		WorkflowLogger.getLogger().log(Level.INFO, "Nb Vertices  : "+piGraph.getVertices().size());
-		WorkflowLogger.getLogger().log(Level.INFO, "Nb Fifos     : "+piGraph.getFifos().size());
-		WorkflowLogger.getLogger().log(Level.INFO, "Nb Parameters: "+piGraph.getParameters().size());	
-		
-		return new HashMap<String, Object>();
-	}
-
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String monitorMessage() {
-		return "Display Stats on PiMM.";
-	}
-
+		// Actor.
+		if(eObject instanceof Actor){
+			return true;
+		}
 	
+		return false;
+	}
+
 }

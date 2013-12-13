@@ -95,6 +95,7 @@ import org.ietr.preesm.experiment.ui.pimm.features.AddDataOutputPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddParameterFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddDataOutputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddDataInputInterfaceFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.ClearActorRefinementFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateConfigInputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateConfigOutputInterfaceFeature;
@@ -179,18 +180,22 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
 	@Override
 	public ICreateConnectionFeature[] getCreateConnectionFeatures() {
-		return new ICreateConnectionFeature[] { new CreateFifoFeature(this),
-				new CreateDependencyFeature(this) };
+		return new ICreateConnectionFeature[] { 
+				new CreateFifoFeature(this),
+				new CreateDependencyFeature(this)
+				};
 	}
 
 	@Override
 	public ICreateFeature[] getCreateFeatures() {
-		return new ICreateFeature[] { new CreateActorFeature(this),
+		return new ICreateFeature[] { 
+				new CreateActorFeature(this),
 				new CreateParameterFeature(this),
 				new CreateConfigInputInterfaceFeature(this),
 				new CreateConfigOutputInterfaceFeature(this),
 				new CreateDataInputInterfaceFeature(this),
-				new CreateDataOutputInterfaceFeature(this) };
+				new CreateDataOutputInterfaceFeature(this) 
+				};
 	}
 
 	@Override
@@ -214,7 +219,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 					new AddConfigInputPortFeature(this),
 					new AddConfigOutputPortFeature(this),
 					new SetActorRefinementFeature(this),
-					new OpenRefinementFeature(this) };
+					new ClearActorRefinementFeature(this),
+					new OpenRefinementFeature(this)
+					};
 			for (ICustomFeature feature : actorFeatures) {
 				features.add(feature);
 			}

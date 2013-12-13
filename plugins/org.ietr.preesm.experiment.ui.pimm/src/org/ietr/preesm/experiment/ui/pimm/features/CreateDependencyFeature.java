@@ -91,7 +91,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 		// dependency. We assume that the canStartConnection is already true.
 
 		// Refresh to remove all remaining tooltip;
-		getDiagramEditor().refresh();
+		getDiagramBehavior().refresh();
 		PictogramElement targetPE = context.getTargetPictogramElement();
 		Object targetObj = getBusinessObjectForPictogramElement(targetPE);
 
@@ -109,7 +109,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 				// Create tooltip message
 				PiMMUtil.setToolTip(getFeatureProvider(), context
 						.getTargetAnchor().getGraphicsAlgorithm(),
-						getDiagramEditor(),
+						getDiagramBehavior(),
 						"A dependency set by a config. output port can only target a parameter.");
 			}
 			return false;
@@ -125,7 +125,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 				// Create tooltip message
 				PiMMUtil.setToolTip(getFeatureProvider(), context
 						.getTargetAnchor().getGraphicsAlgorithm(),
-						getDiagramEditor(),
+						getDiagramBehavior(),
 						"A config port cannot be connected to several Dependencies");
 				return false;
 			}
@@ -136,7 +136,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 		// False if the target is the setter
 		if (context.getTargetAnchor() == context.getSourceAnchor()) {
 			PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor()
-					.getGraphicsAlgorithm(), getDiagramEditor(),
+					.getGraphicsAlgorithm(), getDiagramBehavior(),
 					"A self dependency is strictly forbidden (as well as cyclic dependencies)");
 			return false;
 		}
@@ -148,7 +148,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 			PiMMUtil.setToolTip(
 					getFeatureProvider(),
 					context.getTargetPictogramElement().getGraphicsAlgorithm(),
-					getDiagramEditor(),
+					getDiagramBehavior(),
 					"Configuration Interfaces cannot be the getter of a dependency.\nCheck the inerface port instead.");
 			return false;
 		}
@@ -164,7 +164,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 				&& (target instanceof DataOutputPort || target instanceof DataInputPort)) {
 			// Create tooltip message
 			PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor()
-					.getGraphicsAlgorithm(), getDiagramEditor(),
+					.getGraphicsAlgorithm(), getDiagramBehavior(),
 					"A Dependency cannot end at a data port");
 			return false;
 		}
@@ -178,7 +178,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 	public boolean canStartConnection(ICreateConnectionContext context) {
 
 		// Refresh to remove all remaining tooltip;
-		getDiagramEditor().refresh();
+		getDiagramBehavior().refresh();
 
 		// Return true if the connection starts at a ISetter
 		ISetter setter = getSetter(context.getSourceAnchor());
@@ -192,7 +192,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 		if (obj instanceof DataInputPort || obj instanceof ConfigInputPort) {
 			// Create tooltip message
 			PiMMUtil.setToolTip(getFeatureProvider(), context.getSourceAnchor()
-					.getGraphicsAlgorithm(), getDiagramEditor(),
+					.getGraphicsAlgorithm(), getDiagramBehavior(),
 					"A Dependency cannot start at an input port");
 			return false;
 		}
@@ -200,7 +200,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 		if (obj instanceof DataOutputPort) {
 			// Create tooltip message
 			PiMMUtil.setToolTip(getFeatureProvider(), context.getSourceAnchor()
-					.getGraphicsAlgorithm(), getDiagramEditor(),
+					.getGraphicsAlgorithm(), getDiagramBehavior(),
 					"A Dependency cannot start at an data output port");
 			return false;
 		}
@@ -342,7 +342,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 	protected Dependency createDependency(ISetter setter, ConfigInputPort getter) {
 
 		// Refresh to remove all remaining tooltip;
-		getDiagramEditor().refresh();
+		getDiagramBehavior().refresh();
 
 		// Retrieve the graph
 		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());

@@ -42,10 +42,8 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.platform.GFPropertySection;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
@@ -137,30 +135,12 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 		data.top = new FormAttachment(lblExpression);
 		lblValue.setLayoutData(data);
 		
-		txtExpression.addKeyListener(new KeyListener() {
-			
+		txtExpression.addModifyListener(new ModifyListener() {
 			@Override
-			public void keyReleased(KeyEvent e) {
-				if(e.keyCode == 13){ //If you press the enter key
-					updateProperties();
-				}
+			public void modifyText(ModifyEvent e) {
+				updateProperties();			
 			}
-			
-			@Override
-			public void keyPressed(KeyEvent e) {}
-		});
-		
-		
-		txtExpression.addFocusListener(new FocusListener() {
-			@Override
-			public void focusLost(FocusEvent e) {
-				updateProperties();
-			}
-
-			@Override
-			public void focusGained(FocusEvent e) {}
-		});
-		
+		});		
 	}
 	
 	/**
@@ -176,26 +156,34 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 			
 			if(bo instanceof Parameter){
 				Parameter param = (Parameter) bo;
-				setNewExpression(param.getExpression(), txtExpression.getText());
-				getDiagramEditor().refreshRenderingDecorators(pe);
+				if(param.getExpression().getString().compareTo(txtExpression.getText()) != 0){
+					setNewExpression(param.getExpression(), txtExpression.getText());
+					getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
+				}
 			}//end Parameter
 
 			if(bo instanceof DataOutputPort){
 				DataOutputPort oPort = (DataOutputPort) bo;
-				setNewExpression(oPort.getExpression(), txtExpression.getText());
-				getDiagramEditor().refreshRenderingDecorators((PictogramElement)(pe.eContainer()));
+				if(oPort.getExpression().getString().compareTo(txtExpression.getText()) != 0){
+					setNewExpression(oPort.getExpression(), txtExpression.getText());
+					getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators((PictogramElement)(pe.eContainer()));
+				}
 			}//end OutputPort
 			
 			if(bo instanceof DataInputPort){
 				DataInputPort iPort = (DataInputPort) bo;
-				setNewExpression(iPort.getExpression(), txtExpression.getText());
-				getDiagramEditor().refreshRenderingDecorators((PictogramElement)(pe.eContainer()));
+				if(iPort.getExpression().getString().compareTo(txtExpression.getText()) != 0){
+					setNewExpression(iPort.getExpression(), txtExpression.getText());
+					getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators((PictogramElement)(pe.eContainer()));
+				}
 			}//end InputPort
 			
 			if(bo instanceof Delay){
 				Delay delay = (Delay) bo;
-				setNewExpression(delay.getExpression(), txtExpression.getText());
-				getDiagramEditor().refreshRenderingDecorators(pe);
+				if(delay.getExpression().getString().compareTo(txtExpression.getText()) != 0){
+					setNewExpression(delay.getExpression(), txtExpression.getText());
+					getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
+				}
 			}//end Delay
 		}
 		
@@ -208,7 +196,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 	 * @param value		String value
 	 */
 	private void setNewExpression(final Expression e, final String value){
-		TransactionalEditingDomain editingDomain = getDiagramTypeProvider().getDiagramEditor().getEditingDomain(); 
+		TransactionalEditingDomain editingDomain = getDiagramTypeProvider().getDiagramBehavior().getEditingDomain(); 
 		editingDomain.getCommandStack().execute(
 					new RecordingCommand(editingDomain) {
 						
@@ -225,6 +213,7 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 		PictogramElement pe = getSelectedPictogramElement();
 		String name = null;
 		Expression e = null;
+		boolean expressionFocus = txtExpression.isFocusControl();
 		txtExpression.setEnabled(false);
 		
 		if (pe != null) {
@@ -291,9 +280,14 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 				if(!(bo instanceof InterfaceActor))
 					txtExpression.setEnabled(true);
 				
-				txtExpression.setText(e.getString());
+				if(txtExpression.getText().compareTo(e.getString()) != 0){
+					txtExpression.setText(e.getString());
+				}				
 							
 				lblValueObj.setText(e.evaluate());
+				
+				if(expressionFocus)
+					txtExpression.setFocus();
 			}
 		}
 	}

@@ -13,7 +13,7 @@
             </output>
             <output
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.Graph">
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
             </output>
             <output
                   id="architecture"
@@ -31,7 +31,7 @@
          <inputs>
             <input
                   id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.Graph">
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
             </input>
          </inputs>
       </task>
@@ -55,6 +55,11 @@
                id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basic"
                label="Basic">
          </propertyTab>
+         <propertyTab
+               category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
+               id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor"
+               label="BasicActor">
+         </propertyTab>
       </propertyTabs>
    </extension>
    <extension
@@ -67,6 +72,12 @@
               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basic"
               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basic">
         </propertySection>
+         <propertySection
+               class="org.ietr.preesm.experiment.model.transformation.properties.ActorPropertiesSection"
+               filter="org.ietr.preesm.experiment.model.transformation.properties.PiMMActorFilter"
+               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicActor"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor">
+         </propertySection>
       </propertySections>
    </extension>
    
