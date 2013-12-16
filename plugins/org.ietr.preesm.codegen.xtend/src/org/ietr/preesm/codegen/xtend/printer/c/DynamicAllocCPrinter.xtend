@@ -196,6 +196,7 @@ class DynamicAllocCPrinter extends CPrinter {
 									(block as CoreBlock).getInitBlock().getCodeElts().add(initSem);
 									
 									// Register the semaphore to all its users
+									free.key.users.forEach[sem.users.add(it)]
 									free.value.forEach[
 										sem.users.add(it.creator)
 										it.users.forEach[
@@ -351,6 +352,8 @@ class DynamicAllocCPrinter extends CPrinter {
 		«ENDIF»
 		«IF fifoCall.operation == FifoOperation.PUSH || fifoCall.operation == FifoOperation.INIT»
 			«printMalloc(fifoCall.headBuffer)»
+		«ELSE /*POP */»
+			cache_inv(&«fifoCall.headBuffer.doSwitch»,1);
 		«ENDIF»
 		«printCallWithMallocFree(fifoCall,super.printFifoCall(fifoCall))»
 		«IF fifoCall.operation == FifoOperation.POP»

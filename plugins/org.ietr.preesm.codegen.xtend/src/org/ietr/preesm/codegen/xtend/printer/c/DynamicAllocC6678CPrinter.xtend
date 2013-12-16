@@ -33,12 +33,6 @@ class DynamicAllocC6678CPrinter extends C6678CPrinter {
 	 */
 	Set<Buffer> printedMerged
 	
-	/**
-	 * Set of CharSequence used to avoid calling the same cache operation 
-	 * multiple times in a broadcast or roundbuffer call. 
-	 */
-	var currentOperationMemcpy = new HashSet<CharSequence>();
-	
 	new() {
 		super()
 		IGNORE_USELESS_MEMCPY = true
@@ -184,12 +178,10 @@ class DynamicAllocC6678CPrinter extends C6678CPrinter {
 	'''
 	
 	override printBroadcast(SpecialCall call) {
-		currentOperationMemcpy.clear
 		printCallWithMallocFree(call,super.printBroadcast(call))
 	}
 	
 	override printRoundBuffer(SpecialCall call) {
-		currentOperationMemcpy.clear
 		printCallWithMallocFree(call,super.printRoundBuffer(call))
 	}	
 	
@@ -225,39 +217,21 @@ class DynamicAllocC6678CPrinter extends C6678CPrinter {
 			'''
 		}  else if(helperPrinter.mergedFree.containsKey(buffer) || (helperPrinter.mergedBuffers.containsKey(buffer) && helperPrinter.mergedFree.containsKey(helperPrinter.mergedBuffers.get(buffer)))){
 			// The buffer is a merged free. It will be allocated several times.
-			var string = CodegenFactory.eINSTANCE.createConstantString;
-						string.setCreator(buffer.creator);
-						string.setValue(buffer.name)
 			var mergedBuffer =  
 				if(helperPrinter.mergedFree.containsKey(buffer)){
 					buffer
 				} else {
 					helperPrinter.mergedBuffers.get(buffer)
 				}
+				var string = CodegenFactory.eINSTANCE.createConstantString;
+						string.setCreator(buffer.creator);
+				string.setValue(mergedBuffer.name)
 			'''
 				«mergedBuffer.doSwitch» = («mergedBuffer.type»*) multiple_malloc(sharedHeap, (void**)&«mergedBuffer.doSwitch»,«mergedBuffer.size»*sizeof(«mergedBuffer.type»), «helperPrinter.mergedFree.get(mergedBuffer).size + 1»/*nbOfFree*/, «helperPrinter.mergedFreeSemaphore.get(mergedBuffer).doSwitch», «printConstantString(string)», CACHE_LINE_SIZE);
 				cache_wb(&«buffer.doSwitch», 1);
 			'''	
 		}
 		// else, the buffer is a merged buffer that does not need to be allocated
-	}
-	
-	
-	override printMemcpy(Buffer output, int outOffset, Buffer input, int inOffset, int size, String type) {
-		var result = super.printMemcpy(output, outOffset, input, inOffset, size, type)
-		
-		// In case where no memcpy is needed, check that the cache_wb is only 
-		// called once per Broadcast/RoundBuffer
-		if(!result.toString.contains("memcpy")){
-			if(!currentOperationMemcpy.contains(result)){
-				currentOperationMemcpy.add(result)
-				return result
-			} else {
-				return ''''''
-			}
-		}
-		
-		result
 	}
 	
 	/**

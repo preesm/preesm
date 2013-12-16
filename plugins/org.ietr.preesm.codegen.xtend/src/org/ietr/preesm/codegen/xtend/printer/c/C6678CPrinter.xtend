@@ -54,8 +54,15 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
 import org.ietr.preesm.codegen.xtend.model.codegen.Call
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
+import java.util.HashSet
 
 class C6678CPrinter extends CPrinter {
+	
+	/**
+	 * Set of CharSequence used to avoid calling the same cache operation 
+	 * multiple times in a broadcast or roundbuffer call. 
+	 */
+	var currentOperationMemcpy = new HashSet<CharSequence>();
 	
 	override printCoreBlockHeader(CoreBlock block) '''
 		/** 
@@ -75,7 +82,10 @@ class C6678CPrinter extends CPrinter {
 	'''
 	
 	override printBroadcast(SpecialCall call) '''
-		«super.printBroadcast(call)»
+		«{
+			currentOperationMemcpy.clear
+			super.printBroadcast(call)
+		}»
 		«printCacheCoherency(call)»
 	'''
 	
@@ -173,13 +183,21 @@ class C6678CPrinter extends CPrinter {
 		// merged buffer is executed on the same core, its data will still be valid
 		if(result.empty) {
 			result = '''cache_wb(«input.doSwitch», «input.size»*sizeof(«input.type»));'''
+			if(!currentOperationMemcpy.contains(result)){
+				currentOperationMemcpy.add(result)
+		    } else {
+		    	result =''''''
+		    }
 		}
 			
 		result;
 	}
 	
 	override printRoundBuffer(SpecialCall call) '''
-		«super.printRoundBuffer(call)»
+		«{
+			currentOperationMemcpy.clear
+			super.printRoundBuffer(call)
+		}»
 		«printCacheCoherency(call)»
 	'''
 	

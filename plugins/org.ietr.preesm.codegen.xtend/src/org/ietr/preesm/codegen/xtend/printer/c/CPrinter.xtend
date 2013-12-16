@@ -68,7 +68,7 @@ class CPrinter extends DefaultPrinter {
 	 * Temporary global var to ignore the automatic suppression of memcpy
 	 * whose target and destination are identical. 
 	 */
-	protected var IGNORE_USELESS_MEMCPY = false
+	protected var IGNORE_USELESS_MEMCPY = true
 	
 	override printCoreBlockHeader(CoreBlock block) '''
 			/** 
