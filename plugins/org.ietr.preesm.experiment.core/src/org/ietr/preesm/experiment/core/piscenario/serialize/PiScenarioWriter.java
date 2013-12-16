@@ -37,6 +37,7 @@ package org.ietr.preesm.experiment.core.piscenario.serialize;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -87,6 +88,7 @@ public class PiScenarioWriter {
 		Element root = dom.getDocumentElement();
 
 		addFiles(root);
+		addConstraints(root);
 
 		return dom;
 	}
@@ -127,7 +129,27 @@ public class PiScenarioWriter {
 		Element archi = dom.createElement("architecture");
 		files.appendChild(archi);
 		archi.setAttribute("url", piscenario.getArchitectureURL());
-
-
+	}
+	
+	private void writeConstraintChildren(String actor, Element parentElement){
+		Set<String> children = piscenario.getConstraints().getChildrenOf(actor);
+		
+		if(children.size() == 0){
+			parentElement.setAttribute("Cores", piscenario.getConstraints().getCoreId(actor).toString());
+		}else{
+			for(String child : children){
+				String[] tmp = child.split("/");
+				String childName = tmp[tmp.length-1];
+				Element childElement = dom.createElement(childName);
+				parentElement.appendChild(childElement);		
+				writeConstraintChildren(child, childElement);
+			}
+		}
+	}
+	
+	private void addConstraints(Element parent){
+		Element constraints = dom.createElement("constraints");
+		parent.appendChild(constraints);
+		writeConstraintChildren("", constraints);		
 	}
 }

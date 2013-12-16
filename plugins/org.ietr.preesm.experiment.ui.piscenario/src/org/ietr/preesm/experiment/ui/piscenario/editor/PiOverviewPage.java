@@ -73,6 +73,9 @@ public class PiOverviewPage extends FormPage {
 	 */
 	private PiScenario piscenario;
 
+	/**
+	 * Default Constructor of an Overview Page
+	 */
 	public PiOverviewPage(PiScenario piscenario, FormEditor editor, String id,
 			String title) {
 		super(editor, id, title);

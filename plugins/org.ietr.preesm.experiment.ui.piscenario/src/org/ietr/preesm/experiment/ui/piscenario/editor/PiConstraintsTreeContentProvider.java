@@ -33,77 +33,64 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.experiment.core.piscenario;
+package org.ietr.preesm.experiment.ui.piscenario.editor;
 
 import java.util.Set;
 
+import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.Viewer;
+import org.ietr.preesm.experiment.core.piscenario.Constraints;
+
 /**
- * Storing all information of a {@link PiScenario}: a scenario for PiGraphs 
+ * This class provides the elements displayed in {@link PiConstraintsTreeSection}. Each
+ * element is a vertex. This tree is used in scenario editor to edit the
+ * constraints
+ * 
  * @author jheulot
- *
  */
-public class PiScenario {	
-	/**
-	 * Path to the algorithm file
-	 */
-	private String algorithmURL = "";
+public class PiConstraintsTreeContentProvider implements ITreeContentProvider {
 
-	/**
-	 * Path to the architecture file
-	 */
-	private String architectureURL = "";
+	private Constraints constraints = null;
 
-	/**
-	 * Path to the scenario file
-	 */
-	private String scenarioURL = "";
+
+	public PiConstraintsTreeContentProvider(CheckboxTreeViewer treeViewer) {
+		super();
+	}
+
+	@Override
+	public Object[] getChildren(Object parentElement) {
+		String parentString = (String) parentElement;
+		Set<String> children = constraints.getChildrenOf(parentString);
+		return children.toArray();
+	}
 	
-	private Constraints constraints;
-	
-	private Set<String> operatorIds;
+	@Override
+	public Object getParent(Object element) {
+		return null;
+	}
+
+	@Override
+	public boolean hasChildren(Object element) {
+		Set<String> children = constraints.getChildrenOf((String) element);
+		return children.size() != 0;
+	}
+
+	@Override
+	public Object[] getElements(Object inputElement) {
+		Object[] table = new Object[1];
 		
-
-	public PiScenario() {
-		constraints = new Constraints();
-	}
-	
-	public String getScenarioURL() {
-		return scenarioURL;
+		table[0] = (String)"";
+		return constraints.getChildrenOf("").toArray();
 	}
 
-	public void setScenarioURL(String scenarioURL) {
-		this.scenarioURL = scenarioURL;
-	}
-	
-	public String getAlgorithmURL() {
-		return algorithmURL;
-	}
-	
-	public Constraints getConstraints() {
-		return constraints;
-	}
-	
-	public void setConstraints(Constraints consts) {
-		constraints = consts;
+	@Override
+	public void dispose() {
 	}
 
-	public Set<String> getOperatorIds() {
-		return operatorIds;
+	@Override
+	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		constraints = (Constraints) newInput;
 	}
 
-	public void setAlgorithmURL(String algorithmURL) {
-		this.algorithmURL = algorithmURL;
-	}
-	
-	public String getArchitectureURL() {
-		return architectureURL;
-	}
-
-	public void setArchitectureURL(String architectureURL) {
-		this.architectureURL = architectureURL;
-	}
-
-	public void setOperatorIds(Set<String> operatorInstanceIds) {
-		operatorIds = operatorInstanceIds;
-	}
 }

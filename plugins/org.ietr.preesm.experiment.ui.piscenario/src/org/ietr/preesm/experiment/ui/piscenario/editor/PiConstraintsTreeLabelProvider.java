@@ -33,20 +33,32 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.experiment.core.piscenario;
+package org.ietr.preesm.experiment.ui.piscenario.editor;
 
-import java.util.HashSet;
-import java.util.Set;
+import org.eclipse.jface.viewers.LabelProvider;
 
-public class ConstraintTree {
-	private Set<ConstraintTree> children;
-	private Set<String> operatorIds;
-	private String vertexId;
+/**
+ * The label provider displays the name of the {@link PiGraph} actor displayed in a tree for Constraints
+ * 
+ * @author jheulot
+ */
+public class PiConstraintsTreeLabelProvider extends LabelProvider {
 
-	public ConstraintTree() {
-		children = new HashSet<ConstraintTree>();
-		operatorIds = new HashSet<String>();
-		vertexId = "";
+	@Override
+	public String getText(Object element) {
+		String name = "";
+		if (element instanceof String) {
+			String[] actors = ((String)element).split("/");
+			name = actors[actors.length-1];
+		} else {
+			try {
+				throw new Exception();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		return name;
 	}
 
 }

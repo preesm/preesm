@@ -35,11 +35,9 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.core.piscenario.serialize;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -47,9 +45,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.sf.dftools.algorithm.importer.GMLSDFImporter;
 import net.sf.dftools.algorithm.importer.InvalidModelException;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
 import net.sf.dftools.architecture.slam.Design;
 import net.sf.dftools.architecture.slam.SlamPackage;
 import net.sf.dftools.architecture.slam.serialize.IPXACTResourceFactoryImpl;
@@ -63,15 +59,17 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.URI;
 import org.ietr.preesm.core.architecture.util.DesignTools;
+import org.ietr.preesm.experiment.core.piscenario.Constraints;
 import org.ietr.preesm.experiment.core.piscenario.PiScenario;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.serialize.PiParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -143,8 +141,17 @@ public class PiScenarioParser {
 					String type = elt.getTagName();
 					if (type.equals("files")) {
 						parseFileNames(elt);
+						if(piscenario.getAlgorithmURL() != ""){
+							try {
+								algo = getAlgorithm(piscenario.getAlgorithmURL());
+								piscenario.getConstraints().updateFromGraph(algo);
+							} catch (CoreException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
 					} else if (type.equals("constraints")) {
-//						parseConstraintGroups(elt);
+						parseConstraints(elt);
 					} else if (type.equals("relativeconstraints")) {
 //						parseRelativeConstraints(elt);
 					} else if (type.equals("timings")) {
@@ -224,10 +231,51 @@ public class PiScenarioParser {
 
 			System.out.println(design.getVlnv().getName());
 
-//			piscenario.setOperatorIds(DesignTools.getOperatorInstanceIds(design));
+			piscenario.setOperatorIds(DesignTools.getOperatorInstanceIds(design));
 //			piscenario.setComNodeIds(DesignTools.getComNodeInstanceIds(design));
 //			piscenario.setOperatorDefinitionIds(DesignTools
 //					.getOperatorComponentIds(design));
+		}
+	}
+	
+	private void parseConstraints(Element element){
+		Node node = element.getFirstChild();
+		try {
+			piscenario.getConstraints().updateFromGraph(getAlgorithm(piscenario.getAlgorithmURL()));
+		} catch (InvalidModelException | CoreException e) {
+			e.printStackTrace();
+		}
+
+		while (node != null) {
+
+			if (node instanceof Element) {
+				parseConstraints((Element) node, "/");				
+			}
+
+			node = node.getNextSibling();
+		}
+	
+	}
+	
+	private void parseConstraints(Element element, String prefix){
+		prefix += element.getNodeName();
+		
+		if(!element.hasChildNodes()){
+			String coresString = element.getAttributes().getNamedItem("Cores").getNodeValue();
+			String[] cores = coresString.split("[\\[\\], ]");
+			
+			for(String core : cores){
+				if(!core.contentEquals(""))
+					piscenario.getConstraints().setConstraint(prefix, core, true);
+			}
+		}
+		
+		Node node = element.getFirstChild();
+		while (node != null) {
+			if (node instanceof Element) {
+				parseConstraints((Element) node, prefix+"/");				
+			}
+			node = node.getNextSibling();
 		}
 	}
 
@@ -251,19 +299,11 @@ public class PiScenarioParser {
 
 	public static PiGraph getAlgorithm(String path) throws InvalidModelException,CoreException {
 		PiGraph algorithm = null;
+		ResourceSet resourceSet = new ResourceSetImpl();
 		
-		Path relativePath = new Path(path);
-
-		try {
-			PiParser piParser = new PiParser(null);
-			
-			InputStream is = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath).getContents();						
-			algorithm = piParser.parse(is);
-
-//			addVertexPathProperties(algorithm, "");
-		} catch (CoreException e) {
-			throw e;
-		}
+		URI uri = URI.createPlatformResourceURI(path, true);
+		Resource ressource = resourceSet.getResource(uri, true);					
+		algorithm = (PiGraph) (ressource.getContents().get(0));
 
 		return algorithm;
 	}

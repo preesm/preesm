@@ -111,8 +111,12 @@ public class PiScenarioEditor extends SharedHeaderFormEditor implements
 		IFormPage overviewPage = new PiOverviewPage(piscenario, this, "Overview", "Overview");
 		overviewPage.addPropertyListener(this);
 
+		IFormPage constraintsPage = new PiConstraintsPage(piscenario, this, "Constraints", "Constraints");
+		constraintsPage.addPropertyListener(this);
+
 		try {
 			addPage(overviewPage);
+			addPage(constraintsPage);
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}
