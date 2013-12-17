@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <graph edgedefault="directed">
+        <data key="name">DecodeDsply</data>
+        <node id="ReadVOP" kind="actor">
+            <port expr="0" kind="input" name="VOL"/>
+            <port expr="0" kind="input" name="Complexity"/>
+            <port expr="0" kind="input" name="VOLPos"/>
+            <port expr="0" kind="input" name="VOPPosIn"/>
+            <port expr="0" kind="output" name="VOPData"/>
+            <port expr="0" kind="output" name="FrmData"/>
+            <port expr="0" kind="output" name="VOPPosOut"/>
+        </node>
+        <node id="DecodeVOP" kind="actor">
+            <port expr="0" kind="input" name="VOPData"/>
+            <port expr="0" kind="input" name="FrmData"/>
+            <port expr="0" kind="input" name="PrevImgIn"/>
+            <port expr="0" kind="output" name="Img"/>
+            <port expr="0" kind="output" name="ImgOut"/>
+        </node>
+        <node id="DsplyVOP" kind="actor">
+            <port expr="0" kind="input" name="Img"/>
+            <port expr="0" kind="input" name="ImgDim"/>
+        </node>
+        <node id="VOL" kind="src">
+            <port expr="0" kind="output" name=""/>
+        </node>
+        <node id="COmplexity" kind="src">
+            <port expr="0" kind="output" name=""/>
+        </node>
+        <node id="VOLPos" kind="src">
+            <port expr="0" kind="output" name=""/>
+        </node>
+        <node id="ImgDim" kind="src">
+            <port expr="0" kind="output" name=""/>
+        </node>
+        <edge kind="fifo" source="VOL" sourceport="" target="ReadVOP" targetport="VOL"/>
+        <edge kind="fifo" source="COmplexity" sourceport=""
+            target="ReadVOP" targetport="Complexity"/>
+        <edge kind="fifo" source="VOLPos" sourceport="" target="ReadVOP" targetport="VOLPos"/>
+        <edge kind="fifo" source="ReadVOP" sourceport="VOPData"
+            target="DecodeVOP" targetport="VOPData"/>
+        <edge kind="fifo" source="ReadVOP" sourceport="FrmData"
+            target="DecodeVOP" targetport="FrmData"/>
+        <edge kind="fifo" source="DecodeVOP" sourceport="Img"
+            target="DsplyVOP" targetport="Img"/>
+        <edge kind="fifo" source="DecodeVOP" sourceport="ImgOut"
+            target="DecodeVOP" targetport="PrevImgIn"/>
+        <edge kind="fifo" source="ReadVOP" sourceport="VOPPosOut"
+            target="ReadVOP" targetport="VOPPosIn"/>
+        <edge kind="fifo" source="ImgDim" sourceport=""
+            target="DsplyVOP" targetport="ImgDim"/>
+    </graph>
+</graphml>
