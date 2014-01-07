@@ -8,15 +8,12 @@ Bundle-Vendor: IETR
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  net.sf.dftools.workflow;bundle-version="0.1.0",
- org.ietr.preesm.experiment.model;bundle-version="0.1.0",
- org.ietr.preesm.core;bundle-version="0.6.3",
  org.eclipse.core.resources;bundle-version="3.8.1",
  net.sf.dftools.architecture;bundle-version="0.1.0",
  net.sf.dftools.algorithm;bundle-version="0.1.0",
  org.eclipse.ui.views.properties.tabbed;bundle-version="3.5.300",
  org.eclipse.graphiti.ui;bundle-version="0.9.1",
  org.eclipse.graphiti;bundle-version="0.9.1",
- org.ietr.preesm.experiment.ui.pimm;bundle-version="0.1.0",
  org.eclipse.ui.navigator,
  org.eclipse.ui.ide;bundle-version="3.8.1",
  org.eclipse.emf.transaction;bundle-version="1.4.0"
@@ -29,6 +26,8 @@ Import-Package: org.eclipse.gef,
  org.eclipse.graphiti.mm.pictograms;version="0.9.1",
  org.eclipse.ui.model,
  org.ietr.preesm.experiment.core.piscenario,
- org.ietr.preesm.experiment.core.piscenario.serialize
+ org.ietr.preesm.experiment.core.piscenario.serialize,
+ org.ietr.preesm.experiment.model.pimm,
+ org.ietr.preesm.experiment.ui.pimm.features
 Bundle-ClassPath: .,
  lib/jep-java-3.4-trial.jar

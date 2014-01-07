@@ -37,7 +37,6 @@ package org.ietr.preesm.experiment.core.piscenario.serialize;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -61,15 +60,13 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.common.util.URI;
 import org.ietr.preesm.core.architecture.util.DesignTools;
-import org.ietr.preesm.experiment.core.piscenario.Constraints;
+import org.ietr.preesm.experiment.core.piscenario.ActorNode;
 import org.ietr.preesm.experiment.core.piscenario.PiScenario;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.core.piscenario.Timing;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -88,11 +85,6 @@ public class PiScenarioParser {
 	 * scenario being retrieved
 	 */
 	private PiScenario piscenario = null;
-
-	/**
-	 * current algorithm
-	 */
-	private PiGraph algo = null;
 
 	public PiScenarioParser() {
 
@@ -125,6 +117,10 @@ public class PiScenarioParser {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		} catch (CoreException e) {
+			if(e.getStatus().getCode() == 274){ // Not refreshed scenario
+				WorkflowLogger.getLogger().log(Level.WARNING, "Resource is out of sync with the file system, please refresh it");
+				return null;
+			}
 			e.printStackTrace();
 		}
 
@@ -141,21 +137,9 @@ public class PiScenarioParser {
 					String type = elt.getTagName();
 					if (type.equals("files")) {
 						parseFileNames(elt);
-						if(piscenario.getAlgorithmURL() != ""){
-							try {
-								algo = getAlgorithm(piscenario.getAlgorithmURL());
-								piscenario.getConstraints().updateFromGraph(algo);
-							} catch (CoreException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					} else if (type.equals("constraints")) {
-						parseConstraints(elt);
-					} else if (type.equals("relativeconstraints")) {
-//						parseRelativeConstraints(elt);
-					} else if (type.equals("timings")) {
-//						parseTimings(elt);
+						piscenario.update();
+					} else if (type.equals("actorTree")){
+						parseActorTree(elt);
 					} else if (type.equals("simuParams")) {
 //						parseSimuParams(elt);
 					} else if (type.equals("variables")) {
@@ -187,7 +171,6 @@ public class PiScenarioParser {
 				if (url.length() > 0) {
 					if (type.equals("algorithm")) {
 						piscenario.setAlgorithmURL(url);
-//						algo = getAlgorithm(url);
 					} else if (type.equals("architecture")) {
 						piscenario.setArchitectureURL(url);
 						initializeArchitectureInformation(url);
@@ -237,47 +220,6 @@ public class PiScenarioParser {
 //					.getOperatorComponentIds(design));
 		}
 	}
-	
-	private void parseConstraints(Element element){
-		Node node = element.getFirstChild();
-		try {
-			piscenario.getConstraints().updateFromGraph(getAlgorithm(piscenario.getAlgorithmURL()));
-		} catch (InvalidModelException | CoreException e) {
-			e.printStackTrace();
-		}
-
-		while (node != null) {
-
-			if (node instanceof Element) {
-				parseConstraints((Element) node, "/");				
-			}
-
-			node = node.getNextSibling();
-		}
-	
-	}
-	
-	private void parseConstraints(Element element, String prefix){
-		prefix += element.getNodeName();
-		
-		if(!element.hasChildNodes()){
-			String coresString = element.getAttributes().getNamedItem("Cores").getNodeValue();
-			String[] cores = coresString.split("[\\[\\], ]");
-			
-			for(String core : cores){
-				if(!core.contentEquals(""))
-					piscenario.getConstraints().setConstraint(prefix, core, true);
-			}
-		}
-		
-		Node node = element.getFirstChild();
-		while (node != null) {
-			if (node instanceof Element) {
-				parseConstraints((Element) node, prefix+"/");				
-			}
-			node = node.getNextSibling();
-		}
-	}
 
 	public static Design parseSlamDesign(String url) {
 		// Demand load the resource into the resource set.
@@ -302,9 +244,70 @@ public class PiScenarioParser {
 		ResourceSet resourceSet = new ResourceSetImpl();
 		
 		URI uri = URI.createPlatformResourceURI(path, true);
+		if(uri.fileExtension() == null || !uri.fileExtension().contentEquals("pi")) return null;
 		Resource ressource = resourceSet.getResource(uri, true);					
 		algorithm = (PiGraph) (ressource.getContents().get(0));
 
 		return algorithm;
+	}
+	
+	private void parseActorNode(Element parentElement, ActorNode parentNode){	
+		boolean isHierarchical = true;
+		
+		Node childNode = parentElement.getFirstChild();
+		while (childNode != null) {
+			if (childNode instanceof Element) {
+				if(((Element)childNode).getTagName().contentEquals("constraints")){
+					isHierarchical = false;
+				}			
+			}
+			childNode = childNode.getNextSibling();
+		}
+		
+		if(isHierarchical){
+			childNode = parentElement.getFirstChild();
+			while (childNode != null) {
+				if (childNode instanceof Element) {
+					parseActorNode((Element)childNode, parentNode.getChild(((Element)childNode).getTagName()));
+				}
+				childNode = childNode.getNextSibling();
+			}
+		}else{	
+			childNode = parentElement.getFirstChild();
+			while (childNode != null) {
+				if (childNode instanceof Element) {
+					if(((Element)childNode).getTagName().contentEquals("constraints")){
+						Node coreNode = childNode.getFirstChild();
+						while (coreNode != null) {
+							if (coreNode instanceof Element) {
+								parentNode.setConstraint(((Element)coreNode).getTagName(), coreNode.getAttributes().getNamedItem("value").getNodeValue().contentEquals("true"));			
+							}	
+							coreNode = coreNode.getNextSibling();
+						}
+					}	
+					if(((Element)childNode).getTagName().contentEquals("timings")){
+						Node coreTypeNode = childNode.getFirstChild();
+						while (coreTypeNode != null) {
+							if (coreTypeNode instanceof Element) {
+								Timing t = parentNode.getTiming(((Element)coreTypeNode).getTagName());
+								t.setStringValue(coreTypeNode.getAttributes().getNamedItem("timing").getNodeValue());
+							}	
+							coreTypeNode = coreTypeNode.getNextSibling();
+						}
+					}	
+				}	
+				childNode = childNode.getNextSibling();
+			}		
+		}
+	}
+	
+	private void parseActorTree(Element element){
+		Node node = element.getFirstChild();
+		while (node != null) {
+			if (node instanceof Element) {
+				parseActorNode((Element) node, piscenario.getActorTree().getRoot());				
+			}
+			node = node.getNextSibling();
+		}		
 	}
 }

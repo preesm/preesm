@@ -107,18 +107,31 @@ public class PiScenarioEditor extends SharedHeaderFormEditor implements
 	 */
 	@Override
 	protected void addPages() {
-		// this.activateSite();
-		IFormPage overviewPage = new PiOverviewPage(piscenario, this, "Overview", "Overview");
-		overviewPage.addPropertyListener(this);
-
-		IFormPage constraintsPage = new PiConstraintsPage(piscenario, this, "Constraints", "Constraints");
-		constraintsPage.addPropertyListener(this);
-
-		try {
-			addPage(overviewPage);
-			addPage(constraintsPage);
-		} catch (PartInitException e) {
-			e.printStackTrace();
+		if(piscenario == null){
+			IFormPage errorPage = new PiFailPage(this, "Fail", "Fail");
+			try {
+				addPage(errorPage);
+			} catch (PartInitException e) {
+				e.printStackTrace();
+			}
+		}else{
+			// this.activateSite();
+			IFormPage overviewPage = new PiOverviewPage(piscenario, this, "Overview", "Overview");
+			overviewPage.addPropertyListener(this);
+		
+			IFormPage constraintsPage = new PiConstraintsPage(piscenario, this, "Constraints", "Constraints");
+			constraintsPage.addPropertyListener(this);
+			
+			IFormPage timingsPage = new PiTimingsPage(piscenario, this, "Timings", "Timings");
+			timingsPage.addPropertyListener(this);
+		
+			try {
+				addPage(overviewPage);
+				addPage(constraintsPage);
+				addPage(timingsPage);
+			} catch (PartInitException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

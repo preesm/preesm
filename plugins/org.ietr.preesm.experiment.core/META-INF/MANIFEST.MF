@@ -11,13 +11,15 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.ietr.preesm.experiment.core.piscenario,
  org.ietr.preesm.experiment.core.piscenario.serialize
-Import-Package: net.sf.dftools.algorithm.importer,
+Import-Package: com.singularsys.jep,
+ net.sf.dftools.algorithm.importer,
  net.sf.dftools.algorithm.model.sdf,
  net.sf.dftools.architecture.design,
  net.sf.dftools.architecture.slam,
  net.sf.dftools.architecture.slam.attributes,
  net.sf.dftools.architecture.slam.serialize,
  net.sf.dftools.workflow.tools,
+ org.eclipse.core.internal.resources,
  org.eclipse.core.resources,
  org.eclipse.emf.common.notify,
  org.eclipse.emf.common.util,
@@ -25,5 +27,6 @@ Import-Package: net.sf.dftools.algorithm.importer,
  org.eclipse.emf.ecore.resource,
  org.eclipse.emf.ecore.resource.impl,
  org.ietr.preesm.core.architecture.util,
+ org.ietr.preesm.core.scenario,
  org.ietr.preesm.experiment.model.pimm,
  org.ietr.preesm.experiment.model.pimm.serialize

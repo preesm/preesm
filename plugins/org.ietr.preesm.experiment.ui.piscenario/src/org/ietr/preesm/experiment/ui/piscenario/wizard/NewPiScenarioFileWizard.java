@@ -39,6 +39,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
 import org.ietr.preesm.experiment.core.piscenario.PiScenario;
+import org.ietr.preesm.experiment.core.piscenario.serialize.PiScenarioWriter;
 
 /**
  * A wizard to create a new {@link PiScenario} file
@@ -69,6 +70,11 @@ public class NewPiScenarioFileWizard extends BasicNewFileResourceWizard {
         }
         
         final IFile createdFile = page.createNewFile();
+        
+        PiScenarioWriter writer = new PiScenarioWriter(new PiScenario());
+		writer.generateScenarioDOM();
+		writer.writeDom(createdFile);
+        
         return createdFile != null;
     }
 

@@ -35,7 +35,18 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.core.piscenario;
 
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+
+import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.architecture.slam.SlamPackage;
+import net.sf.dftools.architecture.slam.serialize.IPXACTResourceFactoryImpl;
+
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.ietr.preesm.core.architecture.util.DesignTools;
+import org.ietr.preesm.experiment.core.piscenario.serialize.PiScenarioParser;
 
 /**
  * Storing all information of a {@link PiScenario}: a scenario for PiGraphs 
@@ -58,13 +69,26 @@ public class PiScenario {
 	 */
 	private String scenarioURL = "";
 	
-	private Constraints constraints;
+	/**
+	 * The {@link ActorTree} storing timings and constraints.
+	 */
+	private ActorTree actorTree;
 	
+	/**
+	 * Set of Operators
+	 */
 	private Set<String> operatorIds;
+
+	/**
+	 * Set of Operator Types
+	 */
+	private Set<String> operatorTypes;
 		
 
 	public PiScenario() {
-		constraints = new Constraints();
+		setActorTree(new ActorTree(this));
+		operatorIds = new HashSet<String>();
+		operatorTypes = new HashSet<String>();
 	}
 	
 	public String getScenarioURL() {
@@ -77,14 +101,6 @@ public class PiScenario {
 	
 	public String getAlgorithmURL() {
 		return algorithmURL;
-	}
-	
-	public Constraints getConstraints() {
-		return constraints;
-	}
-	
-	public void setConstraints(Constraints consts) {
-		constraints = consts;
 	}
 
 	public Set<String> getOperatorIds() {
@@ -105,5 +121,49 @@ public class PiScenario {
 
 	public void setOperatorIds(Set<String> operatorInstanceIds) {
 		operatorIds = operatorInstanceIds;
+	}
+
+	public ActorTree getActorTree() {
+		return actorTree;
+	}
+
+	public void setActorTree(ActorTree actorTree) {
+		this.actorTree = actorTree;
+	}
+
+	public Set<String> getOperatorTypes() {
+		return operatorTypes;
+	}
+
+	public void update() {
+		if (architectureURL.endsWith(".slam")) {
+			Map<String, Object> extToFactoryMap = 
+					Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
+			Object instance = extToFactoryMap.get("slam");
+			if (instance == null) {
+				instance = new IPXACTResourceFactoryImpl();
+				extToFactoryMap.put("slam", instance);
+			}
+
+			if (!EPackage.Registry.INSTANCE.containsKey(SlamPackage.eNS_URI)) {
+				EPackage.Registry.INSTANCE.put(SlamPackage.eNS_URI,
+						SlamPackage.eINSTANCE);
+			}
+
+			// Extract the root object from the resource.
+			Design design = PiScenarioParser.parseSlamDesign(architectureURL);
+
+			operatorIds.clear();
+			operatorIds.addAll(DesignTools.getOperatorInstanceIds(design));
+//			piscenario.setComNodeIds(DesignTools.getComNodeInstanceIds(design));
+			operatorTypes.clear();
+			operatorTypes.addAll(DesignTools.getOperatorComponentIds(design));
+			
+		}else{
+			operatorIds.clear();
+			operatorTypes.clear();
+		}
+		
+		actorTree.update();
 	}
 }

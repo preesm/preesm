@@ -77,7 +77,8 @@
   <eClassifiers xsi:type="ecore:EClass" name="ConfigOutputInterface" eSuperTypes="#//InterfaceActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="Refinement">
     <eOperations name="getAbstractActor" eType="#//AbstractActor"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="fileName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="fileName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        defaultValueLiteral="&quot;&quot;"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Parameter" eSuperTypes="#//AbstractVertex #//ISetter">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="locallyStatic" lowerBound="1"

@@ -11,7 +11,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.core;bundle-version="3.7.0",
  org.eclipse.emf.ecore.xmi;bundle-version="2.7.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Export-Package: org.ietr.preesm.experiment.model.pimm,
+Export-Package: com.singularsys.jep,
+ org.ietr.preesm.experiment.model.pimm,
  org.ietr.preesm.experiment.model.pimm.adapter,
  org.ietr.preesm.experiment.model.pimm.impl,
  org.ietr.preesm.experiment.model.pimm.serialize,
@@ -22,5 +23,6 @@ Bundle-ClassPath: .,
 Bundle-Vendor: IETR
 Bundle-Localization: plugin
 Import-Package: net.sf.dftools.algorithm.exporter,
+ net.sf.dftools.algorithm.importer,
  net.sf.dftools.architecture.utils,
  net.sf.dftools.workflow.tools

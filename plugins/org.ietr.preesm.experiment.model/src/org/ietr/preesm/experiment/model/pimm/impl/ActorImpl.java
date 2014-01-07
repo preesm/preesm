@@ -39,15 +39,19 @@ import java.util.List;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
@@ -264,6 +268,29 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 				return isSetConfigurationActor();
 		}
 		return super.eIsSet(featureID);
+	}
+	/**
+	 * Test if the actor is a hierarchical one.
+	 * @return true, if it is.
+	 */
+	@Override
+	public boolean isHierarchical() {
+		return !(this.getRefinement().getFileName() == null || this.getRefinement().getFileName() == "") ;
+	}
+	
+	/**
+	 * Get the graph from hierarchy.
+	 * @return The {@link PiGraph}
+	 */
+	@Override
+	public PiGraph getGraph() {
+		URI uri = this.getRefinement().getFileURI();
+		ResourceSet resourceSet = new ResourceSetImpl();	
+		
+		if(uri.fileExtension() == null || !uri.fileExtension().contentEquals("pi")) 
+			return null;
+		else			
+			return (PiGraph) (resourceSet.getResource(uri, true).getContents().get(0));
 	}
 
 } // ActorImpl

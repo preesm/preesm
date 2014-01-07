@@ -61,8 +61,8 @@ import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 
 /**
- * This page contains general informations of the {@link PiScenario} including current
- * algorithm and current architecture
+ * This page contains general informations of the {@link PiScenario} 
+ * including current algorithm and current architecture
  * 
  * @author jheulot
  */
@@ -194,12 +194,14 @@ public class PiOverviewPage extends FormPage {
 				Text text = (Text) e.getSource();
 				String type = ((String) text.getData());
 
-				if (type.equals(Messages.getString("Overview.algorithmFile")))
+				if (type.equals(Messages.getString("Overview.algorithmFile"))){
 					piscenario.setAlgorithmURL(text.getText());
-				else if (type.equals(Messages
-						.getString("Overview.architectureFile")))
+					piscenario.update();
+				}
+				else if (type.equals(Messages.getString("Overview.architectureFile"))){
 					piscenario.setArchitectureURL(text.getText());
-
+					piscenario.update();
+				}
 				firePropertyChange(PROP_DIRTY);
 
 			}

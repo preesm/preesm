@@ -173,4 +173,12 @@ public interface PiGraph extends AbstractActor {
 	 *         the requested name.
 	 */
 	public Fifo getFifoIded(String id);
+	
+	/**
+	 * Get the set of {@link Actor} in the graph.
+	 * @return the set of {@link Actor}
+	 */
+	public Set<Actor> getActors();
+	
+	
 } // Graph

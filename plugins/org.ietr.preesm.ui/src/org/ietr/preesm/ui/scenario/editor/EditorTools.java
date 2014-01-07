@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or Â© or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-FranÃ§ois Nezan, MickaÃ«l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -182,9 +182,13 @@ public class EditorTools {
 		if (tree.open() == Window.OK) {
 			IPath fileIPath = null;
 			if (fileExtensions == null) {
+				if(tree.getFirstResult() instanceof IFolder)
 				fileIPath = ((IFolder) tree.getFirstResult()).getFullPath();
+				else return returnVal;
 			} else {
+				if(tree.getFirstResult() instanceof IFile)
 				fileIPath = ((IFile) tree.getFirstResult()).getFullPath();
+				else return returnVal;
 			}
 			returnVal = fileIPath.toString();
 		}

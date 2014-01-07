@@ -35,62 +35,58 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.ui.piscenario.editor;
 
-import java.util.Set;
-
-import org.eclipse.jface.viewers.CheckboxTreeViewer;
-import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.Viewer;
-import org.ietr.preesm.experiment.core.piscenario.Constraints;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.editor.FormEditor;
+import org.eclipse.ui.forms.editor.FormPage;
+import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.SWT;
+import org.ietr.preesm.experiment.core.piscenario.PiScenario;
 
 /**
- * This class provides the elements displayed in {@link PiConstraintsTreeSection}. Each
- * element is a vertex. This tree is used in scenario editor to edit the
- * constraints
- * 
+ * Page displayed if an error occurs during {@link PiScenario} loading
  * @author jheulot
+ *
  */
-public class PiConstraintsTreeContentProvider implements ITreeContentProvider {
+public class PiFailPage extends FormPage {
 
-	private Constraints constraints = null;
-
-
-	public PiConstraintsTreeContentProvider(CheckboxTreeViewer treeViewer) {
-		super();
+	/**
+	 * Create the form page.
+	 * @param id
+	 * @param title
+	 */
+	public PiFailPage(String id, String title) {
+		super(id, title);
 	}
 
-	@Override
-	public Object[] getChildren(Object parentElement) {
-		String parentString = (String) parentElement;
-		Set<String> children = constraints.getChildrenOf(parentString);
-		return children.toArray();
-	}
-	
-	@Override
-	public Object getParent(Object element) {
-		return null;
+	/**
+	 * Create the form page.
+	 * @param editor
+	 * @param id
+	 * @param title
+	 */
+	public PiFailPage(FormEditor editor, String id, String title) {
+		super(editor, id, title);
 	}
 
+	/**
+	 * Create contents of the form.
+	 * @param managedForm
+	 */
 	@Override
-	public boolean hasChildren(Object element) {
-		Set<String> children = constraints.getChildrenOf((String) element);
-		return children.size() != 0;
-	}
-
-	@Override
-	public Object[] getElements(Object inputElement) {
-		Object[] table = new Object[1];
+	protected void createFormContent(IManagedForm managedForm) {
+		FormToolkit toolkit = managedForm.getToolkit();
+		ScrolledForm form = managedForm.getForm();
+		form.setText("Fail Page");
+		Composite body = form.getBody();
+		toolkit.decorateFormHeading(form.getForm());
+		toolkit.paintBordersFor(body);
 		
-		table[0] = (String)"";
-		return constraints.getChildrenOf("").toArray();
+		Label lblNewLabel = new Label(managedForm.getForm().getBody(), SWT.NONE);
+		lblNewLabel.setBounds(10, 10, 315, 17);
+		managedForm.getToolkit().adapt(lblNewLabel, true, true);
+		lblNewLabel.setText("See Console for more informations");
 	}
-
-	@Override
-	public void dispose() {
-	}
-
-	@Override
-	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		constraints = (Constraints) newInput;
-	}
-
 }

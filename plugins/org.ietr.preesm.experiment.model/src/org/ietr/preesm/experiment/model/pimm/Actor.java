@@ -106,4 +106,16 @@ public interface Actor extends AbstractActor {
 	 * @generated
 	 */
 	boolean isSetConfigurationActor();
+	
+	/**
+	 * Test if the actor is a hierarchical one.
+	 * @return true, if it is.
+	 */
+	public boolean isHierarchical();
+	
+	/**
+	 * Get the graph from hierarchy.
+	 * @return The {@link PiGraph}
+	 */
+	public PiGraph getGraph();
 } // Actor

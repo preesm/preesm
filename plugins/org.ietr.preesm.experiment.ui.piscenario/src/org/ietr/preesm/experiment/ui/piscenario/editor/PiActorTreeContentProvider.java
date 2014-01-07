@@ -35,30 +35,69 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.ui.piscenario.editor;
 
-import org.eclipse.jface.viewers.LabelProvider;
+import java.util.Set;
+
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.Viewer;
+import org.ietr.preesm.experiment.core.piscenario.ActorNode;
+import org.ietr.preesm.experiment.core.piscenario.ActorTree;
 
 /**
- * The label provider displays the name of the {@link PiGraph} actor displayed in a tree for Constraints
+ * This class provides the elements displayed in {@link ActorTree}. Each
+ * element is a {@link ActorNode}. This tree is used in scenario editor to edit
+ * constraints and timings
  * 
  * @author jheulot
  */
-public class PiConstraintsTreeLabelProvider extends LabelProvider {
+public class PiActorTreeContentProvider implements ITreeContentProvider {
+	/**
+	 * The corresponding {@link ActorTree}
+	 */
+	private ActorTree actorTree = null;
+
+	/**
+	 * Default Constructor
+	 */
+	public PiActorTreeContentProvider() {
+		super();
+	}
 
 	@Override
-	public String getText(Object element) {
-		String name = "";
-		if (element instanceof String) {
-			String[] actors = ((String)element).split("/");
-			name = actors[actors.length-1];
-		} else {
-			try {
-				throw new Exception();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+	public Object[] getChildren(Object parentElement) {
+		ActorNode parentNode = (ActorNode) parentElement;
+		if(parentNode.isHierarchical()){
+			Set<ActorNode> children = parentNode.getChildren();
+			return children.toArray();
 		}
+		return null;
+	}
+	
+	@Override
+	public Object getParent(Object element) {
+		ActorNode node = (ActorNode) element;
+		return node.getParent();
+	}
 
-		return name;
+	@Override
+	public boolean hasChildren(Object element) {
+		ActorNode node = (ActorNode) element;
+		return node.isHierarchical();
+	}
+
+	@Override
+	public Object[] getElements(Object inputElement) {
+		if(actorTree.getRoot() != null)
+			return actorTree.getRoot().getChildren().toArray();
+		return null;
+	}
+
+	@Override
+	public void dispose() {
+	}
+
+	@Override
+	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		actorTree = (ActorTree) newInput;
 	}
 
 }

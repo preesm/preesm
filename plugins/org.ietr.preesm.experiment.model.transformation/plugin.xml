@@ -9,7 +9,7 @@
          <outputs>
             <output
                   id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+                  object="org.ietr.preesm.experiment.core.piscenario.PiScenario">
             </output>
             <output
                   id="PiMM"

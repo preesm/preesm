@@ -47,6 +47,7 @@ import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -324,6 +325,20 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Get the set of {@link Actor} in the graph.
+	 * @return the set of {@link Actor}
+	 */
+	@Override
+	public Set<Actor> getActors() {
+		HashSet<Actor> actors = new HashSet<Actor>();
+		for(AbstractActor abactor : this.getVertices()){
+			if(abactor instanceof Actor)
+				actors.add((Actor) abactor);
+		}
+		return actors;
 	}
 
 } // GraphImpl

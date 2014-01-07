@@ -9,13 +9,24 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.workbench,
  org.eclipse.ui.workbench,
  org.eclipse.ui.workbench,
- org.eclipse.ui.workbench
+ org.eclipse.ui.workbench,
+ org.ietr.preesm.experiment.model,
+ org.eclipse.core.databinding,
+ org.eclipse.core.databinding.beans,
+ org.eclipse.core.databinding.observable,
+ org.eclipse.core.databinding.property,
+ org.eclipse.jface.databinding,
+ com.ibm.icu,
+ org.eclipse.swt,
+ org.ietr.preesm.ui;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: IETR/INSA
 Import-Package: net.sf.dftools.algorithm.importer,
  net.sf.dftools.workflow.tools,
  org.eclipse.core.resources,
+ org.eclipse.graphiti.platform;version="0.10.1",
+ org.eclipse.graphiti.tb;version="0.10.1",
  org.eclipse.ui.dialogs,
  org.eclipse.ui.forms,
  org.eclipse.ui.forms.editor,
@@ -24,5 +35,4 @@ Import-Package: net.sf.dftools.algorithm.importer,
  org.eclipse.ui.part,
  org.eclipse.ui.wizards.newresource,
  org.ietr.preesm.experiment.core.piscenario,
- org.ietr.preesm.experiment.core.piscenario.serialize,
- org.ietr.preesm.ui.scenario.editor
+ org.ietr.preesm.experiment.core.piscenario.serialize
