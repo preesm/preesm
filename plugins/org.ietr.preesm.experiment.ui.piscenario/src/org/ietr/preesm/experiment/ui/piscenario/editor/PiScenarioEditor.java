@@ -51,6 +51,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.ietr.preesm.experiment.core.piscenario.PiScenario;
 import org.ietr.preesm.experiment.core.piscenario.serialize.PiScenarioParser;
 import org.ietr.preesm.experiment.core.piscenario.serialize.PiScenarioWriter;
+import org.ietr.preesm.experiment.core.piscenario.serialize.PiScenarioWriter;
 
 /**
  * The {@link PiScenarioEditor} allows to change all parameters in {@link PiScenario}
@@ -124,11 +125,15 @@ public class PiScenarioEditor extends SharedHeaderFormEditor implements
 			
 			IFormPage timingsPage = new PiTimingsPage(piscenario, this, "Timings", "Timings");
 			timingsPage.addPropertyListener(this);
+			
+			IFormPage paramsPage = new PiParametersPage(piscenario, this, "Parameters", "Parameters");
+			paramsPage.addPropertyListener(this);
 		
 			try {
 				addPage(overviewPage);
 				addPage(constraintsPage);
 				addPage(timingsPage);
+				addPage(paramsPage);
 			} catch (PartInitException e) {
 				e.printStackTrace();
 			}
@@ -142,7 +147,6 @@ public class PiScenarioEditor extends SharedHeaderFormEditor implements
 	public void doSave(IProgressMonitor monitor) {
 
 		PiScenarioWriter writer = new PiScenarioWriter(piscenario);
-		writer.generateScenarioDOM();
 		writer.writeDom(scenarioFile);
 
 		isDirty = false;

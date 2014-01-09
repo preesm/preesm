@@ -40,25 +40,32 @@ import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.IColorProvider;
+import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Table;
 import org.ietr.preesm.experiment.core.piscenario.ActorNode;
+import org.ietr.preesm.experiment.core.piscenario.ParameterValue;
+import org.ietr.preesm.experiment.core.piscenario.ParameterValue.ParameterType;
 import org.ietr.preesm.experiment.core.piscenario.Timing;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 /**
- * The label provider displays informations to fill the multi-column tree for timing edition.
+ * The label provider displays informations to fill the multi-column tree for parameter edition.
  * @author jheulot
  */
-public class PiTimingsTreeLabelProvider extends LabelProvider implements ITableLabelProvider {
+public class PiParameterTableLabelProvider extends LabelProvider implements ITableLabelProvider, ITableColorProvider {
+	private final Table table;
 	private Image imageOk, imageError;
-	private PiTimingsPage timingPage;
 	
-	PiTimingsTreeLabelProvider(PiTimingsPage _timingPage){
+	PiParameterTableLabelProvider(Table _table){
 		super();
-		timingPage = _timingPage;
+		table = _table;
 		
 		Bundle bundle = FrameworkUtil.getBundle(PiTimingsTreeLabelProvider.class);
 		
@@ -69,7 +76,6 @@ public class PiTimingsTreeLabelProvider extends LabelProvider implements ITableL
 	    url = FileLocator.find(bundle, new Path("icon/ok.png"), null);
 	    imageDcr = ImageDescriptor.createFromURL(url);
 	    this.imageOk = imageDcr.createImage();
-	    
 	}
 	
 	
@@ -80,60 +86,73 @@ public class PiTimingsTreeLabelProvider extends LabelProvider implements ITableL
 
 	@Override
 	public Image getColumnImage(Object element, int columnIndex) {
-		if (element instanceof ActorNode && !((ActorNode) element).isHierarchical()) {
-			Timing timing = ((ActorNode)element).getTiming(timingPage.getSelectedOperatorType());
-			if(timing != null){			
-				switch(columnIndex){
-				case 1: // Parsing Column
-					if(timing.canParse())
-						return imageOk;
-					else
-						return imageError;					
-				case 2: // Evaluation Column
-					if(timing.canEvaluate())
-						return imageOk;
-					else
-						return imageError;	
-				case 0: // Actors Column
-				case 3: // Variables Column
-				case 4: // Expression Column
-					return null; 
-				}				
-			}
+		ParameterValue paramValue = ((ParameterValue)element);
+		if(columnIndex == 4){ // Expression Column
+			if(paramValue.isValid())
+				return imageOk;
+			else
+				return imageError;	
 		} 
 		return null;
 	}
 
 	@Override
 	public String getColumnText(Object element, int columnIndex) {
-		Timing timing;
-		if(columnIndex == 0){ // Actors Column
-			return ((ActorNode)element).getName();
-		}
-		if (element instanceof ActorNode && !((ActorNode) element).isHierarchical()) {
-			switch(columnIndex){
-			case 1: // Parsing Column
-			case 2: // Evaluation Column
-				return null;
-			case 3: // Variables Column
-				timing = ((ActorNode)element).getTiming(timingPage.getSelectedOperatorType());
-				if(timing != null){
-					if(timing.getInputParameters().isEmpty())
-						return "-";
-					else
-						return timing.getInputParameters().toString(); 
-				}else{
-					return "";
+		ParameterValue paramValue = ((ParameterValue)element);
+		switch(columnIndex){
+			case 0: // Actors Column
+				return paramValue.getName();
+			case 1: // Path Column
+				String path = "";
+				ActorNode node = paramValue.getParent();
+				while(node != null){
+					path = "/"+node.getName()+path;
+					node = node.getParent();
 				}
-			case 4: // Expression Column
-				timing = ((ActorNode)element).getTiming(timingPage.getSelectedOperatorType());
-				if(timing != null)
-					return timing.getStringValue(); 
+				return path;
+			case 2: // Type Column
+				return paramValue.getType().toString();
+			case 3: // Variables Column
+				if(paramValue.getType() == ParameterType.DEPENDENT)
+					return paramValue.getInputParameters().toString();
 				else 
-					return "";
-			}		
-		} 
+					return null;
+			case 4: // Expression Column
+				if(paramValue.getType() == ParameterType.DEPENDENT)
+					return paramValue.getExpression();
+				else if(paramValue.getType() == ParameterType.STATIC)
+					return Integer.toString(paramValue.getValue());
+				else if(paramValue.getType() == ParameterType.DYNAMIC)
+					return paramValue.getValues().toString();
+				return null;
+				
+		}
 		return null;
+	}
+
+	@Override
+	public Color getForeground(Object element, int columnIndex) {
+		return table.getForeground();
+	}
+
+
+	@Override
+	public Color getBackground(Object element, int columnIndex) {
+		ParameterValue paramValue = ((ParameterValue)element);
+		switch(columnIndex){
+			case 0: // Actors Column
+			case 1: // Path Column
+			case 2: // Type Column
+			case 4: // Expression Column
+				return table.getBackground();
+			case 3: // Variables Column
+				if(paramValue.getType() == ParameterType.DEPENDENT)
+					return table.getBackground();
+				else 
+					return new Color(table.getDisplay(), 200,200,200);
+				
+		}
+		return table.getBackground();
 	}
 
 }

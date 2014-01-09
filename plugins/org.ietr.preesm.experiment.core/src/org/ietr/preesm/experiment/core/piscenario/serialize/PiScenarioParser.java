@@ -37,190 +37,60 @@ package org.ietr.preesm.experiment.core.piscenario.serialize;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Map;
-import java.util.logging.Level;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import net.sf.dftools.algorithm.importer.InvalidModelException;
 import net.sf.dftools.architecture.slam.Design;
-import net.sf.dftools.architecture.slam.SlamPackage;
-import net.sf.dftools.architecture.slam.serialize.IPXACTResourceFactoryImpl;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.common.util.URI;
-import org.ietr.preesm.core.architecture.util.DesignTools;
-import org.ietr.preesm.experiment.core.piscenario.ActorNode;
 import org.ietr.preesm.experiment.core.piscenario.PiScenario;
-import org.ietr.preesm.experiment.core.piscenario.Timing;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
- * An xml parser retrieving {@link PiScenario} data
+ * An XML parser retrieving {@link PiScenario} data
  * 
  * @author jheulot
  */
 public class PiScenarioParser {
-
 	/**
-	 * xml tree
+	 * Default Constructor.
 	 */
-	private Document dom = null;
-
-	/**
-	 * scenario being retrieved
-	 */
-	private PiScenario piscenario = null;
-
 	public PiScenarioParser() {
-
-		piscenario = new PiScenario();
-	}
-
-	public Document getDom() {
-		return dom;
 	}
 
 	/**
-	 * Retrieves the DOM document
+	 * Retrieves the {@link PiScenario}.
 	 */
 	public PiScenario parseXmlFile(IFile file) throws InvalidModelException,FileNotFoundException {
-		// get the factory
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
 		try {
-
-			// Using factory get an instance of document builder
-			DocumentBuilder db = dbf.newDocumentBuilder();
-
-			// parse using builder to get DOM representation of the XML file
-			dom = db.parse(file.getContents());
-
-		} catch (ParserConfigurationException pce) {
-			pce.printStackTrace();
-		} catch (SAXException se) {
-			se.printStackTrace();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		} catch (CoreException e) {
-			if(e.getStatus().getCode() == 274){ // Not refreshed scenario
-				WorkflowLogger.getLogger().log(Level.WARNING, "Resource is out of sync with the file system, please refresh it");
-				return null;
-			}
+			SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
+			PiScenarioHandler handler = new PiScenarioHandler();
+			file.refreshLocal(IResource.DEPTH_ZERO, null);
+			parser.parse(file.getContents(), handler);
+			return handler.getPiscenario();
+		} catch (SAXException | IOException | CoreException | ParserConfigurationException e) {
 			e.printStackTrace();
-		}
-
-		if (dom != null) {
-			// get the root elememt
-			Element docElt = dom.getDocumentElement();
-
-			Node node = docElt.getFirstChild();
-
-			while (node != null) {
-
-				if (node instanceof Element) {
-					Element elt = (Element) node;
-					String type = elt.getTagName();
-					if (type.equals("files")) {
-						parseFileNames(elt);
-						piscenario.update();
-					} else if (type.equals("actorTree")){
-						parseActorTree(elt);
-					} else if (type.equals("simuParams")) {
-//						parseSimuParams(elt);
-					} else if (type.equals("variables")) {
-//						parseVariables(elt);
-					}
-				}
-
-				node = node.getNextSibling();
-			}
-		}
-
-		piscenario.setScenarioURL(file.getFullPath().toString());
-		return piscenario;
-	}
-
-	/**
-	 * Parses the archi and algo files and retrieves the file contents
-	 */
-	private void parseFileNames(Element filesElt) throws InvalidModelException,FileNotFoundException {
-
-		Node node = filesElt.getFirstChild();
-
-		while (node != null) {
-
-			if (node instanceof Element) {
-				Element elt = (Element) node;
-				String type = elt.getTagName();
-				String url = elt.getAttribute("url");
-				if (url.length() > 0) {
-					if (type.equals("algorithm")) {
-						piscenario.setAlgorithmURL(url);
-					} else if (type.equals("architecture")) {
-						piscenario.setArchitectureURL(url);
-						initializeArchitectureInformation(url);
-					}
-				}
-			}
-
-			node = node.getNextSibling();
+			return new PiScenario();
 		}
 	}
 
 	/**
-	 * Depending on the architecture model, parses the model and populates the
-	 * scenario
+	 * @param url URL of the S-LAM
+	 * @return the S-LAM {@link Design}.
 	 */
-	private void initializeArchitectureInformation(String url) {
-		if (url.contains(".design")) {
-			WorkflowLogger
-					.getLogger()
-					.log(Level.SEVERE,
-							"SLAM architecture 1.0 is no more supported. Use .slam architecture files.");
-		} else if (url.contains(".slam")) {
-			WorkflowLogger.getLogger().log(Level.WARNING,
-					"You are using SLAM architecture 2.0.");
-
-			Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE
-					.getExtensionToFactoryMap();
-			Object instance = extToFactoryMap.get("slam");
-			if (instance == null) {
-				instance = new IPXACTResourceFactoryImpl();
-				extToFactoryMap.put("slam", instance);
-			}
-
-			if (!EPackage.Registry.INSTANCE.containsKey(SlamPackage.eNS_URI)) {
-				EPackage.Registry.INSTANCE.put(SlamPackage.eNS_URI,
-						SlamPackage.eINSTANCE);
-			}
-
-			// Extract the root object from the resource.
-			Design design = parseSlamDesign(url);
-
-			System.out.println(design.getVlnv().getName());
-
-			piscenario.setOperatorIds(DesignTools.getOperatorInstanceIds(design));
-//			piscenario.setComNodeIds(DesignTools.getComNodeInstanceIds(design));
-//			piscenario.setOperatorDefinitionIds(DesignTools
-//					.getOperatorComponentIds(design));
-		}
-	}
-
 	public static Design parseSlamDesign(String url) {
 		// Demand load the resource into the resource set.
 		ResourceSet resourceSet = new ResourceSetImpl();
@@ -239,11 +109,18 @@ public class PiScenarioParser {
 		return design;
 	}
 
-	public static PiGraph getAlgorithm(String path) throws InvalidModelException,CoreException {
+	/**
+	 * 
+	 * @param url URL of the Algorithm.
+	 * @return the {@link PiGraph} algorithm.
+	 * @throws InvalidModelException
+	 * @throws CoreException
+	 */
+	public static PiGraph getAlgorithm(String url) throws InvalidModelException,CoreException {
 		PiGraph algorithm = null;
 		ResourceSet resourceSet = new ResourceSetImpl();
 		
-		URI uri = URI.createPlatformResourceURI(path, true);
+		URI uri = URI.createPlatformResourceURI(url, true);
 		if(uri.fileExtension() == null || !uri.fileExtension().contentEquals("pi")) return null;
 		Resource ressource = resourceSet.getResource(uri, true);					
 		algorithm = (PiGraph) (ressource.getContents().get(0));
@@ -251,63 +128,4 @@ public class PiScenarioParser {
 		return algorithm;
 	}
 	
-	private void parseActorNode(Element parentElement, ActorNode parentNode){	
-		boolean isHierarchical = true;
-		
-		Node childNode = parentElement.getFirstChild();
-		while (childNode != null) {
-			if (childNode instanceof Element) {
-				if(((Element)childNode).getTagName().contentEquals("constraints")){
-					isHierarchical = false;
-				}			
-			}
-			childNode = childNode.getNextSibling();
-		}
-		
-		if(isHierarchical){
-			childNode = parentElement.getFirstChild();
-			while (childNode != null) {
-				if (childNode instanceof Element) {
-					parseActorNode((Element)childNode, parentNode.getChild(((Element)childNode).getTagName()));
-				}
-				childNode = childNode.getNextSibling();
-			}
-		}else{	
-			childNode = parentElement.getFirstChild();
-			while (childNode != null) {
-				if (childNode instanceof Element) {
-					if(((Element)childNode).getTagName().contentEquals("constraints")){
-						Node coreNode = childNode.getFirstChild();
-						while (coreNode != null) {
-							if (coreNode instanceof Element) {
-								parentNode.setConstraint(((Element)coreNode).getTagName(), coreNode.getAttributes().getNamedItem("value").getNodeValue().contentEquals("true"));			
-							}	
-							coreNode = coreNode.getNextSibling();
-						}
-					}	
-					if(((Element)childNode).getTagName().contentEquals("timings")){
-						Node coreTypeNode = childNode.getFirstChild();
-						while (coreTypeNode != null) {
-							if (coreTypeNode instanceof Element) {
-								Timing t = parentNode.getTiming(((Element)coreTypeNode).getTagName());
-								t.setStringValue(coreTypeNode.getAttributes().getNamedItem("timing").getNodeValue());
-							}	
-							coreTypeNode = coreTypeNode.getNextSibling();
-						}
-					}	
-				}	
-				childNode = childNode.getNextSibling();
-			}		
-		}
-	}
-	
-	private void parseActorTree(Element element){
-		Node node = element.getFirstChild();
-		while (node != null) {
-			if (node instanceof Element) {
-				parseActorNode((Element) node, piscenario.getActorTree().getRoot());				
-			}
-			node = node.getNextSibling();
-		}		
-	}
 }

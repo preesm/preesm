@@ -41,8 +41,12 @@ import java.util.Set;
 import net.sf.dftools.algorithm.importer.InvalidModelException;
 
 import org.eclipse.core.runtime.CoreException;
+import org.ietr.preesm.experiment.core.piscenario.ParameterValue.ParameterType;
 import org.ietr.preesm.experiment.core.piscenario.serialize.PiScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.ISetter;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 /**
@@ -140,6 +144,21 @@ public class ActorTree {
 				root.getChildren().remove(childNode);
 			}
 		}
+
+		/* Remove Parameters no more present */
+		for(ParameterValue var : root.getParamValues()){
+			/* Try to find it in the graph */
+			boolean present = false;
+			for(Parameter param: graph.getParameters()){
+				if(param.getName().contentEquals(param.getName())){
+					present = true; 
+					break;
+				}
+			}
+			if(!present){
+				root.getParamValues().remove(var);
+			}	
+		}
 		
 		// Add actor not present
 		for(Actor actor: graph.getActors()){
@@ -152,6 +171,45 @@ public class ActorTree {
 				childNode.getChildren().clear();
 			}
 			childNode.update(piscenario.getOperatorIds(), piscenario.getOperatorTypes(), actor);
+		}
+		
+		/* Update Parameters (Add if not present) */
+		for(Parameter param: graph.getParameters()){
+			ParameterValue paramValue = null;
+			for(ParameterValue paramValueLoop : root.getParamValues()){
+				if(paramValueLoop.getName().contentEquals(param.getName())){
+					paramValue = paramValueLoop; 
+					break;
+				}
+			}
+			if(paramValue == null){
+				if(!param.isLocallyStatic()){ 				
+					/* DYNAMIC */
+					paramValue = new ParameterValue(param.getName(), ParameterType.DYNAMIC, root);
+//					paramValue.getValues().add(param.getValue());
+				}else if(param.getConfigInputPorts().isEmpty()){ 
+					/* STATIC */
+					paramValue = new ParameterValue(param.getName(), ParameterType.STATIC, root);
+//					paramValue.setValue(param.getValue());
+				}else{
+					/* DEPENDANT */
+					paramValue = new ParameterValue(param.getName(), ParameterType.DEPENDENT, root);
+					
+					/* Update Parameter list */
+					Set<String> params = new HashSet<String>();
+					for(ConfigInputPort configInput : param.getConfigInputPorts()){
+						ISetter setter = configInput.getIncomingDependency().getSetter();
+						if(setter instanceof Parameter){
+							params.add(((Parameter) setter).getName());							
+						}
+					}
+					paramValue.setInputParameters(params);
+					
+					/* Update Expression */
+					paramValue.setExpression(param.getExpression().getString());
+				}										
+				root.getParamValues().add(paramValue);	
+			}	
 		}
 	}
 }

@@ -38,8 +38,8 @@ package org.ietr.preesm.experiment.core.piscenario;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.singularsys.jep.EvaluationException;
 import com.singularsys.jep.Jep;
+import com.singularsys.jep.JepException;
 import com.singularsys.jep.ParseException;
 
 /**
@@ -113,40 +113,13 @@ public class Timing {
 	 */
 	public boolean canEvaluate(){
 		Jep jep = new Jep();
-		
-		String value = stringValue;
-		
-		for (String parameter : inputParameters) {			
-			int startingIndex=0;
-			String operators = "*+-/^";
-			while(startingIndex<value.length()){
-				if(value.substring(startingIndex).contains(parameter)){
-					int index = value.substring(startingIndex).indexOf(parameter) + startingIndex;
-					
-					// Verify that the parameter is surrounded by operators.
-					if(index == 0 || operators.contains(""+value.charAt(index-1))){
-						if (index+parameter.length() == value.length() 
-								|| operators.contains(""+value.charAt(index+parameter.length()))){
-							
-							String evaluatedParam;
-							evaluatedParam =  "1";
-							value = value.substring(0, index) 
-									+ value.substring(index).replaceFirst(parameter, "("+evaluatedParam+")");
-						}
-					}
-					startingIndex = index+1;
-				} else {
-					break;
-				}
-			}
-			
-		}
-		
 		try {
-			jep.parse(value);
+			for (String parameter : inputParameters)
+				jep.addVariable(parameter, 1);
+			jep.parse(stringValue);
 			jep.evaluate();
 			return true;
-		} catch (ParseException | EvaluationException e) {
+		} catch (JepException e) {
 			return false;
 		}
 	}

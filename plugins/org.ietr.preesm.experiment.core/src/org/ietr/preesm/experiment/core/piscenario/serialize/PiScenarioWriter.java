@@ -35,21 +35,26 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.core.piscenario.serialize;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.ietr.preesm.experiment.core.piscenario.ActorNode;
 import org.ietr.preesm.experiment.core.piscenario.ActorTree;
+import org.ietr.preesm.experiment.core.piscenario.ParameterValue;
 import org.ietr.preesm.experiment.core.piscenario.PiScenario;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSOutput;
-import org.w3c.dom.ls.LSSerializer;
 
 /**
  * Writes a {@link PiScenario} as an XML
@@ -57,12 +62,6 @@ import org.w3c.dom.ls.LSSerializer;
  * @author jheulot
  */
 public class PiScenarioWriter {
-
-	/**
-	 * Current document
-	 */
-	private Document dom;
-
 	/**
 	 * Current scenario
 	 */
@@ -70,104 +69,121 @@ public class PiScenarioWriter {
 
 	public PiScenarioWriter(PiScenario piscenario) {
 		super();
-
 		this.piscenario = piscenario;
-
-		try {
-			DOMImplementation impl;
-			impl = DOMImplementationRegistry.newInstance()
-					.getDOMImplementation("Core 3.0 XML 3.0 LS");
-			dom = impl.createDocument("", "piscenario", null);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	public Document generateScenarioDOM() {
-
-		Element root = dom.getDocumentElement();
-
-		addFiles(root);
-		addActorTree(root);
-
-		return dom;
 	}
 
 	public void writeDom(IFile file) {
-
 		try {
-			// Gets the DOM implementation of document
-			DOMImplementation impl = dom.getImplementation();
-			DOMImplementationLS implLS = (DOMImplementationLS) impl;
 
-			LSOutput output = implLS.createLSOutput();
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			output.setByteStream(out);
-
-			LSSerializer serializer = implLS.createLSSerializer();
-			serializer.getDomConfig().setParameter("format-pretty-print", true);
-			serializer.write(dom, output);
-
-			file.setContents(new ByteArrayInputStream(out.toByteArray()), true,
-					false, new NullProgressMonitor());
-			out.close();
-
-		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			FileWriter fileWriter = new FileWriter(file.getRawLocation().toFile());
+			
+			XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
+			XMLStreamWriter xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(sw);
+			
+			xmlStreamWriter.writeStartDocument();
+			xmlStreamWriter.writeStartElement("piscenario");
+			
+			writeFiles(xmlStreamWriter);
+			writeActorTree(xmlStreamWriter);
+			
+			xmlStreamWriter.writeEndElement();
+			xmlStreamWriter.writeEndDocument();
+			
+			xmlStreamWriter.flush();
+			xmlStreamWriter.close();
+			
+			/* Use of a transformer to indent xml file */
+			TransformerFactory factory = TransformerFactory.newInstance();
+			
+			Transformer transformer = factory.newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+			
+			transformer.transform(new StreamSource(new StringReader(sw.toString())), new StreamResult(fileWriter));
+	        
+		} catch (TransformerException | XMLStreamException | IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void addFiles(Element parent) {
+	private void writeFiles(XMLStreamWriter xmlStreamWriter) throws XMLStreamException {
+		xmlStreamWriter.writeStartElement("files");
+		
+		xmlStreamWriter.writeStartElement("algorithm");
+		xmlStreamWriter.writeAttribute("url", piscenario.getAlgorithmURL());
+		xmlStreamWriter.writeEndElement();
+		
+		xmlStreamWriter.writeStartElement("architecture");
+		xmlStreamWriter.writeAttribute("url", piscenario.getArchitectureURL());
+		xmlStreamWriter.writeEndElement();
 
-		Element files = dom.createElement("files");
-		parent.appendChild(files);
-
-		Element algo = dom.createElement("algorithm");
-		files.appendChild(algo);
-		algo.setAttribute("url", piscenario.getAlgorithmURL());
-
-		Element archi = dom.createElement("architecture");
-		files.appendChild(archi);
-		archi.setAttribute("url", piscenario.getArchitectureURL());
+		xmlStreamWriter.writeEndElement();
 	}
 	
-	private void writeActorTreeChildren(ActorNode parentNode, Element parentElement){
-		if(parentNode.isHierarchical()){
-			for(ActorNode childNode : parentNode.getChildren()){
-				Element childElement = dom.createElement(childNode.getName());
-				parentElement.appendChild(childElement);
-				writeActorTreeChildren(childNode, childElement);
+	private void writeActorTreeChildren(XMLStreamWriter xmlStreamWriter, ActorNode actorNode) throws XMLStreamException{
+		if(actorNode.isHierarchical()){
+			/* Write Child Actors */
+			for(ActorNode childNode : actorNode.getChildren()){
+				xmlStreamWriter.writeStartElement("actor");
+				xmlStreamWriter.writeAttribute("name", childNode.getName());
+				writeActorTreeChildren(xmlStreamWriter, childNode);
+				xmlStreamWriter.writeEndElement();
 			}
+			
+			/* Write Child Parameters */
+			for(ParameterValue paramValue : actorNode.getParamValues()){
+				xmlStreamWriter.writeStartElement("parameter");
+				xmlStreamWriter.writeAttribute("name", paramValue.getName());
+				xmlStreamWriter.writeAttribute("type", paramValue.getType().toString());
+				switch(paramValue.getType()){
+				case DEPENDENT:
+					xmlStreamWriter.writeAttribute("value", paramValue.getExpression());
+					break;
+				case DYNAMIC:
+					xmlStreamWriter.writeAttribute("value", paramValue.getValues().toString());
+					break;
+				case STATIC:
+					xmlStreamWriter.writeAttribute("value", ""+paramValue.getValue());
+					break;
+				default:
+					break;
+				}
+				xmlStreamWriter.writeEndElement();				
+			}
+			
 		}else{
 			/* Write Constraints */
-			Element constElement = dom.createElement("constraints");
-			parentElement.appendChild(constElement);
 			for(String core : piscenario.getOperatorIds()){
-				Element coreElement = dom.createElement(core);
-				constElement.appendChild(coreElement);
-				coreElement.setAttribute("value", ""+parentNode.getConstraint(core));
+				if(actorNode.getConstraint(core)){
+					xmlStreamWriter.writeStartElement("constraint");
+					xmlStreamWriter.writeAttribute("core", core);
+					xmlStreamWriter.writeEndElement();
+				}
 			}
 			
 			/* Write Timings */
-			Element timElement = dom.createElement("timings");
-			parentElement.appendChild(timElement);
-			for(String coreType : parentNode.getTimings().keySet()){
-				String timing = parentNode.getTimings().get(coreType).getStringValue();
-				Element coreTypeElement = dom.createElement(coreType);
-				timElement.appendChild(coreTypeElement);
-				coreTypeElement.setAttribute("timing", timing);
+			for(String coreType : actorNode.getTimings().keySet()){
+				String value = actorNode.getTimings().get(coreType).getStringValue();
+
+				xmlStreamWriter.writeStartElement("timing");
+				xmlStreamWriter.writeAttribute("coreType", coreType);
+				xmlStreamWriter.writeAttribute("value", value);
+				xmlStreamWriter.writeEndElement();
 			}
 		}
 	}
 	
-	private void addActorTree(Element parent){
-		Element elementTree = dom.createElement("actorTree");
-		parent.appendChild(elementTree);
-		
+	private void writeActorTree(XMLStreamWriter xmlStreamWriter) throws XMLStreamException{
 		ActorTree tree = piscenario.getActorTree(); 
-		Element rootElement = dom.createElement(tree.getRoot().getName());
-		elementTree.appendChild(rootElement);
-		writeActorTreeChildren(tree.getRoot(), rootElement);
+		
+		xmlStreamWriter.writeStartElement("actorTree");
+		
+		xmlStreamWriter.writeStartElement("actor");
+		xmlStreamWriter.writeAttribute("name", tree.getRoot().getName());
+		writeActorTreeChildren(xmlStreamWriter, tree.getRoot());
+		xmlStreamWriter.writeEndElement();
+		
+		xmlStreamWriter.writeEndElement();
 	}
 }

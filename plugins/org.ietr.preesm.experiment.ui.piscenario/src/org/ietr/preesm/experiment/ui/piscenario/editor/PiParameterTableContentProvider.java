@@ -33,48 +33,64 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.experiment.ui.piscenario.wizard;
+package org.ietr.preesm.experiment.ui.piscenario.editor;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
-import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
-import org.ietr.preesm.experiment.core.piscenario.PiScenario;
-import org.ietr.preesm.experiment.core.piscenario.serialize.PiScenarioWriter;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.eclipse.core.commands.common.IIdentifiable;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.IContentProvider;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.Viewer;
+import org.ietr.preesm.experiment.core.piscenario.ActorNode;
+import org.ietr.preesm.experiment.core.piscenario.ActorTree;
+import org.ietr.preesm.experiment.core.piscenario.ParameterValue;
 
 /**
- * A wizard to create a new {@link PiScenario} file
+ * This class provides the elements displayed in {@link ActorTree}. Each
+ * element is a {@link ActorNode}. This tree is used in scenario editor to edit
+ * parameters
+ * 
  * @author jheulot
- *
  */
-public class NewPiScenarioFileWizard extends BasicNewFileResourceWizard {
-	
-	@Override
-	public void addPages() {
-		super.addPages();
-		super.setWindowTitle("New PiScenario File");
+public class PiParameterTableContentProvider implements IStructuredContentProvider {
+	/**
+	 * The corresponding {@link ActorTree}
+	 */
+	private ActorTree actorTree = null;
+
+	/**
+	 * Default Constructor
+	 */
+	public PiParameterTableContentProvider() {
+		super();
 	}
 
 	@Override
-	protected void initializeDefaultPageImageDescriptor() {
-		super.initializeDefaultPageImageDescriptor();
+	public void dispose() {
+	}
+
+	@Override
+	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		actorTree = (ActorTree) newInput;
 	}
 	
-    @Override
-    public boolean performFinish() {
-    	WizardNewFileCreationPage page = (WizardNewFileCreationPage)(getPage("newFilePage1"));
-    	String filename = page.getFileName();
-            
-        if(!filename.endsWith(".piscenario")){
-        	filename += ".piscenario";
-        	page.setFileName(filename);
-        }
-        
-        final IFile createdFile = page.createNewFile();
-        
-        PiScenarioWriter writer = new PiScenarioWriter(new PiScenario());
-		writer.writeDom(createdFile);
-        
-        return createdFile != null;
-    }
+	private void getParams(HashSet<ParameterValue> paramValues, ActorNode node){
+		paramValues.addAll(node.getParamValues());
+		for(ActorNode childnode : node.getChildren()){
+			getParams(paramValues, childnode);
+		}
+	}
+
+	@Override
+	public Object[] getElements(Object inputElement) {
+		HashSet<ParameterValue> paramValues = new HashSet<ParameterValue>();
+		if(actorTree.getRoot() != null){
+			getParams(paramValues, actorTree.getRoot());
+		}		
+		return paramValues.toArray();
+	}
 
 }

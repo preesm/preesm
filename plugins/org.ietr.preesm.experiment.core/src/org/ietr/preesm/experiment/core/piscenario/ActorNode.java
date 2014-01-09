@@ -40,12 +40,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.ietr.preesm.experiment.core.piscenario.ParameterValue.ParameterType;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 /**
- * 
+ * Leaf on the {@link ActorTree} used to store timings, 
+ * constraints and parameters values in the scenario
  * @author jheulot
  *
  */
@@ -62,6 +65,7 @@ public class ActorNode {
 	private String name;
 	private Set<String> constraints;
 	private Map<String,Timing> timings;
+	private Set<ParameterValue> paramValues;
 
 	/**
 	 * Default constructor of {@link ActorNode}
@@ -73,7 +77,8 @@ public class ActorNode {
 		parent = _parent;
 		children = new HashSet<ActorNode>(); 
 		constraints = new HashSet<String>();
-		timings = new HashMap<String,Timing>();      	
+		timings = new HashMap<String,Timing>();   
+		paramValues = new HashSet<ParameterValue>();      	
     }
 
 	/**
@@ -171,6 +176,26 @@ public class ActorNode {
 	}
 	
 	/**
+	 * Get the {@link ParameterValue} of the current node with the given name.
+	 * @param currentOperatorType
+	 * @return the parameter, or null if doesn't exist
+	 */
+	public ParameterValue getParamValue(String name) {
+		for(ParameterValue param : paramValues){
+			if(param.getName().contentEquals(name))
+				return param;
+		}
+		return null;
+	}
+	
+	/**
+	 * @return the parameters
+	 */
+	public Set<ParameterValue> getParamValues() {
+		return paramValues;
+	}
+	
+	/**
 	 * Test if the node is hierarchical
 	 * @return true if the node is hierarchical
 	 */
@@ -217,6 +242,21 @@ public class ActorNode {
 					this.getChildren().remove(childNode);
 				}
 			}
+
+			/* Remove Parameters no more present */
+			for(ParameterValue var : paramValues){
+				/* Try to find it in the graph */
+				boolean present = false;
+				for(Parameter param: graph.getParameters()){
+					if(param.getName().contentEquals(param.getName())){
+						present = true; 
+						break;
+					}
+				}
+				if(!present){
+					paramValues.remove(var);
+				}	
+			}
 			
 			/* Update actors (Add if not present) */
 			for(Actor childActor: graph.getActors()){
@@ -230,6 +270,41 @@ public class ActorNode {
 				}
 				childNode.update(operatorIds, operatorTypes, childActor);
 			}
+			
+			/* Update Parameters (Add if not present) */
+			for(Parameter param: graph.getParameters()){
+				ParameterValue paramValue = null;
+				for(ParameterValue paramValueLoop : paramValues){
+					if(paramValueLoop.getName().contentEquals(param.getName())){
+						paramValue = paramValueLoop; 
+						break;
+					}
+				}
+				if(paramValue == null){
+					if(!param.isLocallyStatic()){ 				
+						/* DYNAMIC */
+						paramValue = new ParameterValue(param.getName(), ParameterType.DYNAMIC, this);
+					}else if(param.getConfigInputPorts().isEmpty()){ 
+						/* STATIC */
+						paramValue = new ParameterValue(param.getName(), ParameterType.STATIC, this);
+					}else{
+						/* DEPENDANT */
+						paramValue = new ParameterValue(param.getName(), ParameterType.DEPENDENT, this);
+						
+						/* Update Parameter list */
+						Set<String> params = new HashSet<String>();
+						for(ConfigInputPort configInput : param.getConfigInputPorts()){
+							params.add(configInput.getName());
+						}
+						paramValue.setInputParameters(params);
+						
+						/* Update Expression */
+						paramValue.setExpression(param.getExpression().getString());
+					}										
+					paramValues.add(paramValue);	
+				}	
+			}
+			
 		}else{ /* Leaf Actor */
 			/* Update operators in constraints */
 			for(String core : constraints){

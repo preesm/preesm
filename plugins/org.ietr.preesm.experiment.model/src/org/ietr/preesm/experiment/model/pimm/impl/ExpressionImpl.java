@@ -48,6 +48,7 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 
 import com.singularsys.jep.EvaluationException;
 import com.singularsys.jep.Jep;
+import com.singularsys.jep.JepException;
 import com.singularsys.jep.ParseException;
 
 /**
@@ -128,7 +129,6 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 	 * Evaluate expression of the class for which it is called.
 	 * <!-- end-user-doc -->
 	 * @return the result of the expression evaluated as an int.
-	 * @throws ParseException 
 	 */
 	public String evaluate(){
 		String allExpression = getString();
@@ -143,9 +143,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 			return "Neither a child of Parameterizable nor a child of a child of Parameterizable";
 		}
 		
-		if(parameterizableObj.getConfigInputPorts().isEmpty()){
-
-		}else{
+		try {
 			for (ConfigInputPort port : parameterizableObj.getConfigInputPorts()) {
 				if(port.getIncomingDependency() != null
 						&& port.getIncomingDependency().getSetter() instanceof Parameter){
@@ -157,45 +155,26 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 					else
 						parameterName = port.getName();
 					
-					int startingIndex=0;
-					String operators = "*+-/^";
-					while(startingIndex<allExpression.length()){
-						if(allExpression.substring(startingIndex).contains(parameterName)){
-							int index = allExpression.substring(startingIndex).indexOf(parameterName) + startingIndex;
-							
-							// Verify that the parameter is surrounded by operators.
-							if(index == 0 || operators.contains(""+allExpression.charAt(index-1))){
-								if (index+parameterName.length() == allExpression.length() 
-										|| operators.contains(""+allExpression.charAt(index+parameterName.length()))){
-									
-									String evaluatedParam;
-									if(p.isConfigurationInterface())
-										// TODO Handle config input interface
-										evaluatedParam =  "0";
-									else
-										evaluatedParam =  p.getExpression().evaluate();
-									allExpression = allExpression.substring(0, index) 
-											+ allExpression.substring(index).replaceFirst(parameterName, "("+evaluatedParam+")");
-								}
-							}
-							startingIndex = index+1;
-						} else {
-							break;
-						}
-					}
+					String evaluatedParam;
+					if(p.isConfigurationInterface())
+						// TODO Handle config input interface
+						evaluatedParam =  "0";
+					else
+						evaluatedParam =  p.getExpression().evaluate();
+					
+					jep.addVariable(parameterName, evaluatedParam);
 				}
 			}
-		}
-		
-		try {
+			
 			jep.parse(allExpression);
 			return jep.evaluate().toString();
+			
 		} catch (ParseException e) {
-//			e.printStackTrace();
 			return "Parsing Error, check expression syntax"+" : "+allExpression;
 		} catch (EvaluationException e) {
-//			e.printStackTrace();
 			return "Evaluation Error, check parameter dependecies"+" : "+allExpression; 
+		}catch (JepException e) {
+			return "Error in parameter subtitution"+" : "+allExpression;
 		}
 				
 	}
