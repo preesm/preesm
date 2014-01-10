@@ -13,8 +13,13 @@
             <dftools:variable name="size" value="2"/>
         </dftools:data>
     </dftools:task>
+    <dftools:task pluginId="pisdf.task.export2c.ExportToC" taskId="Export2C">
+        <dftools:data key="variables"/>
+    </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="architecture"
         targetport="architecture" to="ArchiExporter"/>
     <dftools:dataTransfer from="scenario" sourceport="PiMM"
         targetport="PiMM" to="PiMM2IBSDF"/>
+    <dftools:dataTransfer from="scenario" sourceport="PiMM"
+        targetport="PiSDF" to="Export2C"/>
 </dftools:workflow>

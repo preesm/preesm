@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">DecodeDsply</data>
+        <node expr="0" id="VOPType" kind="param"/>
+        <node expr="0" id="NbMb" kind="param"/>
+        <node id="ReadVOP" kind="actor">
+            <port kind="cfg_output" name="VOPType"/>
+            <port kind="cfg_output" name="NbMb"/>
+            <port expr="1" kind="input" name="VOL"/>
+            <port expr="1" kind="input" name="Complexity"/>
+            <port expr="1" kind="input" name="VOLPos"/>
+            <port expr="1" kind="input" name="VOPPosIn"/>
+            <port expr="1" kind="output" name="VOPData"/>
+            <port expr="1" kind="output" name="FrmData"/>
+            <port expr="1" kind="output" name="VOPPosOut"/>
+        </node>
+        <node id="DecodeVOP" kind="actor">
+            <data key="graph_desc">DecodeVOP.pi</data>
+            <port kind="cfg_input" name="VOPType"/>
+            <port kind="cfg_input" name="NbMb"/>
+            <port expr="1" kind="input" name="VOL"/>
+            <port expr="1" kind="input" name="VOPData"/>
+            <port expr="1" kind="input" name="FrmData"/>
+            <port expr="1" kind="input" name="PrevImg"/>
+            <port expr="1" kind="output" name="Img"/>
+            <port expr="1" kind="output" name="ImgCopy"/>
+        </node>
+        <node id="DsplyVOP" kind="actor">
+            <port expr="1" kind="input" name="Img"/>
+            <port expr="1" kind="input" name="ImgDim"/>
+        </node>
+        <node id="VOL" kind="src">
+            <port expr="1" kind="output" name=""/>
+        </node>
+        <node id="Complexity" kind="src">
+            <port expr="1" kind="output" name=""/>
+        </node>
+        <node id="VOLPos" kind="src">
+            <port expr="1" kind="output" name=""/>
+        </node>
+        <node id="ImgDim" kind="src">
+            <port expr="1" kind="output" name=""/>
+        </node>
+        <node id="BroadVOL" kind="actor">
+            <port expr="1" kind="input" name="VOL"/>
+            <port expr="1" kind="output" name="VOL_0"/>
+            <port expr="1" kind="output" name="VOL_1"/>
+        </node>
+        <edge kind="fifo" source="VOL" sourceport="" target="BroadVOL" targetport="VOL"/>
+        <edge kind="fifo" source="Complexity" sourceport=""
+            target="ReadVOP" targetport="Complexity"/>
+        <edge kind="fifo" source="VOLPos" sourceport="" target="ReadVOP" targetport="VOLPos"/>
+        <edge kind="fifo" source="DecodeVOP" sourceport="Img"
+            target="DsplyVOP" targetport="Img"/>
+        <edge kind="fifo" source="ReadVOP" sourceport="VOPPosOut"
+            target="ReadVOP" targetport="VOPPosIn"/>
+        <edge kind="fifo" source="ImgDim" sourceport=""
+            target="DsplyVOP" targetport="ImgDim"/>
+        <edge kind="fifo" source="BroadVOL" sourceport="VOL_1"
+            target="ReadVOP" targetport="VOL"/>
+        <edge kind="fifo" source="BroadVOL" sourceport="VOL_0"
+            target="DecodeVOP" targetport="VOL"/>
+        <edge kind="fifo" source="ReadVOP" sourceport="VOPData"
+            target="DecodeVOP" targetport="VOPData"/>
+        <edge kind="fifo" source="ReadVOP" sourceport="FrmData"
+            target="DecodeVOP" targetport="FrmData"/>
+        <edge kind="fifo" source="DecodeVOP" sourceport="ImgCopy"
+            target="DecodeVOP" targetport="PrevImg"/>
+        <edge kind="dependency" source="VOPType" target="DecodeVOP" targetport="VOPType"/>
+        <edge kind="dependency" source="NbMb" target="DecodeVOP" targetport="NbMb"/>
+        <edge kind="dependency" source="ReadVOP" sourceport="VOPType" target="VOPType"/>
+        <edge kind="dependency" source="ReadVOP" sourceport="NbMb" target="NbMb"/>
+    </graph>
+</graphml>

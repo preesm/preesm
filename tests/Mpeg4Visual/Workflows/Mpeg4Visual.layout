@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="scenario" x="120" y="121"/>
+      <vertex id="Export2C" x="267" y="109"/>
+      <vertex id="ArchiExporter" x="272" y="191"/>
+   </vertices>
+</layout>
