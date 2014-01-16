@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Memory (experiment)
+Bundle-SymbolicName: org.ietr.preesm.experiment.memory
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.ietr.preesm.experiment.memory.Activator
+Bundle-Vendor: IETR/INSA
+Require-Bundle: org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
