@@ -15,7 +15,9 @@ public class MemoryScriptTask extends AbstractTaskImplementation {
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName, Workflow workflow) throws WorkflowException {
-		// TODO Auto-generated method stub
+		
+		ScriptRunner sr = new ScriptRunner();
+		sr.run();
 		
 		// Outputs
 		Map<String, Object> outputs = new HashMap<String, Object>();
