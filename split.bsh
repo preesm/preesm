@@ -1,0 +1,13 @@
+// Split script
+
+for(i=0;i<NbSplit;i++){
+	for(j=-Overlap; j < Height/NbSplit+Overlap; j++) {
+		iLineIdx = i*Height/NbSplit + j;
+		
+		if(iLineIdx>=0 && iLineIdx < Height){
+				iPixelIdx = iLineIdx*Width ;
+				oPixelIdx = iPixelIdx + Width + i*2*Overlap*Width;
+				o_output.matchWith(oPixelIdx,i_input,iPixelIdx,Width);
+		}
+	}
+}
