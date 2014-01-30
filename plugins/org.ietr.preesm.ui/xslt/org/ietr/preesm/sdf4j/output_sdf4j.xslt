@@ -23,19 +23,22 @@
 
         <!-- graph -->
         <graphml>
-			<key attr.name="arguments" for="node" id="arguments"/>
+			  <key attr.name="arguments" for="node" id="arguments"/>
    			<key attr.name="parameters" for="graph" id="parameters"/>
   			<key attr.name="variables" for="graph" id="variables"/>
    			<key attr.name="name" attr.type="string" for="graph"/>
-			<key attr.name="model" attr.type="string" for="graph"/>
+			  <key attr.name="model" attr.type="string" for="graph"/>
     		<key attr.name="name" attr.type="string" for="node"/>
     		<key attr.name="kind" attr.type="string" for="node"/>
    			<key attr.name="port_direction" attr.type="string" for="node"/>
     		<key attr.name="graph_desc" attr.type="string" for="node"/>
     		<key attr.name="nbRepeat" attr.type="int" for="node"/>
+        <key attr.name="memory_script" attr.type="string" for="node"/>  
     		<key attr.name="edge_cons" attr.type="string" for="edge"/>
     		<key attr.name="edge_delay" attr.type="string" for="edge"/>
     		<key attr.name="edge_prod" attr.type="string" for="edge"/>
+        <key attr.name="target_port_modifier" attr.type="string" for="edge"/>
+        <key attr.name="source_port_modifier" attr.type="string" for="edge"/>
     		<key attr.name="data_type" attr.type="string" for="edge"/>
             <graph edgedefault="directed">
                 <data key="name">
@@ -81,6 +84,12 @@
             <data key="graph_desc">
                 <xsl:value-of select="parameters/parameter[@name = 'refinement']/@value"/>
             </data>
+
+          <xsl:if test="parameters/parameter[@name = 'memory script']/@value">
+            <data key="memory_script">
+              <xsl:value-of select="parameters/parameter[@name = 'memory script']/@value"/>
+            </data>
+          </xsl:if>  
 
             <xsl:apply-templates select="parameters/parameter[@name = 'instance argument']"/>
 			

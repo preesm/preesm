@@ -111,6 +111,10 @@
                   name="refinement"
                   type="java.lang.String">
             </parameter>
+            <parameter
+                  name="memory script"
+                  type="java.lang.String">
+            </parameter>
             <color
                   blue="17"
                   green="188"

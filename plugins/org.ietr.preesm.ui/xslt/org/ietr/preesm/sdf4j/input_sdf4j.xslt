@@ -143,6 +143,14 @@
                     <xsl:attribute name="name">instance argument</xsl:attribute>
                     <xsl:apply-templates select="graphml:data[@key = 'arguments']"/>
                 </xsl:element>
+
+              <xsl:if test="graphml:data[@key = 'memory_script']/text()">
+                <xsl:element name="parameter">
+                  <xsl:attribute name="name">memory script</xsl:attribute>
+                  <xsl:attribute name="value" select="graphml:data[@key = 'memory_script']/text()"/>
+                </xsl:element>
+              </xsl:if>
+              
             </xsl:element>
          
         </xsl:element>
