@@ -1,0 +1,17 @@
+// Split script
+
+
+for(i=0;i<NbSlice;i++){
+	for(j=-Overlap; j < Height/NbSlice+Overlap; j++) {
+		iLineIdx = i*Height/NbSlice + j;
+		
+		if(iLineIdx>=0 && iLineIdx < Height){
+				iPixelIdx = iLineIdx*Width ;
+				oPixelIdx = iPixelIdx + Width + i*2*Overlap*Width;
+				o_output.matchWith(oPixelIdx,i_input,iPixelIdx,Width);
+		}
+	}
+}
+
+// o_output.matchWith(Width,i_input,1); // test multiple matches detection 
+// i_input.matchWith(0,i_input,1); // test inter-input match detection

@@ -28,8 +28,16 @@ public class Buffer {
     return this._tokenSize;
   }
   
-  private final FixedSizeList<Set<Match>> _matchTable;
+  /**
+   * This table is protected to ensure that matches are set only by using
+   * {@link #matchWith(int,Buffer,int)} methods in the scripts.
+   */
+  protected final FixedSizeList<Set<Match>> _matchTable;
   
+  /**
+   * This table is protected to ensure that matches are set only by using
+   * {@link #matchWith(int,Buffer,int)} methods in the scripts.
+   */
   public FixedSizeList<Set<Match>> getMatchTable() {
     return this._matchTable;
   }

@@ -1,8 +1,7 @@
 package org.ietr.preesm.experiment.memory
 
-import java.util.List
-import java.util.Set
 import java.util.ArrayList
+import java.util.Set
 
 class Buffer {
 
@@ -15,8 +14,12 @@ class Buffer {
 	@Property
 	final int tokenSize
 	
-	@Property
-	final FixedSizeList<Set<Match>> matchTable 
+	/**
+	 * This table is protected to ensure that matches are set only by using
+	 * {@link #matchWith(int,Buffer,int)} methods in the scripts.
+	 */
+	 @Property
+	final protected FixedSizeList<Set<Match>> matchTable 
 
 	/**
     * Constructor for the {@link Buffer}.
@@ -40,8 +43,6 @@ class Buffer {
 			
 		buffer.matchTable.set(remoteIdx, (buffer.matchTable.get(remoteIdx)?:newHashSet))
 		buffer.matchTable.get(remoteIdx).add(new Match(this,localIdx))
-			
-		//buffer.matchTable.set(remoteIdx,new Match(this,localIdx)) 
 	}
 	
 	def matchWith(int localIdx, Buffer buffer, int remoteIdx, int size){
@@ -50,6 +51,8 @@ class Buffer {
 		}
 	}
 }
+
+
 
 @Data
 class Match{

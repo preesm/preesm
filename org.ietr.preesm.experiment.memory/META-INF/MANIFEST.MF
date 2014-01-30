@@ -17,4 +17,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.ietr.preesm.experiment.memory
 Bundle-ClassPath: lib/bsh-2.1.7.jar,.
+Import-Package: org.eclipse.core.resources,
+ org.ietr.preesm.core.scenario,
+ org.ietr.preesm.core.types
 
