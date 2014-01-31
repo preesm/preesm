@@ -2,7 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="net.sf.graphiti.model.definition">
+         point="org.ietr.dftools.graphiti.model.definition">
       <configuration
             extension="graphml"
             name="GraphML"

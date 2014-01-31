@@ -3,7 +3,7 @@
 <plugin>
    <extension-point id="printers" name="Printers" schema="schema/printers.exsd"/>
    <extension
-         point="net.sf.dftools.workflow.tasks">
+         point="org.ietr.dftools.workflow.tasks">
       <task
             id="org.ietr.preesm.codegen.xtend.task.CodegenTask"
             name="Xtend Codegen"

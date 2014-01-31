@@ -2,7 +2,7 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension
-         point="net.sf.dftools.workflow.scenarios">
+         point="org.ietr.dftools.workflow.scenarios">
       <scenario
             id="org.ietr.preesm.scenario.task"
             type="org.ietr.preesm.core.workflow.SDFAndArchitectureScenarioNode">

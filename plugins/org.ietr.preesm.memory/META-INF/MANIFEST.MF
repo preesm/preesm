@@ -5,10 +5,10 @@ Bundle-SymbolicName: org.ietr.preesm.memory;singleton:=true
 Bundle-Version: 1.0.0.rc1-v20131030
 Bundle-Activator: org.ietr.preesm.memory.Activator
 Require-Bundle: org.eclipse.core.runtime,
- net.sf.dftools.workflow;bundle-version="0.0.1",
+ org.ietr.dftools.workflow;bundle-version="0.0.1",
  org.jgrapht,
- net.sf.dftools.architecture;bundle-version="0.0.1",
- net.sf.dftools.algorithm;bundle-version="0.0.1",
+ org.ietr.dftools.architecture;bundle-version="0.0.1",
+ org.ietr.dftools.algorithm;bundle-version="0.0.1",
  org.ietr.preesm.algorithm;bundle-version="0.6.3"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

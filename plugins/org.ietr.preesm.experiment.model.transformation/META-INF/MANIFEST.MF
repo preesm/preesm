@@ -7,10 +7,10 @@ Bundle-Activator: org.ietr.preesm.experiment.model.transformation.Activator
 Bundle-Vendor: IETR
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- net.sf.dftools.workflow;bundle-version="0.1.0",
+ org.ietr.dftools.workflow;bundle-version="0.1.0",
  org.eclipse.core.resources;bundle-version="3.8.1",
- net.sf.dftools.architecture;bundle-version="0.1.0",
- net.sf.dftools.algorithm;bundle-version="0.1.0",
+ org.ietr.dftools.architecture;bundle-version="0.1.0",
+ org.ietr.dftools.algorithm;bundle-version="0.1.0",
  org.eclipse.ui.views.properties.tabbed;bundle-version="3.5.300",
  org.eclipse.graphiti.ui;bundle-version="0.9.1",
  org.eclipse.graphiti;bundle-version="0.9.1",
