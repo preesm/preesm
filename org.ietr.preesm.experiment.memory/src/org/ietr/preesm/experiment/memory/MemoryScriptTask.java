@@ -12,6 +12,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
 public class MemoryScriptTask extends AbstractTaskImplementation {
+	
+	public static final String PARAM_CHECK = "Check";
+	public static final String VALUE_CHECK_NONE = "None";
+	public static final String VALUE_CHECK_FAST = "Fast";
+	public static final String VALUE_CHECK_THOROUGH = "Thorough";
 
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
@@ -29,11 +34,27 @@ public class MemoryScriptTask extends AbstractTaskImplementation {
 		// Get the data types from the scenario
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 		sr.setDataTypes(scenario.getSimulationManager().getDataTypes());
-
 		
+		// Get check policy
+		String checkString = parameters.get(PARAM_CHECK);
+		switch(checkString){
+		case VALUE_CHECK_NONE:
+			sr.setCheckPolicy(CheckPolicy.NONE);
+			break;
+		case VALUE_CHECK_FAST:
+			sr.setCheckPolicy(CheckPolicy.FAST);
+			break;
+		case VALUE_CHECK_THOROUGH:
+			sr.setCheckPolicy(CheckPolicy.THOROUGH);
+			break;
+		default:
+			sr.setCheckPolicy(CheckPolicy.FAST);
+			break;
+		}
+
 		// Execute all the scripts
 		sr.run();
-		sr.runTest();
+		//sr.runTest();
 
 		// Outputs
 		Map<String, Object> outputs = new HashMap<String, Object>();
@@ -45,8 +66,9 @@ public class MemoryScriptTask extends AbstractTaskImplementation {
 
 	@Override
 	public Map<String, String> getDefaultParameters() {
-		// TODO Auto-generated method stub
-		return null;
+		Map<String,String> param = new HashMap<String,String>();
+		param.put(PARAM_CHECK, "? C {"+VALUE_CHECK_NONE+", "+VALUE_CHECK_FAST+", "+VALUE_CHECK_THOROUGH+"}");
+		return param;
 	}
 
 	@Override
