@@ -1,9 +1,9 @@
 // Broadcast script
 
 inIdx=0;
-final int inSize = inputs.get(0).getNbTokens()*inputs.get(0).getTokenSize();
+final int inSize = inputs.get(0).getNbTokens();
 for(output : outputs) {
-	remaining = output.getNbTokens()*output.getTokenSize();
+	remaining = output.getNbTokens();
 	outIdx=0;
 	do {		
 		// Do the match

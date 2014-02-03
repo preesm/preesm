@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.FileLocator
 import org.eclipse.core.runtime.Path
 import org.eclipse.xtext.xbase.lib.Pair
 import org.ietr.preesm.core.types.DataType
+import bsh.ParseException
 
 enum CheckPolicy {
 	NONE,
@@ -379,23 +380,28 @@ class ScriptRunner {
 			if (interpreter.get("outputs") == null)
 				interpreter.set("outputs", outputs)
 
-			try {
-				
+			try {				
 				// Run the script
 				interpreter.source(script.absolutePath);
 				
 				// Check the result
-				//System.out.print( (288/8 )*352+1 );//+""+ outputs.get(0).matchTable.get((288/8 - 1)*352+1).toString());
-				//System.out.println(outputs.get(0).matchTable.get((288/8 )*352+1));
-				//System.out.println(inputs.get(0).matchTable.get((288/8 - 1)*352));
 				if(checkPolicy != CheckPolicy::NONE)
 				{
-					System.out.print(sdfVertex.name + ": ")
-					System.out.println( check(script ,inputs->outputs))
+					check(script ,inputs->outputs)
 				}
 
 				// Store the result if the execution was successful 
 				scriptResults.put(dagVertex, inputs -> outputs)
+			
+			} catch (ParseException error) {
+
+				// Logger is used to display messages in the console
+				val logger = WorkflowLogger.getLogger
+				var message = error.rawMessage + "\n" + error.cause
+			
+				logger.log(Level.WARNING,
+					"Parse error in " + sdfVertex.name + " memory script:\n" +
+						message)
 
 			} catch (EvalError error) {
 

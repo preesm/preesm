@@ -2,7 +2,7 @@
 
 outIdx = 0;
 for(input : inputs){
-	inSize = input.getNbTokens()*input.getTokenSize();
+	inSize = input.getNbTokens();
 	outputs.get(0).matchWith(outIdx,input,0,inSize);
 	outIdx +=  inSize;
 }
