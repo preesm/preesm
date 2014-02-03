@@ -38,10 +38,8 @@ package org.ietr.preesm.experiment.core.piscenario;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.singularsys.jep.EvaluationException;
 import com.singularsys.jep.Jep;
 import com.singularsys.jep.JepException;
-import com.singularsys.jep.ParseException;
 
 /**
  * Value(s) of a parameter in a graph.

@@ -51,7 +51,6 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.ietr.preesm.experiment.core.piscenario.PiScenario;
 import org.ietr.preesm.experiment.core.piscenario.serialize.PiScenarioParser;
 import org.ietr.preesm.experiment.core.piscenario.serialize.PiScenarioWriter;
-import org.ietr.preesm.experiment.core.piscenario.serialize.PiScenarioWriter;
 
 /**
  * The {@link PiScenarioEditor} allows to change all parameters in {@link PiScenario}

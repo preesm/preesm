@@ -40,18 +40,15 @@ import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Table;
 import org.ietr.preesm.experiment.core.piscenario.ActorNode;
 import org.ietr.preesm.experiment.core.piscenario.ParameterValue;
 import org.ietr.preesm.experiment.core.piscenario.ParameterValue.ParameterType;
-import org.ietr.preesm.experiment.core.piscenario.Timing;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 

@@ -36,13 +36,8 @@
 package org.ietr.preesm.experiment.ui.piscenario.editor;
 
 import java.util.HashSet;
-import java.util.Set;
 
-import org.eclipse.core.commands.common.IIdentifiable;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.ietr.preesm.experiment.core.piscenario.ActorNode;
 import org.ietr.preesm.experiment.core.piscenario.ActorTree;
