@@ -28,10 +28,9 @@
  */
 package org.ietr.preesm.ui.editor.graph.validators;
 
-import net.sf.graphiti.model.Graph;
-import net.sf.graphiti.model.IValidator;
-
 import org.eclipse.core.resources.IFile;
+import org.ietr.dftools.graphiti.model.Graph;
+import org.ietr.dftools.graphiti.model.IValidator;
 
 /**
  * This class implements an IP-XACT model validator.

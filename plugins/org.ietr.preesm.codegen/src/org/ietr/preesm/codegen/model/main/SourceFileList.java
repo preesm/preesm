@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.sf.dftools.architecture.slam.ComponentInstance;
+import org.ietr.dftools.architecture.slam.ComponentInstance;
 
 /**
  * A generated code is the gathering of source files, each one corresponding to

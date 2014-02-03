@@ -39,10 +39,6 @@ package org.ietr.preesm.ui.scenario.editor.constraints;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.sf.dftools.algorithm.model.IRefinement;
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
-
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.swt.SWT;
@@ -58,6 +54,9 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.ietr.dftools.algorithm.model.IRefinement;
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.ui.scenario.editor.HierarchicalSDFVertex;

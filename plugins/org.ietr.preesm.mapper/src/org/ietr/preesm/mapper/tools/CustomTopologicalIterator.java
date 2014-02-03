@@ -39,8 +39,7 @@ package org.ietr.preesm.mapper.tools;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.sf.dftools.algorithm.model.dag.DAGVertex;
-
+import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;

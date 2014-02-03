@@ -41,16 +41,15 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
-import net.sf.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor;
-import net.sf.dftools.algorithm.model.visitors.SDF4JException;
-import net.sf.dftools.algorithm.model.visitors.VisitorOutput;
-import net.sf.dftools.workflow.WorkflowException;
-import net.sf.dftools.workflow.elements.Workflow;
-import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
-
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor;
+import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
+import org.ietr.dftools.algorithm.model.visitors.VisitorOutput;
+import org.ietr.dftools.workflow.WorkflowException;
+import org.ietr.dftools.workflow.elements.Workflow;
+import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
 /**
  * Class used to transform a SDF graph into a HSDF graph. Actually into a single

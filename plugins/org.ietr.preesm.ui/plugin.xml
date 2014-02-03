@@ -773,8 +773,8 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="net.sf.graphiti.ui.editors.GraphEditor"
-            contributorClass="net.sf.graphiti.ui.editors.GraphActionBarContributor"
+            class="org.ietr.dftools.graphiti.ui.editors.GraphEditor"
+            contributorClass="org.ietr.dftools.graphiti.ui.editors.GraphActionBarContributor"
             default="true"
             extensions="graphml, design, component"
             icon="icons/graphiti.gif"
@@ -830,7 +830,7 @@
    <extension
          point="org.eclipse.debug.ui.launchShortcuts">
       <shortcut
-            class="net.sf.dftools.ui.workflow.launch.WorkflowLaunchShortcut"
+            class="org.ietr.dftools.ui.workflow.launch.WorkflowLaunchShortcut"
             icon="icons/workflow.png"
             id="net.sf.dftools.ui.workflow.workflowLaunchShortcut"
             label="Preesm Workflow"

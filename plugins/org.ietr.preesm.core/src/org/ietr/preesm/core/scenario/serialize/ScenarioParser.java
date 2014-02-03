@@ -46,14 +46,14 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.sf.dftools.algorithm.importer.GMLSDFImporter;
-import net.sf.dftools.algorithm.importer.InvalidModelException;
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
-import net.sf.dftools.architecture.slam.Design;
-import net.sf.dftools.architecture.slam.SlamPackage;
-import net.sf.dftools.architecture.slam.serialize.IPXACTResourceFactoryImpl;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
+import org.ietr.dftools.algorithm.importer.GMLSDFImporter;
+import org.ietr.dftools.algorithm.importer.InvalidModelException;
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.architecture.slam.Design;
+import org.ietr.dftools.architecture.slam.SlamPackage;
+import org.ietr.dftools.architecture.slam.serialize.IPXACTResourceFactoryImpl;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;

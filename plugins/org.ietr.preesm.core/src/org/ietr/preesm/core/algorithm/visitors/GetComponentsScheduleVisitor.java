@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import net.sf.dftools.algorithm.model.dag.DAGEdge;
-import net.sf.dftools.algorithm.model.dag.DAGVertex;
-import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import net.sf.dftools.algorithm.model.visitors.IGraphVisitor;
-import net.sf.dftools.algorithm.model.visitors.SDF4JException;
-import net.sf.dftools.architecture.slam.ComponentInstance;
+import org.ietr.dftools.algorithm.model.dag.DAGEdge;
+import org.ietr.dftools.algorithm.model.dag.DAGVertex;
+import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor;
+import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
+import org.ietr.dftools.architecture.slam.ComponentInstance;
 
 /**
  * Visitor to retrieve the schedule of each component of

@@ -44,12 +44,11 @@ import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.sf.dftools.architecture.slam.ComponentInstance;
-import net.sf.dftools.architecture.slam.Design;
-import net.sf.dftools.workflow.WorkflowException;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
-
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.dftools.architecture.slam.ComponentInstance;
+import org.ietr.dftools.architecture.slam.Design;
+import org.ietr.dftools.workflow.WorkflowException;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbstractAbc;

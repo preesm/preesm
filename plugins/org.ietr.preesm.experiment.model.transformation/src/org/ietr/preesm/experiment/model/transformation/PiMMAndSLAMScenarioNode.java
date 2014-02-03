@@ -6,13 +6,12 @@ package org.ietr.preesm.experiment.model.transformation;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.dftools.architecture.slam.Design;
-import net.sf.dftools.workflow.WorkflowException;
-import net.sf.dftools.workflow.implement.AbstractScenarioImplementation;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
+import org.ietr.dftools.architecture.slam.Design;
+import org.ietr.dftools.workflow.WorkflowException;
+import org.ietr.dftools.workflow.implement.AbstractScenarioImplementation;
 import org.ietr.preesm.experiment.core.piscenario.PiScenario;
 import org.ietr.preesm.experiment.core.piscenario.serialize.PiScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;

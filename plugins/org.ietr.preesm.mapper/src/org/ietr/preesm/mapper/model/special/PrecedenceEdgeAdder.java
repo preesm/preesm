@@ -41,10 +41,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import net.sf.dftools.algorithm.model.dag.DAGEdge;
-import net.sf.dftools.architecture.slam.ComponentInstance;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
-
+import org.ietr.dftools.algorithm.model.dag.DAGEdge;
+import org.ietr.dftools.architecture.slam.ComponentInstance;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.abc.transaction.AddPrecedenceEdgeTransaction;
 import org.ietr.preesm.mapper.abc.transaction.RemoveEdgeTransaction;

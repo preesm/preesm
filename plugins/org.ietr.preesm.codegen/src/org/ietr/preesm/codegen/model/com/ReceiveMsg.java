@@ -38,9 +38,8 @@ package org.ietr.preesm.codegen.model.com;
 
 import java.util.List;
 
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.architecture.slam.ComponentInstance;
-
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.buffer.Buffer;
 import org.ietr.preesm.codegen.model.printer.CodeZoneId;

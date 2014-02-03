@@ -36,11 +36,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.codegen.model;
 
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
-import net.sf.dftools.algorithm.model.visitors.IGraphVisitor;
-import net.sf.dftools.algorithm.model.visitors.SDF4JException;
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor;
+import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 
 
 /**

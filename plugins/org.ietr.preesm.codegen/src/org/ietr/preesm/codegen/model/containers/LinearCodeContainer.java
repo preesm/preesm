@@ -36,8 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.codegen.model.containers;
 
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.main.ICodeElement;
 import org.ietr.preesm.codegen.model.printer.CodeZoneId;

@@ -40,13 +40,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Iterator;
 
-import net.sf.dftools.algorithm.exporter.GMLExporter;
-import net.sf.dftools.algorithm.exporter.Key;
-import net.sf.dftools.algorithm.model.AbstractGraph;
-import net.sf.dftools.algorithm.model.dag.DAGEdge;
-import net.sf.dftools.algorithm.model.dag.DAGVertex;
-import net.sf.dftools.architecture.slam.attributes.Parameter;
-import net.sf.dftools.architecture.slam.impl.ComponentInstanceImpl;
+import org.ietr.dftools.algorithm.exporter.GMLExporter;
+import org.ietr.dftools.algorithm.exporter.Key;
+import org.ietr.dftools.algorithm.model.AbstractGraph;
+import org.ietr.dftools.algorithm.model.dag.DAGEdge;
+import org.ietr.dftools.algorithm.model.dag.DAGVertex;
+import org.ietr.dftools.architecture.slam.attributes.Parameter;
+import org.ietr.dftools.architecture.slam.impl.ComponentInstanceImpl;
 
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;

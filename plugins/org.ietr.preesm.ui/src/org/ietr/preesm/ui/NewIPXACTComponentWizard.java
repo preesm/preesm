@@ -28,12 +28,6 @@
  */
 package org.ietr.preesm.ui;
 
-import net.sf.graphiti.GraphitiModelPlugin;
-import net.sf.graphiti.model.Configuration;
-import net.sf.graphiti.model.Graph;
-import net.sf.graphiti.model.ObjectType;
-import net.sf.graphiti.ui.wizards.WizardSaveGraphPage;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -45,6 +39,11 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
+import org.ietr.dftools.graphiti.GraphitiModelPlugin;
+import org.ietr.dftools.graphiti.model.Configuration;
+import org.ietr.dftools.graphiti.model.Graph;
+import org.ietr.dftools.graphiti.model.ObjectType;
+import org.ietr.dftools.graphiti.ui.wizards.WizardSaveGraphPage;
 
 /**
  * This class provides a wizard to create a new ipxact network.

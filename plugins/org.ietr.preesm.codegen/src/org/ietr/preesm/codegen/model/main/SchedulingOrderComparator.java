@@ -38,8 +38,7 @@ package org.ietr.preesm.codegen.model.main;
 
 import java.util.Comparator;
 
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 
 /**

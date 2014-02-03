@@ -36,8 +36,7 @@ knowledge of the CeCILL-B license and that you accept its terms.
 
 package org.ietr.preesm.codegen.model.main;
 
-import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
-
+import org.ietr.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
 import org.ietr.preesm.codegen.model.call.Variable;
 
 public class DynamicParameterAllocation extends VariableAllocation {

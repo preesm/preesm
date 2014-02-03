@@ -38,10 +38,9 @@ package org.ietr.preesm.mapper.abc;
 
 import java.util.List;
 
-import net.sf.dftools.architecture.slam.ComponentInstance;
-import net.sf.dftools.architecture.slam.Design;
-import net.sf.dftools.workflow.WorkflowException;
-
+import org.ietr.dftools.architecture.slam.ComponentInstance;
+import org.ietr.dftools.architecture.slam.Design;
+import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.IMapperAbc;
 import org.ietr.preesm.mapper.abc.edgescheduling.EdgeSchedType;
