@@ -2,7 +2,7 @@ package org.ietr.preesm.experiment.memory
 
 import java.util.ArrayList
 import java.util.Map
-import java.util.Set
+import java.util.List
 
 class Buffer {
 
@@ -20,7 +20,7 @@ class Buffer {
 	 * {@link #matchWith(int,Buffer,int)} methods in the scripts.
 	 */
 	@Property
-	final protected Map<Integer, Set<Match>> matchTable
+	final protected Map<Integer, List<Match>> matchTable
 
 	/**
     * Constructor for the {@link Buffer}.
@@ -76,39 +76,90 @@ class Buffer {
 					this.tokenSize + "!=" + buffer.tokenSize + ")")
 		}
 
-		if (localIdx + size - 1 >= nbTokens * tokenSize) {
+		if (localIdx + size - 1 >= nbTokens) {
 			throw new RuntimeException(
 				"Cannot match " + this.name + " with " + buffer.name + " because matched range [" + localIdx + ".." +
-					(localIdx + size - 1) + "] exceeds buffer size:" + nbTokens * tokenSize)
+					(localIdx + size - 1) + "] exceeds buffer size:" + nbTokens)
 		}
 
-		if (remoteIdx + size -1 >= buffer.nbTokens * buffer.tokenSize) {
+		if (remoteIdx + size - 1 >= buffer.nbTokens) {
 			throw new RuntimeException(
 				"Cannot match " + buffer.name + " with " + this.name + " because matched range [" + remoteIdx + ".." +
-					(remoteIdx + size - 1)  + "] exceeds buffer size:" + buffer.nbTokens * tokenSize)
+					(remoteIdx + size - 1) + "] exceeds buffer size:" + buffer.nbTokens)
 		}
 
-		var matchSet = matchTable.get(localIdx)
+		var matchSet = matchTable.get(localIdx * tokenSize)
 		if (matchSet == null) {
-			matchSet = newHashSet
-			matchTable.put(localIdx, matchSet)
+			matchSet = newArrayList
+			matchTable.put(localIdx * tokenSize, matchSet)
 		}
-		matchSet.add(new Match(buffer, remoteIdx, size * this.tokenSize))
+		val localMatch = new Match(buffer, remoteIdx * tokenSize, size * this.tokenSize)
+		matchSet.add(localMatch)
 
-		var remoteMatchSet = buffer.matchTable.get(remoteIdx)
+		var remoteMatchSet = buffer.matchTable.get(remoteIdx * tokenSize)
 		if (remoteMatchSet == null) {
-			remoteMatchSet = newHashSet
-			buffer.matchTable.put(remoteIdx, remoteMatchSet)
+			remoteMatchSet = newArrayList
+			buffer.matchTable.put(remoteIdx * tokenSize, remoteMatchSet)
 		}
-		remoteMatchSet.add(new Match(this, localIdx, size * this.tokenSize))
+		val remoteMatch = new Match(this, localIdx * tokenSize, size * this.tokenSize)
+		remoteMatchSet.add(remoteMatch)
+
+		localMatch.reciprocate = remoteMatch
+
 	}
 }
 
-@Data
 class Match {
+	new(Buffer remoteBuffer, int remoteIndex, int size) {
+		buffer = remoteBuffer
+		index = remoteIndex
+		length = size
+	}
+
+	@Property
 	Buffer buffer
+	@Property
 	int index
+	@Property
 	int length
+
+	Match _reciprocate
+
+	def setReciprocate(Match remoteMatch) {
+		_reciprocate = remoteMatch
+		remoteMatch._reciprocate = this
+	}
+
+	def getReciprocate() {
+		_reciprocate
+	}
+	
+	/**
+	 * Overriden to forbid
+	 */
+	override hashCode(){
+		// Forbidden because if a non final attribute is changed, then the hashcode changes.
+		// But if the Match is already stored in a map, its original hashcode will have been used
+		throw new UnsupportedOperationException("HashCode is not supported for Match class. Do not use HashMap.")
+			//index.hashCode.bitwiseXor(length.hashCode).bitwiseXor(buffer.hashCode) 	
+	}
+
+	/**
+	 * Reciprocate is not considered 
+ 	*/
+	override equals(Object obj) {
+		if (this === obj)
+			return true
+		if (obj === null)
+			return false
+		if (this.class != obj.class)
+			return false
+		var other = obj as Match
+		this.buffer == other.buffer && this.index == other.index && this.length == other.length
+	}
+	
+	override toString()'''«buffer.name»[«index»..«index+length-1»]'''
+
 }
 
 // cf http://stackoverflow.com/questions/5207162/fixed-size-list-in-java

@@ -38,7 +38,7 @@ enum CheckPolicy {
 }
 
 class ScriptRunner {
-	
+
 	@Property
 	var checkPolicy = CheckPolicy::NONE
 
@@ -79,6 +79,7 @@ class ScriptRunner {
 	 *            are retrieved.
 	 */
 	def protected findScripts(DirectedAcyclicGraph dag) {
+
 		// Retrieve the original sdf folder
 		val workspace = ResourcesPlugin.getWorkspace
 		val sdfPath = dag.propertyBean.getValue(DirectedAcyclicGraph.PATH, String) as String
@@ -95,6 +96,7 @@ class ScriptRunner {
 					case DAGVertex.DAG_VERTEX: {
 						val pathString = sdfVertex.propertyBean.getValue(SDFVertex.MEMORY_SCRIPT, String) as String
 						if (pathString != null) {
+
 							// Retrieve the script path as a relative path to the
 							// graphml
 							var scriptFile = sdfFile.parent.getFile(new Path(pathString)).rawLocation.makeAbsolute.
@@ -102,6 +104,7 @@ class ScriptRunner {
 							if (scriptFile.exists) {
 								scriptedVertices.put(dagVertex, scriptFile)
 							} else {
+
 								// If this code is reached
 								// Check if the script file exists in the source code
 								// /scripts directory.
@@ -171,9 +174,31 @@ class ScriptRunner {
 				}
 			}
 		}
+		
+		scriptedVertices.size
 	}
-	
-		/**
+
+	/**
+	 * Check the results obtained when running the {@link #run()} method.
+	 * Checks are performed according to the current {@link #setCheckPolicy(CheckPolicy)}.
+	 * The {@link #checkResult(File,Pair)} method is used to perform the checks.
+	 * Vertices whose script results do not pass the checks are removed
+	 * from the {@link #scriptResults} map.
+	 */
+	def check() {
+		if (checkPolicy != CheckPolicy::NONE) {
+
+			// Do the checks
+			val invalidVertices = newArrayList
+			scriptResults.forEach[vertex, result|
+				if(!checkResult(scriptedVertices.get(vertex), result)) invalidVertices.add(vertex)]
+
+			// Remove invalid results
+			invalidVertices.forEach[scriptResults.remove(it)]
+		}
+	}
+
+	/**
 	 * This method perform several checks on the {@link Buffer buffers}
 	 * resulting from the evaluation of a script. The checked points are:
 	 * <ul>
@@ -201,7 +226,7 @@ class ScriptRunner {
 	 * @return <code>true</code> if all checks were valid, <code>false</code>
 	 *         otherwise.
 	 */
-	def check(File script, Pair<List<Buffer>, List<Buffer>> result) {
+	def checkResult(File script, Pair<List<Buffer>, List<Buffer>> result) {
 
 		val allBuffers = new ArrayList<Buffer>
 		allBuffers.addAll(result.key)
@@ -209,30 +234,27 @@ class ScriptRunner {
 
 		// Check that all matches are reciprocal
 		// For all buffers
-		val res1 = allBuffers.forall[localBuffer | //localBuffer.matchTable.get(0).add()
-				// for all matcheSet  
-				localBuffer.matchTable.entrySet.forall[
-					val matches = it.value
-					val localIdx = it.key
-					// for all matches
-					matches.forall[match |
-						val remoteMatches = match.buffer.matchTable.get(match.index)
-						remoteMatches != null && remoteMatches.contains(new Match(localBuffer, localIdx, match.length))
+		val res1 = allBuffers.forall [ localBuffer | //localBuffer.matchTable.get(0).add()
+			// for all matcheSet  
+			localBuffer.matchTable.entrySet.forall [
+				val matches = it.value
+				val localIdx = it.key
+				// for all matches
+				matches.forall [ match |
+					val remoteMatches = match.buffer.matchTable.get(match.index)
+					remoteMatches != null && remoteMatches.contains(new Match(localBuffer, localIdx, match.length))
 				]
 			]
-		]	
+		]
 		if (!res1) {
 			val logger = WorkflowLogger.logger
 			logger.log(Level.WARNING,
 				"Error in " + script +
 					": One of the match is not reciprocal. Please set matches only by using Buffer.setMatch() methods.")
-		}	
-		
-					
+		}
+
 		// Check that inputs are only merged with outputs (and vice versa)
 		// Not checked => Authorized (ex. for round buffers)  
-		
-		
 		// Find ranges from input and output with multiple matches
 		// Check: If a[i] is matched with b[j], b[k], and c[l] then b[j] (or 
 		// b[k] or c[l]) cannot be matched with a buffer different than a[i].
@@ -242,6 +264,7 @@ class ScriptRunner {
 		val multipleRanges = allBuffers.map[it -> it.multipleMatchRange]
 		val res2 = multipleRanges.forall [ multipleRange |
 			if (multipleRange.value.size != 0) {
+
 				// If the current buffer has multiple ranges
 				multipleRange.value.entrySet.forall [
 					val srcOrig = it.key
@@ -250,10 +273,11 @@ class ScriptRunner {
 					(srcOrig .. srcEnd).forall [
 						val matches = multipleRange.key.matchTable.get(it)
 						if (matches != null) {
+
 							// Test the destination is not within a multiple range
 							matches.forall [
 								val range = multipleRanges.get(allBuffers.indexOf(it.buffer)).value
-								range.filter[destOrig, destEnd|
+								range.filter [ destOrig, destEnd |
 									srcOrig < destEnd && destOrig < srcEnd
 								].size == 0
 							]
@@ -264,18 +288,18 @@ class ScriptRunner {
 			} else
 				true // No multiple range for this buffer
 		]
-		
+
 		if (!res2) {
 			val logger = WorkflowLogger.logger
 			logger.log(Level.WARNING,
 				"Error in " + script +
 					": A buffer element matched multiple times cannot be matched with an element that is itself matched multiple times.")
-		}		
+		}
 
 		res1 && res2
-		
+
 	}
-	
+
 	/**
 	 * Identify which data ranges of a {@link Buffer} are matched multiple
 	 * times. A range is matched multiple times if several matches involving
@@ -297,33 +321,34 @@ class ScriptRunner {
 		var multStart = -1
 		val endMult = newArrayList
 		var inZone = false
-		for(idx : 0 .. buffer.nbTokens*buffer.tokenSize){						
+		for (idx : 0 .. buffer.nbTokens * buffer.tokenSize) {
+
 			// Process ending matches
 			var nbEnding = endMult.size
 			endMult.removeAll(idx)
-			nbMatch = nbMatch - (nbEnding-endMult.size)
-			
+			nbMatch = nbMatch - (nbEnding - endMult.size)
+
 			// Add new matches (if any)
 			var matches = buffer.matchTable.get(idx)
-			if(matches != null){
+			if (matches != null) {
 				nbMatch = nbMatch + matches.size
+
 				// If a new "multiple match" zone begins
-				if(nbMatch>1 && !inZone)
-				{
+				if (nbMatch > 1 && !inZone) {
 					inZone = true
-					multStart = idx				
-				}				
+					multStart = idx
+				}
 				matches.forEach[endMult.add(idx + it.length)]
-			}			
-			
+			}
+
 			// If this was the end of a mult zone
-			if(inZone && nbMatch<=1){
-				multMatchRange.put(multStart, idx-1)
+			if (inZone && nbMatch <= 1) {
+				multMatchRange.put(multStart, idx - 1)
 				inZone = false
 				multStart = -1
-			}			
+			}
 		}
-		
+
 		multMatchRange
 	}
 
@@ -344,7 +369,7 @@ class ScriptRunner {
 	def run() {
 
 		// For each vertex with a script
-		for (e : scriptedVertices.entrySet) {			
+		for (e : scriptedVertices.entrySet) {
 			val dagVertex = e.key
 			val script = e.value
 			val interpreter = new Interpreter();
@@ -380,51 +405,118 @@ class ScriptRunner {
 			if (interpreter.get("outputs") == null)
 				interpreter.set("outputs", outputs)
 
-			try {				
+			try {
+
 				// Run the script
 				interpreter.source(script.absolutePath);
-				
-				// Check the result
-				if(checkPolicy != CheckPolicy::NONE)
-				{
-					check(script ,inputs->outputs)
-				}
 
 				// Store the result if the execution was successful 
 				scriptResults.put(dagVertex, inputs -> outputs)
-			
+
 			} catch (ParseException error) {
 
 				// Logger is used to display messages in the console
 				val logger = WorkflowLogger.getLogger
 				var message = error.rawMessage + "\n" + error.cause
-			
-				logger.log(Level.WARNING,
-					"Parse error in " + sdfVertex.name + " memory script:\n" +
-						message)
+
+				logger.log(Level.WARNING, "Parse error in " + sdfVertex.name + " memory script:\n" + message)
 
 			} catch (EvalError error) {
 
 				// Logger is used to display messages in the console
 				val logger = WorkflowLogger.getLogger
 				var message = error.rawMessage + "\n" + error.cause
-			
+
 				logger.log(Level.WARNING,
 					"Evaluation error in " + sdfVertex.name + " memory script:\n[Line " + error.errorLineNumber + "] " +
 						message)
 
 			} catch (IOException exception) {
 				exception.printStackTrace
-			}  catch (Exception error) {
-
-				// Logger is used to display messages in the console
-				val logger = WorkflowLogger.getLogger
-				logger.log(Level.WARNING,
-					"Evaluation error in " + sdfVertex.name + " memory script:\n[Line ?] " +
-						error.message)
-
 			}
 		}
+	}
+
+	/**
+	 * This method pre-process the {@link #scriptResults} in order to simplify 
+	 * them. (cf. {@link #preProcessResult(List,List)} for more information on 
+	 * the pre-processing).
+	 * This method must be called after {@link #run()} and {@link #check()} 
+	 * have been successfully called.
+	 */
+	def preProcess() {
+		scriptResults.forEach[vertex, result|simplifyResult(result.key, result.value)]
+	}
+
+	/**
+	 * The objective of this method is to merge as many matches as possible
+	 * from the {@link Buffer} {@link List}s.
+	 * Two matches are mergeable if they are consecutive and if they match consecutive targets.<br>
+	 * Example 1: <code>a[0..3]<->b[1..4] and a[4..5]<->b[5..6]</code> are valid candidates.<br>
+	 * Example 2: <code>a[0..3]<->b[1..4] and a[5..6]<->b[5..6]</code> are not valid candidates.
+	 * Before entering this method, the Buffer lists MUST be valid. If the validity of the lists is unsure
+	 * use #check method. 
+	 */
+	def simplifyResult(List<Buffer> inputs, List<Buffer> outputs) {
+
+		val allBuffers = new ArrayList<Buffer>
+		allBuffers.addAll(inputs)
+		allBuffers.addAll(outputs)
+
+		// Matches whose reciprocate has been processed
+		// no need to test them again
+		val processedMatch = newArrayList
+
+		// Iterate over all buffers
+		allBuffers.forEach [ buffer |
+			val removedEntry = newArrayList
+			// Process the match table
+			buffer.matchTable.entrySet.forEach [
+				val localIdx = it.key
+				val matchSet = it.value
+				// For each match
+				matchSet.filter[!processedMatch.contains(it)].forEach [ match |
+					var Match remMatch = null
+					do {
+
+						// Check if a consecutive match exist
+						var candidateSet = buffer.matchTable.get(localIdx + match.length)
+
+						// Since #check() is supposed valid
+						// at most candidate can satisfy the conditions
+						remMatch = if (candidateSet != null) {
+							candidateSet.findFirst [ candidate |
+								candidate.buffer == match.buffer // same target
+								&& candidate.index == match.index + match.length
+							]
+						} else {
+							null
+						}
+						if (remMatch != null) {
+
+							// Remove the consecutive match from matchTables
+							candidateSet.remove(remMatch)
+							val remMatchSet = remMatch.buffer.matchTable.get(remMatch.index)
+							remMatchSet.remove(remMatch.reciprocate)
+
+							// Remove empty matchLists from the matchTable
+							if(remMatchSet.size == 0) remMatch.buffer.matchTable.remove(remMatch.index)
+							if(candidateSet.size == 0) removedEntry.add(localIdx + match.length)
+
+							// Lengthen the existing match
+							match.length = match.length + remMatch.length
+							match.reciprocate.length = match.length
+
+						}
+
+					} while (remMatch != null)
+					// Put the reciprocate match in the in the processes list
+					processedMatch.add(match.reciprocate)
+				]
+			]
+			// Remove empty matchLists from matchTable
+			removedEntry.forEach[buffer.matchTable.remove(it)]
+		]
 	}
 
 	def static Set<SDFEdge> incomingEdges(SDFAbstractVertex vertex) {
@@ -463,11 +555,11 @@ class ScriptRunner {
 			if (scriptFile.exists) {
 				interpreter.source(scriptFile.absolutePath);
 			}
-			
+
 		} catch (IOException e) {
 			e.printStackTrace
-			//null // return null for the try catch block
+
+		//null // return null for the try catch block
 		}
 	}
 }
-
