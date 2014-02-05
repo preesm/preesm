@@ -16,6 +16,20 @@ class Buffer {
 	final int tokenSize
 
 	/**
+	 * Minimum index for the buffer content.
+	 * Constructor initialize this value to 0 but it is possible to lower this
+	 * value by matching another buffer on the "edge" of this one.<br>
+	 * For example: <code>this.matchWith(-3, a, 0, 6)</code> results in 
+	 * matching this[-3..2] with a[0..5], thus lowering this.minIndex to -3.
+	 */
+	int _minIndex
+
+	/**
+	 * cf {@link #minIndex}.
+	 */
+	int _maxIndex
+
+	/**
 	 * This table is protected to ensure that matches are set only by using
 	 * {@link #matchWith(int,Buffer,int)} methods in the scripts.
 	 */
@@ -36,6 +50,16 @@ class Buffer {
 		_nbTokens = nbTokens
 		_tokenSize = tokenSize
 		_matchTable = newHashMap()
+		_minIndex = 0
+		_maxIndex = nbTokens * tokenSize
+	}
+
+	def getMinIndex() {
+		_minIndex
+	}
+
+	def getMaxIndex() {
+		_maxIndex
 	}
 
 	/**
@@ -55,9 +79,10 @@ class Buffer {
 	 * production and consumption rate from the SDF graph).
 	 * 
 	 * @exception Exception
-	 *                may be thrown if the matched ranges exceeds the
-	 *                {@link Buffer#getNbTokens()} or if the two {@link Buffer
-	 *                buffers} have different {@link Buffer#getTokenSize()}.
+	 *                may be thrown if the matched ranges both have elements
+	 * 				  outside of their {@link Buffer} indexes 
+	 * 				  ({@link #_maxIndex} and {@link #_minIndex}). 
+	 *                
 	 * 
 	 * @param localIdx
 	 *            start index of the matched range for the local {@link Buffer}.
@@ -70,24 +95,55 @@ class Buffer {
 	 * @return not used.
 	 */
 	def matchWith(int localIdx, Buffer buffer, int remoteIdx, int size) {
+		
+		// TODO Move all checks to the ScriptRunner#check method!
 		if (this.tokenSize != buffer.tokenSize) {
 			throw new RuntimeException(
 				"Cannot match " + this.name + " with " + buffer.name + " because buffers have different token sized (" +
 					this.tokenSize + "!=" + buffer.tokenSize + ")")
 		}
 
-		if (localIdx + size - 1 >= nbTokens) {
+		// Test if a matched range is completely out of real tokens
+		if ((localIdx >= this.nbTokens) || (localIdx + size - 1 < 0)) {
 			throw new RuntimeException(
-				"Cannot match " + this.name + " with " + buffer.name + " because matched range [" + localIdx + ".." +
-					(localIdx + size - 1) + "] exceeds buffer size:" + nbTokens)
+				"Cannot match " + this.name + "[" + localIdx + ".." + (localIdx + size - 1) + "] and " + buffer.name +
+					"[" + remoteIdx + ".." + (remoteIdx + size - 1) + "] because no \"real\" token from " + this.name +
+					"[0.." + (this.nbTokens - 1) + "] is matched.")
+		}
+		if ((remoteIdx >= buffer.nbTokens) || (remoteIdx + size - 1 < 0)) {
+			throw new RuntimeException(
+				"Cannot match " + this.name + "[" + localIdx + ".." + (localIdx + size - 1) + "] and " + buffer.name +
+					"[" + remoteIdx + ".." + (remoteIdx + size - 1) + "] because no \"real\" token from " + buffer.name +
+					"[0.." + (buffer.nbTokens - 1) + "] is matched.")
 		}
 
-		if (remoteIdx + size - 1 >= buffer.nbTokens) {
+		// Are "virtual" tokens matched together
+		if (// Both ranges begins before the first token
+		((localIdx < 0) && (remoteIdx < 0)) ||
+			// or both buffers ends after the last token
+			((localIdx + size - 1 >= this.nbTokens) && (remoteIdx + size - 1 >= buffer.nbTokens)) ||
+			// or local range begins with less real tokens than the number of virtual tokens beginning remote range
+			(localIdx >= 0 && ((this.nbTokens - localIdx) <= -Math::min(0, remoteIdx))) ||
+			// or remote range begins with less real tokens than the number of virtual tokens beginning local range
+			(remoteIdx >= 0 && ((buffer.nbTokens - remoteIdx) <= -Math::min(0, localIdx)))) {
 			throw new RuntimeException(
-				"Cannot match " + buffer.name + " with " + this.name + " because matched range [" + remoteIdx + ".." +
-					(remoteIdx + size - 1) + "] exceeds buffer size:" + buffer.nbTokens)
+				"Cannot match " + this.name + "[" + localIdx + ".." + (localIdx + size - 1) + "] and " + buffer.name +
+					"[" + remoteIdx + ".." + (remoteIdx + size - 1) +
+					"] because \"virtual tokens\" cannot be matched together.\n" + "Information: " + this.name +
+					" size = " + this.nbTokens + " and " + buffer.name + " size = " + buffer.nbTokens + ".")
 		}
 
+		// If needed, update the buffers min/max indexes
+		if (!(localIdx >= 0) && (localIdx + size - 1 < this.nbTokens)) {
+			this._minIndex = Math::min(_minIndex, localIdx * tokenSize)
+			this._maxIndex = Math::max(_maxIndex, (localIdx + size) * tokenSize)
+		}
+		if (!(remoteIdx >= 0) && (remoteIdx + size - 1 < buffer.nbTokens)) {
+			buffer._minIndex = Math::min(buffer._minIndex, remoteIdx * tokenSize)
+			buffer._maxIndex = Math::max(buffer._maxIndex, (remoteIdx + size) * tokenSize)
+		}
+
+		// Do the match
 		var matchSet = matchTable.get(localIdx * tokenSize)
 		if (matchSet == null) {
 			matchSet = newArrayList
@@ -105,7 +161,6 @@ class Buffer {
 		remoteMatchSet.add(remoteMatch)
 
 		localMatch.reciprocate = remoteMatch
-
 	}
 }
 
@@ -133,15 +188,17 @@ class Match {
 	def getReciprocate() {
 		_reciprocate
 	}
-	
+
 	/**
 	 * Overriden to forbid
 	 */
-	override hashCode(){
+	override hashCode() {
+
 		// Forbidden because if a non final attribute is changed, then the hashcode changes.
 		// But if the Match is already stored in a map, its original hashcode will have been used
 		throw new UnsupportedOperationException("HashCode is not supported for Match class. Do not use HashMap.")
-			//index.hashCode.bitwiseXor(length.hashCode).bitwiseXor(buffer.hashCode) 	
+
+	//index.hashCode.bitwiseXor(length.hashCode).bitwiseXor(buffer.hashCode) 	
 	}
 
 	/**
@@ -157,8 +214,8 @@ class Match {
 		var other = obj as Match
 		this.buffer == other.buffer && this.index == other.index && this.length == other.length
 	}
-	
-	override toString()'''«buffer.name»[«index»..«index+length-1»]'''
+
+	override toString() '''«buffer.name»[«index»..«index + length - 1»]'''
 
 }
 

@@ -2,11 +2,13 @@ package org.ietr.preesm.experiment.memory
 
 import bsh.EvalError
 import bsh.Interpreter
+import bsh.ParseException
 import java.io.File
 import java.io.IOException
 import java.net.URI
 import java.util.ArrayList
 import java.util.HashMap
+import java.util.HashSet
 import java.util.List
 import java.util.Map
 import java.util.Set
@@ -29,7 +31,6 @@ import org.eclipse.core.runtime.FileLocator
 import org.eclipse.core.runtime.Path
 import org.eclipse.xtext.xbase.lib.Pair
 import org.ietr.preesm.core.types.DataType
-import bsh.ParseException
 
 enum CheckPolicy {
 	NONE,
@@ -174,7 +175,7 @@ class ScriptRunner {
 				}
 			}
 		}
-		
+
 		scriptedVertices.size
 	}
 
@@ -234,7 +235,7 @@ class ScriptRunner {
 
 		// Check that all matches are reciprocal
 		// For all buffers
-		val res1 = allBuffers.forall [ localBuffer | //localBuffer.matchTable.get(0).add()
+		val res1 = allBuffers.forall [ localBuffer |
 			// for all matcheSet  
 			localBuffer.matchTable.entrySet.forall [
 				val matches = it.value
@@ -296,9 +297,79 @@ class ScriptRunner {
 					": A buffer element matched multiple times cannot be matched with an element that is itself matched multiple times.")
 		}
 
+		// Find and remove partially matched buffers
+		val testedBuffers = new HashSet<Buffer>(allBuffers)
+		var nbRemoved = 0;
+		do {
+		val partiallyMatchedBuffers = newArrayList
+		testedBuffers.forEach [ buffer |
+			val coveredRange = new ArrayList<Range>
+			val iterEntry = buffer.matchTable.entrySet.iterator
+			val stop = newArrayList(false)
+			while(iterEntry.hasNext && !stop.get(0)){
+				val entry = iterEntry.next
+				val localIdx = entry.key
+				entry.value.forEach [
+					val addedRange = coveredRange.union(new Range(localIdx,localIdx + it.length))
+					//indexSet.addAll(localIdx .. localIdx + it.length - 1)
+					stop.set(0, stop.get(0) || (addedRange.start == buffer.minIndex && addedRange.end == buffer.maxIndex))
+				]
+			}
+			
+			// If a buffer is partially matched 
+			if (! stop.get(0)) {
+				partiallyMatchedBuffers.add(buffer)
+
+				// Warning only for partially matched buffers?
+				// If a buffer is not matched at all, silently remove it from the lists.
+				if (coveredRange.size != 0) {
+					val logger = WorkflowLogger.logger
+					logger.log(Level.WARNING,
+						"Warning in " + script + ":\nBuffer \"" + buffer.name +
+							"\" is only partially matched. Its memory will not be part of the optimization process.")
+				}
+			}
+		]
+		// Do the removal
+		nbRemoved = partiallyMatchedBuffers.size
+		result.key.removeAll(partiallyMatchedBuffers)
+		result.value.removeAll(partiallyMatchedBuffers)
+		testedBuffers.clear
+		partiallyMatchedBuffers.forEach[
+			it.matchTable.values.forEach[
+				it.forEach[
+					testedBuffers.add(it.buffer)
+					it.buffer.matchTable.get(it.index).remove(it.reciprocate)
+				]
+			]
+		]
+		
+		} while(nbRemoved >0)
+		
 		res1 && res2
 
 	}
+	
+	def union(ArrayList<Range> ranges, Range newRange) {
+		var iter =  ranges.iterator
+		while(iter.hasNext){
+			val range = iter.next
+			// If new range overlaps with current range
+			if((newRange.start <= range.end && range.start <= newRange.end) //||
+				//(newRange.start == range.end || range.start == newRange.end)
+			){
+				// Remove old range and include it with the new
+				iter.remove
+				newRange.start = Math.min(newRange.start, range.start)
+				newRange.end = Math.max(newRange.end, range.end)
+			}
+		}
+		
+		ranges.add(newRange)
+		newRange
+	}
+	
+	
 
 	/**
 	 * Identify which data ranges of a {@link Buffer} are matched multiple
@@ -439,12 +510,14 @@ class ScriptRunner {
 
 	/**
 	 * This method pre-process the {@link #scriptResults} in order to simplify 
-	 * them. (cf. {@link #preProcessResult(List,List)} for more information on 
+	 * them. (cf. {@link #simplifyResult(List,List)} for more information on 
 	 * the pre-processing).
 	 * This method must be called after {@link #run()} and {@link #check()} 
 	 * have been successfully called.
 	 */
 	def preProcess() {
+
+		// Simplify results
 		scriptResults.forEach[vertex, result|simplifyResult(result.key, result.value)]
 	}
 
@@ -562,4 +635,20 @@ class ScriptRunner {
 		//null // return null for the try catch block
 		}
 	}
+}
+
+class Range {
+	@Property
+	var int start
+	
+	@Property
+	var int end
+	
+	new(int start, int end){
+		_start = start
+		_end = end
+	}
+	
+	override toString() '''[«start»..«end»]'''
+	
 }
