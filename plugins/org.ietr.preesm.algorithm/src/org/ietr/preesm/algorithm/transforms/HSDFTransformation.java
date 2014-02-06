@@ -134,7 +134,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 	 * logger.log(Level.FINER, "Transforming application " + algorithm.getName()
 	 * + " to HSDF"); VisitorOutput.setLogger(logger); if
 	 * (algorithm.validateModel(AbstractWorkflowLogger.getLogger())) {
-	 * net.sf.dftools.algorithm.model.sdf.visitors.OptimizedToHSDFVisitor toHsdf
+	 * org.ietr.dftools.algorithm.model.sdf.visitors.OptimizedToHSDFVisitor toHsdf
 	 * = new OptimizedToHSDFVisitor(); try { algorithm.accept(toHsdf); } catch
 	 * (SDF4JException e) { e.printStackTrace(); throw (new
 	 * PreesmException(e.getMessage())); } logger.log(Level.FINER,

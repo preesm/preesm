@@ -2,7 +2,7 @@
 <xsl:stylesheet 
     xmlns="http://ietr-image.insa-rennes.fr/projects/Preesm"
     xmlns:preesm="http://ietr-image.insa-rennes.fr/projects/Preesm"
-    xmlns:dftools="http://net.sf.dftools"
+    xmlns:dftools="http://org.ietr.dftools"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
     
     <xsl:output indent="yes" method="xml"/>

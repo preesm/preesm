@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dftools:workflow xmlns:dftools="http://net.sf.dftools">
+<dftools:workflow xmlns:dftools="http://org.ietr.dftools">
     <dftools:scenario pluginId="org.ietr.preesm.scenario.ibsdfandslam"/>
     <dftools:task pluginId="org.ietr.preesm.archi.slam.flattening" taskId="flatten">
         <dftools:data key="variables"/>

@@ -785,19 +785,19 @@
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
       <propertyTabs
-            contributorId="net.sf.graphiti.ui.properties.contributor">
+            contributorId="org.ietr.dftools.graphiti.ui.properties.contributor">
          <propertyTab
-               category="net.sf.graphiti.ui.properties.category.graph"
+               category="org.ietr.dftools.graphiti.ui.properties.category.graph"
                id="org.ietr.preesm.ui.properties.tab.sdf.graph.parameters"
                label="Graph Parameters">
          </propertyTab>
          <propertyTab
-               category="net.sf.graphiti.ui.properties.category.graph"
+               category="org.ietr.dftools.graphiti.ui.properties.category.graph"
                id="org.ietr.preesm.ui.properties.tab.sdf.graph.variables"
                label="Graph Variable Declarations">
          </propertyTab>
          <propertyTab
-               category="net.sf.graphiti.ui.properties.category.vertex"
+               category="org.ietr.dftools.graphiti.ui.properties.category.vertex"
                id="org.ietr.preesm.ui.properties.tab.sdf.vertex.arguments"
                label="Instance Arguments">
          </propertyTab>
@@ -806,7 +806,7 @@
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertySections">
       <propertySections
-            contributorId="net.sf.graphiti.ui.properties.contributor">
+            contributorId="org.ietr.dftools.graphiti.ui.properties.contributor">
          <propertySection
                class="org.ietr.preesm.ui.properties.SDFGraphParametersListSection"
                filter="org.ietr.preesm.ui.properties.filters.SDFGraphFilter"
@@ -832,7 +832,7 @@
       <shortcut
             class="org.ietr.dftools.ui.workflow.launch.WorkflowLaunchShortcut"
             icon="icons/workflow.png"
-            id="net.sf.dftools.ui.workflow.workflowLaunchShortcut"
+            id="org.ietr.dftools.ui.workflow.workflowLaunchShortcut"
             label="Preesm Workflow"
             modes="run,debug">
          <description
@@ -850,7 +850,7 @@
                      <and>
                         <test
                               forcePluginActivation="true"
-                              property="net.sf.dftools.isWorkflow">
+                              property="org.ietr.dftools.isWorkflow">
                         </test>
                      </and>
                   </iterate>
