@@ -148,9 +148,7 @@ class ScriptRunner {
 				"Error in " + script + ":\nOne of the match is not reciprocal." +
 					" Please set matches only by using Buffer.matchWith() methods.")
 		}
-
-		// Check that inputs are only merged with outputs (and vice versa)
-		// Not checked => Authorized (ex. for round buffers)  
+ 
 		// Find ranges from input and output with multiple matches
 		// Check: If a[i] is matched with b[j], b[k], and c[l] then b[j] (or 
 		// b[k] or c[l]) cannot be matched with a buffer different than a[i].
