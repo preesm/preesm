@@ -2,7 +2,7 @@
 <feature
       id="org.ietr.preesm.feature"
       label="Preesm Feature"
-      version="1.0.0.rc1-v20131030"
+      version="1.0.0.qualifier"
       provider-name="IETR/INSA"
       os="linux,win32">
 
@@ -88,20 +88,6 @@ terms.
    </requires>
 
    <plugin
-         id="org.ietr.preesm.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.ietr.preesm.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.ietr.preesm.algorithm"
          download-size="0"
          install-size="0"
@@ -116,7 +102,7 @@ terms.
          unpack="false"/>
 
    <plugin
-         id="org.ietr.preesm.memory"
+         id="org.ietr.preesm.codegen.xtend"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -130,7 +116,14 @@ terms.
          unpack="false"/>
 
    <plugin
-         id="org.ietr.preesm.codegen.xtend"
+         id="org.ietr.preesm.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.ietr.preesm.experiment.core"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -158,7 +151,28 @@ terms.
          unpack="false"/>
 
    <plugin
+         id="org.ietr.preesm.experiment.ui.piscenario"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="org.ietr.preesm.mapper"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.ietr.preesm.memory"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.ietr.preesm.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"

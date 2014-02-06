@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Transformation
 Bundle-SymbolicName: org.ietr.preesm.experiment.model.transformation;singleton:=true
-Bundle-Version: 1.0.0.rc1-v20131030
+Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.ietr.preesm.experiment.model.transformation.Activator
 Bundle-Vendor: IETR
 Require-Bundle: org.eclipse.ui,
