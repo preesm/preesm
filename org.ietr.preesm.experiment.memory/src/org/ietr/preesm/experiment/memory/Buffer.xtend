@@ -3,18 +3,181 @@ package org.ietr.preesm.experiment.memory
 import java.util.ArrayList
 import java.util.Map
 import java.util.List
+import static extension org.ietr.preesm.experiment.memory.Range.*
 
 class Buffer {
+	
+	/**
+	 * Identify which data ranges of a {@link Buffer} are matched multiple
+	 * times. A range is matched multiple times if several matches involving
+	 * this ranges are stored in the {@link Buffer#getMatchTable() match table}
+	 * of the {@link Buffer}. For example, if these to calls are executed: </br>
+	 * <code>a.matchWith(b,0 *            the {@link Buffer} whose multiple matched ranges are
+	 *            extracted.
+	 * 
+	 * @return a {@link Map} containing the start end end of ranges matched
+	 *         multiple times.
+	 */
+	static def getMultipleMatchRange(Buffer buffer) {
+		var multMatchRange = newHashMap
+		var nbMatch = 0
+		var multStart = -1
+		val endMult = newArrayList
+		var inZone = false
+		for (idx : 0 .. buffer.nbTokens * buffer.tokenSize) {
 
-	@Property
-	final String name
+			// Process ending matches
+			var nbEnding = endMult.size
+			endMult.removeAll(idx)
+			nbMatch = nbMatch - (nbEnding - endMult.size)
 
-	@Property
-	final int nbTokens
+			// Add new matches (if any)
+			var matches = buffer.matchTable.get(idx)
+			if (matches != null) {
+				nbMatch = nbMatch + matches.size
 
-	@Property
-	final int tokenSize
+				// If a new "multiple match" zone begins
+				if (nbMatch > 1 && !inZone) {
+					inZone = true
+					multStart = idx
+				}
+				matches.forEach[endMult.add(idx + it.length)]
+			}
 
+			// If this was the end of a mult zone
+			if (inZone && nbMatch <= 1) {
+				multMatchRange.put(multStart, idx - 1)
+				inZone = false
+				multStart = -1
+			}
+		}
+
+		multMatchRange
+	}
+
+	/**
+	 * Test if the {@link Buffer} is partially matched.<br>
+	 * <br>
+	 * A {@link Buffer} is partially matched if only part of its token range 
+	 * (i.e. from {@link Buffer#_minIndex minIndex} to {@link Buffer#_maxIndex
+	 *  maxIndex}) are involved in a {@link Match} in the {@link Buffer} 
+	 * {@link Buffer#_matchTable match table}.
+	 * 
+	 * @param buffer
+	 * 	The tested {@link Buffer}.
+	 * @return <code>true</code> if the {@link Buffer} is completely matched,
+	 * and <code>false</code> otherwise. 
+	 */
+	static def isPartiallyMatched(Buffer buffer) {
+		val coveredRange = new ArrayList<Range>
+		val iterEntry = buffer.matchTable.entrySet.iterator
+		var stop = false
+
+		while (iterEntry.hasNext && !stop) {
+			val entry = iterEntry.next
+			val localIdx = entry.key
+			var iterMatch = entry.value.iterator
+			while (iterMatch.hasNext && !stop) {
+				val match = iterMatch.next
+				val addedRange = coveredRange.union(new Range(localIdx, localIdx + match.length))
+
+				// Set stop to true if the range covers the complete token range
+				stop = stop || (addedRange.start == buffer.minIndex && addedRange.end == buffer.maxIndex)
+			}
+		}
+
+		// If the loops were stopped, a complete range was reached
+		stop
+	}
+
+	/**
+	 * Test if all {@link Match matches} contained in the {@link 
+	 * Buffer#_machTable matchTable} are reciprocal.<br><br>
+	 * 
+	 * A {@link Match} is reciprocal if the remote {@link Match#buffer}
+     * contains an reciprocal {@link Match} in its {@link Buffer#_matchTable
+     * matchTable}.  
+	 */
+	static def isReciprocal(Buffer localBuffer) {
+		localBuffer.matchTable.entrySet.forall [
+			val matches = it.value
+			val localIdx = it.key
+			// for all matches
+			matches.forall [ match |
+				val remoteMatches = match.buffer.matchTable.get(match.index)
+				remoteMatches != null && remoteMatches.contains(new Match(localBuffer, localIdx, match.length))
+			]
+		]
+	}
+	
+	/**
+	 * The objective of this method is to merge as many matches as possible
+	 * from the {@link Buffer} {@link Buffer#_matchTable match tables}.<br><br>
+	 * 
+	 * Two matches are mergeable if they are consecutive and if they match 
+	 * consecutive targets.<br>
+	 * Example 1: <code>a[0..3]<->b[1..4] and a[4..5]<->b[5..6]</code> are
+	 * valid candidates.<br>
+	 * Example 2: <code>a[0..3]<->b[1..4] and a[5..6]<->b[5..6]</code> are
+	 * not valid candidates.<br><b>
+	 * Before using this method, the {@link Buffer} must pass all checks
+	 * performed by the {@link ScriptRunner#check()} method. </b>
+	 * 
+	 * @param buffer
+	 * 	The {@link Buffer} whose {@link Buffer#_matchTable matchTable} is
+	 *  simplified.
+	 * @param processedMatch
+	 * 	A {@link List} containing {@link Match matches} that will be ignored
+	 *  during simplification. This list will be updated during the method
+	 *  execution by adding to it the {@link Match#reciprocate} of the 
+	 *  processed {@link Match matches}. 
+	 */
+	static def simplifyMatches(Buffer buffer, List<Match> processedMatch) {
+		val removedEntry = newArrayList
+		// Process the match table
+		buffer.matchTable.entrySet.forEach [
+			val localIdx = it.key
+			val matchSet = it.value
+			// For each match
+			matchSet.filter[!processedMatch.contains(it)].forEach [ match |
+				var Match remMatch = null
+				do {
+					// Check if a consecutive match exist
+					var candidateSet = buffer.matchTable.get(localIdx + match.length)
+		
+					// Since Buffer#check() is supposed valid
+					// at most one candidate can satisfy the conditions
+					remMatch = if (candidateSet != null) {
+						candidateSet.findFirst [ candidate |
+							candidate.buffer == match.buffer // same target
+							&& candidate.index == match.index + match.length
+						]
+					} else {
+						null
+					}
+					if (remMatch != null) {
+						// Remove the consecutive match from matchTables
+						candidateSet.remove(remMatch)
+						val remMatchSet = remMatch.buffer.matchTable.get(remMatch.index)
+						remMatchSet.remove(remMatch.reciprocate)
+		
+						// Remove empty matchLists from the matchTable
+						if(remMatchSet.size == 0) remMatch.buffer.matchTable.remove(remMatch.index)
+						if(candidateSet.size == 0) removedEntry.add(localIdx + match.length)
+		
+						// Lengthen the existing match
+						match.length = match.length + remMatch.length
+						match.reciprocate.length = match.length
+					}
+				} while (remMatch != null)
+				// Put the reciprocate match in the in the processes list
+				processedMatch.add(match.reciprocate)
+			]
+		]
+		// Remove empty matchLists from matchTable
+		removedEntry.forEach[buffer.matchTable.remove(it)]
+	}
+	
 	/**
 	 * Minimum index for the buffer content.
 	 * Constructor initialize this value to 0 but it is possible to lower this
@@ -28,13 +191,22 @@ class Buffer {
 	 * cf {@link #minIndex}.
 	 */
 	int _maxIndex
-
+		
 	/**
 	 * This table is protected to ensure that matches are set only by using
 	 * {@link #matchWith(int,Buffer,int)} methods in the scripts.
 	 */
 	@Property
 	final protected Map<Integer, List<Match>> matchTable
+	
+	@Property
+	final String name
+
+	@Property
+	final int nbTokens
+
+	@Property
+	final int tokenSize		
 
 	/**
     * Constructor for the {@link Buffer}.
@@ -95,8 +267,7 @@ class Buffer {
 	 * @return not used.
 	 */
 	def matchWith(int localIdx, Buffer buffer, int remoteIdx, int size) {
-		
-		// TODO Move all checks to the ScriptRunner#check method!
+
 		if (this.tokenSize != buffer.tokenSize) {
 			throw new RuntimeException(
 				"Cannot match " + this.name + " with " + buffer.name + " because buffers have different token sized (" +
@@ -161,102 +332,5 @@ class Buffer {
 		remoteMatchSet.add(remoteMatch)
 
 		localMatch.reciprocate = remoteMatch
-	}
-}
-
-class Match {
-	new(Buffer remoteBuffer, int remoteIndex, int size) {
-		buffer = remoteBuffer
-		index = remoteIndex
-		length = size
-	}
-
-	@Property
-	Buffer buffer
-	@Property
-	int index
-	@Property
-	int length
-
-	Match _reciprocate
-
-	def setReciprocate(Match remoteMatch) {
-		_reciprocate = remoteMatch
-		remoteMatch._reciprocate = this
-	}
-
-	def getReciprocate() {
-		_reciprocate
-	}
-
-	/**
-	 * Overriden to forbid
-	 */
-	override hashCode() {
-
-		// Forbidden because if a non final attribute is changed, then the hashcode changes.
-		// But if the Match is already stored in a map, its original hashcode will have been used
-		throw new UnsupportedOperationException("HashCode is not supported for Match class. Do not use HashMap.")
-
-	//index.hashCode.bitwiseXor(length.hashCode).bitwiseXor(buffer.hashCode) 	
-	}
-
-	/**
-	 * Reciprocate is not considered 
- 	*/
-	override equals(Object obj) {
-		if (this === obj)
-			return true
-		if (obj === null)
-			return false
-		if (this.class != obj.class)
-			return false
-		var other = obj as Match
-		this.buffer == other.buffer && this.index == other.index && this.length == other.length
-	}
-
-	override toString() '''«buffer.name»[«index»..«index + length - 1»]'''
-
-}
-
-// cf http://stackoverflow.com/questions/5207162/fixed-size-list-in-java
-class FixedSizeList<T> extends ArrayList<T> {
-
-	new(int capacity) {
-		super(capacity);
-		for (i : 0 .. capacity - 1) {
-			super.add(null);
-		}
-	}
-
-	new(T[] initialElements) {
-		super(initialElements.length);
-		for (loopElement : initialElements) {
-			super.add(loopElement);
-		}
-	}
-
-	override clear() {
-		throw new UnsupportedOperationException("Elements may not be cleared from a fixed size List.");
-	}
-
-	override add(T o) {
-		throw new UnsupportedOperationException("Elements may not be added to a fixed size List, use set() instead.");
-	}
-
-	override add(int index, T element) {
-		throw new UnsupportedOperationException("Elements may not be added to a fixed size List, use set() instead.");
-	}
-
-	override remove(int index) {
-		throw new UnsupportedOperationException("Elements may not be removed from a fixed size List.");
-	}
-
-	override remove(Object o) {
-		throw new UnsupportedOperationException("Elements may not be removed from a fixed size List.");
-	}
-
-	override removeRange(int fromIndex, int toIndex) {
-		throw new UnsupportedOperationException("Elements may not be removed from a fixed size List.");
 	}
 }

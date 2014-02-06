@@ -8,7 +8,6 @@ import java.io.IOException
 import java.net.URI
 import java.util.ArrayList
 import java.util.HashMap
-import java.util.HashSet
 import java.util.List
 import java.util.Map
 import java.util.Set
@@ -32,6 +31,8 @@ import org.eclipse.core.runtime.Path
 import org.eclipse.xtext.xbase.lib.Pair
 import org.ietr.preesm.core.types.DataType
 
+import static extension org.ietr.preesm.experiment.memory.Buffer.*
+
 enum CheckPolicy {
 	NONE,
 	FAST,
@@ -39,6 +40,22 @@ enum CheckPolicy {
 }
 
 class ScriptRunner {
+
+	/**
+	 * Helper method to get the incoming {@link SDFEdge}s of an {@link 
+	 * SDFAbstractVertex}.
+	 */
+	def static Set<SDFEdge> incomingEdges(SDFAbstractVertex vertex) {
+		vertex.base.incomingEdgesOf(vertex)
+	}
+
+	/**
+	 * Helper method to get the outgoing {@link SDFEdge}s of an {@link 
+	 * SDFAbstractVertex}.
+	 */
+	def static Set<SDFEdge> outgoingEdges(SDFAbstractVertex vertex) {
+		vertex.base.outgoingEdgesOf(vertex)
+	}
 
 	@Property
 	var checkPolicy = CheckPolicy::NONE
@@ -50,12 +67,6 @@ class ScriptRunner {
 	@Property
 	var Map<String, DataType> dataTypes
 
-	/** 
-	 * A {@link Map} that associates each {@link DAGVertex} with a
-	 * memory script to this memory script {@link File}.
-	 */
-	val scriptedVertices = new HashMap<DAGVertex, File>();
-
 	/**
 	 * A {@link Map} that associates each {@link DAGVertex} from the
 	 * {@link #scriptedVertices} map to the result of the successful 
@@ -65,6 +76,123 @@ class ScriptRunner {
      * {@link Buffer buffers}.
 	 */
 	val scriptResults = new HashMap<DAGVertex, Pair<List<Buffer>, List<Buffer>>>
+
+	/** 
+	 * A {@link Map} that associates each {@link DAGVertex} with a
+	 * memory script to this memory script {@link File}.
+	 */
+	val scriptedVertices = new HashMap<DAGVertex, File>();
+
+	/**
+	 * Check the results obtained when running the {@link #run()} method.
+	 * Checks are performed according to the current {@link #setCheckPolicy(CheckPolicy)}.
+	 * The {@link #checkResult(File,Pair)} method is used to perform the checks.
+	 * Vertices whose script results do not pass the checks are removed
+	 * from the {@link #scriptResults} map.
+	 */
+	def check() {
+		if (checkPolicy != CheckPolicy::NONE) {
+
+			// Do the checks
+			val invalidVertices = newArrayList
+			scriptResults.forEach[vertex, result|
+				if(!checkResult(scriptedVertices.get(vertex), result)) invalidVertices.add(vertex)]
+
+			// Remove invalid results
+			invalidVertices.forEach[scriptResults.remove(it)]
+		}
+	}
+
+	/**
+	 * This method perform several checks on the {@link Buffer buffers}
+	 * resulting from the evaluation of a script. The checked points are:
+	 * <ul>
+	 * <li>If all {@link Match matches} are reciprocal. A {@link Match}
+	 * belonging to the {@link Buffer#getMatchTable() matchTable} of a
+	 * {@link Buffer} is reciprocal if the {@link Match#getBuffer() matched
+	 * buffer} has a reciprocal {@link Match} in its
+	 * {@link Buffer#getMatchTable() match table}.</li>
+	 * <li>If ranges matched multiple times are not matched with other ranges
+	 * that are {@link #getMultipleMatchRange(Buffer) matched multiple times}.
+	 * For example, with a,b and c three {@link Buffer buffers}, if a[i] is
+	 * matched with b[j], b[k], and c[l] then b[j] (or b[k] or c[l]) cannot be
+	 * matched with a {@link Buffer} different than a[i].</li>
+	 * </ul>
+	 * If one of the checks is not valid, the method will return false and a
+	 * warning will be displayed in the {@link Logger log}.
+	 * 
+	 * @param script
+	 *            the script {@link File} from which the result {@link Buffer
+	 *            buffers} result.
+	 * @param result
+	 *            a {@link Pair} of {@link List} of {@link Buffer buffers}. The
+	 *            key {@link List} contains input {@link Buffer buffers} and the
+	 *            value {@link List} contain output {@link Buffer buffers}.
+	 * @return <code>true</code> if all checks were valid, <code>false</code>
+	 *         otherwise.
+	 */
+	def checkResult(File script, Pair<List<Buffer>, List<Buffer>> result) {
+		val allBuffers = new ArrayList<Buffer>
+		allBuffers.addAll(result.key)
+		allBuffers.addAll(result.value)
+
+		// Check that all matches are reciprocal
+		// For all buffers
+		val res1 = allBuffers.forall [ localBuffer |
+			// for all matcheSet  
+			localBuffer.reciprocal
+		]
+		if (!res1) {
+			val logger = WorkflowLogger.logger
+			logger.log(Level.WARNING,
+				"Error in " + script + ":\nOne of the match is not reciprocal." +
+					" Please set matches only by using Buffer.matchWith() methods.")
+		}
+
+		// Check that inputs are only merged with outputs (and vice versa)
+		// Not checked => Authorized (ex. for round buffers)  
+		// Find ranges from input and output with multiple matches
+		// Check: If a[i] is matched with b[j], b[k], and c[l] then b[j] (or 
+		// b[k] or c[l]) cannot be matched with a buffer different than a[i].
+		// forall inputs -> forall elements -> forall multiple matches
+		// check that other side of the match has a unique match (implicitly: 
+		// with the current multiple match).
+		val multipleRanges = allBuffers.map[it -> it.multipleMatchRange]
+		val res2 = multipleRanges.forall [ multipleRange |
+			if (multipleRange.value.size != 0) {
+
+				// If the current buffer has multiple ranges
+				multipleRange.value.entrySet.forall [
+					val srcOrig = it.key
+					val srcEnd = it.getValue()
+					// for all match within this range
+					(srcOrig .. srcEnd).forall [
+						val matches = multipleRange.key.matchTable.get(it)
+						if (matches != null) {
+
+							// Test the destination is not within a multiple range
+							matches.forall [
+								val range = multipleRanges.get(allBuffers.indexOf(it.buffer)).value
+								range.filter [ destOrig, destEnd |
+									srcOrig < destEnd && destOrig < srcEnd
+								].size == 0
+							]
+						} else
+							true
+					]
+				]
+			} else
+				true // No multiple range for this buffer
+		]
+
+		if (!res2) {
+			val logger = WorkflowLogger.logger
+			logger.log(Level.WARNING,
+				"Error in " + script + ":\nA buffer element matched multiple times cannot" +
+					" be matched with an element that is itself matched multiple times.")
+		}
+		res1 && res2
+	}
 
 	/**
 	 * This method finds the memory scripts associated to the {@link DAGVertex
@@ -180,247 +308,16 @@ class ScriptRunner {
 	}
 
 	/**
-	 * Check the results obtained when running the {@link #run()} method.
-	 * Checks are performed according to the current {@link #setCheckPolicy(CheckPolicy)}.
-	 * The {@link #checkResult(File,Pair)} method is used to perform the checks.
-	 * Vertices whose script results do not pass the checks are removed
-	 * from the {@link #scriptResults} map.
+	 * This method pre-process the {@link #scriptResults} in order to simplify 
+	 * them. (cf. {@link #simplifyResult(List,List)} for more information on 
+	 * the pre-processing).
+	 * This method must be called after {@link #run()} and {@link #check()} 
+	 * have been successfully called.
 	 */
-	def check() {
-		if (checkPolicy != CheckPolicy::NONE) {
+	def preProcess() {
 
-			// Do the checks
-			val invalidVertices = newArrayList
-			scriptResults.forEach[vertex, result|
-				if(!checkResult(scriptedVertices.get(vertex), result)) invalidVertices.add(vertex)]
-
-			// Remove invalid results
-			invalidVertices.forEach[scriptResults.remove(it)]
-		}
-	}
-
-	/**
-	 * This method perform several checks on the {@link Buffer buffers}
-	 * resulting from the evaluation of a script. The checked points are:
-	 * <ul>
-	 * <li>If all {@link Match matches} are reciprocal. A {@link Match}
-	 * belonging to the {@link Buffer#getMatchTable() matchTable} of a
-	 * {@link Buffer} is reciprocal if the {@link Match#getBuffer() matched
-	 * buffer} has a reciprocal {@link Match} in its
-	 * {@link Buffer#getMatchTable() match table}.</li>
-	 * <li>If ranges matched multiple times are not matched with other ranges
-	 * that are {@link #getMultipleMatchRange(Buffer) matched multiple times}.
-	 * For example, with a,b and c three {@link Buffer buffers}, if a[i] is
-	 * matched with b[j], b[k], and c[l] then b[j] (or b[k] or c[l]) cannot be
-	 * matched with a {@link Buffer} different than a[i].</li>
-	 * </ul>
-	 * If one of the checks is not valid, the method will return false and a
-	 * warning will be displayed in the {@link Logger log}.
-	 * 
-	 * @param script
-	 *            the script {@link File} from which the result {@link Buffer
-	 *            buffers} result.
-	 * @param result
-	 *            a {@link Pair} of {@link List} of {@link Buffer buffers}. The
-	 *            key {@link List} contains input {@link Buffer buffers} and the
-	 *            value {@link List} contain output {@link Buffer buffers}.
-	 * @return <code>true</code> if all checks were valid, <code>false</code>
-	 *         otherwise.
-	 */
-	def checkResult(File script, Pair<List<Buffer>, List<Buffer>> result) {
-
-		val allBuffers = new ArrayList<Buffer>
-		allBuffers.addAll(result.key)
-		allBuffers.addAll(result.value)
-
-		// Check that all matches are reciprocal
-		// For all buffers
-		val res1 = allBuffers.forall [ localBuffer |
-			// for all matcheSet  
-			localBuffer.matchTable.entrySet.forall [
-				val matches = it.value
-				val localIdx = it.key
-				// for all matches
-				matches.forall [ match |
-					val remoteMatches = match.buffer.matchTable.get(match.index)
-					remoteMatches != null && remoteMatches.contains(new Match(localBuffer, localIdx, match.length))
-				]
-			]
-		]
-		if (!res1) {
-			val logger = WorkflowLogger.logger
-			logger.log(Level.WARNING,
-				"Error in " + script +
-					": One of the match is not reciprocal. Please set matches only by using Buffer.setMatch() methods.")
-		}
-
-		// Check that inputs are only merged with outputs (and vice versa)
-		// Not checked => Authorized (ex. for round buffers)  
-		// Find ranges from input and output with multiple matches
-		// Check: If a[i] is matched with b[j], b[k], and c[l] then b[j] (or 
-		// b[k] or c[l]) cannot be matched with a buffer different than a[i].
-		// forall inputs -> forall elements -> forall multiple matches
-		// check that other side of the match has a unique match (implicitly: 
-		// with the current multiple match).
-		val multipleRanges = allBuffers.map[it -> it.multipleMatchRange]
-		val res2 = multipleRanges.forall [ multipleRange |
-			if (multipleRange.value.size != 0) {
-
-				// If the current buffer has multiple ranges
-				multipleRange.value.entrySet.forall [
-					val srcOrig = it.key
-					val srcEnd = it.getValue()
-					// for all match within this range
-					(srcOrig .. srcEnd).forall [
-						val matches = multipleRange.key.matchTable.get(it)
-						if (matches != null) {
-
-							// Test the destination is not within a multiple range
-							matches.forall [
-								val range = multipleRanges.get(allBuffers.indexOf(it.buffer)).value
-								range.filter [ destOrig, destEnd |
-									srcOrig < destEnd && destOrig < srcEnd
-								].size == 0
-							]
-						} else
-							true
-					]
-				]
-			} else
-				true // No multiple range for this buffer
-		]
-
-		if (!res2) {
-			val logger = WorkflowLogger.logger
-			logger.log(Level.WARNING,
-				"Error in " + script +
-					": A buffer element matched multiple times cannot be matched with an element that is itself matched multiple times.")
-		}
-
-		// Find and remove partially matched buffers
-		val testedBuffers = new HashSet<Buffer>(allBuffers)
-		var nbRemoved = 0;
-		do {
-		val partiallyMatchedBuffers = newArrayList
-		testedBuffers.forEach [ buffer |
-			val coveredRange = new ArrayList<Range>
-			val iterEntry = buffer.matchTable.entrySet.iterator
-			val stop = newArrayList(false)
-			while(iterEntry.hasNext && !stop.get(0)){
-				val entry = iterEntry.next
-				val localIdx = entry.key
-				entry.value.forEach [
-					val addedRange = coveredRange.union(new Range(localIdx,localIdx + it.length))
-					//indexSet.addAll(localIdx .. localIdx + it.length - 1)
-					stop.set(0, stop.get(0) || (addedRange.start == buffer.minIndex && addedRange.end == buffer.maxIndex))
-				]
-			}
-			
-			// If a buffer is partially matched 
-			if (! stop.get(0)) {
-				partiallyMatchedBuffers.add(buffer)
-
-				// Warning only for partially matched buffers?
-				// If a buffer is not matched at all, silently remove it from the lists.
-				if (coveredRange.size != 0) {
-					val logger = WorkflowLogger.logger
-					logger.log(Level.WARNING,
-						"Warning in " + script + ":\nBuffer \"" + buffer.name +
-							"\" is only partially matched. Its memory will not be part of the optimization process.")
-				}
-			}
-		]
-		// Do the removal
-		nbRemoved = partiallyMatchedBuffers.size
-		result.key.removeAll(partiallyMatchedBuffers)
-		result.value.removeAll(partiallyMatchedBuffers)
-		testedBuffers.clear
-		partiallyMatchedBuffers.forEach[
-			it.matchTable.values.forEach[
-				it.forEach[
-					testedBuffers.add(it.buffer)
-					it.buffer.matchTable.get(it.index).remove(it.reciprocate)
-				]
-			]
-		]
-		
-		} while(nbRemoved >0)
-		
-		res1 && res2
-
-	}
-	
-	def union(ArrayList<Range> ranges, Range newRange) {
-		var iter =  ranges.iterator
-		while(iter.hasNext){
-			val range = iter.next
-			// If new range overlaps with current range
-			if((newRange.start <= range.end && range.start <= newRange.end) //||
-				//(newRange.start == range.end || range.start == newRange.end)
-			){
-				// Remove old range and include it with the new
-				iter.remove
-				newRange.start = Math.min(newRange.start, range.start)
-				newRange.end = Math.max(newRange.end, range.end)
-			}
-		}
-		
-		ranges.add(newRange)
-		newRange
-	}
-	
-	
-
-	/**
-	 * Identify which data ranges of a {@link Buffer} are matched multiple
-	 * times. A range is matched multiple times if several matches involving
-	 * this ranges are stored in the {@link Buffer#getMatchTable() match table}
-	 * of the {@link Buffer}. For example, if these to calls are executed: </br>
-	 * <code>a.matchWith(b,0,32)</br>a.matchWith(c,16,4)</code> <br>
-	 * Then <code>a[16..19]</code> is matched multiple times.
-	 * 
-	 * @param buffer
-	 *            the {@link Buffer} whose multiple matched ranges are
-	 *            extracted.
-	 * 
-	 * @return a {@link Map} containing the start end end of ranges matched
-	 *         multiple times.
-	 */
-	static def getMultipleMatchRange(Buffer buffer) {
-		var multMatchRange = newHashMap
-		var nbMatch = 0
-		var multStart = -1
-		val endMult = newArrayList
-		var inZone = false
-		for (idx : 0 .. buffer.nbTokens * buffer.tokenSize) {
-
-			// Process ending matches
-			var nbEnding = endMult.size
-			endMult.removeAll(idx)
-			nbMatch = nbMatch - (nbEnding - endMult.size)
-
-			// Add new matches (if any)
-			var matches = buffer.matchTable.get(idx)
-			if (matches != null) {
-				nbMatch = nbMatch + matches.size
-
-				// If a new "multiple match" zone begins
-				if (nbMatch > 1 && !inZone) {
-					inZone = true
-					multStart = idx
-				}
-				matches.forEach[endMult.add(idx + it.length)]
-			}
-
-			// If this was the end of a mult zone
-			if (inZone && nbMatch <= 1) {
-				multMatchRange.put(multStart, idx - 1)
-				inZone = false
-				multStart = -1
-			}
-		}
-
-		multMatchRange
+		// Simplify results
+		scriptResults.forEach[vertex, result|simplifyResult(result.key, result.value)]
 	}
 
 	/**
@@ -475,7 +372,6 @@ class ScriptRunner {
 				interpreter.set("inputs", inputs)
 			if (interpreter.get("outputs") == null)
 				interpreter.set("outputs", outputs)
-
 			try {
 
 				// Run the script
@@ -483,125 +379,27 @@ class ScriptRunner {
 
 				// Store the result if the execution was successful 
 				scriptResults.put(dagVertex, inputs -> outputs)
-
 			} catch (ParseException error) {
 
 				// Logger is used to display messages in the console
 				val logger = WorkflowLogger.getLogger
 				var message = error.rawMessage + "\n" + error.cause
-
 				logger.log(Level.WARNING, "Parse error in " + sdfVertex.name + " memory script:\n" + message)
-
 			} catch (EvalError error) {
 
 				// Logger is used to display messages in the console
 				val logger = WorkflowLogger.getLogger
 				var message = error.rawMessage + "\n" + error.cause
-
 				logger.log(Level.WARNING,
 					"Evaluation error in " + sdfVertex.name + " memory script:\n[Line " + error.errorLineNumber + "] " +
 						message)
-
 			} catch (IOException exception) {
 				exception.printStackTrace
 			}
 		}
 	}
 
-	/**
-	 * This method pre-process the {@link #scriptResults} in order to simplify 
-	 * them. (cf. {@link #simplifyResult(List,List)} for more information on 
-	 * the pre-processing).
-	 * This method must be called after {@link #run()} and {@link #check()} 
-	 * have been successfully called.
-	 */
-	def preProcess() {
-
-		// Simplify results
-		scriptResults.forEach[vertex, result|simplifyResult(result.key, result.value)]
-	}
-
-	/**
-	 * The objective of this method is to merge as many matches as possible
-	 * from the {@link Buffer} {@link List}s.
-	 * Two matches are mergeable if they are consecutive and if they match consecutive targets.<br>
-	 * Example 1: <code>a[0..3]<->b[1..4] and a[4..5]<->b[5..6]</code> are valid candidates.<br>
-	 * Example 2: <code>a[0..3]<->b[1..4] and a[5..6]<->b[5..6]</code> are not valid candidates.
-	 * Before entering this method, the Buffer lists MUST be valid. If the validity of the lists is unsure
-	 * use #check method. 
-	 */
-	def simplifyResult(List<Buffer> inputs, List<Buffer> outputs) {
-
-		val allBuffers = new ArrayList<Buffer>
-		allBuffers.addAll(inputs)
-		allBuffers.addAll(outputs)
-
-		// Matches whose reciprocate has been processed
-		// no need to test them again
-		val processedMatch = newArrayList
-
-		// Iterate over all buffers
-		allBuffers.forEach [ buffer |
-			val removedEntry = newArrayList
-			// Process the match table
-			buffer.matchTable.entrySet.forEach [
-				val localIdx = it.key
-				val matchSet = it.value
-				// For each match
-				matchSet.filter[!processedMatch.contains(it)].forEach [ match |
-					var Match remMatch = null
-					do {
-
-						// Check if a consecutive match exist
-						var candidateSet = buffer.matchTable.get(localIdx + match.length)
-
-						// Since #check() is supposed valid
-						// at most candidate can satisfy the conditions
-						remMatch = if (candidateSet != null) {
-							candidateSet.findFirst [ candidate |
-								candidate.buffer == match.buffer // same target
-								&& candidate.index == match.index + match.length
-							]
-						} else {
-							null
-						}
-						if (remMatch != null) {
-
-							// Remove the consecutive match from matchTables
-							candidateSet.remove(remMatch)
-							val remMatchSet = remMatch.buffer.matchTable.get(remMatch.index)
-							remMatchSet.remove(remMatch.reciprocate)
-
-							// Remove empty matchLists from the matchTable
-							if(remMatchSet.size == 0) remMatch.buffer.matchTable.remove(remMatch.index)
-							if(candidateSet.size == 0) removedEntry.add(localIdx + match.length)
-
-							// Lengthen the existing match
-							match.length = match.length + remMatch.length
-							match.reciprocate.length = match.length
-
-						}
-
-					} while (remMatch != null)
-					// Put the reciprocate match in the in the processes list
-					processedMatch.add(match.reciprocate)
-				]
-			]
-			// Remove empty matchLists from matchTable
-			removedEntry.forEach[buffer.matchTable.remove(it)]
-		]
-	}
-
-	def static Set<SDFEdge> incomingEdges(SDFAbstractVertex vertex) {
-		vertex.base.incomingEdgesOf(vertex)
-	}
-
-	def static Set<SDFEdge> outgoingEdges(SDFAbstractVertex vertex) {
-		vertex.base.outgoingEdgesOf(vertex)
-	}
-
 	def runTest() {
-
 		val interpreter = new Interpreter();
 
 		// Import the necessary libraries
@@ -632,23 +430,19 @@ class ScriptRunner {
 		} catch (IOException e) {
 			e.printStackTrace
 
-		//null // return null for the try catch block
 		}
 	}
-}
 
-class Range {
-	@Property
-	var int start
-	
-	@Property
-	var int end
-	
-	new(int start, int end){
-		_start = start
-		_end = end
+	def simplifyResult(List<Buffer> inputs, List<Buffer> outputs) {
+		val allBuffers = new ArrayList<Buffer>
+		allBuffers.addAll(inputs)
+		allBuffers.addAll(outputs)
+
+		// Matches whose reciprocate has been processed
+		// no need to test them again
+		val processedMatch = newArrayList
+
+		// Iterate over all buffers
+		allBuffers.forEach[it.simplifyMatches(processedMatch)]
 	}
-	
-	override toString() '''[«start»..«end»]'''
-	
 }
