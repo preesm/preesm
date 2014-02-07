@@ -1,7 +1,6 @@
 package org.ietr.preesm.experiment.memory
 
 import java.util.ArrayList
-import java.util.HashMap
 import java.util.List
 import java.util.Map
 
@@ -38,13 +37,7 @@ class Buffer {
 			]
 		]
 
-
-
-		
-		
-		val result = new HashMap<Integer,Integer>
-		multipleMatchRanges.forEach[result.put(it.start, it.end - 1)]
-		result
+		multipleMatchRanges
 	}
 
 	/**

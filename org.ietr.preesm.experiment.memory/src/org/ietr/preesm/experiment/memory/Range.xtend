@@ -20,18 +20,37 @@ class Range {
 	 * @return the {@link List} of {@link Range} ranges corresponding to the 
 	 * intersection of the newRange with the ranges. 
 	 */
-	def static intersection(List<Range> ranges, Range newRange){
+	def static List<Range> intersection(List<Range> ranges, Range newRange){
 		val intersectionRanges = newArrayList 
 		ranges.forEach[ range |
 			// If the ranges overlap
-			if(range.hasOverlap(newRange))
-			{
-				val start = Math::max(range.start, newRange.start)
-				val end  = Math::min(range.end, newRange.end)
-				intersectionRanges.union(new Range(start, end))
+			val intersect = range.intersection(newRange)
+			// !== is equivalent to the != of java
+			// if we use !=, .equals will be called
+			if(intersect !== null)
+			{				
+			 	intersectionRanges.union(intersect)
 			}			
-		]		
+		]
+				
 		return intersectionRanges		
+	}
+	
+	/**
+	 * If the two ranges overlap, the intersection of the two ranges is returned.
+	 * Else, null is returned
+	 * Ranges passed as parameter are not modified
+	 */
+	def static intersection(Range range0, Range range1){
+		var start = 0
+		var end = 0
+		if(range0.hasOverlap(range1))
+			{
+				start = Math::max(range0.start, range1.start)
+				end  = Math::min(range0.end, range1.end)
+				return new Range(start, end)
+			}	
+		null
 	}
 	
 	/**
@@ -129,5 +148,4 @@ class Range {
 	override clone(){
 		new Range(this)
 	}
-	
 }

@@ -32,6 +32,7 @@ import org.eclipse.xtext.xbase.lib.Pair
 import org.ietr.preesm.core.types.DataType
 
 import static extension org.ietr.preesm.experiment.memory.Buffer.*
+import static extension org.ietr.preesm.experiment.memory.Range.*
 
 enum CheckPolicy {
 	NONE,
@@ -148,7 +149,7 @@ class ScriptRunner {
 				"Error in " + script + ":\nOne of the match is not reciprocal." +
 					" Please set matches only by using Buffer.matchWith() methods.")
 		}
- 
+
 		// Find ranges from input and output with multiple matches
 		// Check: If a[i] is matched with b[j], b[k], and c[l] then b[j] (or 
 		// b[k] or c[l]) cannot be matched with a buffer different than a[i].
@@ -160,23 +161,31 @@ class ScriptRunner {
 			if (multipleRange.value.size != 0) {
 
 				// If the current buffer has multiple ranges
-				multipleRange.value.entrySet.forall [
-					val srcOrig = it.key
-					val srcEnd = it.getValue()
-					// for all match within this range
-					(srcOrig .. srcEnd).forall [
-						val matches = multipleRange.key.matchTable.get(it)
-						if (matches != null) {
-
-							// Test the destination is not within a multiple range
-							matches.forall [
-								val range = multipleRanges.get(allBuffers.indexOf(it.buffer)).value
-								range.filter [ destOrig, destEnd |
-									srcOrig < destEnd && destOrig < srcEnd
-								].size == 0
-							]
-						} else
-							true
+				multipleRange.value.forall [ r |
+					// Fill a list that contains Pair
+					// Each pair is composed of a remote buffer and a remote range
+					// This range is matched with a multiple matched range from
+					// the current local buffer. Consequently, this remote 
+					// range must not be part of a remote multiple matched range.
+					val matchFromMultRange = newArrayList;
+					multipleRange.key.matchTable.forEach [ localIdx, matches |
+						matches.forEach [
+							if (r.hasOverlap(new Range(localIdx, localIdx + it.length))) {
+								val localInter = r.intersection(new Range(localIdx, localIdx + it.length))
+								val remoteRangeStart = it.index + localInter.start - localIdx
+								val remoteRange = new Range(remoteRangeStart, remoteRangeStart + localInter.length)
+								matchFromMultRange.add(
+									it.buffer -> remoteRange)
+							}
+						]
+					]
+					
+					matchFromMultRange.forall[
+						val buffer = it.key
+						val range = it.value
+						
+						val intersect = multipleRanges.get(allBuffers.indexOf(buffer)).value.intersection(range)
+						intersect.size == 0
 					]
 				]
 			} else
