@@ -1,8 +1,10 @@
 package org.ietr.preesm.experiment.memory
 
 import java.util.ArrayList
-import java.util.Map
+import java.util.HashMap
 import java.util.List
+import java.util.Map
+
 import static extension org.ietr.preesm.experiment.memory.Range.*
 
 class Buffer {
@@ -19,40 +21,30 @@ class Buffer {
 	 *         multiple times.
 	 */
 	static def getMultipleMatchRange(Buffer buffer) {
-		var multMatchRange = newHashMap
-		var nbMatch = 0
-		var multStart = -1
-		val endMult = newArrayList
-		var inZone = false
-		for (idx : 0 .. buffer.nbTokens * buffer.tokenSize) {
+		
+		val matchRanges = newArrayList
+		val multipleMatchRanges = newArrayList
+		// For each matchList
+		buffer.matchTable.forEach[localIdx, matchList|
+			// For each Match
+			matchList.forEach[ match |
+				val newRange = new Range(localIdx, localIdx + match.length ) 
+				// Get the intersection of the match and existing match ranges
+				val intersections =  matchRanges.intersection(newRange)
+				multipleMatchRanges.union(intersections)
+				
+				// Update the existing match ranges
+				matchRanges.union(newRange)
+			]
+		]
 
-			// Process ending matches
-			var nbEnding = endMult.size
-			endMult.removeAll(idx)
-			nbMatch = nbMatch - (nbEnding - endMult.size)
 
-			// Add new matches (if any)
-			var matches = buffer.matchTable.get(idx)
-			if (matches != null) {
-				nbMatch = nbMatch + matches.size
 
-				// If a new "multiple match" zone begins
-				if (nbMatch > 1 && !inZone) {
-					inZone = true
-					multStart = idx
-				}
-				matches.forEach[endMult.add(idx + it.length)]
-			}
-
-			// If this was the end of a mult zone
-			if (inZone && nbMatch <= 1) {
-				multMatchRange.put(multStart, idx - 1)
-				inZone = false
-				multStart = -1
-			}
-		}
-
-		multMatchRange
+		
+		
+		val result = new HashMap<Integer,Integer>
+		multipleMatchRanges.forEach[result.put(it.start, it.end - 1)]
+		result
 	}
 
 	/**

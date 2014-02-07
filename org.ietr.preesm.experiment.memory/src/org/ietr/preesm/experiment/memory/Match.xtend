@@ -51,5 +51,5 @@ class Match {
 		this.buffer == other.buffer && this.index == other.index && this.length == other.length
 	}
 
-	override toString() '''«buffer.name»[«index»..«index + length - 1»]'''
+	override toString() '''«buffer.name»[«index»..«index + length »['''
 }
