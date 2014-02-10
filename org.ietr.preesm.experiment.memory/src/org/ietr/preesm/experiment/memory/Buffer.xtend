@@ -6,6 +6,7 @@ import java.util.Map
 
 import static extension org.ietr.preesm.experiment.memory.Range.*
 import net.sf.dftools.algorithm.model.sdf.SDFEdge
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex
 
 class Buffer {
 	
@@ -198,7 +199,10 @@ class Buffer {
 	final SDFEdge sdfEdge
 	
 	@Property
-	boolean indivisible			
+	boolean indivisible		
+	
+	@Property 
+	final SDFAbstractVertex sdfVertex	
 
 	/**
     * Constructor for the {@link Buffer}.
@@ -209,8 +213,9 @@ class Buffer {
     * @param tokenSize
     * 	The size of one token of the buffer.
     */
-	new(SDFEdge edge, String name, int nbTokens, int tokenSize) {
+	new(SDFEdge edge, SDFAbstractVertex vertex, String name, int nbTokens, int tokenSize) {
 		_sdfEdge = edge
+		_sdfVertex = vertex
 		_name = name
 		_nbTokens = nbTokens
 		_tokenSize = tokenSize
@@ -327,4 +332,6 @@ class Buffer {
 
 		localMatch.reciprocate = remoteMatch
 	}
+	
+	override toString() '''«sdfVertex.name».«name»[«nbTokens*tokenSize»]'''
 }
