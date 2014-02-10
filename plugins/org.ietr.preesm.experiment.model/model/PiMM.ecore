@@ -35,8 +35,6 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Port" abstract="true">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
-        changeable="false"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DataInputPort" eSuperTypes="#//Port">
     <eStructuralFeatures xsi:type="ecore:EReference" name="incomingFifo" eType="#//Fifo"
@@ -68,8 +66,6 @@
   <eClassifiers xsi:type="ecore:EClass" name="InterfaceActor" eSuperTypes="#//AbstractActor">
     <eStructuralFeatures xsi:type="ecore:EReference" name="graphPort" lowerBound="1"
         eType="#//Port"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
-        changeable="false"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DataInputInterface" eSuperTypes="#//InterfaceActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="DataOutputInterface" eSuperTypes="#//InterfaceActor"/>

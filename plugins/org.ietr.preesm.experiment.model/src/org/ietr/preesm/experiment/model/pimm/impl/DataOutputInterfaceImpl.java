@@ -37,9 +37,12 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.ecore.EClass;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -59,8 +62,6 @@ public class DataOutputInterfaceImpl extends InterfaceActorImpl implements
 	protected DataOutputInterfaceImpl() {
 		super();
 
-		kind = KIND;
-
 		// Add the unique input port of the Sink Interface
 		// The port intentionally has no name
 		DataInputPort port = PiMMFactory.eINSTANCE.createDataInputPort();
@@ -77,4 +78,11 @@ public class DataOutputInterfaceImpl extends InterfaceActorImpl implements
 		return PiMMPackage.Literals.DATA_OUTPUT_INTERFACE;
 	}
 
+	@Override
+	public Port initializePort(PiGraph graph) {
+		Port port = PiMMFactory.eINSTANCE.createDataOutputPort();
+		graph.getDataOutputPorts().add((DataOutputPort) port);
+		return port;
+	}
+	
 } // SinkInterfaceImpl

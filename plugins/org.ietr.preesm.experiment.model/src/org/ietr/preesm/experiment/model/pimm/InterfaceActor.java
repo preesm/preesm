@@ -45,7 +45,6 @@ package org.ietr.preesm.experiment.model.pimm;
  * The following features are supported:
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.InterfaceActor#getGraphPort <em>Graph Port</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.InterfaceActor#getKind <em>Kind</em>}</li>
  * </ul>
  * </p>
  *
@@ -76,19 +75,6 @@ public interface InterfaceActor extends AbstractActor {
 	 */
 	void setGraphPort(Port value);
 
-	/**
-	 * Returns the value of the '<em><b>Kind</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Kind</em>' attribute isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Kind</em>' attribute.
-	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getInterfaceActor_Kind()
-	 * @model required="true" changeable="false"
-	 * @generated
-	 */
-	String getKind();
+	Port initializePort(PiGraph graph);
 
 } // InterfaceVertex

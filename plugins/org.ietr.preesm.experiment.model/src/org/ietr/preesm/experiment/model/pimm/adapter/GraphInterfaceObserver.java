@@ -116,24 +116,20 @@ public class GraphInterfaceObserver extends AdapterImpl {
 	 */
 	protected void addInterfaceActor(InterfaceActor iActor, PiGraph graph) {
 		// Create the Associated port and store it in the appropriate List
-		Port port;
-		switch (iActor.getKind()) {
-		case DataInputInterface.KIND:
+		Port port = iActor.initializePort(graph);
+		if (iActor instanceof DataInputInterface) {
 			port = PiMMFactory.eINSTANCE.createDataInputPort();
 			graph.getDataInputPorts().add((DataInputPort) port);
-			break;
-		case DataOutputInterface.KIND:
+		}
+		else if (iActor instanceof DataOutputInterface) {
 			port = PiMMFactory.eINSTANCE.createDataOutputPort();
 			graph.getDataOutputPorts().add((DataOutputPort) port);
-			break;
-		case ConfigOutputInterface.KIND:
+		}
+		else if (iActor instanceof ConfigOutputInterface) {
 			port = PiMMFactory.eINSTANCE.createConfigOutputPort();
 			graph.getConfigOutputPorts().add((ConfigOutputPort) port);
-			break;
-		default:
-			return;
 		}
-
+		
 		// Set the interface properties
 		port.setName(iActor.getName());
 		iActor.setGraphPort(port);

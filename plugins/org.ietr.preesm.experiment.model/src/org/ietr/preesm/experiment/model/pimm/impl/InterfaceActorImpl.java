@@ -51,7 +51,6 @@ import org.ietr.preesm.experiment.model.pimm.Port;
  * The following features are implemented:
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#getGraphPort <em>Graph Port</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#getKind <em>Kind</em>}</li>
  * </ul>
  * </p>
  *
@@ -69,24 +68,6 @@ public class InterfaceActorImpl extends AbstractActorImpl implements
 	 * @ordered
 	 */
 	protected Port graphPort;
-
-	/**
-	 * The default value of the '{@link #getKind() <em>Kind</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @see #getKind()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String KIND_EDEFAULT = null;
-
-	/**
-	 * The cached value of the '{@link #getKind() <em>Kind</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @see #getKind()
-	 * @generated
-	 * @ordered
-	 */
-	protected String kind = KIND_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -114,8 +95,6 @@ public class InterfaceActorImpl extends AbstractActorImpl implements
 			case PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT:
 				if (resolve) return getGraphPort();
 				return basicGetGraphPort();
-			case PiMMPackage.INTERFACE_ACTOR__KIND:
-				return getKind();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -129,8 +108,6 @@ public class InterfaceActorImpl extends AbstractActorImpl implements
 		switch (featureID) {
 			case PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT:
 				return graphPort != null;
-			case PiMMPackage.INTERFACE_ACTOR__KIND:
-				return KIND_EDEFAULT == null ? kind != null : !KIND_EDEFAULT.equals(kind);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -159,7 +136,7 @@ public class InterfaceActorImpl extends AbstractActorImpl implements
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->InterfaceActorImpl
 	 * @generated
 	 */
 	@Override
@@ -188,15 +165,7 @@ public class InterfaceActorImpl extends AbstractActorImpl implements
 		return graphPort;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	public String getKind() {
-		return kind;
-	}
-
-	/**
+	/**InterfaceActorImpl
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
@@ -215,19 +184,9 @@ public class InterfaceActorImpl extends AbstractActorImpl implements
 		}
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
 	@Override
-	public String toString() {
-		if (eIsProxy()) return super.toString();
-
-		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (kind: ");
-		result.append(kind);
-		result.append(')');
-		return result.toString();
+	public Port initializePort(PiGraph graph) {
+		throw new UnsupportedOperationException("Operation initializePort is not implemented in InterfaceActorImpl");
 	}
 
 } // InterfaceVertexImpl

@@ -420,22 +420,13 @@ public interface PiMMPackage extends EPackage {
 	int PORT__NAME = 0;
 
 	/**
-	 * The feature id for the '<em><b>Kind</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int PORT__KIND = 1;
-
-	/**
 	 * The number of structural features of the '<em>Port</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PORT_FEATURE_COUNT = 2;
+	int PORT_FEATURE_COUNT = 1;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataInputPortImpl <em>Data Input Port</em>}' class.
@@ -455,15 +446,6 @@ public interface PiMMPackage extends EPackage {
 	 * @ordered
 	 */
 	int DATA_INPUT_PORT__NAME = PORT__NAME;
-
-	/**
-	 * The feature id for the '<em><b>Kind</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DATA_INPUT_PORT__KIND = PORT__KIND;
 
 	/**
 	 * The feature id for the '<em><b>Incoming Fifo</b></em>' reference.
@@ -512,15 +494,6 @@ public interface PiMMPackage extends EPackage {
 	int DATA_OUTPUT_PORT__NAME = PORT__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Kind</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DATA_OUTPUT_PORT__KIND = PORT__KIND;
-
-	/**
 	 * The feature id for the '<em><b>Outgoing Fifo</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -567,15 +540,6 @@ public interface PiMMPackage extends EPackage {
 	int CONFIG_INPUT_PORT__NAME = PORT__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Kind</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int CONFIG_INPUT_PORT__KIND = PORT__KIND;
-
-	/**
 	 * The feature id for the '<em><b>Incoming Dependency</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -611,15 +575,6 @@ public interface PiMMPackage extends EPackage {
 	 * @ordered
 	 */
 	int CONFIG_OUTPUT_PORT__NAME = DATA_OUTPUT_PORT__NAME;
-
-	/**
-	 * The feature id for the '<em><b>Kind</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int CONFIG_OUTPUT_PORT__KIND = DATA_OUTPUT_PORT__KIND;
 
 	/**
 	 * The feature id for the '<em><b>Outgoing Fifo</b></em>' reference.
@@ -778,22 +733,13 @@ public interface PiMMPackage extends EPackage {
 	int INTERFACE_ACTOR__GRAPH_PORT = ABSTRACT_ACTOR_FEATURE_COUNT + 0;
 
 	/**
-	 * The feature id for the '<em><b>Kind</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int INTERFACE_ACTOR__KIND = ABSTRACT_ACTOR_FEATURE_COUNT + 1;
-
-	/**
 	 * The number of structural features of the '<em>Interface Actor</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int INTERFACE_ACTOR_FEATURE_COUNT = ABSTRACT_ACTOR_FEATURE_COUNT + 2;
+	int INTERFACE_ACTOR_FEATURE_COUNT = ABSTRACT_ACTOR_FEATURE_COUNT + 1;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataInputInterfaceImpl <em>Data Input Interface</em>}' class.
@@ -858,15 +804,6 @@ public interface PiMMPackage extends EPackage {
 	 * @ordered
 	 */
 	int DATA_INPUT_INTERFACE__GRAPH_PORT = INTERFACE_ACTOR__GRAPH_PORT;
-
-	/**
-	 * The feature id for the '<em><b>Kind</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DATA_INPUT_INTERFACE__KIND = INTERFACE_ACTOR__KIND;
 
 	/**
 	 * The number of structural features of the '<em>Data Input Interface</em>' class.
@@ -940,15 +877,6 @@ public interface PiMMPackage extends EPackage {
 	 * @ordered
 	 */
 	int DATA_OUTPUT_INTERFACE__GRAPH_PORT = INTERFACE_ACTOR__GRAPH_PORT;
-
-	/**
-	 * The feature id for the '<em><b>Kind</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DATA_OUTPUT_INTERFACE__KIND = INTERFACE_ACTOR__KIND;
 
 	/**
 	 * The number of structural features of the '<em>Data Output Interface</em>' class.
@@ -1237,15 +1165,6 @@ public interface PiMMPackage extends EPackage {
 	 * @ordered
 	 */
 	int CONFIG_OUTPUT_INTERFACE__GRAPH_PORT = INTERFACE_ACTOR__GRAPH_PORT;
-
-	/**
-	 * The feature id for the '<em><b>Kind</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int CONFIG_OUTPUT_INTERFACE__KIND = INTERFACE_ACTOR__KIND;
 
 	/**
 	 * The number of structural features of the '<em>Config Output Interface</em>' class.
@@ -1558,17 +1477,6 @@ public interface PiMMPackage extends EPackage {
 	EAttribute getPort_Name();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Port#getKind <em>Kind</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Kind</em>'.
-	 * @see org.ietr.preesm.experiment.model.pimm.Port#getKind()
-	 * @see #getPort()
-	 * @generated
-	 */
-	EAttribute getPort_Kind();
-
-	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.DataInputPort <em>Data Input Port</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1737,17 +1645,6 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getInterfaceActor_GraphPort();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.InterfaceActor#getKind <em>Kind</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Kind</em>'.
-	 * @see org.ietr.preesm.experiment.model.pimm.InterfaceActor#getKind()
-	 * @see #getInterfaceActor()
-	 * @generated
-	 */
-	EAttribute getInterfaceActor_Kind();
 
 	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.DataInputInterface <em>Data Input Interface</em>}'.
@@ -2138,14 +2035,6 @@ public interface PiMMPackage extends EPackage {
 		EAttribute PORT__NAME = eINSTANCE.getPort_Name();
 
 		/**
-		 * The meta object literal for the '<em><b>Kind</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute PORT__KIND = eINSTANCE.getPort_Kind();
-
-		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataInputPortImpl <em>Data Input Port</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -2284,14 +2173,6 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EReference INTERFACE_ACTOR__GRAPH_PORT = eINSTANCE.getInterfaceActor_GraphPort();
-
-		/**
-		 * The meta object literal for the '<em><b>Kind</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute INTERFACE_ACTOR__KIND = eINSTANCE.getInterfaceActor_Kind();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataInputInterfaceImpl <em>Data Input Interface</em>}' class.

@@ -88,7 +88,6 @@ public class DataInputPortImpl extends PortImpl implements DataInputPort {
 	 */
 	protected DataInputPortImpl() {
 		super();
-		kind = "input";
 		
 		this.setExpression(PiMMFactory.eINSTANCE.createExpression());
 	}
@@ -305,6 +304,11 @@ public class DataInputPortImpl extends PortImpl implements DataInputPort {
 				return expression != null;
 		}
 		return super.eIsSet(featureID);
+	}
+
+	@Override
+	public String getKind() {
+		return "input";
 	}
 
 } //InputPortImpl

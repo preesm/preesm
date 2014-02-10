@@ -38,7 +38,6 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
-
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
@@ -76,7 +75,6 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 	 */
 	protected ConfigInputPortImpl() {
 		super();
-		kind = "cfg_input";
 	}
 
 	/**
@@ -236,6 +234,11 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 				return incomingDependency != null;
 		}
 		return super.eIsSet(featureID);
+	}
+
+	@Override
+	public String getKind() {
+		return "cfg_input";
 	}
 
 } //ConfigInputPortImpl

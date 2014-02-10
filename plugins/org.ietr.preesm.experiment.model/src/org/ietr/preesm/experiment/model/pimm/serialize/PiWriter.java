@@ -47,8 +47,12 @@ import org.ietr.dftools.architecture.utils.DomUtil;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
@@ -479,20 +483,20 @@ public class PiWriter {
 	 *            The {@link InterfaceActor} to serialize
 	 */
 	protected void writeInterfaceVertex(Element vertexElt, InterfaceActor vertex) {
+		//TODO: CGUY Remove completely kind?
 		// Set the kind of the Actor
-		vertexElt.setAttribute("kind", vertex.getKind());
-		// writeDataElt(vertexElt, "kind", "actor");
-		// Write ports of the actor
-		switch (vertex.getKind()) {
-		case "src":
-			writePorts(vertexElt, vertex.getDataOutputPorts());
-			break;
-		case "snk":
-			writePorts(vertexElt, vertex.getDataInputPorts());
-			break;
-		default:
+		if (vertex instanceof DataInputInterface) {
+			vertexElt.setAttribute("kind", DataInputInterface.KIND);	
 		}
-
+		else if (vertex instanceof DataOutputInterface) {
+			vertexElt.setAttribute("kind", DataOutputInterface.KIND);	
+		}
+		else if (vertex instanceof ConfigOutputInterface) {
+			vertexElt.setAttribute("kind", ConfigOutputInterface.KIND);	
+		}
+		// Write ports of the actor
+		writePorts(vertexElt, vertex.getDataOutputPorts());
+		writePorts(vertexElt, vertex.getDataInputPorts());
 	}
 
 	/**
@@ -528,7 +532,9 @@ public class PiWriter {
 	 *            The Element to fill (could be removed later if it is always
 	 *            rootElt)
 	 * @param graph
-	 *            The serialized Graph
+	 *            The serialized Graph// Set the kind of the Actor
+//		vertexElt.setAttribute("kind", vertex.getKind());
+//		// writeDataElt(vertexElt, "kind", "actor");
 	 */
 	protected void writePi(Element parentElt, PiGraph graph) {
 		// Add IBSDF Keys - Might not be needed.
@@ -553,19 +559,21 @@ public class PiWriter {
 			Port port = (Port) portObj;
 			Element portElt = appendChild(vertexElt, "port");
 			portElt.setAttribute("name", port.getName());
-			portElt.setAttribute("kind", port.getKind());
 			
-			switch(port.getKind()){
-			case "input":
+			
+			if (port instanceof DataInputPort) {
+				portElt.setAttribute("kind", "input");
 				portElt.setAttribute("expr", ((DataInputPort)port).getExpression().getString());
-				break;
-			case "output":
+			}
+			else if (port instanceof DataOutputPort) {
+				portElt.setAttribute("kind", "output");
 				portElt.setAttribute("expr", ((DataOutputPort)port).getExpression().getString());
-				break;
-			case "cfg_input":
-				break;
-			case "cfg_output":
-				break;
+			}
+			else if (port instanceof ConfigInputPort) {
+				portElt.setAttribute("kind", "cfg_input");
+			}
+			else if (port instanceof ConfigOutputPort) {
+				portElt.setAttribute("kind", "cfg_output");
 			}
 		}
 	}

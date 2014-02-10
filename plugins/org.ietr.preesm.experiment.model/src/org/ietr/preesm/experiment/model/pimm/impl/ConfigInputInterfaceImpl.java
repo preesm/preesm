@@ -36,7 +36,6 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.ecore.EClass;
-
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 
@@ -68,5 +67,4 @@ public class ConfigInputInterfaceImpl extends ParameterImpl implements ConfigInp
 	protected EClass eStaticClass() {
 		return PiMMPackage.Literals.CONFIG_INPUT_INTERFACE;
 	}
-
 } //ConfigInputInterfaceImpl
