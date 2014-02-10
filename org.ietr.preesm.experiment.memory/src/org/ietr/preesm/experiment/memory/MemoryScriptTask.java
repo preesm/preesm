@@ -81,9 +81,10 @@ public class MemoryScriptTask extends AbstractTaskImplementation {
 
 		// Pre-process the script result
 		if (verbose) {
-			logger.log(Level.INFO, "Pre-process memory script results.");
+			logger.log(Level.INFO, "Processing memory script results.");
 		}
-		sr.preProcess();
+		sr.process();
+		
 
 		// sr.runTest();
 

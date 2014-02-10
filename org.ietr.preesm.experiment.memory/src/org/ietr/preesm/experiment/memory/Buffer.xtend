@@ -5,6 +5,7 @@ import java.util.List
 import java.util.Map
 
 import static extension org.ietr.preesm.experiment.memory.Range.*
+import net.sf.dftools.algorithm.model.sdf.SDFEdge
 
 class Buffer {
 	
@@ -191,7 +192,13 @@ class Buffer {
 	final int nbTokens
 
 	@Property
-	final int tokenSize		
+	final int tokenSize
+	
+	@Property
+	final SDFEdge sdfEdge
+	
+	@Property
+	boolean indivisible			
 
 	/**
     * Constructor for the {@link Buffer}.
@@ -202,13 +209,15 @@ class Buffer {
     * @param tokenSize
     * 	The size of one token of the buffer.
     */
-	new(String name, int nbTokens, int tokenSize) {
+	new(SDFEdge edge, String name, int nbTokens, int tokenSize) {
+		_sdfEdge = edge
 		_name = name
 		_nbTokens = nbTokens
 		_tokenSize = tokenSize
 		_matchTable = newHashMap()
 		_minIndex = 0
 		_maxIndex = nbTokens * tokenSize
+		_indivisible = true
 	}
 
 	def getMinIndex() {
