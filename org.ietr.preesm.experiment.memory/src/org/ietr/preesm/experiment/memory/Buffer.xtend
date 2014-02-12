@@ -7,6 +7,7 @@ import java.util.Map
 import static extension org.ietr.preesm.experiment.memory.Range.*
 import net.sf.dftools.algorithm.model.sdf.SDFEdge
 import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex
+import net.sf.dftools.algorithm.model.dag.DAGVertex
 
 class Buffer {
 	
@@ -15,8 +16,9 @@ class Buffer {
 	 * times. A range is matched multiple times if several matches involving
 	 * this ranges are stored in the {@link Buffer#getMatchTable() match table}
 	 * of the {@link Buffer}. For example, if these to calls are executed: </br>
-	 * <code>a.matchWith(b,0 *            the {@link Buffer} whose multiple matched ranges are
-	 *            extracted.
+	 * <code>a.matchWith(0,b,0,3)</code> and <code>a.matchWith(0,b,3,3)</code>,
+	 * then a[0..3[ is matched multiple times.   
+	 * 
 	 * 
 	 * @return a {@link Map} containing the start end end of ranges matched
 	 *         multiple times.
@@ -196,13 +198,14 @@ class Buffer {
 	final int tokenSize
 	
 	@Property
+	final DAGVertex dagVertex
+	
+	@Property
 	final SDFEdge sdfEdge
 	
 	@Property
 	boolean indivisible		
 	
-	@Property 
-	final SDFAbstractVertex sdfVertex	
 
 	/**
     * Constructor for the {@link Buffer}.
@@ -213,9 +216,8 @@ class Buffer {
     * @param tokenSize
     * 	The size of one token of the buffer.
     */
-	new(SDFEdge edge, SDFAbstractVertex vertex, String name, int nbTokens, int tokenSize) {
+	new(SDFEdge edge, DAGVertex dagVertex, String name, int nbTokens, int tokenSize) {
 		_sdfEdge = edge
-		_sdfVertex = vertex
 		_name = name
 		_nbTokens = nbTokens
 		_tokenSize = tokenSize
@@ -223,7 +225,13 @@ class Buffer {
 		_minIndex = 0
 		_maxIndex = nbTokens * tokenSize
 		_indivisible = true
+		_dagVertex = dagVertex
 	}
+	
+	def getSdfVertex(){
+		dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex) as SDFAbstractVertex
+	}
+	
 
 	def getMinIndex() {
 		_minIndex

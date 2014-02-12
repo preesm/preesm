@@ -13,6 +13,7 @@ import java.util.Map
 import java.util.Set
 import java.util.logging.Level
 import java.util.logging.Logger
+import net.sf.dftools.algorithm.model.dag.DAGEdge
 import net.sf.dftools.algorithm.model.dag.DAGVertex
 import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph
 import net.sf.dftools.algorithm.model.dag.edag.DAGBroadcastVertex
@@ -33,7 +34,6 @@ import org.ietr.preesm.core.types.DataType
 
 import static extension org.ietr.preesm.experiment.memory.Buffer.*
 import static extension org.ietr.preesm.experiment.memory.Range.*
-import net.sf.dftools.algorithm.model.dag.DAGEdge
 
 enum CheckPolicy {
 	NONE,
@@ -78,6 +78,30 @@ class ScriptRunner {
      * {@link Buffer buffers}.
 	 */
 	val scriptResults = new HashMap<DAGVertex, Pair<List<Buffer>, List<Buffer>>>
+
+	/**
+	 * A {@link Map} that associates each {@link DAGVertex} from the
+	 * {@link ScriptRunner#scriptedVertices scriptedVertices} map to the 
+	 * potential merge conflicts between its inputs buffers and between its 
+	 * output buffers. These conflicts are stored as follow in the Map:<br>
+	 * <ul><li>Map</li>
+	 * <ul><li>Map.Key: {@link DAGVertex} whose conflicts are stored as value</li>
+	 * <li>Map.Value: Pair to separate inter-inputs and inter-outputs conflicts 
+	 * </li><ul><li>Pair.Key: Map - For inter-inputs conflicts</li>
+	 * <ul><li>Map.Key: Pair identifies a conflicting range of an input buffer</li>
+	 * <ul><li>Pair.Key: Buffer</li><li>Pair.Value: Range</li>
+	 * </ul><li>Map.Value: List of Match that overlap the conflicting range</li></ul>
+	 * <li>Pair.Value: Map - For inter-outputs conflicts</li>
+	 * <ul><li>Map.Key: Pair identifies a conflicting range of an output buffer</li>
+	 * <ul><li>Pair.Key: Buffer</li><li>Pair.Value: Range</li>
+	 * </ul><li>Map.Value: List of Match that overlap the conflicting range</li></ul>
+	 * </ul></ul><ul>
+	 * This {@link Map} is filled in the {@link ScriptRunner#process() 
+	 * process()} method with the result of a call to {@link
+	 * ScriptRunner#identifyMergeRanges(List,List) identifyMergeRanges()} for 
+	 * each {@link DAGVertex}. 
+	 */
+	val mergeConflicts = new HashMap<DAGVertex, Pair<Map<Pair<Buffer, Range>, List<Match>>, Map<Pair<Buffer, Range>, List<Match>>>>
 
 	/** 
 	 * A {@link Map} that associates each {@link DAGVertex} with a
@@ -147,7 +171,7 @@ class ScriptRunner {
 		if (!res1) {
 			val logger = WorkflowLogger.logger
 			logger.log(Level.WARNING,
-				"Error in " + script + ":\nOne of the match is not reciprocal." +
+				"Error in " + script + ":\nOne or more match is not reciprocal." +
 					" Please set matches only by using Buffer.matchWith() methods.")
 		}
 
@@ -324,6 +348,9 @@ class ScriptRunner {
 		// Simplify results
 		scriptResults.forEach[vertex, result|simplifyResult(result.key, result.value)]
 
+		// Identify ranges that may cause a transversal merge
+		scriptResults.forEach[vertex, result|mergeConflicts.put(vertex, identifyMergeRanges(result.key, result.value))]
+
 		// Identify groups of chained buffers from the scripts and dag
 		val groups = groupVertices()
 
@@ -331,6 +358,63 @@ class ScriptRunner {
 		groups.forEach[it.processGroup]
 		var result = groups.fold(0, [res, gr|res + gr.size])
 		println("Identified " + groups.size + " groups. " + result)
+	}
+
+	def Pair<Map<Pair<Buffer, Range>, List<Match>>, Map<Pair<Buffer, Range>, List<Match>>> identifyMergeRanges(
+		List<Buffer> inputs, List<Buffer> outputs) {
+
+		// Result directly stored in buffers:
+		// Map<Pair<Buffer,Range>, List<Match>> 
+		val interInputMerge = new HashMap<Pair<Buffer, Range>, List<Match>>()
+		val interOutputMerge = new HashMap<Pair<Buffer, Range>, List<Match>>()
+
+		// For each Buffer
+		for (buffer : #{inputs, outputs}.flatten) {
+			val isIn = inputs.contains(buffer)
+			val siblings = if (isIn) {
+					inputs
+				} else {
+					outputs
+				}
+
+			// 1- Find multi Ranges
+			val multiRanges = buffer.multipleMatchRange
+			multiRanges.forEach [ range |
+				// find overlapping match
+				val overlappingMatches = newArrayList
+				buffer.matchTable.forEach [ localIdx, matchList |
+					matchList.forEach [
+						if (range.hasOverlap(new Range(localIdx, localIdx + it.length))  
+							// match in siblings are not processed here 
+						&& !siblings.contains(it.buffer)) {
+							overlappingMatches.add(it)
+						}
+					]
+				]
+				val key = new Pair(buffer, range)
+				(if(isIn) interOutputMerge else interInputMerge).put(key, overlappingMatches)
+			]
+
+			// 2- Inter-input / inter			
+			buffer.matchTable.forEach [ localIdx, matchList |
+				matchList.filter[siblings.contains(it.buffer)].forEach [
+					// If this code is reached, the match is between
+					// two inputs or two outputs
+					val map = if(isIn) interInputMerge else interOutputMerge
+					val keyClone = new Pair(buffer, new Range(localIdx, localIdx + it.length))
+					val key = map.keySet.findFirst[it == keyClone] ?: keyClone
+					var conflictingMatches = map.get(key)
+					if (conflictingMatches === null) {
+						conflictingMatches = newArrayList
+						map.put(key, conflictingMatches)
+					}
+					conflictingMatches.add(it)
+				]
+			]
+		}
+
+		// Return the pair of result lists
+		new Pair(interInputMerge, interOutputMerge)
 	}
 
 	/**
@@ -348,8 +432,42 @@ class ScriptRunner {
 
 		// Iterate the merging algorithm until no buffers are merged
 		var updated = false
+		val step = 0
 		do {
+			switch (step) {
+				// First step: Merge mergeable buffer with a unique match 
+				case 0: {
+					// Find all mergeable buffers with a unique match (if any)
+					val candidates = buffers.filter[
+						val entry = it.matchTable.entrySet.head
+						// Returns true if:
+						// There is a unique match
+						it.matchTable.size == 1 && entry.value.size == 1
+						// that begins at index 0 (or less)
+						entry.key <= 0 &&
+						// and ends at the end of the buffer (or more)
+						entry.key + entry.value.head.length >= it.nbTokens * it.tokenSize &&
+						// and is not involved in any conflicting range
+						{
+							// Only the destination can have conflicts here since
+							// the match source has a unique match in its matchTable
+							
+							val match = entry.value.head
+							val destConflicts = mergeConflicts.get(match.buffer.getDagVertex)
+							val isDestIn = scriptResults.get(match.buffer.getDagVertex).key.contains(match.buffer)
+							val map = if(isDestIn) destConflicts.key else destConflicts.value
+							map.values.flatten.forall[it != match]
+						} 						
+					]
+					
+					println(candidates)
+				}
+				
+				
+			} 
+			 
 			// 1- Find a mergeable buffer
+			
 			// 2- merge it !
 		} while (updated)
 	}
@@ -492,10 +610,10 @@ class ScriptRunner {
 
 			// Create the input/output lists
 			val inputs = sdfVertex.incomingEdges.map[
-				new Buffer(it, sdfVertex, it.targetLabel, it.cons.intValue, dataTypes.get(it.dataType.toString).size)].
+				new Buffer(it, dagVertex, it.targetLabel, it.cons.intValue, dataTypes.get(it.dataType.toString).size)].
 				toList
 			val outputs = sdfVertex.outgoingEdges.map[
-				new Buffer(it, sdfVertex, it.sourceLabel, it.prod.intValue, dataTypes.get(it.dataType.toString).size)].
+				new Buffer(it, dagVertex, it.sourceLabel, it.prod.intValue, dataTypes.get(it.dataType.toString).size)].
 				toList
 
 			// Import the necessary libraries
@@ -551,11 +669,11 @@ class ScriptRunner {
 		parameters.forEach[name, value|interpreter.set(name, value)]
 
 		// Retrieve buffers
-		var inputs = newArrayList(new Buffer(null, null, "input", parameters.get("Height") * parameters.get("Width"), 1))
+		var inputs = newArrayList(new Buffer(null, null,"input", parameters.get("Height") * parameters.get("Width"), 1))
 		inputs.forEach[interpreter.set("i_" + it.name, it)]
 
 		var outputs = newArrayList(
-			new Buffer(null, null, "output",
+			new Buffer(null, null ,"output",
 				parameters.get("Height") * parameters.get("Width") +
 					parameters.get("NbSlice") * parameters.get("Overlap") * 2 * parameters.get("Width"), 1))
 		outputs.forEach[interpreter.set("o_" + it.name, it)]

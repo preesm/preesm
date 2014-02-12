@@ -105,6 +105,10 @@ class Range {
 		newRange.start == range.end || range.start == newRange.end
 	}
 	
+	def static hasOverlap(List<Range> ranges, Range range) {
+		!ranges.forall[!it.hasOverlap(range)]
+	}
+	
 	def static hasOverlap(Range newRange, Range range) {
 		newRange.start < range.end && range.start < newRange.end
 	}
