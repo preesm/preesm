@@ -4,7 +4,7 @@ Bundle-Name: Experimental Preesm core plug-in
 Bundle-SymbolicName: org.ietr.preesm.experiment.core;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.ietr.preesm.experiment.core.Activator
-Bundle-Vendor: IETR/INSA of Rennes
+Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

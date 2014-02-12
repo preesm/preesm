@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm mapper Plug-in
 Bundle-SymbolicName: org.ietr.preesm.mapper;singleton:=true
-Bundle-Version: 1.0.0.rc1-v20131030
+Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.ietr.preesm.mapper.activator.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.ietr.preesm.core,
@@ -22,7 +22,7 @@ Bundle-ClassPath: lib/jcommon-1.0.13.jar,
  .
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Bundle-Vendor: IETR/INSA of Rennes
+Bundle-Vendor: IETR/INSA Rennes
 Export-Package: org.ietr.preesm.mapper,
  org.ietr.preesm.mapper.exporter,
  org.ietr.preesm.mapper.scenariogen,

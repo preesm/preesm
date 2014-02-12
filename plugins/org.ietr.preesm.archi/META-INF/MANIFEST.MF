@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: org.ietr.preesm.archi
+Bundle-Name: Preesm S-LAM Tools
 Bundle-SymbolicName: org.ietr.preesm.architecture;singleton:=true
-Bundle-Version: 1.0.0.rc1-v20131030
+Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.ietr.preesm.architecture.Activator
-Bundle-Vendor: IETR
+Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.core.runtime,
  org.ietr.preesm.core;bundle-version="0.0.4",
  org.eclipse.ui.workbench;bundle-version="3.4.0",
