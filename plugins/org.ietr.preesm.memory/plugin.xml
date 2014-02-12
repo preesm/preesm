@@ -2,7 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="org.ietr.dftools.workflow.tasks">
+         point="net.sf.dftools.workflow.tasks">
       <task
             id="org.ietr.preesm.memory.bounds.MemoryBoundsEstimator"
             name="Memory Bounds Estimator"

@@ -7,18 +7,18 @@ Bundle-Activator: org.ietr.preesm.ui.Activator
 Bundle-Vendor: IETR/INSA
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.ietr.dftools.graphiti.ui,
- org.ietr.dftools.graphiti.model,
+ net.sf.graphiti.ui,
+ net.sf.graphiti.model,
  org.eclipse.core.resources,
  org.eclipse.ui.views.properties.tabbed,
  org.jgrapht,
  org.eclipse.gef,
- org.ietr.dftools.ui;bundle-version="0.0.1",
+ net.sf.dftools.ui;bundle-version="0.0.1",
  org.eclipse.ui.ide;bundle-version="3.7.0",
- org.ietr.dftools.workflow;bundle-version="0.0.1",
+ net.sf.dftools.workflow;bundle-version="0.0.1",
  org.eclipse.ui.console;bundle-version="3.5.100",
  org.ietr.preesm.core;bundle-version="0.6.1",
- org.ietr.dftools.algorithm;bundle-version="0.0.1"
+ net.sf.dftools.algorithm;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global

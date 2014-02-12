@@ -26,7 +26,7 @@
       </editor>
    </extension>
    <extension
-         point="org.ietr.dftools.workflow.tasks">
+         point="net.sf.dftools.workflow.tasks">
       <task
             id="org.ietr.preesm.plugin.mapper.exporter.ImplExportTransform"
             name="Implementation Exporter"

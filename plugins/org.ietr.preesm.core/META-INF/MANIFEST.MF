@@ -17,10 +17,10 @@ Require-Bundle: org.eclipse.core.expressions,
  org.eclipse.ui.views,
  org.junit,
  org.eclipse.ui.navigator,
- org.ietr.dftools.workflow,
+ net.sf.dftools.workflow,
  org.jgrapht;bundle-version="0.8.2",
- org.ietr.dftools.architecture;bundle-version="0.0.1",
- org.ietr.dftools.algorithm;bundle-version="0.0.1"
+ net.sf.dftools.architecture;bundle-version="0.0.1",
+ net.sf.dftools.algorithm;bundle-version="0.0.1"
 Bundle-ClassPath: .,
  lib/djep-full-latest.jar,
  lib/jmatharray.jar,

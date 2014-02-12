@@ -7,11 +7,11 @@ Bundle-Activator: org.ietr.preesm.codegen.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.emf.ecore;bundle-version="2.6.0",
- org.ietr.dftools.workflow,
+ net.sf.dftools.workflow,
  org.jgrapht,
  org.ietr.preesm.core;bundle-version="0.6.1",
- org.ietr.dftools.architecture;bundle-version="0.0.1",
- org.ietr.dftools.algorithm;bundle-version="0.0.1"
+ net.sf.dftools.architecture;bundle-version="0.0.1",
+ net.sf.dftools.algorithm;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: lib/JFlex.jar,
  lib/logkit-1.2.jar,

@@ -2,7 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="org.ietr.dftools.workflow.scenarios">
+         point="net.sf.dftools.workflow.scenarios">
       <scenario
             id="org.ietr.preesm.experiment.model.transformation.PiMMAndS-LAM"
             type="org.ietr.preesm.experiment.model.transformation.PiMMAndSLAMScenarioNode">
@@ -24,7 +24,7 @@
    </extension>
   
    <extension
-         point="org.ietr.dftools.workflow.tasks">
+         point="net.sf.dftools.workflow.tasks">
       <task
             id="org.ietr.preesm.experiment.model.transformation.taskExpression"
             type="org.ietr.preesm.experiment.model.transformation.TaskExpression">
