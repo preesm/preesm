@@ -2,7 +2,7 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension
-         point="net.sf.dftools.workflow.scenarios">
+         point="org.ietr.dftools.workflow.scenarios">
       <scenario
             id="org.ietr.preesm.scenario.task"
             type="org.ietr.preesm.core.workflow.SDFAndArchitectureScenarioNode">
@@ -36,7 +36,8 @@
             <output
                   id="S-LAM"
                   object="net.sf.dftools.architecture.slam.Design">
-            </output></outputs>
+            </output>
+         </outputs>
       </scenario>
    </extension>
 

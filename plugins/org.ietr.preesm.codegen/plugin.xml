@@ -2,7 +2,7 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension
-         point="net.sf.dftools.workflow.tasks">
+         point="org.ietr.dftools.workflow.tasks">
       <task
             id="org.ietr.preesm.plugin.codegen"
             name="Default code generation"
@@ -10,7 +10,8 @@
          <outputs>
             <output
                   id="SourceFileList"
-                  object="org.ietr.preesm.codegen.model.main.SourceFileList"></output>
+                  object="org.ietr.preesm.codegen.model.main.SourceFileList">
+            </output>
          </outputs>
          <inputs>
             <input

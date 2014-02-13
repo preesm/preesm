@@ -1,41 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension
-         point="net.sf.dftools.workflow.scenarios">
-      <scenario
-            id="org.ietr.preesm.experiment.model.transformation.PiMMAndS-LAM"
-            type="org.ietr.preesm.experiment.model.transformation.PiMMAndSLAMScenarioNode">
-         <outputs>
-            <output
-                  id="scenario"
-                  object="org.ietr.preesm.experiment.core.piscenario.PiScenario">
-            </output>
-            <output
-                  id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
-            </output>
-            <output
-                  id="architecture"
-                  object="net.sf.dftools.architecture.slam.Design">
-            </output>
-         </outputs>
-      </scenario>
-   </extension>
   
-   <extension
-         point="net.sf.dftools.workflow.tasks">
-      <task
-            id="org.ietr.preesm.experiment.model.transformation.taskExpression"
-            type="org.ietr.preesm.experiment.model.transformation.TaskExpression">
-         <inputs>
-            <input
-                  id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
-            </input>
-         </inputs>
-      </task>
-   </extension>
   
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
@@ -106,5 +72,39 @@
                   pattern="org.eclipse.ui.navigator.resourceContent">
             </contentExtension></includes>
       </viewerContentBinding>
+   </extension>
+   <extension
+         point="org.ietr.dftools.workflow.tasks">
+      <task
+            id="org.ietr.preesm.experiment.model.transformation.taskExpression"
+            type="org.ietr.preesm.experiment.model.transformation.TaskExpression">
+         <inputs>
+            <input
+                  id="PiMM"
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+            </input>
+         </inputs>
+      </task>
+   </extension>
+   <extension
+         point="org.ietr.dftools.workflow.scenarios">
+      <scenario
+            id="org.ietr.preesm.experiment.model.transformation.PiMMAndS-LAM"
+            type="org.ietr.preesm.experiment.model.transformation.PiMMAndSLAMScenarioNode">
+         <outputs>
+            <output
+                  id="scenario"
+                  object="org.ietr.preesm.experiment.core.piscenario.PiScenario">
+            </output>
+            <output
+                  id="PiMM"
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+            </output>
+            <output
+                  id="architecture"
+                  object="net.sf.dftools.architecture.slam.Design">
+            </output>
+         </outputs>
+      </scenario>
    </extension>
 </plugin>

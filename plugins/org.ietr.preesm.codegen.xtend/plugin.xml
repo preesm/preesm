@@ -2,32 +2,6 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="printers" name="Printers" schema="schema/printers.exsd"/>
-   <extension
-         point="net.sf.dftools.workflow.tasks">
-      <task
-            id="org.ietr.preesm.codegen.xtend.task.CodegenTask"
-            name="Xtend Codegen"
-            type="org.ietr.preesm.codegen.xtend.task.CodegenTask">
-         <inputs>
-            <input
-                  id="MemEx"
-                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
-            </input>
-            <input
-                  id="architecture"
-                  object="net.sf.dftools.architecture.slam.Design">
-            </input>
-            <input
-                  id="DAG"
-                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
-            </input>
-            <input
-                  id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
-            </input>
-         </inputs>
-      </task>
-   </extension>
    <extension point="org.eclipse.emf.ecore.generated_package">
       <!-- @generated codegen -->
       <package
@@ -114,5 +88,31 @@
             </core_type>
          </printer>
       </printers>
+   </extension>
+   <extension
+         point="org.ietr.dftools.workflow.tasks">
+      <task
+            id="org.ietr.preesm.codegen.xtend.task.CodegenTask"
+            name="Xtend Codegen"
+            type="org.ietr.preesm.codegen.xtend.task.CodegenTask">
+         <inputs>
+            <input
+                  id="MemEx"
+                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+            </input>
+            <input
+                  id="architecture"
+                  object="net.sf.dftools.architecture.slam.Design">
+            </input>
+            <input
+                  id="DAG"
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+         </inputs>
+      </task>
    </extension>
 </plugin>
