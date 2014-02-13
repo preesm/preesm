@@ -197,9 +197,9 @@ class ScriptRunner {
 						matches.forEach [
 							if (r.hasOverlap(new Range(localIdx, localIdx + it.length))) {
 								val localInter = r.intersection(new Range(localIdx, localIdx + it.length))
-								val remoteRangeStart = it.index + localInter.start - localIdx
+								val remoteRangeStart = it.remoteIndex + localInter.start - localIdx
 								val remoteRange = new Range(remoteRangeStart, remoteRangeStart + localInter.length)
-								matchFromMultRange.add(it.buffer -> remoteRange)
+								matchFromMultRange.add(it.remoteBuffer -> remoteRange)
 							}
 						]
 					]
@@ -386,7 +386,7 @@ class ScriptRunner {
 					matchList.forEach [
 						if (range.hasOverlap(new Range(localIdx, localIdx + it.length))  
 							// match in siblings are not processed here 
-						&& !siblings.contains(it.buffer)) {
+						&& !siblings.contains(it.remoteBuffer)) {
 							overlappingMatches.add(it)
 						}
 					]
@@ -397,7 +397,7 @@ class ScriptRunner {
 
 			// 2- Inter-input / inter			
 			buffer.matchTable.forEach [ localIdx, matchList |
-				matchList.filter[siblings.contains(it.buffer)].forEach [
+				matchList.filter[siblings.contains(it.remoteBuffer)].forEach [
 					// If this code is reached, the match is between
 					// two inputs or two outputs
 					val map = if(isIn) interInputMerge else interOutputMerge
@@ -432,7 +432,7 @@ class ScriptRunner {
 
 		// Iterate the merging algorithm until no buffers are merged
 		var updated = false
-		val step = 0
+		var step = 0
 		do {
 			switch (step) {
 				// First step: Merge mergeable buffer with a unique match 
@@ -451,25 +451,39 @@ class ScriptRunner {
 						{
 							// Only the destination can have conflicts here since
 							// the match source has a unique match in its matchTable
-							
 							val match = entry.value.head
-							val destConflicts = mergeConflicts.get(match.buffer.getDagVertex)
-							val isDestIn = scriptResults.get(match.buffer.getDagVertex).key.contains(match.buffer)
+							val destConflicts = mergeConflicts.get(match.remoteBuffer.getDagVertex)
+							val dagVertexResults = scriptResults.get(match.remoteBuffer.getDagVertex)
+							val isDestIn = dagVertexResults.key.contains(it)
 							val map = if(isDestIn) destConflicts.key else destConflicts.value
-							map.values.flatten.forall[it != match]
+							map.values.flatten.forall[
+								it != match.reciprocate
+							]
 						} 						
 					]
 					
-					println(candidates)
-				}
-				
-				
+					if(!candidates.empty){
+						// If there are candidates, merge them all and do step 0 again
+						step = 1
+						// Do the merge
+						candidates.forEach[
+							applyMatches(it, #[it.matchTable.entrySet.head.value.head])
+						]
+						
+						
+					} else {
+						// If there was no candidates, go to step 1
+						step = 1
+					}
+				}				
 			} 
 			 
-			// 1- Find a mergeable buffer
-			
-			// 2- merge it !
+			 updated = step != 1
 		} while (updated)
+	}
+	
+	def applyMatches(Buffer buffer, List<Match> matchs) {
+		
 	}
 
 	/**

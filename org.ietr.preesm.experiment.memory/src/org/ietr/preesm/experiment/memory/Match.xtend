@@ -1,16 +1,20 @@
 package org.ietr.preesm.experiment.memory
 
 class Match {
-	new(Buffer remoteBuffer, int remoteIndex, int size) {
-		buffer = remoteBuffer
-		index = remoteIndex
+	new(Buffer localBuffer, int localIndex, Buffer remoteBuffer, int remoteIndex, int size) {
+		this.remoteBuffer = remoteBuffer
+		this.remoteIndex = remoteIndex
 		length = size
 	}
-
+	
+	@Property 
+	Buffer localBuffer
 	@Property
-	Buffer buffer
+	int localIndex	
 	@Property
-	int index
+	Buffer remoteBuffer
+	@Property
+	int remoteIndex
 	@Property
 	int length
 
@@ -48,8 +52,8 @@ class Match {
 		if (this.class != obj.class)
 			return false
 		var other = obj as Match
-		this.buffer == other.buffer && this.index == other.index && this.length == other.length
+		this.remoteBuffer == other.remoteBuffer && this.remoteIndex == other.remoteIndex && this.length == other.length
 	}
 
-	override toString() '''«buffer.name»[«index»..«index + length »['''
+	override toString() '''«remoteBuffer.name»[«remoteIndex»..«remoteIndex + length »['''
 }

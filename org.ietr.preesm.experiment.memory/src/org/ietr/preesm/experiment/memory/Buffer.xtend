@@ -93,8 +93,8 @@ class Buffer {
 			val localIdx = it.key
 			// for all matches
 			matches.forall [ match |
-				val remoteMatches = match.buffer.matchTable.get(match.index)
-				remoteMatches != null && remoteMatches.contains(new Match(localBuffer, localIdx, match.length))
+				val remoteMatches = match.remoteBuffer.matchTable.get(match.remoteIndex)
+				remoteMatches != null && remoteMatches.contains(new Match( match.remoteBuffer, match.remoteIndex, localBuffer, localIdx, match.length))
 			]
 		]
 	}
@@ -138,8 +138,8 @@ class Buffer {
 					// at most one candidate can satisfy the conditions
 					remMatch = if (candidateSet != null) {
 						candidateSet.findFirst [ candidate |
-							candidate.buffer == match.buffer // same target
-							&& candidate.index == match.index + match.length
+							candidate.remoteBuffer == match.remoteBuffer // same target
+							&& candidate.remoteIndex == match.remoteIndex + match.length
 						]
 					} else {
 						null
@@ -147,11 +147,11 @@ class Buffer {
 					if (remMatch != null) {
 						// Remove the consecutive match from matchTables
 						candidateSet.remove(remMatch)
-						val remMatchSet = remMatch.buffer.matchTable.get(remMatch.index)
+						val remMatchSet = remMatch.remoteBuffer.matchTable.get(remMatch.remoteIndex)
 						remMatchSet.remove(remMatch.reciprocate)
 		
 						// Remove empty matchLists from the matchTable
-						if(remMatchSet.size == 0) remMatch.buffer.matchTable.remove(remMatch.index)
+						if(remMatchSet.size == 0) remMatch.remoteBuffer.matchTable.remove(remMatch.remoteIndex)
 						if(candidateSet.size == 0) removedEntry.add(localIdx + match.length)
 		
 						// Lengthen the existing match
@@ -327,7 +327,7 @@ class Buffer {
 			matchSet = newArrayList
 			matchTable.put(localIdx * tokenSize, matchSet)
 		}
-		val localMatch = new Match(buffer, remoteIdx * tokenSize, size * this.tokenSize)
+		val localMatch = new Match(this, localIdx * tokenSize, buffer, remoteIdx * tokenSize, size * this.tokenSize)
 		matchSet.add(localMatch)
 
 		var remoteMatchSet = buffer.matchTable.get(remoteIdx * tokenSize)
@@ -335,7 +335,7 @@ class Buffer {
 			remoteMatchSet = newArrayList
 			buffer.matchTable.put(remoteIdx * tokenSize, remoteMatchSet)
 		}
-		val remoteMatch = new Match(this, localIdx * tokenSize, size * this.tokenSize)
+		val remoteMatch = new Match(buffer, remoteIdx*tokenSize, this, localIdx * tokenSize, size * this.tokenSize)
 		remoteMatchSet.add(remoteMatch)
 
 		localMatch.reciprocate = remoteMatch
