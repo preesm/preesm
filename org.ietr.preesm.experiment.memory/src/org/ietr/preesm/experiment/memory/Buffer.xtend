@@ -3,14 +3,14 @@ package org.ietr.preesm.experiment.memory
 import java.util.ArrayList
 import java.util.List
 import java.util.Map
+import net.sf.dftools.algorithm.model.dag.DAGVertex
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex
+import net.sf.dftools.algorithm.model.sdf.SDFEdge
 
 import static extension org.ietr.preesm.experiment.memory.Range.*
-import net.sf.dftools.algorithm.model.sdf.SDFEdge
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex
-import net.sf.dftools.algorithm.model.dag.DAGVertex
 
 class Buffer {
-	
+
 	/**
 	 * Identify which data ranges of a {@link Buffer} are matched multiple
 	 * times. A range is matched multiple times if several matches involving
@@ -24,18 +24,18 @@ class Buffer {
 	 *         multiple times.
 	 */
 	static def getMultipleMatchRange(Buffer buffer) {
-		
+
 		val matchRanges = newArrayList
 		val multipleMatchRanges = newArrayList
+
 		// For each matchList
-		buffer.matchTable.forEach[localIdx, matchList|
+		buffer.matchTable.forEach [ localIdx, matchList |
 			// For each Match
-			matchList.forEach[ match |
-				val newRange = new Range(localIdx, localIdx + match.length ) 
+			matchList.forEach [ match |
+				val newRange = new Range(localIdx, localIdx + match.length)
 				// Get the intersection of the match and existing match ranges
-				val intersections =  matchRanges.intersection(newRange)
+				val intersections = matchRanges.intersection(newRange)
 				multipleMatchRanges.union(intersections)
-				
 				// Update the existing match ranges
 				matchRanges.union(newRange)
 			]
@@ -57,7 +57,7 @@ class Buffer {
 	 * @return <code>true</code> if the {@link Buffer} is completely matched,
 	 * and <code>false</code> otherwise. 
 	 */
-	static def isPartiallyMatched(Buffer buffer) {
+	static def isCompletelyMatched(Buffer buffer) {
 		val coveredRange = new ArrayList<Range>
 		val iterEntry = buffer.matchTable.entrySet.iterator
 		var stop = false
@@ -94,11 +94,12 @@ class Buffer {
 			// for all matches
 			matches.forall [ match |
 				val remoteMatches = match.remoteBuffer.matchTable.get(match.remoteIndex)
-				remoteMatches != null && remoteMatches.contains(new Match( match.remoteBuffer, match.remoteIndex, localBuffer, localIdx, match.length))
+				remoteMatches != null && remoteMatches.contains(
+					new Match(match.remoteBuffer, match.remoteIndex, localBuffer, localIdx, match.length))
 			]
 		]
 	}
-	
+
 	/**
 	 * The objective of this method is to merge as many matches as possible
 	 * from the {@link Buffer} {@link Buffer#_matchTable match tables}.<br><br>
@@ -123,6 +124,7 @@ class Buffer {
 	 */
 	static def simplifyMatches(Buffer buffer, List<Match> processedMatch) {
 		val removedEntry = newArrayList
+
 		// Process the match table
 		buffer.matchTable.entrySet.forEach [
 			val localIdx = it.key
@@ -131,9 +133,10 @@ class Buffer {
 			matchSet.filter[!processedMatch.contains(it)].forEach [ match |
 				var Match remMatch = null
 				do {
+
 					// Check if a consecutive match exist
 					var candidateSet = buffer.matchTable.get(localIdx + match.length)
-		
+
 					// Since Buffer#check() is supposed valid
 					// at most one candidate can satisfy the conditions
 					remMatch = if (candidateSet != null) {
@@ -145,15 +148,16 @@ class Buffer {
 						null
 					}
 					if (remMatch != null) {
+
 						// Remove the consecutive match from matchTables
 						candidateSet.remove(remMatch)
 						val remMatchSet = remMatch.remoteBuffer.matchTable.get(remMatch.remoteIndex)
 						remMatchSet.remove(remMatch.reciprocate)
-		
+
 						// Remove empty matchLists from the matchTable
 						if(remMatchSet.size == 0) remMatch.remoteBuffer.matchTable.remove(remMatch.remoteIndex)
 						if(candidateSet.size == 0) removedEntry.add(localIdx + match.length)
-		
+
 						// Lengthen the existing match
 						match.length = match.length + remMatch.length
 						match.reciprocate.length = match.length
@@ -163,10 +167,11 @@ class Buffer {
 				processedMatch.add(match.reciprocate)
 			]
 		]
+
 		// Remove empty matchLists from matchTable
 		removedEntry.forEach[buffer.matchTable.remove(it)]
 	}
-	
+
 	/**
 	 * Minimum index for the buffer content.
 	 * Constructor initialize this value to 0 but it is possible to lower this
@@ -180,14 +185,14 @@ class Buffer {
 	 * cf {@link #minIndex}.
 	 */
 	int _maxIndex
-		
+
 	/**
 	 * This table is protected to ensure that matches are set only by using
 	 * {@link #matchWith(int,Buffer,int)} methods in the scripts.
 	 */
 	@Property
 	final protected Map<Integer, List<Match>> matchTable
-	
+
 	@Property
 	final String name
 
@@ -196,19 +201,18 @@ class Buffer {
 
 	@Property
 	final int tokenSize
-	
+
 	@Property
 	final DAGVertex dagVertex
-	
+
 	@Property
 	final SDFEdge sdfEdge
-	
+
 	@Property
-	boolean indivisible		
-	
+	boolean indivisible
+
 	@Property
-	final protected  Map<Range, Pair<Buffer,Integer>> appliedMatches
-	
+	final protected Map<Range, Pair<Buffer, Integer>> appliedMatches
 
 	/**
     * Constructor for the {@link Buffer}.
@@ -231,11 +235,10 @@ class Buffer {
 		_indivisible = true
 		_dagVertex = dagVertex
 	}
-	
-	def getSdfVertex(){
+
+	def getSdfVertex() {
 		dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex) as SDFAbstractVertex
 	}
-	
 
 	def getMinIndex() {
 		_minIndex
@@ -281,22 +284,22 @@ class Buffer {
 
 		if (this.tokenSize != buffer.tokenSize) {
 			throw new RuntimeException(
-				"Cannot match " + this.name + " with " + buffer.name + " because buffers have different token sized (" +
-					this.tokenSize + "!=" + buffer.tokenSize + ")")
+				'''Cannot match «this.dagVertex.name».«this.name» with «buffer.dagVertex.name».«buffer.name» because buffers have different token sized («this.
+					tokenSize» != «buffer.tokenSize» ")''')
 		}
 
 		// Test if a matched range is completely out of real tokens
 		if ((localIdx >= this.nbTokens) || (localIdx + size - 1 < 0)) {
 			throw new RuntimeException(
-				"Cannot match " + this.name + "[" + localIdx + ".." + (localIdx + size - 1) + "] and " + buffer.name +
-					"[" + remoteIdx + ".." + (remoteIdx + size - 1) + "] because no \"real\" token from " + this.name +
-					"[0.." + (this.nbTokens - 1) + "] is matched.")
+				'''Cannot match «this.dagVertex.name».«this.name»[«localIdx»..«(localIdx + size - 1)»] and «buffer.
+					dagVertex.name».«buffer.name»[«remoteIdx»..«(remoteIdx + size - 1)»] because no "real" token from «this.
+					dagVertex.name».«this.name»[0..«(this.nbTokens - 1)»] is matched.''')
 		}
 		if ((remoteIdx >= buffer.nbTokens) || (remoteIdx + size - 1 < 0)) {
 			throw new RuntimeException(
-				"Cannot match " + this.name + "[" + localIdx + ".." + (localIdx + size - 1) + "] and " + buffer.name +
-					"[" + remoteIdx + ".." + (remoteIdx + size - 1) + "] because no \"real\" token from " + buffer.name +
-					"[0.." + (buffer.nbTokens - 1) + "] is matched.")
+				'''Cannot match «this.dagVertex.name».«this.name»[«localIdx»..«localIdx + size - 1»] and «buffer.
+					dagVertex.name».«buffer.name»[«remoteIdx»..«remoteIdx + size - 1»] because no "real" token from "«buffer.
+					dagVertex.name».«buffer.name»[0..«buffer.nbTokens - 1»] is matched.''')
 		}
 
 		// Are "virtual" tokens matched together
@@ -309,12 +312,15 @@ class Buffer {
 			// or remote range begins with less real tokens than the number of virtual tokens beginning local range
 			(remoteIdx >= 0 && ((buffer.nbTokens - remoteIdx) <= -Math::min(0, localIdx)))) {
 			throw new RuntimeException(
-				"Cannot match " + this.name + "[" + localIdx + ".." + (localIdx + size - 1) + "] and " + buffer.name +
-					"[" + remoteIdx + ".." + (remoteIdx + size - 1) +
-					"] because \"virtual tokens\" cannot be matched together.\n" + "Information: " + this.name +
-					" size = " + this.nbTokens + " and " + buffer.name + " size = " + buffer.nbTokens + ".")
+				'''Cannot match «this.dagVertex.name».«this.name»[«localIdx»..«localIdx + size - 1»] and «buffer.
+					dagVertex.name».«buffer.name»[«remoteIdx»..«(remoteIdx + size - 1)»] because "virtual tokens" cannot be matched together.«"\n"»Information: «this.
+					dagVertex.name».«this.name» size = «this.nbTokens» and «buffer.dagVertex.name».«buffer.name» size = «buffer.
+					nbTokens».''')
 		}
-
+		
+		this.byteMatchWith(localIdx*tokenSize,buffer, remoteIdx*tokenSize, size*tokenSize)
+		
+		/*
 		// If needed, update the buffers min/max indexes
 		if (!(localIdx >= 0) && (localIdx + size - 1 < this.nbTokens)) {
 			this._minIndex = Math::min(_minIndex, localIdx * tokenSize)
@@ -339,29 +345,124 @@ class Buffer {
 			remoteMatchSet = newArrayList
 			buffer.matchTable.put(remoteIdx * tokenSize, remoteMatchSet)
 		}
-		val remoteMatch = new Match(buffer, remoteIdx*tokenSize, this, localIdx * tokenSize, size * this.tokenSize)
+		val remoteMatch = new Match(buffer, remoteIdx * tokenSize, this, localIdx * tokenSize, size * this.tokenSize)
+		remoteMatchSet.add(remoteMatch)
+
+		localMatch.reciprocate = remoteMatch
+		return localMatch*/
+	}
+
+	def byteMatchWith(int localByteIdx, Buffer buffer, int remoteByteIdx, int byteSize) {
+		byteMatchWith(localByteIdx, buffer, remoteByteIdx, byteSize, true)
+	}
+
+	def byteMatchWith(int localByteIdx, Buffer buffer, int remoteByteIdx, int byteSize, boolean check) {
+
+		// Test if a matched range is completely out of real bytes
+		if (check) {
+			if ((localByteIdx >= this.nbTokens * this.tokenSize) || (localByteIdx + byteSize - 1 < 0)) {
+				throw new RuntimeException(
+					'''Cannot match bytes «this.dagVertex.name».«this.name»[«localByteIdx»..«(localByteIdx + byteSize -
+						1)»] and «buffer.dagVertex.name».«buffer.name»[«remoteByteIdx»..«(remoteByteIdx + byteSize - 1)»] because no "real" byte from «this.
+						dagVertex.name».«this.name»[0..«(this.nbTokens * this.tokenSize - 1)»] is matched.''')
+			}
+			if ((remoteByteIdx >= buffer.nbTokens * buffer.tokenSize) || (remoteByteIdx + byteSize - 1 < 0)) {
+				throw new RuntimeException(
+					'''Cannot match bytes «this.dagVertex.name».«this.name»[«localByteIdx»..«localByteIdx + byteSize - 1»] and «buffer.
+						dagVertex.name».«buffer.name»[«remoteByteIdx»..«remoteByteIdx + byteSize - 1»] because no "real" byte from "«buffer.
+						dagVertex.name».«buffer.name»[0..«buffer.nbTokens * buffer.tokenSize - 1»] is matched.''')
+			}
+
+			// Are "virtual" tokens matched together
+			if (// Both ranges begins before the first byte
+			((localByteIdx < 0) && (remoteByteIdx < 0)) ||
+				// or both buffers ends after the last byte
+				((localByteIdx + byteSize - 1 >= this.nbTokens * this.tokenSize) &&
+					(remoteByteIdx + byteSize - 1 >= buffer.nbTokens * buffer.tokenSize)) ||
+				// or local range begins with less real bytes than the number of virtual bytes beginning remote range
+				(localByteIdx >= 0 && ((this.nbTokens * this.tokenSize - localByteIdx) <= -Math::min(0, remoteByteIdx))) ||
+				// or remote range begins with less real bytes than the number of virtual bytes beginning local range
+				(remoteByteIdx >= 0 &&
+					((buffer.nbTokens * buffer.tokenSize - remoteByteIdx) <= -Math::min(0, localByteIdx)))) {
+				throw new RuntimeException(
+					'''Cannot match bytes «this.dagVertex.name».«this.name»[«localByteIdx»..«localByteIdx + byteSize - 1»] and «buffer.
+						dagVertex.name».«buffer.name»[«remoteByteIdx»..«(remoteByteIdx + byteSize - 1)»] because "virtual bytes" cannot be matched together.«"\n"»Information: «this.
+						dagVertex.name».«this.name» size = «this.nbTokens * this.tokenSize» and «buffer.dagVertex.name».«buffer.
+						name» size = «buffer.nbTokens * buffer.tokenSize».''')
+			}
+		}
+
+		// If needed, update the buffers min/max indexes
+		if (!(localByteIdx >= 0 && localByteIdx + byteSize - 1 < this.nbTokens * this.tokenSize)) {
+			this._minIndex = Math::min(_minIndex, localByteIdx)
+			this._maxIndex = Math::max(_maxIndex, (localByteIdx + byteSize))
+		}
+		if (!(remoteByteIdx >= 0 && remoteByteIdx + byteSize - 1 < buffer.nbTokens * buffer.tokenSize)) {
+			buffer._minIndex = Math::min(buffer._minIndex, remoteByteIdx)
+			buffer._maxIndex = Math::max(buffer._maxIndex, (remoteByteIdx + byteSize))
+		}
+
+		// Do the match
+		var matchSet = matchTable.get(localByteIdx)
+		if (matchSet == null) {
+			matchSet = newArrayList
+			matchTable.put(localByteIdx, matchSet)
+		}
+		val localMatch = new Match(this, localByteIdx, buffer, remoteByteIdx, byteSize)
+		matchSet.add(localMatch)
+
+		var remoteMatchSet = buffer.matchTable.get(remoteByteIdx)
+		if (remoteMatchSet == null) {
+			remoteMatchSet = newArrayList
+			buffer.matchTable.put(remoteByteIdx, remoteMatchSet)
+		}
+		val remoteMatch = new Match(buffer, remoteByteIdx, this, localByteIdx, byteSize)
 		remoteMatchSet.add(remoteMatch)
 
 		localMatch.reciprocate = remoteMatch
 		return localMatch
 	}
-	
-	override toString() '''«sdfVertex.name».«name»[«nbTokens*tokenSize»]'''
-	
+
+	override toString() '''«sdfVertex.name».«name»[«nbTokens * tokenSize»]'''
+
 	/**
 	 * We do not check that the match is possible !
 	 */
 	def applyMatch(Match match) {
-		// Temp version with unique match
+
+		// Temp version with unique match for a complete buffer
 		val it = match
-		appliedMatches.put(new Range(localIndex, localIndex + length), remoteBuffer->remoteIndex)
-		// Remove the applied match from the remote buffer
-		val remoteMatchList = remoteBuffer.matchTable.get(remoteIndex)
-		remoteMatchList.remove(match.reciprocate)
-		// Remove the match list if it is empty
-		if(remoteMatchList.size == 0) {
-			remoteBuffer.matchTable.remove(remoteIndex)
-		}
+		appliedMatches.put(new Range(localIndex, localIndex + length), remoteBuffer -> remoteIndex)
+
+		// Copy all third-party matches from the merged buffer
+		localBuffer.matchTable.values.flatten.filter[it != match].toList.immutableCopy.forEach [
+			match.remoteBuffer.byteMatchWith(it.localIndex - (match.localIndex - match.remoteIndex), it.remoteBuffer,
+				it.remoteIndex, it.length)
+			it.unmatch
+		]
+
+		// Remove the applied match from the buffers
+		match.unmatch
+		
+		// TODO: update the division points if any
 	}
 	
+	def unmatch(Match match){
+		val it = match 
+		
+		// Local unmatch
+		val localList = localBuffer.matchTable.get(localIndex)
+		localList.remove(it)
+		if(localList.size == 0){
+			localBuffer.matchTable.remove(localIndex)
+		}
+		
+		// Remote unmatch
+		val remoteList = remoteBuffer.matchTable.get(remoteIndex)
+		remoteList.remove(reciprocate)
+		if(remoteList.size == 0){
+			remoteBuffer.matchTable.remove(remoteIndex)
+		}
+		
+	}
 }

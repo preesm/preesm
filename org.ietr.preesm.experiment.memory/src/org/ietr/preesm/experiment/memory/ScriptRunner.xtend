@@ -32,8 +32,8 @@ import org.eclipse.core.runtime.Path
 import org.eclipse.xtext.xbase.lib.Pair
 import org.ietr.preesm.core.types.DataType
 
-import static extension org.ietr.preesm.experiment.memory.Buffer.*
 import static extension org.ietr.preesm.experiment.memory.Range.*
+import static extension org.ietr.preesm.experiment.memory.Buffer.*
 
 enum CheckPolicy {
 	NONE,
@@ -108,6 +108,8 @@ class ScriptRunner {
 	 * memory script to this memory script {@link File}.
 	 */
 	val scriptedVertices = new HashMap<DAGVertex, File>();
+	
+	static public final boolean printTodo = false
 
 	/**
 	 * Check the results obtained when running the {@link #run()} method.
@@ -348,6 +350,33 @@ class ScriptRunner {
 		// Simplify results
 		scriptResults.forEach[vertex, result|simplifyResult(result.key, result.value)]
 
+		// Identify divisible buffers
+		scriptResults.forEach [ vertex, result |
+			val allBuffers = new ArrayList<Buffer>
+			allBuffers.addAll(result.key)
+			allBuffers.addAll(result.value)
+			val divisibleCandidates = allBuffers.filter [ buffer |
+				// A buffer is potentially divisible if it is totally
+				// matched
+				var r0 = buffer.completelyMatched 
+				// if it has no multiple range
+				var r1 = buffer.multipleMatchRange.empty 
+				// If it has several matches (that were not merged by the
+				//  simplifyResult)
+				var r2 = buffer.matchTable.size > 1
+				
+				r0 && r1 && r2
+			]
+			
+			
+			// We only set as divisible the buffer
+			// that have no match with any other divisible buffer
+			divisibleCandidates.toList.filter[buffer |
+				buffer.matchTable.values.flatten.forall[!divisibleCandidates.toList.contains(it.remoteBuffer)]
+			].forEach[it.indivisible = false]
+			
+		]
+
 		// Identify ranges that may cause a transversal merge
 		scriptResults.forEach[vertex, result|mergeConflicts.put(vertex, identifyMergeRanges(result.key, result.value))]
 
@@ -355,7 +384,7 @@ class ScriptRunner {
 		val groups = groupVertices()
 
 		// Process the groups one by one
-		groups.forEach[
+		groups.forEach [
 			it.processGroup
 		]
 		var result = groups.fold(0, [res, gr|res + gr.size])
@@ -429,9 +458,13 @@ class ScriptRunner {
 		vertices.forEach [
 			var pair = scriptResults.get(it)
 			buffers.addAll(pair.key)
+			if(printTodo){
+				println("Todo Filter already matched buffers")
+			}
 			buffers.addAll(pair.value)
 		]
 
+		//println(buffers.fold(0,[res, buf | res + buf.maxIndex - buf.minIndex]))
 		// Iterate the merging algorithm until no buffers are merged
 		var updated = false
 		var step = 0
@@ -439,59 +472,74 @@ class ScriptRunner {
 			switch (step) {
 				// First step: Merge mergeable buffer with a unique match 
 				case 0: {
+
 					// Find all mergeable buffers with a unique match (if any)
-					val candidates = buffers.filter[
+					val candidates = buffers.filter [
 						val entry = it.matchTable.entrySet.head
 						// Returns true if:
 						// There is a unique match
 						it.matchTable.size == 1 && entry.value.size == 1 &&
-						// that begins at index 0 (or less)
-						entry.key <= 0 &&
-						// and ends at the end of the buffer (or more)
-						entry.key + entry.value.head.length >= it.nbTokens * it.tokenSize &&
+							// that begins at index 0 (or less)
+							entry.key <= 0 &&
+							// and ends at the end of the buffer (or more)
+							entry.key + entry.value.head.length >= it.nbTokens * it.tokenSize &&
 						// and is not involved in any conflicting range
-						{
-							// Only the destination can have conflicts here since
-							// the match source has a unique match in its matchTable
-							val match = entry.value.head
-							val destConflicts = mergeConflicts.get(match.remoteBuffer.getDagVertex)
-							val dagVertexResults = scriptResults.get(match.remoteBuffer.getDagVertex)
-							val isDestIn = dagVertexResults.key.contains(it)
-							val map = if(isDestIn) destConflicts.key else destConflicts.value
-							map.values.flatten.forall[
-								it != match.reciprocate
-							]
-						} 						
+							{
+
+								// Only the destination can have conflicts here since
+								// the match source has a unique match in its matchTable
+								val match = entry.value.head
+								val destConflicts = mergeConflicts.get(match.remoteBuffer.getDagVertex)
+								val dagVertexResults = scriptResults.get(match.remoteBuffer.getDagVertex)
+								val isDestIn = dagVertexResults.key.contains(it)
+								val map = if(isDestIn) destConflicts.key else destConflicts.value
+								map.values.flatten.forall [
+									it != match.reciprocate
+								]
+							}
 					].toList.immutableCopy
-					
+
 					// Copy the candidate list, otherwise it is updated when
 					// the content of buffers are modified
-					println(candidates)
-					if(!candidates.empty){
+					println('''0- «candidates»''')
+					if (!candidates.empty) {
+
 						// If there are candidates, merge them all and do step 0 again
 						step = 0
+
 						// Do the merge
-						candidates.forEach[
-							applyMatches( #[it.matchTable.entrySet.head.value.head])
+						candidates.forEach [
+							applyMatches(#[it.matchTable.entrySet.head.value.head])
 						]
 						buffers.removeAll(candidates)
-						
-						
+
 					} else {
+
 						// If there was no candidates, go to step 1
 						step = 1
 					}
-				}				
-			} 
-			 updated = step != 1
+				} // case 0
+				// Second step: ???
+				case 1: {
+				}
+			}
+			updated = step != 1
 		} while (updated)
+
+		//println(buffers.fold(0,[res, buf | res + buf.maxIndex - buf.minIndex]))
 		println("---")
 	}
-	
+
 	def applyMatches(List<Match> matches) {
+
 		// Temp version with a unique match with no merge conflicts
 		var match = matches.head
 		match.localBuffer.applyMatch(match)
+		// if there was conflicts with the removed buffer
+		if(printTodo){
+			println("Todo: Process match conflicts when merging")
+		}		
+
 	}
 
 	/**
@@ -568,13 +616,17 @@ class ScriptRunner {
 									// Find the 2 buffers corresponding to this sdfEdge
 									var buffers = bufferCandidates.filter[it.sdfEdge == sdfEdge]
 									if (buffers.size == 2) {
+										validBuffers = true
 
 										// Match them together
-										val match = buffers.get(0).matchWith(0, buffers.get(1), 0, buffers.get(0).nbTokens)
-										// Apply the match immediately
-										//applyMatches(#[match])
-										
-										validBuffers = true
+										buffers.get(0).matchWith(0, buffers.get(1), 0,
+											buffers.get(0).nbTokens)
+
+										// Do not apply the match immediately
+										// it would mess up with merge conflicts
+										if(printTodo){
+											println("Todo : apply match when grouping vertices.")
+										}
 									}
 								}
 							}
@@ -694,11 +746,11 @@ class ScriptRunner {
 		parameters.forEach[name, value|interpreter.set(name, value)]
 
 		// Retrieve buffers
-		var inputs = newArrayList(new Buffer(null, null,"input", parameters.get("Height") * parameters.get("Width"), 1))
+		var inputs = newArrayList(new Buffer(null, null, "input", parameters.get("Height") * parameters.get("Width"), 1))
 		inputs.forEach[interpreter.set("i_" + it.name, it)]
 
 		var outputs = newArrayList(
-			new Buffer(null, null ,"output",
+			new Buffer(null, null, "output",
 				parameters.get("Height") * parameters.get("Width") +
 					parameters.get("NbSlice") * parameters.get("Overlap") * 2 * parameters.get("Width"), 1))
 		outputs.forEach[interpreter.set("o_" + it.name, it)]
