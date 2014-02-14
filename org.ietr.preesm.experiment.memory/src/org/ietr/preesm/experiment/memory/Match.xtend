@@ -2,6 +2,8 @@ package org.ietr.preesm.experiment.memory
 
 class Match {
 	new(Buffer localBuffer, int localIndex, Buffer remoteBuffer, int remoteIndex, int size) {
+		this.localBuffer = localBuffer
+		this.localIndex = localIndex
 		this.remoteBuffer = remoteBuffer
 		this.remoteIndex = remoteIndex
 		length = size
@@ -55,5 +57,5 @@ class Match {
 		this.remoteBuffer == other.remoteBuffer && this.remoteIndex == other.remoteIndex && this.length == other.length
 	}
 
-	override toString() '''«remoteBuffer.name»[«remoteIndex»..«remoteIndex + length »['''
+	override toString() '''«remoteBuffer.dagVertex.name».«remoteBuffer.name»[«remoteIndex»..«remoteIndex + length »['''
 }

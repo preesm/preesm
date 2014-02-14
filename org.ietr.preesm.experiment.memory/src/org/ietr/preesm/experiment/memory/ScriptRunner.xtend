@@ -355,7 +355,9 @@ class ScriptRunner {
 		val groups = groupVertices()
 
 		// Process the groups one by one
-		groups.forEach[it.processGroup]
+		groups.forEach[
+			it.processGroup
+		]
 		var result = groups.fold(0, [res, gr|res + gr.size])
 		println("Identified " + groups.size + " groups. " + result)
 	}
@@ -442,7 +444,7 @@ class ScriptRunner {
 						val entry = it.matchTable.entrySet.head
 						// Returns true if:
 						// There is a unique match
-						it.matchTable.size == 1 && entry.value.size == 1
+						it.matchTable.size == 1 && entry.value.size == 1 &&
 						// that begins at index 0 (or less)
 						entry.key <= 0 &&
 						// and ends at the end of the buffer (or more)
@@ -460,15 +462,19 @@ class ScriptRunner {
 								it != match.reciprocate
 							]
 						} 						
-					]
+					].toList.immutableCopy
 					
+					// Copy the candidate list, otherwise it is updated when
+					// the content of buffers are modified
+					println(candidates)
 					if(!candidates.empty){
 						// If there are candidates, merge them all and do step 0 again
-						step = 1
+						step = 0
 						// Do the merge
 						candidates.forEach[
-							applyMatches(it, #[it.matchTable.entrySet.head.value.head])
+							applyMatches( #[it.matchTable.entrySet.head.value.head])
 						]
+						buffers.removeAll(candidates)
 						
 						
 					} else {
@@ -477,13 +483,15 @@ class ScriptRunner {
 					}
 				}				
 			} 
-			 
 			 updated = step != 1
 		} while (updated)
+		println("---")
 	}
 	
-	def applyMatches(Buffer buffer, List<Match> matchs) {
-		
+	def applyMatches(List<Match> matches) {
+		// Temp version with a unique match with no merge conflicts
+		var match = matches.head
+		match.localBuffer.applyMatch(match)
 	}
 
 	/**
@@ -562,7 +570,10 @@ class ScriptRunner {
 									if (buffers.size == 2) {
 
 										// Match them together
-										buffers.get(0).matchWith(0, buffers.get(1), 0, buffers.get(0).nbTokens)
+										val match = buffers.get(0).matchWith(0, buffers.get(1), 0, buffers.get(0).nbTokens)
+										// Apply the match immediately
+										//applyMatches(#[match])
+										
 										validBuffers = true
 									}
 								}

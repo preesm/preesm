@@ -206,6 +206,9 @@ class Buffer {
 	@Property
 	boolean indivisible		
 	
+	@Property
+	final protected  Map<Range, Pair<Buffer,Integer>> appliedMatches
+	
 
 	/**
     * Constructor for the {@link Buffer}.
@@ -222,6 +225,7 @@ class Buffer {
 		_nbTokens = nbTokens
 		_tokenSize = tokenSize
 		_matchTable = newHashMap()
+		_appliedMatches = newHashMap()
 		_minIndex = 0
 		_maxIndex = nbTokens * tokenSize
 		_indivisible = true
@@ -271,7 +275,7 @@ class Buffer {
 	 *            start index of the matched range for the remote {@link Buffer}
 	 * @param size
 	 *            the size of the matched range
-	 * @return not used.
+	 * @return the created local {@link Match}
 	 */
 	def matchWith(int localIdx, Buffer buffer, int remoteIdx, int size) {
 
@@ -339,7 +343,25 @@ class Buffer {
 		remoteMatchSet.add(remoteMatch)
 
 		localMatch.reciprocate = remoteMatch
+		return localMatch
 	}
 	
 	override toString() '''«sdfVertex.name».«name»[«nbTokens*tokenSize»]'''
+	
+	/**
+	 * We do not check that the match is possible !
+	 */
+	def applyMatch(Match match) {
+		// Temp version with unique match
+		val it = match
+		appliedMatches.put(new Range(localIndex, localIndex + length), remoteBuffer->remoteIndex)
+		// Remove the applied match from the remote buffer
+		val remoteMatchList = remoteBuffer.matchTable.get(remoteIndex)
+		remoteMatchList.remove(match.reciprocate)
+		// Remove the match list if it is empty
+		if(remoteMatchList.size == 0) {
+			remoteBuffer.matchTable.remove(remoteIndex)
+		}
+	}
+	
 }
