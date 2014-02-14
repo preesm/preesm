@@ -36,8 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.mapper.model.special;
 
-import net.sf.dftools.algorithm.model.dag.types.DAGDefaultVertexPropertyType;
-
+import org.ietr.dftools.algorithm.model.dag.types.DAGDefaultVertexPropertyType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;

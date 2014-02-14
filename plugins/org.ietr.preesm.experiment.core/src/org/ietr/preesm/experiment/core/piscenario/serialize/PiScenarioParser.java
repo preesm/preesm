@@ -42,9 +42,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import net.sf.dftools.algorithm.importer.InvalidModelException;
-import net.sf.dftools.architecture.slam.Design;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -54,6 +51,8 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.common.util.URI;
+import org.ietr.dftools.algorithm.importer.InvalidModelException;
+import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.experiment.core.piscenario.PiScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.xml.sax.SAXException;

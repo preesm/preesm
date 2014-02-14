@@ -44,9 +44,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import net.sf.dftools.architecture.slam.ComponentInstance;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
-
+import org.ietr.dftools.architecture.slam.ComponentInstance;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;

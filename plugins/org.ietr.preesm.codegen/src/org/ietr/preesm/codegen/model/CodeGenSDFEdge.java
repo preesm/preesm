@@ -36,9 +36,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.codegen.model;
 
-import net.sf.dftools.algorithm.model.AbstractEdgePropertyType;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
+import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 
 public class CodeGenSDFEdge extends SDFEdge {
 

@@ -40,14 +40,14 @@ import java.util.logging.Level;
 
 import jscl.math.Expression;
 import jscl.math.JSCLInteger;
-import net.sf.dftools.algorithm.SDFMath;
-import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
-import net.sf.dftools.algorithm.model.psdf.types.PSDFEdgePropertyType;
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
 
+import org.ietr.dftools.algorithm.SDFMath;
+import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
+import org.ietr.dftools.algorithm.model.psdf.types.PSDFEdgePropertyType;
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.model.CodeGenSDFBroadcastVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFFifoPullVertex;

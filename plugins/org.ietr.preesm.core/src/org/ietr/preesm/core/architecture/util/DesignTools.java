@@ -9,13 +9,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.dftools.architecture.slam.ComponentInstance;
-import net.sf.dftools.architecture.slam.Design;
-import net.sf.dftools.architecture.slam.attributes.Parameter;
-import net.sf.dftools.architecture.slam.component.Component;
-import net.sf.dftools.architecture.slam.component.Operator;
-import net.sf.dftools.architecture.slam.component.impl.ComNodeImpl;
-import net.sf.dftools.architecture.slam.link.Link;
+import org.ietr.dftools.architecture.slam.ComponentInstance;
+import org.ietr.dftools.architecture.slam.Design;
+import org.ietr.dftools.architecture.slam.attributes.Parameter;
+import org.ietr.dftools.architecture.slam.component.Component;
+import org.ietr.dftools.architecture.slam.component.Operator;
+import org.ietr.dftools.architecture.slam.component.impl.ComNodeImpl;
+import org.ietr.dftools.architecture.slam.link.Link;
 
 /**
  * Provides specific getters and setters for S-LAM architecture
@@ -98,7 +98,7 @@ public class DesignTools {
 	public static Set<String> getOperatorComponentIds(Design design) {
 		Set<String> operatorIds = new HashSet<String>();
 
-		for (net.sf.dftools.architecture.slam.component.Component component : design
+		for (org.ietr.dftools.architecture.slam.component.Component component : design
 				.getComponentHolder().getComponents()) {
 			if (component instanceof Operator) {
 				operatorIds.add(component.getVlnv().getName());
@@ -114,7 +114,7 @@ public class DesignTools {
 	public static Set<Component> getOperatorComponents(Design design) {
 		Set<Component> operators = new HashSet<Component>();
 
-		for (net.sf.dftools.architecture.slam.component.Component component : design
+		for (org.ietr.dftools.architecture.slam.component.Component component : design
 				.getComponentHolder().getComponents()) {
 			if (component instanceof Operator) {
 				operators.add(component);

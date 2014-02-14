@@ -1,12 +1,11 @@
 package org.ietr.preesm.mapper.scenariogen;
 
-import net.sf.dftools.algorithm.factories.SDFEdgeFactory;
-import net.sf.dftools.algorithm.factories.SDFVertexFactory;
-import net.sf.dftools.algorithm.importer.GMLImporter;
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
-
+import org.ietr.dftools.algorithm.factories.SDFEdgeFactory;
+import org.ietr.dftools.algorithm.factories.SDFVertexFactory;
+import org.ietr.dftools.algorithm.importer.GMLImporter;
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;

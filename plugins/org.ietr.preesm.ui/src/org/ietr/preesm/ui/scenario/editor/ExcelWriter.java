@@ -42,9 +42,9 @@ import java.io.OutputStream;
 
 import jxl.write.WritableSheet;
 import jxl.write.biff.RowsExceededException;
-import net.sf.dftools.algorithm.importer.InvalidModelException;
 
 import org.eclipse.swt.events.SelectionListener;
+import org.ietr.dftools.algorithm.importer.InvalidModelException;
 
 /**
  * Abstract class, must be implementing when exporting

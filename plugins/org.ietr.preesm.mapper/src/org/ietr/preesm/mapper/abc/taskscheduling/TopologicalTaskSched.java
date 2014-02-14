@@ -42,9 +42,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 
-import net.sf.dftools.algorithm.model.dag.DAGVertex;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
-
+import org.ietr.dftools.algorithm.model.dag.DAGVertex;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.abc.order.VertexOrderList;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;

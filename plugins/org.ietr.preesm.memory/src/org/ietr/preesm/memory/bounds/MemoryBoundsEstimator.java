@@ -41,12 +41,11 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.sf.dftools.workflow.WorkflowException;
-import net.sf.dftools.workflow.elements.Workflow;
-import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
-
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.dftools.workflow.WorkflowException;
+import org.ietr.dftools.workflow.elements.Workflow;
+import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.memory.allocation.MemoryAllocatorTask;
 import org.ietr.preesm.memory.exclusiongraph.MemExBroadcastMerger;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;

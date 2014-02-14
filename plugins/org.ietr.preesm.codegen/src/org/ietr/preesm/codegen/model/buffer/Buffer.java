@@ -38,9 +38,8 @@ package org.ietr.preesm.codegen.model.buffer;
 
 import java.util.logging.Level;
 
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
-import net.sf.dftools.workflow.tools.WorkflowLogger;
-
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.model.call.FunctionArgument;
 import org.ietr.preesm.codegen.model.printer.CodeZoneId;
 import org.ietr.preesm.codegen.model.printer.IAbstractPrinter;

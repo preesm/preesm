@@ -39,12 +39,11 @@ package org.ietr.preesm.mapper;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.dftools.architecture.slam.Design;
-import net.sf.dftools.workflow.WorkflowException;
-import net.sf.dftools.workflow.elements.Workflow;
-import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
-
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.dftools.architecture.slam.Design;
+import org.ietr.dftools.workflow.WorkflowException;
+import org.ietr.dftools.workflow.elements.Workflow;
+import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.impl.latency.SpanLengthCalculator;
 import org.ietr.preesm.mapper.abc.route.calcul.RouteCalculator;

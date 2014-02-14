@@ -39,9 +39,8 @@ package org.ietr.preesm.mapper.abc.impl.latency;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.dftools.architecture.slam.ComponentInstance;
-import net.sf.dftools.architecture.slam.Design;
-
+import org.ietr.dftools.architecture.slam.ComponentInstance;
+import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbcType;

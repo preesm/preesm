@@ -42,8 +42,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-import net.sf.dftools.algorithm.model.dag.DAGVertex;
-
+import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;

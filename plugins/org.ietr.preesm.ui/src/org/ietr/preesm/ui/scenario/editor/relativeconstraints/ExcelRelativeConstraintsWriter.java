@@ -51,14 +51,14 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
-import net.sf.dftools.algorithm.importer.InvalidModelException;
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.ietr.dftools.algorithm.importer.InvalidModelException;
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.SDFListContentProvider;
 import org.ietr.preesm.ui.scenario.editor.ExcelWriter;

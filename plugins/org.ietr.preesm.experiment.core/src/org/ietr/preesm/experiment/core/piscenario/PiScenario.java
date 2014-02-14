@@ -39,12 +39,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.dftools.architecture.slam.Design;
-import net.sf.dftools.architecture.slam.SlamPackage;
-import net.sf.dftools.architecture.slam.serialize.IPXACTResourceFactoryImpl;
-
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.ietr.dftools.architecture.slam.Design;
+import org.ietr.dftools.architecture.slam.SlamPackage;
+import org.ietr.dftools.architecture.slam.serialize.IPXACTResourceFactoryImpl;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.experiment.core.piscenario.serialize.PiScenarioParser;
 

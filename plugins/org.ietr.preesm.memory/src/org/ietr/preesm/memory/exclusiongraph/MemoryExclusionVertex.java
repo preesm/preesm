@@ -41,12 +41,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.dftools.algorithm.model.AbstractEdge;
-import net.sf.dftools.algorithm.model.AbstractVertex;
-import net.sf.dftools.algorithm.model.PropertyBean;
-import net.sf.dftools.algorithm.model.PropertyFactory;
-import net.sf.dftools.algorithm.model.dag.DAGEdge;
-
+import org.ietr.dftools.algorithm.model.AbstractEdge;
+import org.ietr.dftools.algorithm.model.AbstractVertex;
+import org.ietr.dftools.algorithm.model.PropertyBean;
+import org.ietr.dftools.algorithm.model.PropertyFactory;
+import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;

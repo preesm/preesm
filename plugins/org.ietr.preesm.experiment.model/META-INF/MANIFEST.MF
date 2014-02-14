@@ -22,7 +22,7 @@ Bundle-ClassPath: .,
  lib/jep-java-3.4-trial.jar
 Bundle-Vendor: IETR/INSA Rennes
 Bundle-Localization: plugin
-Import-Package: net.sf.dftools.algorithm.exporter,
- net.sf.dftools.algorithm.importer,
- net.sf.dftools.architecture.utils,
- net.sf.dftools.workflow.tools
+Import-Package: org.ietr.dftools.algorithm.exporter,
+ org.ietr.dftools.algorithm.importer,
+ org.ietr.dftools.architecture.utils,
+ org.ietr.dftools.workflow.tools

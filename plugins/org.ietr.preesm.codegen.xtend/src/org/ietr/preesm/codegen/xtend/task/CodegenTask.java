@@ -12,12 +12,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import net.sf.dftools.architecture.slam.Design;
-import net.sf.dftools.workflow.WorkflowException;
-import net.sf.dftools.workflow.elements.Workflow;
-import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IWorkspace;
@@ -34,6 +28,11 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import org.ietr.dftools.architecture.slam.Design;
+import org.ietr.dftools.workflow.WorkflowException;
+import org.ietr.dftools.workflow.elements.Workflow;
+import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
 import org.ietr.preesm.codegen.xtend.printer.CodegenAbstractPrinter;
@@ -49,9 +48,9 @@ public class CodegenTask extends AbstractTaskImplementation {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * net.sf.dftools.workflow.implement.AbstractTaskImplementation#execute(
+	 * org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(
 	 * java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
-	 * java.lang.String, net.sf.dftools.workflow.elements.Workflow)
+	 * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
 	 */
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
