@@ -30,7 +30,7 @@ package org.ietr.preesm.ui.properties;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
-import org.ietr.graphiti.ui.properties.MapSection;
+import org.ietr.dftools.graphiti.ui.properties.MapSection;
 
 /**
  * This class defines a map section for graph variables.

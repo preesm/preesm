@@ -2,7 +2,7 @@ package org.ietr.preesm.ui.properties.filters;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.jface.viewers.IFilter;
-import org.ietr.graphiti.model.Graph;
+import org.ietr.dftools.graphiti.model.Graph;
 
 /**
  * This class filters SDF graphs to enable the correct property tabs

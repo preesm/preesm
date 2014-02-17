@@ -39,11 +39,11 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
-import org.ietr.graphiti.GraphitiModelPlugin;
-import org.ietr.graphiti.model.Configuration;
-import org.ietr.graphiti.model.Graph;
-import org.ietr.graphiti.model.ObjectType;
-import org.ietr.graphiti.ui.wizards.WizardSaveGraphPage;
+import org.ietr.dftools.graphiti.GraphitiModelPlugin;
+import org.ietr.dftools.graphiti.model.Configuration;
+import org.ietr.dftools.graphiti.model.Graph;
+import org.ietr.dftools.graphiti.model.ObjectType;
+import org.ietr.dftools.graphiti.ui.wizards.WizardSaveGraphPage;
 
 /**
  * This class provides a wizard to create a new ipxact network.

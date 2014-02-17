@@ -29,8 +29,8 @@
 package org.ietr.preesm.ui.editor.graph.validators;
 
 import org.eclipse.core.resources.IFile;
-import org.ietr.graphiti.model.Graph;
-import org.ietr.graphiti.model.IValidator;
+import org.ietr.dftools.graphiti.model.Graph;
+import org.ietr.dftools.graphiti.model.IValidator;
 
 public class IDLValidator implements IValidator {
 

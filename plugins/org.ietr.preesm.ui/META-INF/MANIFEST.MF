@@ -7,8 +7,8 @@ Bundle-Activator: org.ietr.preesm.ui.Activator
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.ietr.graphiti.ui,
- org.ietr.graphiti.model,
+ org.ietr.dftools.graphiti.ui,
+ org.ietr.dftools.graphiti.model,
  org.eclipse.core.resources,
  org.eclipse.ui.views.properties.tabbed,
  org.jgrapht,

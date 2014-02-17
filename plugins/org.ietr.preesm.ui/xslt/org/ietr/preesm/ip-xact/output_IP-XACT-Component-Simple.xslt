@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:fn="http://www.w3.org/2005/xpath-functions"
-    xmlns:grammar="java:org.ietr.graphiti.io.GrammarTransformer"
+    xmlns:grammar="java:org.ietr.dftools.graphiti.io.GrammarTransformer"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4 http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4/index.xsd" 
