@@ -39,6 +39,7 @@ Thumbs.db
 # Others #
 ##########
 *.java._trace
+*.java.save
 bin/
 target/
 generated/
