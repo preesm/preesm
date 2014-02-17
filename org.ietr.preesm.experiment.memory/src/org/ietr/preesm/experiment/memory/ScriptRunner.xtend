@@ -108,7 +108,7 @@ class ScriptRunner {
 	 * memory script to this memory script {@link File}.
 	 */
 	val scriptedVertices = new HashMap<DAGVertex, File>();
-	
+
 	static public final boolean printTodo = false
 
 	/**
@@ -358,23 +358,19 @@ class ScriptRunner {
 			val divisibleCandidates = allBuffers.filter [ buffer |
 				// A buffer is potentially divisible if it is totally
 				// matched
-				var r0 = buffer.completelyMatched 
+				var r0 = buffer.completelyMatched
 				// if it has no multiple range
-				var r1 = buffer.multipleMatchRange.empty 
+				var r1 = buffer.multipleMatchRange.empty
 				// If it has several matches (that were not merged by the
 				//  simplifyResult)
 				var r2 = buffer.matchTable.size > 1
-				
 				r0 && r1 && r2
 			]
-			
-			
 			// We only set as divisible the buffer
 			// that have no match with any other divisible buffer
-			divisibleCandidates.toList.filter[buffer |
+			divisibleCandidates.toList.filter [ buffer |
 				buffer.matchTable.values.flatten.forall[!divisibleCandidates.toList.contains(it.remoteBuffer)]
 			].forEach[it.indivisible = false]
-			
 		]
 
 		// Identify ranges that may cause a transversal merge
@@ -394,7 +390,6 @@ class ScriptRunner {
 	def Pair<Map<Pair<Buffer, Range>, List<Match>>, Map<Pair<Buffer, Range>, List<Match>>> identifyMergeRanges(
 		List<Buffer> inputs, List<Buffer> outputs) {
 
-		// Result directly stored in buffers:
 		// Map<Pair<Buffer,Range>, List<Match>> 
 		val interInputMerge = new HashMap<Pair<Buffer, Range>, List<Match>>()
 		val interOutputMerge = new HashMap<Pair<Buffer, Range>, List<Match>>()
@@ -410,18 +405,40 @@ class ScriptRunner {
 
 			// 1- Find multi Ranges
 			val multiRanges = buffer.multipleMatchRange
+
+			// For each multiple range
 			multiRanges.forEach [ range |
 				// find overlapping match
 				val overlappingMatches = newArrayList
+				val overlappingSiblingMatches = newArrayList
 				buffer.matchTable.forEach [ localIdx, matchList |
-					matchList.forEach [
-						if (range.hasOverlap(new Range(localIdx, localIdx + it.length))  
-							// match in siblings are not processed here 
-						&& !siblings.contains(it.remoteBuffer)) {
-							overlappingMatches.add(it)
+					matchList.forEach [ match |
+						if (range.hasOverlap(new Range(localIdx, localIdx + match.length))) {
+							val matches = if (!siblings.contains(match.remoteBuffer)) {
+
+									// match not in siblings 
+									overlappingMatches
+								} else {
+
+									// Match in siblings
+									overlappingSiblingMatches
+								}
+
+							// Add a conflict between the overlapping match
+							// and all previous overlapping matches
+							matches.forEach [
+								// For Matches
+								match.conflictingMatches.add(it)
+								it.conflictingMatches.add(match)
+								// And reciprocates
+								match.reciprocate.conflictingMatches.add(it.reciprocate)
+								it.reciprocate.conflictingMatches.add(match.reciprocate)
+							]
+							matches.add(match)
 						}
 					]
 				]
+				// Old backup
 				val key = new Pair(buffer, range)
 				(if(isIn) interOutputMerge else interInputMerge).put(key, overlappingMatches)
 			]
@@ -431,7 +448,11 @@ class ScriptRunner {
 				matchList.filter[siblings.contains(it.remoteBuffer)].forEach [
 					// If this code is reached, the match is between
 					// two inputs or two outputs
+					// Old Backup
 					val map = if(isIn) interInputMerge else interOutputMerge
+					// The conflicting range is the one of the local match
+					// (the reciprocal conflicting range will be added when
+					// testing the remote buffer)
 					val keyClone = new Pair(buffer, new Range(localIdx, localIdx + it.length))
 					val key = map.keySet.findFirst[it == keyClone] ?: keyClone
 					var conflictingMatches = map.get(key)
@@ -441,6 +462,28 @@ class ScriptRunner {
 					}
 					conflictingMatches.add(it)
 				]
+			]
+		}
+
+		// Remove duplicates from match.conflicting match lists
+		// For each buffer
+		if (printTodo) {
+
+			// Karol Note: Might no be necessary at all !
+			// It seems that no duplicates are created by the previous code
+			println("Check if removing duplicates is needed.")
+		}
+		for (buffer : #{inputs, outputs}.flatten) {
+
+			// for each match
+			buffer.matchTable.values.flatten.forEach [
+				// Remove duplicates
+				var index = 0
+				while (index < it.conflictingMatches.size - 1) {
+					val currentElt = it.conflictingMatches.get(index)
+					it.conflictingMatches.subList(index + 1, it.conflictingMatches.size).removeAll(currentElt)
+					index = index + 1
+				}
 			]
 		}
 
@@ -458,7 +501,7 @@ class ScriptRunner {
 		vertices.forEach [
 			var pair = scriptResults.get(it)
 			buffers.addAll(pair.key)
-			if(printTodo){
+			if (printTodo) {
 				println("Todo Filter already matched buffers")
 			}
 			buffers.addAll(pair.value)
@@ -535,10 +578,11 @@ class ScriptRunner {
 		// Temp version with a unique match with no merge conflicts
 		var match = matches.head
 		match.localBuffer.applyMatch(match)
+
 		// if there was conflicts with the removed buffer
-		if(printTodo){
+		if (printTodo) {
 			println("Todo: Process match conflicts when merging")
-		}		
+		}
 
 	}
 
@@ -624,7 +668,7 @@ class ScriptRunner {
 
 										// Do not apply the match immediately
 										// it would mess up with merge conflicts
-										if(printTodo){
+										if (printTodo) {
 											println("Todo : apply match when grouping vertices.")
 										}
 									}
