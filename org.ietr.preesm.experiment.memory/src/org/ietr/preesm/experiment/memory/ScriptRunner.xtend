@@ -79,30 +79,6 @@ class ScriptRunner {
 	 */
 	val scriptResults = new HashMap<DAGVertex, Pair<List<Buffer>, List<Buffer>>>
 
-	/**
-	 * A {@link Map} that associates each {@link DAGVertex} from the
-	 * {@link ScriptRunner#scriptedVertices scriptedVertices} map to the 
-	 * potential merge conflicts between its inputs buffers and between its 
-	 * output buffers. These conflicts are stored as follow in the Map:<br>
-	 * <ul><li>Map</li>
-	 * <ul><li>Map.Key: {@link DAGVertex} whose conflicts are stored as value</li>
-	 * <li>Map.Value: Pair to separate inter-inputs and inter-outputs conflicts 
-	 * </li><ul><li>Pair.Key: Map - For inter-inputs conflicts</li>
-	 * <ul><li>Map.Key: Pair identifies a conflicting range of an input buffer</li>
-	 * <ul><li>Pair.Key: Buffer</li><li>Pair.Value: Range</li>
-	 * </ul><li>Map.Value: List of Match that overlap the conflicting range</li></ul>
-	 * <li>Pair.Value: Map - For inter-outputs conflicts</li>
-	 * <ul><li>Map.Key: Pair identifies a conflicting range of an output buffer</li>
-	 * <ul><li>Pair.Key: Buffer</li><li>Pair.Value: Range</li>
-	 * </ul><li>Map.Value: List of Match that overlap the conflicting range</li></ul>
-	 * </ul></ul><ul>
-	 * This {@link Map} is filled in the {@link ScriptRunner#process() 
-	 * process()} method with the result of a call to {@link
-	 * ScriptRunner#identifyMergeRanges(List,List) identifyMergeRanges()} for 
-	 * each {@link DAGVertex}. 
-	 */
-	val mergeConflicts = new HashMap<DAGVertex, Pair<Map<Pair<Buffer, Range>, List<Match>>, Map<Pair<Buffer, Range>, List<Match>>>>
-
 	/** 
 	 * A {@link Map} that associates each {@link DAGVertex} with a
 	 * memory script to this memory script {@link File}.
@@ -374,7 +350,7 @@ class ScriptRunner {
 		]
 
 		// Identify ranges that may cause a transversal merge
-		scriptResults.forEach[vertex, result|mergeConflicts.put(vertex, identifyMergeRanges(result.key, result.value))]
+		scriptResults.forEach[vertex, result|identifyMergeRanges(result.key, result.value)]
 
 		// Identify groups of chained buffers from the scripts and dag
 		val groups = groupVertices()
@@ -387,12 +363,7 @@ class ScriptRunner {
 		println("Identified " + groups.size + " groups. " + result)
 	}
 
-	def Pair<Map<Pair<Buffer, Range>, List<Match>>, Map<Pair<Buffer, Range>, List<Match>>> identifyMergeRanges(
-		List<Buffer> inputs, List<Buffer> outputs) {
-
-		// Map<Pair<Buffer,Range>, List<Match>> 
-		val interInputMerge = new HashMap<Pair<Buffer, Range>, List<Match>>()
-		val interOutputMerge = new HashMap<Pair<Buffer, Range>, List<Match>>()
+	def identifyMergeRanges(List<Buffer> inputs, List<Buffer> outputs) {
 
 		// For each Buffer
 		for (buffer : #{inputs, outputs}.flatten) {
@@ -438,30 +409,6 @@ class ScriptRunner {
 						}
 					]
 				]
-				// Old backup
-				val key = new Pair(buffer, range)
-				(if(isIn) interOutputMerge else interInputMerge).put(key, overlappingMatches)
-			]
-
-			// 2- Inter-input / inter			
-			buffer.matchTable.forEach [ localIdx, matchList |
-				matchList.filter[siblings.contains(it.remoteBuffer)].forEach [
-					// If this code is reached, the match is between
-					// two inputs or two outputs
-					// Old Backup
-					val map = if(isIn) interInputMerge else interOutputMerge
-					// The conflicting range is the one of the local match
-					// (the reciprocal conflicting range will be added when
-					// testing the remote buffer)
-					val keyClone = new Pair(buffer, new Range(localIdx, localIdx + it.length))
-					val key = map.keySet.findFirst[it == keyClone] ?: keyClone
-					var conflictingMatches = map.get(key)
-					if (conflictingMatches === null) {
-						conflictingMatches = newArrayList
-						map.put(key, conflictingMatches)
-					}
-					conflictingMatches.add(it)
-				]
 			]
 		}
 
@@ -486,9 +433,6 @@ class ScriptRunner {
 				}
 			]
 		}
-
-		// Return the pair of result lists
-		new Pair(interInputMerge, interOutputMerge)
 	}
 
 	/**
@@ -500,11 +444,9 @@ class ScriptRunner {
 		val buffers = newArrayList
 		vertices.forEach [
 			var pair = scriptResults.get(it)
-			buffers.addAll(pair.key)
-			if (printTodo) {
-				println("Todo Filter already matched buffers")
-			}
-			buffers.addAll(pair.value)
+			// Buffer that were already merged are not processed
+			buffers.addAll(pair.key.filter[it.appliedMatches.size == 0])
+			buffers.addAll(pair.value.filter[it.appliedMatches.size == 0])
 		]
 
 		//println(buffers.fold(0,[res, buf | res + buf.maxIndex - buf.minIndex]))
@@ -532,13 +474,7 @@ class ScriptRunner {
 								// Only the destination can have conflicts here since
 								// the match source has a unique match in its matchTable
 								val match = entry.value.head
-								val destConflicts = mergeConflicts.get(match.remoteBuffer.getDagVertex)
-								val dagVertexResults = scriptResults.get(match.remoteBuffer.getDagVertex)
-								val isDestIn = dagVertexResults.key.contains(it)
-								val map = if(isDestIn) destConflicts.key else destConflicts.value
-								map.values.flatten.forall [
-									it != match.reciprocate
-								]
+								 match.conflictingMatches.size == 0 								
 							}
 					].toList.immutableCopy
 
@@ -579,10 +515,8 @@ class ScriptRunner {
 		var match = matches.head
 		match.localBuffer.applyMatch(match)
 
-		// if there was conflicts with the removed buffer
-		if (printTodo) {
-			println("Todo: Process match conflicts when merging")
-		}
+		// If there was conflicts with the removed buffer
+		
 
 	}
 
@@ -663,11 +597,12 @@ class ScriptRunner {
 										validBuffers = true
 
 										// Match them together
-										buffers.get(0).matchWith(0, buffers.get(1), 0,
+										val match = buffers.get(0).matchWith(0, buffers.get(1), 0,
 											buffers.get(0).nbTokens)
 
 										// Do not apply the match immediately
 										// it would mess up with merge conflicts
+										applyMatches(#[match])
 										if (printTodo) {
 											println("Todo : apply match when grouping vertices.")
 										}

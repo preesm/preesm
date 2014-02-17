@@ -10,6 +10,7 @@ class Match {
 		this.remoteIndex = remoteIndex
 		length = size
 		this.conflictingMatches = newArrayList
+		this.applied = false
 	}
 
 	@Property
@@ -24,6 +25,14 @@ class Match {
 	int length
 	@Property
 	List<Match> conflictingMatches
+	
+	/**
+	 * This {@link boolean} is set to <code>true</code> if the current {@link 
+	 * Match} was applied.
+	 */
+	@Property
+	boolean applied
+	
 
 	Match _reciprocate
 

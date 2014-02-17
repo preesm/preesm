@@ -317,10 +317,10 @@ class Buffer {
 					dagVertex.name».«this.name» size = «this.nbTokens» and «buffer.dagVertex.name».«buffer.name» size = «buffer.
 					nbTokens».''')
 		}
-		
-		this.byteMatchWith(localIdx*tokenSize,buffer, remoteIdx*tokenSize, size*tokenSize)
-		
-		/*
+
+		this.byteMatchWith(localIdx * tokenSize, buffer, remoteIdx * tokenSize, size * tokenSize)
+
+	/*
 		// If needed, update the buffers min/max indexes
 		if (!(localIdx >= 0) && (localIdx + size - 1 < this.nbTokens)) {
 			this._minIndex = Math::min(_minIndex, localIdx * tokenSize)
@@ -377,8 +377,8 @@ class Buffer {
 			if (// Both ranges begins before the first byte
 			((localByteIdx < 0) && (remoteByteIdx < 0)) ||
 				// or both buffers ends after the last byte
-				((localByteIdx + byteSize - 1 >= this.nbTokens * this.tokenSize) &&
-					(remoteByteIdx + byteSize - 1 >= buffer.nbTokens * buffer.tokenSize)) ||
+			((localByteIdx + byteSize - 1 >= this.nbTokens * this.tokenSize) &&
+				(remoteByteIdx + byteSize - 1 >= buffer.nbTokens * buffer.tokenSize)) ||
 				// or local range begins with less real bytes than the number of virtual bytes beginning remote range
 				(localByteIdx >= 0 && ((this.nbTokens * this.tokenSize - localByteIdx) <= -Math::min(0, remoteByteIdx))) ||
 				// or remote range begins with less real bytes than the number of virtual bytes beginning local range
@@ -427,42 +427,69 @@ class Buffer {
 
 	/**
 	 * We do not check that the match is possible !
+	 * The local buffer is merged into the remote buffer
+	 * The local buffer does not "exists" afterwards
 	 */
 	def applyMatch(Match match) {
 
 		// Temp version with unique match for a complete buffer
-		val it = match
-		appliedMatches.put(new Range(localIndex, localIndex + length), remoteBuffer -> remoteIndex)
+		appliedMatches.put(new Range(match.localIndex, match.localIndex + match.length),
+			match.remoteBuffer -> match.remoteIndex)
 
-		// Copy all third-party matches from the merged buffer
-		localBuffer.matchTable.values.flatten.filter[it != match].toList.immutableCopy.forEach [
-			match.remoteBuffer.byteMatchWith(it.localIndex - (match.localIndex - match.remoteIndex), it.remoteBuffer,
-				it.remoteIndex, it.length)
-			it.unmatch
+		// Move all third-party matches from the merged buffer
+		match.localBuffer.matchTable.values.flatten.filter[it != match].toList.immutableCopy.forEach [ movedMatch |
+			// Remove old match from original match list
+			val localList = match.localBuffer.matchTable.get(movedMatch.localIndex)
+			localList.remove(movedMatch)
+			if (localList.size == 0) {
+				match.localBuffer.matchTable.remove(movedMatch.localIndex)
+			}
+			// Change the match local buffer and index	
+			// Length and remoteBuffer are unchanged
+			movedMatch.localBuffer = match.remoteBuffer
+			movedMatch.localIndex = movedMatch.localIndex - (match.localIndex - match.remoteIndex)
+			// Update the reciprocate
+			movedMatch.reciprocate.remoteBuffer = movedMatch.localBuffer
+			movedMatch.reciprocate.remoteIndex = movedMatch.localIndex
+			// Put the moved match in its new host matchTable
+			var matchList = match.remoteBuffer.matchTable.get(movedMatch.localIndex)
+			if (matchList === null) {
+				matchList = newArrayList
+				match.remoteBuffer.matchTable.put(movedMatch.localIndex, matchList)
+			}
+			matchList.add(movedMatch)
 		]
 
-		// Remove the applied match from the buffers
+		// Remove the applied match from the buffers match table 
+		// (local and reciprocate)
 		match.unmatch
-		
+
+		// Match was applied (and reciprocate)
+		match.applied = true
+		match.reciprocate.applied = true
+
 		// TODO: update the division points if any
+		if (ScriptRunner::printTodo) {
+			println("Update division points in match application")
+		}
 	}
-	
-	def unmatch(Match match){
-		val it = match 
-		
+
+	def unmatch(Match match) {
+		val it = match
+
 		// Local unmatch
 		val localList = localBuffer.matchTable.get(localIndex)
 		localList.remove(it)
-		if(localList.size == 0){
+		if (localList.size == 0) {
 			localBuffer.matchTable.remove(localIndex)
 		}
-		
+
 		// Remote unmatch
 		val remoteList = remoteBuffer.matchTable.get(remoteIndex)
 		remoteList.remove(reciprocate)
-		if(remoteList.size == 0){
+		if (remoteList.size == 0) {
 			remoteBuffer.matchTable.remove(remoteIndex)
 		}
-		
+
 	}
 }
