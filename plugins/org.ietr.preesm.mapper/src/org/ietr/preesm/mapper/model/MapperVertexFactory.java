@@ -36,10 +36,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.mapper.model;
 
-import org.ietr.dftools.algorithm.factories.ModelVertexFactory;
-import org.ietr.dftools.algorithm.model.AbstractVertex;
-import org.ietr.dftools.algorithm.model.IInterface;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.factories.ModelVertexFactory;
+import net.sf.dftools.algorithm.model.AbstractVertex;
+import net.sf.dftools.algorithm.model.IInterface;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+
 import org.w3c.dom.Element;
 
 /**

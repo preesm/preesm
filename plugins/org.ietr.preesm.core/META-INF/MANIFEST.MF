@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm core plug-in
 Bundle-SymbolicName: org.ietr.preesm.core;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.0.rc1-v20131030
 Bundle-Activator: org.ietr.preesm.core.Activator
 Bundle-Vendor: IETR/INSA of Rennes
 Require-Bundle: org.eclipse.core.expressions,
@@ -20,8 +20,7 @@ Require-Bundle: org.eclipse.core.expressions,
  org.ietr.dftools.workflow,
  org.jgrapht;bundle-version="0.8.2",
  org.ietr.dftools.architecture;bundle-version="0.0.1",
- org.ietr.dftools.algorithm;bundle-version="0.0.1",
- org.ietr.dftools.graphiti.model;bundle-version="1.3.11"
+ org.ietr.dftools.algorithm;bundle-version="0.0.1"
 Bundle-ClassPath: .,
  lib/djep-full-latest.jar,
  lib/jmatharray.jar,
@@ -44,4 +43,5 @@ Export-Package: jscl.math,
  org.ietr.preesm.core.workflow
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
-Import-Package: org.ietr.preesm.experiment.model.pimm
+Import-Package: net.sf.graphiti.model,
+ org.ietr.preesm.experiment.model.pimm

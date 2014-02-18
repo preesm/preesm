@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm XTend code generation plug-in
 Bundle-SymbolicName: org.ietr.preesm.codegen.xtend;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.0.rc1-v20131030
 Bundle-Activator: org.ietr.preesm.codegen.xtend.Activator
 Bundle-Vendor: IETR/INSA of Rennes
 Require-Bundle: org.eclipse.core.runtime,

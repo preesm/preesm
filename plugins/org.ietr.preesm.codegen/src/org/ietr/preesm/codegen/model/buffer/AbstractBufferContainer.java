@@ -41,7 +41,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+
 import org.ietr.preesm.codegen.model.allocators.AllocationPolicy;
 import org.ietr.preesm.codegen.model.allocators.IBufferAllocator;
 import org.ietr.preesm.codegen.model.call.Variable;

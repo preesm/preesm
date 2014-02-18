@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
+Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -38,11 +38,12 @@ package org.ietr.preesm.ui.console;
 
 import java.util.logging.Level;
 
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.IConsoleFactory;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
 /**
  * @author mpelcat

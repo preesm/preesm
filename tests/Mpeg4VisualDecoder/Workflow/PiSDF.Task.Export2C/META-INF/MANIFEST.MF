@@ -5,8 +5,8 @@ Bundle-SymbolicName: PiSDF.Task.Export2C;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: pisdf.task.export2c.Activator
 Require-Bundle: org.eclipse.core.runtime,
- org.ietr.dftools.workflow,
- org.ietr.dftools.algorithm,
+ net.sf.dftools.workflow,
+ net.sf.dftools.algorithm,
  org.jgrapht,
  org.eclipse.xtend.lib,
  com.google.guava,

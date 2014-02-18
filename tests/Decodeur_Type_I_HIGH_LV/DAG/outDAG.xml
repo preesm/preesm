@@ -8,28 +8,28 @@
         <desc>java.lang.String</desc>
     </key>
     <key attr.name="Operator" attr.type="string" for="vertex" id="Operator">
-        <desc>org.ietr.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType</desc>
+        <desc>net.sf.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType</desc>
     </key>
     <key attr.name="schedulingOrder" attr.type="int" for="vertex" id="schedulingOrder">
-        <desc>org.ietr.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType</desc>
+        <desc>net.sf.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType</desc>
     </key>
     <key attr.name="dataSize" attr.type="int" for="vertex" id="dataSize">
-        <desc>org.ietr.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType</desc>
+        <desc>net.sf.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType</desc>
     </key>
     <key attr.name="duration" attr.type="int" for="vertex" id="duration">
-        <desc>org.ietr.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType</desc>
+        <desc>net.sf.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType</desc>
     </key>
     <key attr.name="senderGraphName" attr.type="string" for="vertex" id="senderGraphName">
-        <desc>org.ietr.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType</desc>
+        <desc>net.sf.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType</desc>
     </key>
     <key attr.name="receiverGraphName" attr.type="string" for="vertex" id="receiverGraphName">
-        <desc>org.ietr.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType</desc>
+        <desc>net.sf.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType</desc>
     </key>
     <key attr.name="Operator_address" attr.type="string" for="vertex" id="Operator_address">
-        <desc>org.ietr.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType</desc>
+        <desc>net.sf.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType</desc>
     </key>
     <key attr.name="originalId" attr.type="string" for="vertex" id="originalId">
-        <desc>org.ietr.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType</desc>
+        <desc>net.sf.dftools.algorithm.model.dag.types.DAGDefaultEdgePropertyType</desc>
     </key>
     <graph edgedefault="directed">
         <data key="name"/>

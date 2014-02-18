@@ -41,11 +41,12 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import net.sf.dftools.algorithm.importer.InvalidModelException;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.ietr.dftools.algorithm.importer.InvalidModelException;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.tools.NameComparator;
 

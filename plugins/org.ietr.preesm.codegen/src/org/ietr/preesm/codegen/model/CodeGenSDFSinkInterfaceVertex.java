@@ -36,8 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.codegen.model;
 
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
+import net.sf.dftools.architecture.slam.ComponentInstance;
 
 public class CodeGenSDFSinkInterfaceVertex extends SDFSinkInterfaceVertex
 		implements ICodeGenSDFVertex {

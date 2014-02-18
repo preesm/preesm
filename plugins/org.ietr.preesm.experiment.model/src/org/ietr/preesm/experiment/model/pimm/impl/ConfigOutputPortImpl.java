@@ -79,6 +79,7 @@ public class ConfigOutputPortImpl extends DataOutputPortImpl implements ConfigOu
 	 */
 	protected ConfigOutputPortImpl() {
 		super();
+		kind = "cfg_output";
 	}
 
 	/**

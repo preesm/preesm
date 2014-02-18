@@ -40,7 +40,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.ietr.preesm.mapper.abc.AbcType;
 import org.ietr.preesm.mapper.abc.edgescheduling.EdgeSchedType;
 

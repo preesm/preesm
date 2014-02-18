@@ -36,7 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.mapper.model;
 
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+
 import org.ietr.preesm.mapper.model.property.EdgeInit;
 import org.ietr.preesm.mapper.model.property.EdgeTiming;
 

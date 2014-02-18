@@ -38,16 +38,17 @@ package org.ietr.preesm.mapper.graphtransfo;
 
 import java.util.Iterator;
 
-import org.ietr.dftools.algorithm.model.AbstractEdge;
-import org.ietr.dftools.algorithm.model.PropertyBean;
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
+import net.sf.dftools.algorithm.model.AbstractEdge;
+import net.sf.dftools.algorithm.model.PropertyBean;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
+
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;

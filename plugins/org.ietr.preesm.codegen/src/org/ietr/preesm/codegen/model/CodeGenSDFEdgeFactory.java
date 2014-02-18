@@ -36,10 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.codegen.model;
 
-import org.ietr.dftools.algorithm.factories.SDFEdgeFactory;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
+import net.sf.dftools.algorithm.factories.SDFEdgeFactory;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
+import net.sf.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
 
 public class CodeGenSDFEdgeFactory extends SDFEdgeFactory {
 

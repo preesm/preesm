@@ -6,13 +6,13 @@
    <key attr.name="parameters" for="graph" id="parameters"/>
    <key attr.name="variables" for="graph" id="variables"/>
    <key attr.name="edge_prod" attr.type="int" for="edge" id="edge_prod">
-      <desc>org.ietr.dftools.algorithm.model.sdf.SDFDefaultEdgePropertyType</desc>
+      <desc>net.sf.dftools.algorithm.model.sdf.SDFDefaultEdgePropertyType</desc>
    </key>
    <key attr.name="edge_delay" attr.type="int" for="edge" id="edge_delay">
-      <desc>org.ietr.dftools.algorithm.model.sdf.SDFDefaultEdgePropertyType</desc>
+      <desc>net.sf.dftools.algorithm.model.sdf.SDFDefaultEdgePropertyType</desc>
    </key>
    <key attr.name="edge_cons" attr.type="int" for="edge" id="edge_cons">
-      <desc>org.ietr.dftools.algorithm.model.sdf.SDFDefaultEdgePropertyType</desc>
+      <desc>net.sf.dftools.algorithm.model.sdf.SDFDefaultEdgePropertyType</desc>
    </key>
    <graph edgedefault="directed">
       <data key="parameters"/>

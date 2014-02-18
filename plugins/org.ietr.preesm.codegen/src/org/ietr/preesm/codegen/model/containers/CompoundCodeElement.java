@@ -42,17 +42,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
-import org.ietr.dftools.algorithm.model.parameters.Parameter;
-import org.ietr.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.parameters.Parameter;
+import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.sdf.SDFInterfaceVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 
 import org.ietr.preesm.codegen.model.CodeGenSDFBroadcastVertex;
 import org.ietr.preesm.codegen.model.CodeGenSDFFifoPullVertex;

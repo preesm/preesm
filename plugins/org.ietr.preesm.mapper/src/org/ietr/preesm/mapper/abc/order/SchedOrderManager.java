@@ -45,9 +45,10 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
 
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
+
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;

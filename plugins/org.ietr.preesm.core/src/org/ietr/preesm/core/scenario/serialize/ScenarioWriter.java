@@ -40,9 +40,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Collection;
 
+import net.sf.dftools.algorithm.model.parameters.Variable;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.ietr.dftools.algorithm.model.parameters.Variable;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.RelativeConstraintManager;

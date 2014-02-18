@@ -7,9 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor;
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.visitors.IGraphVisitor;
+import net.sf.dftools.algorithm.model.visitors.SDF4JException;
+
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;

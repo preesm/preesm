@@ -1,9 +1,10 @@
 package org.ietr.preesm.ui.properties.filters;
 
+import net.sf.graphiti.model.Graph;
+import net.sf.graphiti.model.Vertex;
+
 import org.eclipse.gef.EditPart;
 import org.eclipse.jface.viewers.IFilter;
-import org.ietr.dftools.graphiti.model.Graph;
-import org.ietr.dftools.graphiti.model.Vertex;
 
 /**
  * This class filters SDF vertices to enable the correct property tabs

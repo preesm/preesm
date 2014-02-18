@@ -39,10 +39,11 @@ package org.ietr.preesm.codegen.model.containers;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+
 import org.ietr.preesm.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.buffer.Buffer;

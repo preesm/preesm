@@ -15,11 +15,11 @@
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="net.sf.dftools.architecture.slam.Design">
             </input>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
             <input
                   id="scenario"

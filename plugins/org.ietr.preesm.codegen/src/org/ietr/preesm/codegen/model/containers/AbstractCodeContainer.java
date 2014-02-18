@@ -40,8 +40,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.ietr.dftools.algorithm.model.AbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.AbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.main.ICodeElement;
 import org.ietr.preesm.codegen.model.printer.CodeZoneId;

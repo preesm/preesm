@@ -52,8 +52,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
@@ -66,6 +64,8 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.experiment.core.piscenario.ActorNode;
 import org.ietr.preesm.experiment.core.piscenario.PiScenario;
 import org.ietr.preesm.ui.scenario.editor.Messages;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 
 /**
  * Timing editor within the implementation editor

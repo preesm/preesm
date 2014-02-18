@@ -42,10 +42,11 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.logging.Level;
 
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.ietr.preesm.codegen.model.ICodeGenSDFVertex;
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.buffer.Buffer;

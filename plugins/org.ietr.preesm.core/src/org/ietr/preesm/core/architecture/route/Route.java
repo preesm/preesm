@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
+Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.ietr.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.ComponentInstance;
 
 /**
  * A route contains several Route Steps. It links operators. To operators

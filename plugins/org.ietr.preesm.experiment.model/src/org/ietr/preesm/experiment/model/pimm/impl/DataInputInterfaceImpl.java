@@ -36,13 +36,11 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.ecore.EClass;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
-import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -60,6 +58,7 @@ public class DataInputInterfaceImpl extends InterfaceActorImpl implements
 	 */
 	protected DataInputInterfaceImpl() {
 		super();
+		kind = KIND;
 
 		// Add the unique output port of the Source Interface
 		// The port intentionally has no name 
@@ -76,12 +75,5 @@ public class DataInputInterfaceImpl extends InterfaceActorImpl implements
 	protected EClass eStaticClass() {
 		return PiMMPackage.Literals.DATA_INPUT_INTERFACE;
 	}
-	
-	@Override
-	public Port initializePort(PiGraph graph) {
-		Port port = PiMMFactory.eINSTANCE.createDataInputPort();
-		graph.getDataInputPorts().add((DataInputPort) port);
-		return port;
-	}
-	
+
 } // SourceInterfaceImpl

@@ -38,7 +38,8 @@ package org.ietr.preesm.codegen.idl;
 
 import java.util.logging.Level;
 
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.jacorb.idl.ConstDecl;
 import org.jacorb.idl.GlobalInputStream;
 import org.jacorb.idl.IDLTreeVisitor;

@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.mapper.abc;
 
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
 
 /**
  * The special vertices are special to the mapper because they have additional

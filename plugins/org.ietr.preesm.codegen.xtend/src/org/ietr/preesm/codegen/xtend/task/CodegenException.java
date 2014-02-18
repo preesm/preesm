@@ -36,7 +36,7 @@
 
 package org.ietr.preesm.codegen.xtend.task;
 
-import org.ietr.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.WorkflowException;
 
 /**
  * Exception thrown when an error has occured during the codegen.

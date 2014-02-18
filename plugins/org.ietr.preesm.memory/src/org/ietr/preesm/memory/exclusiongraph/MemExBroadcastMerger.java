@@ -45,17 +45,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.ietr.dftools.algorithm.iterators.DAGIterator;
-import org.ietr.dftools.algorithm.model.AbstractEdge;
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import org.ietr.dftools.algorithm.model.dag.edag.DAGBroadcastVertex;
-import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
-import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
+import net.sf.dftools.algorithm.iterators.DAGIterator;
+import net.sf.dftools.algorithm.model.AbstractEdge;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import net.sf.dftools.algorithm.model.dag.edag.DAGBroadcastVertex;
+import net.sf.dftools.algorithm.model.dag.edag.DAGForkVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
+import net.sf.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
 
 /**
  * The purpose of this class is to process a {@link MemoryExclusionGraph MemEx}

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dftools:workflow xmlns:dftools="http://org.ietr.dftools">
+<dftools:workflow xmlns:dftools="http://net.sf.dftools">
     <dftools:scenario pluginId="org.ietr.preesm.experiment.model.transformation.PiMMAndS-LAM"/>
     <dftools:task pluginId="pisdf.task.export2c.ExportToC" taskId="Export2C">
         <dftools:data key="variables"/>

@@ -42,19 +42,19 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.ietr.dftools.algorithm.iterators.DAGIterator;
-import org.ietr.dftools.algorithm.iterators.SDFIterator;
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.algorithm.iterators.DAGIterator;
+import net.sf.dftools.algorithm.iterators.SDFIterator;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 /**
  * Utility class created to gather all static methods used to remove fork/join

@@ -40,8 +40,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.mapper.model.property.VertexInit;
 import org.ietr.preesm.mapper.model.property.VertexMapping;

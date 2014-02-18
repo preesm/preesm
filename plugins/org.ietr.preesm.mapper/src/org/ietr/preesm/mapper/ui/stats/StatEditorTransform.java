@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
+Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -39,12 +39,13 @@ package org.ietr.preesm.mapper.ui.stats;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.elements.Workflow;
+import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
-import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.elements.Workflow;
-import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.IAbc;
 

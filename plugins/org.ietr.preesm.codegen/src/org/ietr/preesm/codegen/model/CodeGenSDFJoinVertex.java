@@ -38,10 +38,10 @@ package org.ietr.preesm.codegen.model;
 
 import java.util.Map;
 
-import org.ietr.dftools.algorithm.model.AbstractEdge;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.algorithm.model.AbstractEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
+import net.sf.dftools.architecture.slam.ComponentInstance;
 
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;

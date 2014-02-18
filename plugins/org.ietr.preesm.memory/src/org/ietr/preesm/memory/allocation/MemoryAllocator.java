@@ -42,11 +42,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.ietr.dftools.algorithm.model.PropertyBean;
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.PropertyBean;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;

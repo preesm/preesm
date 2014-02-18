@@ -36,13 +36,11 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.ecore.EClass;
+
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
-import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
  * <!-- begin-user-doc -->
@@ -62,6 +60,8 @@ public class ConfigOutputInterfaceImpl extends InterfaceActorImpl implements Con
 	 */
 	protected ConfigOutputInterfaceImpl() {
 		super();
+		
+		kind = KIND;
 
 		// Add the unique input port of the ConfigOutputInterface
 		// The port intentionally has no name
@@ -78,13 +78,6 @@ public class ConfigOutputInterfaceImpl extends InterfaceActorImpl implements Con
 	@Override
 	protected EClass eStaticClass() {
 		return PiMMPackage.Literals.CONFIG_OUTPUT_INTERFACE;
-	}
-	
-	@Override
-	public Port initializePort(PiGraph graph) {
-		Port port = PiMMFactory.eINSTANCE.createConfigOutputPort();
-		graph.getConfigOutputPorts().add((ConfigOutputPort) port);
-		return port;
 	}
 
 } //ConfigOutputInterfaceImpl

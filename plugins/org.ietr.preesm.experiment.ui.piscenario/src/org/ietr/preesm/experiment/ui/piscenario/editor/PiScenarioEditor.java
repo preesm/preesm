@@ -37,6 +37,8 @@ package org.ietr.preesm.experiment.ui.piscenario.editor;
 
 import java.util.logging.Level;
 
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
@@ -46,7 +48,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.forms.editor.SharedHeaderFormEditor;
 import org.eclipse.ui.part.FileEditorInput;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.core.piscenario.PiScenario;
 import org.ietr.preesm.experiment.core.piscenario.serialize.PiScenarioParser;
 import org.ietr.preesm.experiment.core.piscenario.serialize.PiScenarioWriter;

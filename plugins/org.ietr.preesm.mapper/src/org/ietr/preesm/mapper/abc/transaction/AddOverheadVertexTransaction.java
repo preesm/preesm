@@ -39,7 +39,8 @@ package org.ietr.preesm.mapper.abc.transaction;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAG;

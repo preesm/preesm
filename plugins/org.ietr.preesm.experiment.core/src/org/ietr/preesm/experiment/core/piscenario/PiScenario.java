@@ -39,9 +39,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.architecture.slam.SlamPackage;
-import org.ietr.dftools.architecture.slam.serialize.IPXACTResourceFactoryImpl;
+import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.architecture.slam.SlamPackage;
+import net.sf.dftools.architecture.slam.serialize.IPXACTResourceFactoryImpl;
 
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;

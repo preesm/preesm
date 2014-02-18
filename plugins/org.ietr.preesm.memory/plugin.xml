@@ -34,7 +34,7 @@
          <inputs>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
             <input
                   id="scenario"
@@ -66,7 +66,7 @@
          <inputs>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
             <input
                   id="MemEx"

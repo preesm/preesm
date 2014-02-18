@@ -39,12 +39,13 @@ package org.ietr.preesm.mapper;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.elements.Workflow;
+
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbstractAbc;
 import org.ietr.preesm.mapper.abc.IAbc;

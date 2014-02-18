@@ -38,7 +38,8 @@ package org.ietr.preesm.mapper.tools;
 
 import java.util.logging.Level;
 
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;

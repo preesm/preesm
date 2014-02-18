@@ -36,10 +36,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.mapper.ui.gantt;
 
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.activator.Activator;
 import org.ietr.preesm.mapper.gantt.GanttData;
 

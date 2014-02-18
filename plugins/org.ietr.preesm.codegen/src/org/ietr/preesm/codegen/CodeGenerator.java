@@ -40,8 +40,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
+
 import org.ietr.preesm.codegen.idl.IDLPrototypeFactory;
 import org.ietr.preesm.codegen.model.CodeGenSDFGraph;
 import org.ietr.preesm.codegen.model.main.SourceFile;

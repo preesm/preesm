@@ -39,7 +39,7 @@ package org.ietr.preesm.mapper.params;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 /**
  * Parameters for task scheduling FAST algorithm multithread

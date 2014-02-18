@@ -45,10 +45,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.DmaRouteStep;
 import org.ietr.preesm.core.architecture.route.MemRouteStep;

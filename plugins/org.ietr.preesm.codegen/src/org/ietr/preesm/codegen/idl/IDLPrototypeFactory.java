@@ -40,7 +40,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.logging.Level;
 
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
 import org.ietr.preesm.codegen.model.IFunctionFactory;

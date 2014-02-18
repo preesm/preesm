@@ -46,6 +46,7 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Port#getName <em>Name</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.Port#getKind <em>Kind</em>}</li>
  * </ul>
  * </p>
  *
@@ -64,13 +65,7 @@ public interface Port extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Name</em>' attribute.
 	 * @see #setName(String)
-	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPort_Name()}
-		else if (vertex instanceof DataOutputInterface) {
-			vertexElt.setAttribute("kind", "snk");
-		}
-		else if (vertex instanceof ConfigOutputInterface) {
-			
-		}
+	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPort_Name()
 	 * @model required="true"
 	 * @generated
 	 */
@@ -85,7 +80,20 @@ public interface Port extends EObject {
 	 * @generated
 	 */
 	void setName(String value);
-	
+
+	/**
+	 * Returns the value of the '<em><b>Kind</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Kind</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Kind</em>' attribute.
+	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPort_Kind()
+	 * @model required="true" changeable="false"
+	 * @generated
+	 */
 	String getKind();
 
 } // Port

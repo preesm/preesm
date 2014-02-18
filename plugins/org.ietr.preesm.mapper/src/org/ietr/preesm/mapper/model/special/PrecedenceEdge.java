@@ -36,7 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.mapper.model.special;
 
-import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 

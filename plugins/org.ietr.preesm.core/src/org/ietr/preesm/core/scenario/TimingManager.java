@@ -42,10 +42,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+
 import org.ietr.preesm.core.scenario.serialize.ExcelTimingParser;
 
 /**

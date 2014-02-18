@@ -3,12 +3,12 @@ package org.ietr.preesm.core.algorithm.visitors;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor;
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import net.sf.dftools.algorithm.model.visitors.IGraphVisitor;
+import net.sf.dftools.algorithm.model.visitors.SDF4JException;
+import net.sf.dftools.architecture.slam.ComponentInstance;
 
 /**
  * Visitor to identify the inter-core communications of a mapped DAG. This

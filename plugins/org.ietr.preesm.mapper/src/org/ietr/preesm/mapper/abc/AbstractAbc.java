@@ -42,14 +42,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.impl.latency.AccuratelyTimedAbc;
@@ -91,7 +92,6 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Current directed acyclic graph. It is the external dag graph
 	 */
-
 	protected MapperDAG dag;
 
 	/**

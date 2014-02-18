@@ -44,9 +44,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.model.MapperDAG;

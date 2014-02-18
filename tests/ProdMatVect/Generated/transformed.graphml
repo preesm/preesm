@@ -3,16 +3,16 @@
     <key attr.name="graph_desc" attr.type="string" for="node" id="graph_desc"/>
     <key attr.name="arguments" for="node" id="arguments"/>
     <key attr.name="edge_prod" attr.type="int" for="edge" id="edge_prod">
-        <desc>org.ietr.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
     </key>
     <key attr.name="edge_delay" attr.type="int" for="edge" id="edge_delay">
-        <desc>org.ietr.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
     </key>
     <key attr.name="edge_cons" attr.type="int" for="edge" id="edge_cons">
-        <desc>org.ietr.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
+        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFNumericalEdgePropertyTypeFactory</desc>
     </key>
     <key attr.name="data_type" attr.type="string" for="edge" id="data_type">
-        <desc>org.ietr.dftools.algorithm.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
+        <desc>net.sf.dftools.algorithm.model.sdf.types.SDFTextualEdgePropertyTypeFactory</desc>
     </key>
     <key attr.name="name" attr.type="string" for="graph" id="name"/>
     <key attr.name="parameters" for="graph" id="parameters"/>

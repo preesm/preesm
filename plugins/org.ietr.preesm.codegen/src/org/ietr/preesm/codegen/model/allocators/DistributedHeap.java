@@ -38,7 +38,8 @@ package org.ietr.preesm.codegen.model.allocators;
 
 import java.util.List;
 
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.buffer.Buffer;
 import org.ietr.preesm.codegen.model.buffer.BufferAllocation;

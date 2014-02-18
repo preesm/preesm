@@ -48,12 +48,13 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
 /**
  * This class provides methods to transform an XML file via XSLT

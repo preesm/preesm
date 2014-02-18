@@ -39,13 +39,14 @@ package org.ietr.preesm.codegen.model.factories;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
-import org.ietr.dftools.algorithm.model.parameters.NoIntegerValueException;
-import org.ietr.dftools.algorithm.model.psdf.parameters.PSDFDynamicArgument;
-import org.ietr.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.parameters.InvalidExpressionException;
+import net.sf.dftools.algorithm.model.parameters.NoIntegerValueException;
+import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicArgument;
+import net.sf.dftools.algorithm.model.psdf.parameters.PSDFDynamicParameter;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
 import org.ietr.preesm.codegen.model.CodeGenSDFInitVertex;

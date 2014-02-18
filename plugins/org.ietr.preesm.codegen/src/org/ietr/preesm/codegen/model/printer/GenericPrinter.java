@@ -41,6 +41,9 @@ import java.util.logging.Level;
 
 import javax.xml.transform.TransformerConfigurationException;
 
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -48,8 +51,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.model.main.SourceFile;
 import org.ietr.preesm.codegen.model.main.SourceFileList;
 import org.ietr.preesm.core.Activator;

@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
+Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -36,8 +36,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.ui.scenario.editor;
 
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+
 import org.eclipse.jface.viewers.LabelProvider;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 
 /**
  * The label provider displays the name of the vertex displayed in a SDF tree

@@ -454,6 +454,15 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getPort_Kind() {
+		return (EAttribute)portEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getDataInputPort() {
 		return dataInputPortEClass;
 	}
@@ -591,6 +600,15 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 */
 	public EReference getInterfaceActor_GraphPort() {
 		return (EReference)interfaceActorEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getInterfaceActor_Kind() {
+		return (EAttribute)interfaceActorEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -824,6 +842,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
 		portEClass = createEClass(PORT);
 		createEAttribute(portEClass, PORT__NAME);
+		createEAttribute(portEClass, PORT__KIND);
 
 		dataInputPortEClass = createEClass(DATA_INPUT_PORT);
 		createEReference(dataInputPortEClass, DATA_INPUT_PORT__INCOMING_FIFO);
@@ -846,6 +865,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
 		interfaceActorEClass = createEClass(INTERFACE_ACTOR);
 		createEReference(interfaceActorEClass, INTERFACE_ACTOR__GRAPH_PORT);
+		createEAttribute(interfaceActorEClass, INTERFACE_ACTOR__KIND);
 
 		dataInputInterfaceEClass = createEClass(DATA_INPUT_INTERFACE);
 
@@ -948,6 +968,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
 		initEClass(portEClass, Port.class, "Port", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getPort_Name(), ecorePackage.getEString(), "name", null, 1, 1, Port.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getPort_Kind(), ecorePackage.getEString(), "kind", null, 1, 1, Port.class, !IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(dataInputPortEClass, DataInputPort.class, "DataInputPort", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getDataInputPort_IncomingFifo(), this.getFifo(), this.getFifo_TargetPort(), "incomingFifo", null, 0, 1, DataInputPort.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -970,6 +991,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
 		initEClass(interfaceActorEClass, InterfaceActor.class, "InterfaceActor", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getInterfaceActor_GraphPort(), this.getPort(), null, "graphPort", null, 1, 1, InterfaceActor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getInterfaceActor_Kind(), ecorePackage.getEString(), "kind", null, 1, 1, InterfaceActor.class, !IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(dataInputInterfaceEClass, DataInputInterface.class, "DataInputInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
@@ -980,7 +1002,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEClass(configOutputInterfaceEClass, ConfigOutputInterface.class, "ConfigOutputInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(refinementEClass, Refinement.class, "Refinement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getRefinement_FileName(), ecorePackage.getEString(), "fileName", "\"\"", 0, 1, Refinement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRefinement_FileName(), ecorePackage.getEString(), "fileName", null, 0, 1, Refinement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		addEOperation(refinementEClass, this.getAbstractActor(), "getAbstractActor", 0, 1, IS_UNIQUE, IS_ORDERED);
 

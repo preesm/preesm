@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
+Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -52,9 +52,10 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 
-import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.AbstractAbc;
 import org.ietr.preesm.mapper.abc.IAbc;

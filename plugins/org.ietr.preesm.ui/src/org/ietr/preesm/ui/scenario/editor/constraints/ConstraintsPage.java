@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
+Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -38,6 +38,8 @@ package org.ietr.preesm.ui.scenario.editor.constraints;
 
 import java.io.FileNotFoundException;
 
+import net.sf.dftools.algorithm.importer.InvalidModelException;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -60,7 +62,6 @@ import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.ui.scenario.editor.Messages;

@@ -1,7 +1,7 @@
 package org.ietr.preesm.core.scenario;
 
-import org.ietr.dftools.algorithm.model.parameters.Variable;
-import org.ietr.dftools.algorithm.model.parameters.VariableSet;
+import net.sf.dftools.algorithm.model.parameters.Variable;
+import net.sf.dftools.algorithm.model.parameters.VariableSet;
 
 import org.ietr.preesm.core.scenario.serialize.ExcelVariablesParser;
 

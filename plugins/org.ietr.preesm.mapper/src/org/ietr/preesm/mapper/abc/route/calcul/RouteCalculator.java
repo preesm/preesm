@@ -44,12 +44,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.architecture.slam.component.Operator;
-import org.ietr.dftools.architecture.slam.component.impl.ComNodeImpl;
-import org.ietr.dftools.architecture.slam.link.Link;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
+import net.sf.dftools.architecture.slam.component.Operator;
+import net.sf.dftools.architecture.slam.component.impl.ComNodeImpl;
+import net.sf.dftools.architecture.slam.link.Link;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
+
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.architecture.route.RouteStepFactory;

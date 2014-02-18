@@ -47,32 +47,32 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.ietr.dftools.algorithm.iterators.DAGIterator;
-import org.ietr.dftools.algorithm.model.AbstractGraph;
-import org.ietr.dftools.algorithm.model.AbstractVertex;
-import org.ietr.dftools.algorithm.model.CodeRefinement;
-import org.ietr.dftools.algorithm.model.CodeRefinement.Language;
-import org.ietr.dftools.algorithm.model.IInterface;
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import org.ietr.dftools.algorithm.model.dag.edag.DAGBroadcastVertex;
-import org.ietr.dftools.algorithm.model.dag.edag.DAGEndVertex;
-import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex;
-import org.ietr.dftools.algorithm.model.dag.edag.DAGInitVertex;
-import org.ietr.dftools.algorithm.model.dag.edag.DAGJoinVertex;
-import org.ietr.dftools.algorithm.model.parameters.Argument;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.Design;
+import net.sf.dftools.algorithm.iterators.DAGIterator;
+import net.sf.dftools.algorithm.model.AbstractGraph;
+import net.sf.dftools.algorithm.model.AbstractVertex;
+import net.sf.dftools.algorithm.model.CodeRefinement;
+import net.sf.dftools.algorithm.model.CodeRefinement.Language;
+import net.sf.dftools.algorithm.model.IInterface;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import net.sf.dftools.algorithm.model.dag.edag.DAGBroadcastVertex;
+import net.sf.dftools.algorithm.model.dag.edag.DAGEndVertex;
+import net.sf.dftools.algorithm.model.dag.edag.DAGForkVertex;
+import net.sf.dftools.algorithm.model.dag.edag.DAGInitVertex;
+import net.sf.dftools.algorithm.model.dag.edag.DAGJoinVertex;
+import net.sf.dftools.algorithm.model.parameters.Argument;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFGraph;
+import net.sf.dftools.algorithm.model.sdf.SDFInterfaceVertex;
+import net.sf.dftools.algorithm.model.sdf.SDFVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.Design;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
@@ -1123,7 +1123,7 @@ public class CodegenModelGenerator {
 
 			// // Retrieve the variable from its context (i.e. from its original
 			// // (sub)graph)
-			// org.ietr.dftools.algorithm.model.parameters.Variable originalVar =
+			// net.sf.dftools.algorithm.model.parameters.Variable originalVar =
 			// originalSDF
 			// .getHierarchicalVertexFromPath(sdfVertex.getInfo())
 			// .getBase().getVariables().getVariable(actorParam.getName());

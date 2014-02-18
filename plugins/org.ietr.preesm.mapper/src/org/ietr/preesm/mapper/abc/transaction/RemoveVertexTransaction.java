@@ -39,7 +39,8 @@ package org.ietr.preesm.mapper.abc.transaction;
 import java.util.List;
 import java.util.Set;
 
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;

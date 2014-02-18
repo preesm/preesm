@@ -88,6 +88,7 @@ public class DataOutputPortImpl extends PortImpl implements DataOutputPort {
 	 */
 	protected DataOutputPortImpl() {
 		super();
+		kind = "output";
 
 		this.setExpression(PiMMFactory.eINSTANCE.createExpression());
 	}
@@ -309,11 +310,6 @@ public class DataOutputPortImpl extends PortImpl implements DataOutputPort {
 				return expression != null;
 		}
 		return super.eIsSet(featureID);
-	}
-
-	@Override
-	public String getKind() {
-		return "output";
 	}
 
 } //OutputPortImpl

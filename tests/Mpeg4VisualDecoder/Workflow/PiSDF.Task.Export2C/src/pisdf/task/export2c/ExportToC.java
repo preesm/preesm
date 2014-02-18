@@ -2,9 +2,9 @@ package pisdf.task.export2c;
 
 import java.util.Map;
 
-import org.ietr.dftools.workflow.WorkflowException;
-import org.ietr.dftools.workflow.elements.Workflow;
-import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import net.sf.dftools.workflow.WorkflowException;
+import net.sf.dftools.workflow.elements.Workflow;
+import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;

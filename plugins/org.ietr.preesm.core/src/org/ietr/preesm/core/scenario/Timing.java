@@ -38,7 +38,7 @@ package org.ietr.preesm.core.scenario;
 
 import java.util.logging.Level;
 
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 /**
  * A timing links a SDF vertex and an operator definition to a time. Ids are

@@ -17,7 +17,7 @@
             </output>
             <output
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="net.sf.dftools.architecture.slam.Design">
             </output>
          </outputs>
       </scenario>

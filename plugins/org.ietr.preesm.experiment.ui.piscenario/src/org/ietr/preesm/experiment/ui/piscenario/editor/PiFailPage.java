@@ -35,14 +35,14 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.ui.piscenario.editor;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.SWT;
 import org.ietr.preesm.experiment.core.piscenario.PiScenario;
 
 /**

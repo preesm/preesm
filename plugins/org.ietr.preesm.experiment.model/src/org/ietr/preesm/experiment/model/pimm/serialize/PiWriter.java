@@ -41,27 +41,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import net.sf.dftools.algorithm.exporter.Key;
+import net.sf.dftools.architecture.utils.DomUtil;
+
 import org.eclipse.emf.common.util.EList;
-import org.ietr.dftools.algorithm.exporter.Key;
-import org.ietr.dftools.architecture.utils.DomUtil;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
-import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.w3c.dom.Document;
@@ -483,20 +480,20 @@ public class PiWriter {
 	 *            The {@link InterfaceActor} to serialize
 	 */
 	protected void writeInterfaceVertex(Element vertexElt, InterfaceActor vertex) {
-		//TODO: CGUY Remove completely kind?
 		// Set the kind of the Actor
-		if (vertex instanceof DataInputInterface) {
-			vertexElt.setAttribute("kind", DataInputInterface.KIND);	
-		}
-		else if (vertex instanceof DataOutputInterface) {
-			vertexElt.setAttribute("kind", DataOutputInterface.KIND);	
-		}
-		else if (vertex instanceof ConfigOutputInterface) {
-			vertexElt.setAttribute("kind", ConfigOutputInterface.KIND);	
-		}
+		vertexElt.setAttribute("kind", vertex.getKind());
+		// writeDataElt(vertexElt, "kind", "actor");
 		// Write ports of the actor
-		writePorts(vertexElt, vertex.getDataOutputPorts());
-		writePorts(vertexElt, vertex.getDataInputPorts());
+		switch (vertex.getKind()) {
+		case "src":
+			writePorts(vertexElt, vertex.getDataOutputPorts());
+			break;
+		case "snk":
+			writePorts(vertexElt, vertex.getDataInputPorts());
+			break;
+		default:
+		}
+
 	}
 
 	/**
@@ -532,9 +529,7 @@ public class PiWriter {
 	 *            The Element to fill (could be removed later if it is always
 	 *            rootElt)
 	 * @param graph
-	 *            The serialized Graph// Set the kind of the Actor
-//		vertexElt.setAttribute("kind", vertex.getKind());
-//		// writeDataElt(vertexElt, "kind", "actor");
+	 *            The serialized Graph
 	 */
 	protected void writePi(Element parentElt, PiGraph graph) {
 		// Add IBSDF Keys - Might not be needed.
@@ -559,21 +554,19 @@ public class PiWriter {
 			Port port = (Port) portObj;
 			Element portElt = appendChild(vertexElt, "port");
 			portElt.setAttribute("name", port.getName());
+			portElt.setAttribute("kind", port.getKind());
 			
-			
-			if (port instanceof DataInputPort) {
-				portElt.setAttribute("kind", "input");
+			switch(port.getKind()){
+			case "input":
 				portElt.setAttribute("expr", ((DataInputPort)port).getExpression().getString());
-			}
-			else if (port instanceof DataOutputPort) {
-				portElt.setAttribute("kind", "output");
+				break;
+			case "output":
 				portElt.setAttribute("expr", ((DataOutputPort)port).getExpression().getString());
-			}
-			else if (port instanceof ConfigInputPort) {
-				portElt.setAttribute("kind", "cfg_input");
-			}
-			else if (port instanceof ConfigOutputPort) {
-				portElt.setAttribute("kind", "cfg_output");
+				break;
+			case "cfg_input":
+				break;
+			case "cfg_output":
+				break;
 			}
 		}
 	}

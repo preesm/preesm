@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dftools:workflow xmlns:dftools="http://org.ietr.dftools">
+<dftools:workflow xmlns:dftools="http://net.sf.dftools">
     <dftools:scenario pluginId="org.ietr.preesm.scenario.task"/>
     <dftools:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="Gantt Plotter">
         <dftools:data key="variables"/>

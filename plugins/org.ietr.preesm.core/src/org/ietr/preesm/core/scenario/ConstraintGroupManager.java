@@ -40,8 +40,9 @@ import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.ietr.dftools.algorithm.importer.InvalidModelException;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import net.sf.dftools.algorithm.importer.InvalidModelException;
+import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
+
 import org.ietr.preesm.core.scenario.serialize.ExcelConstraintsParser;
 
 /**

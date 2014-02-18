@@ -41,8 +41,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
+import net.sf.dftools.algorithm.model.dag.DAGEdge;
+import net.sf.dftools.algorithm.model.dag.DAGVertex;
+
 import org.ietr.preesm.memory.bounds.AbstractMaximumWeightCliqueSolver;
 import org.ietr.preesm.memory.bounds.HeuristicSolver;
 import org.ietr.preesm.memory.bounds.OstergardSolver;

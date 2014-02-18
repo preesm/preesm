@@ -115,18 +115,21 @@ public class LayoutInterfaceFeature extends AbstractLayoutFeature {
 			for (Shape shape : containerShape.getChildren()) {
 				GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
 				if (ga instanceof Text) {
-					if (vertex instanceof DataInputInterface) {
+					switch (((InterfaceActor) vertex).getKind()) {
+					case DataInputInterface.KIND:
 						ga.setWidth(size.getWidth());
 						Graphiti.getGaService().setLocation(ga, 0, 0);
-					}
-					else if (vertex instanceof DataOutputInterface) {
-						ga.setWidth(size.getWidth());
-						Graphiti.getGaService().setLocation(ga, 16 + 3, 0);	
-					}
-					else if (vertex instanceof ConfigOutputInterface) {
+						break;
+					case DataOutputInterface.KIND:
 						ga.setWidth(size.getWidth());
 						Graphiti.getGaService().setLocation(ga, 16 + 3, 0);
+						break;
+					case ConfigOutputInterface.KIND:
+						ga.setWidth(size.getWidth());
+						Graphiti.getGaService().setLocation(ga, 16 + 3, 0);
+						break;
 					}
+
 				}
 			}
 		}

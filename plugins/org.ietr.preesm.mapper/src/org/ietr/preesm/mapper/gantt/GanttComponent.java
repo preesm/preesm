@@ -40,7 +40,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import net.sf.dftools.workflow.tools.WorkflowLogger;
 
 /**
  * A Gantt component is the information for 1 line in a Gantt chart

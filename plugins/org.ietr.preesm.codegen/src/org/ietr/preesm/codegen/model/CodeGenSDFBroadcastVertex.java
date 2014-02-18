@@ -36,8 +36,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.codegen.model;
 
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
 

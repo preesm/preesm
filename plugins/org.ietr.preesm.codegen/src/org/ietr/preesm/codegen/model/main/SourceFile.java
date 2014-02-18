@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.ietr.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.ComponentInstance;
 
 import org.ietr.preesm.codegen.model.buffer.AbstractBufferContainer;
 import org.ietr.preesm.codegen.model.containers.AbstractCodeContainer;

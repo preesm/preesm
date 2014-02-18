@@ -34,7 +34,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="scenario"
@@ -42,11 +42,11 @@
             </input>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="net.sf.dftools.architecture.slam.Design">
             </input>
          </inputs>
          <outputs>
@@ -80,11 +80,11 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="net.sf.dftools.architecture.slam.Design">
             </input>
             <input
                   id="scenario"
@@ -94,7 +94,7 @@
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
@@ -109,11 +109,11 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="net.sf.dftools.architecture.slam.Design">
             </input>
             <input
                   id="scenario"
@@ -123,7 +123,7 @@
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
@@ -138,11 +138,11 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="net.sf.dftools.architecture.slam.Design">
             </input>
             <input
                   id="scenario"
@@ -152,7 +152,7 @@
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
@@ -182,11 +182,11 @@
          <inputs>
             <input
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="net.sf.dftools.architecture.slam.Design">
             </input>
             <input
                   id="scenario"
@@ -196,7 +196,7 @@
          <outputs>
             <output
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </output>
             <output
                   id="ABC"
@@ -215,11 +215,11 @@
             </output>
             <output
                   id="SDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
+                  object="net.sf.dftools.architecture.slam.Design">
             </output>
          </outputs>
       </task>
@@ -230,7 +230,7 @@
          <inputs>
             <input
                   id="DAG"
-                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
          </inputs>
       </task>

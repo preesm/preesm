@@ -36,7 +36,8 @@ knowledge of the CeCILL-B license and that you accept its terms.
 
 package org.ietr.preesm.codegen.model.buffer;
 
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
+import net.sf.dftools.algorithm.model.sdf.SDFEdge;
+
 import org.ietr.preesm.codegen.model.expression.IExpression;
 import org.ietr.preesm.core.types.DataType;
 

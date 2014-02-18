@@ -36,7 +36,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.mapper.abc.edgescheduling;
 
-import org.ietr.dftools.architecture.slam.ComponentInstance;
+import net.sf.dftools.architecture.slam.ComponentInstance;
+
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
