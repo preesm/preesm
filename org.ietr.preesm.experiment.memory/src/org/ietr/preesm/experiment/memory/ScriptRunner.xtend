@@ -32,8 +32,8 @@ import org.eclipse.core.runtime.Path
 import org.eclipse.xtext.xbase.lib.Pair
 import org.ietr.preesm.core.types.DataType
 
-import static extension org.ietr.preesm.experiment.memory.Range.*
 import static extension org.ietr.preesm.experiment.memory.Buffer.*
+import static extension org.ietr.preesm.experiment.memory.Range.*
 
 enum CheckPolicy {
 	NONE,
@@ -327,28 +327,11 @@ class ScriptRunner {
 		scriptResults.forEach[vertex, result|simplifyResult(result.key, result.value)]
 
 		// Identify divisible buffers
-		scriptResults.forEach [ vertex, result |
-			val allBuffers = new ArrayList<Buffer>
-			allBuffers.addAll(result.key)
-			allBuffers.addAll(result.value)
-			val divisibleCandidates = allBuffers.filter [ buffer |
-				// A buffer is potentially divisible if it is totally
-				// matched
-				var r0 = buffer.completelyMatched
-				// if it has no multiple range
-				var r1 = buffer.multipleMatchRange.empty
-				// If it has several matches (that were not merged by the
-				//  simplifyResult)
-				var r2 = buffer.matchTable.size > 1
-				r0 && r1 && r2
-			]
-			// We only set as divisible the buffer
-			// that have no match with any other divisible buffer
-			divisibleCandidates.toList.filter [ buffer |
-				buffer.matchTable.values.flatten.forall[!divisibleCandidates.toList.contains(it.remoteBuffer)]
-			].forEach[it.indivisible = false]
-		]
-
+		scriptResults.forEach [ vertex, result |identifyDivisibleBuffers(result)]
+		
+		// Identify inter-inputs and inter-outputs matches
+		scriptResults.forEach [ vertex, result | identifySiblingMatches(result)]
+		
 		// Identify ranges that may cause a transversal merge
 		scriptResults.forEach[vertex, result|identifyMergeRanges(result.key, result.value)]
 
@@ -361,6 +344,59 @@ class ScriptRunner {
 		]
 		var result = groups.fold(0, [res, gr|res + gr.size])
 		println("Identified " + groups.size + " groups. " + result)
+	}
+	
+	def identifySiblingMatches(Pair<List<Buffer>, List<Buffer>> result) {
+		result.key.forEach[
+			it.matchTable.values.flatten.forEach[
+				if(result.key.contains(it.remoteBuffer)){
+					it.siblingMatch = true
+				}
+			]
+		]
+		
+		result.value.forEach[
+			it.matchTable.values.flatten.forEach[
+				if(result.value.contains(it.remoteBuffer)){
+					it.siblingMatch = true
+				}
+			]
+		]
+	}
+	
+	def identifyDivisibleBuffers(Pair<List<Buffer>, List<Buffer>> result) {
+		val allBuffers = new ArrayList<Buffer>
+		allBuffers.addAll(result.key)
+		allBuffers.addAll(result.value)
+		val divisibleCandidates = allBuffers.filter [ buffer |
+			// A buffer is potentially divisible 	
+			// If it has several matches (that were not merged by the
+			//  simplifyResult). (Because if the buffer only has one
+			// contiguous match, a divided buffer is not expected)
+			buffer.matchTable.size > 1 &&
+			// if it is totally matched, so that all parts of the divided 
+			// buffer can still be accessed
+			buffer.completelyMatched &&
+			// if it has no multiple range, a bit arbitrary decision
+			// mainly because if we do not do that, almost all
+			// buffers would be divisible. In a way, if a buffer
+			// is matched several times, this means that we assume
+			// that we will find several other buffers matched within this
+			// one, so we do not want to divide it since a divisible buffer
+			// is divisible only if we can match all its subparts in a
+			// indivisible buffer. Split is a good example !
+			// We do not want the split input to be divided !
+			buffer.multipleMatchRange.empty
+		]
+		// We only set as divisible the buffer
+		// that have no match with any other divisible buffer
+		divisibleCandidates.toList.filter [ buffer |
+			buffer.matchTable.values.flatten.forall[
+				!divisibleCandidates.toList.contains(it.remoteBuffer)
+			]
+		].forEach[
+			it.indivisible = false
+		]
 	}
 
 	def identifyMergeRanges(List<Buffer> inputs, List<Buffer> outputs) {
@@ -470,7 +506,6 @@ class ScriptRunner {
 							entry.key + entry.value.head.length >= it.nbTokens * it.tokenSize &&
 						// and is not involved in any conflicting range
 							{
-
 								// Only the destination can have conflicts here since
 								// the match source has a unique match in its matchTable
 								val match = entry.value.head

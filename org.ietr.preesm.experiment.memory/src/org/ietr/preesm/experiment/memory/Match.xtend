@@ -11,6 +11,7 @@ class Match {
 		length = size
 		this.conflictingMatches = newArrayList
 		this.applied = false
+		this.siblingMatch = false
 	}
 
 	@Property
@@ -25,6 +26,16 @@ class Match {
 	int length
 	@Property
 	List<Match> conflictingMatches
+	
+	/** 
+	 * This Property is set to <code>true</code> if the current {@link Match}
+	 * links a input {@link Buffer} to another input or an output {@link 
+	 * Buffer} to another output. This property is set within the {@link 
+	 * ScriptRunner#identifySiblingMatches(Pair)}
+	 * 
+	 */
+	@Property
+	boolean siblingMatch
 	
 	/**
 	 * This {@link boolean} is set to <code>true</code> if the current {@link 
