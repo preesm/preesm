@@ -36,10 +36,8 @@
 ehthumbs.db
 Thumbs.db
 
-# Others #
-##########
-*.java._trace
-*.java.save
+# Temporary files and generated files #
+#######################################
 bin/
 target/
 generated/
