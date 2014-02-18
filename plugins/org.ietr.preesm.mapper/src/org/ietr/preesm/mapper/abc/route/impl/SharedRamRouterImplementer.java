@@ -3,8 +3,7 @@ package org.ietr.preesm.mapper.abc.route.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.dftools.architecture.slam.ComponentInstance;
-
+import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.core.architecture.route.MemRouteStep;
 import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;

@@ -36,9 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.ui.scenario.editor.variables;
 
-import net.sf.dftools.algorithm.model.parameters.Variable;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
-
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -80,6 +77,8 @@ import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.ietr.dftools.algorithm.model.parameters.Variable;
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;

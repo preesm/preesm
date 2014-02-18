@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.ietr.preesm.feature_1.0.0.201402130920.jar" id="org.ietr.preesm.feature" version="1.0.0.201402130920">
+      <category name="PREESM"/>
+   </feature>
+   <feature url="features/net.sf.dftools.feature_1.0.0.201402130920.jar" id="net.sf.dftools.feature" version="1.0.0.201402130920">
+      <category name="DFTools"/>
+   </feature>
+   <feature url="features/net.sf.graphiti.feature_1.0.0.201402130920.jar" id="net.sf.graphiti.feature" version="1.0.0.201402130920">
+      <category name="Graphiti"/>
+   </feature>
+   <category-def name="PREESM" label="PREESM">
+      <description>
+         PREESM (the Parallel and Real-time Embedded Executives Scheduling Method) is an open source rapid prototyping and code generation tool. It is primarily employed to simulate signal processing applications and generate code for multi-core Digital Signal Processors. PREESM is developed at the Institute of Electronics and Telecommunications-Rennes (IETR) in collaboration with Texas Instruments France in Nice.
+      </description>
+   </category-def>
+   <category-def name="DFTools" label="DFTools">
+      <description>
+         The DFTools projetc offers features to dataflow modeling tools such as the Open RVC-CAL Compiler (Orcc) and PREESM.
+      </description>
+   </category-def>
+   <category-def name="Graphiti" label="Graphiti">
+      <description>
+         Graphiti is a generic graph editor under BSD license created by IETR/INSA Rennes shipped as an Eclipse plug-in.
+      </description>
+   </category-def>
+</site>

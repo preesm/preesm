@@ -39,12 +39,6 @@ package org.ietr.preesm.algorithm.exportXml;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.dftools.algorithm.exporter.GMLSDFExporter;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
-import net.sf.dftools.workflow.WorkflowException;
-import net.sf.dftools.workflow.elements.Workflow;
-import net.sf.dftools.workflow.implement.AbstractTaskImplementation;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -53,6 +47,11 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.ietr.dftools.algorithm.exporter.GMLSDFExporter;
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.workflow.WorkflowException;
+import org.ietr.dftools.workflow.elements.Workflow;
+import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 
 public class SDF4JGMLExporter extends AbstractTaskImplementation {
 

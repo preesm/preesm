@@ -10,7 +10,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
             </input>
          </inputs>
       </task>
@@ -21,13 +21,13 @@
          <inputs>
             <input
                   id="SDF"
-                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="SDF"
-                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
             </output>
          </outputs>
       </task>
@@ -38,13 +38,13 @@
          <inputs>
             <input
                   id="SDF"
-                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
             </input>
          </inputs>
          <outputs>
             <output
                   id="SDF"
-                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
             </output>
          </outputs>
       </task>
@@ -55,7 +55,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="scenario"
@@ -70,7 +70,7 @@
          <inputs>
             <input
                   id="SDF"
-                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
             </input>
             <input
                   id="scenario"
@@ -78,13 +78,13 @@
             </input>
             <input
                   id="architecture"
-                  object="net.sf.dftools.architecture.slam.Design">
+                  object="org.ietr.dftools.architecture.slam.Design">
             </input>
          </inputs>
          <outputs>
             <output
                   id="SDF"
-                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="scenario"
@@ -99,7 +99,7 @@
          <outputs>
             <output
                   id="SDF"
-                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="scenario"
@@ -113,7 +113,7 @@
             </input>
             <input
                   id="architecture"
-                  object="net.sf.dftools.architecture.slam.Design">
+                  object="org.ietr.dftools.architecture.slam.Design">
             </input>
          </inputs>
       </task>

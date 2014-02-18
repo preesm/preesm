@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns/1.0rc">
 <key attr.name="Weight" attr.type="int" for="edge" id="Weight">
-<desc>net.sf.dftools.algorithm.model.dag.DAGDefaultEdgePropertyType</desc>
+<desc>org.ietr.dftools.algorithm.model.dag.DAGDefaultEdgePropertyType</desc>
 </key>
 <key attr.name="name" attr.type="string" for="vertex" id="name">
 <desc>java.lang.String</desc>

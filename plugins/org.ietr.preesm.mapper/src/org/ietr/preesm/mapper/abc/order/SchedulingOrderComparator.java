@@ -38,8 +38,7 @@ package org.ietr.preesm.mapper.abc.order;
 
 import java.util.Comparator;
 
-import net.sf.dftools.algorithm.model.dag.DAGVertex;
-
+import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 /**

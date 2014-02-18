@@ -36,7 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.mapper.model.property;
 
-import net.sf.dftools.algorithm.model.AbstractEdgePropertyType;
+import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
 
 /**
  * Extending propertyType

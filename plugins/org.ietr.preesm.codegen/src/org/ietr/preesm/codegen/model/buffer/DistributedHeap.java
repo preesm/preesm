@@ -38,8 +38,7 @@ package org.ietr.preesm.codegen.model.buffer;
 
 import java.util.List;
 
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
-
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.preesm.codegen.model.printer.IAbstractPrinter;
 import org.ietr.preesm.core.types.DataType;
 

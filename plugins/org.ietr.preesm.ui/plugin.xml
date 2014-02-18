@@ -2,6 +2,246 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.ietr.dftools.graphiti.ui.editors.GraphEditor"
+            contributorClass="org.ietr.dftools.graphiti.ui.editors.GraphActionBarContributor"
+            default="true"
+            extensions="graphml, design, component"
+            icon="icons/graphiti.gif"
+            id="org.ietr.preesm.ui.editor.graph"
+            name="Preesm Network Editor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
+      <propertyTabs
+            contributorId="org.ietr.dftools.graphiti.ui.properties.contributor">
+         <propertyTab
+               category="org.ietr.dftools.graphiti.ui.properties.category.graph"
+               id="org.ietr.preesm.ui.properties.tab.sdf.graph.parameters"
+               label="Graph Parameters">
+         </propertyTab>
+         <propertyTab
+               category="org.ietr.dftools.graphiti.ui.properties.category.graph"
+               id="org.ietr.preesm.ui.properties.tab.sdf.graph.variables"
+               label="Graph Variable Declarations">
+         </propertyTab>
+         <propertyTab
+               category="org.ietr.dftools.graphiti.ui.properties.category.vertex"
+               id="org.ietr.preesm.ui.properties.tab.sdf.vertex.arguments"
+               label="Instance Arguments">
+         </propertyTab>
+      </propertyTabs>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertySections">
+      <propertySections
+            contributorId="org.ietr.dftools.graphiti.ui.properties.contributor">
+         <propertySection
+               class="org.ietr.preesm.ui.properties.SDFGraphParametersListSection"
+               filter="org.ietr.preesm.ui.properties.filters.SDFGraphFilter"
+               id="org.ietr.preesm.ui.properties.section.sdf.graph.parameters"
+               tab="org.ietr.preesm.ui.properties.tab.sdf.graph.parameters">
+         </propertySection>
+         <propertySection
+               class="org.ietr.preesm.ui.properties.SDFGraphVariablesMapSection"
+               filter="org.ietr.preesm.ui.properties.filters.SDFGraphFilter"
+               id="org.ietr.preesm.ui.properties.section.sdf.graph.variables"
+               tab="org.ietr.preesm.ui.properties.tab.sdf.graph.variables">
+         </propertySection>
+         <propertySection
+               class="org.ietr.preesm.ui.properties.SDFVertexInstanceArgumentsMapSection"
+               filter="org.ietr.preesm.ui.properties.filters.SDFVertexFilter"
+               id="org.ietr.preesm.ui.properties.section.sdf.vertex.arguments"
+               tab="org.ietr.preesm.ui.properties.tab.sdf.vertex.arguments">
+         </propertySection>
+      </propertySections>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="org.ietr.dftools.ui.workflow.launch.WorkflowLaunchShortcut"
+            icon="icons/workflow.png"
+            id="org.ietr.dftools.ui.workflow.workflowLaunchShortcut"
+            label="Preesm Workflow"
+            modes="run,debug">
+         <description
+               description="Launch a Preesm workflow"
+               mode="run">
+         </description>
+         <contextualLaunch>
+            <enablement>
+               <with
+                     variable="selection">
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <and>
+                        <test
+                              forcePluginActivation="true"
+                              property="net.sf.dftools.isWorkflow">
+                        </test>
+                     </and>
+                  </iterate>
+               </with>
+            </enablement>
+         </contextualLaunch>
+      </shortcut>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            canFinishEarly="false"
+            category="org.ietr.preesm.category"
+            class="org.ietr.preesm.ui.NewGraphMLWizard"
+            hasPages="true"
+            icon="icons/graphiti.gif"
+            id="org.ietr.preesm.ui.wizards.graphml"
+            name="Algorithm (GraphML)"
+            project="false">
+         <description>
+            Create a new FU network.
+         </description>
+      </wizard>
+      <wizard
+            canFinishEarly="false"
+            category="org.ietr.preesm.category"
+            class="org.ietr.preesm.ui.NewIPXACTDesignWizard"
+            hasPages="true"
+            icon="icons/graphiti.gif"
+            id="org.ietr.preesm.ui.wizards.ip-xact.design"
+            name="Architecture Design (IP-XACT)"
+            project="false">
+         <description>
+            Create a new FU network.
+         </description>
+      </wizard>
+      <wizard
+            canFinishEarly="false"
+            category="org.ietr.preesm.category"
+            class="org.ietr.preesm.ui.NewIPXACTComponentWizard"
+            hasPages="true"
+            icon="icons/graphiti.gif"
+            id="org.ietr.preesm.ui.wizards.ip-xact.component"
+            name="Architecture Component (IP-XACT)"
+            project="false">
+         <description>
+            Create a new FU network.
+         </description>
+      </wizard>
+      <category
+            id="org.ietr.preesm.category"
+            name="Preesm">
+      </category>
+      <wizard
+            category="org.ietr.preesm.category"
+            class="org.ietr.preesm.ui.wizards.NewPreesmProjectWizard"
+            hasPages="true"
+            icon="icons/preesmProject.png"
+            id="org.ietr.preesm.core.wizards.NewPreesmProjectWizard"
+            name="Project"
+            project="true">
+         <description>
+            Create a new Preesm project
+         </description>
+      </wizard>
+      <wizard
+            category="org.ietr.preesm.category"
+            class="org.ietr.preesm.ui.wizards.NewScenarioFileWizard"
+            hasPages="true"
+            icon="icons/preesm4mini.PNG"
+            id="org.ietr.preesm.core.ui.wizards.NewScenarioFileWizard"
+            name="Scenario"
+            project="false">
+         <description>
+            Create a new scenario file
+         </description>
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.ide.projectNatureImages">
+      <image
+            icon="icons/preesmProjectNature.png"
+            id="org.ietr.preesm.core.ui.wizards.projectNatureImage"
+            natureId="org.ietr.preesm.core.ui.wizards.nature">
+         <description>
+            A Preesm project.
+         </description>
+      </image>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.ietr.preesm.ui.scenario.editor.ScenarioEditor"
+            default="true"
+            extensions="scenario"
+            icon="icons/preesm4mini.PNG"
+            id="org.ietr.preesm.ui.scenario.editor.ScenarioEditor"
+            name="Preesm scenario editor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.console.consoleFactories">
+      <consoleFactory
+            class="org.ietr.preesm.ui.console.CoreConsoleFactory"
+            icon="icons/preesm2mini.PNG"
+            label="Preesm Core Console">
+      </consoleFactory>
+   </extension>
+   <extension
+         id="albert"
+         name="albert"
+         point="org.eclipse.ui.ide.resourceFilters">
+      <filter
+            pattern="*.layout"
+            selected="true">
+         <description>
+            albert
+         </description>
+      </filter>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <commonFilter
+            activeByDefault="true"
+            class="org.ietr.preesm.ui.ProjectExplorerFilter"
+            description="Filters the *.layout files"
+            id="org.ietr.preesm.core.layoutfilefilter"
+            name="LayoutFileFilter"
+            visibleInUI="true">
+      </commonFilter>
+   </extension>
+   <extension
+         id="org.ietr.preesm.ui.projectexplorerviewer"
+         name="org.ietr.preesm.ui.projectexplorerviewer"
+         point="org.eclipse.ui.navigator.viewer">
+      <viewerContentBinding
+            viewerId="org.eclipse.ui.navigator.ProjectExplorer">
+         <includes>
+            <contentExtension
+                  isRoot="true"
+                  pattern="org.ietr.preesm.core.layoutfilefilter">
+            </contentExtension>
+            <contentExtension
+                  isRoot="true"
+                  pattern="org.eclipse.ui.navigator.resourceContent">
+            </contentExtension>
+         </includes>
+      </viewerContentBinding>
+   </extension>
+   <extension
+         id="org.ietr.preesm.core.ui.wizards.nature"
+         name="Preesm Project"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="org.ietr.preesm.ui.wizards.PreesmProjectNature">
+         </run>
+      </runtime>
+   </extension>
+   <extension
          point="org.ietr.dftools.graphiti.model.definition">
       <configuration
             extension="graphml"
@@ -769,246 +1009,6 @@
             </parameter>
          </vertexType>
       </configuration>
-   </extension>
-   <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            class="net.sf.graphiti.ui.editors.GraphEditor"
-            contributorClass="net.sf.graphiti.ui.editors.GraphActionBarContributor"
-            default="true"
-            extensions="graphml, design, component"
-            icon="icons/graphiti.gif"
-            id="org.ietr.preesm.ui.editor.graph"
-            name="Preesm Network Editor">
-      </editor>
-   </extension>
-   <extension
-         point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
-      <propertyTabs
-            contributorId="net.sf.graphiti.ui.properties.contributor">
-         <propertyTab
-               category="net.sf.graphiti.ui.properties.category.graph"
-               id="org.ietr.preesm.ui.properties.tab.sdf.graph.parameters"
-               label="Graph Parameters">
-         </propertyTab>
-         <propertyTab
-               category="net.sf.graphiti.ui.properties.category.graph"
-               id="org.ietr.preesm.ui.properties.tab.sdf.graph.variables"
-               label="Graph Variable Declarations">
-         </propertyTab>
-         <propertyTab
-               category="net.sf.graphiti.ui.properties.category.vertex"
-               id="org.ietr.preesm.ui.properties.tab.sdf.vertex.arguments"
-               label="Instance Arguments">
-         </propertyTab>
-      </propertyTabs>
-   </extension>
-   <extension
-         point="org.eclipse.ui.views.properties.tabbed.propertySections">
-      <propertySections
-            contributorId="net.sf.graphiti.ui.properties.contributor">
-         <propertySection
-               class="org.ietr.preesm.ui.properties.SDFGraphParametersListSection"
-               filter="org.ietr.preesm.ui.properties.filters.SDFGraphFilter"
-               id="org.ietr.preesm.ui.properties.section.sdf.graph.parameters"
-               tab="org.ietr.preesm.ui.properties.tab.sdf.graph.parameters">
-         </propertySection>
-         <propertySection
-               class="org.ietr.preesm.ui.properties.SDFGraphVariablesMapSection"
-               filter="org.ietr.preesm.ui.properties.filters.SDFGraphFilter"
-               id="org.ietr.preesm.ui.properties.section.sdf.graph.variables"
-               tab="org.ietr.preesm.ui.properties.tab.sdf.graph.variables">
-         </propertySection>
-         <propertySection
-               class="org.ietr.preesm.ui.properties.SDFVertexInstanceArgumentsMapSection"
-               filter="org.ietr.preesm.ui.properties.filters.SDFVertexFilter"
-               id="org.ietr.preesm.ui.properties.section.sdf.vertex.arguments"
-               tab="org.ietr.preesm.ui.properties.tab.sdf.vertex.arguments">
-         </propertySection>
-      </propertySections>
-   </extension>
-   <extension
-         point="org.eclipse.debug.ui.launchShortcuts">
-      <shortcut
-            class="net.sf.dftools.ui.workflow.launch.WorkflowLaunchShortcut"
-            icon="icons/workflow.png"
-            id="net.sf.dftools.ui.workflow.workflowLaunchShortcut"
-            label="Preesm Workflow"
-            modes="run,debug">
-         <description
-               description="Launch a Preesm workflow"
-               mode="run">
-         </description>
-         <contextualLaunch>
-            <enablement>
-               <with
-                     variable="selection">
-                  <count
-                        value="1">
-                  </count>
-                  <iterate>
-                     <and>
-                        <test
-                              forcePluginActivation="true"
-                              property="net.sf.dftools.isWorkflow">
-                        </test>
-                     </and>
-                  </iterate>
-               </with>
-            </enablement>
-         </contextualLaunch>
-      </shortcut>
-   </extension>
-   <extension
-         point="org.eclipse.ui.newWizards">
-      <wizard
-            canFinishEarly="false"
-            category="org.ietr.preesm.category"
-            class="org.ietr.preesm.ui.NewGraphMLWizard"
-            hasPages="true"
-            icon="icons/graphiti.gif"
-            id="org.ietr.preesm.ui.wizards.graphml"
-            name="Algorithm (GraphML)"
-            project="false">
-         <description>
-            Create a new FU network.
-         </description>
-      </wizard>
-      <wizard
-            canFinishEarly="false"
-            category="org.ietr.preesm.category"
-            class="org.ietr.preesm.ui.NewIPXACTDesignWizard"
-            hasPages="true"
-            icon="icons/graphiti.gif"
-            id="org.ietr.preesm.ui.wizards.ip-xact.design"
-            name="Architecture Design (IP-XACT)"
-            project="false">
-         <description>
-            Create a new FU network.
-         </description>
-      </wizard>
-      <wizard
-            canFinishEarly="false"
-            category="org.ietr.preesm.category"
-            class="org.ietr.preesm.ui.NewIPXACTComponentWizard"
-            hasPages="true"
-            icon="icons/graphiti.gif"
-            id="org.ietr.preesm.ui.wizards.ip-xact.component"
-            name="Architecture Component (IP-XACT)"
-            project="false">
-         <description>
-            Create a new FU network.
-         </description>
-      </wizard>
-      <category
-            id="org.ietr.preesm.category"
-            name="Preesm">
-      </category>
-      <wizard
-            category="org.ietr.preesm.category"
-            class="org.ietr.preesm.ui.wizards.NewPreesmProjectWizard"
-            hasPages="true"
-            icon="icons/preesmProject.png"
-            id="org.ietr.preesm.core.wizards.NewPreesmProjectWizard"
-            name="Project"
-            project="true">
-         <description>
-            Create a new Preesm project
-         </description>
-      </wizard>
-      <wizard
-            category="org.ietr.preesm.category"
-            class="org.ietr.preesm.ui.wizards.NewScenarioFileWizard"
-            hasPages="true"
-            icon="icons/preesm4mini.PNG"
-            id="org.ietr.preesm.core.ui.wizards.NewScenarioFileWizard"
-            name="Scenario"
-            project="false">
-         <description>
-            Create a new scenario file
-         </description>
-      </wizard>
-   </extension>
-   <extension
-         point="org.eclipse.ui.ide.projectNatureImages">
-      <image
-            icon="icons/preesmProjectNature.png"
-            id="org.ietr.preesm.core.ui.wizards.projectNatureImage"
-            natureId="org.ietr.preesm.core.ui.wizards.nature">
-         <description>
-            A Preesm project.
-         </description>
-      </image>
-   </extension>
-   <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            class="org.ietr.preesm.ui.scenario.editor.ScenarioEditor"
-            default="true"
-            extensions="scenario"
-            icon="icons/preesm4mini.PNG"
-            id="org.ietr.preesm.ui.scenario.editor.ScenarioEditor"
-            name="Preesm scenario editor">
-      </editor>
-   </extension>
-   <extension
-         point="org.eclipse.ui.console.consoleFactories">
-      <consoleFactory
-            class="org.ietr.preesm.ui.console.CoreConsoleFactory"
-            icon="icons/preesm2mini.PNG"
-            label="Preesm Core Console">
-      </consoleFactory>
-   </extension>
-   <extension
-         id="albert"
-         name="albert"
-         point="org.eclipse.ui.ide.resourceFilters">
-      <filter
-            pattern="*.layout"
-            selected="true">
-         <description>
-            albert
-         </description>
-      </filter>
-   </extension>
-   <extension
-         point="org.eclipse.ui.navigator.navigatorContent">
-      <commonFilter
-            activeByDefault="true"
-            class="org.ietr.preesm.ui.ProjectExplorerFilter"
-            description="Filters the *.layout files"
-            id="org.ietr.preesm.core.layoutfilefilter"
-            name="LayoutFileFilter"
-            visibleInUI="true">
-      </commonFilter>
-   </extension>
-   <extension
-         id="org.ietr.preesm.ui.projectexplorerviewer"
-         name="org.ietr.preesm.ui.projectexplorerviewer"
-         point="org.eclipse.ui.navigator.viewer">
-      <viewerContentBinding
-            viewerId="org.eclipse.ui.navigator.ProjectExplorer">
-         <includes>
-            <contentExtension
-                  isRoot="true"
-                  pattern="org.ietr.preesm.core.layoutfilefilter">
-            </contentExtension>
-            <contentExtension
-                  isRoot="true"
-                  pattern="org.eclipse.ui.navigator.resourceContent">
-            </contentExtension>
-         </includes>
-      </viewerContentBinding>
-   </extension>
-   <extension
-         id="org.ietr.preesm.core.ui.wizards.nature"
-         name="Preesm Project"
-         point="org.eclipse.core.resources.natures">
-      <runtime>
-         <run
-               class="org.ietr.preesm.ui.wizards.PreesmProjectNature">
-         </run>
-      </runtime>
    </extension>
 
 </plugin>

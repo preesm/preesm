@@ -36,9 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.ui.scenario.editor.timings;
 
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFVertex;
-
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -53,6 +50,8 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 

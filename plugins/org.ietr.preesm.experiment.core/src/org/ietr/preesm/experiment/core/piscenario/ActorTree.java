@@ -38,9 +38,8 @@ package org.ietr.preesm.experiment.core.piscenario;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.sf.dftools.algorithm.importer.InvalidModelException;
-
 import org.eclipse.core.runtime.CoreException;
+import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.preesm.experiment.core.piscenario.ParameterValue.ParameterType;
 import org.ietr.preesm.experiment.core.piscenario.serialize.PiScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.Actor;

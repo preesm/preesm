@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -38,14 +38,14 @@ package org.ietr.preesm.core.architecture.route;
 
 import java.util.List;
 
-import net.sf.dftools.architecture.slam.ComponentInstance;
-import net.sf.dftools.architecture.slam.Design;
-import net.sf.dftools.architecture.slam.component.Dma;
-import net.sf.dftools.architecture.slam.component.Mem;
-import net.sf.dftools.architecture.slam.component.impl.DmaImpl;
-import net.sf.dftools.architecture.slam.component.impl.MemImpl;
-import net.sf.dftools.architecture.slam.link.ControlLink;
-import net.sf.dftools.architecture.slam.link.Link;
+import org.ietr.dftools.architecture.slam.ComponentInstance;
+import org.ietr.dftools.architecture.slam.Design;
+import org.ietr.dftools.architecture.slam.component.Dma;
+import org.ietr.dftools.architecture.slam.component.Mem;
+import org.ietr.dftools.architecture.slam.component.impl.DmaImpl;
+import org.ietr.dftools.architecture.slam.component.impl.MemImpl;
+import org.ietr.dftools.architecture.slam.link.ControlLink;
+import org.ietr.dftools.architecture.slam.link.Link;
 
 /**
  * Depending on the architecture nodes separating two operators, generates a

@@ -39,12 +39,11 @@ package org.ietr.preesm.mapper.exporter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
-import net.sf.dftools.algorithm.exporter.GMLExporter;
-import net.sf.dftools.algorithm.model.AbstractGraph;
-import net.sf.dftools.algorithm.model.dag.DAGEdge;
-import net.sf.dftools.algorithm.model.dag.DAGVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-
+import org.ietr.dftools.algorithm.exporter.GMLExporter;
+import org.ietr.dftools.algorithm.model.AbstractGraph;
+import org.ietr.dftools.algorithm.model.dag.DAGEdge;
+import org.ietr.dftools.algorithm.model.dag.DAGVertex;
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.w3c.dom.Element;
 

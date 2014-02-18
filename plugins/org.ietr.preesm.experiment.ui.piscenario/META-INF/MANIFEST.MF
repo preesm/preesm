@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: PiScenario Editor
+Bundle-Name: Preesm PiScenario Editor
 Bundle-SymbolicName: org.ietr.preesm.experiment.ui.piscenario;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.ietr.preesm.experiment.ui.piscenario.Activator
@@ -21,10 +21,8 @@ Require-Bundle: org.eclipse.ui,
  org.ietr.preesm.ui;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
-Bundle-Vendor: IETR/INSA
-Import-Package: net.sf.dftools.algorithm.importer,
- net.sf.dftools.workflow.tools,
- org.eclipse.core.resources,
+Bundle-Vendor: IETR/INSA Rennes
+Import-Package: org.eclipse.core.resources,
  org.eclipse.graphiti.platform;version="0.10.1",
  org.eclipse.graphiti.tb;version="0.10.1",
  org.eclipse.ui.dialogs,
@@ -34,5 +32,7 @@ Import-Package: net.sf.dftools.algorithm.importer,
  org.eclipse.ui.forms.widgets,
  org.eclipse.ui.part,
  org.eclipse.ui.wizards.newresource,
+ org.ietr.dftools.algorithm.importer,
+ org.ietr.dftools.workflow.tools,
  org.ietr.preesm.experiment.core.piscenario,
  org.ietr.preesm.experiment.core.piscenario.serialize

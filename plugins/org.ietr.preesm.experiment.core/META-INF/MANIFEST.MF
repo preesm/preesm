@@ -4,7 +4,7 @@ Bundle-Name: Experimental Preesm core plug-in
 Bundle-SymbolicName: org.ietr.preesm.experiment.core;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.ietr.preesm.experiment.core.Activator
-Bundle-Vendor: IETR/INSA of Rennes
+Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
@@ -12,13 +12,6 @@ Bundle-ActivationPolicy: lazy
 Export-Package: org.ietr.preesm.experiment.core.piscenario,
  org.ietr.preesm.experiment.core.piscenario.serialize
 Import-Package: com.singularsys.jep,
- net.sf.dftools.algorithm.importer,
- net.sf.dftools.algorithm.model.sdf,
- net.sf.dftools.architecture.design,
- net.sf.dftools.architecture.slam,
- net.sf.dftools.architecture.slam.attributes,
- net.sf.dftools.architecture.slam.serialize,
- net.sf.dftools.workflow.tools,
  org.eclipse.core.internal.resources,
  org.eclipse.core.resources,
  org.eclipse.emf.common.notify,
@@ -26,6 +19,13 @@ Import-Package: com.singularsys.jep,
  org.eclipse.emf.ecore,
  org.eclipse.emf.ecore.resource,
  org.eclipse.emf.ecore.resource.impl,
+ org.ietr.dftools.algorithm.importer,
+ org.ietr.dftools.algorithm.model.sdf,
+ org.ietr.dftools.architecture.design,
+ org.ietr.dftools.architecture.slam,
+ org.ietr.dftools.architecture.slam.attributes,
+ org.ietr.dftools.architecture.slam.serialize,
+ org.ietr.dftools.workflow.tools,
  org.ietr.preesm.core.architecture.util,
  org.ietr.preesm.core.scenario,
  org.ietr.preesm.experiment.model.pimm,

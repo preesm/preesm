@@ -37,9 +37,8 @@ package org.ietr.preesm.experiment.model.pimm.serialize;
 
 import java.io.InputStream;
 
-import net.sf.dftools.architecture.utils.DomUtil;
-
 import org.eclipse.emf.common.util.URI;
+import org.ietr.dftools.architecture.utils.DomUtil;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;

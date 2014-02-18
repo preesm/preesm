@@ -19,7 +19,8 @@
             <output
                   id="MemEx"
                   object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
-            </output></outputs>
+            </output>
+         </outputs>
          <inputs>
             <input
                   id="MemEx"
@@ -34,7 +35,7 @@
          <inputs>
             <input
                   id="DAG"
-                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
             <input
                   id="scenario"
@@ -66,7 +67,7 @@
          <inputs>
             <input
                   id="DAG"
-                  object="net.sf.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
             </input>
             <input
                   id="MemEx"

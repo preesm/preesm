@@ -40,8 +40,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import net.sf.dftools.architecture.slam.ComponentInstance;
-
+import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.mapper.abc.SpecialVertexManager;

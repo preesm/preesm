@@ -13,11 +13,11 @@
             </output>
             <output
                   id="SDF"
-                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="architecture"
-                  object="net.sf.dftools.architecture.slam.Design">
+                  object="org.ietr.dftools.architecture.slam.Design">
             </output>
          </outputs>
       </scenario>
@@ -31,12 +31,13 @@
             </output>
             <output
                   id="IBSDF"
-                  object="net.sf.dftools.algorithm.model.sdf.SDFGraph">
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
             </output>
             <output
                   id="S-LAM"
-                  object="net.sf.dftools.architecture.slam.Design">
-            </output></outputs>
+                  object="org.ietr.dftools.architecture.slam.Design">
+            </output>
+         </outputs>
       </scenario>
    </extension>
 

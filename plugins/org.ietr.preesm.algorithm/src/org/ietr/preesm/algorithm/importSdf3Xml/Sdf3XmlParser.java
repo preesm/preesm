@@ -5,17 +5,16 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFEdge;
-import net.sf.dftools.algorithm.model.sdf.SDFGraph;
-import net.sf.dftools.algorithm.model.sdf.SDFInterfaceVertex;
-import net.sf.dftools.algorithm.model.sdf.SDFVertex;
-import net.sf.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
-import net.sf.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import net.sf.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
-import net.sf.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
-import net.sf.dftools.architecture.utils.DomUtil;
-
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
+import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
+import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
+import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
+import org.ietr.dftools.architecture.utils.DomUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

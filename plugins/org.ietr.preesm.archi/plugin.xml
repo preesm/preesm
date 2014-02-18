@@ -10,7 +10,7 @@
          <inputs>
             <input
                   id="architecture"
-                  object="net.sf.dftools.architecture.slam.Design">
+                  object="org.ietr.dftools.architecture.slam.Design">
             </input>
          </inputs>
       </task>
@@ -21,13 +21,13 @@
          <inputs>
             <input
                   id="architecture"
-                  object="net.sf.dftools.architecture.slam.Design">
+                  object="org.ietr.dftools.architecture.slam.Design">
             </input>
          </inputs>
          <outputs>
             <output
                   id="architecture"
-                  object="net.sf.dftools.architecture.slam.Design">
+                  object="org.ietr.dftools.architecture.slam.Design">
             </output>
          </outputs>
       </task>

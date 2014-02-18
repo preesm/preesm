@@ -41,10 +41,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import net.sf.dftools.algorithm.exporter.Key;
-import net.sf.dftools.architecture.utils.DomUtil;
-
 import org.eclipse.emf.common.util.EList;
+import org.ietr.dftools.algorithm.exporter.Key;
+import org.ietr.dftools.architecture.utils.DomUtil;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;

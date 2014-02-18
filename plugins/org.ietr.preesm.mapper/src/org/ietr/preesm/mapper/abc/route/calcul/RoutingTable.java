@@ -41,8 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-import net.sf.dftools.architecture.slam.ComponentInstance;
-
+import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 

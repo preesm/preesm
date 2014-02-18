@@ -36,10 +36,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.codegen.model;
 
-import net.sf.dftools.algorithm.model.IRefinement;
-import net.sf.dftools.algorithm.model.sdf.SDFVertex;
-import net.sf.dftools.architecture.slam.ComponentInstance;
-
+import org.ietr.dftools.algorithm.model.IRefinement;
+import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
+import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;

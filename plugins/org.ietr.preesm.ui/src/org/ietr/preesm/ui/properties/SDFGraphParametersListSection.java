@@ -28,10 +28,9 @@
  */
 package org.ietr.preesm.ui.properties;
 
-import net.sf.graphiti.ui.properties.ListSection;
-
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
+import org.ietr.dftools.graphiti.ui.properties.ListSection;
 
 /**
  * This class defines a list section for graph parameters.
