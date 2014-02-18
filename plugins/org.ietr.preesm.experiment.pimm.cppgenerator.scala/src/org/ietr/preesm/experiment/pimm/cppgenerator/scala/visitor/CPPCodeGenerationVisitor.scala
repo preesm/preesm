@@ -3,6 +3,8 @@ package org.ietr.preesm.experiment.pimm.cppgenerator.scala.visitor
 import org.eclipse.emf.ecore.EObject
 import org.ietr.preesm.experiment.model.pimm._
 import scala.collection.immutable.Stack
+import java.util.Map
+import java.util.HashMap
 //Allows to consider Java collections as Scala collections and to use foreach...
 import collection.JavaConversions._
 
@@ -16,6 +18,10 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
   //Stack and list to handle hierarchical graphs
   private val graphsStack: Stack[GraphDescription] = new Stack[GraphDescription]
   private var currentSubGraphs: List[PiGraph] = Nil
+  //Variable containing the name of the currently visited Actor for PortDescriptions
+  private var currentAbstractActorName: String = ""
+  //Map linking ports to their correspondent description
+  private val portMap: Map[Port, PortDescription] = new HashMap[Port, PortDescription]
 
   /**
    * Dispatch method to visit the different elements of a PiMM model
@@ -158,19 +164,43 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
   private def getVertexName(aa: AbstractActor): String = "vx" + aa.getName()
 
   private def visitActor(a: Actor): Unit = {
-    //TODO
+    visitAbstractActor(a)
   }
 
+  /**
+   * Generic visit method for all AbstractActors (Actors, PiGraph)
+   */
   private def visitAbstractActor(aa: AbstractActor) = {
-    //TODO
+    //Stock the name of the current AbstractActor
+    currentAbstractActorName = aa.getName()
+
+    //Call the addVertex method on the current graph
+    currentMethod.append("\n\tPiSDFVertex *")
+    currentMethod.append(getVertexName(aa))
+    currentMethod.append(" = (PiSDFVertex*)graph->addVertex(\"")
+    //Pass the name of the AbstractActor
+    currentMethod.append(currentAbstractActorName)
+    currentMethod.append("\",")
+    //Pass the type of vertex
+    currentMethod.append("pisdf_vertex")
+    currentMethod.append(");")
+
+    //Visit data ports to fill the portMap
+    aa.getDataInputPorts().foreach(p => visit(p))
+    aa.getDataOutputPorts().foreach(p => visit(p))
+    //TODO: Keep the visit of ConfigPorts?
+    aa.getConfigInputPorts().foreach(p => visit(p))
+    aa.getConfigOutputPorts().foreach(p => visit(p))
   }
 
+  /**
+   * When visiting data ports, we stock the necessary informations for edge generation into PortDescriptions
+   */
   private def visitDataInputPort(dip: DataInputPort): Unit = {
-    //TODO
+    portMap.put(dip, new PortDescription(currentAbstractActorName, dip.getExpression().getString()))
   }
-
   private def visitDataOutputPort(dop: DataOutputPort): Unit = {
-    //TODO
+    portMap.put(dop, new PortDescription(currentAbstractActorName, dop.getExpression().getString()))
   }
 
   private def visitConfigInputPort(cip: ConfigInputPort): Unit = {
@@ -253,3 +283,8 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
  * Class allowing to stock necessary information about graphs
  */
 class GraphDescription(val pg: PiGraph, var subGraphs: List[PiGraph], var method: StringBuilder)
+
+/**
+ * Class allowing to stock necessary information about ports for the edges generation
+ */
+class PortDescription(val nodeName: String, val expression: String)
