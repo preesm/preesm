@@ -8,6 +8,8 @@ Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.core.runtime,
  org.ietr.dftools.workflow,
  org.ietr.dftools.algorithm,
- org.jgrapht
+ org.jgrapht,
+ org.scala-ide.scala.library,
+ org.ietr.preesm.experiment.model;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
