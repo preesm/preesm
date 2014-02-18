@@ -42,4 +42,6 @@ bin/
 target/
 generated/
 xtend-gen/
+/plugins/org.ietr.preesm.codegen.xtend/xtend-gen/
 *~
+*._trace
