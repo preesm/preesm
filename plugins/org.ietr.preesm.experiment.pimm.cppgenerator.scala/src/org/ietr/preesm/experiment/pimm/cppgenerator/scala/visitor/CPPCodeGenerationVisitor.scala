@@ -13,11 +13,10 @@ import collection.JavaConversions._
  */
 class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var currentMethod: StringBuilder) {
 
-  //Stacks and list to handle hierarchical graphs
-  private val methodsStack: Stack[StringBuilder] = new Stack[StringBuilder]
+  //Stack and list to handle hierarchical graphs
   private val graphsStack: Stack[GraphDescription] = new Stack[GraphDescription]
   private var currentSubGraphs: List[PiGraph] = Nil
-  
+
   /**
    * Dispatch method to visit the different elements of a PiMM model
    * Cases must be ordered from bottom to top of the inheritance tree:
@@ -71,7 +70,7 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     //Generating the method body
     generateMethodBody(pg)
     //Reset the container graph as the current graph
-    pop
+    pop()
 
     //We should also generate the C++ code as for any Actor
     visitAbstractActor(pg)
@@ -92,7 +91,7 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     //The method accept as parameter a pointer to the PiSDFGraph graph it will build and a pointer to the parent actor of graph (i.e., the hierarchical actor)
     currentMethod.append("(PiSDFGraph* graph, BaseVertex* parentVertex)")
   }
-  
+
   /**
    * Concatenate the body of the method corresponding to a PiGraph to the currentMethod StringBuilder
    */
@@ -107,11 +106,57 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     //Generating edges
     currentMethod.append("\n\t//Edges")
     pg.getFifos().foreach(f => visit(f))
+    //Generating call to methods generated for subgraphs, if any
+    if (!currentSubGraphs.isEmpty) {
+      currentMethod.append("\n\t//Subgraphs")
+      generateCallsToSubgraphs()
+    }
     currentMethod.append("}\n")
     visitAbstractActor(pg)
   }
 
-  
+  private def generateCallsToSubgraphs(): Unit = {
+    //For each subgraph of the current graph
+    currentSubGraphs.foreach(sg => {
+      val sgName = getSubraphName(sg)
+      val vxName = getVertexName(sg)
+      //Generate test in order to prevent to reach the limit of graphs
+      currentMethod.append("\n\tif(nb_graphs >= MAX_NB_PiSDF_SUB_GRAPHS - 1) exitWithCode(1054);")
+      //Get the pointer to the subgraph
+      currentMethod.append("\n\tPiSDFGraph *")
+      currentMethod.append(sgName)
+      currentMethod.append(" = &graphs[nb_graphs];")
+      //Increment the graph counter
+      currentMethod.append("\n\tnb_graphs++;")
+      //Call the building method of sg with the pointer
+      currentMethod.append("\n\t")
+      currentMethod.append(getMethodName(sg))
+      currentMethod.append("(")
+      //Pass the pointer to the subgraph
+      currentMethod.append(sgName)
+      currentMethod.append(",")
+      //Pass the parent vertex
+      currentMethod.append(vxName)
+      currentMethod.append(");")
+      currentMethod.append("\n\t")
+      //Set the subgraph as subgraph of the vertex
+      currentMethod.append(vxName)
+      currentMethod.append("->setSubGraph(")
+      currentMethod.append(sgName)
+      currentMethod.append(");")
+    })
+  }
+
+  /**
+   * Returns the name of the subgraph pg
+   */
+  private def getSubraphName(pg: PiGraph): String = pg.getName() + "_subGraph"
+
+  /**
+   * Returns the name of the variable pointing to the C++ object corresponding to AbstractActor aa
+   */
+  private def getVertexName(aa: AbstractActor): String = "vx" + aa.getName()
+
   private def visitActor(a: Actor): Unit = {
     //TODO
   }
@@ -186,10 +231,9 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
   private def push(pg: PiGraph): Unit = {
     //Test in order to ignore the most outer graph
     if (currentGraph != pg) {
-      graphsStack.push(new GraphDescription(currentGraph, currentSubGraphs))
+      graphsStack.push(new GraphDescription(currentGraph, currentSubGraphs, currentMethod))
       currentGraph = pg
       currentSubGraphs = Nil
-      methodsStack.push(currentMethod)
       currentMethod = new StringBuilder
     }
   }
@@ -199,9 +243,8 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     if (top != null) {
       currentGraph = top.pg
       currentSubGraphs = top.subGraphs
+      currentMethod = top.method
       graphsStack.pop
-      currentMethod = methodsStack.top
-      methodsStack.pop
     }
   }
 }
@@ -209,4 +252,4 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
 /**
  * Class allowing to stock necessary information about graphs
  */
-class GraphDescription(val pg: PiGraph, var subGraphs: List[PiGraph])
+class GraphDescription(val pg: PiGraph, var subGraphs: List[PiGraph], var method: StringBuilder)
