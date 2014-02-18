@@ -211,8 +211,31 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     //TODO
   }
 
+  /**
+   * When visiting a FIFO we should add an edge to the current graph
+   */
   private def visitFifo(f: Fifo): Unit = {
-    //TODO
+    //Call the addEdge method on the current graph
+    currentMethod.append("\n\t")
+    currentMethod.append("graph->addEdge(")
+    val src: PortDescription = portMap.get(f.getSourcePort())
+    //Pass the name of the source node
+    currentMethod.append(src.nodeName)
+    currentMethod.append(", \"")
+    //Pass the production of the source node
+    currentMethod.append(src.expression)
+    currentMethod.append("\", ")
+    val tgt: PortDescription = portMap.get(f.getTargetPort())
+    //Pass the name of the target node
+    currentMethod.append(tgt.nodeName)
+    currentMethod.append(", \"")
+    //Pass the consumption of the target node
+    currentMethod.append(tgt.expression)
+    currentMethod.append("\", ")
+    //Pass the delay of the FIFO
+    currentMethod.append(f.getDelay().getExpression())
+    currentMethod.append("\"")
+    currentMethod.append(");")
   }
 
   private def visitInterfaceActor(ia: InterfaceActor): Unit = {
