@@ -327,11 +327,11 @@ class ScriptRunner {
 		scriptResults.forEach[vertex, result|simplifyResult(result.key, result.value)]
 
 		// Identify divisible buffers
-		scriptResults.forEach [ vertex, result |identifyDivisibleBuffers(result)]
-		
+		scriptResults.forEach[vertex, result|identifyDivisibleBuffers(result)]
+
 		// Identify inter-inputs and inter-outputs matches
-		scriptResults.forEach [ vertex, result | identifySiblingMatches(result)]
-		
+		scriptResults.forEach[vertex, result|identifySiblingMatches(result)]
+
 		// Identify ranges that may cause a transversal merge
 		scriptResults.forEach[vertex, result|identifyMergeRanges(result.key, result.value)]
 
@@ -345,25 +345,25 @@ class ScriptRunner {
 		var result = groups.fold(0, [res, gr|res + gr.size])
 		println("Identified " + groups.size + " groups. " + result)
 	}
-	
+
 	def identifySiblingMatches(Pair<List<Buffer>, List<Buffer>> result) {
-		result.key.forEach[
-			it.matchTable.values.flatten.forEach[
-				if(result.key.contains(it.remoteBuffer)){
+		result.key.forEach [
+			it.matchTable.values.flatten.forEach [
+				if (result.key.contains(it.remoteBuffer)) {
 					it.siblingMatch = true
 				}
 			]
 		]
-		
-		result.value.forEach[
-			it.matchTable.values.flatten.forEach[
-				if(result.value.contains(it.remoteBuffer)){
+
+		result.value.forEach [
+			it.matchTable.values.flatten.forEach [
+				if (result.value.contains(it.remoteBuffer)) {
 					it.siblingMatch = true
 				}
 			]
 		]
 	}
-	
+
 	def identifyDivisibleBuffers(Pair<List<Buffer>, List<Buffer>> result) {
 		val allBuffers = new ArrayList<Buffer>
 		allBuffers.addAll(result.key)
@@ -374,27 +374,28 @@ class ScriptRunner {
 			//  simplifyResult). (Because if the buffer only has one
 			// contiguous match, a divided buffer is not expected)
 			buffer.matchTable.size > 1 &&
-			// if it is totally matched, so that all parts of the divided 
-			// buffer can still be accessed
-			buffer.completelyMatched &&
-			// if it has no multiple range, a bit arbitrary decision
-			// mainly because if we do not do that, almost all
-			// buffers would be divisible. In a way, if a buffer
-			// is matched several times, this means that we assume
-			// that we will find several other buffers matched within this
-			// one, so we do not want to divide it since a divisible buffer
-			// is divisible only if we can match all its subparts in a
-			// indivisible buffer. Split is a good example !
-			// We do not want the split input to be divided !
-			buffer.multipleMatchRange.empty
+				// if it is totally matched, so that all parts of the divided 
+				// buffer can still be accessed
+				buffer.completelyMatched &&
+				// if it has no multiple range, a bit arbitrary decision
+				// mainly because if we do not do that, almost all
+				// buffers would be divisible. In a way, if a buffer
+				// is matched several times, this means that we assume
+				// that we will find several other buffers matched within this
+				// one, so we do not want to divide it since a divisible buffer
+				// is divisible only if we can match all its subparts in a
+				// indivisible buffer. Split is a good example !
+				// We do not want the split input to be divided !
+				buffer.multipleMatchRange.empty
 		]
+
 		// We only set as divisible the buffer
 		// that have no match with any other divisible buffer
 		divisibleCandidates.toList.filter [ buffer |
-			buffer.matchTable.values.flatten.forall[
+			buffer.matchTable.values.flatten.forall [
 				!divisibleCandidates.toList.contains(it.remoteBuffer)
 			]
-		].forEach[
+		].forEach [
 			it.indivisible = false
 		]
 	}
@@ -506,10 +507,11 @@ class ScriptRunner {
 							entry.key + entry.value.head.length >= it.nbTokens * it.tokenSize &&
 						// and is not involved in any conflicting range
 							{
+
 								// Only the destination can have conflicts here since
 								// the match source has a unique match in its matchTable
 								val match = entry.value.head
-								 match.conflictingMatches.size == 0 								
+								match.conflictingMatches.size == 0
 							}
 					].toList.immutableCopy
 
@@ -550,9 +552,7 @@ class ScriptRunner {
 		var match = matches.head
 		match.localBuffer.applyMatch(match)
 
-		// If there was conflicts with the removed buffer
-		
-
+	// If there was conflicts with the removed buffer
 	}
 
 	/**
@@ -701,11 +701,12 @@ class ScriptRunner {
 
 			// Create the input/output lists
 			val inputs = sdfVertex.incomingEdges.map[
-				new Buffer(it, dagVertex, it.targetLabel, it.cons.intValue, dataTypes.get(it.dataType.toString).size)].
-				toList
+				new Buffer(it, dagVertex, it.targetLabel, it.cons.intValue, dataTypes.get(it.dataType.toString).size,
+					(it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_IN) ||
+						(it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED))].toList
 			val outputs = sdfVertex.outgoingEdges.map[
-				new Buffer(it, dagVertex, it.sourceLabel, it.prod.intValue, dataTypes.get(it.dataType.toString).size)].
-				toList
+				new Buffer(it, dagVertex, it.sourceLabel, it.prod.intValue, dataTypes.get(it.dataType.toString).size,
+					(it.sourcePortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_OUT))].toList
 
 			// Import the necessary libraries
 			interpreter.eval("import " + Buffer.name + ";")
@@ -760,13 +761,14 @@ class ScriptRunner {
 		parameters.forEach[name, value|interpreter.set(name, value)]
 
 		// Retrieve buffers
-		var inputs = newArrayList(new Buffer(null, null, "input", parameters.get("Height") * parameters.get("Width"), 1))
+		var inputs = newArrayList(
+			new Buffer(null, null, "input", parameters.get("Height") * parameters.get("Width"), 1, true))
 		inputs.forEach[interpreter.set("i_" + it.name, it)]
 
 		var outputs = newArrayList(
 			new Buffer(null, null, "output",
 				parameters.get("Height") * parameters.get("Width") +
-					parameters.get("NbSlice") * parameters.get("Overlap") * 2 * parameters.get("Width"), 1))
+					parameters.get("NbSlice") * parameters.get("Overlap") * 2 * parameters.get("Width"), 1, true))
 		outputs.forEach[interpreter.set("o_" + it.name, it)]
 
 		try {

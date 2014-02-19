@@ -213,6 +213,9 @@ class Buffer {
 
 	@Property
 	final protected Map<Range, Pair<Buffer, Integer>> appliedMatches
+	
+	@Property
+	List<Range> mergeableRanges
 
 	/**
     * Constructor for the {@link Buffer}.
@@ -223,7 +226,7 @@ class Buffer {
     * @param tokenSize
     * 	The size of one token of the buffer.
     */
-	new(SDFEdge edge, DAGVertex dagVertex, String name, int nbTokens, int tokenSize) {
+	new(SDFEdge edge, DAGVertex dagVertex, String name, int nbTokens, int tokenSize, boolean mergeable) {
 		_sdfEdge = edge
 		_name = name
 		_nbTokens = nbTokens
@@ -234,6 +237,10 @@ class Buffer {
 		_maxIndex = nbTokens * tokenSize
 		_indivisible = true
 		_dagVertex = dagVertex
+		_mergeableRanges = newArrayList
+		if(mergeable){
+			_mergeableRanges.add(new Range(0, nbTokens*tokenSize))
+		}
 	}
 
 	def getSdfVertex() {
