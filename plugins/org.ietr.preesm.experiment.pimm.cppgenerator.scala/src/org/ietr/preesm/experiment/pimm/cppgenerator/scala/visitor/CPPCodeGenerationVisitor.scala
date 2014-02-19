@@ -261,8 +261,13 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
   }
 
   private def visitParameter(p: Parameter): Unit = {
-    //TODO
+    currentMethod.append("\n\tPISDFParameter *")
+    currentMethod.append(getParameterName(p))
+    currentMethod.append(" = graph->addParameter(\"")
+    currentMethod.append(p.getName())
+    currentMethod.append("\");")
   }
+  private def getParameterName(p: Parameter): String = "param_" + p.getName();
 
   private def visitDependency(d: Dependency): Unit = {
     //TODO
