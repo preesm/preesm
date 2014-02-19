@@ -218,6 +218,7 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     //Call the addEdge method on the current graph
     currentMethod.append("\n\t")
     currentMethod.append("graph->addEdge(")
+    //Use the PortDescription of the source port to get the informations about the source node
     val src: PortDescription = portMap.get(f.getSourcePort())
     //Pass the name of the source node
     currentMethod.append(src.nodeName)
@@ -225,6 +226,7 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     //Pass the production of the source node
     currentMethod.append(src.expression)
     currentMethod.append("\", ")
+    //Use the PortDescription of the target port to get the informations about the target node
     val tgt: PortDescription = portMap.get(f.getTargetPort())
     //Pass the name of the target node
     currentMethod.append(tgt.nodeName)
