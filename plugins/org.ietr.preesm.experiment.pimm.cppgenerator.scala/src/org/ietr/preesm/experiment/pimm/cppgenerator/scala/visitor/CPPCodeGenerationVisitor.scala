@@ -13,7 +13,7 @@ import collection.JavaConversions._
  * currentGraph: The most outer graph of the PiMM model
  * currentMethod: The StringBuilder used to write the C++ code
  */
-class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var currentMethod: StringBuilder) {
+class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var currentMethod: StringBuilder) extends PiMMVisitor{
 
   //Stack and list to handle hierarchical graphs
   private val graphsStack: Stack[GraphDescription] = new Stack[GraphDescription]
@@ -24,44 +24,10 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
   private val portMap: Map[Port, PortDescription] = new HashMap[Port, PortDescription]
 
   /**
-   * Dispatch method to visit the different elements of a PiMM model
-   * Cases must be ordered from bottom to top of the inheritance tree:
-   * subclasses (most specific classes) must come before their superclasses
-   */
-  def visit(e: EObject): Unit = {
-    e match {
-
-      case dii: DataInputInterface => visitDataInputInterface(dii)
-      case doi: DataOutputInterface => visitDataOutputInterface(doi)
-      case coi: ConfigOutputInterface => visitConfigOutputInterface(coi)
-
-      case ia: InterfaceActor => visitInterfaceActor(ia)
-      case cii: ConfigInputInterface => visitConfigInputInterface(cii)
-      case pg: PiGraph => visitPiGraph(pg)
-      case a: Actor => visitActor(a)
-
-      case aa: AbstractActor => visitAbstractActor(aa)
-
-      case p: Parameter => visitParameter(p)
-      case cop: ConfigOutputPort => visitConfigOutputPort(cop)
-
-      case dip: DataInputPort => visitDataInputPort(dip)
-      case dop: DataOutputPort => visitDataOutputPort(dop)
-      case cip: ConfigInputPort => visitConfigInputPort(cip)
-      case d: Delay => visitDelay(d)
-
-      case f: Fifo => visitFifo(f)
-      case r: Refinement => visitRefinement(r)
-      case d: Dependency => visitDependency(d)
-      case e: Expression => visitExpression(e)
-    }
-  }
-
-  /**
    * When visiting a PiGraph (either the most outer graph or an hierarchical actor),
    * we should generate a new C++ method
    */
-  private def visitPiGraph(pg: PiGraph): Unit = {
+  def visitPiGraph(pg: PiGraph): Unit = {
     //Add pg to the list of subgraphs of the current graph, except in the case pg is the current graph
     if (pg != currentGraph) pg :: currentSubGraphs
     //Stock the container graph and setpg pg as the new current graph
@@ -163,14 +129,14 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
    */
   private def getVertexName(aa: AbstractActor): String = "vx" + aa.getName()
 
-  private def visitActor(a: Actor): Unit = {
+  def visitActor(a: Actor): Unit = {
     visitAbstractActor(a)
   }
 
   /**
    * Generic visit method for all AbstractActors (Actors, PiGraph)
    */
-  private def visitAbstractActor(aa: AbstractActor) = {
+  def visitAbstractActor(aa: AbstractActor): Unit = {
     //Stock the name of the current AbstractActor
     currentAbstractActorName = aa.getName()
 
@@ -196,25 +162,25 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
   /**
    * When visiting data ports, we stock the necessary informations for edge generation into PortDescriptions
    */
-  private def visitDataInputPort(dip: DataInputPort): Unit = {
+  def visitDataInputPort(dip: DataInputPort): Unit = {
     portMap.put(dip, new PortDescription(currentAbstractActorName, dip.getExpression().getString()))
   }
-  private def visitDataOutputPort(dop: DataOutputPort): Unit = {
+  def visitDataOutputPort(dop: DataOutputPort): Unit = {
     portMap.put(dop, new PortDescription(currentAbstractActorName, dop.getExpression().getString()))
   }
 
-  private def visitConfigInputPort(cip: ConfigInputPort): Unit = {
+  def visitConfigInputPort(cip: ConfigInputPort): Unit = {
     //TODO
   }
 
-  private def visitConfigOutputPort(cop: ConfigOutputPort): Unit = {
+  def visitConfigOutputPort(cop: ConfigOutputPort): Unit = {
     //TODO
   }
 
   /**
    * When visiting a FIFO we should add an edge to the current graph
    */
-  private def visitFifo(f: Fifo): Unit = {
+  def visitFifo(f: Fifo): Unit = {
     //Call the addEdge method on the current graph
     currentMethod.append("\n\t")
     currentMethod.append("graph->addEdge(")
@@ -240,48 +206,49 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     currentMethod.append(");")
   }
 
-  private def visitInterfaceActor(ia: InterfaceActor): Unit = {
+  def visitInterfaceActor(ia: InterfaceActor): Unit = {
     //TODO
   }
 
-  private def visitDataInputInterface(dii: DataInputInterface): Unit = {
+  def visitDataInputInterface(dii: DataInputInterface): Unit = {
     //TODO
   }
 
-  private def visitDataOutputInterface(doi: DataOutputInterface): Unit = {
+  def visitDataOutputInterface(doi: DataOutputInterface): Unit = {
     //TODO
   }
 
-  private def visitConfigOutputInterface(coi: ConfigOutputInterface): Unit = {
+  def visitConfigOutputInterface(coi: ConfigOutputInterface): Unit = {
     //TODO
   }
 
-  private def visitRefinement(r: Refinement): Unit = {
+  def visitRefinement(r: Refinement): Unit = {
     //TODO
   }
 
-  private def visitParameter(p: Parameter): Unit = {
+  def visitParameter(p: Parameter): Unit = {
     currentMethod.append("\n\tPISDFParameter *")
     currentMethod.append(getParameterName(p))
     currentMethod.append(" = graph->addParameter(\"")
     currentMethod.append(p.getName())
     currentMethod.append("\");")
   }
+  
   private def getParameterName(p: Parameter): String = "param_" + p.getName();
 
-  private def visitDependency(d: Dependency): Unit = {
+  def visitDependency(d: Dependency): Unit = {
     //TODO
   }
 
-  private def visitDelay(d: Delay): Unit = {
+  def visitDelay(d: Delay): Unit = {
     //TODO
   }
 
-  private def visitExpression(e: Expression): Unit = {
+  def visitExpression(e: Expression): Unit = {
     //TODO
   }
 
-  private def visitConfigInputInterface(cii: ConfigInputInterface): Unit = {
+  def visitConfigInputInterface(cii: ConfigInputInterface): Unit = {
     //TODO
   }
 
