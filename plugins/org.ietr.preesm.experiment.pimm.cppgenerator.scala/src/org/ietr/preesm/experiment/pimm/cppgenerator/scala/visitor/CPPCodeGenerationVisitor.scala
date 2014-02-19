@@ -53,11 +53,17 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
   //Stack and list to handle hierarchical graphs
   private val graphsStack: Stack[GraphDescription] = new Stack[GraphDescription]
   private var currentSubGraphs: List[PiGraph] = Nil
-  //Variable containing the name of the currently visited Actor for PortDescriptions
+  //Variables containing the name and type of the currently visited AbstractActor for AbstractActor generation and PortDescriptions
   private var currentAbstractActorName: String = ""
+  private var currentAbstractActorType: String = ""
   //Map linking ports to their correspondent description
   private val portMap: Map[Port, PortDescription] = new HashMap[Port, PortDescription]
-
+  //Map linking Fifos to their C++ names
+  private val fifoMap: Map[Fifo, String] = new HashMap[Fifo, String]
+  //Shortcut for currentMethod.append()
+  private def append(s: String) = currentMethod.append(s)
+  
+  
   /**
    * When visiting a PiGraph (either the most outer graph or an hierarchical actor),
    * we should generate a new C++ method
@@ -70,8 +76,8 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
 
     val pgName = pg.getName()
 
-    currentMethod.append("// Method building PiGraph ")
-    currentMethod.append(pgName)
+    append("// Method building PiGraph ")
+    append(pgName)
     //Generating the method signature
     generateMethodSignature(pg)
     //Generating the method body
@@ -80,6 +86,7 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     pop()
 
     //We should also generate the C++ code as for any Actor
+    currentAbstractActorType = "pisdf_vertex"
     visitAbstractActor(pg)
   }
 
@@ -93,32 +100,32 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
    */
   private def generateMethodSignature(pg: PiGraph): Unit = {
     //The method does not return anything
-    currentMethod.append("void ")
-    currentMethod.append(getMethodName(pg))
+    append("void ")
+    append(getMethodName(pg))
     //The method accept as parameter a pointer to the PiSDFGraph graph it will build and a pointer to the parent actor of graph (i.e., the hierarchical actor)
-    currentMethod.append("(PiSDFGraph* graph, BaseVertex* parentVertex)")
+    append("(PiSDFGraph* graph, BaseVertex* parentVertex)")
   }
 
   /**
    * Concatenate the body of the method corresponding to a PiGraph to the currentMethod StringBuilder
    */
   private def generateMethodBody(pg: PiGraph): Unit = {
-    currentMethod.append("{")
+    append("{")
     //Generating parameters
-    currentMethod.append("\n\t//Parameters")
+    append("\n\t//Parameters")
     pg.getParameters().foreach(p => visit(p))
     //Generating vertices
-    currentMethod.append("\n\t//Vertices")
+    append("\n\t//Vertices")
     pg.getVertices().foreach(v => visit(v))
     //Generating edges
-    currentMethod.append("\n\t//Edges")
+    append("\n\t//Edges")
     pg.getFifos().foreach(f => visit(f))
     //Generating call to methods generated for subgraphs, if any
     if (!currentSubGraphs.isEmpty) {
-      currentMethod.append("\n\t//Subgraphs")
+      append("\n\t//Subgraphs")
       generateCallsToSubgraphs()
     }
-    currentMethod.append("}\n")
+    append("}\n")
     visitAbstractActor(pg)
   }
 
@@ -128,29 +135,29 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
       val sgName = getSubraphName(sg)
       val vxName = getVertexName(sg)
       //Generate test in order to prevent to reach the limit of graphs
-      currentMethod.append("\n\tif(nb_graphs >= MAX_NB_PiSDF_SUB_GRAPHS - 1) exitWithCode(1054);")
+      append("\n\tif(nb_graphs >= MAX_NB_PiSDF_SUB_GRAPHS - 1) exitWithCode(1054);")
       //Get the pointer to the subgraph
-      currentMethod.append("\n\tPiSDFGraph *")
-      currentMethod.append(sgName)
-      currentMethod.append(" = &graphs[nb_graphs];")
+      append("\n\tPiSDFGraph *")
+      append(sgName)
+      append(" = &graphs[nb_graphs];")
       //Increment the graph counter
-      currentMethod.append("\n\tnb_graphs++;")
+      append("\n\tnb_graphs++;")
       //Call the building method of sg with the pointer
-      currentMethod.append("\n\t")
-      currentMethod.append(getMethodName(sg))
-      currentMethod.append("(")
+      append("\n\t")
+      append(getMethodName(sg))
+      append("(")
       //Pass the pointer to the subgraph
-      currentMethod.append(sgName)
-      currentMethod.append(",")
+      append(sgName)
+      append(",")
       //Pass the parent vertex
-      currentMethod.append(vxName)
-      currentMethod.append(");")
-      currentMethod.append("\n\t")
+      append(vxName)
+      append(");")
+      append("\n\t")
       //Set the subgraph as subgraph of the vertex
-      currentMethod.append(vxName)
-      currentMethod.append("->setSubGraph(")
-      currentMethod.append(sgName)
-      currentMethod.append(");")
+      append(vxName)
+      append("->setSubGraph(")
+      append(sgName)
+      append(");")
     })
   }
 
@@ -176,15 +183,19 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     currentAbstractActorName = aa.getName()
 
     //Call the addVertex method on the current graph
-    currentMethod.append("\n\tPiSDFVertex *")
-    currentMethod.append(getVertexName(aa))
-    currentMethod.append(" = (PiSDFVertex*)graph->addVertex(\"")
+    append("\n\tPiSDFVertex *")
+    append(getVertexName(aa))
+
+    //Call the addVertex method on the current graph
+    append("\n\tPiSDFVertex *")
+    append(getVertexName(aa))
+    append(" = (PiSDFVertex*)graph->addVertex(\"")
     //Pass the name of the AbstractActor
-    currentMethod.append(currentAbstractActorName)
-    currentMethod.append("\",")
+    append(currentAbstractActorName)
+    append("\",")
     //Pass the type of vertex
-    currentMethod.append("pisdf_vertex")
-    currentMethod.append(");")
+    append(currentAbstractActorType)
+    append(");")
 
     //Visit data ports to fill the portMap
     aa.getDataInputPorts().foreach(p => visit(p))
@@ -216,29 +227,38 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
    * When visiting a FIFO we should add an edge to the current graph
    */
   def visitFifo(f: Fifo): Unit = {
+    val edgeName = generateEdgeName()
+    fifoMap.put(f, edgeName)
     //Call the addEdge method on the current graph
-    currentMethod.append("\n\t")
-    currentMethod.append("graph->addEdge(")
+    append("\n\t")
+    append(edgeName)
+    append("graph->addEdge(")
     //Use the PortDescription of the source port to get the informations about the source node
     val src: PortDescription = portMap.get(f.getSourcePort())
     //Pass the name of the source node
-    currentMethod.append(src.nodeName)
-    currentMethod.append(", \"")
+    append(src.nodeName)
+    append(", \"")
     //Pass the production of the source node
-    currentMethod.append(src.expression)
-    currentMethod.append("\", ")
+    append(src.expression)
+    append("\", ")
     //Use the PortDescription of the target port to get the informations about the target node
     val tgt: PortDescription = portMap.get(f.getTargetPort())
     //Pass the name of the target node
-    currentMethod.append(tgt.nodeName)
-    currentMethod.append(", \"")
+    append(tgt.nodeName)
+    append(", \"")
     //Pass the consumption of the target node
-    currentMethod.append(tgt.expression)
-    currentMethod.append("\", ")
+    append(tgt.expression)
+    append("\", ")
     //Pass the delay of the FIFO
-    currentMethod.append(f.getDelay().getExpression())
-    currentMethod.append("\"")
-    currentMethod.append(");")
+    append(f.getDelay().getExpression().getString())
+    append("\"")
+    append(");")
+  }
+  
+  private var edgeCounter: Integer = -1
+  private def generateEdgeName(): String = {
+    edgeCounter = edgeCounter+1
+    "edge" + edgeCounter
   }
 
   def visitInterfaceActor(ia: InterfaceActor): Unit = {
@@ -246,11 +266,49 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
   }
 
   def visitDataInputInterface(dii: DataInputInterface): Unit = {
-    //TODO
+    val vertexName = getVertexName(dii)
+    //Adding the vertex to the current graph
+    currentAbstractActorType = "input_vertex"
+    visitAbstractActor(dii)
+    //Setting direction to 0 (input)
+    append("\t\n")
+    append(vertexName)
+    append("->setDirection(0);")
+    //Setting the parent vertex
+    append("\t\n")
+    append(vertexName)
+    append("->setParentVertex(parentVertex);")
+    //Setting the parent edge
+    append("\t\n")
+    append(vertexName)
+    append("->setParentEdge(")
+    //Getting the Fifo corresponding to the parent edge
+    val incomingFifo = dii.getDataInputPorts().get(0).getIncomingFifo()
+    append(fifoMap.get(incomingFifo))
+    append(");")    
   }
 
   def visitDataOutputInterface(doi: DataOutputInterface): Unit = {
-    //TODO
+    val vertexName = getVertexName(doi)
+    //Adding the vertex to the current graph
+    currentAbstractActorType = "output_vertex"
+    visitAbstractActor(doi)
+    //Setting direction to 1 (output)
+    append("\t\n")
+    append(vertexName)
+    append("->setDirection(1);")
+    //Setting the parent vertex
+    append("\t\n")
+    append(vertexName)
+    append("->setParentVertex(parentVertex);")
+    //Setting the parent edge
+    append("\t\n")
+    append(vertexName)
+    append("->setParentEdge(")
+    //Getting the Fifo corresponding to the parent edge
+    val incomingFifo = doi.getDataOutputPorts().get(0).getOutgoingFifo()
+    append(fifoMap.get(incomingFifo))
+    append(");")    
   }
 
   def visitConfigOutputInterface(coi: ConfigOutputInterface): Unit = {
@@ -261,12 +319,15 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     //TODO
   }
 
+  /**
+   * When visiting a parameter, we should add a parameter to the current graph
+   */
   def visitParameter(p: Parameter): Unit = {
-    currentMethod.append("\n\tPISDFParameter *")
-    currentMethod.append(getParameterName(p))
-    currentMethod.append(" = graph->addParameter(\"")
-    currentMethod.append(p.getName())
-    currentMethod.append("\");")
+    append("\n\tPISDFParameter *")
+    append(getParameterName(p))
+    append(" = graph->addParameter(\"")
+    append(p.getName())
+    append("\");")
   }
   
   private def getParameterName(p: Parameter): String = "param_" + p.getName();
