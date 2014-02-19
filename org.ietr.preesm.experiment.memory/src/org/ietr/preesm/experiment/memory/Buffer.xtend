@@ -3,9 +3,9 @@ package org.ietr.preesm.experiment.memory
 import java.util.ArrayList
 import java.util.List
 import java.util.Map
-import net.sf.dftools.algorithm.model.dag.DAGVertex
-import net.sf.dftools.algorithm.model.sdf.SDFAbstractVertex
-import net.sf.dftools.algorithm.model.sdf.SDFEdge
+import org.ietr.dftools.algorithm.model.dag.DAGVertex
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 
 import static extension org.ietr.preesm.experiment.memory.Range.*
 

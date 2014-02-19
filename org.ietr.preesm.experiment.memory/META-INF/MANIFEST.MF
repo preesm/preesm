@@ -6,8 +6,8 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.ietr.preesm.experiment.memory.Activator
 Bundle-Vendor: IETR/INSA
 Require-Bundle: org.eclipse.core.runtime,
- net.sf.dftools.workflow,
- net.sf.dftools.algorithm,
+ org.ietr.dftools.workflow,
+ org.ietr.dftools.algorithm,
  org.jgrapht,
  org.ietr.preesm.memory,
  org.eclipse.xtend.lib,
