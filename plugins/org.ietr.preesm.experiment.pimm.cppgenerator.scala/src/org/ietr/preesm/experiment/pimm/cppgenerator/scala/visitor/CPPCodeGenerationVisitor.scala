@@ -1,24 +1,25 @@
-/*******************************************************************************
+/**
+ * *****************************************************************************
  * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
  * Karol Desnos, Julien Heulot, Clément Guy, Yaset Oliva Venegas
- * 
+ *
  * [mpelcat,jnezan,kdesnos,jheulot,cguy,yoliva]@insa-rennes.fr
- * 
+ *
  * This software is a computer program whose purpose is to prototype
  * parallel applications.
- * 
+ *
  * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use, 
+ * abiding by the rules of distribution of free software.  You can  use,
  * modify and/ or redistribute the software under the terms of the CeCILL-C
  * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info". 
- * 
+ * "http://www.cecill.info".
+ *
  * As a counterpart to the access to the source code and  rights to copy,
  * modify and redistribute granted by the license, users are provided only
  * with a limited warranty  and the software's author,  the holder of the
  * economic rights,  and the successive licensors  have only  limited
- * liability. 
- * 
+ * liability.
+ *
  * In this respect, the user's attention is drawn to the risks associated
  * with loading,  using,  modifying and/or developing or reproducing the
  * software by the user in light of its specific status of free software,
@@ -26,13 +27,14 @@
  * therefore means  that it is reserved for developers  and  experienced
  * professionals having in-depth computer knowledge. Users are therefore
  * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or 
- * data to be ensured and,  more generally, to use and operate it in the 
- * same conditions as regards security. 
- * 
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
- ******************************************************************************/
+ * ****************************************************************************
+ */
 package org.ietr.preesm.experiment.pimm.cppgenerator.scala.visitor
 
 import org.eclipse.emf.ecore.EObject
@@ -48,7 +50,7 @@ import collection.JavaConversions._
  * currentGraph: The most outer graph of the PiMM model
  * currentMethod: The StringBuilder used to write the C++ code
  */
-class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var currentMethod: StringBuilder) extends PiMMVisitor{
+class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var currentMethod: StringBuilder) extends PiMMVisitor {
 
   //Stack and list to handle hierarchical graphs
   private val graphsStack: Stack[GraphDescription] = new Stack[GraphDescription]
@@ -56,14 +58,14 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
   //Variables containing the name and type of the currently visited AbstractActor for AbstractActor generation and PortDescriptions
   private var currentAbstractActorName: String = ""
   private var currentAbstractActorType: String = ""
-  //Map linking ports to their correspondent description
-  private val portMap: Map[Port, PortDescription] = new HashMap[Port, PortDescription]
+  private var currentAbstractActorClass: String = ""
+  //Map linking data ports to their corresponding description
+  private val dataPortMap: Map[Port, DataPortDescription] = new HashMap[Port, DataPortDescription]
   //Map linking Fifos to their C++ names
   private val fifoMap: Map[Fifo, String] = new HashMap[Fifo, String]
   //Shortcut for currentMethod.append()
   private def append(s: String) = currentMethod.append(s)
-  
-  
+
   /**
    * When visiting a PiGraph (either the most outer graph or an hierarchical actor),
    * we should generate a new C++ method
@@ -82,12 +84,14 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     generateMethodSignature(pg)
     //Generating the method body
     generateMethodBody(pg)
-    //Reset the container graph as the current graph
-    pop()
 
     //We should also generate the C++ code as for any Actor
     currentAbstractActorType = "pisdf_vertex"
+    currentAbstractActorClass = "PiSDFVertex"
     visitAbstractActor(pg)
+
+    //Reset the container graph as the current graph
+    pop()
   }
 
   /**
@@ -126,7 +130,6 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
       generateCallsToSubgraphs()
     }
     append("}\n")
-    visitAbstractActor(pg)
   }
 
   private def generateCallsToSubgraphs(): Unit = {
@@ -172,6 +175,8 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
   private def getVertexName(aa: AbstractActor): String = "vx" + aa.getName()
 
   def visitActor(a: Actor): Unit = {
+    currentAbstractActorType = "pisdf_vertex"
+    currentAbstractActorClass = "PiSDFVertex"
     visitAbstractActor(a)
   }
 
@@ -183,13 +188,13 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     currentAbstractActorName = aa.getName()
 
     //Call the addVertex method on the current graph
-    append("\n\tPiSDFVertex *")
+    append("\n\t")
+    append(currentAbstractActorClass)
+    append(" *")
     append(getVertexName(aa))
-
-    //Call the addVertex method on the current graph
-    append("\n\tPiSDFVertex *")
-    append(getVertexName(aa))
-    append(" = (PiSDFVertex*)graph->addVertex(\"")
+    append(" = (")
+    append(currentAbstractActorClass)
+    append("*)graph->addVertex(\"")
     //Pass the name of the AbstractActor
     append(currentAbstractActorName)
     append("\",")
@@ -197,10 +202,10 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     append(currentAbstractActorType)
     append(");")
 
-    //Visit data ports to fill the portMap
+    //Visit data ports to fill the dataPortMap
     aa.getDataInputPorts().foreach(p => visit(p))
     aa.getDataOutputPorts().foreach(p => visit(p))
-    //TODO: Keep the visit of ConfigPorts?
+    //Visit configuration ports to fill the cfgPortMap
     aa.getConfigInputPorts().foreach(p => visit(p))
     aa.getConfigOutputPorts().foreach(p => visit(p))
   }
@@ -209,10 +214,10 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
    * When visiting data ports, we stock the necessary informations for edge generation into PortDescriptions
    */
   def visitDataInputPort(dip: DataInputPort): Unit = {
-    portMap.put(dip, new PortDescription(currentAbstractActorName, dip.getExpression().getString()))
+    dataPortMap.put(dip, new DataPortDescription(currentAbstractActorName, dip.getExpression().getString()))
   }
   def visitDataOutputPort(dop: DataOutputPort): Unit = {
-    portMap.put(dop, new PortDescription(currentAbstractActorName, dop.getExpression().getString()))
+    dataPortMap.put(dop, new DataPortDescription(currentAbstractActorName, dop.getExpression().getString()))
   }
 
   def visitConfigInputPort(cip: ConfigInputPort): Unit = {
@@ -234,7 +239,7 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     append(edgeName)
     append("graph->addEdge(")
     //Use the PortDescription of the source port to get the informations about the source node
-    val src: PortDescription = portMap.get(f.getSourcePort())
+    val src: DataPortDescription = dataPortMap.get(f.getSourcePort())
     //Pass the name of the source node
     append(src.nodeName)
     append(", \"")
@@ -242,7 +247,7 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     append(src.expression)
     append("\", ")
     //Use the PortDescription of the target port to get the informations about the target node
-    val tgt: PortDescription = portMap.get(f.getTargetPort())
+    val tgt: DataPortDescription = dataPortMap.get(f.getTargetPort())
     //Pass the name of the target node
     append(tgt.nodeName)
     append(", \"")
@@ -254,21 +259,31 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     append("\"")
     append(");")
   }
-  
+
   private var edgeCounter: Integer = -1
   private def generateEdgeName(): String = {
-    edgeCounter = edgeCounter+1
+    edgeCounter = edgeCounter + 1
     "edge" + edgeCounter
   }
 
   def visitInterfaceActor(ia: InterfaceActor): Unit = {
-    //TODO
+    //Adding the vertex to the current graph
+    currentAbstractActorType = "config_vertex"
+    currentAbstractActorClass = "PiSDFConfigVertex"
+    visitAbstractActor(ia)
+    ia.getConfigOutputPorts().foreach(cop => {
+      cop.getOutgoingDependencies().foreach(od => {
+        od.getGetter()
+      })
+    })
   }
 
   def visitDataInputInterface(dii: DataInputInterface): Unit = {
     val vertexName = getVertexName(dii)
+
     //Adding the vertex to the current graph
     currentAbstractActorType = "input_vertex"
+    currentAbstractActorClass = "PiSDFIfVertex"
     visitAbstractActor(dii)
     //Setting direction to 0 (input)
     append("\t\n")
@@ -285,13 +300,15 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     //Getting the Fifo corresponding to the parent edge
     val incomingFifo = dii.getDataInputPorts().get(0).getIncomingFifo()
     append(fifoMap.get(incomingFifo))
-    append(");")    
+    append(");")
   }
 
   def visitDataOutputInterface(doi: DataOutputInterface): Unit = {
     val vertexName = getVertexName(doi)
+
     //Adding the vertex to the current graph
     currentAbstractActorType = "output_vertex"
+    currentAbstractActorClass = "PiSDFIfVertex"
     visitAbstractActor(doi)
     //Setting direction to 1 (output)
     append("\t\n")
@@ -308,7 +325,7 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     //Getting the Fifo corresponding to the parent edge
     val incomingFifo = doi.getDataOutputPorts().get(0).getOutgoingFifo()
     append(fifoMap.get(incomingFifo))
-    append(");")    
+    append(");")
   }
 
   def visitConfigOutputInterface(coi: ConfigOutputInterface): Unit = {
@@ -329,7 +346,7 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     append(p.getName())
     append("\");")
   }
-  
+
   private def getParameterName(p: Parameter): String = "param_" + p.getName();
 
   def visitDependency(d: Dependency): Unit = {
@@ -373,11 +390,11 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
 }
 
 /**
- * Class allowing to stock necessary information about graphs
+ * Class allowing to stock necessary information about graphs when moving through the graph hierrachy
  */
 class GraphDescription(val pg: PiGraph, var subGraphs: List[PiGraph], var method: StringBuilder)
 
 /**
- * Class allowing to stock necessary information about ports for the edges generation
+ * Class allowing to stock necessary information about data ports for the edges generation
  */
-class PortDescription(val nodeName: String, val expression: String)
+class DataPortDescription(val nodeName: String, val expression: String)
