@@ -71,10 +71,10 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph,
       currentMethod = new StringBuilder
     }
   }
-  private def pop(): Unit = {
-    val top = graphsStack.top
+  private def pop(): Unit = {    
     //Test in order to ignore the most outer graph
-    if (top != null) {
+    if (!graphsStack.isEmpty) {
+      val top = graphsStack.top
       currentGraph = top.pg
       currentSubGraphs = top.subGraphs
       currentMethod = top.method
