@@ -12,7 +12,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.ietr.preesm.memory,
  org.eclipse.xtend.lib,
  com.google.guava,
- org.eclipse.xtext.xbase.lib
+ org.eclipse.xtext.xbase.lib,
+ org.junit;bundle-version="4.5.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.ietr.preesm.experiment.memory
