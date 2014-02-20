@@ -35,33 +35,69 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.pimm.cppgenerator.scala;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.pimm.cppgenerator.scala.visitor.CPPCodeGenerationLauncher;
 
 public class PiMMCppGenerationTask extends AbstractTaskImplementation {
+
+	private static String graph_key = "PiMM";
+	private static String scenario_key = "scenario";
 
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName, Workflow workflow) throws WorkflowException {
-		// TODO Auto-generated method stub
-		return null;
+
+		// Retrieve inputs
+		//PreesmScenario scenario = (PreesmScenario) inputs.get(scenario_key);
+		PiGraph pg = (PiGraph) inputs.get(graph_key);
+
+		CPPCodeGenerationLauncher launcher = new CPPCodeGenerationLauncher();
+
+		String finalResult = launcher.generateCPPCode(pg);
+
+		// Do the print
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		String workspacePath = workspace.getRoot().getLocation().toString();
+		//String codegenPath = workspacePath + scenario.getCodegenManager().getCodegenDirectory() + "/cpp/" + pg.getName() + ".cpp";
+		String codegenPath = workspacePath + "/tutorialPimm/Code/generated/cpp/" + pg.getName() + ".cpp";
+		
+		FileWriter out;
+		try {
+			out = new FileWriter(codegenPath);
+			out.write(finalResult);
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		//Create an empty output map
+		Map<String, Object> output = new HashMap<String, Object>();
+		return output;
 	}
 
 	@Override
 	public Map<String, String> getDefaultParameters() {
-		// TODO Auto-generated method stub
-		return null;
+		//Create an empty parameters map
+		Map<String, String> parameters = new HashMap<String, String>();
+		return parameters;
 	}
 
 	@Override
 	public String monitorMessage() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Generating C++ code.";
 	}
 
 }
