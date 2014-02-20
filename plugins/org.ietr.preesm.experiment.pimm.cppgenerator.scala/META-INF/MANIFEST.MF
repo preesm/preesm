@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PREESM C++ Generator for PiMM models
-Bundle-SymbolicName: org.ietr.preesm.experiment.pimm.cppgenerator.scala
+Bundle-SymbolicName: org.ietr.preesm.experiment.pimm.cppgenerator.scala;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.ietr.preesm.experiment.pimm.cppgenerator.scala.Activator
 Bundle-Vendor: IETR/INSA Rennes
@@ -10,6 +10,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.ietr.dftools.algorithm,
  org.jgrapht,
  org.scala-ide.scala.library,
- org.ietr.preesm.experiment.model;bundle-version="1.0.0"
+ org.ietr.preesm.experiment.model;bundle-version="1.0.0",
+ org.ietr.preesm.core,
+ org.eclipse.core.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
+Export-Package: org.ietr.preesm.experiment.pimm.cppgenerator.scala
