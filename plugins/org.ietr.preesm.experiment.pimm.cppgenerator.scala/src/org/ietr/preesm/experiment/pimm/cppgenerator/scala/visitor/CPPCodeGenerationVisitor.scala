@@ -50,21 +50,43 @@ import collection.JavaConversions._
  * currentGraph: The most outer graph of the PiMM model
  * currentMethod: The StringBuilder used to write the C++ code
  */
-class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var currentMethod: StringBuilder) extends PiMMVisitor {
+class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var currentMethod: StringBuilder, private val preprocessor: CPPCodeGenerationPreProcessVisitor) extends PiMMVisitor {
 
   //Stack and list to handle hierarchical graphs
   private val graphsStack: Stack[GraphDescription] = new Stack[GraphDescription]
+  private def push(pg: PiGraph): Unit = {
+    //Test in order to ignore the most outer graph
+    if (currentGraph != pg) {
+      graphsStack.push(new GraphDescription(currentGraph, currentSubGraphs, currentMethod))
+      currentGraph = pg
+      currentSubGraphs = Nil
+      currentMethod = new StringBuilder
+    }
+  }
+  private def pop(): Unit = {
+    val top = graphsStack.top
+    //Test in order to ignore the most outer graph
+    if (top != null) {
+      currentGraph = top.pg
+      currentSubGraphs = top.subGraphs
+      currentMethod = top.method
+      graphsStack.pop
+    }
+  }
   private var currentSubGraphs: List[PiGraph] = Nil
-  //Variables containing the name and type of the currently visited AbstractActor for AbstractActor generation and PortDescriptions
-  private var currentAbstractActorName: String = ""
+  //Variables containing the type of the currently visited AbstractActor for AbstractActor generation
   private var currentAbstractActorType: String = ""
   private var currentAbstractActorClass: String = ""
+
   //Map linking data ports to their corresponding description
-  private val dataPortMap: Map[Port, DataPortDescription] = new HashMap[Port, DataPortDescription]
+  private val dataPortMap: Map[Port, DataPortDescription] = preprocessor.getDataPortMap
+  //Map linking data ports to their corresponding description
+  private val dependencyMap: Map[Dependency, DependencyDescription] = preprocessor.getDependencyMap
+
   //Map linking Fifos to their C++ names
   private val fifoMap: Map[Fifo, String] = new HashMap[Fifo, String]
   //Shortcut for currentMethod.append()
-  private def append(s: String) = currentMethod.append(s)
+  private def append(a: Any) = currentMethod.append(a)
 
   /**
    * When visiting a PiGraph (either the most outer graph or an hierarchical actor),
@@ -184,8 +206,12 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
    * Generic visit method for all AbstractActors (Actors, PiGraph)
    */
   def visitAbstractActor(aa: AbstractActor): Unit = {
-    //Stock the name of the current AbstractActor
-    currentAbstractActorName = aa.getName()
+
+    val isConfigVertex = aa.getConfigOutputPorts().size() > 0
+    if (isConfigVertex) {
+      currentAbstractActorClass = "PiSDFConfigVertex"
+      currentAbstractActorType = "config_vertex"
+    }
 
     //Call the addVertex method on the current graph
     append("\n\t")
@@ -196,36 +222,27 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     append(currentAbstractActorClass)
     append("*)graph->addVertex(\"")
     //Pass the name of the AbstractActor
-    append(currentAbstractActorName)
+    append(aa.getName())
     append("\",")
     //Pass the type of vertex
     append(currentAbstractActorType)
     append(");")
-
-    //Visit data ports to fill the dataPortMap
-    aa.getDataInputPorts().foreach(p => visit(p))
-    aa.getDataOutputPorts().foreach(p => visit(p))
-    //Visit configuration ports to fill the cfgPortMap
-    aa.getConfigInputPorts().foreach(p => visit(p))
-    aa.getConfigOutputPorts().foreach(p => visit(p))
-  }
-
-  /**
-   * When visiting data ports, we stock the necessary informations for edge generation into PortDescriptions
-   */
-  def visitDataInputPort(dip: DataInputPort): Unit = {
-    dataPortMap.put(dip, new DataPortDescription(currentAbstractActorName, dip.getExpression().getString()))
-  }
-  def visitDataOutputPort(dop: DataOutputPort): Unit = {
-    dataPortMap.put(dop, new DataPortDescription(currentAbstractActorName, dop.getExpression().getString()))
-  }
-
-  def visitConfigInputPort(cip: ConfigInputPort): Unit = {
-    //TODO
-  }
-
-  def visitConfigOutputPort(cop: ConfigOutputPort): Unit = {
-    //TODO
+    //Add connections to parameters if necessary
+    aa.getConfigOutputPorts().foreach(cip => cip.getOutgoingDependencies().foreach(d => {
+      append("\n\t")
+      append(getVertexName(aa))
+      append("->addRelatedParam(")
+      append(dependencyMap.get(d).tgtName)
+      append(");")
+    }))
+    //Add connections from parameters if necessary
+    aa.getConfigInputPorts().foreach(cop => {
+      append("\n\t")
+      append(getVertexName(aa))
+      append("->addParam(")
+      append(dependencyMap.get(cop.getIncomingDependency()).srcName)
+      append(");")
+    })
   }
 
   /**
@@ -267,15 +284,7 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
   }
 
   def visitInterfaceActor(ia: InterfaceActor): Unit = {
-    //Adding the vertex to the current graph
-    currentAbstractActorType = "config_vertex"
-    currentAbstractActorClass = "PiSDFConfigVertex"
     visitAbstractActor(ia)
-    ia.getConfigOutputPorts().foreach(cop => {
-      cop.getOutgoingDependencies().foreach(od => {
-        od.getGetter()
-      })
-    })
   }
 
   def visitDataInputInterface(dii: DataInputInterface): Unit = {
@@ -301,6 +310,7 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     val incomingFifo = dii.getDataInputPorts().get(0).getIncomingFifo()
     append(fifoMap.get(incomingFifo))
     append(");")
+    visitInterfaceActor(dii)
   }
 
   def visitDataOutputInterface(doi: DataOutputInterface): Unit = {
@@ -326,14 +336,11 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     val incomingFifo = doi.getDataOutputPorts().get(0).getOutgoingFifo()
     append(fifoMap.get(incomingFifo))
     append(");")
+    visitInterfaceActor(doi)
   }
 
   def visitConfigOutputInterface(coi: ConfigOutputInterface): Unit = {
-    //TODO
-  }
-
-  def visitRefinement(r: Refinement): Unit = {
-    //TODO
+    visitInterfaceActor(coi)
   }
 
   /**
@@ -349,43 +356,40 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
 
   private def getParameterName(p: Parameter): String = "param_" + p.getName();
 
+  def visitRefinement(r: Refinement): Unit = {
+    throw new UnsupportedOperationException()
+  }
+
+  def visitDataInputPort(dip: DataInputPort): Unit = {
+    throw new UnsupportedOperationException()
+  }
+
+  def visitDataOutputPort(dop: DataOutputPort): Unit = {
+    throw new UnsupportedOperationException()
+  }
+
+  def visitConfigInputPort(cip: ConfigInputPort): Unit = {
+    throw new UnsupportedOperationException()
+  }
+
+  def visitConfigOutputPort(cop: ConfigOutputPort): Unit = {
+    throw new UnsupportedOperationException()
+  }
+
   def visitDependency(d: Dependency): Unit = {
-    //TODO
+    throw new UnsupportedOperationException()
   }
 
   def visitDelay(d: Delay): Unit = {
-    //TODO
+    throw new UnsupportedOperationException()
   }
 
   def visitExpression(e: Expression): Unit = {
-    //TODO
+    throw new UnsupportedOperationException()
   }
 
   def visitConfigInputInterface(cii: ConfigInputInterface): Unit = {
-    //TODO
-  }
-
-  /**
-   * Handling the graphs and methods stacks
-   */
-  private def push(pg: PiGraph): Unit = {
-    //Test in order to ignore the most outer graph
-    if (currentGraph != pg) {
-      graphsStack.push(new GraphDescription(currentGraph, currentSubGraphs, currentMethod))
-      currentGraph = pg
-      currentSubGraphs = Nil
-      currentMethod = new StringBuilder
-    }
-  }
-  private def pop(): Unit = {
-    val top = graphsStack.top
-    //Test in order to ignore the most outer graph
-    if (top != null) {
-      currentGraph = top.pg
-      currentSubGraphs = top.subGraphs
-      currentMethod = top.method
-      graphsStack.pop
-    }
+    visitParameter(cii)
   }
 }
 
@@ -393,8 +397,3 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
  * Class allowing to stock necessary information about graphs when moving through the graph hierrachy
  */
 class GraphDescription(val pg: PiGraph, var subGraphs: List[PiGraph], var method: StringBuilder)
-
-/**
- * Class allowing to stock necessary information about data ports for the edges generation
- */
-class DataPortDescription(val nodeName: String, val expression: String)
