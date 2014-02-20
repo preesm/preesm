@@ -42,22 +42,30 @@ import org.ietr.preesm.experiment.model.pimm._
 import scala.collection.immutable.Stack
 import java.util.Map
 import java.util.HashMap
-//Allows to consider Java collections as Scala collections and to use foreach...
 import collection.JavaConversions._
+import org.ietr.preesm.experiment.pimm.cppgenerator.scala.utils.CppCodeGenerationNameGenerator
 
 /**
  * PiMM models visitor generating C++ code for COMPA Runtime
  * currentGraph: The most outer graph of the PiMM model
  * currentMethod: The StringBuilder used to write the C++ code
  */
-class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var currentMethod: StringBuilder, private val preprocessor: CPPCodeGenerationPreProcessVisitor) extends PiMMVisitor {
+class CPPCodeGenerationVisitor(private var currentGraph: PiGraph,
+  private var currentMethod: StringBuilder,
+  private val preprocessor: CPPCodeGenerationPreProcessVisitor)
+  extends PiMMVisitor
+  with CppCodeGenerationNameGenerator {
 
   //Stack and list to handle hierarchical graphs
   private val graphsStack: Stack[GraphDescription] = new Stack[GraphDescription]
   private def push(pg: PiGraph): Unit = {
     //Test in order to ignore the most outer graph
     if (currentGraph != pg) {
+      //Add pg to the list of subgraphs of the current graph
+      pg :: currentSubGraphs
+      //Stock the current values
       graphsStack.push(new GraphDescription(currentGraph, currentSubGraphs, currentMethod))
+      //Re-init the values with the one from the new current graph
       currentGraph = pg
       currentSubGraphs = Nil
       currentMethod = new StringBuilder
@@ -93,11 +101,11 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
    * we should generate a new C++ method
    */
   def visitPiGraph(pg: PiGraph): Unit = {
-    //Add pg to the list of subgraphs of the current graph, except in the case pg is the current graph
-    if (pg != currentGraph) pg :: currentSubGraphs
-    //Stock the container graph and setpg pg as the new current graph
-    push(pg)
+    val isCurrentGraph = pg == currentGraph
 
+    //Stock the container graph and set pg as the new current graph
+    push(pg)
+    
     val pgName = pg.getName()
 
     append("// Method building PiGraph ")
@@ -113,13 +121,8 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     visitAbstractActor(pg)
 
     //Reset the container graph as the current graph
-    pop()
+    pop()    
   }
-
-  /**
-   * Returns the name of the building method for the PiGraph pg
-   */
-  private def getMethodName(pg: PiGraph): String = "build" + pg.getName()
 
   /**
    * Concatenate the signature of the method corresponding to a PiGraph to the currentMethod StringBuilder
@@ -186,16 +189,6 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     })
   }
 
-  /**
-   * Returns the name of the subgraph pg
-   */
-  private def getSubraphName(pg: PiGraph): String = pg.getName() + "_subGraph"
-
-  /**
-   * Returns the name of the variable pointing to the C++ object corresponding to AbstractActor aa
-   */
-  private def getVertexName(aa: AbstractActor): String = "vx" + aa.getName()
-
   def visitActor(a: Actor): Unit = {
     currentAbstractActorType = "pisdf_vertex"
     currentAbstractActorClass = "PiSDFVertex"
@@ -249,7 +242,7 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
    * When visiting a FIFO we should add an edge to the current graph
    */
   def visitFifo(f: Fifo): Unit = {
-    val edgeName = generateEdgeName()
+    val edgeName = generateEdgeName(f)
     fifoMap.put(f, edgeName)
     //Call the addEdge method on the current graph
     append("\n\t")
@@ -272,15 +265,10 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     append(tgt.expression)
     append("\", ")
     //Pass the delay of the FIFO
-    append(f.getDelay().getExpression().getString())
+    if (f.getDelay() != null) append(f.getDelay().getExpression().getString())    
+    else append("0")    
     append("\"")
     append(");")
-  }
-
-  private var edgeCounter: Integer = -1
-  private def generateEdgeName(): String = {
-    edgeCounter = edgeCounter + 1
-    "edge" + edgeCounter
   }
 
   def visitInterfaceActor(ia: InterfaceActor): Unit = {
@@ -353,8 +341,6 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph, private var cu
     append(p.getName())
     append("\");")
   }
-
-  private def getParameterName(p: Parameter): String = "param_" + p.getName();
 
   def visitRefinement(r: Refinement): Unit = {
     throw new UnsupportedOperationException()
