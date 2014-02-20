@@ -213,7 +213,7 @@ class Buffer {
 
 	@Property
 	final protected Map<Range, Pair<Buffer, Integer>> appliedMatches
-	
+
 	@Property
 	List<Range> mergeableRanges
 
@@ -238,8 +238,8 @@ class Buffer {
 		_indivisible = true
 		_dagVertex = dagVertex
 		_mergeableRanges = newArrayList
-		if(mergeable){
-			_mergeableRanges.add(new Range(0, nbTokens*tokenSize))
+		if (mergeable) {
+			_mergeableRanges.add(new Range(0, nbTokens * tokenSize))
 		}
 	}
 
@@ -467,6 +467,9 @@ class Buffer {
 			matchList.add(movedMatch)
 		]
 
+		// Update the mergeable range of the remote buffer
+		updateRemoteMergeableRange(match)
+
 		// Remove the applied match from the buffers match table 
 		// (local and reciprocate)
 		match.unmatch
@@ -479,6 +482,35 @@ class Buffer {
 		if (ScriptRunner::printTodo) {
 			println("Update division points in match application")
 		}
+	}
+
+	def updateRemoteMergeableRange(Match match) {
+
+		// 1 - Get the mergeable ranges that are involved in the match
+		val localMergeableRange = match.localBuffer.mergeableRanges.intersection(
+			new Range(match.localIndex, match.localIndex + match.length))
+		val remoteMergeableRange = match.remoteBuffer.mergeableRanges.intersection(
+			new Range(match.remoteIndex, match.remoteIndex + match.length))
+
+		// 2 - Realign the two ranges 
+		localMergeableRange.translate(-match.localIndex)
+		remoteMergeableRange.translate(-match.remoteIndex)
+
+		// 3 - Get intersection => the mergeable range of the result
+		val resultMergeableRange = localMergeableRange.intersection(remoteMergeableRange)
+
+		// 4 - Update the destination mergeable range
+		// no need to update the origin mergeable range since 
+		// this buffer will no longer be used in the processing
+		// 4.1 - compute the Mergeable range that must be removed
+		// from the destination buffer
+		val unmergeableRange = remoteMergeableRange.difference(resultMergeableRange)
+
+		// 4.2 - Realign unmergeable range with destination buffer
+		unmergeableRange.translate(match.remoteIndex)
+
+		// 4.3 - Remove it from the remoteMergeableRange
+		match.remoteBuffer.mergeableRanges = match.remoteBuffer.mergeableRanges.difference(unmergeableRange)
 	}
 
 	def unmatch(Match match) {
