@@ -101,8 +101,6 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph,
    * we should generate a new C++ method
    */
   def visitPiGraph(pg: PiGraph): Unit = {
-    val isCurrentGraph = pg == currentGraph
-
     //Stock the container graph and set pg as the new current graph
     push(pg)
     
@@ -119,7 +117,7 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph,
     currentAbstractActorType = "pisdf_vertex"
     currentAbstractActorClass = "PiSDFVertex"
     visitAbstractActor(pg)
-
+    
     //Reset the container graph as the current graph
     pop()    
   }
@@ -129,7 +127,7 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph,
    */
   private def generateMethodSignature(pg: PiGraph): Unit = {
     //The method does not return anything
-    append("void ")
+    append("\nvoid ")
     append(getMethodName(pg))
     //The method accept as parameter a pointer to the PiSDFGraph graph it will build and a pointer to the parent actor of graph (i.e., the hierarchical actor)
     append("(PiSDFGraph* graph, BaseVertex* parentVertex)")
@@ -154,7 +152,7 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph,
       append("\n\t//Subgraphs")
       generateCallsToSubgraphs()
     }
-    append("}\n")
+    append("\n}\n")
   }
 
   private def generateCallsToSubgraphs(): Unit = {
@@ -245,9 +243,9 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph,
     val edgeName = generateEdgeName(f)
     fifoMap.put(f, edgeName)
     //Call the addEdge method on the current graph
-    append("\n\t")
+    append("\n\tPiSDFEdge *")
     append(edgeName)
-    append("graph->addEdge(")
+    append(" = graph->addEdge(")
     //Use the PortDescription of the source port to get the informations about the source node
     val src: DataPortDescription = dataPortMap.get(f.getSourcePort())
     //Pass the name of the source node

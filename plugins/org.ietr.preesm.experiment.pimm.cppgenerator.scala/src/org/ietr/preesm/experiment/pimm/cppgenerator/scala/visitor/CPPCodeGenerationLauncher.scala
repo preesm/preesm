@@ -134,7 +134,7 @@ class CPPCodeGenerationLauncher extends CppCodeGenerationNameGenerator {
     append(sgName)
     append(");")
 
-    append("}\n")
+    append("\n}\n")
   }
 
   /**
