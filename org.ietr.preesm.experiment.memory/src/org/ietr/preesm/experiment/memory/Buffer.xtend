@@ -109,9 +109,12 @@ class Buffer {
 	 * Example 1: <code>a[0..3]<->b[1..4] and a[4..5]<->b[5..6]</code> are
 	 * valid candidates.<br>
 	 * Example 2: <code>a[0..3]<->b[1..4] and a[5..6]<->b[5..6]</code> are
-	 * not valid candidates.<br><b>
+	 * not valid candidates. Merging buffers does not change the divisibility
+	 * of the buffer since if contiguous matches are applied, at least one 
+	 * of them will become indivisible (since subparts of a divided buffer 
+	 * cannot be match within divided buffers.)<br><b>
 	 * Before using this method, the {@link Buffer} must pass all checks
-	 * performed by the {@link ScriptRunner#check()} method. </b>
+	 * performed by the {@link ScriptRunner#check()} method.</b>
 	 * 
 	 * @param buffer
 	 * 	The {@link Buffer} whose {@link Buffer#_matchTable matchTable} is
@@ -171,6 +174,13 @@ class Buffer {
 		// Remove empty matchLists from matchTable
 		removedEntry.forEach[buffer.matchTable.remove(it)]
 	}
+	
+	
+	/**
+	 * cf {@link #minIndex}.
+	 */
+	@Property 
+	int maxIndex
 
 	/**
 	 * Minimum index for the buffer content.
@@ -179,12 +189,8 @@ class Buffer {
 	 * For example: <code>this.matchWith(-3, a, 0, 6)</code> results in 
 	 * matching this[-3..2] with a[0..5], thus lowering this.minIndex to -3.
 	 */
-	int _minIndex
-
-	/**
-	 * cf {@link #minIndex}.
-	 */
-	int _maxIndex
+	@Property
+	int minIndex
 
 	/**
 	 * This table is protected to ensure that matches are set only by using
@@ -208,12 +214,27 @@ class Buffer {
 	@Property
 	final SDFEdge sdfEdge
 
+	/**
+	 * This {@link List} of {@link Range} is used to store its indivisible 
+	 * sub-parts. A buffer can effectively be divided only if its is not 
+	 * indivisible and if the division imposed by the matches do not break
+	 * any indivisible range.
+	 */
 	@Property
-	boolean indivisible
+	List<Range> indivisibleRanges
 
 	@Property
 	final protected Map<Range, Pair<Buffer, Integer>> appliedMatches
 
+	/**
+	 * This flag is set at the {@link Buffer} instantiation to indicate whether
+	 * the buffer is mergeable or not. If the buffer is mergeable, all its 
+	 * virtual tokens will be associated to mergeable ranges. Otherwise they 
+	 * won't.
+	 */
+	@Property
+	final boolean originallyMergeable 
+	
 	@Property
 	List<Range> mergeableRanges
 
@@ -235,25 +256,36 @@ class Buffer {
 		_appliedMatches = newHashMap()
 		_minIndex = 0
 		_maxIndex = nbTokens * tokenSize
-		_indivisible = true
 		_dagVertex = dagVertex
+		_originallyMergeable = mergeable
 		_mergeableRanges = newArrayList
 		if (mergeable) {
 			_mergeableRanges.add(new Range(0, nbTokens * tokenSize))
 		}
+		_indivisibleRanges = newArrayList
 	}
 
 	def getSdfVertex() {
 		dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex) as SDFAbstractVertex
 	}
-
-	def getMinIndex() {
-		_minIndex
-	}
-
-	def getMaxIndex() {
-		_maxIndex
-	}
+	
+	private def setMaxIndex(int newValue){
+		// if the buffer was originally mergeable
+		if(this.originallyMergeable){
+			// Add a new mergeable range corresponding to the new virtual tokens
+			this.mergeableRanges.union(new Range(_maxIndex, newValue))
+		}
+		_maxIndex = newValue
+	} 
+	
+	private def setMinIndex(int newValue){
+		// if the buffer was originally mergeable
+		if(this.originallyMergeable){
+			// Add a new mergeable range corresponding to the new virtual tokens
+			this.mergeableRanges.union(new Range(newValue, _maxIndex))
+		}
+		_minIndex = newValue
+	} 
 
 	/**
 	* Cf. {@link Buffer#matchWith(int, Buffer, int, int)} with size = 1
@@ -434,6 +466,7 @@ class Buffer {
 
 	/**
 	 * We do not check that the match is possible !
+	 * We just apply it and assume all checks are performed somewhere else !
 	 * The local buffer is merged into the remote buffer
 	 * The local buffer does not "exists" afterwards
 	 */
@@ -442,7 +475,7 @@ class Buffer {
 		// Temp version with unique match for a complete buffer
 		appliedMatches.put(new Range(match.localIndex, match.localIndex + match.length),
 			match.remoteBuffer -> match.remoteIndex)
-
+		
 		// Move all third-party matches from the merged buffer
 		match.localBuffer.matchTable.values.flatten.filter[it != match].toList.immutableCopy.forEach [ movedMatch |
 			// Remove old match from original match list
@@ -467,8 +500,37 @@ class Buffer {
 			matchList.add(movedMatch)
 		]
 
+		
+		// Update the min and max index of the remoteBuffer (if necessary)
+		// Must be called before updateRemoteMergeableRange(match)
+		val updatedRemoteIndex = updateRemoteIndexes(match)	
+		
+		// Update divisability if remote buffer 
+		// The divisability update must not be applied if the applied match involves
+		// the division of the local buffer, instead the remote buffer should become !
+		// non divisable !
+		updateDivisibleRanges(match)
+		
 		// Update the mergeable range of the remote buffer
 		updateRemoteMergeableRange(match)
+
+		// Update conflicting matches
+		// 1- For all matches of the remote buffer (old and newly added)
+		// 1.1- If the match local range falls within indivisible range(s)
+		//      Then:
+	    // 1.1.1- the match must be enlarged to cover these range(s)
+	    //        Several matches might become redundant (i.e. identical) in the process
+	    // 2- After all matches were updated, update the conflicting matches list
+	    //    of all buffers connected to any match of the remoteBuffer (including
+	    //    the remote buffer itself.
+	    //    This operation will be similar to the original conflicting match computation
+	    //    except that now multiple matches will be much more frequent so this cannot
+	    //    be used as a basis for the computation.
+	    //    To solve this problem, I think a list of potentially conflicting match
+	    //    should be stored in each match (i.e. all other matches of both the local
+	    //    and target buffer before constituting groups.)
+	    
+	      
 
 		// Remove the applied match from the buffers match table 
 		// (local and reciprocate)
@@ -478,19 +540,84 @@ class Buffer {
 		match.applied = true
 		match.reciprocate.applied = true
 
-		// TODO: update the division points if any
-		if (ScriptRunner::printTodo) {
-			println("Update division points in match application")
+	}
+	
+	/**
+	 * MUST be called before updateRemoteMergeableRange because the updated local
+	 * indexes are used in the current function, which cause an update of the mergeable ranges.
+	 * @return true of the indexes were updated, false otherwise
+	 */
+	def updateRemoteIndexes(Match match) {
+		var res = false ;
+		
+		val localRange = new Range(match.localIndex, match.localIndex + match.length)
+		
+		// Get the local indivisible ranges involved in the match
+		val localIndivisibleRanges = match.localBuffer.indivisibleRanges.filter [
+			// An indivisible range can go beyond the matched
+			// range. For example, if the range includes virtual tokens
+			it.hasOverlap(localRange)
+		].map[it.clone as Range]
+		
+		// Align them with the remote ranges
+		localIndivisibleRanges.translate(match.remoteIndex - match.localIndex)
+		
+		// Update the remote buffer indexes if needed.
+		if(minStart(localIndivisibleRanges) < match.remoteBuffer.minIndex) {
+			res = true
+			match.remoteBuffer.minIndex = minStart(localIndivisibleRanges)
 		}
+		
+		if(maxEnd(localIndivisibleRanges) > match.remoteBuffer.maxIndex) {
+			res = true
+			match.remoteBuffer.maxIndex = maxEnd(localIndivisibleRanges)
+		}
+		
+		res
+	}
+	
+
+	def updateDivisibleRanges(Match match) {
+		val localRange = new Range(match.localIndex, match.localIndex + match.length)
+		
+		// Get the local indivisible ranges involved in the match
+		val localIndivisibleRanges = match.localBuffer.indivisibleRanges.filter [
+			// An indivisible range can go beyond the matched
+			// range. For example, if the range includes virtual tokens
+			it.hasOverlap(localRange)
+		].map[it.clone as Range]
+		
+		// Align them with the remote ranges
+		localIndivisibleRanges.translate(match.remoteIndex - match.localIndex)
+		
+		// Do the lazy union
+		// The divisability update must not be applied if the applied match involves
+		// the division of the local buffer, instead the remote buffer should become !
+		// non divisable !
+		match.remoteBuffer.indivisibleRanges.lazyUnion(localIndivisibleRanges)
 	}
 
+	/**
+	 * Must be called after updateRemoteIndexesAndDivisibleRanges
+	 */
 	def updateRemoteMergeableRange(Match match) {
 
 		// 1 - Get the mergeable ranges that are involved in the match
-		val localMergeableRange = match.localBuffer.mergeableRanges.intersection(
-			new Range(match.localIndex, match.localIndex + match.length))
-		val remoteMergeableRange = match.remoteBuffer.mergeableRanges.intersection(
-			new Range(match.remoteIndex, match.remoteIndex + match.length))
+		val localRange = new Range(match.localIndex, match.localIndex + match.length)
+		// Get the local indivisible ranges involved in the match
+		val localIndivisibleRanges = match.localBuffer.indivisibleRanges.filter [
+			// An indivisible range can go beyond the matched
+			// range. For example, if the range includes virtual tokens
+			it.hasOverlap(localRange)
+		].map[it.clone as Range]
+		
+		// Get the local involved Range
+		val involvedRange = new Range(minStart(localIndivisibleRanges), maxEnd(localIndivisibleRanges))
+		val localMergeableRange = match.localBuffer.mergeableRanges.intersection(involvedRange)
+		
+		// Translate it to get the remote involved range
+		involvedRange.translate(match.remoteIndex - match.localIndex)
+		val remoteMergeableRange = match.remoteBuffer.mergeableRanges.intersection(involvedRange)
 
 		// 2 - Realign the two ranges 
 		localMergeableRange.translate(-match.localIndex)

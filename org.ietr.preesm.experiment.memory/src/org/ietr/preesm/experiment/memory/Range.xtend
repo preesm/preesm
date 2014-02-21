@@ -90,7 +90,7 @@ class Range {
 	 * 	The integer value used to {@link Range#translate(int) translate} the
 	 * {@link Range ranges}.
 	 */
-	def static void translate(Collection<Range> ranges, int delta) {
+	def static void translate(Iterable<Range> ranges, int delta) {
 		ranges.forEach[it.translate(delta)]
 	}
 
@@ -203,9 +203,9 @@ class Range {
 	 * <br><br>
 	 * This method updates the given {@link List} of {@link Range} to include
 	 * its union with the {@link Range} passed as a parameter. If the ranges 
-	 * list contains ranges that overlap the new range, then the new range is
-	 * updated and become the union of the new range and all overlapping ranges
-	 * from the list.
+	 * list contains ranges that overlap or are contiguous with the new range,
+	 * then the new range is updated and become the union of the new range and 
+	 * all overlapping ranges from the list.
 	 * 
 	 * @param ranges
 	 * 	The {@link List} of {@link Range} to update.
@@ -231,6 +231,69 @@ class Range {
 		}
 		ranges.add(newRange)
 		newRange
+	}
+	
+	/**
+	 * Successively computes the {@link Range#lazyUnion(List,Range)} of {@link
+	 * Range ranges} from <code>ranges1</code> with the {@link Iterable} <code>
+	 * ranges0</code>.<br>
+	 * Both lists are thus modified by this function, but only ranges0 contains 
+	 * the result of the method.
+	 * 
+	 * @return ranges0, that contains the lazy union result
+	 */
+	def static List<Range> lazyUnion(List<Range> ranges0, Iterable<Range> ranges1) {
+		ranges1.forEach[ranges0.lazyUnion(it)]
+		ranges0
+	}
+	
+	/**
+	 * Same as {@link Range#union(List,Range)} except that {@link 
+	 * Range#isContiguous(Range) contiguous} {@link Range ranges} are not 
+	 * merged.
+	 * 
+	 * @param ranges
+	 * 	The {@link List} of {@link Range} to update.
+	 * 
+	 * @param newRange
+	 *   The new {@link Range} to add.
+	 * 
+	 * @return the updated newRange {@link Range}. 
+	 */
+	def static lazyUnion(List<Range> ranges, Range newRange) {
+		var iter = ranges.iterator
+		while (iter.hasNext) {
+			val range = iter.next
+
+			// If new range overlaps with current range
+			if (range.hasOverlap(newRange)) {
+
+				// Remove old range and include it with the new
+				iter.remove
+				newRange.start = Math.min(newRange.start, range.start)
+				newRange.end = Math.max(newRange.end, range.end)
+			}
+		}
+		ranges.add(newRange)
+		newRange
+	}
+	
+	/**
+	 * Return the minimum start value of the ranges
+	 */
+	def static minStart(Iterable<Range> ranges) {
+		ranges.fold(0,[res, range |
+			Math::min(res, range.start)
+		])
+	}
+	
+		/**
+	 * Return the minimum start value of the ranges
+	 */
+	def static maxEnd(Iterable<Range> ranges) {
+		ranges.fold(0,[res, range |
+			Math::max(res, range.end)
+		])
 	}
 
 	def static isContiguous(Range newRange, Range range) {

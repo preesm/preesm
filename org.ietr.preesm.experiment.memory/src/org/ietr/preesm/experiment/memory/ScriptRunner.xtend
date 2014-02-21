@@ -372,31 +372,21 @@ class ScriptRunner {
 			// A buffer is potentially divisible 	
 			// If it has several matches (that were not merged by the
 			//  simplifyResult). (Because if the buffer only has one
-			// contiguous match, a divided buffer is not expected)
+			// contiguous match, a divided buffer is not possible, cf
+			// Buffer.simplifyMatches() comments.)
 			buffer.matchTable.size > 1 &&
 				// if it is totally matched, so that all parts of the divided 
 				// buffer can still be accessed
-				buffer.completelyMatched &&
-				// if it has no multiple range, a bit arbitrary decision
-				// mainly because if we do not do that, almost all
-				// buffers would be divisible. In a way, if a buffer
-				// is matched several times, this means that we assume
-				// that we will find several other buffers matched within this
-				// one, so we do not want to divide it since a divisible buffer
-				// is divisible only if we can match all its subparts in a
-				// indivisible buffer. Split is a good example !
-				// We do not want the split input to be divided !
-				buffer.multipleMatchRange.empty
+				buffer.completelyMatched
 		]
 
-		// We only set as divisible the buffer
-		// that have no match with any other divisible buffer
-		divisibleCandidates.toList.filter [ buffer |
-			buffer.matchTable.values.flatten.forall [
-				!divisibleCandidates.toList.contains(it.remoteBuffer)
+		// All are divisible BUT it will not be possible to match divided
+		// buffers together (checked later)
+		divisibleCandidates.forEach [ buffer |
+			buffer.matchTable.values.flatten.forEach[
+				val r = new Range(it.localIndex, it.localIndex + it.length)
+				buffer.indivisibleRanges.lazyUnion(r)
 			]
-		].forEach [
-			it.indivisible = false
 		]
 	}
 
@@ -492,7 +482,7 @@ class ScriptRunner {
 		var step = 0
 		do {
 			switch (step) {
-				// First step: Merge mergeable buffer with a unique match 
+				// First step: Merge non-conflicting buffer with a unique match 
 				case 0: {
 
 					// Find all mergeable buffers with a unique match (if any)
@@ -505,7 +495,7 @@ class ScriptRunner {
 							entry.key <= 0 &&
 							// and ends at the end of the buffer (or more)
 							entry.key + entry.value.head.length >= it.nbTokens * it.tokenSize &&
-						// and is not involved in any conflicting range
+						    // and is not involved in any conflicting range
 							{
 
 								// Only the destination can have conflicts here since
@@ -535,11 +525,35 @@ class ScriptRunner {
 						step = 1
 					}
 				} // case 0
-				// Second step: ???
+				// Second step: Merge divisible buffers with multiple matchs 
+				// and no conflict 
 				case 1: {
+
+					// Find all divisible buffers with multiple match and no 
+					// conflict that are not matched in another divisible buffer
+					// (if any)
+					val candidates = buffers.filter [
+						// Has a non-empty matchTable 
+						it.matchTable.size != 0 &&						
+						// is divisible
+						/*!it.indivisible &&*/ it.matchTable.values.flatten.forall [
+							// Is not involved in any conflicting range
+							it.conflictingMatches.size == 0  /*&&
+								// no match falls in a divisible buffer
+								it.remoteBuffer.indivisible */
+						]
+					].toList.immutableCopy
+
+					println('''1- «candidates»''')
+					if (!candidates.empty) {
+						step = 2
+					} else {
+						step = 2
+					}
 				}
 			}
-			updated = step != 1
+
+			updated = step != 2
 		} while (updated)
 
 		//println(buffers.fold(0,[res, buf | res + buf.maxIndex - buf.minIndex]))
@@ -566,7 +580,10 @@ class ScriptRunner {
 	 * The {@link #scriptResults} attribute of the calling {@link ScriptRunner}
 	 * are updated by this method. In particular, a
 	 * {@link Buffe#matchWith(int,Buffer,int,int) match} is added between
-	 * buffers of different actors that correspond to the same SDFEdges.
+	 * buffers of different actors that correspond to the same SDFEdges. This 
+	 * method must be called after {@link
+	 * ScriptRunner#identifyDivisibleBuffer()} as it set to indivisible the 
+	 * buffers that are on the border of groups. 
 	 * 
 	 * @return a {@link List} of groups. Each group is itself a {@link List} of
 	 *         {@link DAGVertex}.
@@ -586,6 +603,7 @@ class ScriptRunner {
 
 			// Identify other vertices that can be put into the group
 			var List<DAGVertex> newVertices = newArrayList(dagSeedVertex)
+			val List<Buffer> intraGroupBuffer = newArrayList
 			while (newVertices.size != 0) {
 
 				// Initialize the group size
@@ -638,9 +656,11 @@ class ScriptRunner {
 										// Do not apply the match immediately
 										// it would mess up with merge conflicts
 										applyMatches(#[match])
-										if (printTodo) {
-											println("Todo : apply match when grouping vertices.")
-										}
+
+										// Save matched buffer
+										intraGroupBuffer.add(match.localBuffer)
+										intraGroupBuffer.add(match.remoteBuffer)
+
 									}
 								}
 							}
@@ -660,6 +680,14 @@ class ScriptRunner {
 				// a ConcurrentModificationException
 				newVertices = new ArrayList<DAGVertex>(group.subList(groupSize, group.size))
 			}
+
+			// Set as indivisible all buffers that are on the edge of the group.
+			group.forEach [
+				val results = scriptResults.get(it)
+				#{results.key, results.value}.flatten.filter[!intraGroupBuffer.contains(it)].forEach [
+					it.indivisibleRanges.lazyUnion(new Range(it.minIndex, it.maxIndex))
+				]
+			]
 
 			// The group is completed, save it
 			groups.add(group)
