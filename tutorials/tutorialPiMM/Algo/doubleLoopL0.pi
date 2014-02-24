@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">doubleLoop</data>
+        <node expr="0" id="N" kind="param"/>
+        <node id="ReadFile" kind="actor">
+            <data key="graph_desc"/>
+            <port kind="cfg_output" name="N"/>
+            <port expr="0" kind="output" name="M"/>
+            <port expr="0" kind="output" name="Array"/>
+        </node>
+        <node id="BroadCast" kind="actor">
+            <data key="graph_desc"/>
+            <port expr="0" kind="input" name="in"/>
+            <port expr="0" kind="output" name="out1"/>
+            <port expr="0" kind="output" name="out2"/>
+        </node>
+        <node id="InitNLoop" kind="actor">
+            <data key="graph_desc"/>
+            <port kind="cfg_input" name="N"/>
+            <port expr="0" kind="input" name="M_in"/>
+            <port expr="0" kind="input" name="Array_in"/>
+            <port expr="0" kind="output" name="M_out"/>
+            <port expr="0" kind="output" name="Array_out"/>
+        </node>
+        <node id="MLoop" kind="actor">
+            <data key="graph_desc">doubleLoopL1.pi</data>
+            <port expr="0" kind="input" name="M_in"/>
+            <port expr="0" kind="input" name="Line_in"/>
+            <port expr="0" kind="output" name="Line_out"/>
+        </node>
+        <node id="EndNLoop" kind="actor">
+            <data key="graph_desc"/>
+            <port kind="cfg_input" name="N"/>
+            <port expr="0" kind="input" name="Array_in"/>
+            <port expr="0" kind="output" name="Array_out"/>
+        </node>
+        <node id="WriteFile" kind="actor">
+            <data key="graph_desc"/>
+            <port expr="0" kind="input" name="M"/>
+            <port expr="0" kind="input" name="Array"/>
+        </node>
+        <node id="RB0" kind="actor">
+            <data key="graph_desc"/>
+            <port expr="0" kind="input" name="in"/>
+            <port expr="0" kind="output" name="out"/>
+        </node>
+        <node id="RB1" kind="actor">
+            <data key="graph_desc"/>
+            <port expr="0" kind="input" name="in"/>
+            <port expr="0" kind="output" name="out"/>
+        </node>
+        <edge kind="fifo" source="ReadFile" sourceport="M" target="RB0" targetport="in"/>
+        <edge kind="fifo" source="BroadCast" sourceport="out2"
+            target="InitNLoop" targetport="M_in"/>
+        <edge kind="fifo" source="InitNLoop" sourceport="M_out"
+            target="MLoop" targetport="M_in"/>
+        <edge kind="fifo" source="InitNLoop" sourceport="Array_out"
+            target="MLoop" targetport="Line_in"/>
+        <edge kind="fifo" source="MLoop" sourceport="Line_out"
+            target="EndNLoop" targetport="Array_in"/>
+        <edge kind="fifo" source="EndNLoop" sourceport="Array_out"
+            target="WriteFile" targetport="Array"/>
+        <edge kind="fifo" source="BroadCast" sourceport="out1"
+            target="WriteFile" targetport="M"/>
+        <edge kind="fifo" source="ReadFile" sourceport="Array"
+            target="RB1" targetport="in"/>
+        <edge kind="fifo" source="RB0" sourceport="out"
+            target="BroadCast" targetport="in"/>
+        <edge kind="fifo" source="RB1" sourceport="out"
+            target="InitNLoop" targetport="Array_in"/>
+        <edge kind="dependency" source="ReadFile" sourceport="N" target="N"/>
+        <edge kind="dependency" source="N" target="InitNLoop" targetport="N"/>
+        <edge kind="dependency" source="N" target="EndNLoop" targetport="N"/>
+    </graph>
+</graphml>
