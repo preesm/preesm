@@ -41,30 +41,34 @@ package org.ietr.preesm.experiment.pimm.cppgenerator.scala.visitor
 import org.ietr.preesm.experiment.model.pimm._
 import java.util.HashMap
 import java.util.Map
-//Allows to consider Java collections as Scala collections and to use foreach...
 import collection.JavaConversions._
+import org.ietr.preesm.experiment.pimm.cppgenerator.scala.utils.CppCodeGenerationNameGenerator
 
 /**
  * The C++ code generation needs a preprocess in order to get source/target nodes/actors for every Fifo and Dependency
  */
-class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor {
+class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor with CppCodeGenerationNameGenerator {
 
   //Variables containing the name of the currently visited AbstractActor for PortDescriptions
-  private var currentAbstractActorName: String = ""
+  private var currentAbstractVertexName: String = ""
   //Map linking data ports to their corresponding description
   private val dataPortMap: Map[Port, DataPortDescription] = new HashMap[Port, DataPortDescription]
   def getDataPortMap(): Map[Port, DataPortDescription] = dataPortMap
 
-  //Map linking data ports to their corresponding description
-  private val cfgPortMap: Map[Port, String] = new HashMap[Port, String]
+  //Map linking configuration input ports to the name of their node
+  private val cfgInPortMap: Map[ConfigInputPort, String] = new HashMap[ConfigInputPort, String]
 
-  //Map linking data ports to their corresponding description
+  //Map linking ISetters (Parameter and ConfigOutputPort) to the name of their node or their name
+  private val setterMap: Map[ISetter, String] = new HashMap[ISetter, String]
+
+  //Map linking dependencies to their corresponding description
   private val dependencyMap: Map[Dependency, DependencyDescription] = new HashMap[Dependency, DependencyDescription]
   def getDependencyMap(): Map[Dependency, DependencyDescription] = dependencyMap
 
   def visitPiGraph(pg: PiGraph): Unit = {
     visitAbstractActor(pg)
     pg.getActors().foreach(a => visit(a))
+    pg.getParameters().foreach(p => visit(p))
     pg.getDependencies().foreach(d => visit(d))
   }
 
@@ -73,13 +77,14 @@ class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor {
   }
 
   def visitAbstractActor(aa: AbstractActor): Unit = {
-    //Stock the name of the current AbstractActor
-    currentAbstractActorName = aa.getName()
+    //Fix currentAbstractVertexName
+    currentAbstractVertexName = getVertexName(aa)
+    //Visit configuration input ports to fill cfgInPortMap
+    visitAbstractVertex(aa)
     //Visit data ports to fill the dataPortMap
     aa.getDataInputPorts().foreach(p => visit(p))
     aa.getDataOutputPorts().foreach(p => visit(p))
-    //Visit configuration ports to fill the cfgPortMap
-    aa.getConfigInputPorts().foreach(p => visit(p))
+    //Visit configuration output ports to fill the setterMap
     aa.getConfigOutputPorts().foreach(p => visit(p))
   }
 
@@ -87,18 +92,22 @@ class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor {
    * When visiting data ports, we stock the necessary informations for edge generation into PortDescriptions
    */
   def visitDataInputPort(dip: DataInputPort): Unit = {
-    dataPortMap.put(dip, new DataPortDescription(currentAbstractActorName, dip.getExpression().getString()))
+    //Fill dataPortMap
+    dataPortMap.put(dip, new DataPortDescription(currentAbstractVertexName, dip.getExpression().getString()))
   }
   def visitDataOutputPort(dop: DataOutputPort): Unit = {
-    dataPortMap.put(dop, new DataPortDescription(currentAbstractActorName, dop.getExpression().getString()))
+    //Fill dataPortMap
+    dataPortMap.put(dop, new DataPortDescription(currentAbstractVertexName, dop.getExpression().getString()))
   }
 
   def visitConfigInputPort(cip: ConfigInputPort): Unit = {
-    cfgPortMap.put(cip, currentAbstractActorName)
+    //Fill cfgInPortMap
+    cfgInPortMap.put(cip, currentAbstractVertexName)
   }
 
   def visitConfigOutputPort(cop: ConfigOutputPort): Unit = {
-    cfgPortMap.put(cop, currentAbstractActorName)
+    //Fill setterMap
+    setterMap.put(cop, currentAbstractVertexName)
   }
 
   def visitFifo(f: Fifo): Unit = {
@@ -126,18 +135,18 @@ class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor {
   }
 
   def visitParameter(p: Parameter): Unit = {
-    throw new UnsupportedOperationException()
+    //Fix currentAbstractVertexName
+    currentAbstractVertexName = getParameterName(p)
+    //Visit configuration input ports to fill cfgInPortMap
+    visitAbstractVertex(p)
+    //Fill the setterMap
+    setterMap.put(p, getParameterName(p))
   }
 
   def visitDependency(d: Dependency): Unit = {
-    val setter = d.getSetter()
-    val getter = d.getGetter()
-
-    val srcName = setter match {
-      case p: Parameter => p.getName()
-      case cop: ConfigOutputPort => cfgPortMap.get(cop)
-    }
-    val tgtName = cfgPortMap.get(getter)
+    //Fill the dependencyMap with the names of source and target of d
+    val srcName = setterMap.get(d.getSetter())
+    val tgtName = cfgInPortMap.get(d.getGetter())
     dependencyMap.put(d, new DependencyDescription(srcName, tgtName))
   }
 
@@ -151,6 +160,11 @@ class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor {
 
   def visitConfigInputInterface(cii: ConfigInputInterface): Unit = {
     throw new UnsupportedOperationException()
+  }
+
+  def visitAbstractVertex(av: AbstractVertex): Unit = {   
+    //Visit configuration input ports to fill cfgInPortMap
+    av.getConfigInputPorts().foreach(p => visit(p))
   }
 }
 
