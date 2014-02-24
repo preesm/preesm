@@ -35,7 +35,6 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  * ****************************************************************************
  */
-
 package org.ietr.preesm.experiment.pimm.cppgenerator.scala.visitor
 
 import org.ietr.preesm.experiment.model.pimm.PiGraph
