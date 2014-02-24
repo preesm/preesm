@@ -20,7 +20,7 @@ trait CppCodeGenerationNameGenerator {
   /**
    * Returns the name of the building method for the PiGraph pg
    */
-  protected def getMethodName(pg: PiGraph): String = "build" + pg.getName()
+  protected def getMethodName(pg: PiGraph): String = pg.getName()
   
   /**
    * Returns the name of the parameter
@@ -32,7 +32,7 @@ trait CppCodeGenerationNameGenerator {
    */
   private var edgeCounter: Integer = -1
   private var edgeMap: Map[Fifo, String] = new HashMap[Fifo, String]
-  protected def generateEdgeName(f: Fifo): String = {
+  protected def getEdgeName(f: Fifo): String = {
     if (!edgeMap.containsKey(f)) {
       edgeCounter = edgeCounter + 1
       edgeMap.put(f, "edge" + edgeCounter)

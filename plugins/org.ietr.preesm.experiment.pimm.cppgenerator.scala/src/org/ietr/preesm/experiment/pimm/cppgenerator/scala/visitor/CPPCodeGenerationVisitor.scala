@@ -44,44 +44,28 @@ import java.util.Map
 import java.util.HashMap
 import collection.JavaConversions._
 import org.ietr.preesm.experiment.pimm.cppgenerator.scala.utils.CppCodeGenerationNameGenerator
+import java.util.Collection
 
 /**
  * PiMM models visitor generating C++ code for COMPA Runtime
  * currentGraph: The most outer graph of the PiMM model
  * currentMethod: The StringBuilder used to write the C++ code
  */
-class CPPCodeGenerationVisitor(private var currentGraph: PiGraph,
-  private var currentMethod: StringBuilder,
-  private val preprocessor: CPPCodeGenerationPreProcessVisitor)
-  extends PiMMVisitor
-  with CppCodeGenerationNameGenerator {
+class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val preprocessor: CPPCodeGenerationPreProcessVisitor)
+  extends PiMMVisitor with CppCodeGenerationNameGenerator {
 
-  //Stack and list to handle hierarchical graphs
-  private val graphsStack: Stack[GraphDescription] = new Stack[GraphDescription]
-  private def push(pg: PiGraph): Unit = {
-    //Test in order to ignore the most outer graph
-    if (currentGraph != pg) {
-      //Add pg to the list of subgraphs of the current graph
-      pg :: currentSubGraphs
-      //Stock the current values
-      graphsStack.push(new GraphDescription(currentGraph, currentSubGraphs, currentMethod))
-      //Re-init the values with the one from the new current graph
-      currentGraph = pg
-      currentSubGraphs = Nil
-      currentMethod = new StringBuilder
-    }
+  //Maps to handle hierarchical graphs
+  private val graph2method: Map[PiGraph, StringBuilder] = new HashMap[PiGraph, StringBuilder]
+  private val graph2subgraphs: Map[PiGraph, List[PiGraph]] = new HashMap[PiGraph, List[PiGraph]]
+  
+  def getMethods(): Collection[StringBuilder] = {
+    graph2method.values()
   }
-  private def pop(): Unit = {    
-    //Test in order to ignore the most outer graph
-    if (!graphsStack.isEmpty) {
-      val top = graphsStack.top
-      currentGraph = top.pg
-      currentSubGraphs = top.subGraphs
-      currentMethod = top.method
-      graphsStack.pop
-    }
-  }
+
+  private var currentMethod: StringBuilder = topMethod
+  private var currentGraph: PiGraph = null
   private var currentSubGraphs: List[PiGraph] = Nil
+
   //Variables containing the type of the currently visited AbstractActor for AbstractActor generation
   private var currentAbstractActorType: String = ""
   private var currentAbstractActorClass: String = ""
@@ -101,25 +85,51 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph,
    * we should generate a new C++ method
    */
   def visitPiGraph(pg: PiGraph): Unit = {
-    //Stock the container graph and set pg as the new current graph
-    push(pg)
+    //We should first generate the C++ code as for any Actor in the outer graph
+    currentAbstractActorType = "pisdf_vertex"
+    currentAbstractActorClass = "PiSDFVertex"
+    visitAbstractActor(pg)
+
+    //We add pg as a subgraph of the current graph
+    pg::currentSubGraphs
     
+    //We stock the informations about the current graph for later use
+    var currentOuterGraph: PiGraph = null
+    currentOuterGraph = currentGraph    
+    if (currentOuterGraph != null) {
+      graph2method.put(currentOuterGraph, currentMethod)
+      graph2subgraphs.put(currentOuterGraph, currentSubGraphs)
+    }
+    //We initialize variables which will stock informations about pg during its method generation
+    //The new current graph is pg
+    currentGraph = pg
+    //We start a new StringBuilder to generate its method
+    currentMethod = new StringBuilder
+    //Currently we know no subgraphs to pg
+    currentSubGraphs = Nil
+
+    //And then visit pg as a PiGraph, generating the method to build its C++ corresponding PiSDFGraph
     val pgName = pg.getName()
 
-    append("// Method building PiGraph ")
+    append("\n// Method building PiSDFGraph ")
     append(pgName)
     //Generating the method signature
     generateMethodSignature(pg)
     //Generating the method body
     generateMethodBody(pg)
 
-    //We should also generate the C++ code as for any Actor
-    currentAbstractActorType = "pisdf_vertex"
-    currentAbstractActorClass = "PiSDFVertex"
-    visitAbstractActor(pg)
     
-    //Reset the container graph as the current graph
-    pop()    
+    //If pg has no subgraphs, its method has not been added in graph2method map
+    if (!graph2method.containsKey(currentGraph)) {
+      graph2method.put(currentGraph, currentMethod)
+    }
+    
+    //We get back the informations about the outer graph to continue visiting it
+    if (currentOuterGraph != null) {
+      currentMethod = graph2method.get(currentOuterGraph)
+      currentSubGraphs = graph2subgraphs.get(currentOuterGraph)
+    }
+    currentGraph = currentOuterGraph     
   }
 
   /**
@@ -139,17 +149,17 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph,
   private def generateMethodBody(pg: PiGraph): Unit = {
     append("{")
     //Generating parameters
-    append("\n\t//Parameters")
+    append("\n\n\t//Parameters")
     pg.getParameters().foreach(p => visit(p))
     //Generating vertices
-    append("\n\t//Vertices")
+    append("\n\n\t//Vertices")
     pg.getVertices().foreach(v => visit(v))
     //Generating edges
-    append("\n\t//Edges")
+    append("\n\n\t//Edges")
     pg.getFifos().foreach(f => visit(f))
     //Generating call to methods generated for subgraphs, if any
     if (!currentSubGraphs.isEmpty) {
-      append("\n\t//Subgraphs")
+      append("\n\n\t//Subgraphs")
       generateCallsToSubgraphs()
     }
     append("\n}\n")
@@ -240,7 +250,7 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph,
    * When visiting a FIFO we should add an edge to the current graph
    */
   def visitFifo(f: Fifo): Unit = {
-    val edgeName = generateEdgeName(f)
+    val edgeName = getEdgeName(f)
     fifoMap.put(f, edgeName)
     //Call the addEdge method on the current graph
     append("\n\tPiSDFEdge *")
@@ -263,8 +273,8 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph,
     append(tgt.expression)
     append("\", ")
     //Pass the delay of the FIFO
-    if (f.getDelay() != null) append(f.getDelay().getExpression().getString())    
-    else append("0")    
+    if (f.getDelay() != null) append(f.getDelay().getExpression().getString())
+    else append("0")
     append("\"")
     append(");")
   }
@@ -380,4 +390,4 @@ class CPPCodeGenerationVisitor(private var currentGraph: PiGraph,
 /**
  * Class allowing to stock necessary information about graphs when moving through the graph hierrachy
  */
-class GraphDescription(val pg: PiGraph, var subGraphs: List[PiGraph], var method: StringBuilder)
+class GraphDescription(var subGraphs: List[PiGraph], var method: StringBuilder)

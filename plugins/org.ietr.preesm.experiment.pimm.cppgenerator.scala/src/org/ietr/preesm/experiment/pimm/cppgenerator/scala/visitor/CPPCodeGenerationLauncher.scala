@@ -40,12 +40,13 @@ package org.ietr.preesm.experiment.pimm.cppgenerator.scala.visitor
 
 import org.ietr.preesm.experiment.model.pimm.PiGraph
 import org.ietr.preesm.experiment.pimm.cppgenerator.scala.utils.CppCodeGenerationNameGenerator
+import collection.JavaConversions._
 
 class CPPCodeGenerationLauncher extends CppCodeGenerationNameGenerator {
 
-  val stringBuilder = new StringBuilder()
+  val topMethod = new StringBuilder()
   //Shortcut to stringBuilder.append
-  private def append(a: Any) = stringBuilder.append(a)
+  private def append(a: Any) = topMethod.append(a)
   
   /**
    * Main method, launching the generation for the whole PiGraph pg,
@@ -53,19 +54,24 @@ class CPPCodeGenerationLauncher extends CppCodeGenerationNameGenerator {
    */
   def generateCPPCode(pg: PiGraph): String = {    
     val preprocessor = new CPPCodeGenerationPreProcessVisitor
-    val codeGenerator = new CPPCodeGenerationVisitor(pg, stringBuilder, preprocessor)
+    val codeGenerator = new CPPCodeGenerationVisitor(topMethod, preprocessor)
 
     ///Generate the header (license, includes and constants)
     generateHeader
     append("\n")
     //Generate the top method from which the C++ graph building is launch
-    generateTopMehod(pg)
+    openTopMehod(pg)
     //Preprocess PiGraph pg in order to collect information on sources and targets of Fifos and Dependecies
     preprocessor.visit(pg)
     //Generate C++ code for the whole PiGraph
     codeGenerator.visit(pg)
+    closeTopMethod
+    //Concatenate the results
+    codeGenerator.getMethods.foreach(m => {
+      topMethod.append(m)
+    })
     //Returns the final C++ code
-    stringBuilder.toString
+    topMethod.toString
   }
 
   /**
@@ -91,22 +97,21 @@ class CPPCodeGenerationLauncher extends CppCodeGenerationNameGenerator {
    * Generate the needed constants for the final C++ file
    */
   private def generateConstants() = {
-    append("\n\nstatic PiSDFGraph graphs[MAX_NB_PiSDF_SUB_GRAPHS];")
+    append("\nstatic PiSDFGraph graphs[MAX_NB_PiSDF_SUB_GRAPHS];")
     append("\nstatic UINT8 nb_graphs = 0;")
   }
 
   /**
    * Generate the top method, responsible for building the whole C++ PiGraph corresponding to pg
    */
-  private def generateTopMehod(pg: PiGraph): Unit = {
+  private def openTopMehod(pg: PiGraph): Unit = {
     append("\n/**")
     append("\n * This is the method you need to call to build a complete PiSDF graph.")
     append("\n */")
     //The method does not return anything and is named top
     append("\nvoid top")
     //The method accept as parameter a pointer to the PiSDFGraph graph it will build
-    append("(PiSDFGraph* graph)")
-    append("{")
+    append("(PiSDFGraph* graph, Scenario *scenario){")
 
     val sgName = getSubraphName(pg)
     val vxName = getVertexName(pg)
@@ -132,8 +137,9 @@ class CPPCodeGenerationLauncher extends CppCodeGenerationNameGenerator {
     append(vxName)
     append("->setSubGraph(")
     append(sgName)
-    append(");")
-
+    append(");")    
+  }  
+  private def closeTopMethod(): Unit = {
     append("\n}\n")
   }
 
