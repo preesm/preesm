@@ -174,12 +174,11 @@ class Buffer {
 		// Remove empty matchLists from matchTable
 		removedEntry.forEach[buffer.matchTable.remove(it)]
 	}
-	
-	
+
 	/**
 	 * cf {@link #minIndex}.
 	 */
-	@Property 
+	@Property
 	int maxIndex
 
 	/**
@@ -233,8 +232,8 @@ class Buffer {
 	 * won't.
 	 */
 	@Property
-	final boolean originallyMergeable 
-	
+	final boolean originallyMergeable
+
 	@Property
 	List<Range> mergeableRanges
 
@@ -268,24 +267,28 @@ class Buffer {
 	def getSdfVertex() {
 		dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex) as SDFAbstractVertex
 	}
-	
-	private def setMaxIndex(int newValue){
+
+	private def setMaxIndex(int newValue) {
+
 		// if the buffer was originally mergeable
-		if(this.originallyMergeable){
+		if (this.originallyMergeable) {
+
 			// Add a new mergeable range corresponding to the new virtual tokens
 			this.mergeableRanges.union(new Range(_maxIndex, newValue))
 		}
 		_maxIndex = newValue
-	} 
-	
-	private def setMinIndex(int newValue){
+	}
+
+	private def setMinIndex(int newValue) {
+
 		// if the buffer was originally mergeable
-		if(this.originallyMergeable){
+		if (this.originallyMergeable) {
+
 			// Add a new mergeable range corresponding to the new virtual tokens
 			this.mergeableRanges.union(new Range(newValue, _maxIndex))
 		}
 		_minIndex = newValue
-	} 
+	}
 
 	/**
 	* Cf. {@link Buffer#matchWith(int, Buffer, int, int)} with size = 1
@@ -475,7 +478,7 @@ class Buffer {
 		// Temp version with unique match for a complete buffer
 		appliedMatches.put(new Range(match.localIndex, match.localIndex + match.length),
 			match.remoteBuffer -> match.remoteIndex)
-		
+
 		// Move all third-party matches from the merged buffer
 		match.localBuffer.matchTable.values.flatten.filter[it != match].toList.immutableCopy.forEach [ movedMatch |
 			// Remove old match from original match list
@@ -500,17 +503,19 @@ class Buffer {
 			matchList.add(movedMatch)
 		]
 
-		
+		// Update the conflictCandidates
+		updateConflictCandidates(match)
+
 		// Update the min and max index of the remoteBuffer (if necessary)
 		// Must be called before updateRemoteMergeableRange(match)
-		val updatedRemoteIndex = updateRemoteIndexes(match)	
-		
+		val updatedRemoteIndex = updateRemoteIndexes(match)
+
 		// Update divisability if remote buffer 
 		// The divisability update must not be applied if the applied match involves
 		// the division of the local buffer, instead the remote buffer should become !
 		// non divisable !
 		updateDivisibleRanges(match)
-		
+
 		// Update the mergeable range of the remote buffer
 		updateRemoteMergeableRange(match)
 
@@ -518,20 +523,17 @@ class Buffer {
 		// 1- For all matches of the remote buffer (old and newly added)
 		// 1.1- If the match local range falls within indivisible range(s)
 		//      Then:
-	    // 1.1.1- the match must be enlarged to cover these range(s)
-	    //        Several matches might become redundant (i.e. identical) in the process
-	    // 2- After all matches were updated, update the conflicting matches list
-	    //    of all buffers connected to any match of the remoteBuffer (including
-	    //    the remote buffer itself.
-	    //    This operation will be similar to the original conflicting match computation
-	    //    except that now multiple matches will be much more frequent so this cannot
-	    //    be used as a basis for the computation.
-	    //    To solve this problem, I think a list of potentially conflicting match
-	    //    should be stored in each match (i.e. all other matches of both the local
-	    //    and target buffer before constituting groups.)
-	    
-	      
-
+		// 1.1.1- the match must be enlarged to cover these range(s)
+		//        Several matches might become redundant (i.e. identical) in the process
+		// 2- After all matches were updated, update the conflicting matches list
+		//    of all buffers connected to any match of the remoteBuffer (including
+		//    the remote buffer itself.
+		//    This operation will be similar to the original conflicting match computation
+		//    except that now multiple matches will be much more frequent so this cannot
+		//    be used as a basis for the computation.
+		//    To solve this problem, I think a list of potentially conflicting match
+		//    should be stored in each match (i.e. all other matches of both the local
+		//    and target buffer before constituting groups.)
 		// Remove the applied match from the buffers match table 
 		// (local and reciprocate)
 		match.unmatch
@@ -541,55 +543,155 @@ class Buffer {
 		match.reciprocate.applied = true
 
 	}
-	
+
+	/**
+	 * Must be called before {@link ScriptRunner#updateConflictingMatches() 
+	 * updating conflicting matches}.
+	 */
+	def updateConflictCandidates(Match match) {
+
+		// 1. If the applied match is not interSiblings
+		// 1.1. Conflict candidates of the applied local->remote match are 
+		// added to all remote->other matches (except inter siblings and 
+		// the already conflicting to remote->local (i.e. the backward if
+		// local->remote is forward or vice versa))
+		// 1.2. Conflict candidates of the applied remote->local match are 
+		// added to all local->other matches (except inter siblings and 
+		// the already conflicting to local->remote (i.e. the forward if
+		// remote->local is backward or vice versa))
+		// 1.3. InterSibling matches of the localBuffer and remoteBuffer of
+		// the applied Match become conflict candidates of each other.
+		// 2. If the applied match is interSiblings
+		// 2.1 InterSiblings local->other and remote->other matches become conflict
+		// candidate (like 1.3).
+		// 2.2 New conflicts are added between Forward match of the 
+		// remoteBuffer and forward match of the localBuffer
+		// 2.3 New conflicts are added between Backward match of the 
+		// remoteBuffer and backward matches of the localBuffer
+		// 1.1 and 2.1
+		val newConflicts = newArrayList
+		if (!match.conflictCandidates.empty || !match.conflictingMatches.empty) {
+			match.remoteBuffer.matchTable.values.flatten.filter [
+				it.type == match.type
+			].forEach [ otherMatch |
+				otherMatch.conflictCandidates.addAll(match.conflictCandidates)
+				otherMatch.conflictCandidates.addAll(match.conflictingMatches)
+				
+				newConflicts.add(otherMatch)
+			]
+			match.conflictCandidates.forEach[it.conflictCandidates.addAll(newConflicts)]
+			match.conflictingMatches.forEach[it.conflictCandidates.addAll(newConflicts)]
+			newConflicts.clear
+		}
+
+		//1.
+		if (match.type != MatchType::INTER_SIBLINGS) {
+
+			// 1.2
+			if (!match.reciprocate.conflictCandidates.empty || !match.reciprocate.conflictingMatches.empty) {
+				match.localBuffer.matchTable.values.flatten.filter [
+					it.type != MatchType::INTER_SIBLINGS && it.type != match.type
+				].forEach [ otherMatch |
+					otherMatch.conflictCandidates.addAll(match.reciprocate.conflictCandidates)
+					otherMatch.conflictCandidates.addAll(match.reciprocate.conflictingMatches)
+					newConflicts.add(otherMatch)
+				]
+				match.reciprocate.conflictCandidates.forEach[it.conflictCandidates.addAll(newConflicts)]
+				match.reciprocate.conflictingMatches.forEach[it.conflictCandidates.addAll(newConflicts)]
+				newConflicts.clear
+			}
+
+			// 1.3
+			val localSiblingMatches = match.localBuffer.matchTable.values.flatten.filter [
+				it.type == MatchType::INTER_SIBLINGS
+			]
+			if (! localSiblingMatches.empty) {
+				match.remoteBuffer.matchTable.values.flatten.filter [
+					it.type == MatchType::INTER_SIBLINGS
+				].forEach [ remoteMatch |
+					remoteMatch.conflictCandidates.addAll(localSiblingMatches)
+					localSiblingMatches.forEach [ localMatch |
+						localMatch.conflictCandidates.add(remoteMatch)
+					]
+				]
+			}
+		} 			
+		// 2. 
+		else {
+
+			// 2.2 & 2.3
+			val localForward = newArrayList
+			val localBackward = newArrayList
+			match.localBuffer.matchTable.values.flatten.forEach [
+				switch (it.type) {
+					case MatchType::FORWARD:
+						localForward.add(it)
+					case MatchType::BACKWARD:
+						localBackward.add(it)
+				}
+			]
+			match.remoteBuffer.matchTable.values.flatten.forEach [ otherMatch |
+				switch (otherMatch.type) {
+					case MatchType::FORWARD: {
+						otherMatch.conflictCandidates.addAll(localForward)
+						localForward.forEach[it.conflictCandidates.add(otherMatch)]
+					}
+					case MatchType::BACKWARD: {
+						otherMatch.conflictCandidates.addAll(localBackward)
+						localBackward.forEach[it.conflictCandidates.add(otherMatch)]
+					}
+				}
+			]
+		}
+	}
+
 	/**
 	 * MUST be called before updateRemoteMergeableRange because the updated local
 	 * indexes are used in the current function, which cause an update of the mergeable ranges.
 	 * @return true of the indexes were updated, false otherwise
 	 */
 	def updateRemoteIndexes(Match match) {
-		var res = false ;
-		
+		var res = false;
+
 		val localRange = new Range(match.localIndex, match.localIndex + match.length)
-		
+
 		// Get the local indivisible ranges involved in the match
 		val localIndivisibleRanges = match.localBuffer.indivisibleRanges.filter [
 			// An indivisible range can go beyond the matched
 			// range. For example, if the range includes virtual tokens
 			it.hasOverlap(localRange)
 		].map[it.clone as Range]
-		
+
 		// Align them with the remote ranges
 		localIndivisibleRanges.translate(match.remoteIndex - match.localIndex)
-		
+
 		// Update the remote buffer indexes if needed.
-		if(minStart(localIndivisibleRanges) < match.remoteBuffer.minIndex) {
+		if (minStart(localIndivisibleRanges) < match.remoteBuffer.minIndex) {
 			res = true
 			match.remoteBuffer.minIndex = minStart(localIndivisibleRanges)
 		}
-		
-		if(maxEnd(localIndivisibleRanges) > match.remoteBuffer.maxIndex) {
+
+		if (maxEnd(localIndivisibleRanges) > match.remoteBuffer.maxIndex) {
 			res = true
 			match.remoteBuffer.maxIndex = maxEnd(localIndivisibleRanges)
 		}
-		
+
 		res
 	}
-	
 
 	def updateDivisibleRanges(Match match) {
 		val localRange = new Range(match.localIndex, match.localIndex + match.length)
-		
+
 		// Get the local indivisible ranges involved in the match
 		val localIndivisibleRanges = match.localBuffer.indivisibleRanges.filter [
 			// An indivisible range can go beyond the matched
 			// range. For example, if the range includes virtual tokens
 			it.hasOverlap(localRange)
 		].map[it.clone as Range]
-		
+
 		// Align them with the remote ranges
 		localIndivisibleRanges.translate(match.remoteIndex - match.localIndex)
-		
+
 		// Do the lazy union
 		// The divisability update must not be applied if the applied match involves
 		// the division of the local buffer, instead the remote buffer should become !
@@ -604,17 +706,18 @@ class Buffer {
 
 		// 1 - Get the mergeable ranges that are involved in the match
 		val localRange = new Range(match.localIndex, match.localIndex + match.length)
+
 		// Get the local indivisible ranges involved in the match
 		val localIndivisibleRanges = match.localBuffer.indivisibleRanges.filter [
 			// An indivisible range can go beyond the matched
 			// range. For example, if the range includes virtual tokens
 			it.hasOverlap(localRange)
 		].map[it.clone as Range]
-		
+
 		// Get the local involved Range
 		val involvedRange = new Range(minStart(localIndivisibleRanges), maxEnd(localIndivisibleRanges))
 		val localMergeableRange = match.localBuffer.mergeableRanges.intersection(involvedRange)
-		
+
 		// Translate it to get the remote involved range
 		involvedRange.translate(match.remoteIndex - match.localIndex)
 		val remoteMergeableRange = match.remoteBuffer.mergeableRanges.intersection(involvedRange)
@@ -656,6 +759,12 @@ class Buffer {
 		if (remoteList.size == 0) {
 			remoteBuffer.matchTable.remove(remoteIndex)
 		}
+		
+		// Remove it from conflictingMatches and conflictCandidates
+		match.conflictCandidates.forEach[it.conflictCandidates.remove(match)]
+		match.conflictingMatches.forEach[it.conflictingMatches.remove(match)]
+		match.reciprocate.conflictCandidates.forEach[it.conflictCandidates.remove(match.reciprocate)]
+		match.reciprocate.conflictingMatches.forEach[it.conflictingMatches.remove(match.reciprocate)]
 
 	}
 }

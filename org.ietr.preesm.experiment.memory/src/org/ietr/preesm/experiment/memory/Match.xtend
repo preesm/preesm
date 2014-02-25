@@ -10,6 +10,7 @@ class Match {
 		this.remoteIndex = remoteIndex
 		length = size
 		this.conflictingMatches = newArrayList
+		this.conflictCandidates = newArrayList
 		this.applied = false
 		this.siblingMatch = false
 	}
@@ -26,6 +27,11 @@ class Match {
 	int length
 	@Property
 	List<Match> conflictingMatches
+	@Property
+	List<Match> conflictCandidates
+	@Property
+	MatchType type 
+	
 	
 	/** 
 	 * This Property is set to <code>true</code> if the current {@link Match}
@@ -54,6 +60,15 @@ class Match {
 
 	def getReciprocate() {
 		_reciprocate
+	}
+	
+	/**
+	 * Returns a {@link Range} going from {@link Match#getLocalIndex() 
+	 * localIndex} to the end of the matched tokens.
+	 * 
+	 */
+	def getLocalRange(){
+		new Range(localIndex, localIndex + length)	
 	}
 
 	/**
@@ -84,5 +99,26 @@ class Match {
 			this.length == other.length
 	}
 
-	override toString() '''«remoteBuffer.dagVertex.name».«remoteBuffer.name»[«remoteIndex»..«remoteIndex + length»['''
+	override toString() '''«localBuffer.dagVertex.name».«localBuffer.name»[«localIndex»..«localIndex + length»[=>«remoteBuffer.dagVertex.name».«remoteBuffer.name»[«remoteIndex»..«remoteIndex + length»['''
+}
+
+/**
+ * This enumeration represent the type of the current {@link Match}
+ */
+public enum MatchType{
+	/**
+	 * The {@link Match} links several inputs (or outputs) together.
+	 */
+	INTER_SIBLINGS,
+	/**
+	 * The {@link Match} is internal to an actor and links an input {@link 
+	 * Buffer} to an output {@link Buffer}, <b>or</b> the {@link Match} is
+	 * external to an actor (i.e. correspond to an edge) and it links an output
+	 * {@link Buffer} of an actor to the input {@link Buffer} of the next.
+	 */
+	FORWARD,
+	/**
+	 * Opposite of {@link MatchType.FORWARD}
+	 */
+	BACKWARD
 }

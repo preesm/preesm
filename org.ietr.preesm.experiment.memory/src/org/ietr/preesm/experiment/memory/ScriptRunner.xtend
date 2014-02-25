@@ -13,6 +13,10 @@ import java.util.Map
 import java.util.Set
 import java.util.logging.Level
 import java.util.logging.Logger
+import org.eclipse.core.resources.ResourcesPlugin
+import org.eclipse.core.runtime.FileLocator
+import org.eclipse.core.runtime.Path
+import org.eclipse.xtext.xbase.lib.Pair
 import org.ietr.dftools.algorithm.model.dag.DAGEdge
 import org.ietr.dftools.algorithm.model.dag.DAGVertex
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph
@@ -26,10 +30,6 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex
 import org.ietr.dftools.workflow.tools.WorkflowLogger
-import org.eclipse.core.resources.ResourcesPlugin
-import org.eclipse.core.runtime.FileLocator
-import org.eclipse.core.runtime.Path
-import org.eclipse.xtext.xbase.lib.Pair
 import org.ietr.preesm.core.types.DataType
 
 import static extension org.ietr.preesm.experiment.memory.Buffer.*
@@ -332,8 +332,8 @@ class ScriptRunner {
 		// Identify inter-inputs and inter-outputs matches
 		scriptResults.forEach[vertex, result|identifySiblingMatches(result)]
 
-		// Identify ranges that may cause a transversal merge
-		scriptResults.forEach[vertex, result|identifyMergeRanges(result.key, result.value)]
+		// Identify match that may cause a inter-input / inter-output merge
+		scriptResults.forEach[vertex, result|identifyConflictingMatchCandidates(result.key, result.value)]
 
 		// Identify groups of chained buffers from the scripts and dag
 		val groups = groupVertices()
@@ -346,11 +346,28 @@ class ScriptRunner {
 		println("Identified " + groups.size + " groups. " + result)
 	}
 
+	/**
+	 * For each {@link Buffer} passed as a parameter, this method scan the 
+	 * {@link Match} in the {@link Buffer#getMatchTable() matchTable} and set.
+	 * their {@link Match#getType() type}. Matches whose {@link 
+	 * Match#getLocalBuffer() localBuffer} and {@link Match#getRemoteBuffer() 
+	 * remoteBuffer} belong to the same {@link List} of {@link Match} are 
+	 * marked as <code>INTER_SIBLINGS</code>. Other {@link Match} are marked as
+	 * <code>FORWARD</code> or <code>BACKWARD</code>.
+	 * 
+	 * @param result
+	 * 	{@link Pair} of {@link List} of {@link Buffer}. The {@link Pair} key 
+	 * and value respectively contain input and output {@link Buffer} of an 
+	 * actor. 
+	 */
 	def identifySiblingMatches(Pair<List<Buffer>, List<Buffer>> result) {
 		result.key.forEach [
 			it.matchTable.values.flatten.forEach [
 				if (result.key.contains(it.remoteBuffer)) {
 					it.siblingMatch = true
+					it.type = MatchType::INTER_SIBLINGS
+				}  else {
+					it.type = MatchType::FORWARD
 				}
 			]
 		]
@@ -359,6 +376,9 @@ class ScriptRunner {
 			it.matchTable.values.flatten.forEach [
 				if (result.value.contains(it.remoteBuffer)) {
 					it.siblingMatch = true
+					it.type = MatchType::INTER_SIBLINGS
+				} else {
+					it.type = MatchType::BACKWARD
 				}
 			]
 		]
@@ -383,83 +403,99 @@ class ScriptRunner {
 		// All are divisible BUT it will not be possible to match divided
 		// buffers together (checked later)
 		divisibleCandidates.forEach [ buffer |
-			buffer.matchTable.values.flatten.forEach[
+			buffer.matchTable.values.flatten.forEach [
 				val r = new Range(it.localIndex, it.localIndex + it.length)
 				buffer.indivisibleRanges.lazyUnion(r)
 			]
 		]
 	}
 
-	def identifyMergeRanges(List<Buffer> inputs, List<Buffer> outputs) {
+	/**
+	 * This method fills the {@link Match#getConflictCandidates() 
+	 * conflictCandidates} {@link Match} {@link List} of all the {@link Match 
+	 * matches} contained in the {@link Buffer#getMatchTable() matchTable} of 
+	 * the {@link Buffer} passed as parameter. Two {@link Match} are 
+	 * potentially conflicting if:
+	 * <ul><li>They link inputs with inputs (or outputs with outputs).<br>
+	 * <b>OR</b></li>
+	 * <li>They have the same {@link Match#getLocalBuffer()}</li></ul>
+	 * 
+	 * @param inputs
+	 * 	{@link List} of input {@link Buffer} of an actor.
+	 * @param outputs
+	 * 	{@link List} of output {@link Buffer} of an actor.
+	 */
+	def identifyConflictingMatchCandidates(List<Buffer> inputs, List<Buffer> outputs) {
 
+		// Identify potentially conflicting matches
 		// For each Buffer
 		for (buffer : #{inputs, outputs}.flatten) {
-			val isIn = inputs.contains(buffer)
-			val siblings = if (isIn) {
-					inputs
+
+			// Sort matches in 2 groups: 
+			val regularMatches = newArrayList
+			val interSiblingMatches = newArrayList
+			buffer.matchTable.values.flatten.forEach [ match |
+				if (match.siblingMatch) {
+					interSiblingMatches.add(match)
 				} else {
-					outputs
+					regularMatches.add(match)
 				}
+			]
 
-			// 1- Find multi Ranges
-			val multiRanges = buffer.multipleMatchRange
-
-			// For each multiple range
-			multiRanges.forEach [ range |
-				// find overlapping match
-				val overlappingMatches = newArrayList
-				val overlappingSiblingMatches = newArrayList
-				buffer.matchTable.forEach [ localIdx, matchList |
-					matchList.forEach [ match |
-						if (range.hasOverlap(new Range(localIdx, localIdx + match.length))) {
-							val matches = if (!siblings.contains(match.remoteBuffer)) {
-
-									// match not in siblings 
-									overlappingMatches
-								} else {
-
-									// Match in siblings
-									overlappingSiblingMatches
-								}
-
-							// Add a conflict between the overlapping match
-							// and all previous overlapping matches
-							matches.forEach [
-								// For Matches
-								match.conflictingMatches.add(it)
-								it.conflictingMatches.add(match)
-								// And reciprocates
-								match.reciprocate.conflictingMatches.add(it.reciprocate)
-								it.reciprocate.conflictingMatches.add(match.reciprocate)
-							]
-							matches.add(match)
-						}
-					]
-				]
+			// Update the potential conflict list of all matches
+			regularMatches.forEach [ match |
+				match.conflictCandidates.addAll(regularMatches.filter[it != match])
+			]
+			interSiblingMatches.forEach [ match |
+				match.conflictCandidates.addAll(regularMatches.filter[it != match])
 			]
 		}
 
-		// Remove duplicates from match.conflicting match lists
-		// For each buffer
-		if (printTodo) {
-
-			// Karol Note: Might no be necessary at all !
-			// It seems that no duplicates are created by the previous code
-			println("Check if removing duplicates is needed.")
-		}
+		// Identify the already conflicting matches
 		for (buffer : #{inputs, outputs}.flatten) {
 
-			// for each match
-			buffer.matchTable.values.flatten.forEach [
-				// Remove duplicates
-				var index = 0
-				while (index < it.conflictingMatches.size - 1) {
-					val currentElt = it.conflictingMatches.get(index)
-					it.conflictingMatches.subList(index + 1, it.conflictingMatches.size).removeAll(currentElt)
-					index = index + 1
-				}
-			]
+			// for Each match
+			val matchList = buffer.matchTable.values.flatten
+			updateConflictingMatches(matchList)
 		}
+	}
+
+	/**
+	 * This method update the {@link Match#getConflictingMatches() 
+	 * conflictingMatches} {@link List} of all the {@link Match} passed as a 
+	 * parameter. To do so, the method scan all the {@link 
+	 * Match#getConflictCandidates() conflictCandidates} of each {@link Match} 
+	 * and check if any candidate has an overlapping range. In such case, the 
+	 * candidate is moved to the {@link Match#getConflictingMatches() 
+	 * conflictingMatches} of the {@link Match} and its {@link 
+	 * Match#getReciprocate() reciprocate}. To ensure consistency, one should 
+	 * make sure that if a {@link Match} is updated with this method, then all 
+	 * the {@link Match matches} contained in its {@link 
+	 * Match#getConflictCandidates() conflictCandidates} {@link List} are 
+	 * updated too.   
+	 * 
+	 * @param matchList
+	 * 		The {@link Iterable} of {@link Match} to update
+	 */
+	def updateConflictingMatches(Iterable<Match> matchList) {
+		matchList.forEach [ match |
+			// Check all the conflict candidaes
+			val iter = match.conflictCandidates.iterator
+			while (iter.hasNext) {
+				val candidate = iter.next
+				if (candidate.localRange.hasOverlap(match.localRange)) {
+					iter.remove
+
+					// Add the candidate to the conflicting matches
+					match.conflictingMatches.add(candidate)
+					match.reciprocate.conflictingMatches.add(candidate.reciprocate)
+					
+					// Remove it from the reciprocate candidates (if it was present)
+					match.reciprocate.conflictCandidates.remove(candidate.reciprocate)
+					
+				}
+			}
+		]
 	}
 
 	/**
@@ -536,9 +572,11 @@ class ScriptRunner {
 						// Has a non-empty matchTable 
 						it.matchTable.size != 0 &&						
 						// is divisible
-						/*!it.indivisible &&*/ it.matchTable.values.flatten.forall [
+						/*!it.indivisible &&*/
+						it.matchTable.values.flatten.forall [
 							// Is not involved in any conflicting range
-							it.conflictingMatches.size == 0  /*&&
+							it.conflictingMatches.size == 0
+						/*&&
 								// no match falls in a divisible buffer
 								it.remoteBuffer.indivisible */
 						]
@@ -652,6 +690,13 @@ class ScriptRunner {
 										// Match them together
 										val match = buffers.get(0).matchWith(0, buffers.get(1), 0,
 											buffers.get(0).nbTokens)
+										if(buffers.get(0).dagVertex == dagEdge.source){
+											match.type = MatchType::FORWARD
+											match.reciprocate.type = MatchType::BACKWARD
+										} else {
+											match.type = MatchType::BACKWARD
+											match.reciprocate.type = MatchType::FORWARD
+										}
 
 										// Do not apply the match immediately
 										// it would mess up with merge conflicts
