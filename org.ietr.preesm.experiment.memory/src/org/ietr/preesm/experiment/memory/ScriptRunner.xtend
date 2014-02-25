@@ -173,8 +173,8 @@ class ScriptRunner {
 					val matchFromMultRange = newArrayList;
 					multipleRange.key.matchTable.forEach [ localIdx, matches |
 						matches.forEach [
-							if (r.hasOverlap(new Range(localIdx, localIdx + it.length))) {
-								val localInter = r.intersection(new Range(localIdx, localIdx + it.length))
+							if (r.hasOverlap(it.localRange)) {
+								val localInter = r.intersection(it.localRange)
 								val remoteRangeStart = it.remoteIndex + localInter.start - localIdx
 								val remoteRange = new Range(remoteRangeStart, remoteRangeStart + localInter.length)
 								matchFromMultRange.add(it.remoteBuffer -> remoteRange)

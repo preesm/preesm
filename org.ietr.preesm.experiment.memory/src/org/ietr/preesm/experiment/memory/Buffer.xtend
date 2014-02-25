@@ -32,7 +32,7 @@ class Buffer {
 		buffer.matchTable.forEach [ localIdx, matchList |
 			// For each Match
 			matchList.forEach [ match |
-				val newRange = new Range(localIdx, localIdx + match.length)
+				val newRange = match.localRange
 				// Get the intersection of the match and existing match ranges
 				val intersections = matchRanges.intersection(newRange)
 				multipleMatchRanges.union(intersections)
@@ -64,11 +64,10 @@ class Buffer {
 
 		while (iterEntry.hasNext && !stop) {
 			val entry = iterEntry.next
-			val localIdx = entry.key
 			var iterMatch = entry.value.iterator
 			while (iterMatch.hasNext && !stop) {
 				val match = iterMatch.next
-				val addedRange = coveredRange.union(new Range(localIdx, localIdx + match.length))
+				val addedRange = coveredRange.union(match.localRange)
 
 				// Set stop to true if the range covers the complete token range
 				stop = stop || (addedRange.start == buffer.minIndex && addedRange.end == buffer.maxIndex)
@@ -476,7 +475,7 @@ class Buffer {
 	def applyMatch(Match match) {
 
 		// Temp version with unique match for a complete buffer
-		appliedMatches.put(new Range(match.localIndex, match.localIndex + match.length),
+		appliedMatches.put(match.localRange,
 			match.remoteBuffer -> match.remoteIndex)
 
 		// Move all third-party matches from the merged buffer
@@ -653,7 +652,7 @@ class Buffer {
 	def updateRemoteIndexes(Match match) {
 		var res = false;
 
-		val localRange = new Range(match.localIndex, match.localIndex + match.length)
+		val localRange = match.localRange
 
 		// Get the local indivisible ranges involved in the match
 		val localIndivisibleRanges = match.localBuffer.indivisibleRanges.filter [
@@ -680,7 +679,7 @@ class Buffer {
 	}
 
 	def updateDivisibleRanges(Match match) {
-		val localRange = new Range(match.localIndex, match.localIndex + match.length)
+		val localRange = match.localRange
 
 		// Get the local indivisible ranges involved in the match
 		val localIndivisibleRanges = match.localBuffer.indivisibleRanges.filter [
@@ -705,7 +704,7 @@ class Buffer {
 	def updateRemoteMergeableRange(Match match) {
 
 		// 1 - Get the mergeable ranges that are involved in the match
-		val localRange = new Range(match.localIndex, match.localIndex + match.length)
+		val localRange = match.localRange
 
 		// Get the local indivisible ranges involved in the match
 		val localIndivisibleRanges = match.localBuffer.indivisibleRanges.filter [
