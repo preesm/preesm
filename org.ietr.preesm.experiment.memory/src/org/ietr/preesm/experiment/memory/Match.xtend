@@ -99,10 +99,10 @@ class Match {
 	/**
 	 * Returns the {@link Range} of the {@link Match#getLocalBuffer() 
 	 * localBuffer} that will be impacted if <code>this</code> {@link Match} 
-	 * is applied. This {@link Range} corresponds to the largest {@link 
-	 * Match#getLocalIndivisibleRange() localIndivisibleRange} between the one 
-	 * of the current {@link Match} and the one of its {@link 
-	 * Match#getReciprocate() reciprocate}.
+	 * is applied. This {@link Range} corresponds to the largest {@link Range}
+	 * between the {@link #getLocalRange()} of the current {@link Match} and 
+	 * the {@link Match#getLocalIndivisibleRange() localIndivisibleRange} of 
+	 * the {@link #getReciprocate() reciprocate} {@link Match}. 
 	 * 
 	 * @return a {@link Range} of impacted tokens aligned with the {@link 
 	 * Match#getLocalBuffer() localBuffer} indexes.
@@ -110,7 +110,7 @@ class Match {
 	def Range getLocalImpactedRange() {
 
 		// Get the aligned smallest indivisible range (local or remote)
-		val localIndivisibleRange = this.localIndivisibleRange
+		val localIndivisibleRange = this.localRange
 		val remoteIndivisibleRange = this.reciprocate.localIndivisibleRange
 		remoteIndivisibleRange.translate(this.localIndex - this.remoteIndex)
 		val smallestRange = if (localIndivisibleRange.length > remoteIndivisibleRange.length) {

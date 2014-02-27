@@ -366,7 +366,7 @@ class ScriptRunner {
 				if (result.key.contains(it.remoteBuffer)) {
 					it.siblingMatch = true
 					it.type = MatchType::INTER_SIBLINGS
-				}  else {
+				} else {
 					it.type = MatchType::FORWARD
 				}
 			]
@@ -404,16 +404,16 @@ class ScriptRunner {
 		// buffers together (checked later)
 		divisibleCandidates.forEach [ buffer |
 			buffer.matchTable.values.flatten.forEach [
-				val r = it.localRange 
+				val r = it.localRange
 				buffer.indivisibleRanges.lazyUnion(r)
 			]
 		]
-		
+
 		// All other buffers are not divisible
 		allBuffers.removeAll(divisibleCandidates)
-		allBuffers.forEach[
+		allBuffers.forEach [
 			it.indivisibleRanges.add(new Range(it.minIndex, it.maxIndex))
-		] 
+		]
 	}
 
 	/**
@@ -502,15 +502,13 @@ class ScriptRunner {
 						    // and is not involved in any conflicting range
 							{
 								val match = entry.value.head
-								match.conflictingMatches.size == 0 
-								//&& 
-								//match.reciprocate.conflictingMatches.size == 0 
+								match.conflictingMatches.size == 0
 							}
 					].toList.immutableCopy
 
 					// Copy the candidate list, otherwise it is updated when
 					// the content of buffers are modified
-					println('''0- «candidates»''')
+					println('''0- «candidates.map[it.matchTable.entrySet.head.value.head]»''')
 					if (!candidates.empty) {
 
 						// If there are candidates, merge them all and do step 0 again
@@ -539,13 +537,10 @@ class ScriptRunner {
 						// Has a non-empty matchTable 
 						it.matchTable.size != 0 &&						
 						// is divisible
-						/*!it.indivisible &&*/
+						!it.divisible &&
 						it.matchTable.values.flatten.forall [
 							// Is not involved in any conflicting range
 							it.conflictingMatches.size == 0
-						/*&&
-								// no match falls in a divisible buffer
-								it.remoteBuffer.indivisible */
 						]
 					].toList.immutableCopy
 
@@ -657,7 +652,7 @@ class ScriptRunner {
 										// Match them together
 										val match = buffers.get(0).matchWith(0, buffers.get(1), 0,
 											buffers.get(0).nbTokens)
-										if(buffers.get(0).dagVertex == dagEdge.source){
+										if (buffers.get(0).dagVertex == dagEdge.source) {
 											match.type = MatchType::FORWARD
 											match.reciprocate.type = MatchType::BACKWARD
 										} else {

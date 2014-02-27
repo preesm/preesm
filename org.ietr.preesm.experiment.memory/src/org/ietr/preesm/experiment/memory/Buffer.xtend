@@ -57,9 +57,9 @@ class Buffer {
 	 * @return <code>true</code> if the {@link Buffer} is completely matched,
 	 * and <code>false</code> otherwise. 
 	 */
-	static def isCompletelyMatched(Buffer buffer) {
+	def isCompletelyMatched() {
 		val coveredRange = new ArrayList<Range>
-		val iterEntry = buffer.matchTable.entrySet.iterator
+		val iterEntry = this.matchTable.entrySet.iterator
 		var stop = false
 
 		while (iterEntry.hasNext && !stop) {
@@ -70,7 +70,7 @@ class Buffer {
 				val addedRange = coveredRange.union(match.localRange)
 
 				// Set stop to true if the range covers the complete token range
-				stop = stop || (addedRange.start == buffer.minIndex && addedRange.end == buffer.maxIndex)
+				stop = stop || (addedRange.start == this.minIndex && addedRange.end == this.maxIndex)
 			}
 		}
 
@@ -284,7 +284,7 @@ class Buffer {
 		if (this.originallyMergeable) {
 
 			// Add a new mergeable range corresponding to the new virtual tokens
-			this.mergeableRanges.union(new Range(newValue, _maxIndex))
+			this.mergeableRanges.union(new Range(newValue, _minIndex))
 		}
 		_minIndex = newValue
 	}
@@ -462,6 +462,38 @@ class Buffer {
 
 		localMatch.reciprocate = remoteMatch
 		return localMatch
+	}
+	
+	/**
+	 * A {@link Buffer} is divisible if its {@link #getIndivisibleRanges() 
+	 * indivisible ranges} are not unique and completely cover the {@link 
+	 * #getMinIndex() minIndex} to {@link #getMaxIndex() maxIndex} {@link 
+	 * Range}, if it is {@link #isCompletelyMatched() completelyMatched},
+	 *  and if it is matched only in indivisible {@link Buffer buffers}.
+	 * 
+	 * @return <code>true</code> if the {@link Buffer} is divisible, <code>
+	 * false</code> otherwise.
+	 */
+	def boolean isDivisible(){
+		this.remoteDivisible &&
+		matchTable.values.flatten.forall[
+			!it.remoteBuffer.remoteDivisible
+		]		
+	}
+	
+	/**
+	 * Same as {@link #isDivisible()} except that {@link Match matches} are not
+	 * tested to check if they only are in indivisible {@link Buffer}. 
+	 */
+	def boolean isRemoteDivisible(){
+		isCompletelyMatched &&
+		indivisibleRanges.size > 1 &&
+		{
+			// Test that all ranges are covered by the indivisible ranges
+			val copy = indivisibleRanges.map[it.clone as Range].toList
+			val coveredRange = copy.tail.toList.union(copy.head)
+			coveredRange == new Range(minIndex, maxIndex)			
+		} 	
 	}
 
 	override toString() '''«sdfVertex.name».«name»[«nbTokens * tokenSize»]'''
