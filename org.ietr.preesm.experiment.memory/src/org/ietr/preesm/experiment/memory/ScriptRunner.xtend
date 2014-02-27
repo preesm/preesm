@@ -404,10 +404,16 @@ class ScriptRunner {
 		// buffers together (checked later)
 		divisibleCandidates.forEach [ buffer |
 			buffer.matchTable.values.flatten.forEach [
-				val r = new Range(it.localIndex, it.localIndex + it.length)
+				val r = it.localRange 
 				buffer.indivisibleRanges.lazyUnion(r)
 			]
 		]
+		
+		// All other buffers are not divisible
+		allBuffers.removeAll(divisibleCandidates)
+		allBuffers.forEach[
+			it.indivisibleRanges.add(new Range(it.minIndex, it.maxIndex))
+		] 
 	}
 
 	/**
@@ -456,46 +462,8 @@ class ScriptRunner {
 
 			// for Each match
 			val matchList = buffer.matchTable.values.flatten
-			updateConflictingMatches(matchList)
+			Buffer::updateConflictingMatches(matchList)
 		}
-	}
-
-	/**
-	 * This method update the {@link Match#getConflictingMatches() 
-	 * conflictingMatches} {@link List} of all the {@link Match} passed as a 
-	 * parameter. To do so, the method scan all the {@link 
-	 * Match#getConflictCandidates() conflictCandidates} of each {@link Match} 
-	 * and check if any candidate has an overlapping range. In such case, the 
-	 * candidate is moved to the {@link Match#getConflictingMatches() 
-	 * conflictingMatches} of the {@link Match} and its {@link 
-	 * Match#getReciprocate() reciprocate}. To ensure consistency, one should 
-	 * make sure that if a {@link Match} is updated with this method, then all 
-	 * the {@link Match matches} contained in its {@link 
-	 * Match#getConflictCandidates() conflictCandidates} {@link List} are 
-	 * updated too.   
-	 * 
-	 * @param matchList
-	 * 		The {@link Iterable} of {@link Match} to update
-	 */
-	def updateConflictingMatches(Iterable<Match> matchList) {
-		matchList.forEach [ match |
-			// Check all the conflict candidaes
-			val iter = match.conflictCandidates.iterator
-			while (iter.hasNext) {
-				val candidate = iter.next
-				if (candidate.localRange.hasOverlap(match.localRange)) {
-					iter.remove
-
-					// Add the candidate to the conflicting matches
-					match.conflictingMatches.add(candidate)
-					match.reciprocate.conflictingMatches.add(candidate.reciprocate)
-					
-					// Remove it from the reciprocate candidates (if it was present)
-					match.reciprocate.conflictCandidates.remove(candidate.reciprocate)
-					
-				}
-			}
-		]
 	}
 
 	/**
@@ -533,11 +501,10 @@ class ScriptRunner {
 							entry.key + entry.value.head.length >= it.nbTokens * it.tokenSize &&
 						    // and is not involved in any conflicting range
 							{
-
-								// Only the destination can have conflicts here since
-								// the match source has a unique match in its matchTable
 								val match = entry.value.head
-								match.conflictingMatches.size == 0
+								match.conflictingMatches.size == 0 
+								//&& 
+								//match.reciprocate.conflictingMatches.size == 0 
 							}
 					].toList.immutableCopy
 

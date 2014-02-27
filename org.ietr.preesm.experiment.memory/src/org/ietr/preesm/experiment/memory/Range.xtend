@@ -73,7 +73,7 @@ class Range {
 	 */
 	static def difference(List<Range> ranges, List<Range> ranges2) {
 		// Copy the original list
-		var result = ranges.map[it.clone as Range]
+		var result = ranges.map[it.clone as Range].toList // toList to make sure the map function is applied only once
 		// Successively subtract all ranges from ranges2
 		for(range : ranges2){
 			result = result.difference(range)
