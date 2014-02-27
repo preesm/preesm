@@ -404,7 +404,11 @@ class ScriptRunner {
 				// that the developer knows where tokens are only by looking at
 				// its actor script.
 				buffer.completelyMatched
-		// Note that at this point, virtual tokens are always matched
+				// Note that at this point, virtual tokens are always matched
+				// so this constraint ensure that future virtual tokens are 
+				// always attached to real token by an overlapping 
+				// indivisible range !
+				
 		]
 
 		// All are divisible BUT it will not be possible to match divided
@@ -487,6 +491,10 @@ class ScriptRunner {
 			buffers.addAll(pair.value.filter[it.appliedMatches.size == 0])
 		]
 
+		// Sort the buffers in alphabetical order to enforce similarities 
+		// between successive run
+		buffers.sortInplaceBy[name]
+
 		//println(buffers.fold(0,[res, buf | res + buf.maxIndex - buf.minIndex]))
 		// Iterate the merging algorithm until no buffers are merged
 		var updated = false
@@ -496,7 +504,7 @@ class ScriptRunner {
 				// First step: Merge non-conflicting buffer with a unique match 
 				case 0: {
 
-					// Find all mergeable buffers with a unique match (if any)
+					// Find all buffers with a unique match (if any)
 					val candidates = buffers.filter [
 						val entry = it.matchTable.entrySet.head
 						// Returns true if:
@@ -523,7 +531,7 @@ class ScriptRunner {
 
 						// Do the merge
 						candidates.forEach [
-							applyMatches(#[it.matchTable.entrySet.head.value.head])
+							it.applyMatches(it.matchTable.entrySet.head.value)
 						]
 						buffers.removeAll(candidates)
 
@@ -547,7 +555,9 @@ class ScriptRunner {
 						it.divisible && it.matchTable.values.flatten.forall [
 							// Is not involved in any conflicting range
 							it.conflictingMatches.size == 0
-						] && it.multipleMatchRange.size == 0
+						] &&
+						// Has no multiple match Range. 
+						it.multipleMatchRange.size == 0
 					].toList.immutableCopy
 
 					println('''1- («candidates.size») «candidates»''')
@@ -569,20 +579,36 @@ class ScriptRunner {
 				// Third step: Same as step 0, but test forward matches
 				// of buffers only
 				case 2: {
+					val matchedBuffers = newArrayList
+					while (step == 2) {
+						
+						// Find all buffers with a unique forward match (if any)
+						val candidate = buffers.findFirst [
+							val matches = it.matchTable.values.flatten.filter[it.type == MatchType::FORWARD]
+							// Returns true if:
+							// There is a unique forward match
+							matches.size == 1 &&
+								// that begins at index 0 (or less)
+								matches.head.localIndex <= 0 &&
+								// and ends at the end of the buffer (or more)
+								matches.head.localIndex + matches.head.length >= it.nbTokens * it.tokenSize &&
+								// and is not involved in any conflicting match
+								matches.head.conflictingMatches.size == 0
+						]
 
-					// Find all 
-					val candidates = buffers.filter [
-						false
-					].toList.immutableCopy
+						if (candidate != null) {
+							matchedBuffers.add(candidate)
+							
+							// If there is a candidate, merge them all and do step 2 again
+							candidate.applyMatches(#[candidate.matchTable.values.flatten.filter[it.type == MatchType::FORWARD].head])
+							
+							step = 2
+							buffers.remove(candidate)
 
-					println('''2- («candidates.size») «candidates»''')
-					if (!candidates.empty) {
-
-						// If there are candidates, merge them all and do step 0 again
-						step = 0
-
-					} else {
-						step = 3
+						} else {
+							println('''2- («matchedBuffers.size») «matchedBuffers»''')
+							step = 3
+						}
 					}
 				}
 			}
@@ -594,12 +620,7 @@ class ScriptRunner {
 		println("---")
 	}
 
-	def applyMatches(List<Match> matches) {
-
-		// Temp version with a unique match with no merge conflicts
-		var match = matches.head
-		match.localBuffer.applyMatch(match)
-	}
+	
 
 	/**
 	 * Called only for divisible buffers with multiple match and no 
@@ -622,9 +643,7 @@ class ScriptRunner {
 		]
 
 		// apply the matches of the buffer one by one
-		matches.forEach [
-			buffer.applyMatch(it)
-		]
+		buffer.applyMatches(matches)
 	}
 
 	/**
@@ -718,9 +737,8 @@ class ScriptRunner {
 											match.reciprocate.type = MatchType::FORWARD
 										}
 
-										// Do not apply the match immediately
-										// it would mess up with merge conflicts
-										applyMatches(#[match])
+										// Apply the match immediately
+										match.localBuffer.applyMatches(#[match])
 
 										// Save matched buffer
 										intraGroupBuffer.add(match.localBuffer)

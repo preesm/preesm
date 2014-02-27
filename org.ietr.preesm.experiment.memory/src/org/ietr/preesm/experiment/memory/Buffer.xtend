@@ -50,7 +50,9 @@ class Buffer {
 	 * A {@link Buffer} is partially matched if only part of its token range 
 	 * (i.e. from 0 to {@link #getNbTokens() nbTokens}*{@link #getTokenSize() 
 	 * tokenSize}) are involved in a {@link Match} in the {@link Buffer} 
-	 * {@link Buffer#_matchTable match table}.
+	 * {@link Buffer#_matchTable match table}. This condition is sufficient 
+	 * since all "virtual" tokens of a {@link Buffer} will always have an 
+	 * overlapping indivisible range with real tokens. 
 	 * 
 	 * @param buffer
 	 * 	The tested {@link Buffer}.
@@ -70,7 +72,7 @@ class Buffer {
 				val addedRange = coveredRange.union(match.localRange)
 
 				// Set stop to true if the range covers the complete token range
-				stop = stop || (addedRange.start == this.minIndex && addedRange.end == this.maxIndex)
+				stop = stop || (addedRange.start <= 0 && addedRange.end >= tokenSize * nbTokens)
 			}
 		}
 
@@ -400,6 +402,24 @@ class Buffer {
 	def byteMatchWith(int localByteIdx, Buffer buffer, int remoteByteIdx, int byteSize, boolean check) {
 
 		// Test if a matched range is completely out of real bytes
+		// This rule is indispensable to make sure that "virtual" token
+		// exist for a reason. Without this rule, the match application would
+		// fall down, especially because if a pure virtual token was matched
+		// this match would not be forwarding when matching the "real" tokens
+		// since only matches overlapping the match.localIndivisibleRange are
+		// forwarded when this match is applied.
+		// eg. 
+		// 
+		// Actor A with one input (2 tokens) and one output (4 tokens)
+		// A.in tokens {0, 1} and virtual tokens {-3, -2, -1}
+		// A.out tokens {0, 1, 2, 3} 
+		// 
+		// Match1 A.in[-3..-1[ with A.out[0..2[
+		// Match2 A.in[0..2[ with A.out[2..4[
+		//
+		// Because of a graph edge, A.in is matched into B.out(2 tokens),  
+		// Then, Match1 will not be forwarded to B.out because it has no overlap with the 
+		// real tokens.  
 		if (check) {
 			if ((localByteIdx >= this.nbTokens * this.tokenSize) || (localByteIdx + byteSize - 1 < 0)) {
 				throw new RuntimeException(
@@ -463,7 +483,7 @@ class Buffer {
 		localMatch.reciprocate = remoteMatch
 		return localMatch
 	}
-	
+
 	/**
 	 * A {@link Buffer} is divisible if its {@link #getIndivisibleRanges() 
 	 * indivisible ranges} are not unique and completely cover the 0 to {@link 
@@ -478,20 +498,18 @@ class Buffer {
 	 * @return <code>true</code> if the {@link Buffer} is divisible, <code>
 	 * false</code> otherwise.
 	 */
-	def boolean isDivisible(){
-		isCompletelyMatched &&
-		indivisibleRanges.size > 1 &&
-		{
+	def boolean isDivisible() {
+		isCompletelyMatched && indivisibleRanges.size > 1 && {
+
 			// Test that all ranges are covered by the indivisible ranges
 			val copy = indivisibleRanges.map[it.clone as Range].toList
 			val coveredRange = copy.tail.toList.union(copy.head)
-			coveredRange == new Range(0, nbTokens*tokenSize)			
-		} 	 &&
-		matchTable.values.flatten.forall[
+			coveredRange == new Range(0, nbTokens * tokenSize)
+		} && matchTable.values.flatten.forall [
 			it.remoteBuffer.indivisible
-		]		
+		]
 	}
-	
+
 	/**
 	 *  A {@link Buffer} is indivisible if its {@link #getIndivisibleRanges() 
 	 * indivisibleRanges} attribute contains a unique {@link Range} that covers
@@ -501,10 +519,9 @@ class Buffer {
 	 * is not necessarily {@link #isDivisible() divisible}. Indeed, it might 
 	 * fulfill parts of the conditions to be divisible.</b>
 	 */
-	def boolean isIndivisible(){
-		this.indivisibleRanges.size == 1 &&
-		this.indivisibleRanges.head.start == this.minIndex &&
-		this.indivisibleRanges.head.end == this.maxIndex 
+	def boolean isIndivisible() {
+		this.indivisibleRanges.size == 1 && this.indivisibleRanges.head.start == this.minIndex &&
+			this.indivisibleRanges.head.end == this.maxIndex
 	}
 
 	override toString() '''«sdfVertex.name».«name»[«nbTokens * tokenSize»]'''
@@ -515,72 +532,93 @@ class Buffer {
 	 * The local buffer is merged into the remote buffer
 	 * The local buffer does not "exists" afterwards
 	 */
-	def applyMatch(Match match) {
+	def applyMatches(List<Match> matches) {
 
-		// Temp version with unique match for a complete buffer <= not true anymore
-		appliedMatches.put(match.localIndivisibleRange, match.remoteBuffer -> match.remoteIndex)
+		// copy the list to iterate on it
+		val matchesCopy = new ArrayList(matches)
 
-		// Move all third-party matches from the matched range of the merged buffer
-		match.localBuffer.matchTable.values.flatten.filter[
-			it != match &&
-			it.localRange.hasOverlap(match.localIndivisibleRange)
-		].toList.immutableCopy.forEach [ movedMatch |
-			// Remove old match from original match list
-			val localList = match.localBuffer.matchTable.get(movedMatch.localIndex)
-			localList.remove(movedMatch)
-			if (localList.size == 0) {
-				match.localBuffer.matchTable.remove(movedMatch.localIndex)
-			}
-			// Change the match local buffer and index	
-			// Length and remoteBuffer are unchanged
-			movedMatch.localBuffer = match.remoteBuffer
-			movedMatch.localIndex = movedMatch.localIndex - (match.localIndex - match.remoteIndex)
-			// Update the reciprocate
-			movedMatch.reciprocate.remoteBuffer = movedMatch.localBuffer
-			movedMatch.reciprocate.remoteIndex = movedMatch.localIndex
-			// Put the moved match in its new host matchTable
-			var matchList = match.remoteBuffer.matchTable.get(movedMatch.localIndex)
-			if (matchList === null) {
-				matchList = newArrayList
-				match.remoteBuffer.matchTable.put(movedMatch.localIndex, matchList)
-			}
-			matchList.add(movedMatch)
+		// Check that all match have the current buffer as local
+		if(!matchesCopy.forall[it.localBuffer == this]){
+			throw new RuntimeException(
+				"Incorrect call to applyMatches method.\n One of the given matches does not belong to the this Buffer.")
+		}
+		
+		// Check that the matches completely cover the buffer
+		val matchedRange = matchesCopy.fold(new ArrayList<Range>) [ res, match |
+			res.union(match.localRange)
+			res
 		]
-
-		// Update the conflictCandidates
-		updateConflictCandidates(match)
-
-		// Update the min and max index of the remoteBuffer (if necessary)
-		// Must be called before updateRemoteMergeableRange(match)
-		updateRemoteIndexes(match)
-
-		// Update divisability if remote buffer 
-		// The divisability update must not be applied if the applied match involves
-		// the division of the local buffer, instead the remote buffer should become !
-		// non divisable ! <= Note Since buffer division is conditioned by the 
-		// indivisibility of the remote buffer, this remark should probably be ignored
-		updateDivisibleRanges(match)
-
-		// Update the mergeable range of the remote buffer
-		updateRemoteMergeableRange(match)
-
-		// Update Matches
-		updateMatches(match)
-
-		// Update conflicting matches
-		var matchToUpdate = match.remoteBuffer.matchTable.values.flatten.filter[it != match.reciprocate]
-		while (matchToUpdate.size != 0) {
-			matchToUpdate = updateConflictingMatches(matchToUpdate)
+		val tokenRange = new Range(0, tokenSize * nbTokens)
+		if (matchedRange.intersection(tokenRange).head != tokenRange) {
+			throw new RuntimeException(
+				"Incorrect call to applyMatches method.\n All real token must be covered by the given matches.")
 		}
 
-		// Remove the applied match from the buffers match table 
-		// (local and reciprocate)
-		match.unmatch
+		for (match : matchesCopy) {
 
-		// Match was applied (and reciprocate)
-		match.applied = true
-		match.reciprocate.applied = true
+			// Temp version with unique match for a complete buffer <= not true anymore
+			appliedMatches.put(match.localIndivisibleRange, match.remoteBuffer -> match.remoteIndex)
 
+			// Move all third-party matches from the matched range of the merged buffer
+			match.localBuffer.matchTable.values.flatten.filter [
+				it != match && it.localRange.hasOverlap(match.localIndivisibleRange)
+			].toList.immutableCopy.forEach [ movedMatch |
+				// Remove old match from original match list
+				val localList = match.localBuffer.matchTable.get(movedMatch.localIndex)
+				localList.remove(movedMatch)
+				if (localList.size == 0) {
+					match.localBuffer.matchTable.remove(movedMatch.localIndex)
+				}
+				// Change the match local buffer and index	
+				// Length and remoteBuffer are unchanged
+				movedMatch.localBuffer = match.remoteBuffer
+				movedMatch.localIndex = movedMatch.localIndex - (match.localIndex - match.remoteIndex)
+				// Update the reciprocate
+				movedMatch.reciprocate.remoteBuffer = movedMatch.localBuffer
+				movedMatch.reciprocate.remoteIndex = movedMatch.localIndex
+				// Put the moved match in its new host matchTable
+				var matchList = match.remoteBuffer.matchTable.get(movedMatch.localIndex)
+				if (matchList === null) {
+					matchList = newArrayList
+					match.remoteBuffer.matchTable.put(movedMatch.localIndex, matchList)
+				}
+				matchList.add(movedMatch)
+			]
+
+			// Update the conflictCandidates
+			updateConflictCandidates(match)
+
+			// Update the min and max index of the remoteBuffer (if necessary)
+			// Must be called before updateRemoteMergeableRange(match)
+			updateRemoteIndexes(match)
+
+			// Update divisability if remote buffer 
+			// The divisability update must not be applied if the applied match involves
+			// the division of the local buffer, instead the remote buffer should become !
+			// non divisable ! <= Note Since buffer division is conditioned by the 
+			// indivisibility of the remote buffer, this remark should probably be ignored
+			updateDivisibleRanges(match)
+
+			// Update the mergeable range of the remote buffer
+			updateRemoteMergeableRange(match)
+
+			// Update Matches
+			updateMatches(match)
+
+			// Update conflicting matches
+			var matchToUpdate = match.remoteBuffer.matchTable.values.flatten.filter[it != match.reciprocate]
+			while (matchToUpdate.size != 0) {
+				matchToUpdate = updateConflictingMatches(matchToUpdate)
+			}
+
+			// Remove the applied match from the buffers match table 
+			// (local and reciprocate)
+			match.unmatch
+
+			// Match was applied (and reciprocate)
+			match.applied = true
+			match.reciprocate.applied = true
+		}
 	}
 
 	def updateMatches(Match match) {
@@ -818,8 +856,8 @@ class Buffer {
 		var res = false;
 
 		// Get the local indivisible ranges involved in the match
-		val localIndivisibleRange = match.localIndivisibleRange 
-		
+		val localIndivisibleRange = match.localIndivisibleRange
+
 		// Align them with the remote ranges
 		localIndivisibleRange.translate(match.remoteIndex - match.localIndex)
 
