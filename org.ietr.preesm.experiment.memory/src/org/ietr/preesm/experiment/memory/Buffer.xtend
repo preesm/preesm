@@ -48,8 +48,8 @@ class Buffer {
 	 * Test if the {@link Buffer} is partially matched.<br>
 	 * <br>
 	 * A {@link Buffer} is partially matched if only part of its token range 
-	 * (i.e. from {@link Buffer#_minIndex minIndex} to {@link Buffer#_maxIndex
-	 *  maxIndex}) are involved in a {@link Match} in the {@link Buffer} 
+	 * (i.e. from 0 to {@link #getNbTokens() nbTokens}*{@link #getTokenSize() 
+	 * tokenSize}) are involved in a {@link Match} in the {@link Buffer} 
 	 * {@link Buffer#_matchTable match table}.
 	 * 
 	 * @param buffer
@@ -466,34 +466,45 @@ class Buffer {
 	
 	/**
 	 * A {@link Buffer} is divisible if its {@link #getIndivisibleRanges() 
-	 * indivisible ranges} are not unique and completely cover the {@link 
-	 * #getMinIndex() minIndex} to {@link #getMaxIndex() maxIndex} {@link 
+	 * indivisible ranges} are not unique and completely cover the 0 to {@link 
+	 * #getNbTokens() nbTokens}*{@link #getTokenSize() tokenSize} {@link 
 	 * Range}, if it is {@link #isCompletelyMatched() completelyMatched},
-	 *  and if it is matched only in indivisible {@link Buffer buffers}.
+	 * and if it is matched only in {@link #isIndivisible() indivisible} {@link
+	 * Buffer buffers}.<br>
+	 * <b> An {@link Buffer} that is not {@link #isIndivisible() indivisible} 
+	 * is not necessarily divisible. Indeed, it might fulfill parts of the 
+	 * conditions to be divisible.</b>
 	 * 
 	 * @return <code>true</code> if the {@link Buffer} is divisible, <code>
 	 * false</code> otherwise.
 	 */
 	def boolean isDivisible(){
-		this.remoteDivisible &&
-		matchTable.values.flatten.forall[
-			!it.remoteBuffer.remoteDivisible
-		]		
-	}
-	
-	/**
-	 * Same as {@link #isDivisible()} except that {@link Match matches} are not
-	 * tested to check if they only are in indivisible {@link Buffer}. 
-	 */
-	def boolean isRemoteDivisible(){
 		isCompletelyMatched &&
 		indivisibleRanges.size > 1 &&
 		{
 			// Test that all ranges are covered by the indivisible ranges
 			val copy = indivisibleRanges.map[it.clone as Range].toList
 			val coveredRange = copy.tail.toList.union(copy.head)
-			coveredRange == new Range(minIndex, maxIndex)			
-		} 	
+			coveredRange == new Range(0, nbTokens*tokenSize)			
+		} 	 &&
+		matchTable.values.flatten.forall[
+			it.remoteBuffer.indivisible
+		]		
+	}
+	
+	/**
+	 *  A {@link Buffer} is indivisible if its {@link #getIndivisibleRanges() 
+	 * indivisibleRanges} attribute contains a unique {@link Range} that covers
+	 * all the {@link #getMinIndex() minIndex} to {@link #getMaxIndex() 
+	 * maxIndex} {@link Range}. <br>
+	 * <b> An {@link Buffer} that is not {@link #isIndivisible() indivisible} 
+	 * is not necessarily {@link #isDivisible() divisible}. Indeed, it might 
+	 * fulfill parts of the conditions to be divisible.</b>
+	 */
+	def boolean isIndivisible(){
+		this.indivisibleRanges.size == 1 &&
+		this.indivisibleRanges.head.start == this.minIndex &&
+		this.indivisibleRanges.head.end == this.maxIndex 
 	}
 
 	override toString() '''«sdfVertex.name».«name»[«nbTokens * tokenSize»]'''
@@ -506,11 +517,14 @@ class Buffer {
 	 */
 	def applyMatch(Match match) {
 
-		// Temp version with unique match for a complete buffer
-		appliedMatches.put(match.localRange, match.remoteBuffer -> match.remoteIndex)
+		// Temp version with unique match for a complete buffer <= not true anymore
+		appliedMatches.put(match.localIndivisibleRange, match.remoteBuffer -> match.remoteIndex)
 
-		// Move all third-party matches from the merged buffer
-		match.localBuffer.matchTable.values.flatten.filter[it != match].toList.immutableCopy.forEach [ movedMatch |
+		// Move all third-party matches from the matched range of the merged buffer
+		match.localBuffer.matchTable.values.flatten.filter[
+			it != match &&
+			it.localRange.hasOverlap(match.localIndivisibleRange)
+		].toList.immutableCopy.forEach [ movedMatch |
 			// Remove old match from original match list
 			val localList = match.localBuffer.matchTable.get(movedMatch.localIndex)
 			localList.remove(movedMatch)
@@ -543,7 +557,8 @@ class Buffer {
 		// Update divisability if remote buffer 
 		// The divisability update must not be applied if the applied match involves
 		// the division of the local buffer, instead the remote buffer should become !
-		// non divisable !
+		// non divisable ! <= Note Since buffer division is conditioned by the 
+		// indivisibility of the remote buffer, this remark should probably be ignored
 		updateDivisibleRanges(match)
 
 		// Update the mergeable range of the remote buffer
@@ -802,27 +817,21 @@ class Buffer {
 	def updateRemoteIndexes(Match match) {
 		var res = false;
 
-		val localRange = match.localRange
-
 		// Get the local indivisible ranges involved in the match
-		val localIndivisibleRanges = match.localBuffer.indivisibleRanges.filter [
-			// An indivisible range can go beyond the matched
-			// range. For example, if the range includes virtual tokens
-			it.hasOverlap(localRange)
-		].map[it.clone as Range].toList // toList to make sure the map function is applied only once
-
+		val localIndivisibleRange = match.localIndivisibleRange 
+		
 		// Align them with the remote ranges
-		localIndivisibleRanges.translate(match.remoteIndex - match.localIndex)
+		localIndivisibleRange.translate(match.remoteIndex - match.localIndex)
 
 		// Update the remote buffer indexes if needed.
-		if (minStart(localIndivisibleRanges) < match.remoteBuffer.minIndex) {
+		if (localIndivisibleRange.start < match.remoteBuffer.minIndex) {
 			res = true
-			match.remoteBuffer.minIndex = minStart(localIndivisibleRanges)
+			match.remoteBuffer.minIndex = localIndivisibleRange.start
 		}
 
-		if (maxEnd(localIndivisibleRanges) > match.remoteBuffer.maxIndex) {
+		if (localIndivisibleRange.end > match.remoteBuffer.maxIndex) {
 			res = true
-			match.remoteBuffer.maxIndex = maxEnd(localIndivisibleRanges)
+			match.remoteBuffer.maxIndex = localIndivisibleRange.end
 		}
 
 		res
@@ -854,17 +863,8 @@ class Buffer {
 	def updateRemoteMergeableRange(Match match) {
 
 		// 1 - Get the mergeable ranges that are involved in the match
-		val localRange = match.localRange
-
-		// Get the local indivisible ranges involved in the match
-		val localIndivisibleRanges = match.localBuffer.indivisibleRanges.filter [
-			// An indivisible range can go beyond the matched
-			// range. For example, if the range includes virtual tokens
-			it.hasOverlap(localRange)
-		].map[it.clone as Range].toList // toList to make sure the map function is applied only once
-
 		// Get the local involved Range
-		val involvedRange = new Range(minStart(localIndivisibleRanges), maxEnd(localIndivisibleRanges))
+		val involvedRange = match.localIndivisibleRange
 		val localMergeableRange = match.localBuffer.mergeableRanges.intersection(involvedRange)
 
 		// Translate it to get the remote involved range

@@ -396,8 +396,15 @@ class ScriptRunner {
 			// Buffer.simplifyMatches() comments.)
 			buffer.matchTable.size > 1 &&
 				// if it is totally matched, so that all parts of the divided 
-				// buffer can still be accessed
+				// buffer can still be accessed in an immediately logical way.
+				// With the successive merges, unmatched ranges might become 
+				// part of an indivisible range with a matched range. However
+				// since this kind of behavior is not intuitive, we set not
+				// completely matched buffers as indivisible from the start so 
+				// that the developer knows where tokens are only by looking at
+				// its actor script.
 				buffer.completelyMatched
+				// Note that at this point, virtual tokens are always matched
 		]
 
 		// All are divisible BUT it will not be possible to match divided
@@ -508,7 +515,7 @@ class ScriptRunner {
 
 					// Copy the candidate list, otherwise it is updated when
 					// the content of buffers are modified
-					println('''0- «candidates.map[it.matchTable.entrySet.head.value.head]»''')
+					println('''0- («candidates.size») «candidates.map[it.matchTable.entrySet.head.value.head]»''')
 					if (!candidates.empty) {
 
 						// If there are candidates, merge them all and do step 0 again
@@ -537,16 +544,25 @@ class ScriptRunner {
 						// Has a non-empty matchTable 
 						it.matchTable.size != 0 &&						
 						// is divisible
-						!it.divisible &&
+						it.divisible &&
 						it.matchTable.values.flatten.forall [
 							// Is not involved in any conflicting range
 							it.conflictingMatches.size == 0
-						]
+						] &&
+						it.multipleMatchRange.size == 0
 					].toList.immutableCopy
 
-					println('''1- «candidates»''')
+					println('''1- («candidates.size») «candidates»''')
 					if (!candidates.empty) {
-						step = 2
+						// If there are candidates, merge them all and do step 0 again
+						step = 0
+						// Do the matche
+						candidates.forEach [
+							applyDivisionMatch(it)
+						]
+						buffers.removeAll(candidates)
+						
+						
 					} else {
 						step = 2
 					}
@@ -564,9 +580,33 @@ class ScriptRunner {
 
 		// Temp version with a unique match with no merge conflicts
 		var match = matches.head
-		match.localBuffer.applyMatch(match)
-
-	// If there was conflicts with the removed buffer
+		match.localBuffer.applyMatch(match)	
+	}
+	
+	/**
+	 * Called only for divisible buffers with multiple match and no 
+	 * conflict that are not matched in another divisible buffer
+	 */
+	def applyDivisionMatch(Buffer buffer){	
+		// In the current version, the buffer only contains
+		// the matches necessary and sufficient for the division (i.e. no multiple matched ranges)
+		// To process this special case in the future, some matches will have 
+		// to be changes: e.g. siblings will become forward or things like that
+		// . For a simpler version, simply remove those other matches.	
+		
+		// The match table will be modified by the applyMatch method, so we need a copy of it to iterate ! 
+		val matches = new ArrayList(buffer.matchTable.values.flatten.toList)
+		
+		// Remove the matches from each other conflict candidates
+		matches.forEach[
+			it.conflictCandidates.removeAll(matches)
+			it.reciprocate.conflictCandidates.removeAll(matches.map[it.reciprocate])
+		]
+		
+		// apply the matches of the buffer one by one
+		matches.forEach[
+			buffer.applyMatch(it)
+		]
 	}
 
 	/**
