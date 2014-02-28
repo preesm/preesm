@@ -45,6 +45,34 @@ class Buffer {
 	}
 
 	/**
+	 * Same as {@link #getMultipleMatchRange(Buffer)} but tests only the given 
+	 * {@link List} of {@link Match matches}. This method does not check if all
+	 * {@link Match matches} in the {@link List} have the same {@link 
+	 * #getLocalBuffer() local buffer}.
+	 * 
+	 * @param matches 
+	 * 	the {@link List} of {@link Match matches}
+	 * @return a {@link List} of {@link Range} containing the overlapping 
+	 * ranges of the matches.
+	 */
+	static def getOverlappingRanges(List<Match> matches) {
+		val matchRanges = newArrayList
+		val multipleMatchRanges = newArrayList
+
+		// For each Match
+		matches.forEach [ match |
+			val newRange = match.localRange
+			// Get the intersection of the match and existing match ranges
+			val intersections = matchRanges.intersection(newRange)
+			multipleMatchRanges.union(intersections)
+			// Update the existing match ranges
+			matchRanges.union(newRange)
+		]
+
+		multipleMatchRanges
+	}
+
+	/**
 	 * Test if the {@link Buffer} is partially matched.<br>
 	 * <br>
 	 * A {@link Buffer} is partially matched if only part of its token range 
@@ -538,11 +566,11 @@ class Buffer {
 		val matchesCopy = new ArrayList(matches)
 
 		// Check that all match have the current buffer as local
-		if(!matchesCopy.forall[it.localBuffer == this]){
+		if (!matchesCopy.forall[it.localBuffer == this]) {
 			throw new RuntimeException(
 				"Incorrect call to applyMatches method.\n One of the given matches does not belong to the this Buffer.")
 		}
-		
+
 		// Check that the matches completely cover the buffer
 		val matchedRange = matchesCopy.fold(new ArrayList<Range>) [ res, match |
 			res.union(match.localRange)
