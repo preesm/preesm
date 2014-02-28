@@ -404,11 +404,10 @@ class ScriptRunner {
 				// that the developer knows where tokens are only by looking at
 				// its actor script.
 				buffer.completelyMatched
-				// Note that at this point, virtual tokens are always matched
-				// so this constraint ensure that future virtual tokens are 
-				// always attached to real token by an overlapping 
-				// indivisible range !
-				
+		// Note that at this point, virtual tokens are always matched
+		// so this constraint ensure that future virtual tokens are 
+		// always attached to real token by an overlapping 
+		// indivisible range !
 		]
 
 		// All are divisible BUT it will not be possible to match divided
@@ -581,9 +580,10 @@ class ScriptRunner {
 				case 2: {
 					val matchedBuffers = newArrayList
 					while (step == 2) {
-						
+						var MatchType type
+
 						// Find all buffers with a unique forward match (if any)
-						val candidate = buffers.findFirst [
+						var candidate = buffers.findFirst [
 							val matches = it.matchTable.values.flatten.filter[it.type == MatchType::FORWARD]
 							// Returns true if:
 							// There is a unique forward match
@@ -595,13 +595,33 @@ class ScriptRunner {
 								// and is not involved in any conflicting match
 								matches.head.conflictingMatches.size == 0
 						]
+						if (candidate != null) {
+							type = MatchType::FORWARD
+						} else {
+							candidate = buffers.findFirst [
+								val matches = it.matchTable.values.flatten.filter[it.type == MatchType::BACKWARD]
+								// Returns true if:
+								// There is a unique forward match
+								matches.size == 1 &&
+									// that begins at index 0 (or less)
+									matches.head.localIndex <= 0 &&
+									// and ends at the end of the buffer (or more)
+									matches.head.localIndex + matches.head.length >= it.nbTokens * it.tokenSize &&
+									// and is not involved in any conflicting match
+									matches.head.conflictingMatches.size == 0
+							]
+							if (candidate != null) {
+								type = MatchType::BACKWARD
+							}
+						}
 
 						if (candidate != null) {
 							matchedBuffers.add(candidate)
-							
+							val valType = type // a val is needed to be usable in the filter lambda expression
 							// If there is a candidate, merge them all and do step 2 again
-							candidate.applyMatches(#[candidate.matchTable.values.flatten.filter[it.type == MatchType::FORWARD].head])
-							
+							candidate.applyMatches(
+								#[candidate.matchTable.values.flatten.filter[it.type == valType].head])
+
 							step = 2
 							buffers.remove(candidate)
 
@@ -619,8 +639,6 @@ class ScriptRunner {
 		//println(buffers.fold(0,[res, buf | res + buf.maxIndex - buf.minIndex]))
 		println("---")
 	}
-
-	
 
 	/**
 	 * Called only for divisible buffers with multiple match and no 
