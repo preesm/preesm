@@ -384,6 +384,10 @@ class ScriptRunner {
 		]
 	}
 
+	/** 
+	 * Also fill the {@link Buffer#getDivisibilityRequiredMatches() 
+	 * divisibilityRequiredMatches} {@link List}. 
+	 */
 	def identifyDivisibleBuffers(Pair<List<Buffer>, List<Buffer>> result) {
 		val allBuffers = new ArrayList<Buffer>
 		allBuffers.addAll(result.key)
@@ -403,7 +407,7 @@ class ScriptRunner {
 				// completely matched buffers as indivisible from the start so 
 				// that the developer knows where tokens are only by looking at
 				// its actor script.
-				buffer.completelyMatched
+				buffer.completelyMatched 
 		// Note that at this point, virtual tokens are always matched
 		// so this constraint ensure that future virtual tokens are 
 		// always attached to real token by an overlapping 
@@ -413,9 +417,12 @@ class ScriptRunner {
 		// All are divisible BUT it will not be possible to match divided
 		// buffers together (checked later)
 		divisibleCandidates.forEach [ buffer |
+			val drMatches = newArrayList
+			buffer.divisibilityRequiredMatches.add(drMatches)
 			buffer.matchTable.values.flatten.forEach [
 				val r = it.localRange
 				buffer.indivisibleRanges.lazyUnion(r)
+				drMatches.add(it)
 			]
 		]
 
@@ -549,14 +556,19 @@ class ScriptRunner {
 					// (if any)
 					val candidates = buffers.filter [
 						// Has a non-empty matchTable 
-						it.matchTable.size != 0 &&						
+						val t1 = it.matchTable.size != 0  						
 						// is divisible
-						it.divisible && it.matchTable.values.flatten.forall [
+						val t2 = it.divisible 
+						val t3 = it.matchTable.values.flatten.forall [
 							// Is not involved in any conflicting range
 							it.conflictingMatches.size == 0
-						] &&
+						] 
 						// Has no multiple match Range. 
-						it.multipleMatchRange.size == 0
+						val t4 =it.multipleMatchRange.size == 0
+						// No need to check the divisibilityRequiredMatches since
+						// the only matches of the Buffer are the one
+						// responsible for the division
+						t1 && t2 && t3 && t4
 					].toList.immutableCopy
 
 					println('''1- («candidates.size») «candidates»''')
@@ -616,8 +628,9 @@ class ScriptRunner {
 						}
 
 						if (candidate != null) {
-							matchedBuffers.add(candidate)
 							val valType = type // a val is needed to be usable in the filter lambda expression
+							matchedBuffers.add(candidate.matchTable.values.flatten.filter[it.type == valType].head)
+							
 							// If there is a candidate, merge them all and do step 2 again
 							candidate.applyMatches(
 								#[candidate.matchTable.values.flatten.filter[it.type == valType].head])
@@ -631,9 +644,56 @@ class ScriptRunner {
 						}
 					}
 				}
+				// Fourth step: 
+				case 3: {
+					val matchedBuffers = newArrayList
+					while (step == 3) {
+						var MatchType type
+
+						// Find all buffers with a unique forward match (if any)
+						var candidate = buffers.findFirst [
+							val matches = it.matchTable.values.flatten.filter[it.type == MatchType::FORWARD]
+							// Returns true if:
+							// Has a several forward matches 
+							matches.size != 0 &&						
+							// is divisible
+							it.divisible && matches.forall [
+								// Is not involved in any conflicting range
+								it.conflictingMatches.size == 0
+							] &&
+						// Matches have no multiple match Range. 
+						matches.overlappingRanges.size == 0 && 
+						// Check divisibilityRequiredMatches
+						it.doesCompleteRequiredMatches(matches)
+						]
+						if (candidate != null) {
+							type = MatchType::FORWARD
+						} else {
+
+							if (candidate != null) {
+								type = MatchType::BACKWARD
+							}
+						}
+
+						if (candidate != null) {
+							matchedBuffers.add(candidate)
+							val valType = type // a val is needed to be usable in the filter lambda expression
+
+							// If there is a candidate, merge them all and do step 2 again
+							candidate.applyMatches(
+								#[candidate.matchTable.values.flatten.filter[it.type == valType].head])
+							step = 3
+							buffers.remove(candidate)
+
+						} else {
+							println('''3- («matchedBuffers.size») «matchedBuffers»''')
+							step = 4
+						}
+					}
+				}
 			}
 
-			updated = step != 3
+			updated = step != 4
 		} while (updated)
 
 		//println(buffers.fold(0,[res, buf | res + buf.maxIndex - buf.minIndex]))
@@ -747,16 +807,20 @@ class ScriptRunner {
 										// Match them together
 										val match = buffers.get(0).matchWith(0, buffers.get(1), 0,
 											buffers.get(0).nbTokens)
-										if (buffers.get(0).dagVertex == dagEdge.source) {
+										val forwardMatch = if (buffers.get(0).dagVertex == dagEdge.source) {
 											match.type = MatchType::FORWARD
 											match.reciprocate.type = MatchType::BACKWARD
+											match
 										} else {
 											match.type = MatchType::BACKWARD
 											match.reciprocate.type = MatchType::FORWARD
+											match.reciprocate
 										}
 
-										// Apply the match immediately
-										match.localBuffer.applyMatches(#[match])
+										// Apply the forward match immediately
+										// (we always apply the forward match to enforce
+										// reproducibility of the processing)
+										forwardMatch.localBuffer.applyMatches(#[forwardMatch])
 
 										// Save matched buffer
 										intraGroupBuffer.add(match.localBuffer)

@@ -51,10 +51,10 @@ class Range {
 	 */
 	static def List<Range> difference(List<Range> ranges, Range range) {
 		val result = newArrayList
-		ranges.forEach[
+		ranges.forEach [
 			result.union(it.difference(range))
 		]
-		
+
 		result
 	}
 
@@ -72,13 +72,15 @@ class Range {
 	 * Range}.
 	 */
 	static def difference(List<Range> ranges, List<Range> ranges2) {
+
 		// Copy the original list
 		var List<Range> result = new ArrayList(ranges.map[it.clone as Range]) // to make sure the map function is applied only once
+
 		// Successively subtract all ranges from ranges2
-		for(range : ranges2){
+		for (range : ranges2) {
 			result = result.difference(range)
-		}		
-		
+		}
+
 		result
 	}
 
@@ -216,23 +218,29 @@ class Range {
 	 * @return the updated newRange {@link Range}. 
 	 */
 	def static union(List<Range> ranges, Range newRange) {
-		var iter = ranges.iterator
-		while (iter.hasNext) {
-			val range = iter.next
+		var changed = true
+		while (changed == true) {
+			changed = false
+			val originalRange = newRange.clone
+			var iter = ranges.iterator
+			while (iter.hasNext) {
+				val range = iter.next
 
-			// If new range overlaps with current range or are contiguous
-			if (range.hasOverlap(newRange) || range.isContiguous(newRange)) {
+				// If new range overlaps with current range or are contiguous
+				if (range.hasOverlap(newRange) || range.isContiguous(newRange)) {
 
-				// Remove old range and include it with the new
-				iter.remove
-				newRange.start = Math.min(newRange.start, range.start)
-				newRange.end = Math.max(newRange.end, range.end)
+					// Remove old range and include it with the new
+					iter.remove
+					newRange.start = Math.min(newRange.start, range.start)
+					newRange.end = Math.max(newRange.end, range.end)
+				}
 			}
+			ranges.add(newRange)
+			changed = newRange != originalRange
 		}
-		ranges.add(newRange)
 		newRange
 	}
-	
+
 	/**
 	 * Successively computes the {@link Range#lazyUnion(List,Range)} of {@link
 	 * Range ranges} from <code>ranges1</code> with the {@link Iterable} <code>
@@ -246,7 +254,7 @@ class Range {
 		ranges1.forEach[ranges0.lazyUnion(it)]
 		ranges0
 	}
-	
+
 	/**
 	 * Same as {@link Range#union(List,Range)} except that {@link 
 	 * Range#isContiguous(Range) contiguous} {@link Range ranges} are not 
@@ -277,23 +285,25 @@ class Range {
 		ranges.add(newRange)
 		newRange
 	}
-	
+
 	/**
 	 * Return the minimum start value of the ranges
 	 */
 	def static minStart(Iterable<Range> ranges) {
-		ranges.fold(0,[res, range |
-			Math::min(res, range.start)
-		])
+		ranges.fold(0,
+			[ res, range |
+				Math::min(res, range.start)
+			])
 	}
-	
-		/**
+
+	/**
 	 * Return the minimum start value of the ranges
 	 */
 	def static maxEnd(Iterable<Range> ranges) {
-		ranges.fold(0,[res, range |
-			Math::max(res, range.end)
-		])
+		ranges.fold(0,
+			[ res, range |
+				Math::max(res, range.end)
+			])
 	}
 
 	def static isContiguous(Range newRange, Range range) {
@@ -350,32 +360,32 @@ class Range {
 }
 
 class testRange {
-	@Test def void testDifference(){
-		var range0 = new Range(0,10)
-		var range1 = new Range(5,15)
-		var range2 = new Range(3,7)
-		var range3 = new Range(15,20)
+	@Test def void testDifference() {
+		var range0 = new Range(0, 10)
+		var range1 = new Range(5, 15)
+		var range2 = new Range(3, 7)
+		var range3 = new Range(15, 20)
 		var List<Range> ranges = new ArrayList<Range>
-		Range::union(ranges , range0)
-		Range::union(ranges , new Range(12, 17))
-		
+		Range::union(ranges, range0)
+		Range::union(ranges, new Range(12, 17))
+
 		var List<Range> ranges1 = newArrayList
-		ranges1.add(new Range(2,3))
-		ranges1.add(new Range(5,14))
-		
+		ranges1.add(new Range(2, 3))
+		ranges1.add(new Range(5, 14))
+
 		// Check the result of range0 - range1
-		assertEquals("[[0..5[]",range0.difference(range1).toString)
-		
+		assertEquals("[[0..5[]", range0.difference(range1).toString)
+
 		// Check the result of range0 - range3
-		assertEquals("[[0..10[]",range0.difference(range3).toString)
-				
+		assertEquals("[[0..10[]", range0.difference(range3).toString)
+
 		// Check the result of range0 - range1
-		assertEquals("[[0..3[, [7..10[]",range0.difference(range2).toString)
-		
+		assertEquals("[[0..3[, [7..10[]", range0.difference(range2).toString)
+
 		// Check the result of ranges - range1
-		assertEquals("[[0..5[, [15..17[]",Range::difference(ranges,range1).toString)
-		
+		assertEquals("[[0..5[, [15..17[]", Range::difference(ranges, range1).toString)
+
 		// Check the result of ranges - ranges1
-		assertEquals("[[0..2[, [3..5[, [14..17[]",Range::difference(ranges,ranges1).toString)
+		assertEquals("[[0..2[, [3..5[, [14..17[]", Range::difference(ranges, ranges1).toString)
 	}
 }

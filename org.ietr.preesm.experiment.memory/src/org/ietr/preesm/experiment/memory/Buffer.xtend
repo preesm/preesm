@@ -25,23 +25,7 @@ class Buffer {
 	 */
 	static def getMultipleMatchRange(Buffer buffer) {
 
-		val matchRanges = newArrayList
-		val multipleMatchRanges = newArrayList
-
-		// For each matchList
-		buffer.matchTable.forEach [ localIdx, matchList |
-			// For each Match
-			matchList.forEach [ match |
-				val newRange = match.localRange
-				// Get the intersection of the match and existing match ranges
-				val intersections = matchRanges.intersection(newRange)
-				multipleMatchRanges.union(intersections)
-				// Update the existing match ranges
-				matchRanges.union(newRange)
-			]
-		]
-
-		multipleMatchRanges
+		buffer.matchTable.values.flatten.overlappingRanges
 	}
 
 	/**
@@ -55,7 +39,7 @@ class Buffer {
 	 * @return a {@link List} of {@link Range} containing the overlapping 
 	 * ranges of the matches.
 	 */
-	static def getOverlappingRanges(List<Match> matches) {
+	static def getOverlappingRanges(Iterable<Match> matches) {
 		val matchRanges = newArrayList
 		val multipleMatchRanges = newArrayList
 
@@ -251,6 +235,18 @@ class Buffer {
 	@Property
 	List<Range> indivisibleRanges
 
+	/**
+	 * This {@link List} contains all {@link Match} that must be applied
+	 * to authorize the division of a {@link Buffer}. 
+	 * The {@link List} contains {@link List} of {@link Match}. To authorize
+	 * a division, each sublist must contain enough {@link Match#isApplied() 
+	 * applied} {@link Match} to cover all the tokens (real and virtual) of
+	 * the original {@link Match#getLocalBuffer() localBuffer} of the
+	 *  {@link Match matches}.
+	 */
+	@Property
+	List<List<Match>> divisibilityRequiredMatches
+
 	@Property
 	final protected Map<Range, Pair<Buffer, Integer>> appliedMatches
 
@@ -291,6 +287,7 @@ class Buffer {
 			_mergeableRanges.add(new Range(0, nbTokens * tokenSize))
 		}
 		_indivisibleRanges = newArrayList
+		_divisibilityRequiredMatches = newArrayList
 	}
 
 	def getSdfVertex() {
@@ -530,8 +527,10 @@ class Buffer {
 		isCompletelyMatched && indivisibleRanges.size > 1 && {
 
 			// Test that all ranges are covered by the indivisible ranges
-			val copy = indivisibleRanges.map[it.clone as Range].toList
-			val coveredRange = copy.tail.toList.union(copy.head)
+			val List<Range> copy = new ArrayList<Range>(indivisibleRanges.map[it.clone as Range].toList)
+			val firstElement = copy.head
+			copy.remove(0)
+			val coveredRange = copy.union(firstElement)
 			coveredRange == new Range(0, nbTokens * tokenSize)
 		} && matchTable.values.flatten.forall [
 			it.remoteBuffer.indivisible
@@ -579,7 +578,8 @@ class Buffer {
 		val tokenRange = new Range(0, tokenSize * nbTokens)
 		if (matchedRange.intersection(tokenRange).head != tokenRange) {
 			throw new RuntimeException(
-				"Incorrect call to applyMatches method.\n All real token must be covered by the given matches.")
+				"Incorrect call to applyMatches method.\n All real token must be covered by the given matches.\n" +
+					matches)
 		}
 
 		for (match : matchesCopy) {
@@ -842,6 +842,70 @@ class Buffer {
 					iter.remove
 
 					// Add the candidate to the conflicting matches
+					//match.conflictingMatches.add(candidate)
+					match.reciprocate.conflictingMatches.add(candidate.reciprocate)
+
+					// Remove it from the reciprocate candidates (if it was present)
+					//match.reciprocate.conflictCandidates.remove(candidate.reciprocate)
+
+					updatedMatches.add(candidate)
+				}
+			}
+			// Do the same for reciprocate
+			iter = match.reciprocate.conflictCandidates.iterator
+			while (iter.hasNext) {
+				val candidate = iter.next
+				if (candidate.localImpactedRange.hasOverlap(match.reciprocate.localImpactedRange)) {
+					iter.remove
+
+					// Add the candidate to the conflicting matches
+					match.conflictingMatches.add(candidate.reciprocate)
+
+					//match.reciprocate.conflictingMatches.add(candidate)
+					// Remove it from the candidates (if it was present)
+					//match.conflictCandidates.remove(candidate.reciprocate)
+
+					if (!updatedMatches.contains(candidate.reciprocate)) {
+						updatedMatches.add(candidate.reciprocate)
+					}
+				}
+			}
+		]
+
+		return updatedMatches
+	}
+
+	/**
+	 * This method update the {@link Match#getConflictingMatches() 
+	 * conflictingMatches} {@link List} of all the {@link Match} passed as a 
+	 * parameter. To do so, the method scan all the {@link 
+	 * Match#getConflictCandidates() conflictCandidates} of each {@link Match} 
+	 * and check if any candidate has an overlapping range. In such case, the 
+	 * candidate is moved to the {@link Match#getConflictingMatches() 
+	 * conflictingMatches} of the {@link Match} and its {@link 
+	 * Match#getReciprocate() reciprocate}. To ensure consistency, one should 
+	 * make sure that if a {@link Match} is updated with this method, then all 
+	 * the {@link Match matches} contained in its {@link 
+	 * Match#getConflictCandidates() conflictCandidates} {@link List} are 
+	 * updated too.   
+	 * 
+	 * @param matchList
+	 * 		The {@link Iterable} of {@link Match} to update
+	 * 
+	 * @return the {@link List} of {@link Match} updated by the method
+	 */
+	static def backupupdateConflictingMatches(Iterable<Match> matchList) {
+
+		val updatedMatches = newArrayList
+		matchList.forEach [ match |
+			// Check all the conflict candidaes
+			var iter = match.conflictCandidates.iterator
+			while (iter.hasNext) {
+				val candidate = iter.next
+				if (candidate.localImpactedRange.hasOverlap(match.localImpactedRange)) {
+					iter.remove
+
+					// Add the candidate to the conflicting matches
 					match.conflictingMatches.add(candidate)
 					match.reciprocate.conflictingMatches.add(candidate.reciprocate)
 
@@ -903,6 +967,11 @@ class Buffer {
 		res
 	}
 
+	/** 
+	 * Also update the {@link #getDivisibilityRequiredMatches() 
+	 * divisibilityRequiredMatches} {@link List} of the {@link Buffer}.
+	 * 
+	 */
 	def updateDivisibleRanges(Match match) {
 		val localRange = match.localRange
 
@@ -921,6 +990,17 @@ class Buffer {
 		// the division of the local buffer, instead the remote buffer should become !
 		// non divisable !
 		match.remoteBuffer.indivisibleRanges.lazyUnion(localIndivisibleRanges)
+
+		// If the destination range is still divisible,(i.e. if the remote 
+		// localRange overlaps more than a unique indivisible Range.)
+		// Then Forward all DivisibilityRequiredMatches from the local Buffer
+		// No risk if the match is applied as a result of a division since
+		// in such case, the destination is compulsorily indivisible			
+		if (match.remoteBuffer.indivisibleRanges.filter [
+			it.hasOverlap(match.reciprocate.localRange)
+		].size > 1) {
+			match.remoteBuffer.divisibilityRequiredMatches.addAll(match.localBuffer.divisibilityRequiredMatches)
+		}
 	}
 
 	/**
@@ -982,4 +1062,31 @@ class Buffer {
 		match.reciprocate.conflictingMatches.forEach[it.conflictingMatches.remove(match.reciprocate)]
 
 	}
+
+	/**
+	 * This method checks if the given {@link Matches} are sufficient to 
+	 * complete the {@link #getDivisibilityRequiredMatches()} condition.
+	 * 
+	 */
+	def doesCompleteRequiredMatches(Iterable<Match> matches) {
+
+		// Remove completed lists
+		val iter = this.divisibilityRequiredMatches.iterator
+		while (iter.hasNext) {
+
+			// In the current version we only check if all lists are completelyMatched
+			// for better optimization, we must check if each list contains enough applied matches
+			// to cover the complete original range
+			val list = iter.next
+			if (list.forall[it.applied]) {
+				iter.remove
+			}
+		}
+		
+		// Check if the proposed matches completes the remaining lists
+		this.divisibilityRequiredMatches.forall[ list|
+			matches.toList.containsAll(list)
+		]
+	}
+
 }
