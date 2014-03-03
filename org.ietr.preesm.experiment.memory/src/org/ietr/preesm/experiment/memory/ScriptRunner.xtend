@@ -407,7 +407,7 @@ class ScriptRunner {
 				// completely matched buffers as indivisible from the start so 
 				// that the developer knows where tokens are only by looking at
 				// its actor script.
-				buffer.completelyMatched 
+				buffer.completelyMatched
 		// Note that at this point, virtual tokens are always matched
 		// so this constraint ensure that future virtual tokens are 
 		// always attached to real token by an overlapping 
@@ -556,15 +556,15 @@ class ScriptRunner {
 					// (if any)
 					val candidates = buffers.filter [
 						// Has a non-empty matchTable 
-						val t1 = it.matchTable.size != 0  						
+						val t1 = it.matchTable.size != 0
 						// is divisible
-						val t2 = it.divisible 
+						val t2 = it.divisible
 						val t3 = it.matchTable.values.flatten.forall [
 							// Is not involved in any conflicting range
 							it.conflictingMatches.size == 0
-						] 
+						]
 						// Has no multiple match Range. 
-						val t4 =it.multipleMatchRange.size == 0
+						val t4 = it.multipleMatchRange.size == 0
 						// No need to check the divisibilityRequiredMatches since
 						// the only matches of the Buffer are the one
 						// responsible for the division
@@ -630,7 +630,7 @@ class ScriptRunner {
 						if (candidate != null) {
 							val valType = type // a val is needed to be usable in the filter lambda expression
 							matchedBuffers.add(candidate.matchTable.values.flatten.filter[it.type == valType].head)
-							
+
 							// If there is a candidate, merge them all and do step 2 again
 							candidate.applyMatches(
 								#[candidate.matchTable.values.flatten.filter[it.type == valType].head])
@@ -644,13 +644,14 @@ class ScriptRunner {
 						}
 					}
 				}
-				// Fourth step: 
+				// Fourth step: Like case 1 but considering forward only
+				// or backward only matches
 				case 3: {
 					val matchedBuffers = newArrayList
 					while (step == 3) {
 						var MatchType type
 
-						// Find all buffers with a unique forward match (if any)
+						// Find all buffers with a division with forward matches (if any)
 						var candidate = buffers.findFirst [
 							val matches = it.matchTable.values.flatten.filter[it.type == MatchType::FORWARD]
 							// Returns true if:
@@ -661,15 +662,29 @@ class ScriptRunner {
 								// Is not involved in any conflicting range
 								it.conflictingMatches.size == 0
 							] &&
-						// Matches have no multiple match Range. 
-						matches.overlappingRanges.size == 0 && 
-						// Check divisibilityRequiredMatches
-						it.doesCompleteRequiredMatches(matches)
+								// Matches have no multiple match Range. 
+								matches.overlappingRanges.size == 0 &&
+								// Check divisibilityRequiredMatches
+								it.doesCompleteRequiredMatches(matches)
 						]
 						if (candidate != null) {
 							type = MatchType::FORWARD
 						} else {
-
+							candidate = buffers.findFirst [
+								val matches = it.matchTable.values.flatten.filter[it.type == MatchType::BACKWARD]
+								// Returns true if:
+								// Has a several forward matches 
+								matches.size != 0 &&						
+								// is divisible
+								it.divisible && matches.forall [
+									// Is not involved in any conflicting range
+									it.conflictingMatches.size == 0
+								] &&
+									// Matches have no multiple match Range. 
+									matches.overlappingRanges.size == 0 &&
+									// Check divisibilityRequiredMatches
+									it.doesCompleteRequiredMatches(matches)
+							]
 							if (candidate != null) {
 								type = MatchType::BACKWARD
 							}
@@ -679,7 +694,7 @@ class ScriptRunner {
 							matchedBuffers.add(candidate)
 							val valType = type // a val is needed to be usable in the filter lambda expression
 
-							// If there is a candidate, merge them all and do step 2 again
+							// If there is a candidate, merge them all and do step 3 again
 							candidate.applyMatches(
 								#[candidate.matchTable.values.flatten.filter[it.type == valType].head])
 							step = 3
@@ -691,9 +706,56 @@ class ScriptRunner {
 						}
 					}
 				}
+				// Fifth step: Mergeable buffers with a unique match that have conflicts 
+				case 4: {
+
+					// Find all buffers with a unique match (if any)
+					val candidates = buffers.filter [
+						val entry = it.matchTable.entrySet.head
+						// Returns true if:
+						// There is a unique match
+						it.matchTable.size == 1 && entry.value.size == 1 &&
+							// that begins at index 0 (or less)
+							entry.key <= 0 &&
+							// and ends at the end of the buffer (or more)
+							entry.key + entry.value.head.length >= it.nbTokens * it.tokenSize &&
+						    // and is involved in conflicting matche(s)
+							{
+								val match = entry.value.head
+								match.conflictingMatches.size > 0
+							} &&
+							// Buffer is mergeable
+							{
+								it.mergeableRanges.size == 1 &&
+								it.mergeableRanges.head.start == it.minIndex &&
+								it.mergeableRanges.head.end == it.maxIndex								
+							} 
+					].toList.immutableCopy
+
+					// Copy the candidate list, otherwise it is updated when
+					// the content of buffers are modified
+					println('''4- («candidates.size») «candidates.map[it.matchTable.entrySet.head.value.head]»''')
+					if (!candidates.empty) {
+
+						// If there are candidates, merge them all and do step 0 again
+						step = 0
+
+						// Do the merge
+						//candidates.forEach [
+						//	it.applyMatches(it.matchTable.entrySet.head.value)
+						//]
+						buffers.removeAll(candidates)
+
+					} else {
+
+						// If there was no candidates, go to step 5
+						step = 5
+					}
+
+				}
 			}
 
-			updated = step != 4
+			updated = step != 5
 		} while (updated)
 
 		//println(buffers.fold(0,[res, buf | res + buf.maxIndex - buf.minIndex]))
@@ -808,14 +870,14 @@ class ScriptRunner {
 										val match = buffers.get(0).matchWith(0, buffers.get(1), 0,
 											buffers.get(0).nbTokens)
 										val forwardMatch = if (buffers.get(0).dagVertex == dagEdge.source) {
-											match.type = MatchType::FORWARD
-											match.reciprocate.type = MatchType::BACKWARD
-											match
-										} else {
-											match.type = MatchType::BACKWARD
-											match.reciprocate.type = MatchType::FORWARD
-											match.reciprocate
-										}
+												match.type = MatchType::FORWARD
+												match.reciprocate.type = MatchType::BACKWARD
+												match
+											} else {
+												match.type = MatchType::BACKWARD
+												match.reciprocate.type = MatchType::FORWARD
+												match.reciprocate
+											}
 
 										// Apply the forward match immediately
 										// (we always apply the forward match to enforce
@@ -895,11 +957,11 @@ class ScriptRunner {
 			// Create the input/output lists
 			val inputs = sdfVertex.incomingEdges.map[
 				new Buffer(it, dagVertex, it.targetLabel, it.cons.intValue, dataTypes.get(it.dataType.toString).size,
-					(it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_IN) ||
-						(it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED))].toList
+					(it.sourcePortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_OUT))].toList
 			val outputs = sdfVertex.outgoingEdges.map[
 				new Buffer(it, dagVertex, it.sourceLabel, it.prod.intValue, dataTypes.get(it.dataType.toString).size,
-					(it.sourcePortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_OUT))].toList
+					(it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_IN) ||
+						(it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED))].toList
 
 			// Import the necessary libraries
 			interpreter.eval("import " + Buffer.name + ";")
