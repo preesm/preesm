@@ -72,7 +72,13 @@ class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor with CppCodeGenerat
   }
 
   def visitActor(a: Actor): Unit = {
-    visitAbstractActor(a)
+    //If the refinement of a points to the description of PiGraph, visit it to preprocess its content
+    val innerGraph: AbstractActor = a.getRefinement().getAbstractActor()
+    if (innerGraph != null) {      
+      visit(innerGraph)
+    } else {
+      visitAbstractActor(a)
+    }    
   }
 
   def visitAbstractActor(aa: AbstractActor): Unit = {

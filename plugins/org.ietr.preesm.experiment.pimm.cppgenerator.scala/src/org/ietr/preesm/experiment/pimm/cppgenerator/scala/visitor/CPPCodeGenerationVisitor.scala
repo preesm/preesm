@@ -57,7 +57,7 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
   //Maps to handle hierarchical graphs
   private val graph2method: Map[PiGraph, StringBuilder] = new HashMap[PiGraph, StringBuilder]
   private val graph2subgraphs: Map[PiGraph, List[PiGraph]] = new HashMap[PiGraph, List[PiGraph]]
-  
+
   def getMethods(): Collection[StringBuilder] = {
     graph2method.values()
   }
@@ -91,11 +91,11 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
     visitAbstractActor(pg)
 
     //We add pg as a subgraph of the current graph
-    pg::currentSubGraphs
-    
+    pg :: currentSubGraphs
+
     //We stock the informations about the current graph for later use
     var currentOuterGraph: PiGraph = null
-    currentOuterGraph = currentGraph    
+    currentOuterGraph = currentGraph
     if (currentOuterGraph != null) {
       graph2method.put(currentOuterGraph, currentMethod)
       graph2subgraphs.put(currentOuterGraph, currentSubGraphs)
@@ -118,18 +118,17 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
     //Generating the method body
     generateMethodBody(pg)
 
-    
     //If pg has no subgraphs, its method has not been added in graph2method map
     if (!graph2method.containsKey(currentGraph)) {
       graph2method.put(currentGraph, currentMethod)
     }
-    
+
     //We get back the informations about the outer graph to continue visiting it
     if (currentOuterGraph != null) {
       currentMethod = graph2method.get(currentOuterGraph)
       currentSubGraphs = graph2subgraphs.get(currentOuterGraph)
     }
-    currentGraph = currentOuterGraph     
+    currentGraph = currentOuterGraph
   }
 
   /**
@@ -198,9 +197,18 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
   }
 
   def visitActor(a: Actor): Unit = {
-    currentAbstractActorType = "pisdf_vertex"
-    currentAbstractActorClass = "PiSDFVertex"
-    visitAbstractActor(a)
+    //If the refinement of a points to the description of PiGraph, visit it
+    val innerGraph: AbstractActor = a.getRefinement().getAbstractActor()
+    if (innerGraph != null) {      
+      visit(innerGraph)
+    }
+    //Otherwise, generate a vertex
+    else {
+      currentAbstractActorType = "pisdf_vertex"
+      currentAbstractActorClass = "PiSDFVertex"
+      visitAbstractActor(a)
+    }
+
   }
 
   /**
@@ -279,10 +287,6 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
     append(");")
   }
 
-  def visitInterfaceActor(ia: InterfaceActor): Unit = {
-    visitAbstractActor(ia)
-  }
-
   def visitDataInputInterface(dii: DataInputInterface): Unit = {
     val vertexName = getVertexName(dii)
 
@@ -306,7 +310,6 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
     val incomingFifo = dii.getDataInputPorts().get(0).getIncomingFifo()
     append(fifoMap.get(incomingFifo))
     append(");")
-    visitInterfaceActor(dii)
   }
 
   def visitDataOutputInterface(doi: DataOutputInterface): Unit = {
@@ -332,11 +335,16 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
     val incomingFifo = doi.getDataOutputPorts().get(0).getOutgoingFifo()
     append(fifoMap.get(incomingFifo))
     append(");")
-    visitInterfaceActor(doi)
   }
 
   def visitConfigOutputInterface(coi: ConfigOutputInterface): Unit = {
-    visitInterfaceActor(coi)
+    //TODO
+    throw new UnsupportedOperationException()
+  }
+  
+  
+  def visitConfigInputInterface(cii: ConfigInputInterface): Unit = {
+    visitParameter(cii)
   }
 
   /**
@@ -349,42 +357,15 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
     append(p.getName())
     append("\");")
   }
-
-  def visitRefinement(r: Refinement): Unit = {
-    throw new UnsupportedOperationException()
-  }
-
-  def visitDataInputPort(dip: DataInputPort): Unit = {
-    throw new UnsupportedOperationException()
-  }
-
-  def visitDataOutputPort(dop: DataOutputPort): Unit = {
-    throw new UnsupportedOperationException()
-  }
-
-  def visitConfigInputPort(cip: ConfigInputPort): Unit = {
-    throw new UnsupportedOperationException()
-  }
-
-  def visitConfigOutputPort(cop: ConfigOutputPort): Unit = {
-    throw new UnsupportedOperationException()
-  }
-
-  def visitDependency(d: Dependency): Unit = {
-    throw new UnsupportedOperationException()
-  }
-
-  def visitDelay(d: Delay): Unit = {
-    throw new UnsupportedOperationException()
-  }
-
-  def visitExpression(e: Expression): Unit = {
-    throw new UnsupportedOperationException()
-  }
-
-  def visitConfigInputInterface(cii: ConfigInputInterface): Unit = {
-    visitParameter(cii)
-  }
+  def visitInterfaceActor(ia: InterfaceActor): Unit = throw new UnsupportedOperationException()
+  def visitRefinement(r: Refinement): Unit = throw new UnsupportedOperationException()
+  def visitDataInputPort(dip: DataInputPort): Unit = throw new UnsupportedOperationException()
+  def visitDataOutputPort(dop: DataOutputPort): Unit = throw new UnsupportedOperationException()
+  def visitConfigInputPort(cip: ConfigInputPort): Unit = throw new UnsupportedOperationException()
+  def visitConfigOutputPort(cop: ConfigOutputPort): Unit = throw new UnsupportedOperationException()
+  def visitDependency(d: Dependency): Unit = throw new UnsupportedOperationException()
+  def visitDelay(d: Delay): Unit = throw new UnsupportedOperationException()
+  def visitExpression(e: Expression): Unit = throw new UnsupportedOperationException()
 }
 
 /**
