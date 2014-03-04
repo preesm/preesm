@@ -14,7 +14,6 @@ class Match {
 		this.conflictingMatches = newArrayList
 		this.conflictCandidates = newArrayList
 		this.applied = false
-		this.siblingMatch = false
 	}
 
 	@Property
@@ -33,16 +32,6 @@ class Match {
 	List<Match> conflictCandidates
 	@Property
 	MatchType type
-
-	/** 
-	 * This Property is set to <code>true</code> if the current {@link Match}
-	 * links a input {@link Buffer} to another input or an output {@link 
-	 * Buffer} to another output. This property is set within the {@link 
-	 * ScriptRunner#identifySiblingMatches(Pair)}
-	 * 
-	 */
-	@Property
-	boolean siblingMatch
 
 	/**
 	 * This {@link boolean} is set to <code>true</code> if the current {@link 
@@ -161,8 +150,9 @@ public enum MatchType {
 
 	/**
 	 * The {@link Match} links several inputs (or outputs) together.
+	 * Not allowed anymore
 	 */
-	INTER_SIBLINGS,
+	//INTER_SIBLINGS,
 
 	/**
 	 * The {@link Match} is internal to an actor and links an input {@link 

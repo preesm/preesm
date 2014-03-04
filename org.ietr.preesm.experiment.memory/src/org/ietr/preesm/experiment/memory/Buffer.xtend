@@ -717,25 +717,15 @@ class Buffer {
 	 */
 	def updateConflictCandidates(Match match) {
 
-		// 1. If the applied match is not interSiblings
-		// 1.1. Conflict candidates of the applied local->remote match are 
+		// 1. Conflict candidates of the applied local->remote match are 
 		// added to all remote->other matches (except inter siblings and 
 		// the already conflicting to remote->local (i.e. the backward if
 		// local->remote is forward or vice versa))
-		// 1.2. Conflict candidates of the applied remote->local match are 
+		// 2. Conflict candidates of the applied remote->local match are 
 		// added to all local->other matches (except inter siblings and 
 		// the already conflicting to local->remote (i.e. the forward if
 		// remote->local is backward or vice versa))
-		// 1.3. InterSibling matches of the localBuffer and remoteBuffer of
-		// the applied Match become conflict candidates of each other.
-		// 2. If the applied match is interSiblings
-		// 2.1 InterSiblings local->other and remote->other matches become conflict
-		// candidate (like 1.3).
-		// 2.2 New conflicts are added between Forward match of the 
-		// remoteBuffer and forward match of the localBuffer
-		// 2.3 New conflicts are added between Backward match of the 
-		// remoteBuffer and backward matches of the localBuffer
-		// 1.1 and 2.1
+		// 1
 		val newConflicts = newArrayList
 		if (!match.conflictCandidates.empty || !match.conflictingMatches.empty) {
 			match.remoteBuffer.matchTable.values.flatten.filter [
@@ -750,64 +740,18 @@ class Buffer {
 			newConflicts.clear
 		}
 
-		//1.
-		if (match.type != MatchType::INTER_SIBLINGS) {
-
-			// 1.2
-			if (!match.reciprocate.conflictCandidates.empty || !match.reciprocate.conflictingMatches.empty) {
-				match.localBuffer.matchTable.values.flatten.filter [
-					it.type != MatchType::INTER_SIBLINGS && it.type != match.type
-				].forEach [ otherMatch |
-					otherMatch.conflictCandidates.addAll(match.reciprocate.conflictCandidates)
-					otherMatch.conflictCandidates.addAll(match.reciprocate.conflictingMatches)
-					newConflicts.add(otherMatch)
-				]
-				match.reciprocate.conflictCandidates.forEach[it.conflictCandidates.addAll(newConflicts)]
-				match.reciprocate.conflictingMatches.forEach[it.conflictCandidates.addAll(newConflicts)]
-				newConflicts.clear
-			}
-
-			// 1.3
-			val localSiblingMatches = match.localBuffer.matchTable.values.flatten.filter [
-				it.type == MatchType::INTER_SIBLINGS
+		// 2.
+		if (!match.reciprocate.conflictCandidates.empty || !match.reciprocate.conflictingMatches.empty) {
+			match.localBuffer.matchTable.values.flatten.filter [
+				it.type != match.type
+			].forEach [ otherMatch |
+				otherMatch.conflictCandidates.addAll(match.reciprocate.conflictCandidates)
+				otherMatch.conflictCandidates.addAll(match.reciprocate.conflictingMatches)
+				newConflicts.add(otherMatch)
 			]
-			if (! localSiblingMatches.empty) {
-				match.remoteBuffer.matchTable.values.flatten.filter [
-					it.type == MatchType::INTER_SIBLINGS
-				].forEach [ remoteMatch |
-					remoteMatch.conflictCandidates.addAll(localSiblingMatches)
-					localSiblingMatches.forEach [ localMatch |
-						localMatch.conflictCandidates.add(remoteMatch)
-					]
-				]
-			}
-		} 			
-		// 2. 
-		else {
-
-			// 2.2 & 2.3
-			val localForward = newArrayList
-			val localBackward = newArrayList
-			match.localBuffer.matchTable.values.flatten.forEach [
-				switch (it.type) {
-					case MatchType::FORWARD:
-						localForward.add(it)
-					case MatchType::BACKWARD:
-						localBackward.add(it)
-				}
-			]
-			match.remoteBuffer.matchTable.values.flatten.forEach [ otherMatch |
-				switch (otherMatch.type) {
-					case MatchType::FORWARD: {
-						otherMatch.conflictCandidates.addAll(localForward)
-						localForward.forEach[it.conflictCandidates.add(otherMatch)]
-					}
-					case MatchType::BACKWARD: {
-						otherMatch.conflictCandidates.addAll(localBackward)
-						localBackward.forEach[it.conflictCandidates.add(otherMatch)]
-					}
-				}
-			]
+			match.reciprocate.conflictCandidates.forEach[it.conflictCandidates.addAll(newConflicts)]
+			match.reciprocate.conflictingMatches.forEach[it.conflictCandidates.addAll(newConflicts)]
+			newConflicts.clear
 		}
 	}
 
@@ -847,7 +791,6 @@ class Buffer {
 
 					// Remove it from the reciprocate candidates (if it was present)
 					//match.reciprocate.conflictCandidates.remove(candidate.reciprocate)
-
 					updatedMatches.add(candidate)
 				}
 			}
@@ -864,7 +807,6 @@ class Buffer {
 					//match.reciprocate.conflictingMatches.add(candidate)
 					// Remove it from the candidates (if it was present)
 					//match.conflictCandidates.remove(candidate.reciprocate)
-
 					if (!updatedMatches.contains(candidate.reciprocate)) {
 						updatedMatches.add(candidate.reciprocate)
 					}
@@ -1082,9 +1024,9 @@ class Buffer {
 				iter.remove
 			}
 		}
-		
+
 		// Check if the proposed matches completes the remaining lists
-		this.divisibilityRequiredMatches.forall[ list|
+		this.divisibilityRequiredMatches.forall [ list |
 			matches.toList.containsAll(list)
 		]
 	}

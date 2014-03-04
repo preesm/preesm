@@ -190,8 +190,7 @@ class ScriptRunner {
 		// b[k] or c[l]) cannot be matched with a buffer different than a[i].
 		// forall inputs -> forall elements -> forall multiple matches
 		// check that other side of the match has a unique match (implicitly: 
-		// with the current multiple match).
-		
+		// with the current multiple match).		
 		val res4 = multipleRanges.forall [ multipleRange |
 			if (multipleRange.value.size != 0) {
 
@@ -362,7 +361,8 @@ class ScriptRunner {
 		scriptResults.forEach[vertex, result|identifyDivisibleBuffers(result)]
 
 		// Identify inter-inputs and inter-outputs matches
-		scriptResults.forEach[vertex, result|identifySiblingMatches(result)]
+		// should never occur
+		scriptResults.forEach[vertex, result|identifyMatchesType(result)]
 
 		// Identify match that may cause a inter-input / inter-output merge
 		scriptResults.forEach[vertex, result|identifyConflictingMatchCandidates(result.key, result.value)]
@@ -392,12 +392,11 @@ class ScriptRunner {
 	 * and value respectively contain input and output {@link Buffer} of an 
 	 * actor. 
 	 */
-	def identifySiblingMatches(Pair<List<Buffer>, List<Buffer>> result) {
+	def identifyMatchesType(Pair<List<Buffer>, List<Buffer>> result) {
 		result.key.forEach [
 			it.matchTable.values.flatten.forEach [
 				if (result.key.contains(it.remoteBuffer)) {
-					it.siblingMatch = true
-					it.type = MatchType::INTER_SIBLINGS
+					throw new RuntimeException("Inter-sibling matches are no longer allowed.")
 				} else {
 					it.type = MatchType::FORWARD
 				}
@@ -407,8 +406,7 @@ class ScriptRunner {
 		result.value.forEach [
 			it.matchTable.values.flatten.forEach [
 				if (result.value.contains(it.remoteBuffer)) {
-					it.siblingMatch = true
-					it.type = MatchType::INTER_SIBLINGS
+					throw new RuntimeException("Inter-sibling matches are no longer allowed.")
 				} else {
 					it.type = MatchType::BACKWARD
 				}
@@ -486,24 +484,14 @@ class ScriptRunner {
 		// For each Buffer
 		for (buffer : #{inputs, outputs}.flatten) {
 
-			// Sort matches in 2 groups: 
-			val regularMatches = newArrayList
-			val interSiblingMatches = newArrayList
-			buffer.matchTable.values.flatten.forEach [ match |
-				if (match.siblingMatch) {
-					interSiblingMatches.add(match)
-				} else {
-					regularMatches.add(match)
-				}
-			]
-
+			// Get the matches 
+			val matches = new ArrayList<Match>(buffer.matchTable.values.flatten.toList)
+		
 			// Update the potential conflict list of all matches
-			regularMatches.forEach [ match |
-				match.conflictCandidates.addAll(regularMatches.filter[it != match])
+			matches.forEach [ match |
+				match.conflictCandidates.addAll(matches.filter[it != match])
 			]
-			interSiblingMatches.forEach [ match |
-				match.conflictCandidates.addAll(regularMatches.filter[it != match])
-			]
+			
 		}
 
 		// Identify the already conflicting matches
