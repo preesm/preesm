@@ -154,38 +154,37 @@ class ScriptRunner {
 				"Error in " + script + ":\nOne or more match is not reciprocal." +
 					" Please set matches only by using Buffer.matchWith() methods.")
 		}
-		
+
 		// Find inter-inputs and inter-outputs matches
-		var res2 = result.key.forall[ buffer |
-			buffer.matchTable.values.flatten.forall[ match |
+		var res2 = result.key.forall [ buffer |
+			buffer.matchTable.values.flatten.forall [ match |
 				result.value.contains(match.remoteBuffer)
-			]	
-		] && result.value.forall[ buffer |
-			buffer.matchTable.values.flatten.forall[ match |
+			]
+		] && result.value.forall [ buffer |
+			buffer.matchTable.values.flatten.forall [ match |
 				result.key.contains(match.remoteBuffer)
-			]	
-		] 
+			]
+		]
 		if (!res2) {
 			val logger = WorkflowLogger.logger
 			logger.log(Level.WARNING,
 				"Error in " + script + ":\nOne or more match links an input (or an output) to another." +
 					" Please set matches only between inputs and outputs.")
 		}
-		
+
 		// Find ranges from input and output with multiple matches
 		val multipleRanges = allBuffers.map[it -> it.multipleMatchRange]
-		
+
 		// There can be no multiple match range in the output buffers !
-		val res3 = multipleRanges.forall[
-			result.key.contains(it.key) ||
-			it.value.size == 0
+		val res3 = multipleRanges.forall [
+			result.key.contains(it.key) || it.value.size == 0
 		]
 		if (!res3) {
 			val logger = WorkflowLogger.logger
 			logger.log(Level.WARNING,
 				"Error in " + script + ":\nMatching multiple times a range of an output buffer is not allowed.")
 		}
-		
+
 		// Check: If a[i] is matched with b[j], b[k], and c[l] then b[j] (or 
 		// b[k] or c[l]) cannot be matched with a buffer different than a[i].
 		// forall inputs -> forall elements -> forall multiple matches
@@ -486,12 +485,12 @@ class ScriptRunner {
 
 			// Get the matches 
 			val matches = new ArrayList<Match>(buffer.matchTable.values.flatten.toList)
-		
+
 			// Update the potential conflict list of all matches
 			matches.forEach [ match |
 				match.conflictCandidates.addAll(matches.filter[it != match])
 			]
-			
+
 		}
 
 		// Identify the already conflicting matches
@@ -529,43 +528,44 @@ class ScriptRunner {
 			switch (step) {
 				// First step: Merge non-conflicting buffer with a unique match 
 				case 0: {
+					val appliedMatches = newArrayList
+					var Buffer candidate
+					do {
+						candidate = null
 
-					// Find all buffers with a unique match (if any)
-					val candidates = buffers.filter [
-						val entry = it.matchTable.entrySet.head
-						// Returns true if:
-						// There is a unique match
-						it.matchTable.size == 1 && entry.value.size == 1 &&
-							// that begins at index 0 (or less)
-							entry.key <= 0 &&
-							// and ends at the end of the buffer (or more)
-							entry.key + entry.value.head.length >= it.nbTokens * it.tokenSize &&
+						// Find all buffers with a unique match (if any)
+						candidate = buffers.findFirst [
+							val entry = it.matchTable.entrySet.head
+							// Returns true if:
+							// There is a unique match
+							it.matchTable.size == 1 && entry.value.size == 1 &&
+								// that begins at index 0 (or less)
+								entry.key <= 0 &&
+								// and ends at the end of the buffer (or more)
+								entry.key + entry.value.head.length >= it.nbTokens * it.tokenSize &&
 						    // and is not involved in any conflicting range
-							{
-								val match = entry.value.head
-								match.conflictingMatches.size == 0
-							}
-					].toList.immutableCopy
-
-					// Copy the candidate list, otherwise it is updated when
-					// the content of buffers are modified
-					println('''0- («candidates.size») «candidates.map[it.matchTable.entrySet.head.value.head]»''')
-					if (!candidates.empty) {
-
-						// If there are candidates, merge them all and do step 0 again
-						step = 0
-
-						// Do the merge
-						candidates.forEach [
-							it.applyMatches(it.matchTable.entrySet.head.value)
+								{
+									val match = entry.value.head
+									match.conflictingMatches.size == 0
+								}
 						]
-						buffers.removeAll(candidates)
 
-					} else {
+						// Copy the candidate list, otherwise it is updated when
+						// the content of buffers are modified
+						if (candidate != null) {
+							appliedMatches.add('''«candidate.matchTable.entrySet.head.value.head»''')
 
-						// If there was no candidates, go to step 1
-						step = 1
-					}
+							// If there is a candidate, apply the match
+							candidate.applyMatches(candidate.matchTable.entrySet.head.value)
+
+							buffers.remove(candidate)
+						}
+					} while (candidate != null)
+
+					// If there was no candidates, go to step 1
+					println('''0- («appliedMatches.size») «appliedMatches»''')
+					step = 1
+
 				} // case 0
 				// Second step: Merge divisible buffers with multiple matchs 
 				// and no conflict 
@@ -726,7 +726,7 @@ class ScriptRunner {
 						}
 					}
 				}
-				// Fifth step: Mergeable buffers with a unique match that have conflicts 
+				// Fifth step: Mergeable buffers with a unique backward match that have conflict(s) 
 				case 4: {
 
 					// Find all buffers with a unique match (if any)
@@ -735,6 +735,8 @@ class ScriptRunner {
 						// Returns true if:
 						// There is a unique match
 						it.matchTable.size == 1 && entry.value.size == 1 &&
+							// Is backward
+							entry.value.head.type == MatchType::BACKWARD &&
 							// that begins at index 0 (or less)
 							entry.key <= 0 &&
 							// and ends at the end of the buffer (or more)
@@ -746,25 +748,24 @@ class ScriptRunner {
 							} &&
 							// Buffer is mergeable
 							{
-								it.mergeableRanges.size == 1 &&
-								it.mergeableRanges.head.start == it.minIndex &&
-								it.mergeableRanges.head.end == it.maxIndex								
-							} 
+								it.mergeableRanges.size == 1 && it.mergeableRanges.head.start == it.minIndex &&
+									it.mergeableRanges.head.end == it.maxIndex
+							}
 					].toList.immutableCopy
 
 					// Copy the candidate list, otherwise it is updated when
 					// the content of buffers are modified
-					//println('''4- («candidates.size») «candidates.map[it.matchTable.entrySet.head.value.head]»''')
+					println('''4- («candidates.size») «candidates.map[it.matchTable.entrySet.head.value.head]»''')
 					if (!candidates.empty) {
 
 						// If there are candidates, merge them all and do step 0 again
-						step = 5
+						step = 0
 
 						// Do the merge
-						//candidates.forEach [
-						//	it.applyMatches(it.matchTable.entrySet.head.value)
-						//]
-						//buffers.removeAll(candidates)
+						candidates.forEach [
+							it.applyMatches(it.matchTable.entrySet.head.value)
+						]
+						buffers.removeAll(candidates)
 
 					} else {
 
@@ -977,17 +978,16 @@ class ScriptRunner {
 			// Create the input/output lists
 			val inputs = sdfVertex.incomingEdges.map[
 				// An input buffer is backward mergeable if it is Pure_in OR if it is unused and linked to a non pure_out source
-				val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_IN) ||
-				((it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED) && 
+				val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_IN) || ((it.
+					targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED) &&
 					!(it.sourcePortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_OUT))
-					
 				new Buffer(it, dagVertex, it.targetLabel, it.cons.intValue, dataTypes.get(it.dataType.toString).size,
 					isMergeable)].toList
-					
+
 			val outputs = sdfVertex.outgoingEdges.map[
 				// An output buffer is mergeable if it is !(pure_out AND unused) or if its target port is not Pure_in 
-				val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_IN) ||
-				((it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED) && 
+				val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_IN) || ((it.
+					targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED) &&
 					!(it.sourcePortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_OUT))
 				new Buffer(it, dagVertex, it.sourceLabel, it.prod.intValue, dataTypes.get(it.dataType.toString).size,
 					isMergeable)].toList
