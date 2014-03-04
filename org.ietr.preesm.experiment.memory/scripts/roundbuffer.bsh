@@ -2,20 +2,15 @@
 
 // Test if roundbuffer is supported
 // Only roundbuffer with all inputs size equal to the outputs size are currently supported
-// Match along the way
 output = outputs.get(0);
-Buffer firstInput = inputs.get(0);
-Buffer previousInput = null;
+Buffer lastInput = null;
 for(input : inputs){
 	if(input.getNbTokens() == output.getNbTokens()){
-		if(previousInput != null && previousInput != firstInput){
-			previousInput.matchWith(0,firstInput,0,firstInput.getNbTokens());
-		}
-		previousInput = input;
+		lastInput = input;
 	} else {
 		throw new RuntimeException("Unsupported roundbuffer with input.nbTokens != output.nbTokens.");
 	}
 }
 
 // Match last input with output
-previousInput.matchWith(0,output,0,output.getNbTokens());
+lastInput.matchWith(0,output,0,output.getNbTokens());

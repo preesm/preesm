@@ -116,6 +116,8 @@ class ScriptRunner {
 	 * {@link Buffer} is reciprocal if the {@link Match#getBuffer() matched
 	 * buffer} has a reciprocal {@link Match} in its
 	 * {@link Buffer#getMatchTable() match table}.</li>
+	 * <li>If there are inter-siblings matches. (i.e. inter-inputs or inter-
+	 * outputs matches.)</li>
 	 * <li>If ranges matched multiple times are not matched with other ranges
 	 * that are {@link #getMultipleMatchRange(Buffer) matched multiple times}.
 	 * For example, with a,b and c three {@link Buffer buffers}, if a[i] is
@@ -152,6 +154,24 @@ class ScriptRunner {
 				"Error in " + script + ":\nOne or more match is not reciprocal." +
 					" Please set matches only by using Buffer.matchWith() methods.")
 		}
+		
+		// Find inter-inputs and inter-outputs matches
+		var res2 = result.key.forall[ buffer |
+			buffer.matchTable.values.flatten.forall[ match |
+				result.value.contains(match.remoteBuffer)
+			]	
+		] && result.value.forall[ buffer |
+			buffer.matchTable.values.flatten.forall[ match |
+				result.key.contains(match.remoteBuffer)
+			]	
+		] 
+		if (!res2) {
+			val logger = WorkflowLogger.logger
+			logger.log(Level.WARNING,
+				"Error in " + script + ":\nOne or more match links an input (or an output) to another." +
+					" Please set matches only between inputs and outputs.")
+		}
+		
 
 		// Find ranges from input and output with multiple matches
 		// Check: If a[i] is matched with b[j], b[k], and c[l] then b[j] (or 
@@ -160,7 +180,7 @@ class ScriptRunner {
 		// check that other side of the match has a unique match (implicitly: 
 		// with the current multiple match).
 		val multipleRanges = allBuffers.map[it -> it.multipleMatchRange]
-		val res2 = multipleRanges.forall [ multipleRange |
+		val res3 = multipleRanges.forall [ multipleRange |
 			if (multipleRange.value.size != 0) {
 
 				// If the current buffer has multiple ranges
@@ -192,13 +212,13 @@ class ScriptRunner {
 				true // No multiple range for this buffer
 		]
 
-		if (!res2) {
+		if (!res3) {
 			val logger = WorkflowLogger.logger
 			logger.log(Level.WARNING,
 				"Error in " + script + ":\nA buffer element matched multiple times cannot" +
 					" be matched with an element that is itself matched multiple times.")
 		}
-		res1 && res2
+		res1 && res2 && res3
 	}
 
 	/**
@@ -734,17 +754,17 @@ class ScriptRunner {
 
 					// Copy the candidate list, otherwise it is updated when
 					// the content of buffers are modified
-					println('''4- («candidates.size») «candidates.map[it.matchTable.entrySet.head.value.head]»''')
+					//println('''4- («candidates.size») «candidates.map[it.matchTable.entrySet.head.value.head]»''')
 					if (!candidates.empty) {
 
 						// If there are candidates, merge them all and do step 0 again
-						step = 0
+						step = 5
 
 						// Do the merge
 						//candidates.forEach [
 						//	it.applyMatches(it.matchTable.entrySet.head.value)
 						//]
-						buffers.removeAll(candidates)
+						//buffers.removeAll(candidates)
 
 					} else {
 
