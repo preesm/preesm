@@ -360,11 +360,11 @@ class ScriptRunner {
 		// Identify divisible buffers
 		scriptResults.forEach[vertex, result|identifyDivisibleBuffers(result)]
 
-		// Identify inter-inputs and inter-outputs matches
-		// should never occur
+		// Identify matches types
 		scriptResults.forEach[vertex, result|identifyMatchesType(result)]
 
-		// Identify match that may cause a inter-input / inter-output merge
+		// Identify match that may cause a inter-output merge (not inter-input since
+		// at this point, multiple matches of output range is forbidden)
 		scriptResults.forEach[vertex, result|identifyConflictingMatchCandidates(result.key, result.value)]
 
 		// Identify groups of chained buffers from the scripts and dag
@@ -383,9 +383,9 @@ class ScriptRunner {
 	 * {@link Match} in the {@link Buffer#getMatchTable() matchTable} and set.
 	 * their {@link Match#getType() type}. Matches whose {@link 
 	 * Match#getLocalBuffer() localBuffer} and {@link Match#getRemoteBuffer() 
-	 * remoteBuffer} belong to the same {@link List} of {@link Match} are 
-	 * marked as <code>INTER_SIBLINGS</code>. Other {@link Match} are marked as
-	 * <code>FORWARD</code> or <code>BACKWARD</code>.
+	 * remoteBuffer} belong to the same {@link List} of {@link Match} will 
+	 * cause the method to throw a {@link RuntimeError}. Other {@link Match}
+	 * are marked as <code>FORWARD</code> or <code>BACKWARD</code>.
 	 * 
 	 * @param result
 	 * 	{@link Pair} of {@link List} of {@link Buffer}. The {@link Pair} key 
@@ -976,12 +976,21 @@ class ScriptRunner {
 
 			// Create the input/output lists
 			val inputs = sdfVertex.incomingEdges.map[
+				// An input buffer is backward mergeable if it is Pure_in OR if it is unused and linked to a non pure_out source
+				val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_IN) ||
+				((it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED) && 
+					!(it.sourcePortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_OUT))
+					
 				new Buffer(it, dagVertex, it.targetLabel, it.cons.intValue, dataTypes.get(it.dataType.toString).size,
-					(it.sourcePortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_OUT))].toList
+					isMergeable)].toList
+					
 			val outputs = sdfVertex.outgoingEdges.map[
+				// An output buffer is mergeable if it is !(pure_out AND unused) or if its target port is not Pure_in 
+				val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_IN) ||
+				((it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED) && 
+					!(it.sourcePortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_OUT))
 				new Buffer(it, dagVertex, it.sourceLabel, it.prod.intValue, dataTypes.get(it.dataType.toString).size,
-					(it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_IN) ||
-						(it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED))].toList
+					isMergeable)].toList
 
 			// Import the necessary libraries
 			interpreter.eval("import " + Buffer.name + ";")
