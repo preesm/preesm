@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PiMM Visitor
+Bundle-SymbolicName: org.ietr.preesm.experiment.pimm.visitor.scala
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.ietr.preesm.experiment.pimm.visitor.scala.Activator
+Bundle-Vendor: IETR/INSA Rennes
+Require-Bundle: org.eclipse.core.runtime,
+ org.scala-ide.scala.library,
+ org.ietr.preesm.experiment.model
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy

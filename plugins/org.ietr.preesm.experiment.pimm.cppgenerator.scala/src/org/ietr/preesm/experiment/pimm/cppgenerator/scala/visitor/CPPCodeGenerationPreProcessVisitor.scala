@@ -42,6 +42,7 @@ import java.util.HashMap
 import java.util.Map
 import collection.JavaConversions._
 import org.ietr.preesm.experiment.pimm.cppgenerator.scala.utils.CppCodeGenerationNameGenerator
+import org.ietr.preesm.experiment.pimm.visitor.scala.PiMMVisitor
 
 /**
  * The C++ code generation needs a preprocess in order to get source/target nodes/actors for every Fifo and Dependency

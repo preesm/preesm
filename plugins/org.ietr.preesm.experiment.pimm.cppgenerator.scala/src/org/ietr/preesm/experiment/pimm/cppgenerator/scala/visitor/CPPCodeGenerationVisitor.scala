@@ -45,6 +45,7 @@ import java.util.HashMap
 import collection.JavaConversions._
 import org.ietr.preesm.experiment.pimm.cppgenerator.scala.utils.CppCodeGenerationNameGenerator
 import java.util.Collection
+import org.ietr.preesm.experiment.pimm.visitor.scala.PiMMVisitor
 
 /**
  * PiMM models visitor generating C++ code for COMPA Runtime
