@@ -172,15 +172,27 @@ class ScriptRunner {
 					" Please set matches only between inputs and outputs.")
 		}
 		
-
 		// Find ranges from input and output with multiple matches
+		val multipleRanges = allBuffers.map[it -> it.multipleMatchRange]
+		
+		// There can be no multiple match range in the output buffers !
+		val res3 = multipleRanges.forall[
+			result.key.contains(it.key) ||
+			it.value.size == 0
+		]
+		if (!res3) {
+			val logger = WorkflowLogger.logger
+			logger.log(Level.WARNING,
+				"Error in " + script + ":\nMatching multiple times a range of an output buffer is not allowed.")
+		}
+		
 		// Check: If a[i] is matched with b[j], b[k], and c[l] then b[j] (or 
 		// b[k] or c[l]) cannot be matched with a buffer different than a[i].
 		// forall inputs -> forall elements -> forall multiple matches
 		// check that other side of the match has a unique match (implicitly: 
 		// with the current multiple match).
-		val multipleRanges = allBuffers.map[it -> it.multipleMatchRange]
-		val res3 = multipleRanges.forall [ multipleRange |
+		
+		val res4 = multipleRanges.forall [ multipleRange |
 			if (multipleRange.value.size != 0) {
 
 				// If the current buffer has multiple ranges
@@ -212,13 +224,13 @@ class ScriptRunner {
 				true // No multiple range for this buffer
 		]
 
-		if (!res3) {
+		if (!res4) {
 			val logger = WorkflowLogger.logger
 			logger.log(Level.WARNING,
 				"Error in " + script + ":\nA buffer element matched multiple times cannot" +
 					" be matched with an element that is itself matched multiple times.")
 		}
-		res1 && res2 && res3
+		res1 && res2 && res3 && res4
 	}
 
 	/**
