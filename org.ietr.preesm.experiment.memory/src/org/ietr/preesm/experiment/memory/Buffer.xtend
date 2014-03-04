@@ -3,6 +3,7 @@ package org.ietr.preesm.experiment.memory
 import java.util.ArrayList
 import java.util.List
 import java.util.Map
+import java.util.Set
 import org.ietr.dftools.algorithm.model.dag.DAGVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
@@ -709,6 +710,68 @@ class Buffer {
 				remoteList.add(modifiedMatch.reciprocate)
 			}
 		]
+
+		// Find redundant matches
+		val matches = match.remoteBuffer.matchTable.values.flatten
+		val Set<Integer> redundantMatches = newHashSet
+		var i = 0
+		while (i < matches.size - 1) {
+
+			// If the current match is not already redundant
+			if (!redundantMatches.contains(i)) {
+				val currentMatch = matches.get(i)
+				var j = i + 1
+				while (j < matches.size) {
+					val redundantMatch = matches.get(j)
+					if (currentMatch == redundantMatch) {
+						
+						// Matches are redundant
+						redundantMatches.add(j)
+						
+						// It does not matter if the redundant matches were conflicting.
+						// If this code is reached, it means that the were not since they
+						// now have the same target and destination.
+						
+						// Transfer information from the redundantMatch to the currentMatch
+						val transferredConflictCandidates = new ArrayList(redundantMatch.conflictCandidates.filter[
+							!currentMatch.conflictCandidates.contains(it) && !currentMatch.conflictingMatches.contains(it) &&
+							it != currentMatch
+						].toList)
+						transferredConflictCandidates.forEach[
+							it.conflictCandidates.remove(redundantMatch)
+							it.conflictCandidates.add(currentMatch)
+							currentMatch.conflictCandidates.add(it)
+						]
+						
+						val transferredConflictingMatches = new ArrayList(redundantMatch.conflictingMatches.filter[
+							!currentMatch.conflictingMatches.contains(it) && it != currentMatch
+						].toList)
+						transferredConflictingMatches.forEach[  
+							// remove from conflict candidates if it was present
+							it.conflictCandidates.remove(currentMatch) 
+							currentMatch.conflictCandidates.remove(it)
+							
+							it.conflictingMatches.remove(redundantMatch)
+							it.conflictingMatches.add(currentMatch)
+							currentMatch.conflictingMatches.add(it)
+						]
+						
+					}
+					j = j + 1
+				}
+			}
+			i = i + 1
+		}
+		
+		// do the removal :
+		if (redundantMatches.size > 0) {
+			//println('''Redundant «redundantMatches.map[matches.get(it)]»''')
+			val removedMatches = new ArrayList(redundantMatches.map[matches.get(it)].toList)
+			removedMatches.forEach[
+				it.unmatch
+			]
+		}
+		 
 	}
 
 	/**
