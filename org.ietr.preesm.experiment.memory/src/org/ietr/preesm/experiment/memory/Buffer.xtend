@@ -659,38 +659,40 @@ class Buffer {
 		val forwardMatch = if(match.type == MatchType::FORWARD) match else match.reciprocate
 		#[forwardMatch.conflictCandidates, forwardMatch.conflictingMatches].flatten.forEach [ conflictMatch |
 			// Must be extracted for each iteration because the union modifies the range
-			val impactedRange = forwardMatch.localImpactedRange
-			// not used in the union because the range is modified in the union
-			// but impactedRange declared before to ease debug.
-			conflictMatch.forbiddenLocalRanges.union(forwardMatch.localImpactedRange)
-			impactedRange.translate(conflictMatch.remoteIndex - conflictMatch.localIndex)
+			val impactedRange = forwardMatch.reciprocate.localImpactedRange
+			impactedRange.translate(conflictMatch.localIndex - conflictMatch.remoteIndex)
+			conflictMatch.forbiddenLocalRanges.union(impactedRange)
 		]
 
 		// For backward match, fill the forbidden an mergeable ranges (if any)
 		val backwardMatch = if(match.type == MatchType::BACKWARD) match else match.reciprocate
 
-		// Get the remote mergeable range
-		val impactedRange = backwardMatch.localImpactedRange
-		impactedRange.translate(backwardMatch.remoteIndex - backwardMatch.localIndex)
-		val remoteMergeableRange = backwardMatch.remoteBuffer.mergeableRanges.intersection(impactedRange)
-
-		// translate it back to local indexes
-		remoteMergeableRange.translate(backwardMatch.localIndex - backwardMatch.remoteIndex)
+		// Get the target mergeable range
+		val impactedRange = backwardMatch.reciprocate.localImpactedRange
+		impactedRange.translate(backwardMatch.localIndex - backwardMatch.remoteIndex)
+		val remoteMergeableRange = backwardMatch.localBuffer.mergeableRanges.intersection(impactedRange)		
 
 		// No need to remove forbidden ranges from it. Indeed, if there are such
 		// range, the match couldn't have been applied
 		// Compute forbidden ranges
 		val forbiddenRanges = #[impactedRange].difference(remoteMergeableRange)
+		// translate it back to source indexes
+		remoteMergeableRange.translate(backwardMatch.remoteIndex - backwardMatch.localIndex)
+		forbiddenRanges.translate(backwardMatch.remoteIndex - backwardMatch.localIndex)
 
 		#[backwardMatch.conflictCandidates, backwardMatch.conflictingMatches].flatten.forEach [ conflictMatch |
 			val newMergeableRanges = new ArrayList(remoteMergeableRange.map[it.clone as Range])
 			val newForbiddenRanges = new ArrayList(forbiddenRanges.map[it.clone as Range])
-			// Must be extracted for each iteration because the union modifies the range
-			val localImpactedRange = backwardMatch.localImpactedRange
-			// not used in the union because the range is modified in the union
-			// but impactedRange declared before to ease debug.
-			conflictMatch.forbiddenLocalRanges.union(backwardMatch.localImpactedRange)
-			localImpactedRange.translate(conflictMatch.remoteIndex - conflictMatch.localIndex)
+			
+			// translate it to localBuffer of conflictMatches indexes
+			newMergeableRanges.translate(conflictMatch.localIndex - conflictMatch.remoteIndex)
+			newForbiddenRanges.translate(conflictMatch.localIndex - conflictMatch.remoteIndex)
+
+			conflictMatch.mergeableLocalRanges.union(newMergeableRanges)
+			conflictMatch.forbiddenLocalRanges.union(newForbiddenRanges)
+			
+			// remove forbidden Ranges from mergeable ranges
+			conflictMatch.mergeableLocalRanges = conflictMatch.mergeableLocalRanges.difference(conflictMatch.forbiddenLocalRanges)
 		]
 	}
 
