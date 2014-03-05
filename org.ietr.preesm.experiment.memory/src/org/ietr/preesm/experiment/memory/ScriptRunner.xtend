@@ -468,9 +468,7 @@ class ScriptRunner {
 	 * matches} contained in the {@link Buffer#getMatchTable() matchTable} of 
 	 * the {@link Buffer} passed as parameter. Two {@link Match} are 
 	 * potentially conflicting if:
-	 * <ul><li>They link inputs with inputs (or outputs with outputs).<br>
-	 * <b>OR</b></li>
-	 * <li>They have the same {@link Match#getLocalBuffer()}</li></ul>
+	 * <ul><li>They have the same {@link Match#getRemoteBuffer()}</li></ul>
 	 * 
 	 * @param inputs
 	 * 	{@link List} of input {@link Buffer} of an actor.
@@ -488,7 +486,7 @@ class ScriptRunner {
 
 			// Update the potential conflict list of all matches
 			matches.forEach [ match |
-				match.conflictCandidates.addAll(matches.filter[it != match])
+				match.reciprocate.conflictCandidates.addAll(matches.filter[it != match].map[it.reciprocate])
 			]
 
 		}
@@ -801,6 +799,8 @@ class ScriptRunner {
 		matches.forEach [
 			it.conflictCandidates.removeAll(matches)
 			it.reciprocate.conflictCandidates.removeAll(matches.map[it.reciprocate])
+			it.conflictingMatches.removeAll(matches)
+			it.reciprocate.conflictingMatches.removeAll(matches.map[it.reciprocate])
 		]
 
 		// apply the matches of the buffer one by one

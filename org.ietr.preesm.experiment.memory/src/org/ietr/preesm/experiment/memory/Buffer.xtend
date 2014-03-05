@@ -589,7 +589,7 @@ class Buffer {
 			appliedMatches.put(match.localIndivisibleRange, match.remoteBuffer -> match.remoteIndex)
 
 			// Fill the forbiddenLocalRanges of conflictCandidates and conflicting matches
-			updateForbiddenAndMergeableLocalRanges(match)			
+			updateForbiddenAndMergeableLocalRanges(match)
 
 			// Move all third-party matches from the matched range of the merged buffer
 			match.localBuffer.matchTable.values.flatten.filter [
@@ -652,8 +652,9 @@ class Buffer {
 			match.reciprocate.applied = true
 		}
 	}
-	
+
 	def updateForbiddenAndMergeableLocalRanges(Match match) {
+
 		// For the forward match, simply fill the forbidden ranges
 		val forwardMatch = if(match.type == MatchType::FORWARD) match else match.reciprocate
 		#[forwardMatch.conflictCandidates, forwardMatch.conflictingMatches].flatten.forEach [ conflictMatch |
@@ -664,25 +665,26 @@ class Buffer {
 			conflictMatch.forbiddenLocalRanges.union(forwardMatch.localImpactedRange)
 			impactedRange.translate(conflictMatch.remoteIndex - conflictMatch.localIndex)
 		]
-		
+
 		// For backward match, fill the forbidden an mergeable ranges (if any)
 		val backwardMatch = if(match.type == MatchType::BACKWARD) match else match.reciprocate
+
 		// Get the remote mergeable range
 		val impactedRange = backwardMatch.localImpactedRange
 		impactedRange.translate(backwardMatch.remoteIndex - backwardMatch.localIndex)
 		val remoteMergeableRange = backwardMatch.remoteBuffer.mergeableRanges.intersection(impactedRange)
+
 		// translate it back to local indexes
 		remoteMergeableRange.translate(backwardMatch.localIndex - backwardMatch.remoteIndex)
+
 		// No need to remove forbidden ranges from it. Indeed, if there are such
 		// range, the match couldn't have been applied
 		// Compute forbidden ranges
 		val forbiddenRanges = #[impactedRange].difference(remoteMergeableRange)
-		
-		 
+
 		#[backwardMatch.conflictCandidates, backwardMatch.conflictingMatches].flatten.forEach [ conflictMatch |
 			val newMergeableRanges = new ArrayList(remoteMergeableRange.map[it.clone as Range])
 			val newForbiddenRanges = new ArrayList(forbiddenRanges.map[it.clone as Range])
-			
 			// Must be extracted for each iteration because the union modifies the range
 			val localImpactedRange = backwardMatch.localImpactedRange
 			// not used in the union because the range is modified in the union
@@ -814,7 +816,6 @@ class Buffer {
 				it.unmatch
 			]
 		}
-
 	}
 
 	/**
@@ -833,30 +834,30 @@ class Buffer {
 		// remote->local is backward or vice versa))
 		// 1
 		val newConflicts = newArrayList
-		if (!match.conflictCandidates.empty || !match.conflictingMatches.empty) {
+		if (!match.reciprocate.conflictCandidates.empty || !match.reciprocate.conflictingMatches.empty) {
 			match.remoteBuffer.matchTable.values.flatten.filter [
 				it.type == match.type
 			].forEach [ otherMatch |
-				otherMatch.conflictCandidates.addAll(match.conflictCandidates)
-				otherMatch.conflictCandidates.addAll(match.conflictingMatches)
-				newConflicts.add(otherMatch)
+				otherMatch.reciprocate.conflictCandidates.addAll(match.reciprocate.conflictCandidates)
+				otherMatch.reciprocate.conflictCandidates.addAll(match.reciprocate.conflictingMatches)
+				newConflicts.add(otherMatch.reciprocate)
 			]
-			match.conflictCandidates.forEach[it.conflictCandidates.addAll(newConflicts)]
-			match.conflictingMatches.forEach[it.conflictCandidates.addAll(newConflicts)]
+			match.reciprocate.conflictCandidates.forEach[it.conflictCandidates.addAll(newConflicts)]
+			match.reciprocate.conflictingMatches.forEach[it.conflictCandidates.addAll(newConflicts)]
 			newConflicts.clear
 		}
 
 		// 2.
-		if (!match.reciprocate.conflictCandidates.empty || !match.reciprocate.conflictingMatches.empty) {
+		if (!match.conflictCandidates.empty || !match.conflictingMatches.empty) {
 			match.localBuffer.matchTable.values.flatten.filter [
 				it.type != match.type
 			].forEach [ otherMatch |
-				otherMatch.conflictCandidates.addAll(match.reciprocate.conflictCandidates)
-				otherMatch.conflictCandidates.addAll(match.reciprocate.conflictingMatches)
-				newConflicts.add(otherMatch)
+				otherMatch.reciprocate.conflictCandidates.addAll(match.conflictCandidates)
+				otherMatch.reciprocate.conflictCandidates.addAll(match.conflictingMatches)
+				newConflicts.add(otherMatch.reciprocate)
 			]
-			match.reciprocate.conflictCandidates.forEach[it.conflictCandidates.addAll(newConflicts)]
-			match.reciprocate.conflictingMatches.forEach[it.conflictCandidates.addAll(newConflicts)]
+			match.conflictCandidates.forEach[it.conflictCandidates.addAll(newConflicts)]
+			match.conflictingMatches.forEach[it.conflictCandidates.addAll(newConflicts)]
 			newConflicts.clear
 		}
 	}
@@ -884,17 +885,17 @@ class Buffer {
 
 		val updatedMatches = newArrayList
 		matchList.forEach [ match |
-			// Check all the conflict candidaes
+			// Check all the conflict candidates
 			var iter = match.conflictCandidates.iterator
 			while (iter.hasNext) {
 				val candidate = iter.next
-				if (candidate.localImpactedRange.hasOverlap(match.localImpactedRange)) {
+				if (candidate.reciprocate.localImpactedRange.hasOverlap(match.reciprocate.localImpactedRange)) {
 					iter.remove
 
 					// Add the candidate to the conflicting matches
-					//match.conflictingMatches.add(candidate)
-					match.reciprocate.conflictingMatches.add(candidate.reciprocate)
+					match.conflictingMatches.add(candidate)
 
+					//match.reciprocate.conflictingMatches.add(candidate.reciprocate)
 					// Remove it from the reciprocate candidates (if it was present)
 					//match.reciprocate.conflictCandidates.remove(candidate.reciprocate)
 					updatedMatches.add(candidate)
@@ -904,13 +905,13 @@ class Buffer {
 			iter = match.reciprocate.conflictCandidates.iterator
 			while (iter.hasNext) {
 				val candidate = iter.next
-				if (candidate.localImpactedRange.hasOverlap(match.reciprocate.localImpactedRange)) {
+				if (candidate.reciprocate.localImpactedRange.hasOverlap(match.localImpactedRange)) {
 					iter.remove
 
 					// Add the candidate to the conflicting matches
-					match.conflictingMatches.add(candidate.reciprocate)
+					//match.conflictingMatches.add(candidate.reciprocate)
+					match.reciprocate.conflictingMatches.add(candidate)
 
-					//match.reciprocate.conflictingMatches.add(candidate)
 					// Remove it from the candidates (if it was present)
 					//match.conflictCandidates.remove(candidate.reciprocate)
 					if (!updatedMatches.contains(candidate.reciprocate)) {
