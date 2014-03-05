@@ -14,6 +14,7 @@ class Match {
 		this.conflictingMatches = newArrayList
 		this.conflictCandidates = newArrayList
 		this.applied = false
+		this.forbiddenLocalRanges = newArrayList
 	}
 
 	@Property
@@ -30,8 +31,52 @@ class Match {
 	List<Match> conflictingMatches
 	@Property
 	List<Match> conflictCandidates
+	
+	/**
+	 * The {@link MatchType} of the current {@link Match}.
+	 */
 	@Property
 	MatchType type
+	
+	/**
+	 * Set the {@link #_type type} of the current {@link Match}.
+	 * If the type is <code>BACKWARD</code> a new list is created for the
+	 * {@link #getMergeableLocalRanges() mergeableLocalRanges}. Otherwise
+	 * mergeableLocalRanges is set to <code>null</code>.
+	 */
+	def setType(MatchType newType){
+		_type = newType
+		_mergeableLocalRanges = if(type == MatchType::BACKWARD){
+			newArrayList
+		} else {
+			null
+		}
+	}
+	
+	/**
+	 * This {@link List} contains {@link Range} of the {@link 
+	 * #getLocalBuffer()} that can be matched only if:<ul>
+	 * <li> The remote buffer has no token for this range (i.e. it is 
+	 * out of the minIndex .. maxIndex range).</li></ul>
+	 * The list of a {@link Match} and the one of its {@link #getReciprocate()
+	 * reciprocate} are not equals.
+	 */
+	@Property
+	List<Range> forbiddenLocalRanges
+	
+	
+	/**
+	 * This {@link List} contains {@link Range} of the {@link 
+	 * #getLocalBuffer()} that can be matched only if:<ul>
+	 * <li> If the match is backward AND both the remote buffers are 
+	 * mergeable for this ranges.<br>
+	 * or</li>
+	 * <li> The remote buffer has no token for this range (i.e. it is 
+	 * out of the minIndex .. maxIndex range).</li></ul>
+	 * Only {@link #getType() backward} matches can have mergeableLocalRanges.
+	 */
+	@Property
+	List<Range> mergeableLocalRanges
 
 	/**
 	 * This {@link boolean} is set to <code>true</code> if the current {@link 
@@ -99,11 +144,11 @@ class Match {
 	def Range getLocalImpactedRange() {
 
 		// Get the aligned smallest indivisible range (local or remote)
-		val localIndivisibleRange = this.localRange
+		val localRange = this.localRange
 		val remoteIndivisibleRange = this.reciprocate.localIndivisibleRange
 		remoteIndivisibleRange.translate(this.localIndex - this.remoteIndex)
-		val smallestRange = if (localIndivisibleRange.length > remoteIndivisibleRange.length) {
-				localIndivisibleRange
+		val smallestRange = if (localRange.length > remoteIndivisibleRange.length) {
+				localRange
 			} else {
 				remoteIndivisibleRange
 			}

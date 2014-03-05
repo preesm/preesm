@@ -588,6 +588,9 @@ class Buffer {
 			// Temp version with unique match for a complete buffer <= not true anymore
 			appliedMatches.put(match.localIndivisibleRange, match.remoteBuffer -> match.remoteIndex)
 
+			// Fill the forbiddenLocalRanges of conflictCandidates and conflicting matches
+			updateForbiddenAndMergeableLocalRanges(match)			
+
 			// Move all third-party matches from the matched range of the merged buffer
 			match.localBuffer.matchTable.values.flatten.filter [
 				it != match && it.localRange.hasOverlap(match.localIndivisibleRange)
@@ -648,6 +651,45 @@ class Buffer {
 			match.applied = true
 			match.reciprocate.applied = true
 		}
+	}
+	
+	def updateForbiddenAndMergeableLocalRanges(Match match) {
+		// For the forward match, simply fill the forbidden ranges
+		val forwardMatch = if(match.type == MatchType::FORWARD) match else match.reciprocate
+		#[forwardMatch.conflictCandidates, forwardMatch.conflictingMatches].flatten.forEach [ conflictMatch |
+			// Must be extracted for each iteration because the union modifies the range
+			val impactedRange = forwardMatch.localImpactedRange
+			// not used in the union because the range is modified in the union
+			// but impactedRange declared before to ease debug.
+			conflictMatch.forbiddenLocalRanges.union(forwardMatch.localImpactedRange)
+			impactedRange.translate(conflictMatch.remoteIndex - conflictMatch.localIndex)
+		]
+		
+		// For backward match, fill the forbidden an mergeable ranges (if any)
+		val backwardMatch = if(match.type == MatchType::BACKWARD) match else match.reciprocate
+		// Get the remote mergeable range
+		val impactedRange = backwardMatch.localImpactedRange
+		impactedRange.translate(backwardMatch.remoteIndex - backwardMatch.localIndex)
+		val remoteMergeableRange = backwardMatch.remoteBuffer.mergeableRanges.intersection(impactedRange)
+		// translate it back to local indexes
+		remoteMergeableRange.translate(backwardMatch.localIndex - backwardMatch.remoteIndex)
+		// No need to remove forbidden ranges from it. Indeed, if there are such
+		// range, the match couldn't have been applied
+		// Compute forbidden ranges
+		val forbiddenRanges = #[impactedRange].difference(remoteMergeableRange)
+		
+		 
+		#[backwardMatch.conflictCandidates, backwardMatch.conflictingMatches].flatten.forEach [ conflictMatch |
+			val newMergeableRanges = new ArrayList(remoteMergeableRange.map[it.clone as Range])
+			val newForbiddenRanges = new ArrayList(forbiddenRanges.map[it.clone as Range])
+			
+			// Must be extracted for each iteration because the union modifies the range
+			val localImpactedRange = backwardMatch.localImpactedRange
+			// not used in the union because the range is modified in the union
+			// but impactedRange declared before to ease debug.
+			conflictMatch.forbiddenLocalRanges.union(backwardMatch.localImpactedRange)
+			localImpactedRange.translate(conflictMatch.remoteIndex - conflictMatch.localIndex)
+		]
 	}
 
 	def updateMatches(Match match) {
@@ -724,54 +766,55 @@ class Buffer {
 				while (j < matches.size) {
 					val redundantMatch = matches.get(j)
 					if (currentMatch == redundantMatch) {
-						
+
 						// Matches are redundant
 						redundantMatches.add(j)
-						
+
 						// It does not matter if the redundant matches were conflicting.
 						// If this code is reached, it means that the were not since they
 						// now have the same target and destination.
-						
 						// Transfer information from the redundantMatch to the currentMatch
-						val transferredConflictCandidates = new ArrayList(redundantMatch.conflictCandidates.filter[
-							!currentMatch.conflictCandidates.contains(it) && !currentMatch.conflictingMatches.contains(it) &&
-							it != currentMatch
-						].toList)
-						transferredConflictCandidates.forEach[
+						val transferredConflictCandidates = new ArrayList(
+							redundantMatch.conflictCandidates.filter [
+								!currentMatch.conflictCandidates.contains(it) &&
+									!currentMatch.conflictingMatches.contains(it) && it != currentMatch
+							].toList)
+						transferredConflictCandidates.forEach [
 							it.conflictCandidates.remove(redundantMatch)
 							it.conflictCandidates.add(currentMatch)
 							currentMatch.conflictCandidates.add(it)
 						]
-						
-						val transferredConflictingMatches = new ArrayList(redundantMatch.conflictingMatches.filter[
-							!currentMatch.conflictingMatches.contains(it) && it != currentMatch
-						].toList)
-						transferredConflictingMatches.forEach[  
+
+						val transferredConflictingMatches = new ArrayList(
+							redundantMatch.conflictingMatches.filter [
+								!currentMatch.conflictingMatches.contains(it) && it != currentMatch
+							].toList)
+						transferredConflictingMatches.forEach [
 							// remove from conflict candidates if it was present
-							it.conflictCandidates.remove(currentMatch) 
+							it.conflictCandidates.remove(currentMatch)
 							currentMatch.conflictCandidates.remove(it)
-							
 							it.conflictingMatches.remove(redundantMatch)
 							it.conflictingMatches.add(currentMatch)
 							currentMatch.conflictingMatches.add(it)
 						]
-						
+
 					}
 					j = j + 1
 				}
 			}
 			i = i + 1
 		}
-		
+
 		// do the removal :
 		if (redundantMatches.size > 0) {
+
 			//println('''Redundant «redundantMatches.map[matches.get(it)]»''')
 			val removedMatches = new ArrayList(redundantMatches.map[matches.get(it)].toList)
-			removedMatches.forEach[
+			removedMatches.forEach [
 				it.unmatch
 			]
 		}
-		 
+
 	}
 
 	/**
