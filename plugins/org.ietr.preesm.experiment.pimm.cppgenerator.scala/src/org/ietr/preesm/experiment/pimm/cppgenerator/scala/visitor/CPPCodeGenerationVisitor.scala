@@ -59,9 +59,7 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
   private val graph2method: Map[PiGraph, StringBuilder] = new HashMap[PiGraph, StringBuilder]
   private val graph2subgraphs: Map[PiGraph, List[PiGraph]] = new HashMap[PiGraph, List[PiGraph]]
 
-  def getMethods(): Collection[StringBuilder] = {
-    graph2method.values()
-  }
+  def getMethods(): Collection[StringBuilder] = graph2method.values()
 
   private var currentMethod: StringBuilder = topMethod
   private var currentGraph: PiGraph = null
@@ -92,11 +90,10 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
     visitAbstractActor(pg)
 
     //We add pg as a subgraph of the current graph
-    pg :: currentSubGraphs
+    currentSubGraphs = pg :: currentSubGraphs
 
     //We stock the informations about the current graph for later use
-    var currentOuterGraph: PiGraph = null
-    currentOuterGraph = currentGraph
+    var currentOuterGraph: PiGraph = currentGraph
     if (currentOuterGraph != null) {
       graph2method.put(currentOuterGraph, currentMethod)
       graph2subgraphs.put(currentOuterGraph, currentSubGraphs)
@@ -198,18 +195,9 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
   }
 
   def visitActor(a: Actor): Unit = {
-    //If the refinement of a points to the description of PiGraph, visit it
-    val innerGraph: AbstractActor = a.getRefinement().getAbstractActor()
-    if (innerGraph != null) {      
-      visit(innerGraph)
-    }
-    //Otherwise, generate a vertex
-    else {
-      currentAbstractActorType = "pisdf_vertex"
-      currentAbstractActorClass = "PiSDFVertex"
-      visitAbstractActor(a)
-    }
-
+    currentAbstractActorType = "pisdf_vertex"
+    currentAbstractActorClass = "PiSDFVertex"
+    visitAbstractActor(a)
   }
 
   /**
@@ -342,11 +330,8 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
     //TODO
     throw new UnsupportedOperationException()
   }
-  
-  
-  def visitConfigInputInterface(cii: ConfigInputInterface): Unit = {
-    visitParameter(cii)
-  }
+
+  def visitConfigInputInterface(cii: ConfigInputInterface): Unit = visitParameter(cii)
 
   /**
    * When visiting a parameter, we should add a parameter to the current graph
