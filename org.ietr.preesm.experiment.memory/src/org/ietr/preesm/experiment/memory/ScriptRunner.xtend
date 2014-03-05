@@ -541,11 +541,13 @@ class ScriptRunner {
 								entry.key <= 0 &&
 								// and ends at the end of the buffer (or more)
 								entry.key + entry.value.head.length >= it.nbTokens * it.tokenSize &&
-						    // and is not involved in any conflicting range
+							    // and is not involved in any conflicting range
 								{
 									val match = entry.value.head
-									match.conflictingMatches.size == 0
-								}
+									match.conflictingMatches.size == 0 &&
+									match.applicable &&
+									match.reciprocate.applicable
+								} 
 						]
 
 						// Copy the candidate list, otherwise it is updated when
@@ -623,7 +625,9 @@ class ScriptRunner {
 								// and ends at the end of the buffer (or more)
 								matches.head.localIndex + matches.head.length >= it.nbTokens * it.tokenSize &&
 								// and is not involved in any conflicting match
-								matches.head.conflictingMatches.size == 0
+								matches.head.conflictingMatches.size == 0 && 
+								matches.head.applicable &&
+								matches.head.reciprocate.applicable
 						]
 						if (candidate != null) {
 							type = MatchType::FORWARD
@@ -638,7 +642,9 @@ class ScriptRunner {
 									// and ends at the end of the buffer (or more)
 									matches.head.localIndex + matches.head.length >= it.nbTokens * it.tokenSize &&
 									// and is not involved in any conflicting match
-									matches.head.conflictingMatches.size == 0
+									matches.head.conflictingMatches.size == 0 &&
+									matches.head.applicable &&
+									matches.head.reciprocate.applicable
 							]
 							if (candidate != null) {
 								type = MatchType::BACKWARD

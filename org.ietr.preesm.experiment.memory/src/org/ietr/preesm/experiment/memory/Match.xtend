@@ -31,28 +31,28 @@ class Match {
 	List<Match> conflictingMatches
 	@Property
 	List<Match> conflictCandidates
-	
+
 	/**
 	 * The {@link MatchType} of the current {@link Match}.
 	 */
 	@Property
 	MatchType type
-	
+
 	/**
 	 * Set the {@link #_type type} of the current {@link Match}.
 	 * If the type is <code>BACKWARD</code> a new list is created for the
 	 * {@link #getMergeableLocalRanges() mergeableLocalRanges}. Otherwise
 	 * mergeableLocalRanges is set to <code>null</code>.
 	 */
-	def setType(MatchType newType){
+	def setType(MatchType newType) {
 		_type = newType
-		_mergeableLocalRanges = if(type == MatchType::BACKWARD){
+		_mergeableLocalRanges = if (type == MatchType::BACKWARD) {
 			newArrayList
 		} else {
 			null
 		}
 	}
-	
+
 	/**
 	 * This {@link List} contains {@link Range} of the {@link 
 	 * #getLocalBuffer()} that can be matched only if:<ul>
@@ -63,8 +63,7 @@ class Match {
 	 */
 	@Property
 	List<Range> forbiddenLocalRanges
-	
-	
+
 	/**
 	 * This {@link List} contains {@link Range} of the {@link 
 	 * #getLocalBuffer()} that can be matched only if:<ul>
@@ -186,6 +185,25 @@ class Match {
 
 	override toString() '''«localBuffer.dagVertex.name».«localBuffer.name»[«localIndex»..«localIndex + length»[=>«remoteBuffer.
 		dagVertex.name».«remoteBuffer.name»[«remoteIndex»..«remoteIndex + length»['''
+
+	/**
+	 * Check whether the current match fulfills its forbiddenLocalRanges and
+	 * mergeableLocalRange conditions. Does not check the reciprocate.
+	 */
+	def isApplicable() {
+
+		// Does not match forbidden tokens
+		val impactedTokens = this.localImpactedRange.intersection(new Range(this.localBuffer.minIndex, this.localBuffer.maxIndex))		
+		this.forbiddenLocalRanges.intersection(impactedTokens).size == 0 &&
+		// And match only localMergeableRange are in fact mergeable 
+		if(this.type == MatchType::FORWARD){
+			true
+		} else {
+			val mustBeMergeableRanges = this.mergeableLocalRanges.intersection(this.localImpactedRange)
+			val mergeableRanges = this.localBuffer.mergeableRanges.intersection(this.localImpactedRange)
+			mustBeMergeableRanges.difference(mergeableRanges).size == 0
+		}	
+	}
 }
 
 /**
@@ -198,7 +216,6 @@ public enum MatchType {
 	 * Not allowed anymore
 	 */
 	//INTER_SIBLINGS,
-
 	/**
 	 * The {@link Match} is internal to an actor and links an input {@link 
 	 * Buffer} to an output {@link Buffer}, <b>or</b> the {@link Match} is
