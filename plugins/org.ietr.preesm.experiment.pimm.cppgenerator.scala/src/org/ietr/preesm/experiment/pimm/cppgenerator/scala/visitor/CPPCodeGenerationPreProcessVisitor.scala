@@ -67,7 +67,7 @@ class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor with CppCodeGenerat
 
   def visitPiGraph(pg: PiGraph): Unit = {
     visitAbstractActor(pg)
-    pg.getActors().foreach(a => visit(a))
+    pg.getVertices().foreach(a => visit(a))
     pg.getParameters().foreach(p => visit(p))
     pg.getDependencies().foreach(d => visit(d))
   }
