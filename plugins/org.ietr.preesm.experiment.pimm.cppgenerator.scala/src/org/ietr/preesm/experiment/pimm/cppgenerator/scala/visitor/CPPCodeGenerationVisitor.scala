@@ -47,6 +47,13 @@ import org.ietr.preesm.experiment.pimm.cppgenerator.scala.utils.CppCodeGeneratio
 import java.util.Collection
 import org.ietr.preesm.experiment.pimm.visitor.scala.PiMMVisitor
 
+//TODO: Find a cleaner way to setParentEdge in Interfaces
+/* 
+ * Ugly workaround for setParentEdge in Interfaces. Must suppose that fifos are always obtained in the same order => Modify the C++ headers?
+ * A better way would be a possibility to get edges from one building method to the other (since the parentEdge is in the outer graph), 
+ * maybe a map from edgeNames to edges with a method getOutputEdgeByName in BaseVertex 
+ */
+
 /**
  * PiMM models visitor generating C++ code for COMPA Runtime
  * currentGraph: The most outer graph of the PiMM model
@@ -73,9 +80,9 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
   private val dataPortMap: Map[Port, DataPortDescription] = preprocessor.getDataPortMap
   //Map linking data ports to their corresponding description
   private val dependencyMap: Map[Dependency, DependencyDescription] = preprocessor.getDependencyMap
+  //Map linking Fifos to their C++ position in their graph collection
+  private val fifoMap: Map[Fifo, Integer] = preprocessor.getFifoMap
 
-  //Map linking Fifos to their C++ names
-  private val fifoMap: Map[Fifo, String] = new HashMap[Fifo, String]
   //Shortcut for currentMethod.append()
   private def append(a: Any) = currentMethod.append(a)
 
@@ -204,7 +211,6 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
    * Generic visit method for all AbstractActors (Actors, PiGraph)
    */
   def visitAbstractActor(aa: AbstractActor): Unit = {
-
     val isConfigVertex = aa.getConfigOutputPorts().size() > 0
     if (isConfigVertex) {
       currentAbstractActorClass = "PiSDFConfigVertex"
@@ -247,12 +253,9 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
    * When visiting a FIFO we should add an edge to the current graph
    */
   def visitFifo(f: Fifo): Unit = {
-    val edgeName = getEdgeName(f)
-    fifoMap.put(f, edgeName)
     //Call the addEdge method on the current graph
-    append("\n\tPiSDFEdge *")
-    append(edgeName)
-    append(" = graph->addEdge(")
+    append("\n\t")
+    append("graph->addEdge(")
     //Use the PortDescription of the source port to get the informations about the source node
     val src: DataPortDescription = dataPortMap.get(f.getSourcePort())
     //Pass the name of the source node
@@ -284,20 +287,33 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
     currentAbstractActorClass = "PiSDFIfVertex"
     visitAbstractActor(dii)
     //Setting direction to 0 (input)
-    append("\t\n")
+    append("\n\t")
     append(vertexName)
     append("->setDirection(0);")
     //Setting the parent vertex
-    append("\t\n")
+    append("\n\t")
     append(vertexName)
     append("->setParentVertex(parentVertex);")
     //Setting the parent edge
-    append("\t\n")
+    append("\n\t")
     append(vertexName)
     append("->setParentEdge(")
     //Getting the Fifo corresponding to the parent edge
-    val incomingFifo = dii.getDataInputPorts().get(0).getIncomingFifo()
-    append(fifoMap.get(incomingFifo))
+    dii.getGraphPort() match {
+      case dip: DataInputPort => {
+        val incomingFifo = dip.getIncomingFifo()
+        append("parentVertex->getInputEdge(")
+        //XXX: setParentEdge workaround
+        /* 
+        * Ugly way to do this. Must suppose that fifos are always obtained in the same order => Modify the C++ headers?
+        * A better way would be a possibility to get edges from one building method to the other (since the parentEdge is in the outer graph), 
+        * maybe a map from edgeNames to edges with a method getOutputEdgeByName in BaseVertex 
+        */
+        append(fifoMap.get(incomingFifo))
+        append(")")
+      }
+      case _ => throw new RuntimeException("Graph port of DataInputInterface " + dii.getName() + " is not a DataInputPort.")
+    }
     append(");")
   }
 
@@ -309,25 +325,39 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
     currentAbstractActorClass = "PiSDFIfVertex"
     visitAbstractActor(doi)
     //Setting direction to 1 (output)
-    append("\t\n")
+    append("\n\t")
     append(vertexName)
     append("->setDirection(1);")
     //Setting the parent vertex
-    append("\t\n")
+    append("\n\t")
     append(vertexName)
     append("->setParentVertex(parentVertex);")
     //Setting the parent edge
-    append("\t\n")
+    append("\n\t")
     append(vertexName)
     append("->setParentEdge(")
     //Getting the Fifo corresponding to the parent edge
-    val incomingFifo = doi.getDataOutputPorts().get(0).getOutgoingFifo()
-    append(fifoMap.get(incomingFifo))
+    doi.getGraphPort() match {
+      case dop: DataOutputPort => {
+        val incomingFifo = dop.getOutgoingFifo()
+        append("parentVertex->getOutputEdge(")
+        //XXX: setParentEdge workaround
+        /* 
+        * Ugly way to do this. Must suppose that fifos are always obtained in the same order => Modify the C++ headers?
+        * A better way would be a possibility to get edges from one building method to the other (since the parentEdge is in the outer graph), 
+        * maybe a map from edgeNames to edges with a method getOutputEdgeByName in BaseVertex 
+        */
+        append(fifoMap.get(incomingFifo))
+        append(")")
+      }
+      case _ => throw new RuntimeException("Graph port of DataOutputInterface " + doi.getName() + " is not a DataOutputPort.")
+    }
+
     append(");")
   }
 
   def visitConfigOutputInterface(coi: ConfigOutputInterface): Unit = {
-    //TODO
+    //TODO: Handle ConfigOutputInterface wrt. the COMPA runtime needs (cf. Yaset)
     throw new UnsupportedOperationException()
   }
 

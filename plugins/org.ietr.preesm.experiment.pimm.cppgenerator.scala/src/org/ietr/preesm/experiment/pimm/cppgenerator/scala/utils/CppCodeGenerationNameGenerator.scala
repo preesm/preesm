@@ -40,7 +40,6 @@ package org.ietr.preesm.experiment.pimm.cppgenerator.scala.utils
 import org.ietr.preesm.experiment.model.pimm._
 import java.util.Map
 import java.util.HashMap
-//Allows to consider Java collections as Scala collections and to use foreach...
 import collection.JavaConversions._
 
 trait CppCodeGenerationNameGenerator {
@@ -65,15 +64,33 @@ trait CppCodeGenerationNameGenerator {
   protected def getParameterName(p: Parameter): String = "param_" + p.getName();
 
   /**
-   * Returns the name of the C++ edge corresponding to Fifo f
+   * Returns the position of the C++ edge corresponding to Fifo f in the collection of edges of graph pg
    */
-  private var edgeCounter: Integer = -1
-  private var edgeMap: Map[Fifo, String] = new HashMap[Fifo, String]
-  protected def getEdgeName(f: Fifo): String = {
+  private var counterMap: Map[AbstractActor, ActorEdgesCounters] = new HashMap[AbstractActor, ActorEdgesCounters]
+  private var edgeMap :Map[Fifo, Integer] = new HashMap[Fifo, Integer]
+  protected def getEdgeNumber(aa : AbstractActor, f: Fifo, kind: EdgeKind.EdgeKind): Integer = {
+    if (!counterMap.containsKey(aa)) {
+      counterMap.put(aa, new ActorEdgesCounters)
+    }
     if (!edgeMap.containsKey(f)) {
-      edgeCounter = edgeCounter + 1
-      edgeMap.put(f, "edge" + edgeCounter)
+      var edgeCounter = 0
+      kind match {
+        case EdgeKind.in => {
+          edgeCounter = counterMap.get(aa).inputEdgesCounter
+          counterMap.get(aa).inputEdgesCounter = edgeCounter+1
+        }
+        case EdgeKind.out => {
+          edgeCounter = counterMap.get(aa).outputEdgesCounter
+          counterMap.get(aa).outputEdgesCounter = edgeCounter+1
+        }
+      }
+      edgeMap.put(f, edgeCounter)
     }
     edgeMap.get(f)
   }
+}
+
+private class ActorEdgesCounters {
+  var inputEdgesCounter = 0
+  var outputEdgesCounter = 0
 }

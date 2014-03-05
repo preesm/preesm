@@ -43,12 +43,14 @@ import java.util.Map
 import collection.JavaConversions._
 import org.ietr.preesm.experiment.pimm.cppgenerator.scala.utils.CppCodeGenerationNameGenerator
 import org.ietr.preesm.experiment.pimm.visitor.scala.PiMMVisitor
+import org.ietr.preesm.experiment.pimm.cppgenerator.scala.utils.EdgeKind
 
 /**
  * The C++ code generation needs a preprocess in order to get source/target nodes/actors for every Fifo and Dependency
  */
 class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor with CppCodeGenerationNameGenerator {
 
+  private var currentAbstractActor: AbstractActor = null
   //Variables containing the name of the currently visited AbstractActor for PortDescriptions
   private var currentAbstractVertexName: String = ""
   //Map linking data ports to their corresponding description
@@ -60,6 +62,10 @@ class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor with CppCodeGenerat
 
   //Map linking ISetters (Parameter and ConfigOutputPort) to the name of their node or their name
   private val setterMap: Map[ISetter, String] = new HashMap[ISetter, String]
+  
+  //Map linking Fifos to their C++ names
+  private val fifoMap: Map[Fifo, Integer] = new HashMap[Fifo, Integer]
+  def getFifoMap(): Map[Fifo, Integer] = fifoMap
 
   //Map linking dependencies to their corresponding description
   private val dependencyMap: Map[Dependency, DependencyDescription] = new HashMap[Dependency, DependencyDescription]
@@ -72,17 +78,11 @@ class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor with CppCodeGenerat
     pg.getDependencies().foreach(d => visit(d))
   }
 
-  def visitActor(a: Actor): Unit = {
-    //If the refinement of a points to the description of PiGraph, visit it to preprocess its content
-    val innerGraph: AbstractActor = a.getRefinement().getAbstractActor()
-    if (innerGraph != null) {      
-      visit(innerGraph)
-    } else {
-      visitAbstractActor(a)
-    }    
-  }
+  def visitActor(a: Actor): Unit = visitAbstractActor(a)
 
   def visitAbstractActor(aa: AbstractActor): Unit = {
+    //Fix currentAbstractActor
+    currentAbstractActor = aa
     //Fix currentAbstractVertexName
     currentAbstractVertexName = getVertexName(aa)
     //Visit configuration input ports to fill cfgInPortMap
@@ -98,10 +98,22 @@ class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor with CppCodeGenerat
    * When visiting data ports, we stock the necessary informations for edge generation into PortDescriptions
    */
   def visitDataInputPort(dip: DataInputPort): Unit = {
+    //XXX: setParentEdge workaround (see visitDataInputInterface and visitDataOutputInterface in CPPCodeGenerationVisitor)
+    //XXX Ugly way to do this. Must suppose that fifos are always obtained in the same order => Modify the C++ headers?
+    //Get the position of the incoming fifo of dip wrt. currentAbstractActor
+    val f = dip.getIncomingFifo()
+    fifoMap.put(f, getEdgeNumber(currentAbstractActor, f, EdgeKind.in))
+    
     //Fill dataPortMap
     dataPortMap.put(dip, new DataPortDescription(currentAbstractVertexName, dip.getExpression().getString()))
   }
   def visitDataOutputPort(dop: DataOutputPort): Unit = {
+    //XXX: setParentEdge workaround (see visitDataInputInterface and visitDataOutputInterface in CPPCodeGenerationVisitor)
+    //XXX Ugly way to do this. Must suppose that fifos are always obtained in the same order => Modify the C++ headers?
+    //Get the position of the outgoing fifo of dop wrt. currentAbstractActor
+    val f = dop.getOutgoingFifo()
+    fifoMap.put(f, getEdgeNumber(currentAbstractActor, f, EdgeKind.out))
+    
     //Fill dataPortMap
     dataPortMap.put(dop, new DataPortDescription(currentAbstractVertexName, dop.getExpression().getString()))
   }
@@ -116,29 +128,13 @@ class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor with CppCodeGenerat
     setterMap.put(cop, currentAbstractVertexName)
   }
 
-  def visitFifo(f: Fifo): Unit = {
-    throw new UnsupportedOperationException()
-  }
+  def visitInterfaceActor(ia: InterfaceActor): Unit = visitAbstractActor(ia)
 
-  def visitInterfaceActor(ia: InterfaceActor): Unit = {
-    visitAbstractActor(ia)
-  }
+  def visitDataInputInterface(dii: DataInputInterface): Unit = visitInterfaceActor(dii)
 
-  def visitDataInputInterface(dii: DataInputInterface): Unit = {
-    visitInterfaceActor(dii)
-  }
+  def visitDataOutputInterface(doi: DataOutputInterface): Unit = visitInterfaceActor(doi)
 
-  def visitDataOutputInterface(doi: DataOutputInterface): Unit = {
-    visitInterfaceActor(doi)
-  }
-
-  def visitConfigOutputInterface(coi: ConfigOutputInterface): Unit = {
-    visitInterfaceActor(coi)
-  }
-
-  def visitRefinement(r: Refinement): Unit = {
-    throw new UnsupportedOperationException()
-  }
+  def visitConfigOutputInterface(coi: ConfigOutputInterface): Unit = visitInterfaceActor(coi)
 
   def visitParameter(p: Parameter): Unit = {
     //Fix currentAbstractVertexName
@@ -156,22 +152,17 @@ class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor with CppCodeGenerat
     dependencyMap.put(d, new DependencyDescription(srcName, tgtName))
   }
 
-  def visitDelay(d: Delay): Unit = {
-    throw new UnsupportedOperationException()
-  }
-
-  def visitExpression(e: Expression): Unit = {
-    throw new UnsupportedOperationException()
-  }
-
-  def visitConfigInputInterface(cii: ConfigInputInterface): Unit = {
-    throw new UnsupportedOperationException()
-  }
-
-  def visitAbstractVertex(av: AbstractVertex): Unit = {   
+  def visitAbstractVertex(av: AbstractVertex): Unit = {
     //Visit configuration input ports to fill cfgInPortMap
     av.getConfigInputPorts().foreach(p => visit(p))
   }
+  
+  def visitFifo(f: Fifo): Unit = throw new UnsupportedOperationException()
+  def visitDelay(d: Delay): Unit = throw new UnsupportedOperationException()
+  def visitExpression(e: Expression): Unit = throw new UnsupportedOperationException()
+  def visitConfigInputInterface(cii: ConfigInputInterface): Unit = throw new UnsupportedOperationException()
+  def visitRefinement(r: Refinement): Unit = throw new UnsupportedOperationException()
+  
 }
 
 /**
