@@ -582,6 +582,13 @@ class Buffer {
 				"Incorrect call to applyMatches method.\n All real token must be covered by the given matches.\n" +
 					matches)
 		}
+		
+		// Check that all matches are applicable
+		if (!matches.forall[it.applicable && it.reciprocate.applicable]){
+			throw new RuntimeException(
+				"Incorrect call to applyMatches method.\n One or more applied matches are not applicable.\n" +
+					matches.filter[!it.applicable || !it.reciprocate.applicable])
+		}
 
 		for (match : matchesCopy) {
 
