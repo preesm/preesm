@@ -582,12 +582,13 @@ class ScriptRunner {
 			// There is a unique match
 			var test = candidate.matchTable.size == 1 && entry.value.size == 1
 
-			// that begins at index 0 (or less)
-			test = test && entry.key <= 0
+			// that covers at index 0 (or less)
+			test = test && entry.value.head.localIndivisibleRange.start <= 0
 
 			// and ends at the end of the buffer (or more)
-			test = test && entry.key + entry.value.head.length >= candidate.nbTokens * candidate.tokenSize
+			test = test && entry.value.head.localIndivisibleRange.end >= candidate.nbTokens * candidate.tokenSize
 
+			//entry.key + entry.value.head.length >= candidate.nbTokens * candidate.tokenSize
 			// and is not involved in any conflicting range
 			test = test && {
 				val match = entry.value.head
@@ -708,11 +709,10 @@ class ScriptRunner {
 				test = matches.size == 1
 
 				// that begins at index 0 (or less)
-				test = test && matches.head.localIndex <= 0
+				test = test && matches.head.localIndivisibleRange.start <= 0
 
 				// and ends at the end of the buffer (or more)
-				test = test &&
-					matches.head.localIndex + matches.head.length >= candidate.nbTokens * candidate.tokenSize
+				test = test && matches.head.localIndivisibleRange.end >= candidate.nbTokens * candidate.tokenSize
 
 				// and is not involved in any conflicting match
 				test = test && matches.head.conflictingMatches.size == 0
@@ -844,10 +844,10 @@ class ScriptRunner {
 			test = test && entry.value.head.type == MatchType::BACKWARD
 
 			// that begins at index 0 (or less)
-			test = test && entry.key <= 0
+			test = test && entry.value.head.localIndivisibleRange.start <= 0
 
 			// and ends at the end of the buffer (or more)
-			test = test && entry.key + entry.value.head.length >= candidate.nbTokens * candidate.tokenSize
+			test = test && entry.value.head.localIndivisibleRange.end >= candidate.nbTokens * candidate.tokenSize
 
 			// and is involved in any conflicting range
 			test = test && {
@@ -882,7 +882,7 @@ class ScriptRunner {
 		// Return the matched buffers
 		return candidates
 	}
-	
+
 	/**
 	 * Match {@link Buffer buffers} that are divisible with their <code>FORWARD
 	 * </code> {@link Match matches} only (or a their <code>BACKWARD</code> 
@@ -905,39 +905,39 @@ class ScriptRunner {
 		val candidates = newArrayList
 
 		for (candidate : buffers) {
-				val matches = candidate.matchTable.values.flatten.filter[it.type == MatchType::BACKWARD]
+			val matches = candidate.matchTable.values.flatten.filter[it.type == MatchType::BACKWARD]
 
-				// Returns true if:
-				// Has a several matches 
-				var test = matches.size != 0
+			// Returns true if:
+			// Has a several matches 
+			var test = matches.size != 0
 
-				// is divisible
-				test = test && candidate.divisible
+			// is divisible
+			test = test && candidate.divisible
 
-				// and is involved in conflicting match(es)
-				test = test && !matches.forall[it.conflictingMatches.size == 0]
-				
-				// All matches are applicable
-				test = test && matches.forall[it.applicable]
-				
-				// buffer is fully mergeable
-				test = test && {
-					candidate.mergeableRanges.size == 1 && candidate.mergeableRanges.head.start == candidate.minIndex &&
-						candidate.mergeableRanges.head.end == candidate.maxIndex
-				}
+			// and is involved in conflicting match(es)
+			test = test && !matches.forall[it.conflictingMatches.size == 0]
 
-				// Matches have no multiple match Range. 
-				test = test && matches.overlappingRanges.size == 0
+			// All matches are applicable
+			test = test && matches.forall[it.applicable]
 
-				// Check divisibilityRequiredMatches
-				test = test && candidate.doesCompleteRequiredMatches(matches)
+			// buffer is fully mergeable
+			test = test && {
+				candidate.mergeableRanges.size == 1 && candidate.mergeableRanges.head.start == candidate.minIndex &&
+					candidate.mergeableRanges.head.end == candidate.maxIndex
+			}
 
-				// and remote buffer(s) are not already in the candidates list
-				test = test && matches.forall[!candidates.contains(it.remoteBuffer)]
+			// Matches have no multiple match Range. 
+			test = test && matches.overlappingRanges.size == 0
 
-				if (test) {
-					candidates.add(candidate)
-				
+			// Check divisibilityRequiredMatches
+			test = test && candidate.doesCompleteRequiredMatches(matches)
+
+			// and remote buffer(s) are not already in the candidates list
+			test = test && matches.forall[!candidates.contains(it.remoteBuffer)]
+
+			if (test) {
+				candidates.add(candidate)
+
 			}
 		}
 
