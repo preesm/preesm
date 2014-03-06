@@ -631,7 +631,7 @@ class Buffer {
 				it.reciprocate.mergeableLocalRanges = it.reciprocate.mergeableLocalRanges.difference(
 					it.reciprocate.forbiddenLocalRanges)
 			]
-			
+
 			// Update the conflictCandidates
 			// Must be done befor forwarding third-party matches
 			updateConflictCandidates(match)
@@ -799,7 +799,7 @@ class Buffer {
 		]
 
 		// Find redundant matches
-		val matches = match.remoteBuffer.matchTable.values.flatten
+		val matches = new ArrayList(match.remoteBuffer.matchTable.values.flatten.toList)
 		val Set<Integer> redundantMatches = newHashSet
 		var i = 0
 		while (i < matches.size - 1) {
@@ -883,12 +883,11 @@ class Buffer {
 								redundantMatch.reciprocate
 						forwardMatch.forbiddenLocalRanges = forwardMatch.forbiddenLocalRanges.intersection(
 							redundantForwardMatch.forbiddenLocalRanges)
-							
-						forwardMatch.reciprocate.forbiddenLocalRanges = forwardMatch.reciprocate.forbiddenLocalRanges.intersection(
-							redundantForwardMatch.reciprocate.forbiddenLocalRanges)
-						forwardMatch.reciprocate.mergeableLocalRanges = forwardMatch.reciprocate.mergeableLocalRanges.intersection(
-							redundantForwardMatch.reciprocate.mergeableLocalRanges)
-							
+
+						forwardMatch.reciprocate.forbiddenLocalRanges = forwardMatch.reciprocate.forbiddenLocalRanges.
+							intersection(redundantForwardMatch.reciprocate.forbiddenLocalRanges)
+						forwardMatch.reciprocate.mergeableLocalRanges = forwardMatch.reciprocate.mergeableLocalRanges.
+							intersection(redundantForwardMatch.reciprocate.mergeableLocalRanges)
 
 					}
 					j = j + 1
@@ -1177,29 +1176,75 @@ class Buffer {
 		match.remoteBuffer.mergeableRanges = match.remoteBuffer.mergeableRanges.difference(unmergeableRange)
 	}
 
+	/**
+	 * Remove the current {@link Match} from its {@link #getLocalBuffer() 
+	 * localBuffer} and {@link #getRemoteBuffer() remoteBuffer} {@link 
+	 * Buffer#getMatchTable() matchTable}. 
+	 * Each time the current match is retrieved in a List, the reference 
+	 * equality (===) from XTend is used. Indeed, several matches might be 
+	 * {@link Match#equals(Object) equals} which would result in removing the 
+	 * wrong match.
+	 */
 	def unmatch(Match match) {
 		val it = match
 
 		// Local unmatch
 		val localList = localBuffer.matchTable.get(localIndex)
-		localList.remove(it)
+		var iter = localList.iterator
+		while (iter.hasNext) {
+
+			// use the triple === to remove the correct
+			// match because several matches might be ==
+			if (iter.next === it) {
+				iter.remove
+			}
+		}
+
+		// Remove empty lists		
 		if (localList.size == 0) {
 			localBuffer.matchTable.remove(localIndex)
 		}
 
 		// Remote unmatch
 		val remoteList = remoteBuffer.matchTable.get(remoteIndex)
-		remoteList.remove(reciprocate)
+		iter = remoteList.iterator
+		while (iter.hasNext) {
+
+			// use the triple === to remove the correct
+			// match because several matches might be ==
+			if (iter.next === it.reciprocate) {
+				iter.remove
+			}
+		}
 		if (remoteList.size == 0) {
 			remoteBuffer.matchTable.remove(remoteIndex)
 		}
 
 		// Remove it from conflictingMatches and conflictCandidates
-		match.conflictCandidates.forEach[it.conflictCandidates.remove(match)]
-		match.conflictingMatches.forEach[it.conflictingMatches.remove(match)]
-		match.reciprocate.conflictCandidates.forEach[it.conflictCandidates.remove(match.reciprocate)]
-		match.reciprocate.conflictingMatches.forEach[it.conflictingMatches.remove(match.reciprocate)]
-
+		match.conflictCandidates.forEach [
+			val iterator = it.conflictCandidates.iterator
+			while (iterator.hasNext) {
+				if(iterator.next === match) iterator.remove
+			}
+		]
+		match.conflictingMatches.forEach [
+			val iterator = it.conflictingMatches.iterator
+			while (iterator.hasNext) {
+				if(iterator.next === match) iterator.remove
+			}
+		]
+		match.reciprocate.conflictCandidates.forEach [
+			val iterator = it.conflictCandidates.iterator
+			while (iterator.hasNext) {
+				if(iterator.next === match.reciprocate) iterator.remove
+			}
+		]
+		match.reciprocate.conflictingMatches.forEach [
+			val iterator = it.conflictingMatches.iterator
+			while (iterator.hasNext) {
+				if(iterator.next === match.reciprocate) iterator.remove
+			}
+		]
 	}
 
 	/**

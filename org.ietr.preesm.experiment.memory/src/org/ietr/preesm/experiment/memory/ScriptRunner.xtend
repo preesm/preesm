@@ -867,10 +867,10 @@ class ScriptRunner {
 			// and ends at the end of the buffer (or more)
 			test = test && entry.key + entry.value.head.length >= candidate.nbTokens * candidate.tokenSize
 
-			// and is not involved in any conflicting range
+			// and is involved in any conflicting range
 			test = test && {
 				val match = entry.value.head
-				match.conflictingMatches.size == 0 && match.applicable && match.reciprocate.applicable
+				match.conflictingMatches.size > 0 && match.applicable && match.reciprocate.applicable
 			}
 
 			// buffer is fully mergeable
