@@ -199,8 +199,8 @@ class Match {
 		if(this.type == MatchType::FORWARD){
 			true
 		} else {
-			val mustBeMergeableRanges = this.mergeableLocalRanges.intersection(this.localImpactedRange)
-			val mergeableRanges = this.localBuffer.mergeableRanges.intersection(this.localImpactedRange)
+			val mustBeMergeableRanges = this.mergeableLocalRanges.intersection(impactedTokens)
+			val mergeableRanges = this.localBuffer.mergeableRanges.intersection(impactedTokens)
 			mustBeMergeableRanges.difference(mergeableRanges).size == 0
 		}	
 	}
