@@ -532,7 +532,7 @@ class Buffer {
 			val firstElement = copy.head
 			copy.remove(0)
 			val coveredRange = copy.union(firstElement)
-			coveredRange == new Range(0, nbTokens * tokenSize)
+			(new Range(0, nbTokens * tokenSize)).difference(coveredRange).size == 0
 		} && matchTable.values.flatten.forall [
 			it.remoteBuffer.indivisible
 		]

@@ -647,7 +647,7 @@ class ScriptRunner {
 			test = test && candidate.divisible
 			test = test && candidate.matchTable.values.flatten.forall [
 				// Is not involved in any conflicting range
-				it.conflictingMatches.size == 0
+				it.conflictingMatches.size == 0 && it.applicable && it.reciprocate.applicable
 			]
 
 			// Has no multiple match Range. 
@@ -781,7 +781,8 @@ class ScriptRunner {
 				test = test && candidate.divisible
 
 				// and is not involved in any conflicting match
-				test = test && matches.forall[it.conflictingMatches.size == 0]
+				test = test && matches.forall[
+					it.conflictingMatches.size == 0 && it.applicable && it.reciprocate.applicable]
 
 				// Matches have no multiple match Range. 
 				test = test && matches.overlappingRanges.size == 0
@@ -918,7 +919,7 @@ class ScriptRunner {
 			test = test && !matches.forall[it.conflictingMatches.size == 0]
 
 			// All matches are applicable
-			test = test && matches.forall[it.applicable]
+			test = test && matches.forall[it.applicable && it.reciprocate.applicable]
 
 			// buffer is fully mergeable
 			test = test && {
