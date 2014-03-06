@@ -561,52 +561,11 @@ class ScriptRunner {
 				}
 				// Fifth step: Mergeable buffers with a unique backward match that have conflict(s) 
 				case 4: {
-
-					// Find all buffers with a unique match (if any)
-					val candidates = buffers.filter [
-						val entry = it.matchTable.entrySet.head
-						// Returns true if:
-						// There is a unique match
-						it.matchTable.size == 1 && entry.value.size == 1 &&
-							// Is backward
-							entry.value.head.type == MatchType::BACKWARD &&
-							// that begins at index 0 (or less)
-							entry.key <= 0 &&
-							// and ends at the end of the buffer (or more)
-							entry.key + entry.value.head.length >= it.nbTokens * it.tokenSize &&
-						    // and is involved in conflicting matche(s)
-							{
-								val match = entry.value.head
-								match.conflictingMatches.size > 0 && match.applicable &&
-									match.reciprocate.applicable
-							} &&
-							// Buffer is mergeable
-							{
-								it.mergeableRanges.size == 1 && it.mergeableRanges.head.start == it.minIndex &&
-									it.mergeableRanges.head.end == it.maxIndex
-							}
-					].toList.immutableCopy
-
-					// Copy the candidate list, otherwise it is updated when
-					// the content of buffers are modified
-					println('''4- («candidates.size») «candidates.map[it.matchTable.entrySet.head.value.head]»''')
-					if (!candidates.empty) {
-
-						// If there are candidates, merge them all and do step 0 again
+					if (processGroupStep4(buffers).size != 0) {
 						step = 0
-
-						// Do the merge
-						candidates.forEach [
-							it.applyMatches(it.matchTable.entrySet.head.value)
-						]
-						buffers.removeAll(candidates)
-
 					} else {
-
-						// If there was no candidates, go to step 5
 						step = 5
 					}
-
 				}
 			}
 
@@ -803,17 +762,19 @@ class ScriptRunner {
 		// Return the matched buffers
 		return candidates.keySet.toList
 	}
-	
+
 	/**
-	 * Match {@link Buffer buffers} with a unique <code>FORWARD</code> {@link 
-	 * Match} (or a unique <code>BACKWARD</code> {@link Match}). in their 
-	 * {@link Buffer#getMatchTable() matchTable} if:<ul>
-	 * <li>The unique match covers the whole real token range of the buffer
-	 * </li>
-	 * <li>The match is not {@link Match#getConflictingMatches() conflicting} 
-	 * with any other match</li>
-	 * <li>The match and its {@link Match#getReciprocate() reciprocate} are 
-	 * applicable.</li></ul>
+	 * Match {@link Buffer buffers} that are divisible with their <code>FORWARD
+	 * </code> {@link Match matches} only (or a their <code>BACKWARD</code> 
+	 * {@link Match matches} only) if:<ul>
+	 * <li>The buffer is {@link Buffer#isDivisible() divisible}.</li>
+	 * <li>Its matches cover the whole real token range of the buffer</li>
+	 * <li>Its matches are not {@link Match#getConflictingMatches() 
+	 * conflicting} with any other match.</li>
+	 * <li>The buffer has no {@link Buffer#getMultipleMatchRange(Buffer) 
+	 * multipleMatchRange}.</li>
+	 * <li>The buffer verify the {@link 
+	 * Buffer#doesCompleteRequiredMatches(Iterable)} condition.</li></ul>
 	 * 
 	 * @param buffers
 	 * 		{@link List} of {@link Buffer} of the processed group. Matched 
@@ -827,8 +788,8 @@ class ScriptRunner {
 			val iterType = #[MatchType::FORWARD, MatchType::BACKWARD].iterator
 			var test = false
 			while (iterType.hasNext && !test) {
-				val currentType = iterType.next				
-				
+				val currentType = iterType.next
+
 				val matches = candidate.matchTable.values.flatten.filter[it.type == currentType]
 
 				// Returns true if:
@@ -839,14 +800,14 @@ class ScriptRunner {
 				test = test && candidate.divisible
 
 				// and is not involved in any conflicting match
-				test = test &&  matches.forall [it.conflictingMatches.size == 0]
+				test = test && matches.forall[it.conflictingMatches.size == 0]
 
 				// Matches have no multiple match Range. 
 				test = test && matches.overlappingRanges.size == 0
-				
+
 				// Check divisibilityRequiredMatches
 				test = test && candidate.doesCompleteRequiredMatches(matches)
-				
+
 				// and remote buffer(s) are not already in the candidates list
 				test = test && matches.forall[!candidates.keySet.contains(it.remoteBuffer)]
 
@@ -860,7 +821,8 @@ class ScriptRunner {
 		print('''3- («candidates.size») ''')
 		for (candidate : candidates.entrySet) {
 			print('''«candidate.key»  ''')
-			applyDivisionMatch(candidate.key, candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList)
+			applyDivisionMatch(candidate.key,
+				candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList)
 		}
 		println("")
 
@@ -868,6 +830,75 @@ class ScriptRunner {
 
 		// Return the matched buffers
 		return candidates.keySet.toList
+	}
+
+	/**
+	 * Match {@link Buffer buffers} with a unique {@link Match} in their 
+	 * {@link Buffer#getMatchTable() matchTable} if:<ul>
+	 * <li>The unique match covers the whole real token range of the buffer
+	 * </li>
+	 * <li>The match is not {@link Match#getConflictingMatches() conflicting} 
+	 * with any other match</li>
+	 * <li>The match and its {@link Match#getReciprocate() reciprocate} are 
+	 * applicable.</li></ul>
+	 * 
+	 * @param buffers
+	 * 		{@link List} of {@link Buffer} of the processed group. Matched 
+	 * 		buffers will be removed from this list by the method.
+	 * @return a {@link List} of merged {@link Buffer}.
+	 */
+	def processGroupStep4(List<Buffer> buffers) {
+		val candidates = newArrayList
+
+		for (candidate : buffers) {
+
+			val entry = candidate.matchTable.entrySet.head
+
+			// Returns true if:
+			// There is a unique match
+			var test = candidate.matchTable.size == 1 && entry.value.size == 1
+
+			// Is backward
+			test = test && entry.value.head.type == MatchType::BACKWARD
+
+			// that begins at index 0 (or less)
+			test = test && entry.key <= 0
+
+			// and ends at the end of the buffer (or more)
+			test = test && entry.key + entry.value.head.length >= candidate.nbTokens * candidate.tokenSize
+
+			// and is not involved in any conflicting range
+			test = test && {
+				val match = entry.value.head
+				match.conflictingMatches.size == 0 && match.applicable && match.reciprocate.applicable
+			}
+
+			// buffer is fully mergeable
+			test = test && {
+				candidate.mergeableRanges.size == 1 && candidate.mergeableRanges.head.start == candidate.minIndex &&
+					candidate.mergeableRanges.head.end == candidate.maxIndex
+			}
+
+			// and remote buffer is not already in the candidates list
+			test = test && !candidates.contains(entry.value.head.remoteBuffer)
+
+			if (test) {
+				candidates.add(candidate)
+			}
+		}
+
+		// If there are candidates, apply the matches
+		print('''4- («candidates.size») ''')
+		for (candidate : candidates) {
+			print('''«candidate.matchTable.entrySet.head.value.head»  ''')
+			candidate.applyMatches(candidate.matchTable.entrySet.head.value)
+		}
+		println("")
+
+		buffers.removeAll(candidates)
+
+		// Return the matched buffers
+		return candidates
 	}
 
 	/**
@@ -882,7 +913,6 @@ class ScriptRunner {
 		// to be changes: e.g. siblings will become forward or things like that
 		// . For a simpler version, simply remove those other matches.	
 		// The match table will be modified by the applyMatch method, so we need a copy of it to iterate ! 
-
 		// Remove the matches from each other conflict candidates
 		matches.forEach [
 			it.conflictCandidates.removeAll(matches)
