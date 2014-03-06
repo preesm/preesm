@@ -582,9 +582,9 @@ class Buffer {
 				"Incorrect call to applyMatches method.\n All real token must be covered by the given matches.\n" +
 					matches)
 		}
-		
+
 		// Check that all matches are applicable
-		if (!matches.forall[it.applicable && it.reciprocate.applicable]){
+		if (!matches.forall[it.applicable && it.reciprocate.applicable]) {
 			throw new RuntimeException(
 				"Incorrect call to applyMatches method.\n One or more applied matches are not applicable.\n" +
 					matches.filter[!it.applicable || !it.reciprocate.applicable])
@@ -595,8 +595,46 @@ class Buffer {
 			// Temp version with unique match for a complete buffer <= not true anymore
 			appliedMatches.put(match.localIndivisibleRange, match.remoteBuffer -> match.remoteIndex)
 
-			// Fill the forbiddenLocalRanges of conflictCandidates and conflicting matches
+			// Fill the forbiddenLocalRanges of conflictCandidates and conflictingMatches 
+			// of the applied match
 			updateForbiddenAndMergeableLocalRanges(match)
+
+			// Transfer the forbiddenLocalRanges of the applied match to the 
+			// matches of its local and remote buffers that have no conflicts
+			// with the appliedMatch or its reciprocate
+			val forwardMatch = if(match.type == MatchType::FORWARD) match else match.reciprocate
+
+			// For each backward match of the localBuffer (i.e. not conflicting with the applied match)
+			forwardMatch.localBuffer.matchTable.values.flatten.filter[it.type == MatchType::BACKWARD].forEach [
+				// Copy the forbiddenLocalRanges of the applied forward match
+				val newForbiddenRanges = new ArrayList(forwardMatch.forbiddenLocalRanges.map[it.clone as Range])
+				// translate to the backward match remoteBuffer indexes
+				newForbiddenRanges.translate(it.remoteIndex - it.localIndex)
+				// Add it to the forward match (i.e. the reciprocate of the backward)
+				it.reciprocate.forbiddenLocalRanges.union(newForbiddenRanges)
+			]
+
+			// For each forward match of the remoteBuffer (i.e. not conflicting with the applied match)
+			forwardMatch.remoteBuffer.matchTable.values.flatten.filter[it.type == MatchType::FORWARD].forEach [
+				// Copy the forbiddenLocalRanges and mergeableLocalRange of the applied backward match
+				val newForbiddenRanges = new ArrayList(
+					forwardMatch.reciprocate.forbiddenLocalRanges.map[it.clone as Range])
+				val newMergeableRanges = new ArrayList(
+					forwardMatch.reciprocate.mergeableLocalRanges.map[it.clone as Range])
+				// translate to the forward match remoteBuffer indexes
+				newForbiddenRanges.translate(it.remoteIndex - it.localIndex)
+				newMergeableRanges.translate(it.remoteIndex - it.localIndex)
+				// Add it to the backward match (i.e. the reciprocate of the forward)
+				it.reciprocate.forbiddenLocalRanges.union(newForbiddenRanges)
+				it.reciprocate.mergeableLocalRanges.union(newMergeableRanges)
+				// Remove forbiddenRanges from mergeableRanges
+				it.reciprocate.mergeableLocalRanges = it.reciprocate.mergeableLocalRanges.difference(
+					it.reciprocate.forbiddenLocalRanges)
+			]
+			
+			// Update the conflictCandidates
+			// Must be done befor forwarding third-party matches
+			updateConflictCandidates(match)
 
 			// Move all third-party matches from the matched range of the merged buffer
 			match.localBuffer.matchTable.values.flatten.filter [
@@ -623,9 +661,6 @@ class Buffer {
 				}
 				matchList.add(movedMatch)
 			]
-
-			// Update the conflictCandidates
-			updateConflictCandidates(match)
 
 			// Update the min and max index of the remoteBuffer (if necessary)
 			// Must be called before updateRemoteMergeableRange(match)
@@ -677,12 +712,13 @@ class Buffer {
 		// Get the target mergeable range
 		val impactedRange = backwardMatch.reciprocate.localImpactedRange
 		impactedRange.translate(backwardMatch.localIndex - backwardMatch.remoteIndex)
-		val remoteMergeableRange = backwardMatch.localBuffer.mergeableRanges.intersection(impactedRange)		
+		val remoteMergeableRange = backwardMatch.localBuffer.mergeableRanges.intersection(impactedRange)
 
 		// No need to remove forbidden ranges from it. Indeed, if there are such
 		// range, the match couldn't have been applied
 		// Compute forbidden ranges
 		val forbiddenRanges = #[impactedRange].difference(remoteMergeableRange)
+
 		// translate it back to source indexes
 		remoteMergeableRange.translate(backwardMatch.remoteIndex - backwardMatch.localIndex)
 		forbiddenRanges.translate(backwardMatch.remoteIndex - backwardMatch.localIndex)
@@ -690,16 +726,14 @@ class Buffer {
 		#[backwardMatch.conflictCandidates, backwardMatch.conflictingMatches].flatten.forEach [ conflictMatch |
 			val newMergeableRanges = new ArrayList(remoteMergeableRange.map[it.clone as Range])
 			val newForbiddenRanges = new ArrayList(forbiddenRanges.map[it.clone as Range])
-			
 			// translate it to localBuffer of conflictMatches indexes
 			newMergeableRanges.translate(conflictMatch.localIndex - conflictMatch.remoteIndex)
 			newForbiddenRanges.translate(conflictMatch.localIndex - conflictMatch.remoteIndex)
-
 			conflictMatch.mergeableLocalRanges.union(newMergeableRanges)
 			conflictMatch.forbiddenLocalRanges.union(newForbiddenRanges)
-			
 			// remove forbidden Ranges from mergeable ranges
-			conflictMatch.mergeableLocalRanges = conflictMatch.mergeableLocalRanges.difference(conflictMatch.forbiddenLocalRanges)
+			conflictMatch.mergeableLocalRanges = conflictMatch.mergeableLocalRanges.difference(
+				conflictMatch.forbiddenLocalRanges)
 		]
 	}
 
@@ -784,8 +818,8 @@ class Buffer {
 						// It does not matter if the redundant matches were conflicting.
 						// If this code is reached, it means that the were not since they
 						// now have the same target and destination.
-						// Transfer information from the redundantMatch to the currentMatch
-						val transferredConflictCandidates = new ArrayList(
+						// Transfer conflictCandidates from the redundantMatch to the currentMatch
+						var transferredConflictCandidates = new ArrayList(
 							redundantMatch.conflictCandidates.filter [
 								!currentMatch.conflictCandidates.contains(it) &&
 									!currentMatch.conflictingMatches.contains(it) && it != currentMatch
@@ -796,7 +830,21 @@ class Buffer {
 							currentMatch.conflictCandidates.add(it)
 						]
 
-						val transferredConflictingMatches = new ArrayList(
+						// And reciprocates
+						transferredConflictCandidates = new ArrayList(
+							redundantMatch.reciprocate.conflictCandidates.filter [
+								!currentMatch.reciprocate.conflictCandidates.contains(it) &&
+									!currentMatch.reciprocate.conflictingMatches.contains(it) &&
+									it != currentMatch.reciprocate
+							].toList)
+						transferredConflictCandidates.forEach [
+							it.conflictCandidates.remove(redundantMatch.reciprocate)
+							it.conflictCandidates.add(currentMatch.reciprocate)
+							currentMatch.reciprocate.conflictCandidates.add(it)
+						]
+
+						// Transfer conflictCandidates from the redundantMatch to the currentMatch
+						var transferredConflictingMatches = new ArrayList(
 							redundantMatch.conflictingMatches.filter [
 								!currentMatch.conflictingMatches.contains(it) && it != currentMatch
 							].toList)
@@ -808,6 +856,39 @@ class Buffer {
 							it.conflictingMatches.add(currentMatch)
 							currentMatch.conflictingMatches.add(it)
 						]
+
+						// and reciprocates
+						transferredConflictingMatches = new ArrayList(
+							redundantMatch.reciprocate.conflictingMatches.filter [
+								!currentMatch.reciprocate.conflictingMatches.contains(it) &&
+									it != currentMatch.reciprocate
+							].toList)
+						transferredConflictingMatches.forEach [
+							// remove from conflict candidates if it was present
+							it.conflictCandidates.remove(currentMatch.reciprocate)
+							currentMatch.reciprocate.conflictCandidates.remove(it)
+							it.conflictingMatches.remove(redundantMatch.reciprocate)
+							it.conflictingMatches.add(currentMatch.reciprocate)
+							currentMatch.reciprocate.conflictingMatches.add(it)
+						]
+
+						// Update localForbiddenRanges and localMergeableRanges
+						val forwardMatch = if (currentMatch.type == MatchType::FORWARD)
+								currentMatch
+							else
+								currentMatch.reciprocate
+						val redundantForwardMatch = if (redundantMatch.type == MatchType::FORWARD)
+								redundantMatch
+							else
+								redundantMatch.reciprocate
+						forwardMatch.forbiddenLocalRanges = forwardMatch.forbiddenLocalRanges.intersection(
+							redundantForwardMatch.forbiddenLocalRanges)
+							
+						forwardMatch.reciprocate.forbiddenLocalRanges = forwardMatch.reciprocate.forbiddenLocalRanges.intersection(
+							redundantForwardMatch.reciprocate.forbiddenLocalRanges)
+						forwardMatch.reciprocate.mergeableLocalRanges = forwardMatch.reciprocate.mergeableLocalRanges.intersection(
+							redundantForwardMatch.reciprocate.mergeableLocalRanges)
+							
 
 					}
 					j = j + 1
