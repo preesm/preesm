@@ -532,43 +532,12 @@ class ScriptRunner {
 						step = 1
 					}
 
-				} // case 0
+				}
 				// Second step: Merge divisible buffers with multiple matchs 
 				// and no conflict 
 				case 1: {
-
-					// Find all divisible buffers with multiple match and no 
-					// conflict that are not matched in another divisible buffer
-					// (if any)
-					val candidates = buffers.filter [
-						// Has a non-empty matchTable 
-						val t1 = it.matchTable.size != 0
-						// is divisible
-						val t2 = it.divisible
-						val t3 = it.matchTable.values.flatten.forall [
-							// Is not involved in any conflicting range
-							it.conflictingMatches.size == 0
-						]
-						// Has no multiple match Range. 
-						val t4 = it.multipleMatchRange.size == 0
-						// No need to check the divisibilityRequiredMatches since
-						// the only matches of the Buffer are the one
-						// responsible for the division
-						t1 && t2 && t3 && t4
-					].toList.immutableCopy
-
-					println('''1- («candidates.size») «candidates»''')
-					if (!candidates.empty) {
-
-						// If there are candidates, merge them all and do step 0 again
+					if (processGroupStep1(buffers).size != 0) {
 						step = 0
-
-						// Do the matche
-						candidates.forEach [
-							applyDivisionMatch(it)
-						]
-						buffers.removeAll(candidates)
-
 					} else {
 						step = 2
 					}
@@ -771,18 +740,17 @@ class ScriptRunner {
 		val candidates = newArrayList
 
 		for (candidate : buffers) {
-			val it = candidate
-			val entry = it.matchTable.entrySet.head
+			val entry = candidate.matchTable.entrySet.head
 
 			// Returns true if:
 			// There is a unique match
-			var test = it.matchTable.size == 1 && entry.value.size == 1
+			var test = candidate.matchTable.size == 1 && entry.value.size == 1
 
 			// that begins at index 0 (or less)
 			test = test && entry.key <= 0
 
 			// and ends at the end of the buffer (or more)
-			test = test && entry.key + entry.value.head.length >= it.nbTokens * it.tokenSize
+			test = test && entry.key + entry.value.head.length >= candidate.nbTokens * candidate.tokenSize
 
 			// and is not involved in any conflicting range
 			test = test && {
@@ -806,7 +774,68 @@ class ScriptRunner {
 		}
 		println("")
 
-		buffers.remove(candidates)
+		buffers.removeAll(candidates)
+
+		// Return the matched buffers
+		return candidates
+	}
+
+	/**
+	 * Match {@link Buffer buffers} that are divisible if:<ul>
+	 * <li>The buffer is {@link Buffer#isDivisible() divisible}.</li>
+	 * <li>Its matches cover the whole real token range of the buffer</li>
+	 * <li>Its matches are not {@link Match#getConflictingMatches() 
+	 * conflicting} with any other match.</li>
+	 * <li>The buffer has no {@link Buffer#getMultipleMatchRange(Buffer) 
+	 * multipleMatchRange}.</li></ul>
+	 *  
+	 * @param buffers
+	 * 		{@link List} of {@link Buffer} of the processed group. Matched 
+	 * 		buffers will be removed from this list by the method.
+	 * @return a {@link List} of merged {@link Buffer}.
+	 */
+	def processGroupStep1(List<Buffer> buffers) {
+
+		val candidates = newArrayList
+
+		for (candidate : buffers) {
+
+			// Find all divisible buffers with multiple match and no 
+			// conflict that are not matched in another divisible buffer
+			// (if any)
+			// Has a non-empty matchTable 
+			var test = candidate.matchTable.size != 0
+
+			// is divisible
+			test = test && candidate.divisible
+			test = test && candidate.matchTable.values.flatten.forall [
+				// Is not involved in any conflicting range
+				it.conflictingMatches.size == 0
+			]
+
+			// Has no multiple match Range. 
+			test = test && candidate.multipleMatchRange.size == 0
+
+			// No need to check the divisibilityRequiredMatches since
+			// the only matches of the Buffer are the one
+			// responsible for the division
+			// and remote buffer(s) are not already in the candidates list
+			test = test && candidate.matchTable.values.flatten.map[it.remoteBuffer].forall[!candidates.contains(it)]
+
+			if (test) {
+				candidates.add(candidate)
+			}
+		}
+
+		// If there are candidates, apply the matches
+		print('''1- («candidates.size») ''')
+		for (candidate : candidates) {
+			print('''«candidate»  ''')
+			applyDivisionMatch(candidate)
+		}
+		println("")
+
+		buffers.removeAll(candidates)
 
 		// Return the matched buffers
 		return candidates
