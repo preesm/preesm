@@ -553,63 +553,10 @@ class ScriptRunner {
 				// Fourth step: Like case 1 but considering forward only
 				// or backward only matches
 				case 3: {
-					val matchedBuffers = newArrayList
-					while (step == 3) {
-						var MatchType type
-
-						// Find all buffers with a division with forward matches (if any)
-						var candidate = buffers.findFirst [
-							val matches = it.matchTable.values.flatten.filter[it.type == MatchType::FORWARD]
-							// Returns true if:
-							// Has a several forward matches 
-							matches.size != 0 &&						
-							// is divisible
-							it.divisible && matches.forall [
-								// Is not involved in any conflicting range
-								it.conflictingMatches.size == 0
-							] &&
-								// Matches have no multiple match Range. 
-								matches.overlappingRanges.size == 0 &&
-								// Check divisibilityRequiredMatches
-								it.doesCompleteRequiredMatches(matches)
-						]
-						if (candidate != null) {
-							type = MatchType::FORWARD
-						} else {
-							candidate = buffers.findFirst [
-								val matches = it.matchTable.values.flatten.filter[it.type == MatchType::BACKWARD]
-								// Returns true if:
-								// Has a several forward matches 
-								matches.size != 0 &&						
-								// is divisible
-								it.divisible && matches.forall [
-									// Is not involved in any conflicting range
-									it.conflictingMatches.size == 0
-								] &&
-									// Matches have no multiple match Range. 
-									matches.overlappingRanges.size == 0 &&
-									// Check divisibilityRequiredMatches
-									it.doesCompleteRequiredMatches(matches)
-							]
-							if (candidate != null) {
-								type = MatchType::BACKWARD
-							}
-						}
-
-						if (candidate != null) {
-							matchedBuffers.add(candidate)
-							val valType = type // a val is needed to be usable in the filter lambda expression
-
-							// If there is a candidate, merge them all and do step 3 again
-							candidate.applyMatches(
-								#[candidate.matchTable.values.flatten.filter[it.type == valType].head])
-							step = 3
-							buffers.remove(candidate)
-
-						} else {
-							println('''3- («matchedBuffers.size») «matchedBuffers»''')
-							step = 4
-						}
+					if (processGroupStep3(buffers).size != 0) {
+						step = 0
+					} else {
+						step = 4
 					}
 				}
 				// Fifth step: Mergeable buffers with a unique backward match that have conflict(s) 
@@ -780,7 +727,7 @@ class ScriptRunner {
 		print('''1- («candidates.size») ''')
 		for (candidate : candidates) {
 			print('''«candidate»  ''')
-			applyDivisionMatch(candidate)
+			applyDivisionMatch(candidate, candidate.matchTable.values.flatten.toList)
 		}
 		println("")
 
@@ -791,7 +738,8 @@ class ScriptRunner {
 	}
 
 	/**
-	 * Match {@link Buffer buffers} with a unique {@link Match} in their 
+	 * Match {@link Buffer buffers} with a unique <code>FORWARD</code> {@link 
+	 * Match} (or a unique <code>BACKWARD</code> {@link Match}). in their 
 	 * {@link Buffer#getMatchTable() matchTable} if:<ul>
 	 * <li>The unique match covers the whole real token range of the buffer
 	 * </li>
@@ -855,12 +803,78 @@ class ScriptRunner {
 		// Return the matched buffers
 		return candidates.keySet.toList
 	}
+	
+	/**
+	 * Match {@link Buffer buffers} with a unique <code>FORWARD</code> {@link 
+	 * Match} (or a unique <code>BACKWARD</code> {@link Match}). in their 
+	 * {@link Buffer#getMatchTable() matchTable} if:<ul>
+	 * <li>The unique match covers the whole real token range of the buffer
+	 * </li>
+	 * <li>The match is not {@link Match#getConflictingMatches() conflicting} 
+	 * with any other match</li>
+	 * <li>The match and its {@link Match#getReciprocate() reciprocate} are 
+	 * applicable.</li></ul>
+	 * 
+	 * @param buffers
+	 * 		{@link List} of {@link Buffer} of the processed group. Matched 
+	 * 		buffers will be removed from this list by the method.
+	 * @return a {@link List} of merged {@link Buffer}.
+	 */
+	def processGroupStep3(List<Buffer> buffers) {
+		val candidates = newHashMap
+
+		for (candidate : buffers) {
+			val iterType = #[MatchType::FORWARD, MatchType::BACKWARD].iterator
+			var test = false
+			while (iterType.hasNext && !test) {
+				val currentType = iterType.next				
+				
+				val matches = candidate.matchTable.values.flatten.filter[it.type == currentType]
+
+				// Returns true if:
+				// Has a several matches 
+				test = matches.size != 0
+
+				// is divisible
+				test = test && candidate.divisible
+
+				// and is not involved in any conflicting match
+				test = test &&  matches.forall [it.conflictingMatches.size == 0]
+
+				// Matches have no multiple match Range. 
+				test = test && matches.overlappingRanges.size == 0
+				
+				// Check divisibilityRequiredMatches
+				test = test && candidate.doesCompleteRequiredMatches(matches)
+				
+				// and remote buffer(s) are not already in the candidates list
+				test = test && matches.forall[!candidates.keySet.contains(it.remoteBuffer)]
+
+				if (test) {
+					candidates.put(candidate, currentType)
+				}
+			}
+		}
+
+		// If there are candidates, apply the matches
+		print('''3- («candidates.size») ''')
+		for (candidate : candidates.entrySet) {
+			print('''«candidate.key»  ''')
+			applyDivisionMatch(candidate.key, candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList)
+		}
+		println("")
+
+		buffers.removeAll(candidates.keySet)
+
+		// Return the matched buffers
+		return candidates.keySet.toList
+	}
 
 	/**
 	 * Called only for divisible buffers with multiple match and no 
 	 * conflict that are not matched in another divisible buffer
 	 */
-	def applyDivisionMatch(Buffer buffer) {
+	def applyDivisionMatch(Buffer buffer, List<Match> matches) {
 
 		// In the current version, the buffer only contains
 		// the matches necessary and sufficient for the division (i.e. no multiple matched ranges)
@@ -868,7 +882,6 @@ class ScriptRunner {
 		// to be changes: e.g. siblings will become forward or things like that
 		// . For a simpler version, simply remove those other matches.	
 		// The match table will be modified by the applyMatch method, so we need a copy of it to iterate ! 
-		val matches = new ArrayList(buffer.matchTable.values.flatten.toList)
 
 		// Remove the matches from each other conflict candidates
 		matches.forEach [
