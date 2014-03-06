@@ -573,13 +573,22 @@ class Buffer {
 
 		// Check that the matches completely cover the buffer
 		val matchedRange = matchesCopy.fold(new ArrayList<Range>) [ res, match |
-			res.union(match.localRange)
+			res.union(match.localIndivisibleRange)
 			res
 		]
 		val tokenRange = new Range(0, tokenSize * nbTokens)
 		if (matchedRange.intersection(tokenRange).head != tokenRange) {
 			throw new RuntimeException(
 				"Incorrect call to applyMatches method.\n All real token must be covered by the given matches.\n" +
+					matches)
+		}
+		
+		// Check that the matches do not overlap
+		if(!matchesCopy.forall[match |
+			matchesCopy.filter[it!==match].forall[!match.localIndivisibleRange.hasOverlap(it.localIndivisibleRange)]
+		]){
+			throw new RuntimeException(
+				"Incorrect call to applyMatches method.\n Given matches are overlapping in the localBuffer.\n" +
 					matches)
 		}
 
