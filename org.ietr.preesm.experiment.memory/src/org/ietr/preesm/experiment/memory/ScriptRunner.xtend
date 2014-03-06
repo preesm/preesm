@@ -531,7 +531,6 @@ class ScriptRunner {
 					} else {
 						step = 1
 					}
-
 				}
 				// Second step: Merge divisible buffers with multiple matchs 
 				// and no conflict 
@@ -545,60 +544,10 @@ class ScriptRunner {
 				// Third step: Same as step 0, but test forward matches
 				// of buffers only
 				case 2: {
-					val matchedBuffers = newArrayList
-					while (step == 2) {
-						var MatchType type
-
-						// Find all buffers with a unique forward match (if any)
-						var candidate = buffers.findFirst [
-							val matches = it.matchTable.values.flatten.filter[it.type == MatchType::FORWARD]
-							// Returns true if:
-							// There is a unique forward match
-							matches.size == 1 &&
-								// that begins at index 0 (or less)
-								matches.head.localIndex <= 0 &&
-								// and ends at the end of the buffer (or more)
-								matches.head.localIndex + matches.head.length >= it.nbTokens * it.tokenSize &&
-								// and is not involved in any conflicting match
-								matches.head.conflictingMatches.size == 0 && matches.head.applicable &&
-								matches.head.reciprocate.applicable
-						]
-						if (candidate != null) {
-							type = MatchType::FORWARD
-						} else {
-							candidate = buffers.findFirst [
-								val matches = it.matchTable.values.flatten.filter[it.type == MatchType::BACKWARD]
-								// Returns true if:
-								// There is a unique forward match
-								matches.size == 1 &&
-									// that begins at index 0 (or less)
-									matches.head.localIndex <= 0 &&
-									// and ends at the end of the buffer (or more)
-									matches.head.localIndex + matches.head.length >= it.nbTokens * it.tokenSize &&
-									// and is not involved in any conflicting match
-									matches.head.conflictingMatches.size == 0 && matches.head.applicable &&
-									matches.head.reciprocate.applicable
-							]
-							if (candidate != null) {
-								type = MatchType::BACKWARD
-							}
-						}
-
-						if (candidate != null) {
-							val valType = type // a val is needed to be usable in the filter lambda expression
-							matchedBuffers.add(candidate.matchTable.values.flatten.filter[it.type == valType].head)
-
-							// If there is a candidate, merge them all and do step 2 again
-							candidate.applyMatches(
-								#[candidate.matchTable.values.flatten.filter[it.type == valType].head])
-
-							step = 2
-							buffers.remove(candidate)
-
-						} else {
-							println('''2- («matchedBuffers.size») «matchedBuffers»''')
-							step = 3
-						}
+					if (processGroupStep2(buffers).size != 0) {
+						step = 0
+					} else {
+						step = 3
 					}
 				}
 				// Fourth step: Like case 1 but considering forward only
@@ -839,6 +788,72 @@ class ScriptRunner {
 
 		// Return the matched buffers
 		return candidates
+	}
+
+	/**
+	 * Match {@link Buffer buffers} with a unique {@link Match} in their 
+	 * {@link Buffer#getMatchTable() matchTable} if:<ul>
+	 * <li>The unique match covers the whole real token range of the buffer
+	 * </li>
+	 * <li>The match is not {@link Match#getConflictingMatches() conflicting} 
+	 * with any other match</li>
+	 * <li>The match and its {@link Match#getReciprocate() reciprocate} are 
+	 * applicable.</li></ul>
+	 * 
+	 * @param buffers
+	 * 		{@link List} of {@link Buffer} of the processed group. Matched 
+	 * 		buffers will be removed from this list by the method.
+	 * @return a {@link List} of merged {@link Buffer}.
+	 */
+	def processGroupStep2(List<Buffer> buffers) {
+		val candidates = newHashMap
+
+		for (candidate : buffers) {
+			val iterType = #[MatchType::FORWARD, MatchType::BACKWARD].iterator
+			var test = false
+			while (iterType.hasNext && !test) {
+				val currentType = iterType.next
+				val matches = candidate.matchTable.values.flatten.filter[it.type == currentType]
+
+				// Returns true if:
+				// There is a unique forward match
+				test = matches.size == 1
+
+				// that begins at index 0 (or less)
+				test = test && matches.head.localIndex <= 0
+
+				// and ends at the end of the buffer (or more)
+				test = test &&
+					matches.head.localIndex + matches.head.length >= candidate.nbTokens * candidate.tokenSize
+
+				// and is not involved in any conflicting match
+				test = test && matches.head.conflictingMatches.size == 0
+
+				// and is both backward and forward applicable
+				test = test && matches.head.applicable && matches.head.reciprocate.applicable
+
+				// and remote buffer is not already in the candidates list
+				test = test && !candidates.keySet.contains(matches.head.remoteBuffer)
+
+				if (test) {
+					candidates.put(candidate, currentType)
+				}
+			}
+		}
+
+		// If there are candidates, apply the matches
+		print('''2- («candidates.size») ''')
+		for (candidate : candidates.entrySet) {
+			print('''«candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head»  ''')
+			candidate.key.applyMatches(
+				#[candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head])
+		}
+		println("")
+
+		buffers.removeAll(candidates.keySet)
+
+		// Return the matched buffers
+		return candidates.keySet.toList
 	}
 
 	/**
