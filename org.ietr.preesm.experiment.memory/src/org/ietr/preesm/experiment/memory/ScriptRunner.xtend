@@ -526,45 +526,11 @@ class ScriptRunner {
 			switch (step) {
 				// First step: Merge non-conflicting buffer with a unique match 
 				case 0: {
-					val appliedMatches = newArrayList
-					var Buffer candidate
-					do {
-						candidate = null
-
-						// Find all buffers with a unique match (if any)
-						candidate = buffers.findFirst [
-							val entry = it.matchTable.entrySet.head
-							// Returns true if:
-							// There is a unique match
-							it.matchTable.size == 1 && entry.value.size == 1 &&
-								// that begins at index 0 (or less)
-								entry.key <= 0 &&
-								// and ends at the end of the buffer (or more)
-								entry.key + entry.value.head.length >= it.nbTokens * it.tokenSize &&
-							    // and is not involved in any conflicting range
-								{
-									val match = entry.value.head
-									match.conflictingMatches.size == 0 &&
-									match.applicable &&
-									match.reciprocate.applicable
-								} 
-						]
-
-						// Copy the candidate list, otherwise it is updated when
-						// the content of buffers are modified
-						if (candidate != null) {
-							appliedMatches.add('''«candidate.matchTable.entrySet.head.value.head»''')
-
-							// If there is a candidate, apply the match
-							candidate.applyMatches(candidate.matchTable.entrySet.head.value)
-
-							buffers.remove(candidate)
-						}
-					} while (candidate != null)
-
-					// If there was no candidates, go to step 1
-					println('''0- («appliedMatches.size») «appliedMatches»''')
-					step = 1
+					if (processGroupStep0(buffers).size != 0) {
+						step = 0
+					} else {
+						step = 1
+					}
 
 				} // case 0
 				// Second step: Merge divisible buffers with multiple matchs 
@@ -625,8 +591,7 @@ class ScriptRunner {
 								// and ends at the end of the buffer (or more)
 								matches.head.localIndex + matches.head.length >= it.nbTokens * it.tokenSize &&
 								// and is not involved in any conflicting match
-								matches.head.conflictingMatches.size == 0 && 
-								matches.head.applicable &&
+								matches.head.conflictingMatches.size == 0 && matches.head.applicable &&
 								matches.head.reciprocate.applicable
 						]
 						if (candidate != null) {
@@ -642,8 +607,7 @@ class ScriptRunner {
 									// and ends at the end of the buffer (or more)
 									matches.head.localIndex + matches.head.length >= it.nbTokens * it.tokenSize &&
 									// and is not involved in any conflicting match
-									matches.head.conflictingMatches.size == 0 &&
-									matches.head.applicable &&
+									matches.head.conflictingMatches.size == 0 && matches.head.applicable &&
 									matches.head.reciprocate.applicable
 							]
 							if (candidate != null) {
@@ -748,7 +712,8 @@ class ScriptRunner {
 						    // and is involved in conflicting matche(s)
 							{
 								val match = entry.value.head
-								match.conflictingMatches.size > 0
+								match.conflictingMatches.size > 0 && match.applicable &&
+									match.reciprocate.applicable
 							} &&
 							// Buffer is mergeable
 							{
@@ -785,6 +750,66 @@ class ScriptRunner {
 
 		//println(buffers.fold(0,[res, buf | res + buf.maxIndex - buf.minIndex]))
 		println("---")
+	}
+
+	/**
+	 * Match {@link Buffer buffers} with a unique {@link Match} in their 
+	 * {@link Buffer#getMatchTable() matchTable} if:<ul>
+	 * <li>The unique match covers the whole real token range of the buffer
+	 * </li>
+	 * <li>The match is not {@link Match#getConflictingMatches() conflicting} 
+	 * with any other match</li>
+	 * <li>The match and its {@link Match#getReciprocate() reciprocate} are 
+	 * applicable.</li></ul>
+	 * 
+	 * @param buffers
+	 * 		{@link List} of {@link Buffer} of the processed group. Matched 
+	 * 		buffers will be removed from this list by the method.
+	 * @return a {@link List} of merged {@link Buffer}.
+	 */
+	def processGroupStep0(List<Buffer> buffers) {
+		val candidates = newArrayList
+
+		for (candidate : buffers) {
+			val it = candidate
+			val entry = it.matchTable.entrySet.head
+
+			// Returns true if:
+			// There is a unique match
+			var test = it.matchTable.size == 1 && entry.value.size == 1
+
+			// that begins at index 0 (or less)
+			test = test && entry.key <= 0
+
+			// and ends at the end of the buffer (or more)
+			test = test && entry.key + entry.value.head.length >= it.nbTokens * it.tokenSize
+
+			// and is not involved in any conflicting range
+			test = test && {
+				val match = entry.value.head
+				match.conflictingMatches.size == 0 && match.applicable && match.reciprocate.applicable
+			}
+
+			// and remote buffer is not already in the candidates list
+			test = test && !candidates.contains(entry.value.head.remoteBuffer)
+
+			if (test) {
+				candidates.add(candidate)
+			}
+		}
+
+		// If there are candidates, apply the matches
+		print('''0- («candidates.size») ''')
+		for (candidate : candidates) {
+			print('''«candidate.matchTable.entrySet.head.value.head»  ''')
+			candidate.applyMatches(candidate.matchTable.entrySet.head.value)
+		}
+		println("")
+
+		buffers.remove(candidates)
+
+		// Return the matched buffers
+		return candidates
 	}
 
 	/**
