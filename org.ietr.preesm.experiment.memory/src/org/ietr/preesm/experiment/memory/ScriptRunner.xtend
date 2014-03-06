@@ -520,57 +520,38 @@ class ScriptRunner {
 
 		//println(buffers.fold(0,[res, buf | res + buf.maxIndex - buf.minIndex]))
 		// Iterate the merging algorithm until no buffers are merged
-		var updated = false
 		var step = 0
 		do {
-			switch (step) {
+			val matchedBuffers = switch (step) {
 				// First step: Merge non-conflicting buffer with a unique match 
-				case 0: {
-					if (processGroupStep0(buffers).size != 0) {
-						step = 0
-					} else {
-						step = 1
-					}
-				}
+				case 0:
+					processGroupStep0(buffers)
 				// Second step: Merge divisible buffers with multiple matchs 
 				// and no conflict 
-				case 1: {
-					if (processGroupStep1(buffers).size != 0) {
-						step = 0
-					} else {
-						step = 2
-					}
-				}
+				case 1:
+					processGroupStep1(buffers)
 				// Third step: Same as step 0, but test forward matches
 				// of buffers only
-				case 2: {
-					if (processGroupStep2(buffers).size != 0) {
-						step = 0
-					} else {
-						step = 3
-					}
-				}
+				case 2:
+					processGroupStep2(buffers)
 				// Fourth step: Like case 1 but considering forward only
 				// or backward only matches
-				case 3: {
-					if (processGroupStep3(buffers).size != 0) {
-						step = 0
-					} else {
-						step = 4
-					}
-				}
+				case 3:
+					processGroupStep3(buffers)
 				// Fifth step: Mergeable buffers with a unique backward match that have conflict(s) 
-				case 4: {
-					if (processGroupStep4(buffers).size != 0) {
-						step = 0
-					} else {
-						step = 5
-					}
-				}
+				case 4:
+					processGroupStep4(buffers)
+				case 5:
+					processGroupStep5(buffers)
 			}
 
-			updated = step != 5
-		} while (updated)
+			if (matchedBuffers.size != 0) {
+				step = 0
+			} else {
+				step = step + 1
+			}
+
+		} while (step < 6)
 
 		//println(buffers.fold(0,[res, buf | res + buf.maxIndex - buf.minIndex]))
 		println("---")
@@ -837,8 +818,9 @@ class ScriptRunner {
 	 * {@link Buffer#getMatchTable() matchTable} if:<ul>
 	 * <li>The unique match covers the whole real token range of the buffer
 	 * </li>
-	 * <li>The match is not {@link Match#getConflictingMatches() conflicting} 
-	 * with any other match</li>
+	 * <li>The match is {@link Match#getConflictingMatches() conflicting} 
+	 * with other match(es)</li>
+	 * <li>The buffer is mergeable</li>
 	 * <li>The match and its {@link Match#getReciprocate() reciprocate} are 
 	 * applicable.</li></ul>
 	 * 
@@ -892,6 +874,79 @@ class ScriptRunner {
 		for (candidate : candidates) {
 			print('''«candidate.matchTable.entrySet.head.value.head»  ''')
 			candidate.applyMatches(candidate.matchTable.entrySet.head.value)
+		}
+		println("")
+
+		buffers.removeAll(candidates)
+
+		// Return the matched buffers
+		return candidates
+	}
+	
+	/**
+	 * Match {@link Buffer buffers} that are divisible with their <code>FORWARD
+	 * </code> {@link Match matches} only (or a their <code>BACKWARD</code> 
+	 * {@link Match matches} only) if:<ul>
+	 * <li>The buffer is {@link Buffer#isDivisible() divisible}.</li>
+	 * <li>Its matches cover the whole real token range of the buffer</li>
+	 * <li>Its matches are not {@link Match#getConflictingMatches() 
+	 * conflicting} with any other match.</li>
+	 * <li>The buffer has no {@link Buffer#getMultipleMatchRange(Buffer) 
+	 * multipleMatchRange}.</li>
+	 * <li>The buffer verify the {@link 
+	 * Buffer#doesCompleteRequiredMatches(Iterable)} condition.</li></ul>
+	 * 
+	 * @param buffers
+	 * 		{@link List} of {@link Buffer} of the processed group. Matched 
+	 * 		buffers will be removed from this list by the method.
+	 * @return a {@link List} of merged {@link Buffer}.
+	 */
+	def processGroupStep5(List<Buffer> buffers) {
+		val candidates = newArrayList
+
+		for (candidate : buffers) {
+				val matches = candidate.matchTable.values.flatten.filter[it.type == MatchType::BACKWARD]
+
+				// Returns true if:
+				// Has a several matches 
+				var test = matches.size != 0
+
+				// is divisible
+				test = test && candidate.divisible
+
+				// and is involved in conflicting match(es)
+				test = test && !matches.forall[it.conflictingMatches.size == 0]
+				
+				// All matches are applicable
+				test = test && matches.forall[it.applicable]
+				
+				// buffer is fully mergeable
+				test = test && {
+					candidate.mergeableRanges.size == 1 && candidate.mergeableRanges.head.start == candidate.minIndex &&
+						candidate.mergeableRanges.head.end == candidate.maxIndex
+				}
+
+				// Matches have no multiple match Range. 
+				test = test && matches.overlappingRanges.size == 0
+
+				// Check divisibilityRequiredMatches
+				test = test && candidate.doesCompleteRequiredMatches(matches)
+
+				// and remote buffer(s) are not already in the candidates list
+				test = test && matches.forall[!candidates.contains(it.remoteBuffer)]
+
+				if (test) {
+					candidates.add(candidate)
+				
+			}
+		}
+
+		// If there are candidates, apply the matches
+		print('''5- («candidates.size») ''')
+		for (candidate : candidates) {
+			print('''«candidate»  ''')
+			applyDivisionMatch(candidate,
+				candidate.matchTable.values.flatten.filter[it.type == MatchType::BACKWARD].toList)
 		}
 		println("")
 
