@@ -521,6 +521,7 @@ class ScriptRunner {
 		//println(buffers.fold(0,[res, buf | res + buf.maxIndex - buf.minIndex]))
 		// Iterate the merging algorithm until no buffers are merged
 		var step = 0
+		var stop = false
 		do {
 			val matchedBuffers = switch (step) {
 				// First step: Merge non-conflicting buffer with a unique match 
@@ -550,8 +551,11 @@ class ScriptRunner {
 			} else {
 				step = step + 1
 			}
+			
+			// Stop if only buffers with no match remains
+			stop = buffers.forall[it.matchTable.empty]
 
-		} while (step < 6)
+		} while (step < 6 && !stop)
 
 		//println(buffers.fold(0,[res, buf | res + buf.maxIndex - buf.minIndex]))
 		println("---")
