@@ -983,8 +983,9 @@ class ScriptRunner {
 	 * @return a {@link List} of merged {@link Buffer}.
 	 */
 	def processGroupStep6(List<Buffer> buffers) {
-		val candidates = newArrayList
-
+		
+		val candidates = newLinkedHashMap
+		
 		// Largest buffers first for this step.
 		buffers.sortInplace [ a, b |
 			// Largest buffer first
@@ -997,27 +998,27 @@ class ScriptRunner {
 				if(nameRes != 0) nameRes else a.name.compareTo(b.name)
 			}
 		]
-
+		
 		for (candidate : buffers) {
+			val iterType = #[MatchType::FORWARD, MatchType::BACKWARD].iterator
+			var test = false
+			while (iterType.hasNext && !test) {
+				val currentType = iterType.next
+				val matches = candidate.matchTable.values.flatten.filter[it.type == currentType]
 
-			val entry = candidate.matchTable.entrySet.head
+				// Returns true if:
+				// There is a unique forward match
+				test = matches.size == 1
 
-			// Returns true if:
-			// There is a unique match
-			var test = candidate.matchTable.size == 1 && entry.value.size == 1
+				// that begins at index 0 (or less)
+				test = test && matches.head.localIndivisibleRange.start <= 0
 
-			// Is backward
-			test = test && entry.value.head.type == MatchType::BACKWARD
+				// and ends at the end of the buffer (or more)
+				test = test && matches.head.localIndivisibleRange.end >= candidate.nbTokens * candidate.tokenSize
 
-			// that begins at index 0 (or less)
-			test = test && entry.value.head.localIndivisibleRange.start <= 0
-
-			// and ends at the end of the buffer (or more)
-			test = test && entry.value.head.localIndivisibleRange.end >= candidate.nbTokens * candidate.tokenSize
-
-			// and is involved in conflicting range
+				// and is involved in conflicting range
 			test = test && {
-				val match = entry.value.head
+				val match = matches.head
 				match.conflictingMatches.size > 0 && match.applicable && match.reciprocate.applicable
 			}
 
@@ -1025,30 +1026,32 @@ class ScriptRunner {
 			// such a buffer it would have been matched in step 4
 			// Conflicting matches of the match are not already in the candidate list
 			test = test && {
-				val match = entry.value.head
-				match.conflictingMatches.forall[!candidates.contains(it.localBuffer)]
+				val match = matches.head
+				match.conflictingMatches.forall[!candidates.keySet.contains(it.localBuffer)]
 			}
 
-			// and remote buffer is not already in the candidates list
-			test = test && !candidates.contains(entry.value.head.remoteBuffer)
+				// and remote buffer is not already in the candidates list
+				test = test && !candidates.keySet.contains(matches.head.remoteBuffer)
 
-			if (test) {
-				candidates.add(candidate)
+				if (test) {
+					candidates.put(candidate, currentType)
+				}
 			}
 		}
 
 		// If there are candidates, apply the matches
 		print('''6- («candidates.size») ''')
-		for (candidate : candidates) {
-			print('''«candidate.matchTable.entrySet.head.value.head»  ''')
-			candidate.applyMatches(candidate.matchTable.entrySet.head.value)
+		for (candidate : candidates.entrySet) {
+			print('''«candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head»  ''')
+			candidate.key.applyMatches(
+				#[candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head])
 		}
 		println("")
 
-		buffers.removeAll(candidates)
+		buffers.removeAll(candidates.keySet)
 
 		// Return the matched buffers
-		return candidates
+		return candidates.keySet.toList
 	}
 
 	/**
