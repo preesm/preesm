@@ -514,15 +514,19 @@ class ScriptRunner {
 			buffers.addAll(pair.value.filter[it.appliedMatches.size == 0])
 		]
 
-		// Sort the buffers in alphabetical order to enforce similarities 
-		// between successive run
-		buffers.sortInplaceBy[name]
-
 		//println(buffers.fold(0,[res, buf | res + buf.maxIndex - buf.minIndex]))
 		// Iterate the merging algorithm until no buffers are merged
 		var step = 0
 		var stop = false
 		do {
+
+			// Sort the buffers in alphabetical order to enforce similarities 
+			// between successive run
+			buffers.sortInplace [ a, b |
+				val nameRes = a.dagVertex.name.compareTo(b.dagVertex.name)
+				if(nameRes != 0) nameRes else a.name.compareTo(b.name)
+			]
+
 			val matchedBuffers = switch (step) {
 				// First step: Merge non-conflicting buffer with a unique match 
 				case 0:
@@ -544,6 +548,8 @@ class ScriptRunner {
 					processGroupStep4(buffers)
 				case 5:
 					processGroupStep5(buffers)
+				case 6:
+					processGroupStep6(buffers)
 			}
 
 			if (matchedBuffers.size != 0) {
@@ -551,11 +557,11 @@ class ScriptRunner {
 			} else {
 				step = step + 1
 			}
-			
+
 			// Stop if only buffers with no match remains
 			stop = buffers.forall[it.matchTable.empty]
 
-		} while (step < 6 && !stop)
+		} while (step < 7 && !stop)
 
 		//println(buffers.fold(0,[res, buf | res + buf.maxIndex - buf.minIndex]))
 		println("---")
@@ -699,7 +705,7 @@ class ScriptRunner {
 	 * @return a {@link List} of merged {@link Buffer}.
 	 */
 	def processGroupStep2(List<Buffer> buffers) {
-		val candidates = newHashMap
+		val candidates = newLinkedHashMap
 
 		for (candidate : buffers) {
 			val iterType = #[MatchType::FORWARD, MatchType::BACKWARD].iterator
@@ -767,7 +773,7 @@ class ScriptRunner {
 	 * @return a {@link List} of merged {@link Buffer}.
 	 */
 	def processGroupStep3(List<Buffer> buffers) {
-		val candidates = newHashMap
+		val candidates = newLinkedHashMap
 
 		for (candidate : buffers) {
 			val iterType = #[MatchType::FORWARD, MatchType::BACKWARD].iterator
@@ -889,15 +895,14 @@ class ScriptRunner {
 	}
 
 	/**
-	 * Match {@link Buffer buffers} that are divisible with their <code>FORWARD
-	 * </code> {@link Match matches} only (or a their <code>BACKWARD</code> 
-	 * {@link Match matches} only) if:<ul>
+	 * Match {@link Buffer buffers} that are divisible with their <code>BACKWARD
+	 * </code> {@link Match matches} only if:<ul>
 	 * <li>The buffer is {@link Buffer#isDivisible() divisible}.</li>
 	 * <li>Its matches cover the whole real token range of the buffer</li>
-	 * <li>Its matches are not {@link Match#getConflictingMatches() 
-	 * conflicting} with any other match.</li>
-	 * <li>The buffer has no {@link Buffer#getMultipleMatchRange(Buffer) 
-	 * multipleMatchRange}.</li>
+	 * <li>Its matches are {@link Match#getConflictingMatches() 
+	 * conflicting} with other match(s) but are applicable.</li>
+	 * <li>The buffer is fully mergeable</li>
+	 * <li>The matches are not overlapping with each other.</li>
 	 * <li>The buffer verify the {@link 
 	 * Buffer#doesCompleteRequiredMatches(Iterable)} condition.</li></ul>
 	 * 
@@ -952,6 +957,91 @@ class ScriptRunner {
 			print('''«candidate»  ''')
 			applyDivisionMatch(candidate,
 				candidate.matchTable.values.flatten.filter[it.type == MatchType::BACKWARD].toList)
+		}
+		println("")
+
+		buffers.removeAll(candidates)
+
+		// Return the matched buffers
+		return candidates
+	}
+
+	/**
+	 * Match {@link Buffer buffers} with a unique {@link Match} in their 
+	 * {@link Buffer#getMatchTable() matchTable} if:<ul>
+	 * <li>The unique match covers the whole real token range of the buffer
+	 * </li>
+	 * <li>The match is {@link Match#getConflictingMatches() conflicting} 
+	 * with other match(es) but is applicable</li>
+	 * <li>The buffer is partially mergeable</li>
+	 * <li>The match and its {@link Match#getReciprocate() reciprocate} are 
+	 * applicable.</li></ul>
+	 * 
+	 * @param buffers
+	 * 		{@link List} of {@link Buffer} of the processed group. Matched 
+	 * 		buffers will be removed from this list by the method.
+	 * @return a {@link List} of merged {@link Buffer}.
+	 */
+	def processGroupStep6(List<Buffer> buffers) {
+		val candidates = newArrayList
+
+		// Largest buffers first for this step.
+		buffers.sortInplace [ a, b |
+			// Largest buffer first
+			val size = (a.minIndex - a.maxIndex) - (b.minIndex - b.maxIndex)
+			// Alphabetical order for buffers of equal size
+			if (size != 0)
+				size
+			else {
+				val nameRes = a.dagVertex.name.compareTo(b.dagVertex.name)
+				if(nameRes != 0) nameRes else a.name.compareTo(b.name)
+			}
+		]
+
+		for (candidate : buffers) {
+
+			val entry = candidate.matchTable.entrySet.head
+
+			// Returns true if:
+			// There is a unique match
+			var test = candidate.matchTable.size == 1 && entry.value.size == 1
+
+			// Is backward
+			test = test && entry.value.head.type == MatchType::BACKWARD
+
+			// that begins at index 0 (or less)
+			test = test && entry.value.head.localIndivisibleRange.start <= 0
+
+			// and ends at the end of the buffer (or more)
+			test = test && entry.value.head.localIndivisibleRange.end >= candidate.nbTokens * candidate.tokenSize
+
+			// and is involved in conflicting range
+			test = test && {
+				val match = entry.value.head
+				match.conflictingMatches.size > 0 && match.applicable && match.reciprocate.applicable
+			}
+
+			// buffer not fully mergeable, no test needed,
+			// such a buffer it would have been matched in step 4
+			// Conflicting matches of the match are not already in the candidate list
+			test = test && {
+				val match = entry.value.head
+				match.conflictingMatches.forall[!candidates.contains(it.localBuffer)]
+			}
+
+			// and remote buffer is not already in the candidates list
+			test = test && !candidates.contains(entry.value.head.remoteBuffer)
+
+			if (test) {
+				candidates.add(candidate)
+			}
+		}
+
+		// If there are candidates, apply the matches
+		print('''6- («candidates.size») ''')
+		for (candidate : candidates) {
+			print('''«candidate.matchTable.entrySet.head.value.head»  ''')
+			candidate.applyMatches(candidate.matchTable.entrySet.head.value)
 		}
 		println("")
 
