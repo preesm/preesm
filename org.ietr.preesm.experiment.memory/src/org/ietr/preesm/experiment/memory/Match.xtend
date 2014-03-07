@@ -1,6 +1,7 @@
 package org.ietr.preesm.experiment.memory
 
 import java.util.List
+import java.util.Map
 
 import static extension org.ietr.preesm.experiment.memory.Range.*
 
@@ -205,6 +206,45 @@ class Match {
 			mustBeMergeableRanges.difference(mergeableRanges).size == 0
 		}
 	}
+
+	/** 
+	 * Recursive method to find where the {@link #getLocalRange()} of the 
+	 * current {@link #getLocalBuffer() localBuffer} is matched.
+	 * 
+	 * @return a {@link Map} that associates: a {@link Range subranges} of the 
+	 * {@link #getLocalRange() localRange} of the  {@link #getLocalBuffer() 
+	 * localBuffer} to a {@link Pair} composed of a {@link Buffer} and a 
+	 * {@link Range} where the associated {@link Range subrange} is matched.
+	 * 
+	 */
+	def Map<Range, Pair<Buffer, Range>> getRoot() {
+		val result = newHashMap
+		val remoteRange = this.localIndivisibleRange.translate(this.remoteIndex - this.localIndex)
+
+		// Termination case if the remote Buffer is not matched	
+		if (this.remoteBuffer.matched == null) {
+			result.put(
+				this.localIndivisibleRange,
+				this.remoteBuffer -> remoteRange
+			)
+		}
+		// Else, recursive call 
+		else {
+			for (match : this.remoteBuffer.matched.filter[it.localIndivisibleRange.hasOverlap(remoteRange)]) {
+				val recursiveResult = match.root
+				for (entry : recursiveResult.entrySet) {
+					val range = entry.key
+
+					// translate back to local range
+					range.translate(this.localIndex - this.remoteIndex)
+					result.put(range, entry.value)
+				}
+			}
+		}
+
+		return result
+	}
+
 }
 
 /**

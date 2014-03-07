@@ -211,6 +211,16 @@ class Buffer {
 	 */
 	@Property
 	final protected Map<Integer, List<Match>> matchTable
+	
+	/**
+	 * This property is used to mark the {@link Buffer buffers} that were 
+	 * {@link #applyMatches(List)}.
+	 * Originally set to <code>null</code>, it is replaced by a {@link List}
+	 * of applied {@link Match} in the {@link #applyMatches(List) applyMatches}
+	 * method. 
+	 */
+	@Property
+	var List<Match> matched = null
 
 	@Property
 	final String name
@@ -563,6 +573,8 @@ class Buffer {
 	def applyMatches(List<Match> matches) {
 
 		// copy the list to iterate on it
+		// Otherwise the list would be modified during the iteration since it 
+		// is the result of a flatten or a filter operation.
 		val matchesCopy = new ArrayList(matches)
 
 		// Check that all match have the current buffer as local
@@ -702,6 +714,9 @@ class Buffer {
 			match.applied = true
 			match.reciprocate.applied = true
 		}
+		
+		// Mark the buffer as Matched
+		this._matched = matchesCopy
 	}
 
 	def updateForbiddenAndMergeableLocalRanges(Match match) {
@@ -1012,70 +1027,6 @@ class Buffer {
 
 					// Remove it from the candidates (if it was present)
 					//match.conflictCandidates.remove(candidate.reciprocate)
-					if (!updatedMatches.contains(candidate.reciprocate)) {
-						updatedMatches.add(candidate.reciprocate)
-					}
-				}
-			}
-		]
-
-		return updatedMatches
-	}
-
-	/**
-	 * This method update the {@link Match#getConflictingMatches() 
-	 * conflictingMatches} {@link List} of all the {@link Match} passed as a 
-	 * parameter. To do so, the method scan all the {@link 
-	 * Match#getConflictCandidates() conflictCandidates} of each {@link Match} 
-	 * and check if any candidate has an overlapping range. In such case, the 
-	 * candidate is moved to the {@link Match#getConflictingMatches() 
-	 * conflictingMatches} of the {@link Match} and its {@link 
-	 * Match#getReciprocate() reciprocate}. To ensure consistency, one should 
-	 * make sure that if a {@link Match} is updated with this method, then all 
-	 * the {@link Match matches} contained in its {@link 
-	 * Match#getConflictCandidates() conflictCandidates} {@link List} are 
-	 * updated too.   
-	 * 
-	 * @param matchList
-	 * 		The {@link Iterable} of {@link Match} to update
-	 * 
-	 * @return the {@link List} of {@link Match} updated by the method
-	 */
-	static def backupupdateConflictingMatches(Iterable<Match> matchList) {
-
-		val updatedMatches = newArrayList
-		matchList.forEach [ match |
-			// Check all the conflict candidaes
-			var iter = match.conflictCandidates.iterator
-			while (iter.hasNext) {
-				val candidate = iter.next
-				if (candidate.localImpactedRange.hasOverlap(match.localImpactedRange)) {
-					iter.remove
-
-					// Add the candidate to the conflicting matches
-					match.conflictingMatches.add(candidate)
-					match.reciprocate.conflictingMatches.add(candidate.reciprocate)
-
-					// Remove it from the reciprocate candidates (if it was present)
-					match.reciprocate.conflictCandidates.remove(candidate.reciprocate)
-
-					updatedMatches.add(candidate)
-				}
-			}
-			// Do the same for reciprocate
-			iter = match.reciprocate.conflictCandidates.iterator
-			while (iter.hasNext) {
-				val candidate = iter.next
-				if (candidate.localImpactedRange.hasOverlap(match.reciprocate.localImpactedRange)) {
-					iter.remove
-
-					// Add the candidate to the conflicting matches
-					match.conflictingMatches.add(candidate.reciprocate)
-					match.reciprocate.conflictingMatches.add(candidate)
-
-					// Remove it from the candidates (if it was present)
-					match.conflictCandidates.remove(candidate.reciprocate)
-
 					if (!updatedMatches.contains(candidate.reciprocate)) {
 						updatedMatches.add(candidate.reciprocate)
 					}

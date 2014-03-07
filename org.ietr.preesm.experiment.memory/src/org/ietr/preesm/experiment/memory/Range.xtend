@@ -104,11 +104,14 @@ class Range {
 	 * 
 	 * @param delta
 	 *  the integer value used to update the range.
+	 * @return this
 	 *  
 	 */
 	def translate(int delta) {
 		start = start + delta
 		end = end + delta
+		
+		this
 	}
 
 	/**

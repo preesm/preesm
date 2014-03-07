@@ -34,6 +34,9 @@ import org.ietr.preesm.core.types.DataType
 
 import static extension org.ietr.preesm.experiment.memory.Buffer.*
 import static extension org.ietr.preesm.experiment.memory.Range.*
+import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
+import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex
+import org.ietr.dftools.workflow.WorkflowException
 
 enum CheckPolicy {
 	NONE,
@@ -84,6 +87,8 @@ class ScriptRunner {
 	 * memory script to this memory script {@link File}.
 	 */
 	val scriptedVertices = new HashMap<DAGVertex, File>();
+	
+	val List<List<Buffer>> bufferGroups = newArrayList 
 
 	static public final boolean printTodo = false
 
@@ -525,6 +530,8 @@ class ScriptRunner {
 			buffers.addAll(pair.key.filter[it.appliedMatches.size == 0])
 			buffers.addAll(pair.value.filter[it.appliedMatches.size == 0])
 		]
+		// copy the buffer list for later use in MEG update
+		bufferGroups.add(new ArrayList(buffers))
 		nbBuffersBefore = nbBuffersBefore + buffers.size
 
 		var before = buffers.fold(0, [res, buf|res + buf.maxIndex - buf.minIndex])
@@ -1399,6 +1406,63 @@ class ScriptRunner {
 						message)
 			} catch (IOException exception) {
 				exception.printStackTrace
+			}
+		}
+	}
+	
+	def updateMEG(MemoryExclusionGraph meg){
+		// Process each group of buffers separately
+		for(buffers : bufferGroups){
+			// For each buffer, get the corresponding MObject
+			val bufferAndMObjectMap = newHashMap
+			for(buffer : buffers){
+				// Get the Mobj
+				val mObjCopy = new MemoryExclusionVertex(buffer.sdfEdge.source.name,buffer.sdfEdge.target.name,0)
+				val mObj = meg.getVertex(mObjCopy)
+				if(mObj == null){
+					throw new WorkflowException('''Cannot find «mObjCopy» in the given MEG. Contact developers for more information.''')
+				}
+				
+				if(mObj.weight != buffer.nbTokens*buffer.tokenSize){
+					// Karol's Note:
+					// To process the aggregated dag edges, we will need to 
+					// split them in the MEG. Doing so, we still need to make 
+					// sure that all related information remains correct:
+					// - Exclusions
+					// - Scheduling order
+					// - Predecessors
+					// - The two Mobj must have different source and sink names.
+					// or otherwise they will be considered equals() even with 
+					// different sizes. 
+					//
+					// Also we will need to make sure that the code generation
+					// printerS are still functional 
+					throw new WorkflowException('''Aggregated DAG Edge not yet supported. Contact Preesm developers for more information.''')
+				}
+				bufferAndMObjectMap.put(buffer, mObj)
+			}
+			
+			// For each unmatched buffer
+			for(buffer : buffers.filter[it.matched == null]){
+				// Enlarge the corresponding mObject to the required size
+				val mObj = bufferAndMObjectMap.get(buffer) 
+				mObj.setWeight(buffer.maxIndex - buffer.minIndex)
+			}
+			
+			// For each matched buffers
+			for(buffer : buffers.filter[it.matched != null]){
+				// find the root buffer(s)
+				// there might be several roots if the buffer was divided
+				// the map associates:
+				// a localRange of the buffer to 
+				// a pair of a root buffer and its range for the buffer 
+				val Map<Range, Pair<Buffer, Range>> rootBuffers = newHashMap()
+				for(match : buffer.matched){
+					rootBuffers.putAll(match.root)
+				}
+				
+				val mObj = bufferAndMObjectMap.get(buffer)
+
 			}
 		}
 	}

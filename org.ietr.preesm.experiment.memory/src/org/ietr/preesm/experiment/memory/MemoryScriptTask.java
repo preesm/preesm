@@ -10,9 +10,9 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
 public class MemoryScriptTask extends AbstractTaskImplementation {
 
@@ -85,9 +85,16 @@ public class MemoryScriptTask extends AbstractTaskImplementation {
 		}
 		sr.process();
 
+		// Update memex
+		if (verbose) {
+			logger.log(Level.INFO, "Updating memory exclusion graph.");
+		}
+		MemoryExclusionGraph meg = (MemoryExclusionGraph) inputs.get("MemEx");
+		sr.updateMEG(meg);
+
 		// Outputs
 		Map<String, Object> outputs = new HashMap<String, Object>();
-		outputs.put("MemEx", inputs.get("MemEx"));
+		outputs.put("MemEx", meg);
 		return outputs;
 	}
 
