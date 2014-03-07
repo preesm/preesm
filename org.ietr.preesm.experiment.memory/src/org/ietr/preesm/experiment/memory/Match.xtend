@@ -193,16 +193,17 @@ class Match {
 	def isApplicable() {
 
 		// Does not match forbidden tokens
-		val impactedTokens = this.localImpactedRange.intersection(new Range(this.localBuffer.minIndex, this.localBuffer.maxIndex))		
+		val impactedTokens = this.localImpactedRange.intersection(
+			new Range(this.localBuffer.minIndex, this.localBuffer.maxIndex))
 		this.forbiddenLocalRanges.intersection(impactedTokens).size == 0 &&
 		// And match only localMergeableRange are in fact mergeable 
-		if(this.type == MatchType::FORWARD){
+		if (this.type == MatchType::FORWARD) {
 			true
 		} else {
 			val mustBeMergeableRanges = this.mergeableLocalRanges.intersection(impactedTokens)
 			val mergeableRanges = this.localBuffer.mergeableRanges.intersection(impactedTokens)
 			mustBeMergeableRanges.difference(mergeableRanges).size == 0
-		}	
+		}
 	}
 }
 

@@ -582,11 +582,11 @@ class Buffer {
 				"Incorrect call to applyMatches method.\n All real token must be covered by the given matches.\n" +
 					matches)
 		}
-		
+
 		// Check that the matches do not overlap
-		if(!matchesCopy.forall[match |
-			matchesCopy.filter[it!==match].forall[!match.localIndivisibleRange.hasOverlap(it.localIndivisibleRange)]
-		]){
+		if (!matchesCopy.forall [ match |
+			matchesCopy.filter[it !== match].forall[!match.localIndivisibleRange.hasOverlap(it.localIndivisibleRange)]
+		]) {
 			throw new RuntimeException(
 				"Incorrect call to applyMatches method.\n Given matches are overlapping in the localBuffer.\n" +
 					matches)
