@@ -84,9 +84,6 @@ public class MemoryScriptTask extends AbstractTaskImplementation {
 			logger.log(Level.INFO, "Processing memory script results.");
 		}
 		sr.process();
-		
-
-		// sr.runTest();
 
 		// Outputs
 		Map<String, Object> outputs = new HashMap<String, Object>();

@@ -1403,41 +1403,6 @@ class ScriptRunner {
 		}
 	}
 
-	def runTest() {
-		val interpreter = new Interpreter();
-
-		// Import the necessary libraries
-		interpreter.eval("import " + Buffer.name + ";")
-
-		//interpreter.eval("import " + Map.name + ";")
-		// Retrieve Parameters
-		var parameters = newHashMap("NbSlice" -> 3, "Overlap" -> 1, "Height" -> 3, "Width" -> 2)
-		parameters.forEach[name, value|interpreter.set(name, value)]
-
-		// Retrieve buffers
-		var inputs = newArrayList(
-			new Buffer(null, null, "input", parameters.get("Height") * parameters.get("Width"), 1, true))
-		inputs.forEach[interpreter.set("i_" + it.name, it)]
-
-		var outputs = newArrayList(
-			new Buffer(null, null, "output",
-				parameters.get("Height") * parameters.get("Width") +
-					parameters.get("NbSlice") * parameters.get("Overlap") * 2 * parameters.get("Width"), 1, true))
-		outputs.forEach[interpreter.set("o_" + it.name, it)]
-
-		try {
-			val sourceStream = class.getResource("/../scripts/split.bsh").toURI
-			val scriptFile = new File(FileLocator.resolve(sourceStream.toURL).file)
-			if (scriptFile.exists) {
-				interpreter.source(scriptFile.absolutePath);
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace
-
-		}
-	}
-
 	/**
 	 * This method calls {@link Buffer#simplifyMatches()} for each 
 	 * {@link Buffer} of the {@link #scriptResults}. 
