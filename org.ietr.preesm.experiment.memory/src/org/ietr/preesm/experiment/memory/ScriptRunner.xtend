@@ -550,6 +550,8 @@ class ScriptRunner {
 					processGroupStep5(buffers)
 				case 6:
 					processGroupStep6(buffers)
+				case 7:
+					processGroupStep7(buffers)
 			}
 
 			if (matchedBuffers.size != 0) {
@@ -561,7 +563,7 @@ class ScriptRunner {
 			// Stop if only buffers with no match remains
 			stop = buffers.forall[it.matchTable.empty]
 
-		} while (step < 7 && !stop)
+		} while (step < 8 && !stop)
 
 		//println(buffers.fold(0,[res, buf | res + buf.maxIndex - buf.minIndex]))
 		println("---")
@@ -1045,6 +1047,83 @@ class ScriptRunner {
 			print('''«candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head»  ''')
 			candidate.key.applyMatches(
 				#[candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head])
+		}
+		println("")
+
+		buffers.removeAll(candidates.keySet)
+
+		// Return the matched buffers
+		return candidates.keySet.toList
+	}
+	
+	/**
+	 * Match {@link Buffer buffers} that are divisible with their <code>FORWARD
+	 * </code> {@link Match matches} only (or a their <code>BACKWARD</code> 
+	 * {@link Match matches} only) if:<ul>
+	 * <li>The buffer is {@link Buffer#isDivisible() divisible}.</li>
+	 * <li>Its matches cover the whole real token range of the buffer</li>
+	 * <li>Its matches are {@link Match#getConflictingMatches() 
+	 * conflicting} with other matches.</li>
+	 * <li>The buffer has no {@link Buffer#getMultipleMatchRange(Buffer) 
+	 * multipleMatchRange}.</li>
+	 * <li>The buffer verify the {@link 
+	 * Buffer#doesCompleteRequiredMatches(Iterable)} condition.</li></ul>
+	 * 
+	 * @param buffers
+	 * 		{@link List} of {@link Buffer} of the processed group. Matched 
+	 * 		buffers will be removed from this list by the method.
+	 * @return a {@link List} of merged {@link Buffer}.
+	 */
+	def processGroupStep7(List<Buffer> buffers) {
+		val candidates = newLinkedHashMap
+
+		for (candidate : buffers) {
+			val iterType = #[MatchType::FORWARD, MatchType::BACKWARD].iterator
+			var test = false
+			while (iterType.hasNext && !test) {
+				val currentType = iterType.next
+
+				val matches = candidate.matchTable.values.flatten.filter[it.type == currentType]
+
+				// Returns true if:
+				// Has a several matches 
+				test = matches.size != 0
+
+				// is divisible
+				test = test && candidate.divisible
+
+				// and is involved in conflicting match
+				test = test && matches.forall[
+					it.conflictingMatches.size != 0 && it.applicable && it.reciprocate.applicable]
+
+				// Matches have no multiple match Range. 
+				test = test && matches.overlappingRanges.size == 0
+
+				// Check divisibilityRequiredMatches
+				test = test && candidate.doesCompleteRequiredMatches(matches)
+				
+				// Conflicting matches of the matches are not already in the candidate list
+				test = test && {					
+					matches.forall[
+						it.conflictingMatches.forall[!candidates.keySet.contains(it.localBuffer)]
+					]
+				}
+
+				// and remote buffer(s) are not already in the candidates list
+				test = test && matches.forall[!candidates.keySet.contains(it.remoteBuffer)]
+
+				if (test) {
+					candidates.put(candidate, currentType)
+				}
+			}
+		}
+
+		// If there are candidates, apply the matches
+		print('''7- («candidates.size») ''')
+		for (candidate : candidates.entrySet) {
+			print('''«candidate.key»  ''')
+			applyDivisionMatch(candidate.key,
+				candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList)
 		}
 		println("")
 
