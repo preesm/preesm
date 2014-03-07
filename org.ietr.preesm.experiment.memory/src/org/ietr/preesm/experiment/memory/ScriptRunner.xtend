@@ -87,8 +87,8 @@ class ScriptRunner {
 	 * memory script to this memory script {@link File}.
 	 */
 	val scriptedVertices = new HashMap<DAGVertex, File>();
-	
-	val List<List<Buffer>> bufferGroups = newArrayList 
+
+	val List<List<Buffer>> bufferGroups = newArrayList
 
 	static public final boolean printTodo = false
 
@@ -530,6 +530,7 @@ class ScriptRunner {
 			buffers.addAll(pair.key.filter[it.appliedMatches.size == 0])
 			buffers.addAll(pair.value.filter[it.appliedMatches.size == 0])
 		]
+
 		// copy the buffer list for later use in MEG update
 		bufferGroups.add(new ArrayList(buffers))
 		nbBuffersBefore = nbBuffersBefore + buffers.size
@@ -1409,21 +1410,26 @@ class ScriptRunner {
 			}
 		}
 	}
-	
-	def updateMEG(MemoryExclusionGraph meg){
+
+	def updateMEG(MemoryExclusionGraph meg) {
+
 		// Process each group of buffers separately
-		for(buffers : bufferGroups){
+		for (buffers : bufferGroups) {
+
 			// For each buffer, get the corresponding MObject
 			val bufferAndMObjectMap = newHashMap
-			for(buffer : buffers){
+			for (buffer : buffers) {
+
 				// Get the Mobj
-				val mObjCopy = new MemoryExclusionVertex(buffer.sdfEdge.source.name,buffer.sdfEdge.target.name,0)
+				val mObjCopy = new MemoryExclusionVertex(buffer.sdfEdge.source.name, buffer.sdfEdge.target.name, 0)
 				val mObj = meg.getVertex(mObjCopy)
-				if(mObj == null){
-					throw new WorkflowException('''Cannot find «mObjCopy» in the given MEG. Contact developers for more information.''')
+				if (mObj == null) {
+					throw new WorkflowException(
+						'''Cannot find «mObjCopy» in the given MEG. Contact developers for more information.''')
 				}
-				
-				if(mObj.weight != buffer.nbTokens*buffer.tokenSize){
+
+				if (mObj.weight != buffer.nbTokens * buffer.tokenSize) {
+
 					// Karol's Note:
 					// To process the aggregated dag edges, we will need to 
 					// split them in the MEG. Doing so, we still need to make 
@@ -1437,32 +1443,48 @@ class ScriptRunner {
 					//
 					// Also we will need to make sure that the code generation
 					// printerS are still functional 
-					throw new WorkflowException('''Aggregated DAG Edge not yet supported. Contact Preesm developers for more information.''')
+					throw new WorkflowException(
+						'''Aggregated DAG Edge not yet supported. Contact Preesm developers for more information.''')
 				}
 				bufferAndMObjectMap.put(buffer, mObj)
 			}
-			
+
 			// For each unmatched buffer
-			for(buffer : buffers.filter[it.matched == null]){
+			for (buffer : buffers.filter[it.matched == null]) {
+
 				// Enlarge the corresponding mObject to the required size
-				val mObj = bufferAndMObjectMap.get(buffer) 
+				val mObj = bufferAndMObjectMap.get(buffer)
 				mObj.setWeight(buffer.maxIndex - buffer.minIndex)
 			}
-			
+
 			// For each matched buffers
-			for(buffer : buffers.filter[it.matched != null]){
+			for (buffer : buffers.filter[it.matched != null]) {
+				val mObj = bufferAndMObjectMap.get(buffer)
+
 				// find the root buffer(s)
 				// there might be several roots if the buffer was divided
 				// the map associates:
 				// a localRange of the buffer to 
 				// a pair of a root buffer and its range for the buffer 
 				val Map<Range, Pair<Buffer, Range>> rootBuffers = newHashMap()
-				for(match : buffer.matched){
+				for (match : buffer.matched) {
 					rootBuffers.putAll(match.root)
 				}
-				
-				val mObj = bufferAndMObjectMap.get(buffer)
 
+				// For buffer receiving a part of the current buffer
+				for (rootBuffer : rootBuffers.values.map[it.key]) {
+					val rootMObj = bufferAndMObjectMap.get(rootBuffer)
+
+					// Add exclusions between the rootMobj and all adjacent
+					// memory objects of MObj
+					for (excludingMObj : meg.getAdjacentVertexOf(mObj)) {
+						if (rootMObj != excludingMObj && !meg.getAdjacentVertexOf(rootMObj).contains(excludingMObj)) {
+							meg.addEdge(rootMObj, excludingMObj)
+						}
+					}
+				}
+				
+				meg.removeVertex(mObj)
 			}
 		}
 	}
