@@ -100,6 +100,14 @@ class ScriptRunner {
 	static int sizeAfter
 
 	/**
+	 * This property is used to represent the alignment of buffers in memory.
+	 * The same value, or a multiple should always be used in the memory 
+	 * allocation. 
+	 */
+	@Property
+	val int alignment
+
+	/**
 	 * Check the results obtained when running the {@link #run()} method.
 	 * Checks are performed according to the current {@link #setCheckPolicy(CheckPolicy)}.
 	 * The {@link #checkResult(File,Pair)} method is used to perform the checks.
@@ -1161,6 +1169,10 @@ class ScriptRunner {
 		return candidates.keySet.toList
 	}
 
+	new(int alignment) {
+		this._alignment = alignment
+	}
+
 	/**
 	 * Called only for divisible buffers with multiple match and no 
 	 * conflict that are not matched in another divisible buffer
@@ -1352,6 +1364,7 @@ class ScriptRunner {
 				val arguments = sdfVertex.propertyBean.getValue(SDFAbstractVertex.ARGUMENTS) as HashMap<String, Argument>
 				if(arguments != null) arguments.entrySet.forEach[parameters.put(it.key, it.value.intValue)]
 			}
+			parameters.put("alignment", _alignment)
 
 			// Create the input/output lists
 			val inputs = sdfVertex.incomingEdges.map[
@@ -1454,12 +1467,20 @@ class ScriptRunner {
 
 				// Enlarge the corresponding mObject to the required size
 				val mObj = bufferAndMObjectMap.get(buffer)
-				mObj.setWeight(buffer.maxIndex - buffer.minIndex)
+				val minIndex = if (buffer.minIndex == 0) {
+						buffer.minIndex
+					} else {
+
+						// Make sure that index aligned in the buffer are in 
+						// fact aligned
+						((buffer.minIndex / _alignment) - 1) * _alignment
+					}
+				mObj.setWeight(buffer.maxIndex - minIndex)
 			}
 
 			// For each matched buffers
+			val bufferAndRoots = newHashMap
 			for (buffer : buffers.filter[it.matched != null]) {
-				val mObj = bufferAndMObjectMap.get(buffer)
 
 				// find the root buffer(s)
 				// there might be several roots if the buffer was divided
@@ -1470,6 +1491,28 @@ class ScriptRunner {
 				for (match : buffer.matched) {
 					rootBuffers.putAll(match.root)
 				}
+
+				// If the buffer respects the alignment constraint
+				if (_alignment <= 0 ||
+					// unless authorized 
+				buffer.unaligned ||
+					// Unless the buffer is divided 
+				rootBuffers.size > 1 ||
+					// Check the alignment
+					(rootBuffers.values.forall[it.value.start % _alignment == 0])) {
+
+					// OK
+					bufferAndRoots.put(buffer, rootBuffers)
+				} else {
+					println("No respect for " + buffer)
+				}
+			}
+			
+			
+
+			for (buffer : buffers.filter[it.matched != null]) {
+				val mObj = bufferAndMObjectMap.get(buffer)
+				val rootBuffers = bufferAndRoots.get(buffer)
 
 				// For buffer receiving a part of the current buffer
 				for (rootBuffer : rootBuffers.values.map[it.key]) {
@@ -1483,7 +1526,7 @@ class ScriptRunner {
 						}
 					}
 				}
-				
+
 				meg.removeVertex(mObj)
 			}
 		}

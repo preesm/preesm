@@ -245,6 +245,14 @@ class Buffer {
 	 */
 	@Property
 	List<Range> indivisibleRanges
+	
+	/**
+	 * If this attribute is set to true, by the producing actor,
+	 * the buffer will be allowed not to be aligned. If the consuming
+	 * actor's script set an input buffer has unaligned, this has no effect.
+	 */
+	@Property
+	var boolean unaligned
 
 	/**
 	 * This {@link List} contains all {@link Match} that must be applied
@@ -283,6 +291,7 @@ class Buffer {
     * 	The size of one token of the buffer.
     */
 	new(SDFEdge edge, DAGVertex dagVertex, String name, int nbTokens, int tokenSize, boolean mergeable) {
+		_unaligned = false
 		_sdfEdge = edge
 		_name = name
 		_nbTokens = nbTokens

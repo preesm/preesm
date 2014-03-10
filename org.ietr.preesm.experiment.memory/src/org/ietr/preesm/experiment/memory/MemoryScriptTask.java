@@ -12,6 +12,7 @@ import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.memory.allocation.MemoryAllocatorTask;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
 public class MemoryScriptTask extends AbstractTaskImplementation {
@@ -36,10 +37,33 @@ public class MemoryScriptTask extends AbstractTaskImplementation {
 		// Get the logger
 		Logger logger = WorkflowLogger.getLogger();
 
+		// Retrieve the alignment param
+		String valueAlignment = parameters.get(MemoryAllocatorTask.PARAM_ALIGNMENT);
+		int alignment;
+		switch (valueAlignment.substring(0,
+				Math.min(valueAlignment.length(), 7))) {
+		case MemoryAllocatorTask.VALUE_ALIGNEMENT_NONE:
+			alignment = -1;
+			break;
+		case MemoryAllocatorTask.VALUE_ALIGNEMENT_DATA:
+			alignment = 0;
+			break;
+		case MemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED:
+			String fixedValue = valueAlignment.substring(7);
+			alignment = Integer.parseInt(fixedValue);
+			break;
+		default:
+			alignment = -1;
+		}
+		if (verbose) {
+			logger.log(Level.INFO, "Scripts with alignment:=" + alignment
+					+ ".");
+		}
+
 		// Retrieve the input graph
 		DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 
-		ScriptRunner sr = new ScriptRunner();
+		ScriptRunner sr = new ScriptRunner(alignment);
 
 		// Retrieve all the scripts
 		int nbScripts = sr.findScripts(dag);
@@ -105,6 +129,9 @@ public class MemoryScriptTask extends AbstractTaskImplementation {
 				+ "}");
 		param.put(PARAM_CHECK, "? C {" + VALUE_CHECK_NONE + ", "
 				+ VALUE_CHECK_FAST + ", " + VALUE_CHECK_THOROUGH + "}");
+		param.put(MemoryAllocatorTask.PARAM_ALIGNMENT,
+				MemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
+
 		return param;
 	}
 
