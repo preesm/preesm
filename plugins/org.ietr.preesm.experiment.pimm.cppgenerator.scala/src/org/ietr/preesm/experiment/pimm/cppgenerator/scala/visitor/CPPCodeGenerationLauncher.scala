@@ -64,7 +64,7 @@ class CPPCodeGenerationLauncher extends CppCodeGenerationNameGenerator {
     preprocessor.visit(pg)
     //Generate C++ code for the whole PiGraph
     codeGenerator.visit(pg)
-    closeTopMethod
+    closeTopMethod(pg)
     //Concatenate the results
     codeGenerator.getMethods.foreach(m => {
       topMethod.append(m)
@@ -89,7 +89,7 @@ class CPPCodeGenerationLauncher extends CppCodeGenerationNameGenerator {
    */
   private def generateIncludes() = {
     append("\n#include <string.h>")
-    append("\n#include <graphs/PiSDF/PiSDFGraph.h.h>")
+    append("\n#include <graphs/PiSDF/PiSDFGraph.h>")
   }
 
   /**
@@ -112,6 +112,9 @@ class CPPCodeGenerationLauncher extends CppCodeGenerationNameGenerator {
     //The method accept as parameter a pointer to the PiSDFGraph graph it will build
     append("(PiSDFGraph* graph, Scenario *scenario){")
 
+    
+  }  
+  private def closeTopMethod(pg: PiGraph): Unit = {
     val sgName = getSubraphName(pg)
     val vxName = getVertexName(pg)
 
@@ -137,8 +140,7 @@ class CPPCodeGenerationLauncher extends CppCodeGenerationNameGenerator {
     append("->setSubGraph(")
     append(sgName)
     append(");")    
-  }  
-  private def closeTopMethod(): Unit = {
+    
     append("\n}\n")
   }
 
