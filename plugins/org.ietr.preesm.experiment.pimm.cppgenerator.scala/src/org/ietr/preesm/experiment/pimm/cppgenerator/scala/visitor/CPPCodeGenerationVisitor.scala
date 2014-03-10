@@ -367,7 +367,7 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
    * When visiting a parameter, we should add a parameter to the current graph
    */
   def visitParameter(p: Parameter): Unit = {
-    append("\n\tPISDFParameter *")
+    append("\n\tPiSDFParameter *")
     append(getParameterName(p))
     append(" = graph->addParameter(\"")
     append(p.getName())
