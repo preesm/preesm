@@ -271,7 +271,7 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
     append(", \"")
     //Pass the consumption of the target node
     append(tgt.expression)
-    append("\", ")
+    append("\", \"")
     //Pass the delay of the FIFO
     if (f.getDelay() != null) append(f.getDelay().getExpression().getString())
     else append("0")
