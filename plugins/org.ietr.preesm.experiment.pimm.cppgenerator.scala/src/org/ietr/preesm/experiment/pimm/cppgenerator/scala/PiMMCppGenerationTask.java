@@ -89,7 +89,7 @@ public class PiMMCppGenerationTask extends AbstractTaskImplementation {
 		parent.mkdirs();
 
 		// Create the file
-		String filePath = pg.getName() + ".cpp";
+		String filePath = pg.getName() + ".h";
 		File file = new File(parent, filePath);
 
 		// Write the file
