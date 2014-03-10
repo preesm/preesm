@@ -243,7 +243,7 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
     aa.getConfigInputPorts().foreach(cop => {
       append("\n\t")
       append(getVertexName(aa))
-      append("->addParam(")
+      append("->addParameter(")
       append(dependencyMap.get(cop.getIncomingDependency()).srcName)
       append(");")
     })
