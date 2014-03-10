@@ -46,6 +46,8 @@ import collection.JavaConversions._
 import org.ietr.preesm.experiment.pimm.cppgenerator.scala.utils.CppCodeGenerationNameGenerator
 import java.util.Collection
 import org.ietr.preesm.experiment.pimm.visitor.scala.PiMMVisitor
+import java.util.LinkedHashMap
+import java.util.LinkedHashSet
 
 //TODO: Find a cleaner way to setParentEdge in Interfaces
 /* 
@@ -62,8 +64,13 @@ import org.ietr.preesm.experiment.pimm.visitor.scala.PiMMVisitor
 class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val preprocessor: CPPCodeGenerationPreProcessVisitor)
   extends PiMMVisitor with CppCodeGenerationNameGenerator {
 
+  //Ordered set for methods prototypes
+  private val prototypes: LinkedHashSet[String] = new LinkedHashSet[String]
+  
+  def getPrototypes(): LinkedHashSet[String] = prototypes
+  
   //Maps to handle hierarchical graphs
-  private val graph2method: Map[PiGraph, StringBuilder] = new HashMap[PiGraph, StringBuilder]
+  private val graph2method: Map[PiGraph, StringBuilder] = new LinkedHashMap[PiGraph, StringBuilder]
   private val graph2subgraphs: Map[PiGraph, List[PiGraph]] = new HashMap[PiGraph, List[PiGraph]]
 
   def getMethods(): Collection[StringBuilder] = graph2method.values()
@@ -140,11 +147,14 @@ class CPPCodeGenerationVisitor(private val topMethod: StringBuilder, private val
    * Concatenate the signature of the method corresponding to a PiGraph to the currentMethod StringBuilder
    */
   private def generateMethodSignature(pg: PiGraph): Unit = {
+    val signature = new StringBuilder()    
     //The method does not return anything
-    append("\nvoid ")
-    append(getMethodName(pg))
+    signature.append("\nvoid ")
+    signature.append(getMethodName(pg))
     //The method accept as parameter a pointer to the PiSDFGraph graph it will build and a pointer to the parent actor of graph (i.e., the hierarchical actor)
-    append("(PiSDFGraph* graph, BaseVertex* parentVertex)")
+    signature.append("(PiSDFGraph* graph, BaseVertex* parentVertex)")
+    prototypes.add(signature.toString)
+    append(signature)
   }
 
   /**

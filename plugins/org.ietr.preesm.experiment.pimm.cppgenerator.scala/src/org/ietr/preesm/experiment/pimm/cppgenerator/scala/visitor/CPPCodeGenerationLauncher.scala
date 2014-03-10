@@ -53,22 +53,27 @@ class CPPCodeGenerationLauncher extends CppCodeGenerationNameGenerator {
    */
   def generateCPPCode(pg: PiGraph): String = {    
     val preprocessor = new CPPCodeGenerationPreProcessVisitor
-    val codeGenerator = new CPPCodeGenerationVisitor(topMethod, preprocessor)
-
+    val tmp = new StringBuilder
+    val codeGenerator = new CPPCodeGenerationVisitor(tmp, preprocessor)
+    //Preprocess PiGraph pg in order to collect information on sources and targets of Fifos and Dependecies
+    preprocessor.visit(pg)
+    //Generate C++ code for the whole PiGraph, at the end, tmp will contain the vertex declaration for pg
+    codeGenerator.visit(pg)
+    
     ///Generate the header (license, includes and constants)
     generateHeader
     append("\n")
+    //Generate the prototypes for each method except top
+    codeGenerator.getPrototypes.foreach(p => {
+      topMethod.append(p)
+      topMethod.append(";\n")
+    })
     //Generate the top method from which the C++ graph building is launch
     openTopMehod(pg)
-    //Preprocess PiGraph pg in order to collect information on sources and targets of Fifos and Dependecies
-    preprocessor.visit(pg)
-    //Generate C++ code for the whole PiGraph
-    codeGenerator.visit(pg)
+    append(tmp)    
     closeTopMethod(pg)
     //Concatenate the results
-    codeGenerator.getMethods.foreach(m => {
-      topMethod.append(m)
-    })
+    codeGenerator.getMethods.foreach(m => topMethod.append(m))
     //Returns the final C++ code
     topMethod.toString
   }
