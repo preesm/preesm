@@ -29,10 +29,18 @@ class Sdf3Printer {
 	def print() '''
 		<sdf3 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" type="sdf" 
 		    			xsi:noNamespaceSchemaLocation="http://www.es.ele.tue.nl/sdf3/xsd/sdf3-sdf.xsd">
-			<applicationGraph name="«sdf.name»">
-				«FOR actor : sdf.vertexSet»
-					«actor.print»
-				«ENDFOR»		
+			<applicationGraph>
+				 <sdf name="«sdf.name.toFirstLower»" type="«sdf.name.toFirstUpper»">
+					«FOR actor : sdf.vertexSet»
+						«actor.print»
+					«ENDFOR»
+					«FOR edge : sdf.edgeSet»
+						«edge.print»
+					«ENDFOR»
+				</sdf>
+				<sdfProperties>
+				</sdfProperties>
+		</applicationGraph>
 	'''
 
 	def print(SDFAbstractVertex actor) '''
@@ -45,6 +53,10 @@ class Sdf3Printer {
 	
 	def print(IInterface port, SDFEdge edge)'''
 		<port name="«port.name»" type="«if(port instanceof SDFSourceInterfaceVertex) "in" else "out"»" rate="«if(port instanceof SDFSourceInterfaceVertex) edge.cons else edge.prod»"/>
+	'''
+	
+	def print(SDFEdge edge)'''
+		<channel name="«edge.source».«edge.sourceLabel»__«edge.target».«edge.targetLabel»" srcActor="«edge.source»" srcPort="«edge.sourceLabel»" dstActor="«edge.target»" dstPort="«edge.targetLabel»" initialTokens="«edge.delay.intValue»"/>
 	'''
 
 	def write(File file) {
