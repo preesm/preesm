@@ -117,6 +117,21 @@
             </input>
          </inputs>
       </task>
+      <task
+            id="org.ietr.preesm.algorithm.exportSdf3Xml.Sdf3Exporter"
+            name="SDF3 Exporter"
+            type="org.ietr.preesm.algorithm.exportSdf3Xml.Sdf3Exporter">
+         <inputs>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+            <input
+                  id="SDF"
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+            </input>
+         </inputs>
+      </task>
    </extension>
 
 </plugin>
