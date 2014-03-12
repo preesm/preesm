@@ -12,6 +12,8 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
 import org.ietr.dftools.algorithm.model.AbstractEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
+import org.ietr.dftools.architecture.slam.Design
+import java.util.HashSet
 
 class Sdf3Printer {
 
@@ -20,10 +22,14 @@ class Sdf3Printer {
 
 	@Property
 	val SDFGraph sdf
+	
+	@Property
+	val Design archi
 
-	new(SDFGraph sdf, PreesmScenario scenario) {
+	new(SDFGraph sdf, PreesmScenario scenario, Design archi) {
 		_scenario = scenario
 		_sdf = sdf
+		_archi = archi
 	}
 
 	def print() '''
@@ -39,6 +45,9 @@ class Sdf3Printer {
 					«ENDFOR»
 				</sdf>
 				<sdfProperties>
+					«FOR actor : sdf.vertexSet»
+						«actor.printProperties»
+					«ENDFOR»
 				</sdfProperties>
 		</applicationGraph>
 	'''
@@ -50,6 +59,29 @@ class Sdf3Printer {
 			«ENDFOR»
 		</actor>
 	'''
+	
+	def printProperties(SDFAbstractVertex actor){
+		val timingManager = scenario.timingManager
+		// Create a set of all the components
+		val components = _archi.componentInstances.map[it.component].toSet
+		val constraintManager = scenario.constraintGroupManager
+		var firstIsDefault = true
+		
+		'''
+		<actorProperties actor="«actor.name»">
+			«IF actor.class == SDFVertex»
+				«FOR component : components»
+					«IF !(constraintManager.getGraphConstraintGroups(actor).map[it.operatorIds.head]).forall[!component.instances.map[it.instanceName].contains(it)]»
+						<processor type="«component.vlnv.name»" default="«if(firstIsDefault) {firstIsDefault = false; true} else false»">
+						<executionTime time="«timingManager.getTimingOrDefault(actor.name, component.vlnv.name)»"/>
+					«ENDIF»
+				«ENDFOR»
+			«ELSE/*The vertex is a fork, join or broadcast */»
+			lalal
+			«ENDIF»
+		</actorProperties>
+		'''
+	}
 	
 	def print(IInterface port, SDFEdge edge)'''
 		<port name="«port.name»" type="«if(port instanceof SDFSourceInterfaceVertex) "in" else "out"»" rate="«if(port instanceof SDFSourceInterfaceVertex) edge.cons else edge.prod»"/>

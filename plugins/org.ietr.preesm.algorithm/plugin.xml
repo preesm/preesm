@@ -130,6 +130,10 @@
                   id="SDF"
                   object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
             </input>
+            <input
+                  id="architecture"
+                  object="org.ietr.dftools.architecture.slam.Design">
+            </input>
          </inputs>
       </task>
    </extension>

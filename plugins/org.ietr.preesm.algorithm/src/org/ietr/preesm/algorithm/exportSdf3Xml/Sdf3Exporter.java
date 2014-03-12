@@ -48,6 +48,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
@@ -67,9 +68,10 @@ public class Sdf3Exporter extends AbstractTaskImplementation {
 		// Retrieve the inputs
 		SDFGraph sdf = (SDFGraph) inputs.get("SDF");
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+		Design archi = (Design) inputs.get("architecture");
 
 		// Create the exporter
-		Sdf3Printer exporter = new Sdf3Printer(sdf, scenario);
+		Sdf3Printer exporter = new Sdf3Printer(sdf, scenario, archi);
 
 		try {
 
