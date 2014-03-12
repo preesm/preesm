@@ -35,24 +35,67 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 package org.ietr.preesm.algorithm.exportSdf3Xml;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.tools.PathTools;
 
 public class Sdf3Exporter extends AbstractTaskImplementation {
 
 	static final public String PARAM_PATH = "path";
 	static final public String VALUE_PATH_DEFAULT = "./Code/SDF3/graph.xml";
-	
+
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName, Workflow workflow) throws WorkflowException {
-		
+
+		// Retrieve the inputs
+		SDFGraph sdf = (SDFGraph) inputs.get("SDF");
+		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+
+		// Create the exporter
+		Sdf3Printer exporter = new Sdf3Printer(sdf, scenario);
+
+		try {
+
+			// Locate the output file
+			String sPath = PathTools.getAbsolutePath(parameters.get("path"),
+					workflow.getProjectName());
+			IPath path = new Path(sPath);
+			if (path.getFileExtension() == null
+					|| !path.getFileExtension().equals("xml")) {
+				path = path.addFileExtension("xml");
+			}
+			IWorkspace workspace = ResourcesPlugin.getWorkspace();
+			IFile iFile = workspace.getRoot().getFile(path);
+			if (!iFile.exists()) {
+				iFile.create(null, false, new NullProgressMonitor());
+			}
+			File file = new File(iFile.getRawLocation().toOSString());
+
+			// Write the result into the text file
+			exporter.write(file);
+
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		return new HashMap<String, Object>();
 	}
 
