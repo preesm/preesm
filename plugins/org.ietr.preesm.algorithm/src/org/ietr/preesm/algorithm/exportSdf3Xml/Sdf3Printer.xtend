@@ -36,7 +36,7 @@ class Sdf3Printer {
 		<sdf3 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" type="sdf" 
 		    			xsi:noNamespaceSchemaLocation="http://www.es.ele.tue.nl/sdf3/xsd/sdf3-sdf.xsd">
 			<applicationGraph>
-				 <sdf name="«sdf.name.toFirstLower»" type="«sdf.name.toFirstUpper»">
+				<sdf name="«sdf.name.toFirstLower»" type="«sdf.name.toFirstUpper»">
 					«FOR actor : sdf.vertexSet»
 						«actor.print»
 					«ENDFOR»
@@ -52,7 +52,8 @@ class Sdf3Printer {
 						«edge.printProperties»
 					«ENDFOR»
 				</sdfProperties>
-		</applicationGraph>
+			</applicationGraph>
+		</sdf3>
 	'''
 
 	def print(SDFAbstractVertex actor) '''
@@ -85,14 +86,16 @@ class Sdf3Printer {
 				«FOR component : components»
 					«IF !(constraintManager.getGraphConstraintGroups(actor).map[it.operatorIds.head]).forall[!component.instances.map[it.instanceName].contains(it)]»
 						<processor type="«component.vlnv.name»" default="«if(firstIsDefault) {firstIsDefault = false; true} else false»">
-						<executionTime time="«timingManager.getTimingOrDefault(actor.name, component.vlnv.name)»"/>
+							<executionTime time="«timingManager.getTimingOrDefault(actor.name, component.vlnv.name)»"/>
+						</processor>
 					«ENDIF»
 				«ENDFOR»
 			«ELSE/*The vertex is a fork, join or broadcast */»
 				«FOR component : components»
 					«IF !(simulationManager.specialVertexOperatorIds.forall[!component.instances.map[it.instanceName].contains(it)])»
 						<processor type="«component.vlnv.name»" default="«if(firstIsDefault) {firstIsDefault = false; true} else false»">
-						<executionTime time="«(nbMemCpy*timingManager.getMemcpySetupTime(component.vlnv.name) + timingManager.getMemcpyTimePerUnit(component.vlnv.name)*size).intValue»"/>
+							<executionTime time="«(nbMemCpy*timingManager.getMemcpySetupTime(component.vlnv.name) + timingManager.getMemcpyTimePerUnit(component.vlnv.name)*size).intValue»"/>
+						</processor>
 					«ENDIF»
 				«ENDFOR»
 			«ENDIF»
