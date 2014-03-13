@@ -65,7 +65,16 @@ class Sdf3Printer {
 		// Create a set of all the components
 		val components = _archi.componentInstances.map[it.component].toSet
 		val constraintManager = scenario.constraintGroupManager
+		val simulationManager = scenario.simulationManager
 		var firstIsDefault = true
+		
+		var nbMemCpy = 0 
+		var size = 0
+		
+		if(actor.class != SDFVertex){
+			nbMemCpy = actor.interfaces.size - 1 
+			size = actor.sources.fold(0,[res, source | res + actor.getAssociatedEdge(source).prod.intValue])
+		} 
 		
 		'''
 		<actorProperties actor="«actor.name»">
@@ -77,7 +86,12 @@ class Sdf3Printer {
 					«ENDIF»
 				«ENDFOR»
 			«ELSE/*The vertex is a fork, join or broadcast */»
-			lalal
+				«FOR component : components»
+					«IF !(simulationManager.specialVertexOperatorIds.forall[!component.instances.map[it.instanceName].contains(it)])»
+						<processor type="«component.vlnv.name»" default="«if(firstIsDefault) {firstIsDefault = false; true} else false»">
+						<executionTime time="«(nbMemCpy*timingManager.getMemcpySetupTime(component.vlnv.name) + timingManager.getMemcpyTimePerUnit(component.vlnv.name)*size).intValue»"/>
+					«ENDIF»
+				«ENDFOR»
 			«ENDIF»
 		</actorProperties>
 		'''
