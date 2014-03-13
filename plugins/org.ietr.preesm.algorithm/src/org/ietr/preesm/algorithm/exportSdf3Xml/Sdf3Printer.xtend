@@ -48,6 +48,9 @@ class Sdf3Printer {
 					«FOR actor : sdf.vertexSet»
 						«actor.printProperties»
 					«ENDFOR»
+					«FOR edge : sdf.edgeSet»
+						«edge.printProperties»
+					«ENDFOR»
 				</sdfProperties>
 		</applicationGraph>
 	'''
@@ -97,13 +100,21 @@ class Sdf3Printer {
 		'''
 	}
 	
+	def printProperties(SDFEdge edge)'''
+		<channelProperties channel="«edge.printName»">
+			<tokenSize sz="«scenario.simulationManager.getDataTypeSizeOrDefault(edge.dataType.toString)»"/>
+		</channelProperties>
+	'''
+	
 	def print(IInterface port, SDFEdge edge)'''
 		<port name="«port.name»" type="«if(port instanceof SDFSourceInterfaceVertex) "in" else "out"»" rate="«if(port instanceof SDFSourceInterfaceVertex) edge.cons else edge.prod»"/>
 	'''
 	
 	def print(SDFEdge edge)'''
-		<channel name="«edge.source».«edge.sourceLabel»__«edge.target».«edge.targetLabel»" srcActor="«edge.source»" srcPort="«edge.sourceLabel»" dstActor="«edge.target»" dstPort="«edge.targetLabel»" initialTokens="«edge.delay.intValue»"/>
+		<channel name="«edge.printName»" srcActor="«edge.source»" srcPort="«edge.sourceLabel»" dstActor="«edge.target»" dstPort="«edge.targetLabel»" initialTokens="«edge.delay.intValue»"/>
 	'''
+	
+	def printName(SDFEdge edge)'''«edge.source».«edge.sourceLabel»__«edge.target».«edge.targetLabel»'''
 
 	def write(File file) {
 		try {
