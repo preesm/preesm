@@ -1,19 +1,16 @@
 package org.ietr.preesm.algorithm.exportSdf3Xml
 
-import java.io.FileWriter
 import java.io.File
+import java.io.FileWriter
 import java.io.IOException
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.preesm.core.scenario.PreesmScenario
-import org.ietr.dftools.algorithm.model.sdf.SDFVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.IInterface
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
-import org.ietr.dftools.algorithm.model.AbstractEdge
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import org.ietr.dftools.algorithm.model.sdf.SDFVertex
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
 import org.ietr.dftools.architecture.slam.Design
-import java.util.HashSet
+import org.ietr.preesm.core.scenario.PreesmScenario
 
 class Sdf3Printer {
 
@@ -103,19 +100,38 @@ class Sdf3Printer {
 		'''
 	}
 	
-	def printProperties(SDFEdge edge)'''
-		<channelProperties channel="«edge.printName»">
-			<tokenSize sz="«scenario.simulationManager.getDataTypeSizeOrDefault(edge.dataType.toString)»"/>
-		</channelProperties>
-	'''
+	def printProperties(SDFEdge edge) {
+		val tokenSize = gcd(edge.cons.intValue, edge.prod.intValue)
+
+		'''
+			<channelProperties channel="«edge.printName»">
+				<tokenSize sz="«scenario.simulationManager.getDataTypeSizeOrDefault(edge.dataType.toString) * tokenSize»"/>
+			</channelProperties>
+		'''
+	}
 	
-	def print(IInterface port, SDFEdge edge)'''
-		<port name="«port.name»" type="«if(port instanceof SDFSourceInterfaceVertex) "in" else "out"»" rate="«if(port instanceof SDFSourceInterfaceVertex) edge.cons else edge.prod»"/>
-	'''
+	def print(IInterface port, SDFEdge edge) {
+		val tokenSize = gcd(edge.cons.intValue, edge.prod.intValue)
+		val rate = if(port instanceof SDFSourceInterfaceVertex) edge.cons.intValue / tokenSize else edge.prod.
+				intValue / tokenSize
+
+		'''
+			<port name="«port.name»" type="«if(port instanceof SDFSourceInterfaceVertex) "in" else "out"»" rate="«rate»"/>
+		'''
+	}
+
+	static def int gcd(int a, int b) {
+		if(b == 0) return a
+		return gcd(b, a % b)
+	}
 	
-	def print(SDFEdge edge)'''
-		<channel name="«edge.printName»" srcActor="«edge.source»" srcPort="«edge.sourceLabel»" dstActor="«edge.target»" dstPort="«edge.targetLabel»" initialTokens="«edge.delay.intValue»"/>
-	'''
+	def print(SDFEdge edge) {
+		val tokenSize = gcd(edge.cons.intValue, edge.prod.intValue)
+		'''
+			<channel name="«edge.printName»" srcActor="«edge.source»" srcPort="«edge.sourceLabel»" dstActor="«edge.target»" dstPort="«edge.
+				targetLabel»" initialTokens="«edge.delay.intValue/tokenSize»"/>
+		'''
+	}
 	
 	def printName(SDFEdge edge)'''«edge.source».«edge.sourceLabel»__«edge.target».«edge.targetLabel»'''
 
