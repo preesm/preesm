@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PREESM Algoithm Optimization
+Bundle-SymbolicName: org.ietr.preesm.algorithm.optimization
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.ietr.preesm.algorithm.optimization.Activator
+Bundle-Vendor: IETR/INSA Rennes
+Require-Bundle: org.eclipse.core.runtime,
+ org.ietr.dftools.workflow,
+ org.ietr.dftools.algorithm,
+ org.jgrapht;bundle-version="0.8.2"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
