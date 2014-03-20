@@ -82,13 +82,16 @@ public class JoinForkCleaner {
 				// elements to remove from graph
 				edgesToRemove.add(e);
 				verticesToRemove.add(e.getSource());
-				verticesToRemove.add(e.getTarget());
-				// Then, add the edges to replace e
-				addEdgesToReplace(e, graph);
+				verticesToRemove.add(e.getTarget());				
 			}
 		}
+		
+		// Then, add the edges to replace e
+		for(SDFEdge e : edgesToRemove) {			
+			addEdgesToReplace(e, graph);
+		}
 
-		// Remove all useless elements from graph
+		// Finally, remove all useless elements from graph
 		graph.removeAllEdges(edgesToRemove);
 		graph.removeAllVertices(verticesToRemove);
 	}
