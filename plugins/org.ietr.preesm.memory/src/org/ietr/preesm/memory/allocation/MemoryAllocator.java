@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.ietr.dftools.algorithm.model.PropertyBean;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
@@ -361,6 +362,7 @@ public abstract class MemoryAllocator {
 	 *            the memory offset at which the {@link MemoryExclusionVertex
 	 *            memory object} is allocated.
 	 */
+	@SuppressWarnings("unchecked")
 	protected void allocateMemoryObject(MemoryExclusionVertex vertex, int offset) {
 		// TODO change the return type from void to boolean.
 		// The returned value will be used to tell if the allocation
@@ -389,6 +391,42 @@ public abstract class MemoryAllocator {
 					MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE,
 					offset + vertex.getWeight());
 		}
+
+		// If the allocated memory object is the result from a merge
+		// do the specific processing.
+		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostMap = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) inputExclusionGraph
+				.getPropertyBean().getValue(
+						MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+		if (hostMap != null && hostMap.containsKey(vertex)) {
+			allocateHostMemoryObject(vertex,
+					(Set<MemoryExclusionVertex>) hostMap.get(vertex));
+		}
+	}
+
+	/**
+	 * Special processing for {@link MemoryExclusionVertex memory objects}
+	 * resulting from memory script merges.
+	 * 
+	 * @param vertex
+	 *            the "host" {@link MemoryExclusionVertex}, i.e. the
+	 *            {@link MemoryExclusionVertex} that "contains" several other
+	 *            {@link MemoryExclusionVertex memory objects} from the original
+	 *            {@link MemoryExclusionGraph}.
+	 * 
+	 * @param vertices
+	 *            the {@link Set} of {@link MemoryExclusionVertex} contained in
+	 *            the "host".
+	 */
+	protected void allocateHostMemoryObject(MemoryExclusionVertex vertex,
+			Set<MemoryExclusionVertex> vertices) {
+		// TODO Replace the big host MemObject with its "content"
+		// - Remove the host memObject from the Memex
+		// - Add back all memory objects to the MemEx
+		// - Put back old exclusions between MObjects (before they were removed
+		// from the graph)
+		// - Special processing for vertices that were splitted => needs to
+		// create several MObj for them
+
 	}
 
 	/**
@@ -623,7 +661,6 @@ public abstract class MemoryAllocator {
 					}
 				}
 			} catch (InvalidExpressionException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return memorySize;
