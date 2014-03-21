@@ -3,9 +3,6 @@
 outIdx = 0;
 for(input : inputs){
 	inSize = input.getNbTokens();
-	// Do the match only for aligned data
-	if(alignment<=0 || outIdx%alignment == 0){
-		outputs.get(0).matchWith(outIdx,input,0,inSize);
-	}
+	outputs.get(0).matchWith(outIdx,input,0,inSize);
 	outIdx +=  inSize;
 }

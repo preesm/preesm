@@ -6,6 +6,9 @@ import java.util.Map
 import static extension org.ietr.preesm.experiment.memory.Range.*
 
 class Match {
+	/**
+	 * Does not save the match in the buffer matchTable
+	 */
 	new(Buffer localBuffer, int localIndex, Buffer remoteBuffer, int remoteIndex, int size) {
 		this.localBuffer = localBuffer
 		this.localIndex = localIndex

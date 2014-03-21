@@ -29,14 +29,14 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex
+import org.ietr.dftools.workflow.WorkflowException
 import org.ietr.dftools.workflow.tools.WorkflowLogger
 import org.ietr.preesm.core.types.DataType
+import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
+import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex
 
 import static extension org.ietr.preesm.experiment.memory.Buffer.*
 import static extension org.ietr.preesm.experiment.memory.Range.*
-import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
-import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex
-import org.ietr.dftools.workflow.WorkflowException
 
 enum CheckPolicy {
 	NONE,
@@ -379,6 +379,23 @@ class ScriptRunner {
 		// Identify divisible buffers
 		scriptResults.forEach[vertex, result|identifyDivisibleBuffers(result)]
 
+		// Update output buffers for alignment
+		if (_alignment > 0) {
+			scriptResults.forEach [ vertex, result |				
+				// All outputs except the mergeable one linked only to pure_in 
+				// inputs within their actor must be enlarged 
+				result.value.filter[!(it.originallyMergeable && it.matchTable.values.flatten.forall[
+					it.remoteBuffer.originallyMergeable
+				])].
+				forEach [ buffer |
+						// Enlarge the buffer 
+						// New range mergeability is automatically handled by 
+						// setMinIndex(int)
+						enlargeForAlignment(buffer)
+				]
+			]
+		}
+
 		// Identify matches types
 		scriptResults.forEach[vertex, result|identifyMatchesType(result)]
 
@@ -388,6 +405,30 @@ class ScriptRunner {
 
 		// Identify groups of chained buffers from the scripts and dag
 		val groups = groupVertices()
+		
+		// Update input buffers on the group border for alignment
+		if (_alignment > 0) {
+			// For each group
+			groups.forEach[ group |
+				// For each vertex of the group
+				group.forEach[ dagVertex |
+					// For each incoming edge of this vertex
+					dagVertex.incomingEdges.forEach[ edge |
+						// If the edge producer is not part of the group
+						if(!group.contains(edge.source)){
+							// Retrieve the corresponding buffer.
+							scriptResults.get(dagVertex).key.filter[ buffer |
+								buffer.sdfEdge.source.name == edge.source.name
+							].forEach[
+								it.enlargeForAlignment
+							]
+						}
+					]
+						
+					
+				]
+			]
+		}
 
 		// Process the groups one by one
 		sizeBefore = sizeAfter = nbBuffersBefore = nbBuffersAfter = 0
@@ -399,6 +440,35 @@ class ScriptRunner {
 			println(
 				'''Identified «groups.size» groups. From «nbBuffersBefore» to «nbBuffersAfter» buffers.''' + "\n" + ''' Saving «sizeBefore»-«sizeAfter»=«sizeBefore -
 					sizeAfter» («(sizeBefore - sizeAfter as float) / sizeBefore»%).''')
+	}
+	
+	def enlargeForAlignment(Buffer buffer) {
+		if(printTodo){  
+			println('''Alignment minus one is probably sufficient''')
+		}
+		val oldMinIndex = buffer.minIndex
+		if (oldMinIndex == 0 || (oldMinIndex) % alignment != 0) {
+			buffer.minIndex = ((oldMinIndex / _alignment) - 1) * _alignment 
+		
+			// New range is indivisible with end of buffer
+			buffer.indivisibleRanges.lazyUnion(new Range(buffer.minIndex, oldMinIndex + 1))
+		}
+		
+		val oldMaxIndex = buffer.maxIndex
+		if (oldMaxIndex == buffer.nbTokens*buffer.tokenSize || (oldMaxIndex) % alignment != 0) {
+			buffer.maxIndex = ((oldMaxIndex / _alignment) + 1) * _alignment 
+		
+			// New range is indivisible with end of buffer
+			buffer.indivisibleRanges.lazyUnion(new Range(oldMaxIndex - 1, buffer.maxIndex))
+		}
+		
+		// Update matches of the buffer
+		// Since the updateMatches update the remote buffer matchTable of a match
+		// except the given match, we create a fake match with the current 
+		// buffer as a remote buffer
+		val fakeMatch = new Match(null,0,buffer,0,0)
+		updateMatches(fakeMatch)		
+		updateConflictingMatches(buffer.matchTable.values.flatten.toList)
 	}
 
 	/**
@@ -1479,7 +1549,6 @@ class ScriptRunner {
 			}
 
 			// For each matched buffers
-			val bufferAndRoots = newHashMap
 			for (buffer : buffers.filter[it.matched != null]) {
 
 				// find the root buffer(s)
@@ -1492,27 +1561,7 @@ class ScriptRunner {
 					rootBuffers.putAll(match.root)
 				}
 
-				// If the buffer respects the alignment constraint
-				if (_alignment <= 0 ||
-					// unless authorized 
-				buffer.unaligned ||
-					// Unless the buffer is divided 
-				rootBuffers.size > 1 ||
-					// Check the alignment
-					(rootBuffers.values.forall[it.value.start % _alignment == 0])) {
-
-					// OK
-					bufferAndRoots.put(buffer, rootBuffers)
-				} else {
-					println("No respect for " + buffer)
-				}
-			}
-			
-			
-
-			for (buffer : buffers.filter[it.matched != null]) {
 				val mObj = bufferAndMObjectMap.get(buffer)
-				val rootBuffers = bufferAndRoots.get(buffer)
 
 				// For buffer receiving a part of the current buffer
 				for (rootBuffer : rootBuffers.values.map[it.key]) {

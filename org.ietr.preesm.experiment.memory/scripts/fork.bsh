@@ -4,7 +4,5 @@ inIdx = 0;
 for(output : outputs){
 	outSize = output.getNbTokens();
 	inputs.get(0).matchWith(inIdx,output,0,outSize);
-	// Authorize the output buffer to be unaligned
-	output.setUnaligned(true);
 	inIdx +=  outSize;
 }

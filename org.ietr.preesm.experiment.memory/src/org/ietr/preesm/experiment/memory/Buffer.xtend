@@ -247,14 +247,6 @@ class Buffer {
 	List<Range> indivisibleRanges
 	
 	/**
-	 * If this attribute is set to true, by the producing actor,
-	 * the buffer will be allowed not to be aligned. If the consuming
-	 * actor's script set an input buffer has unaligned, this has no effect.
-	 */
-	@Property
-	var boolean unaligned
-
-	/**
 	 * This {@link List} contains all {@link Match} that must be applied
 	 * to authorize the division of a {@link Buffer}. 
 	 * The {@link List} contains {@link List} of {@link Match}. To authorize
@@ -291,7 +283,6 @@ class Buffer {
     * 	The size of one token of the buffer.
     */
 	new(SDFEdge edge, DAGVertex dagVertex, String name, int nbTokens, int tokenSize, boolean mergeable) {
-		_unaligned = false
 		_sdfEdge = edge
 		_name = name
 		_nbTokens = nbTokens
@@ -314,7 +305,7 @@ class Buffer {
 		dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex) as SDFAbstractVertex
 	}
 
-	private def setMaxIndex(int newValue) {
+	package def setMaxIndex(int newValue) {
 
 		// if the buffer was originally mergeable
 		if (this.originallyMergeable) {
@@ -325,7 +316,7 @@ class Buffer {
 		_maxIndex = newValue
 	}
 
-	private def setMinIndex(int newValue) {
+	package def setMinIndex(int newValue) {
 
 		// if the buffer was originally mergeable
 		if (this.originallyMergeable) {
@@ -770,7 +761,7 @@ class Buffer {
 		]
 	}
 
-	def updateMatches(Match match) {
+	static def updateMatches(Match match) {
 
 		// 1- For all matches of the remote buffer (old and newly added)
 		// 1.1- If the match (local and remote) ranges falls within 
@@ -804,12 +795,12 @@ class Buffer {
 			modifiedMatch.reciprocate.length = newRange.length
 			// If the match must be moved
 			val originalIndex = modifiedMatch.localIndex
-			val originaRemotelIndex = modifiedMatch.remoteIndex
+			val originalRemoteIndex = modifiedMatch.remoteIndex
 			if (newRange.start != originalIndex) {
 
 				// Move the local match
 				modifiedMatch.localIndex = newRange.start
-				modifiedMatch.remoteIndex = originaRemotelIndex + newRange.start - originalIndex
+				modifiedMatch.remoteIndex = originalRemoteIndex + newRange.start - originalIndex
 				modifiedMatch.localBuffer.matchTable.get(originalIndex).remove(modifiedMatch)
 				val localList = modifiedMatch.localBuffer.matchTable.get(newRange.start) ?: {
 					val newList = newArrayList
@@ -817,17 +808,26 @@ class Buffer {
 					newList
 				}
 				localList.add(modifiedMatch)
+				// Remove the old list if it is empty
+				if(modifiedMatch.localBuffer.matchTable.get(originalIndex).empty){
+					modifiedMatch.localBuffer.matchTable.remove(originalIndex)
+				}
 
 				// Move the remote match  
 				modifiedMatch.reciprocate.localIndex = modifiedMatch.remoteIndex
 				modifiedMatch.reciprocate.remoteIndex = modifiedMatch.localIndex
-				modifiedMatch.remoteBuffer.matchTable.get(originaRemotelIndex).remove(modifiedMatch.reciprocate)
+				modifiedMatch.remoteBuffer.matchTable.get(originalRemoteIndex).remove(modifiedMatch.reciprocate)
 				val remoteList = modifiedMatch.remoteBuffer.matchTable.get(modifiedMatch.remoteIndex) ?: {
 					val newList = newArrayList
 					modifiedMatch.remoteBuffer.matchTable.put(modifiedMatch.remoteIndex, newList)
 					newList
 				}
 				remoteList.add(modifiedMatch.reciprocate)
+				// Remove the old list if it is empty
+				if(modifiedMatch.remoteBuffer.matchTable.get(originalRemoteIndex).empty){
+					modifiedMatch.remoteBuffer.matchTable.remove(originalRemoteIndex)
+				}
+				
 			}
 		]
 
@@ -935,7 +935,7 @@ class Buffer {
 			//println('''Redundant «redundantMatches.map[matches.get(it)]»''')
 			val removedMatches = new ArrayList(redundantMatches.map[matches.get(it)].toList)
 			removedMatches.forEach [
-				it.unmatch
+				unmatch(it)
 			]
 		}
 	}
@@ -1154,7 +1154,7 @@ class Buffer {
 	 * {@link Match#equals(Object) equals} which would result in removing the 
 	 * wrong match.
 	 */
-	def unmatch(Match match) {
+	static def unmatch(Match match) {
 		val it = match
 
 		// Local unmatch
