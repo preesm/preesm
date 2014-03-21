@@ -65,6 +65,18 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 * object is stored in memory.
 	 */
 	public static final String MEMORY_OFFSET_PROPERTY = "memory_offset";
+	
+	/**
+	 * Property of the {@link MemoryExclusionVertex}. The object associated to
+	 * this property is:<br>
+	 * <code>
+	 * List&lt;Pair&lt;MemoryExclusionVertex,Pair&lt;Range,Range&gt;&gt;</code><br>
+	 * This {@link List} stores {@link Pair} of {@link MemoryExclusionVertex}
+	 * and {@link Pair}. Each {@link Pair} corresponds to a {@link Range} of
+	 * real tokens of the memory object and their position in the actual
+	 * {@link MemoryExclusionVertex} (i.e. the key of the first {@link Pair}).
+	 */
+	public static final String REAL_TOKEN_RANGE_PROPERTY = "real_token_range";
 
 	/**
 	 * This Map is used as a reference of dataTypes size when creating an vertex

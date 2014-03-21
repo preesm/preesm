@@ -103,6 +103,20 @@ public class MemoryExclusionGraph extends
 	public static final String WORKING_MEM_ALLOCATION = "working_mem_allocation";
 
 	public static final String SOURCE_DAG = "source_dag";
+	
+	/**
+	 * Property to store the merged memory objects resulting from the script
+	 * processing. The stored object is a:<br>
+	 * <code> 
+	 * Map&lt;MemoryExclusionVertex,Set&ltMemoryExclusionVertex&gt;&gt;
+	 * </code><br>
+	 * <br>
+	 * This {@link Map} associates of {@link MemoryExclusionVertex} that contain
+	 * merged {@link MemoryExclusionVertex} to the {@link Set} of contained
+	 * {@link MemoryExclusionVertex}
+	 * 
+	 */
+	public static final String HOST_MEMORY_OBJECT_PROPERTY = "host_memory_objects";
 
 	/**
 	 * Property to store an {@link Integer} corresponding to the amount of
