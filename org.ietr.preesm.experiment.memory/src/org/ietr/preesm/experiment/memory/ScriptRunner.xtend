@@ -45,7 +45,7 @@ enum CheckPolicy {
 }
 
 class ScriptRunner {
-
+	
 	/**
 	 * Helper method to get the incoming {@link SDFEdge}s of an {@link 
 	 * SDFAbstractVertex}.
@@ -1495,6 +1495,10 @@ class ScriptRunner {
 	}
 
 	def updateMEG(MemoryExclusionGraph meg) {
+		
+		// Create a new property in the MEG to store the merged memory objects
+		val mergedMObjects = newHashMap		
+		meg.propertyBean.setValue(MemoryExclusionGraph::MERGED_MEMORY_OBJECT_PROPERTY, mergedMObjects)
 
 		// Process each group of buffers separately
 		for (buffers : bufferGroups) {
@@ -1562,11 +1566,11 @@ class ScriptRunner {
 				}
 
 				val mObj = bufferAndMObjectMap.get(buffer)
-
+				
 				// For buffer receiving a part of the current buffer
 				for (rootBuffer : rootBuffers.values.map[it.key]) {
 					val rootMObj = bufferAndMObjectMap.get(rootBuffer)
-
+					
 					// Add exclusions between the rootMobj and all adjacent
 					// memory objects of MObj
 					for (excludingMObj : meg.getAdjacentVertexOf(mObj)) {
@@ -1577,6 +1581,15 @@ class ScriptRunner {
 				}
 
 				meg.removeVertex(mObj)
+				
+				// Fill the meg properties (i.e. save the matched buffer info)
+				// Same as rootBuffers with MObj instead of buffer
+				val Map<Range, Pair<MemoryExclusionVertex, Range>> rootMobjects = newHashMap
+				rootBuffers.entrySet.forEach[ entry |
+					val rootMObj = bufferAndMObjectMap.get(entry.value.key)
+					rootMobjects.put(entry.key,rootMObj->entry.value.value)
+				]
+				mergedMObjects.put(mObj, rootMobjects)
 			}
 		}
 	}
