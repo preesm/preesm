@@ -32,11 +32,11 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex
 import org.ietr.dftools.workflow.WorkflowException
 import org.ietr.dftools.workflow.tools.WorkflowLogger
 import org.ietr.preesm.core.types.DataType
-import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex
 
 import static extension org.ietr.preesm.experiment.memory.Buffer.*
 import static extension org.ietr.preesm.experiment.memory.Range.*
+import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
 
 enum CheckPolicy {
 	NONE,
@@ -1498,7 +1498,7 @@ class ScriptRunner {
 		
 		// Create a new property in the MEG to store the merged memory objects
 		val mergedMObjects = newHashMap		
-		meg.propertyBean.setValue(MemoryExclusionGraph::MERGED_MEMORY_OBJECT_PROPERTY, mergedMObjects)
+		meg.propertyBean.setValue(MemoryExclusionGraph::HOST_MEMORY_OBJECT_PROPERTY, mergedMObjects)
 
 		// Process each group of buffers separately
 		for (buffers : bufferGroups) {
@@ -1539,7 +1539,7 @@ class ScriptRunner {
 			// For each unmatched buffer that received matched buffers
 			// (unmatched buffers that did not receive matched buffer
 			// can be left untouched in the MEG)
-			for (buffer : buffers.filter[it.matched == null && !it.host]) {
+			for (buffer : buffers.filter[it.matched == null && it.host]) {
 
 				// Enlarge the corresponding mObject to the required size
 				val mObj = bufferAndMObjectMap.get(buffer)
@@ -1552,6 +1552,16 @@ class ScriptRunner {
 						((buffer.minIndex / _alignment) - 1) * _alignment
 					}
 				mObj.setWeight(buffer.maxIndex - minIndex)
+				
+				// Add the mobj to the meg host list
+				mergedMObjects.put(mObj,newHashSet)				
+				
+				// Save the real token range in the Mobj properties
+				val realTokenRange = new Range(0,buffer.tokenSize*buffer.nbTokens)
+				val actualRealTokenRange = new Range(-minIndex, buffer.tokenSize*buffer.nbTokens - minIndex)
+				val ranges = newArrayList
+				ranges.add(mObj -> (realTokenRange ->actualRealTokenRange))
+				mObj.setPropertyValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, ranges) 
 			}
 
 			// For each matched buffers
@@ -1573,6 +1583,9 @@ class ScriptRunner {
 				for (rootBuffer : rootBuffers.values.map[it.key]) {
 					val rootMObj = bufferAndMObjectMap.get(rootBuffer)
 					
+					// Update the meg hostList property
+					mergedMObjects.get(rootMObj).add(mObj)
+					
 					// Add exclusions between the rootMobj and all adjacent
 					// memory objects of MObj
 					for (excludingMObj : meg.getAdjacentVertexOf(mObj)) {
@@ -1581,17 +1594,21 @@ class ScriptRunner {
 						}
 					}
 				}
-
 				meg.removeVertex(mObj)
 				
-				// Fill the meg properties (i.e. save the matched buffer info)
-				// Same as rootBuffers with MObj instead of buffer
-				val Map<Range, Pair<MemoryExclusionVertex, Range>> rootMobjects = newHashMap
+				// Fill the mobj properties (i.e. save the matched buffer info)	
+				val List<Pair<MemoryExclusionVertex,Pair<Range,Range>>> mObjRoots = newArrayList
+				mObj.setPropertyValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, mObjRoots)
+				val realTokenRange = new Range(0,buffer.tokenSize*buffer.nbTokens)
 				rootBuffers.entrySet.forEach[ entry |
 					val rootMObj = bufferAndMObjectMap.get(entry.value.key)
-					rootMobjects.put(entry.key,rootMObj->entry.value.value)
+					val localRange = entry.key.intersection(realTokenRange)
+					val translatedLocalRange = localRange.clone as Range
+					translatedLocalRange.translate(entry.value.value.start - entry.key.start)
+					val remoteRange = entry.value.value.intersection(translatedLocalRange)
+					mObjRoots.add(rootMObj -> (localRange -> remoteRange))
 				]
-				mergedMObjects.put(mObj, rootMobjects)
+				
 			}
 		}
 	}
