@@ -221,6 +221,13 @@ class Buffer {
 	 */
 	@Property
 	var List<Match> matched = null
+	
+	/**
+	 * This property is set to <code>true</code> if a remote {@link Buffer} was merged
+	 * within the current {@link Buffer}
+	 */
+	@Property
+	var boolean host = false
 
 	@Property
 	final String name
@@ -613,8 +620,8 @@ class Buffer {
 
 		for (match : matchesCopy) {
 
-			// Temp version with unique match for a complete buffer <= not true anymore
 			appliedMatches.put(match.localIndivisibleRange, match.remoteBuffer -> match.remoteIndex)
+			match.remoteBuffer.host = true;
 
 			// Fill the forbiddenLocalRanges of conflictCandidates and conflictingMatches 
 			// of the applied match

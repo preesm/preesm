@@ -1536,8 +1536,10 @@ class ScriptRunner {
 				bufferAndMObjectMap.put(buffer, mObj)
 			}
 
-			// For each unmatched buffer
-			for (buffer : buffers.filter[it.matched == null]) {
+			// For each unmatched buffer that received matched buffers
+			// (unmatched buffers that did not receive matched buffer
+			// can be left untouched in the MEG)
+			for (buffer : buffers.filter[it.matched == null && !it.host]) {
 
 				// Enlarge the corresponding mObject to the required size
 				val mObj = bufferAndMObjectMap.get(buffer)
