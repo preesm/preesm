@@ -45,6 +45,8 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType;
 
 /**
@@ -170,9 +172,10 @@ public class JoinForkCleaner {
 					+ oldOutgoing.getDelay().intValue()
 					+ edge.getDelay().intValue();
 			// Create a new edge between the vertices
-			graph.addEdge(newSource, newTarget, newProdCons, newProdCons,
+			SDFEdge newEdge = graph.addEdge(newSource, newTarget, newProdCons, newProdCons,
 					new SDFIntEdgePropertyType(newDelay));
-
+			newEdge.setSourceInterface(oldIncoming.getSourceInterface());
+			newEdge.setTargetInterface(oldOutgoing.getTargetInterface());
 		}
 	}
 
@@ -206,8 +209,15 @@ public class JoinForkCleaner {
 				SDFEdge edgeToReconnect = target.getOutgoingConnections().get(
 						i * nbJoinEdges + j);
 				SDFAbstractVertex newTarget = edgeToReconnect.getTarget();
-				graph.addEdge(newFork, newTarget, edgeToReconnect.getProd(),
+				SDFEdge newEdge = graph.addEdge(newFork, newTarget, edgeToReconnect.getProd(),
 						edgeToReconnect.getCons(), edgeToReconnect.getDelay());
+				// Set ports for the newEdge
+				newEdge.setTargetInterface(edgeToReconnect.getTargetInterface());
+				SDFSourceInterfaceVertex srcPort = new SDFSourceInterfaceVertex();
+				srcPort.setName("out_" + newFork.getSources().size());
+				newFork.getSources().add(srcPort);
+				newEdge.setSourceInterface(srcPort);
+				
 				edgesToRemove.add(edgeToReconnect);
 			}
 
@@ -226,9 +236,14 @@ public class JoinForkCleaner {
 			int newDelay = oldIncoming.getDelay().intValue()
 					+ edge.getDelay().intValue();
 			// Create a new edge between the vertices
-			graph.addEdge(newSource, newFork, newProdCons, newProdCons,
+			SDFEdge newEdge = graph.addEdge(newSource, newFork, newProdCons, newProdCons,
 					new SDFIntEdgePropertyType(newDelay));
-
+			newEdge.setSourceInterface(oldIncoming.getSourceInterface());
+			// Set ports for the newEdge
+			SDFSinkInterfaceVertex tgtPort = new SDFSinkInterfaceVertex();
+			tgtPort.setName("in_" + newFork.getSinks().size());
+			newFork.getSinks().add(tgtPort);
+			newEdge.setTargetInterface(tgtPort);
 		}
 	}
 
@@ -262,8 +277,15 @@ public class JoinForkCleaner {
 				SDFEdge edgeToReconnect = source.getIncomingConnections().get(
 						i * nbForkEdges + j);
 				SDFAbstractVertex newSource = edgeToReconnect.getSource();
-				graph.addEdge(newSource, newJoin, edgeToReconnect.getProd(),
+				SDFEdge newEdge = graph.addEdge(newSource, newJoin, edgeToReconnect.getProd(),
 						edgeToReconnect.getCons(), edgeToReconnect.getDelay());
+				// Set ports for the newEdge
+				newEdge.setSourceInterface(edgeToReconnect.getSourceInterface());
+				SDFSinkInterfaceVertex tgtPort = new SDFSinkInterfaceVertex();
+				tgtPort.setName("in_" + newJoin.getSinks().size());
+				newJoin.getSinks().add(tgtPort);
+				newEdge.setTargetInterface(tgtPort);
+				
 				edgesToRemove.add(edgeToReconnect);
 			}
 
@@ -282,9 +304,14 @@ public class JoinForkCleaner {
 			int newDelay = oldOutgoing.getDelay().intValue()
 					+ edge.getDelay().intValue();
 			// Create a new edge between the vertices
-			graph.addEdge(newJoin, newTarget, newProdCons, newProdCons,
+			SDFEdge newEdge = graph.addEdge(newJoin, newTarget, newProdCons, newProdCons,
 					new SDFIntEdgePropertyType(newDelay));
-
+			newEdge.setTargetInterface(oldOutgoing.getTargetInterface());
+			// Set ports for the newEdge
+			SDFSourceInterfaceVertex srcPort = new SDFSourceInterfaceVertex();
+			srcPort.setName("out_" + newJoin.getSources().size());
+			newJoin.getSources().add(srcPort);
+			newEdge.setSourceInterface(srcPort);
 		}
 
 	}
