@@ -231,6 +231,9 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 * Neither the weight nor the explodeImplode attributes of the vertices are
 	 * taken into account to test the equality.
 	 * 
+	 * Do not change the way the comparison is done since several other 
+	 * classes relate on it, like ScriptRunner#updateMEG method.
+	 * 
 	 * @param o
 	 *            the object to compare.
 	 * @return true if the object is a similar vertex, false else.
@@ -238,9 +241,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	public boolean equals(Object o) {
 		if (o instanceof MemoryExclusionVertex) {
 			return (this.source.equals(((MemoryExclusionVertex) o).source) && this.sink
-					.equals(((MemoryExclusionVertex) o).sink)); // &&
-																// this.explodeImplode
-			// .equals(((MemoryExclusionVertex) o).explodeImplode));
+					.equals(((MemoryExclusionVertex) o).sink)); 
 		} else {
 			return false;
 		}

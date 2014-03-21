@@ -208,6 +208,18 @@ public class MemoryExclusionGraph extends
 		return newNode;
 	}
 
+	@Override
+	public DefaultEdge addEdge(MemoryExclusionVertex arg0,
+			MemoryExclusionVertex arg1) {
+		Set<MemoryExclusionVertex> set0 = adjacentVerticesBackup.get(arg0);
+		if (set0 != null)
+			set0.add(arg1);
+		Set<MemoryExclusionVertex> set1 = adjacentVerticesBackup.get(arg1);
+		if (set1 != null)
+			set1.add(arg0);
+		return super.addEdge(arg0, arg1);
+	};
+
 	/**
 	 * Method to build the graph based on a DirectedAcyclicGraph
 	 * 
