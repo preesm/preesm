@@ -58,6 +58,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.Block
 import java.util.Map
 import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
+import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
 
 enum PrinterState {
 	PRINTING_DEFINITIONS,
@@ -449,6 +450,16 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 		result.add(printLoopBlockFooter(loopBlock))
 
 		result.join('')
+	}
+	
+	override caseNullBuffer(NullBuffer nullBuffer) {
+		if (state.equals(PrinterState::PRINTING_DEFINITIONS))
+			return printNullBufferDefinition(nullBuffer)
+
+		if (state.equals(PrinterState::PRINTING_DECLARATIONS))
+			return printNullBufferDeclaration(nullBuffer)
+
+		return printNullBuffer(nullBuffer)
 	}
 
 	override caseSemaphore(Semaphore semaphore) {
@@ -868,6 +879,40 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * @return the printed {@link CharSequence}
 	 */
 	def CharSequence printLoopBlockHeader(LoopBlock block)
+	
+	/**
+	 * Method called to print a {@link NullBuffer} outside the
+	 * {@link CoreBlock#getDefinitions() definition} or the
+	 * {@link CoreBlock#getDeclarations() declaration} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param nullBuffer
+	 *            the {@link NullBuffer} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printNullBuffer(NullBuffer nullBuffer)
+
+	/**
+	 * Method called to print a {@link NullBuffer} within the
+	 * {@link CoreBlock#getDeclarations() declaration} {@link CallBlock} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param nullBuffer
+	 *            the {@link NullBuffer} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printNullBufferDeclaration(NullBuffer nullBuffer)
+
+	/**
+	 * Method called to print a {@link NullBuffer} within the
+	 * {@link CoreBlock#getDefinitions() definition} {@link CallBlock} of a
+	 * {@link CoreBlock}
+	 * 
+	 * @param nullBuffer
+	 *            the {@link NullBuffer} to print.
+	 * @return the printed {@link CharSequence}
+	 */
+	def CharSequence printNullBufferDefinition(NullBuffer nullBuffer)
 
 	/**
 	 * Method called to print a {@link SpecialCall} with
