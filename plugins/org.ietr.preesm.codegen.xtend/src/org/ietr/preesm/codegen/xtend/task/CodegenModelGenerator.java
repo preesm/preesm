@@ -57,8 +57,8 @@ import org.ietr.dftools.algorithm.iterators.DAGIterator;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
 import org.ietr.dftools.algorithm.model.CodeRefinement;
-import org.ietr.dftools.algorithm.model.IInterface;
 import org.ietr.dftools.algorithm.model.CodeRefinement.Language;
+import org.ietr.dftools.algorithm.model.IInterface;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
@@ -117,6 +117,7 @@ import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
+import org.ietr.preesm.experiment.memory.Range;
 import org.ietr.preesm.memory.allocation.MemoryAllocator;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
@@ -530,12 +531,16 @@ public class CodegenModelGenerator {
 	 *             If a vertex has an unknown {@link DAGVertex#getKind() Kind}.
 	 */
 	public Set<Block> generate() throws CodegenException {
+		// -1- Add all hosted MemoryObject back in te MemEx
 		// 0 - Create the Buffers of the MemEx
 
 		// 1 - Iterate on the actors of the DAG
 		// 1.0 - Identify the core used.
 		// 1.1 - Construct the "loop" & "init" of each core.
 		// 2 - Put the buffer declaration in their right place
+
+		// -1 - Add all hosted MemoryObject back in te MemEx
+		restoreHostedVertices();
 
 		// 0 - Create the Buffers of the MemEx
 		generateBuffers();
@@ -639,6 +644,51 @@ public class CodegenModelGenerator {
 		generateBufferDefinitions();
 
 		return new HashSet<Block>(coreBlocks.values());
+	}
+
+	/**
+	 * 
+	 */
+	protected void restoreHostedVertices() {
+		@SuppressWarnings("unchecked")
+		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostBuffers = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) memEx
+				.getPropertyBean().getValue(
+						MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+		for (Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry : hostBuffers
+				.entrySet()) {
+			MemoryExclusionVertex hostVertex = entry.getKey();
+			Set<MemoryExclusionVertex> vertices = entry.getValue();
+
+			// Add the hosted vertices back to the MEG
+			// Their allocation was taken care of in the MemoryAllocator
+			for (MemoryExclusionVertex vertex : vertices) {
+				memEx.addVertex(vertex);
+			}
+
+			// Put the hostVertex back to its real size
+			@SuppressWarnings("unchecked")
+			List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realHostRange = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) hostVertex
+					.getPropertyBean().getValue(
+							MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+			// Since host buffer are not divided, there is a unique range in the
+			// list
+			hostVertex.setWeight(realHostRange.get(0).getValue().getKey()
+					.getLength());
+			// Put it at the correct offset
+			Integer groupOffset = (Integer) hostVertex.getPropertyBean()
+					.getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
+			int realOffset = groupOffset + realHostRange.get(0).getValue().getValue()
+					.getStart()
+					- realHostRange.get(0).getValue().getKey().getStart();
+			// In the vertex property
+			hostVertex.setPropertyValue(
+					MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, realOffset);
+			
+			// In the MEG Properties
+			@SuppressWarnings("unchecked")
+			Map<DAGEdge, Integer> dagEdgeAllocation = (Map<DAGEdge, Integer>) memEx.getPropertyBean().getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
+			dagEdgeAllocation.put(hostVertex.getEdge(), realOffset);
+		}
 	}
 
 	/**
@@ -947,7 +997,6 @@ public class CodegenModelGenerator {
 	 *             {@link Prototype}</li>
 	 *             </ul>
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected Entry<List<Variable>, List<PortDirection>> generateCallVariables(
 			DAGVertex dagVertex, Prototype prototype, boolean isInit)
 			throws CodegenException {
@@ -1122,7 +1171,8 @@ public class CodegenModelGenerator {
 
 			// // Retrieve the variable from its context (i.e. from its original
 			// // (sub)graph)
-			// org.ietr.dftools.algorithm.model.parameters.Variable originalVar =
+			// org.ietr.dftools.algorithm.model.parameters.Variable originalVar
+			// =
 			// originalSDF
 			// .getHierarchicalVertexFromPath(sdfVertex.getInfo())
 			// .getBase().getVariables().getVariable(actorParam.getName());
@@ -1135,9 +1185,9 @@ public class CodegenModelGenerator {
 			// }
 		}
 
-		return new AbstractMap.SimpleEntry(new ArrayList<Variable>(
-				variableList.values()), new ArrayList<PortDirection>(
-				directionList.values()));
+		return new AbstractMap.SimpleEntry<List<Variable>, List<PortDirection>>(
+				new ArrayList<Variable>(variableList.values()),
+				new ArrayList<PortDirection>(directionList.values()));
 	}
 
 	/**
