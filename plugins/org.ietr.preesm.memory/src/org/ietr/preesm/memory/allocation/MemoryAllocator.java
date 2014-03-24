@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.ietr.dftools.algorithm.model.PropertyBean;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
@@ -51,6 +52,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
+import org.ietr.preesm.experiment.memory.Range;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.jgrapht.graph.DefaultEdge;
@@ -399,7 +401,7 @@ public abstract class MemoryAllocator {
 						MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
 		if (hostMap != null && hostMap.containsKey(vertex)) {
 			allocateHostMemoryObject(vertex,
-					(Set<MemoryExclusionVertex>) hostMap.get(vertex));
+					(Set<MemoryExclusionVertex>) hostMap.get(vertex), offset);
 		}
 	}
 
@@ -407,7 +409,7 @@ public abstract class MemoryAllocator {
 	 * Special processing for {@link MemoryExclusionVertex memory objects}
 	 * resulting from memory script merges.
 	 * 
-	 * @param vertex
+	 * @param hostVertex
 	 *            the "host" {@link MemoryExclusionVertex}, i.e. the
 	 *            {@link MemoryExclusionVertex} that "contains" several other
 	 *            {@link MemoryExclusionVertex memory objects} from the original
@@ -416,17 +418,53 @@ public abstract class MemoryAllocator {
 	 * @param vertices
 	 *            the {@link Set} of {@link MemoryExclusionVertex} contained in
 	 *            the "host".
+	 * @param offset
+	 *            the offset of the hostVertex
 	 */
-	protected void allocateHostMemoryObject(MemoryExclusionVertex vertex,
-			Set<MemoryExclusionVertex> vertices) {
+	protected void allocateHostMemoryObject(MemoryExclusionVertex hostVertex,
+			Set<MemoryExclusionVertex> vertices, int offset) {
 		// TODO Replace the big host MemObject with its "content"
 		// - Remove the host memObject from the Memex
-		// - Add back all memory objects to the MemEx
 		// - Put back old exclusions between MObjects (before they were removed
 		// from the graph)
 		// - Special processing for vertices that were splitted => needs to
 		// create several MObj for them
+		
+		// For each vertex of the group
+		for (MemoryExclusionVertex vertex : vertices) {
+			
+			// Cannot put the vertex back in the MEG because most allocators 
+			// iterate on the vertices of the graph. (And it's forbidden to
+			// modify a list while iterating on it)
 
+			// Get its offset within the host vertex
+			@SuppressWarnings("unchecked")
+			List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realTokenRange = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) vertex
+					.getPropertyBean().getValue(
+							MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+
+			// If the Mobject is not splitted
+			if (realTokenRange.size() != 1) {
+				int startOffset =  realTokenRange.get(0).getValue().getValue().getStart();
+				
+				// Allocate it at the right place
+				memExNodeAllocation.put(vertex, offset + startOffset);
+				edgeAllocation.put(vertex.getEdge(), offset + startOffset);
+				vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
+						offset + startOffset);
+			} else {
+				// If the Mobject is splitted
+				// Null buffer since the memory of this MObj is no longer 
+				// contiguous				
+				vertex.setWeight(0);
+				// Allocate it at index -1
+				memExNodeAllocation.put(vertex, -1);
+				edgeAllocation.put(vertex.getEdge(), -1);
+				vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
+						-1);
+				
+			}
+		}
 	}
 
 	/**

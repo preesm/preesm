@@ -9,7 +9,10 @@ Require-Bundle: org.eclipse.core.runtime,
  org.jgrapht,
  org.ietr.dftools.architecture;bundle-version="0.0.1",
  org.ietr.dftools.algorithm;bundle-version="0.0.1",
- org.ietr.preesm.algorithm;bundle-version="0.6.3"
+ org.ietr.preesm.algorithm;bundle-version="0.6.3",
+ org.eclipse.xtext.util,
+ org.ietr.preesm.experiment.memory;bundle-version="1.0.0",
+ org.eclipse.xtext.xbase.lib
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: IETR/INSA Rennes
