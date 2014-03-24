@@ -124,6 +124,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 			return createSharedMemoryCommunication();
 		case CodegenPackage.CONSTANT_STRING:
 			return createConstantString();
+		case CodegenPackage.NULL_BUFFER:
+			return createNullBuffer();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName()
 					+ "' is not a valid classifier");
@@ -346,6 +348,16 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	public ConstantString createConstantString() {
 		ConstantStringImpl constantString = new ConstantStringImpl();
 		return constantString;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public NullBuffer createNullBuffer() {
+		NullBufferImpl nullBuffer = new NullBufferImpl();
+		return nullBuffer;
 	}
 
 	/**

@@ -1657,6 +1657,90 @@ public interface CodegenPackage extends EPackage {
 
 	/**
 	 * The meta object id for the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.NullBufferImpl
+	 * <em>Null Buffer</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.NullBufferImpl
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getNullBuffer()
+	 * @generated
+	 */
+	int NULL_BUFFER = 21;
+
+	/**
+	 * The feature id for the '<em><b>Comment</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__COMMENT = BUFFER__COMMENT;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__NAME = BUFFER__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__TYPE = BUFFER__TYPE;
+
+	/**
+	 * The feature id for the '<em><b>Creator</b></em>' container reference.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__CREATOR = BUFFER__CREATOR;
+
+	/**
+	 * The feature id for the '<em><b>Users</b></em>' reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__USERS = BUFFER__USERS;
+
+	/**
+	 * The feature id for the '<em><b>Size</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__SIZE = BUFFER__SIZE;
+
+	/**
+	 * The feature id for the '<em><b>Childrens</b></em>' reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__CHILDRENS = BUFFER__CHILDRENS;
+
+	/**
+	 * The number of structural features of the '<em>Null Buffer</em>' class.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER_FEATURE_COUNT = BUFFER_FEATURE_COUNT + 0;
+
+	/**
+	 * The meta object id for the '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Direction
 	 * <em>Direction</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -1664,7 +1748,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDirection()
 	 * @generated
 	 */
-	int DIRECTION = 21;
+	int DIRECTION = 22;
 
 	/**
 	 * The meta object id for the '
@@ -1675,7 +1759,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDelimiter()
 	 * @generated
 	 */
-	int DELIMITER = 22;
+	int DELIMITER = 23;
 
 	/**
 	 * The meta object id for the '
@@ -1687,7 +1771,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getSpecialType()
 	 * @generated
 	 */
-	int SPECIAL_TYPE = 23;
+	int SPECIAL_TYPE = 24;
 
 	/**
 	 * The meta object id for the '
@@ -1699,7 +1783,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getFifoOperation()
 	 * @generated
 	 */
-	int FIFO_OPERATION = 24;
+	int FIFO_OPERATION = 25;
 
 	/**
 	 * The meta object id for the '
@@ -1711,7 +1795,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getPortDirection()
 	 * @generated
 	 */
-	int PORT_DIRECTION = 25;
+	int PORT_DIRECTION = 26;
 
 	/**
 	 * Returns the meta object for class '
@@ -2516,6 +2600,17 @@ public interface CodegenPackage extends EPackage {
 	EAttribute getConstantString_Value();
 
 	/**
+	 * Returns the meta object for class '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
+	 * <em>Null Buffer</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for class '<em>Null Buffer</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
+	 * @generated
+	 */
+	EClass getNullBuffer();
+
+	/**
 	 * Returns the meta object for enum '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Direction
 	 * <em>Direction</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -3239,6 +3334,18 @@ public interface CodegenPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute CONSTANT_STRING__VALUE = eINSTANCE.getConstantString_Value();
+
+		/**
+		 * The meta object literal for the '
+		 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.NullBufferImpl
+		 * <em>Null Buffer</em>}' class. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.NullBufferImpl
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getNullBuffer()
+		 * @generated
+		 */
+		EClass NULL_BUFFER = eINSTANCE.getNullBuffer();
 
 		/**
 		 * The meta object literal for the '

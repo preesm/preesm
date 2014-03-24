@@ -48,22 +48,21 @@ import org.ietr.preesm.codegen.xtend.model.codegen.*;
  * <!-- begin-user-doc --> The <b>Adapter Factory</b> for the model. It provides
  * an adapter <code>createXXX</code> method for each class of the model. <!--
  * end-user-doc -->
- * 
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage
  * @generated
  */
 public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	/**
-	 * The cached model package. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached model package.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	protected static CodegenPackage modelPackage;
 
 	/**
-	 * Creates an instance of the adapter factory. <!-- begin-user-doc --> <!--
+	 * Creates an instance of the adapter factory.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public CodegenAdapterFactory() {
@@ -77,7 +76,6 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	 * <!-- begin-user-doc --> This implementation returns <code>true</code> if
 	 * the object is either the model's package or is an instance object of the
 	 * model. <!-- end-user-doc -->
-	 * 
 	 * @return whether this factory is applicable for the type of the object.
 	 * @generated
 	 */
@@ -87,7 +85,7 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 			return true;
 		}
 		if (object instanceof EObject) {
-			return ((EObject) object).eClass().getEPackage() == modelPackage;
+			return ((EObject)object).eClass().getEPackage() == modelPackage;
 		}
 		return false;
 	}
@@ -99,139 +97,118 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	protected CodegenSwitch<Adapter> modelSwitch = new CodegenSwitch<Adapter>() {
-		@Override
-		public Adapter caseBlock(Block object) {
-			return createBlockAdapter();
-		}
-
-		@Override
-		public Adapter caseCodeElt(CodeElt object) {
-			return createCodeEltAdapter();
-		}
-
-		@Override
-		public Adapter caseCall(Call object) {
-			return createCallAdapter();
-		}
-
-		@Override
-		public Adapter caseVariable(Variable object) {
-			return createVariableAdapter();
-		}
-
-		@Override
-		public Adapter caseBuffer(Buffer object) {
-			return createBufferAdapter();
-		}
-
-		@Override
-		public Adapter caseSubBuffer(SubBuffer object) {
-			return createSubBufferAdapter();
-		}
-
-		@Override
-		public Adapter caseConstant(Constant object) {
-			return createConstantAdapter();
-		}
-
-		@Override
-		public Adapter caseFunctionCall(FunctionCall object) {
-			return createFunctionCallAdapter();
-		}
-
-		@Override
-		public Adapter caseCommunication(Communication object) {
-			return createCommunicationAdapter();
-		}
-
-		@Override
-		public Adapter caseCoreBlock(CoreBlock object) {
-			return createCoreBlockAdapter();
-		}
-
-		@Override
-		public Adapter caseActorBlock(ActorBlock object) {
-			return createActorBlockAdapter();
-		}
-
-		@Override
-		public Adapter caseLoopBlock(LoopBlock object) {
-			return createLoopBlockAdapter();
-		}
-
-		@Override
-		public Adapter caseActorCall(ActorCall object) {
-			return createActorCallAdapter();
-		}
-
-		@Override
-		public Adapter caseCallBlock(CallBlock object) {
-			return createCallBlockAdapter();
-		}
-
-		@Override
-		public Adapter caseSpecialCall(SpecialCall object) {
-			return createSpecialCallAdapter();
-		}
-
-		@Override
-		public Adapter caseFifoCall(FifoCall object) {
-			return createFifoCallAdapter();
-		}
-
-		@Override
-		public Adapter caseCommentable(Commentable object) {
-			return createCommentableAdapter();
-		}
-
-		@Override
-		public Adapter caseCommunicationNode(CommunicationNode object) {
-			return createCommunicationNodeAdapter();
-		}
-
-		@Override
-		public Adapter caseSemaphore(Semaphore object) {
-			return createSemaphoreAdapter();
-		}
-
-		@Override
-		public Adapter caseSharedMemoryCommunication(
-				SharedMemoryCommunication object) {
-			return createSharedMemoryCommunicationAdapter();
-		}
-
-		@Override
-		public Adapter caseConstantString(ConstantString object) {
-			return createConstantStringAdapter();
-		}
-
-		@Override
-		public Adapter defaultCase(EObject object) {
-			return createEObjectAdapter();
-		}
-	};
+			@Override
+			public Adapter caseBlock(Block object) {
+				return createBlockAdapter();
+			}
+			@Override
+			public Adapter caseCodeElt(CodeElt object) {
+				return createCodeEltAdapter();
+			}
+			@Override
+			public Adapter caseCall(Call object) {
+				return createCallAdapter();
+			}
+			@Override
+			public Adapter caseVariable(Variable object) {
+				return createVariableAdapter();
+			}
+			@Override
+			public Adapter caseBuffer(Buffer object) {
+				return createBufferAdapter();
+			}
+			@Override
+			public Adapter caseSubBuffer(SubBuffer object) {
+				return createSubBufferAdapter();
+			}
+			@Override
+			public Adapter caseConstant(Constant object) {
+				return createConstantAdapter();
+			}
+			@Override
+			public Adapter caseFunctionCall(FunctionCall object) {
+				return createFunctionCallAdapter();
+			}
+			@Override
+			public Adapter caseCommunication(Communication object) {
+				return createCommunicationAdapter();
+			}
+			@Override
+			public Adapter caseCoreBlock(CoreBlock object) {
+				return createCoreBlockAdapter();
+			}
+			@Override
+			public Adapter caseActorBlock(ActorBlock object) {
+				return createActorBlockAdapter();
+			}
+			@Override
+			public Adapter caseLoopBlock(LoopBlock object) {
+				return createLoopBlockAdapter();
+			}
+			@Override
+			public Adapter caseActorCall(ActorCall object) {
+				return createActorCallAdapter();
+			}
+			@Override
+			public Adapter caseCallBlock(CallBlock object) {
+				return createCallBlockAdapter();
+			}
+			@Override
+			public Adapter caseSpecialCall(SpecialCall object) {
+				return createSpecialCallAdapter();
+			}
+			@Override
+			public Adapter caseFifoCall(FifoCall object) {
+				return createFifoCallAdapter();
+			}
+			@Override
+			public Adapter caseCommentable(Commentable object) {
+				return createCommentableAdapter();
+			}
+			@Override
+			public Adapter caseCommunicationNode(CommunicationNode object) {
+				return createCommunicationNodeAdapter();
+			}
+			@Override
+			public Adapter caseSemaphore(Semaphore object) {
+				return createSemaphoreAdapter();
+			}
+			@Override
+			public Adapter caseSharedMemoryCommunication(SharedMemoryCommunication object) {
+				return createSharedMemoryCommunicationAdapter();
+			}
+			@Override
+			public Adapter caseConstantString(ConstantString object) {
+				return createConstantStringAdapter();
+			}
+			@Override
+			public Adapter caseNullBuffer(NullBuffer object) {
+				return createNullBufferAdapter();
+			}
+			@Override
+			public Adapter defaultCase(EObject object) {
+				return createEObjectAdapter();
+			}
+		};
 
 	/**
-	 * Creates an adapter for the <code>target</code>. <!-- begin-user-doc -->
+	 * Creates an adapter for the <code>target</code>.
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * 
-	 * @param target
-	 *            the object to adapt.
+	 * @param target the object to adapt.
 	 * @return the adapter for the <code>target</code>.
 	 * @generated
 	 */
 	@Override
 	public Adapter createAdapter(Notifier target) {
-		return modelSwitch.doSwitch((EObject) target);
+		return modelSwitch.doSwitch((EObject)target);
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Block <em>Block</em>}
-	 * '. <!-- begin-user-doc --> This default implementation returns null so
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.Block <em>Block</em>}'.
+	 * <!-- begin-user-doc --> This default implementation returns null so
 	 * that we can easily ignore cases; it's useful to ignore a case when
 	 * inheritance will catch all the cases anyway. <!-- end-user-doc -->
-	 * 
 	 * @return the new adapter.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Block
 	 * @generated
@@ -257,12 +234,10 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Call <em>Call</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.Call <em>Call</em>}'.
 	 * <!-- begin-user-doc --> This default implementation returns null so that
 	 * we can easily ignore cases; it's useful to ignore a case when inheritance
 	 * will catch all the cases anyway. <!-- end-user-doc -->
-	 * 
 	 * @return the new adapter.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Call
 	 * @generated
@@ -304,13 +279,11 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
-	 * <em>Sub Buffer</em>}'. <!-- begin-user-doc --> This default
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer <em>Sub Buffer</em>}'.
+	 * <!-- begin-user-doc --> This default
 	 * implementation returns null so that we can easily ignore cases; it's
 	 * useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the new adapter.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 	 * @generated
@@ -336,13 +309,11 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
-	 * <em>Function Call</em>}'. <!-- begin-user-doc --> This default
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall <em>Function Call</em>}'.
+	 * <!-- begin-user-doc --> This default
 	 * implementation returns null so that we can easily ignore cases; it's
 	 * useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the new adapter.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
 	 * @generated
@@ -352,13 +323,11 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Communication
-	 * <em>Communication</em>}'. <!-- begin-user-doc --> This default
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.Communication <em>Communication</em>}'.
+	 * <!-- begin-user-doc --> This default
 	 * implementation returns null so that we can easily ignore cases; it's
 	 * useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the new adapter.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Communication
 	 * @generated
@@ -368,13 +337,11 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
-	 * <em>Core Block</em>}'. <!-- begin-user-doc --> This default
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock <em>Core Block</em>}'.
+	 * <!-- begin-user-doc --> This default
 	 * implementation returns null so that we can easily ignore cases; it's
 	 * useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the new adapter.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
 	 * @generated
@@ -384,13 +351,11 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock
-	 * <em>Actor Block</em>}'. <!-- begin-user-doc --> This default
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock <em>Actor Block</em>}'.
+	 * <!-- begin-user-doc --> This default
 	 * implementation returns null so that we can easily ignore cases; it's
 	 * useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the new adapter.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock
 	 * @generated
@@ -400,13 +365,11 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
-	 * <em>Loop Block</em>}'. <!-- begin-user-doc --> This default
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock <em>Loop Block</em>}'.
+	 * <!-- begin-user-doc --> This default
 	 * implementation returns null so that we can easily ignore cases; it's
 	 * useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the new adapter.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
 	 * @generated
@@ -416,13 +379,11 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.ActorCall
-	 * <em>Actor Call</em>}'. <!-- begin-user-doc --> This default
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.ActorCall <em>Actor Call</em>}'.
+	 * <!-- begin-user-doc --> This default
 	 * implementation returns null so that we can easily ignore cases; it's
 	 * useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the new adapter.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.ActorCall
 	 * @generated
@@ -432,13 +393,11 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.CallBlock
-	 * <em>Call Block</em>}'. <!-- begin-user-doc --> This default
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.CallBlock <em>Call Block</em>}'.
+	 * <!-- begin-user-doc --> This default
 	 * implementation returns null so that we can easily ignore cases; it's
 	 * useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the new adapter.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CallBlock
 	 * @generated
@@ -448,13 +407,11 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
-	 * <em>Special Call</em>}'. <!-- begin-user-doc --> This default
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall <em>Special Call</em>}'.
+	 * <!-- begin-user-doc --> This default
 	 * implementation returns null so that we can easily ignore cases; it's
 	 * useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the new adapter.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 	 * @generated
@@ -480,13 +437,11 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Commentable
-	 * <em>Commentable</em>}'. <!-- begin-user-doc --> This default
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.Commentable <em>Commentable</em>}'.
+	 * <!-- begin-user-doc --> This default
 	 * implementation returns null so that we can easily ignore cases; it's
 	 * useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the new adapter.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Commentable
 	 * @generated
@@ -496,13 +451,11 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode
-	 * <em>Communication Node</em>}'. <!-- begin-user-doc --> This default
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode <em>Communication Node</em>}'.
+	 * <!-- begin-user-doc --> This default
 	 * implementation returns null so that we can easily ignore cases; it's
 	 * useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the new adapter.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode
 	 * @generated
@@ -528,13 +481,11 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
-	 * <em>Shared Memory Communication</em>}'. <!-- begin-user-doc --> This
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication <em>Shared Memory Communication</em>}'.
+	 * <!-- begin-user-doc --> This
 	 * default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases
 	 * anyway. <!-- end-user-doc -->
-	 * 
 	 * @return the new adapter.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 	 * @generated
@@ -544,13 +495,11 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
-	 * <em>Constant String</em>}'. <!-- begin-user-doc --> This default
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.ConstantString <em>Constant String</em>}'.
+	 * <!-- begin-user-doc --> This default
 	 * implementation returns null so that we can easily ignore cases; it's
 	 * useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the new adapter.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
 	 * @generated
@@ -560,9 +509,23 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for the default case. <!-- begin-user-doc --> This
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer <em>Null Buffer</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
+	 * @generated
+	 */
+	public Adapter createNullBufferAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for the default case.
+	 * <!-- begin-user-doc --> This
 	 * default implementation returns null. <!-- end-user-doc -->
-	 * 
 	 * @return the new adapter.
 	 * @generated
 	 */

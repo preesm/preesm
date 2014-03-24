@@ -65,6 +65,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation;
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
 import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
@@ -226,6 +227,13 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * @generated
 	 */
 	private EClass constantStringEClass = null;
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	private EClass nullBufferEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -952,6 +960,15 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	public EClass getNullBuffer() {
+		return nullBufferEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	public EEnum getDirection() {
 		return directionEEnum;
 	}
@@ -1111,6 +1128,8 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		constantStringEClass = createEClass(CONSTANT_STRING);
 		createEAttribute(constantStringEClass, CONSTANT_STRING__VALUE);
 
+		nullBufferEClass = createEClass(NULL_BUFFER);
+
 		// Create enums
 		directionEEnum = createEEnum(DIRECTION);
 		delimiterEEnum = createEEnum(DELIMITER);
@@ -1167,6 +1186,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		sharedMemoryCommunicationEClass.getESuperTypes().add(
 				this.getCommunication());
 		constantStringEClass.getESuperTypes().add(this.getVariable());
+		nullBufferEClass.getESuperTypes().add(this.getBuffer());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(blockEClass, Block.class, "Block", !IS_ABSTRACT,
@@ -1483,6 +1503,9 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 				"value", null, 1, 1, ConstantString.class, !IS_TRANSIENT,
 				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
+
+		initEClass(nullBufferEClass, NullBuffer.class, "NullBuffer",
+				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		// Initialize enums and add enum literals
 		initEEnum(directionEEnum, Direction.class, "Direction");
