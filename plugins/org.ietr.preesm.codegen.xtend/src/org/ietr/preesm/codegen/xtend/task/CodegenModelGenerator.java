@@ -102,6 +102,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation;
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
 import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
@@ -654,6 +655,7 @@ public class CodegenModelGenerator {
 		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostBuffers = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) memEx
 				.getPropertyBean().getValue(
 						MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+		if(hostBuffers != null ){
 		for (Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry : hostBuffers
 				.entrySet()) {
 			MemoryExclusionVertex hostVertex = entry.getKey();
@@ -677,18 +679,20 @@ public class CodegenModelGenerator {
 			// Put it at the correct offset
 			Integer groupOffset = (Integer) hostVertex.getPropertyBean()
 					.getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
-			int realOffset = groupOffset + realHostRange.get(0).getValue().getValue()
-					.getStart()
+			int realOffset = groupOffset
+					+ realHostRange.get(0).getValue().getValue().getStart()
 					- realHostRange.get(0).getValue().getKey().getStart();
 			// In the vertex property
 			hostVertex.setPropertyValue(
 					MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, realOffset);
-			
+
 			// In the MEG Properties
 			@SuppressWarnings("unchecked")
-			Map<DAGEdge, Integer> dagEdgeAllocation = (Map<DAGEdge, Integer>) memEx.getPropertyBean().getValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
+			Map<DAGEdge, Integer> dagEdgeAllocation = (Map<DAGEdge, Integer>) memEx
+					.getPropertyBean().getValue(
+							MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
 			dagEdgeAllocation.put(hostVertex.getEdge(), realOffset);
-		}
+		}}
 	}
 
 	/**
@@ -886,39 +890,65 @@ public class CodegenModelGenerator {
 
 		// generate the subbuffer for each dagedge
 		for (Entry<DAGEdge, Integer> dagAlloc : allocation.entrySet()) {
-			SubBuffer dagEdgeBuffer = CodegenFactory.eINSTANCE
-					.createSubBuffer();
+			// If the buffer is not a null buffer
+			if (dagAlloc.getValue() != -1) {
+				SubBuffer dagEdgeBuffer = CodegenFactory.eINSTANCE
+						.createSubBuffer();
 
-			// Old Naming (too long)
-			String comment = dagAlloc.getKey().getSource().getName() + " > "
-					+ dagAlloc.getKey().getTarget().getName();
-			dagEdgeBuffer.setComment(comment);
+				// Old Naming (too long)
+				String comment = dagAlloc.getKey().getSource().getName()
+						+ " > " + dagAlloc.getKey().getTarget().getName();
+				dagEdgeBuffer.setComment(comment);
 
-			String name = dagAlloc.getKey().getSource().getName() + "__"
-					+ dagAlloc.getKey().getTarget().getName();
+				String name = dagAlloc.getKey().getSource().getName() + "__"
+						+ dagAlloc.getKey().getTarget().getName();
 
-			name = generateUniqueBufferName(name);
-			dagEdgeBuffer.setName(name);
-			dagEdgeBuffer.setContainer(sharedBuffer);
-			dagEdgeBuffer.setOffset(dagAlloc.getValue());
-			dagEdgeBuffer.setType("char");
+				name = generateUniqueBufferName(name);
+				dagEdgeBuffer.setName(name);
+				dagEdgeBuffer.setContainer(sharedBuffer);
+				dagEdgeBuffer.setOffset(dagAlloc.getValue());
+				dagEdgeBuffer.setType("char");
 
-			// Generate subsubbuffers. Each subsubbuffer corresponds to an edge
-			// of the single rate SDF Graph
-			Integer dagEdgeSize = generateSubBuffers(dagEdgeBuffer,
-					dagAlloc.getKey(), dagAlloc.getValue());
+				// Generate subsubbuffers. Each subsubbuffer corresponds to an
+				// edge
+				// of the single rate SDF Graph
+				Integer dagEdgeSize = generateSubBuffers(dagEdgeBuffer,
+						dagAlloc.getKey(), dagAlloc.getValue());
 
-			// also accessible with dagAlloc.getKey().getWeight();
-			dagEdgeBuffer.setSize(dagEdgeSize);
+				// also accessible with dagAlloc.getKey().getWeight();
+				dagEdgeBuffer.setSize(dagEdgeSize);
 
-			// Save the DAGEdgeBuffer
-			DAGVertex originalSource = dag.getVertex(dagAlloc.getKey()
-					.getSource().getName());
-			DAGVertex originalTarget = dag.getVertex(dagAlloc.getKey()
-					.getTarget().getName());
-			DAGEdge originalDagEdge = dag.getEdge(originalSource,
-					originalTarget);
-			dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
+				// Save the DAGEdgeBuffer
+				DAGVertex originalSource = dag.getVertex(dagAlloc.getKey()
+						.getSource().getName());
+				DAGVertex originalTarget = dag.getVertex(dagAlloc.getKey()
+						.getTarget().getName());
+				DAGEdge originalDagEdge = dag.getEdge(originalSource,
+						originalTarget);
+				dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
+			} else {
+				// the buffer is a null buffer 
+				NullBuffer dagEdgeBuffer = CodegenFactory.eINSTANCE
+						.createNullBuffer();
+				dagEdgeBuffer.setSize(0);
+				
+				// Old Naming (too long)
+				String comment = dagAlloc.getKey().getSource().getName()
+						+ " > " + dagAlloc.getKey().getTarget().getName();
+				dagEdgeBuffer.setComment(comment);
+				
+				generateSubBuffers(dagEdgeBuffer,
+						dagAlloc.getKey(), dagAlloc.getValue());
+				
+				// Save the DAGEdgeBuffer
+				DAGVertex originalSource = dag.getVertex(dagAlloc.getKey()
+						.getSource().getName());
+				DAGVertex originalTarget = dag.getVertex(dagAlloc.getKey()
+						.getTarget().getName());
+				DAGEdge originalDagEdge = dag.getEdge(originalSource,
+						originalTarget);
+				dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
+			}
 		}
 
 		// Generate buffers for each fifo

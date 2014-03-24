@@ -444,7 +444,7 @@ public abstract class MemoryAllocator {
 							MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
 
 			// If the Mobject is not splitted
-			if (realTokenRange.size() != 1) {
+			if (realTokenRange.size() == 1) {
 				int startOffset =  realTokenRange.get(0).getValue().getValue().getStart();
 				
 				// Allocate it at the right place

@@ -52,10 +52,12 @@ public class NullBufferImpl extends BufferImpl implements NullBuffer {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @generated
+	 *
 	 */
 	protected NullBufferImpl() {
 		super();
+		setName("NULL");
+		setSize(0);
 	}
 
 	/**
