@@ -1,11 +1,13 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Preesm XTend code generation plug-in
+Bundle-Name: %pluginName
 Bundle-SymbolicName: org.ietr.preesm.codegen.xtend;singleton:=true
-Bundle-Version: 1.1.0.qualifier
+Bundle-ClassPath: .
 Bundle-Activator: org.ietr.preesm.codegen.xtend.Activator
-Bundle-Vendor: IETR/INSA Rennes
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.core.resources,
  org.eclipse.emf,
  org.eclipse.emf.ecore.xmi,
@@ -21,6 +23,10 @@ Require-Bundle: org.eclipse.core.runtime,
  org.ietr.preesm.experiment;resolution:=optional,
  org.ietr.preesm.codegen;bundle-version="1.0.0",
  org.ietr.preesm.experiment.memory
+Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Export-Package: org.ietr.preesm.codegen.xtend.task
+Export-Package: org.ietr.preesm.codegen.xtend.task,
+ org.ietr.preesm.codegen.xtend.model.codegen,
+ org.ietr.preesm.codegen.xtend.model.codegen.impl,
+ org.ietr.preesm.codegen.xtend.model.codegen.util
 

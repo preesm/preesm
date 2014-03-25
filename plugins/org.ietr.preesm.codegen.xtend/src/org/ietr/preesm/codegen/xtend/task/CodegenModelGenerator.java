@@ -655,44 +655,48 @@ public class CodegenModelGenerator {
 		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostBuffers = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) memEx
 				.getPropertyBean().getValue(
 						MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
-		if(hostBuffers != null ){
-		for (Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry : hostBuffers
-				.entrySet()) {
-			MemoryExclusionVertex hostVertex = entry.getKey();
-			Set<MemoryExclusionVertex> vertices = entry.getValue();
+		if (hostBuffers != null) {
+			for (Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry : hostBuffers
+					.entrySet()) {
+				MemoryExclusionVertex hostVertex = entry.getKey();
+				Set<MemoryExclusionVertex> vertices = entry.getValue();
 
-			// Add the hosted vertices back to the MEG
-			// Their allocation was taken care of in the MemoryAllocator
-			for (MemoryExclusionVertex vertex : vertices) {
-				memEx.addVertex(vertex);
+				// Add the hosted vertices back to the MEG
+				// Their allocation was taken care of in the MemoryAllocator
+				for (MemoryExclusionVertex vertex : vertices) {
+					memEx.addVertex(vertex);
+				}
+
+				// Put the hostVertex back to its real size
+				@SuppressWarnings("unchecked")
+				List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realHostRange = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) hostVertex
+						.getPropertyBean()
+						.getValue(
+								MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+				// Since host buffer are not divided, there is a unique range in
+				// the
+				// list
+				hostVertex.setWeight(realHostRange.get(0).getValue().getKey()
+						.getLength());
+				// Put it at the correct offset
+				Integer groupOffset = (Integer) hostVertex.getPropertyBean()
+						.getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
+				int realOffset = groupOffset
+						+ realHostRange.get(0).getValue().getValue().getStart()
+						- realHostRange.get(0).getValue().getKey().getStart();
+				// In the vertex property
+				hostVertex.setPropertyValue(
+						MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
+						realOffset);
+
+				// In the MEG Properties
+				@SuppressWarnings("unchecked")
+				Map<DAGEdge, Integer> dagEdgeAllocation = (Map<DAGEdge, Integer>) memEx
+						.getPropertyBean().getValue(
+								MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
+				dagEdgeAllocation.put(hostVertex.getEdge(), realOffset);
 			}
-
-			// Put the hostVertex back to its real size
-			@SuppressWarnings("unchecked")
-			List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realHostRange = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) hostVertex
-					.getPropertyBean().getValue(
-							MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
-			// Since host buffer are not divided, there is a unique range in the
-			// list
-			hostVertex.setWeight(realHostRange.get(0).getValue().getKey()
-					.getLength());
-			// Put it at the correct offset
-			Integer groupOffset = (Integer) hostVertex.getPropertyBean()
-					.getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
-			int realOffset = groupOffset
-					+ realHostRange.get(0).getValue().getValue().getStart()
-					- realHostRange.get(0).getValue().getKey().getStart();
-			// In the vertex property
-			hostVertex.setPropertyValue(
-					MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, realOffset);
-
-			// In the MEG Properties
-			@SuppressWarnings("unchecked")
-			Map<DAGEdge, Integer> dagEdgeAllocation = (Map<DAGEdge, Integer>) memEx
-					.getPropertyBean().getValue(
-							MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
-			dagEdgeAllocation.put(hostVertex.getEdge(), realOffset);
-		}}
+		}
 	}
 
 	/**
@@ -927,19 +931,18 @@ public class CodegenModelGenerator {
 						originalTarget);
 				dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
 			} else {
-				// the buffer is a null buffer 
+				// the buffer is a null buffer
 				NullBuffer dagEdgeBuffer = CodegenFactory.eINSTANCE
 						.createNullBuffer();
-				dagEdgeBuffer.setSize(0);
-				
+
 				// Old Naming (too long)
 				String comment = dagAlloc.getKey().getSource().getName()
 						+ " > " + dagAlloc.getKey().getTarget().getName();
-				dagEdgeBuffer.setComment(comment);
-				
-				generateSubBuffers(dagEdgeBuffer,
-						dagAlloc.getKey(), dagAlloc.getValue());
-				
+				dagEdgeBuffer.setComment("NULL_" + comment);
+
+				generateSubBuffers(dagEdgeBuffer, dagAlloc.getKey(),
+						dagAlloc.getValue());
+
 				// Save the DAGEdgeBuffer
 				DAGVertex originalSource = dag.getVertex(dagAlloc.getKey()
 						.getSource().getName());
@@ -1870,52 +1873,72 @@ public class CodegenModelGenerator {
 		Integer aggregateOffset = new Integer(0);
 		int idx = 0;
 		for (BufferProperties subBufferProperties : buffers) {
-			SubBuffer subBuff = CodegenFactory.eINSTANCE.createSubBuffer();
-			// Old naming techniques with complete path to port. (too long, kept
-			// as a comment)
-			String comment = dagEdge.getSource().getName();
-			comment += '_' + subBufferProperties.getSourceOutputPortID();
-			comment += " > " + dagEdge.getTarget().getName();
-			comment += '_' + subBufferProperties.getDestInputPortID();
-			subBuff.setComment(comment);
+			// If the parent buffer is not null
+			if (parentBuffer instanceof Buffer) {
+				SubBuffer subBuff = CodegenFactory.eINSTANCE.createSubBuffer();
+				// Old naming techniques with complete path to port. (too long,
+				// kept
+				// as a comment)
+				String comment = dagEdge.getSource().getName();
+				comment += '_' + subBufferProperties.getSourceOutputPortID();
+				comment += " > " + dagEdge.getTarget().getName();
+				comment += '_' + subBufferProperties.getDestInputPortID();
+				subBuff.setComment(comment);
 
-			// Buffer is named only with ports ID
-			String name = subBufferProperties.getSourceOutputPortID();
-			name += "__" + subBufferProperties.getDestInputPortID();
+				// Buffer is named only with ports ID
+				String name = subBufferProperties.getSourceOutputPortID();
+				name += "__" + subBufferProperties.getDestInputPortID();
 
-			// Check for duplicates
-			name = generateUniqueBufferName(name);
+				// Check for duplicates
+				name = generateUniqueBufferName(name);
 
-			// If an interSubbufferSpace was defined, add it
-			if (interSubbufferSpace != null) {
-				aggregateOffset += interSubbufferSpace.get(idx);
+				// If an interSubbufferSpace was defined, add it
+				if (interSubbufferSpace != null) {
+					aggregateOffset += interSubbufferSpace.get(idx);
+				}
+				idx++;
+
+				subBuff.setName(name);
+				subBuff.setContainer((Buffer) parentBuffer);
+				subBuff.setOffset(aggregateOffset);
+				subBuff.setType(subBufferProperties.getDataType());
+				subBuff.setSize(subBufferProperties.getSize());
+
+				// Increment the aggregate offset with the size of the current
+				// subBuffer multiplied by the size of the datatype
+				if (subBufferProperties.getDataType().equals("typeNotFound")) {
+					throw new CodegenException(
+							"There is a problem with datatypes.\n"
+									+ "Please make sure that all data types are defined in the Simulation tab of the scenario editor.");
+				}
+				DataType subBuffDataType = dataTypes.get(subBufferProperties
+						.getDataType());
+				if (subBuffDataType == null) {
+					throw new CodegenException("Data type "
+							+ subBufferProperties.getDataType()
+							+ " is undefined in the scenario.");
+				}
+				aggregateOffset += (subBuff.getSize() * subBuffDataType
+						.getSize());
+
+				// Save the created SubBuffer
+				srSDFEdgeBuffers.put(subBufferProperties, subBuff);
+			} else {
+				// The parent buffer is a null buffer
+				NullBuffer nullBuff = CodegenFactory.eINSTANCE
+						.createNullBuffer();
+				// Old naming techniques with complete path to port. (too long,
+				// kept
+				// as a comment)
+				String comment = dagEdge.getSource().getName();
+				comment += '_' + subBufferProperties.getSourceOutputPortID();
+				comment += " > " + dagEdge.getTarget().getName();
+				comment += '_' + subBufferProperties.getDestInputPortID();
+				nullBuff.setComment("NULL_" + comment);
+
+				// Save the created SubBuffer
+				srSDFEdgeBuffers.put(subBufferProperties, nullBuff);
 			}
-			idx++;
-
-			subBuff.setName(name);
-			subBuff.setContainer(parentBuffer);
-			subBuff.setOffset(aggregateOffset);
-			subBuff.setType(subBufferProperties.getDataType());
-			subBuff.setSize(subBufferProperties.getSize());
-
-			// Increment the aggregate offset with the size of the current
-			// subBuffer multiplied by the size of the datatype
-			if (subBufferProperties.getDataType().equals("typeNotFound")) {
-				throw new CodegenException(
-						"There is a problem with datatypes.\n"
-								+ "Please make sure that all data types are defined in the Simulation tab of the scenario editor.");
-			}
-			DataType subBuffDataType = dataTypes.get(subBufferProperties
-					.getDataType());
-			if (subBuffDataType == null) {
-				throw new CodegenException("Data type "
-						+ subBufferProperties.getDataType()
-						+ " is undefined in the scenario.");
-			}
-			aggregateOffset += (subBuff.getSize() * subBuffDataType.getSize());
-
-			// Save the created SubBuffer
-			srSDFEdgeBuffers.put(subBufferProperties, subBuff);
 		}
 
 		return aggregateOffset;
