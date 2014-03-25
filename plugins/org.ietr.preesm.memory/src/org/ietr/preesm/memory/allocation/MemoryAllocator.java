@@ -430,6 +430,9 @@ public abstract class MemoryAllocator {
 		// - Special processing for vertices that were splitted => needs to
 		// create several MObj for them
 		
+		int hostZeroIndexOffset = ((List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>)hostVertex.getPropertyBean().getValue(
+				MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY)).get(0).getValue().getValue().getStart();
+		
 		// For each vertex of the group
 		for (MemoryExclusionVertex vertex : vertices) {
 			
@@ -448,10 +451,10 @@ public abstract class MemoryAllocator {
 				int startOffset =  realTokenRange.get(0).getValue().getValue().getStart();
 				
 				// Allocate it at the right place
-				memExNodeAllocation.put(vertex, offset + startOffset);
-				edgeAllocation.put(vertex.getEdge(), offset + startOffset);
+				memExNodeAllocation.put(vertex, offset + startOffset + hostZeroIndexOffset);
+				edgeAllocation.put(vertex.getEdge(), offset + startOffset + hostZeroIndexOffset);
 				vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
-						offset + startOffset);
+						offset + startOffset + hostZeroIndexOffset);
 			} else {
 				// If the Mobject is splitted
 				// Null buffer since the memory of this MObj is no longer 
