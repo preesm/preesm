@@ -1543,7 +1543,7 @@ class ScriptRunner {
 
 				// Enlarge the corresponding mObject to the required size
 				val mObj = bufferAndMObjectMap.get(buffer)
-				val minIndex = if (buffer.minIndex == 0) {
+				val minIndex = if (buffer.minIndex == 0 || _alignment == -1) {
 						buffer.minIndex
 					} else {
 
@@ -1593,7 +1593,7 @@ class ScriptRunner {
 							meg.addEdge(rootMObj, excludingMObj)
 						}
 					}
-				}
+				}				
 				meg.removeVertex(mObj)
 				
 				// Fill the mobj properties (i.e. save the matched buffer info)	
