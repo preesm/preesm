@@ -940,8 +940,14 @@ public class CodegenModelGenerator {
 						+ " > " + dagAlloc.getKey().getTarget().getName();
 				dagEdgeBuffer.setComment("NULL_" + comment);
 
-				generateSubBuffers(dagEdgeBuffer, dagAlloc.getKey(),
-						dagAlloc.getValue());
+				// Generate subsubbuffers. Each subsubbuffer corresponds to an
+				// edge
+				// of the single rate SDF Graph
+				Integer dagEdgeSize = generateSubBuffers(dagEdgeBuffer,
+						dagAlloc.getKey(), dagAlloc.getValue());
+
+				// We set the size to keep the information
+				dagEdgeBuffer.setSize(dagEdgeSize);
 
 				// Save the DAGEdgeBuffer
 				DAGVertex originalSource = dag.getVertex(dagAlloc.getKey()
@@ -1873,9 +1879,11 @@ public class CodegenModelGenerator {
 		Integer aggregateOffset = new Integer(0);
 		int idx = 0;
 		for (BufferProperties subBufferProperties : buffers) {
+			Buffer buff = null;
 			// If the parent buffer is not null
-			if (parentBuffer instanceof Buffer) {
+			if (!(parentBuffer instanceof NullBuffer)) {
 				SubBuffer subBuff = CodegenFactory.eINSTANCE.createSubBuffer();
+				buff = subBuff;
 				// Old naming techniques with complete path to port. (too long,
 				// kept
 				// as a comment)
@@ -1892,41 +1900,19 @@ public class CodegenModelGenerator {
 				// Check for duplicates
 				name = generateUniqueBufferName(name);
 
-				// If an interSubbufferSpace was defined, add it
-				if (interSubbufferSpace != null) {
-					aggregateOffset += interSubbufferSpace.get(idx);
-				}
-				idx++;
-
 				subBuff.setName(name);
 				subBuff.setContainer((Buffer) parentBuffer);
 				subBuff.setOffset(aggregateOffset);
 				subBuff.setType(subBufferProperties.getDataType());
 				subBuff.setSize(subBufferProperties.getSize());
-
-				// Increment the aggregate offset with the size of the current
-				// subBuffer multiplied by the size of the datatype
-				if (subBufferProperties.getDataType().equals("typeNotFound")) {
-					throw new CodegenException(
-							"There is a problem with datatypes.\n"
-									+ "Please make sure that all data types are defined in the Simulation tab of the scenario editor.");
-				}
-				DataType subBuffDataType = dataTypes.get(subBufferProperties
-						.getDataType());
-				if (subBuffDataType == null) {
-					throw new CodegenException("Data type "
-							+ subBufferProperties.getDataType()
-							+ " is undefined in the scenario.");
-				}
-				aggregateOffset += (subBuff.getSize() * subBuffDataType
-						.getSize());
-
+				
 				// Save the created SubBuffer
 				srSDFEdgeBuffers.put(subBufferProperties, subBuff);
 			} else {
 				// The parent buffer is a null buffer
 				NullBuffer nullBuff = CodegenFactory.eINSTANCE
 						.createNullBuffer();
+				buff = nullBuff;
 				// Old naming techniques with complete path to port. (too long,
 				// kept
 				// as a comment)
@@ -1939,6 +1925,29 @@ public class CodegenModelGenerator {
 				// Save the created SubBuffer
 				srSDFEdgeBuffers.put(subBufferProperties, nullBuff);
 			}
+			
+			// If an interSubbufferSpace was defined, add it
+			if (interSubbufferSpace != null) {
+				aggregateOffset += interSubbufferSpace.get(idx);
+			}
+			idx++;
+			
+			// Increment the aggregate offset with the size of the current
+			// subBuffer multiplied by the size of the datatype
+			if (subBufferProperties.getDataType().equals("typeNotFound")) {
+				throw new CodegenException(
+						"There is a problem with datatypes.\n"
+								+ "Please make sure that all data types are defined in the Simulation tab of the scenario editor.");
+			}
+			DataType subBuffDataType = dataTypes.get(subBufferProperties
+					.getDataType());
+			if (subBuffDataType == null) {
+				throw new CodegenException("Data type "
+						+ subBufferProperties.getDataType()
+						+ " is undefined in the scenario.");
+			}
+			aggregateOffset += (buff.getSize() * subBuffDataType
+					.getSize());
 		}
 
 		return aggregateOffset;

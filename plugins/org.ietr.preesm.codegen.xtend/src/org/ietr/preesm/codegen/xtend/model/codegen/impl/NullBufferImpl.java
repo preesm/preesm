@@ -57,7 +57,6 @@ public class NullBufferImpl extends BufferImpl implements NullBuffer {
 	protected NullBufferImpl() {
 		super();
 		setName("NULL");
-		setSize(0);
 	}
 
 	/**
