@@ -258,14 +258,14 @@ class CPrinter extends DefaultPrinter {
 
 		// Retrieve the container buffer of the input and output as well
 		// as their offset in this buffer
-		var totalOffsetOut = outOffset
+		var totalOffsetOut = outOffset*output.typeSize
 		var bOutput = output
 		while (bOutput instanceof SubBuffer) {
 			totalOffsetOut = totalOffsetOut + (bOutput as SubBuffer).offset
 			bOutput = (bOutput as SubBuffer).container
 		}
 		
-		var totalOffsetIn = inOffset
+		var totalOffsetIn = inOffset*input.typeSize
 		var bInput = input
 		while (bInput instanceof SubBuffer) {
 			totalOffsetIn = totalOffsetIn + (bInput as SubBuffer).offset
