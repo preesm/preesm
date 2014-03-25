@@ -55,6 +55,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
 import org.ietr.preesm.codegen.xtend.model.codegen.Call
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import java.util.HashSet
+import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
 
 class C6678CPrinter extends CPrinter {
 	
@@ -153,7 +154,8 @@ class C6678CPrinter extends CPrinter {
 	/**
 	 * This methods prints a call to the cache invalidate method for each
 	 * {@link PortDirection#INPUT input} {@link Buffer} of the given
-	 * {@link Call}.
+	 * {@link Call}. If the input port is a {@link NullBuffer}, nothing is 
+	 * printed.
 	 * 
 	 * @param call
 	 *            the {@link Call} whose {@link PortDirection#INPUT input}
@@ -163,7 +165,7 @@ class C6678CPrinter extends CPrinter {
 	def printCacheCoherency(Call call)'''
 		«IF call.parameters.size > 0»
 			«FOR i :  0 .. call.parameters.size - 1»
-				«IF call.parameterDirections.get(i) == PortDirection.INPUT»
+				«IF call.parameterDirections.get(i) == PortDirection.INPUT && !(call.parameters.get(i) instanceof NullBuffer)»
 					cache_inv(«call.parameters.get(i).doSwitch», «(call.parameters.get(i) as Buffer).size»*sizeof(«call.parameters.get(i).type»));
 				«ENDIF»
 			«ENDFOR»
@@ -176,18 +178,26 @@ class C6678CPrinter extends CPrinter {
 		var result = super.printMemcpy(output, outOffset, input, inOffset, size, type).toString;
 		var regex = "(memcpy\\()(.*?)[,](.*?)[,](.*?[;])"
 		result = result.replaceAll(regex, "$1(void*)($2),(void*)($3),$4")
-		
+
 		// Also if nothing was printed (i.e. if source and destination are identical
 		// Then a writeback is needed for the output to make sure that when a consumer
 		// finish its execution and invalidate the buffer, if another consumer of the same 
 		// merged buffer is executed on the same core, its data will still be valid
-		if(result.empty) {
-			result = '''cache_wb(«input.doSwitch», «input.size»*sizeof(«input.type»));'''
-			if(!currentOperationMemcpy.contains(result)){
+		if (result.empty) {
+			if (!(input instanceof NullBuffer)) {
+				result = '''cache_wb(«input.doSwitch», «input.size»*sizeof(«input.type»));'''
+			} else {
+
+				// The input buffer is null write back the output instead
+				// since if the input is null, it means it has been exploded
+				// into the output by the memory scripts.
+				result = '''cache_wb(«output.doSwitch», «output.size»*sizeof(«output.type»));'''
+			}
+			if (!currentOperationMemcpy.contains(result)) {
 				currentOperationMemcpy.add(result)
-		    } else {
-		    	result =''''''
-		    }
+			} else {
+				result = ''''''
+			}
 		}
 			
 		result;
