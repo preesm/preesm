@@ -389,13 +389,22 @@ public interface CodegenPackage extends EPackage {
 	int BUFFER__CHILDRENS = VARIABLE_FEATURE_COUNT + 1;
 
 	/**
+	 * The feature id for the '<em><b>Type Size</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int BUFFER__TYPE_SIZE = VARIABLE_FEATURE_COUNT + 2;
+
+	/**
 	 * The number of structural features of the '<em>Buffer</em>' class. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int BUFFER_FEATURE_COUNT = VARIABLE_FEATURE_COUNT + 2;
+	int BUFFER_FEATURE_COUNT = VARIABLE_FEATURE_COUNT + 3;
 
 	/**
 	 * The meta object id for the '
@@ -471,6 +480,15 @@ public interface CodegenPackage extends EPackage {
 	 * @ordered
 	 */
 	int SUB_BUFFER__CHILDRENS = BUFFER__CHILDRENS;
+
+	/**
+	 * The feature id for the '<em><b>Type Size</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SUB_BUFFER__TYPE_SIZE = BUFFER__TYPE_SIZE;
 
 	/**
 	 * The feature id for the '<em><b>Container</b></em>' reference. <!--
@@ -1731,6 +1749,15 @@ public interface CodegenPackage extends EPackage {
 	int NULL_BUFFER__CHILDRENS = BUFFER__CHILDRENS;
 
 	/**
+	 * The feature id for the '<em><b>Type Size</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__TYPE_SIZE = BUFFER__TYPE_SIZE;
+
+	/**
 	 * The number of structural features of the '<em>Null Buffer</em>' class.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -2023,6 +2050,18 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getBuffer_Childrens();
+
+	/**
+	 * Returns the meta object for the attribute '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getTypeSize
+	 * <em>Type Size</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Type Size</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getTypeSize()
+	 * @see #getBuffer()
+	 * @generated
+	 */
+	EAttribute getBuffer_TypeSize();
 
 	/**
 	 * Returns the meta object for class '
@@ -2861,6 +2900,14 @@ public interface CodegenPackage extends EPackage {
 		 * @generated
 		 */
 		EReference BUFFER__CHILDRENS = eINSTANCE.getBuffer_Childrens();
+
+		/**
+		 * The meta object literal for the '<em><b>Type Size</b></em>' attribute
+		 * feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute BUFFER__TYPE_SIZE = eINSTANCE.getBuffer_TypeSize();
 
 		/**
 		 * The meta object literal for the '

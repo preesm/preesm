@@ -103,6 +103,10 @@
         <element xmi:type="ecore:EAttribute" href="codegen.ecore#//Buffer/size"/>
         <layoutConstraint xmi:type="notation:Location" xmi:id="_KGHyQZubEeKpdeZtHB9wCw"/>
       </children>
+      <children xmi:type="notation:Node" xmi:id="_MktBQLQhEeOzDLw8Ei8d4g" type="2001">
+        <element xmi:type="ecore:EAttribute" href="codegen.ecore#//Buffer/typeSize"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_MktBQbQhEeOzDLw8Ei8d4g"/>
+      </children>
       <styles xmi:type="notation:DrawerStyle" xmi:id="_nfeuZZuaEeKpdeZtHB9wCw"/>
       <styles xmi:type="notation:SortingStyle" xmi:id="_nfeuZpuaEeKpdeZtHB9wCw"/>
       <styles xmi:type="notation:FilteringStyle" xmi:id="_nfeuZ5uaEeKpdeZtHB9wCw"/>

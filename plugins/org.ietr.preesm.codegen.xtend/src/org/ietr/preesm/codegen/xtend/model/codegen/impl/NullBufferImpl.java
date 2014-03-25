@@ -52,7 +52,7 @@ public class NullBufferImpl extends BufferImpl implements NullBuffer {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 *
+	 * 
 	 */
 	protected NullBufferImpl() {
 		super();
