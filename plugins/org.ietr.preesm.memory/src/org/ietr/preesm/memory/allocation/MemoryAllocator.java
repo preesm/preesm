@@ -119,7 +119,7 @@ public abstract class MemoryAllocator {
 
 					List<Integer> interBufferSpaces = new ArrayList<Integer>();
 					int largestTypeSize = 1;
-					int internalOffset = 0;
+					int internalOffset = 0; // In Bytes
 					while (iter.hasNext()) {
 						BufferProperties properties = iter.next();
 						String dataType = properties.getDataType();

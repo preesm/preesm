@@ -885,6 +885,7 @@ public class CodegenModelGenerator {
 		sharedBuffer.setSize(size);
 		sharedBuffer.setName("SharedMem");
 		sharedBuffer.setType("char");
+		sharedBuffer.setTypeSize(1); // char is 1 byte
 
 		@SuppressWarnings("unchecked")
 		Map<DAGEdge, Integer> allocation = (Map<DAGEdge, Integer>) memEx
@@ -912,6 +913,7 @@ public class CodegenModelGenerator {
 				dagEdgeBuffer.setContainer(sharedBuffer);
 				dagEdgeBuffer.setOffset(dagAlloc.getValue());
 				dagEdgeBuffer.setType("char");
+				dagEdgeBuffer.setTypeSize(1);
 
 				// Generate subsubbuffers. Each subsubbuffer corresponds to an
 				// edge
@@ -948,6 +950,7 @@ public class CodegenModelGenerator {
 
 				// We set the size to keep the information
 				dagEdgeBuffer.setSize(dagEdgeSize);
+				
 
 				// Save the DAGEdgeBuffer
 				DAGVertex originalSource = dag.getVertex(dagAlloc.getKey()
@@ -1946,6 +1949,7 @@ public class CodegenModelGenerator {
 						+ subBufferProperties.getDataType()
 						+ " is undefined in the scenario.");
 			}
+			buff.setTypeSize(subBuffDataType.getSize());
 			aggregateOffset += (buff.getSize() * subBuffDataType
 					.getSize());
 		}

@@ -65,7 +65,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 * object is stored in memory.
 	 */
 	public static final String MEMORY_OFFSET_PROPERTY = "memory_offset";
-	
+
 	/**
 	 * Property of the {@link MemoryExclusionVertex}. The object associated to
 	 * this property is:<br>
@@ -133,8 +133,8 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 
 	/**
 	 * {@link MemoryExclusionVertex} property associated to a {@link List} of
-	 * {@link Integer} that represent the space between successive "subbuffers"
-	 * of a {@link MemoryExclusionVertex}.
+	 * {@link Integer} that represent the space <b>in bytes</b> between
+	 * successive "subbuffers" of a {@link MemoryExclusionVertex}.
 	 */
 	public static final String INTER_BUFFER_SPACES = "inter_buffer_spaces";
 
@@ -243,8 +243,8 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 * Neither the weight nor the explodeImplode attributes of the vertices are
 	 * taken into account to test the equality.
 	 * 
-	 * Do not change the way the comparison is done since several other 
-	 * classes relate on it, like ScriptRunner#updateMEG method.
+	 * Do not change the way the comparison is done since several other classes
+	 * relate on it, like ScriptRunner#updateMEG method.
 	 * 
 	 * @param o
 	 *            the object to compare.
@@ -253,7 +253,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	public boolean equals(Object o) {
 		if (o instanceof MemoryExclusionVertex) {
 			return (this.source.equals(((MemoryExclusionVertex) o).source) && this.sink
-					.equals(((MemoryExclusionVertex) o).sink)); 
+					.equals(((MemoryExclusionVertex) o).sink));
 		} else {
 			return false;
 		}
