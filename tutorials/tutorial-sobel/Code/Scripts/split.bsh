@@ -1,0 +1,32 @@
+// Split script
+sliceHeight = (ySize/nbSlice+2*overlap);
+sliceSize = sliceHeight*xSize;
+
+for(i=0;i<nbSlice;i++){
+	o_output.matchWith(i*sliceSize,
+	                   i_input,
+                       (i*ySize/nbSlice-overlap)*xSize,
+                       sliceSize);
+} 
+
+
+/*// Old code to test problem detection
+ import org.ietr.preesm.experiment.memory.Match;
+for(i=0;i<nbSlice;i++){
+	for(j=-overlap; j < ySize/nbSlice+overlap; j++) {
+		iLineIdx = i*ySize/nbSlice + j;
+		
+		if(iLineIdx>=0 && iLineIdx < ySize){
+				iPixelIdx = iLineIdx*xSize ;
+				oPixelIdx = iPixelIdx + xSize + i*2*overlap*xSize;
+				o_output.matchWith(oPixelIdx, i_input, iPixelIdx, xSize);
+		}
+	}
+} */
+
+  // o_output.matchWith(0,i_input,ySize*xSize-1,2); // test partially out of range match <= Authorized
+  // o_output.matchWith(-1,i_input,ySize*xSize,1); // fully out of range match
+  // o_output.matchWith(-3,i_input,ySize*xSize-3,6); // Test virtual tokens match detection 
+  // o_output.getMatchTable().get(overlap*xSize).add(new Match(o_output,overlap*xSize,i_input, 1, 1)); // Test the non reciprocal match (require the Match import)
+  // i_input.matchWith(1,o_output,(ySize/nbSlice - overlap + overlap)*xSize+1,2); // test multiple matches detection 
+  // o_output.matchWith(0,o_output, ySize*xSize+nbSlice*2*overlap*xSize - 1  ); // test inter-input match detection 

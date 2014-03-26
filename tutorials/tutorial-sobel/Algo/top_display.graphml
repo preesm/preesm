@@ -10,9 +10,12 @@
     <key attr.name="port_direction" attr.type="string" for="node"/>
     <key attr.name="graph_desc" attr.type="string" for="node"/>
     <key attr.name="nbRepeat" attr.type="int" for="node"/>
+    <key attr.name="memory_script" attr.type="string" for="node"/>
     <key attr.name="edge_cons" attr.type="string" for="edge"/>
     <key attr.name="edge_delay" attr.type="string" for="edge"/>
     <key attr.name="edge_prod" attr.type="string" for="edge"/>
+    <key attr.name="target_port_modifier" attr.type="string" for="edge"/>
+    <key attr.name="source_port_modifier" attr.type="string" for="edge"/>
     <key attr.name="data_type" attr.type="string" for="edge"/>
     <graph edgedefault="directed">
         <data key="name">top_display</data>
@@ -59,8 +62,10 @@
             <data key="name">Split</data>
             <data key="kind">vertex</data>
             <data key="graph_desc">../Code/IDL/split.idl</data>
+            <data key="memory_script">../Code/Scripts/split.bsh</data>
             <data key="arguments">
                 <argument name="nbSlice" value="N"/>
+                <argument name="overlap" value="1"/>
                 <argument name="xSize" value="xsize"/>
                 <argument name="ySize" value="ysize"/>
             </data>
