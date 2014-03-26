@@ -87,6 +87,9 @@
             <dftools:variable name="Verbose" value="? C {True, False}"/>
         </dftools:data>
     </dftools:task>
+    <dftools:task pluginId="org.ietr.preesm.plugin.mapper.plot" taskId="Gantt Plotter">
+        <dftools:data key="variables"/>
+    </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="architecture"
         targetport="architecture" to="LIST scheduler"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
@@ -129,4 +132,8 @@
         targetport="MemEx" to="Mem Bounds"/>
     <dftools:dataTransfer from="Mem Bounds" sourceport="void"
         targetport="void" to="Mem Alloc 2"/>
+    <dftools:dataTransfer from="LIST scheduler" sourceport="ABC"
+        targetport="ABC" to="Gantt Plotter"/>
+    <dftools:dataTransfer from="scenario" sourceport="scenario"
+        targetport="scenario" to="Gantt Plotter"/>
 </dftools:workflow>
