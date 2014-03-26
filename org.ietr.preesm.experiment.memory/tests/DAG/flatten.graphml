@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="kind" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="name" attr.type="string" for="node"/>
+    <key attr.name="kind" attr.type="string" for="node"/>
+    <key attr.name="nbRepeat" attr.type="int" for="node"/>
+    <key attr.name="memory_script" attr.type="string" for="node"/>
+    <key attr.name="edge_cons" attr.type="string" for="edge"/>
+    <key attr.name="edge_delay" attr.type="string" for="edge"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge"/>
+    <key attr.name="data_type" attr.type="string" for="edge"/>
+    <key attr.name="source_port_modifier" attr.type="string" for="edge"/>
+    <key attr.name="target_port_modifier" attr.type="string" for="edge"/>
+    <key attr.name="Weight" attr.type="string" for="edge"/>
+    <graph edgedefault="directed" kind="sdf">
+        <data key="name">top_display</data>
+        <data key="kind">sdf</data>
+        <data key="variables">
+            <variable name="stage2" value="0"/>
+            <variable name="stage3" value="0"/>
+            <variable name="stage4" value="0"/>
+            <variable name="ysize" value="288"/>
+            <variable name="stage1" value="0"/>
+            <variable name="xsize" value="352"/>
+            <variable name="N" value="8"/>
+        </data>
+        <node id="Read_YUV">
+            <data key="graph_desc">../Code/IDL/readYuv.idl</data>
+            <data key="name">Read_YUV</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="xSize" value="352"/>
+                <argument name="ySize" value="288"/>
+            </data>
+        </node>
+        <node id="display">
+            <data key="graph_desc">../Code/IDL/displayPic.idl</data>
+            <data key="name">display</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="index" value="0"/>
+                <argument name="ysize" value="288"/>
+                <argument name="xsize" value="352"/>
+            </data>
+        </node>
+        <node id="Sobel">
+            <data key="graph_desc">../Code/IDL/sobel.idl</data>
+            <data key="name">Sobel</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">8</data>
+            <data key="arguments">
+                <argument name="xSize" value="352"/>
+                <argument name="ySize" value="38"/>
+            </data>
+        </node>
+        <node id="Split">
+            <data key="graph_desc">../Code/IDL/split.idl</data>
+            <data key="name">Split</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="memory_script">../Code/Script/split.bsh</data>
+            <data key="arguments">
+                <argument name="Height" value="288"/>
+                <argument name="Width" value="352"/>
+                <argument name="NbSlice" value="8"/>
+                <argument name="Overlap" value="1"/>
+            </data>
+        </node>
+        <node id="Merge">
+            <data key="graph_desc">../Code/IDL/merge.idl</data>
+            <data key="name">Merge</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="nbSlice" value="8"/>
+                <argument name="xSize" value="352"/>
+                <argument name="ySize" value="288"/>
+            </data>
+        </node>
+        <node id="sink">
+            <data key="graph_desc"/>
+            <data key="name">sink</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">8</data>
+            <data key="memory_script">../Code/Script/sink.bsh</data>
+            <data key="arguments">
+                <argument name="size" value="7040"/>
+            </data>
+        </node>
+        <node id="Split1">
+            <data key="graph_desc">../Code/IDL/split.idl</data>
+            <data key="name">Split1</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="memory_script">../Code/Script/ShuffleSplit.bsh</data>
+            <data key="arguments">
+                <argument name="Height" value="144"/>
+                <argument name="Width" value="176"/>
+                <argument name="NbSlice" value="8"/>
+                <argument name="Overlap" value="1"/>
+            </data>
+        </node>
+        <node id="sink2">
+            <data key="graph_desc"/>
+            <data key="name">sink2</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">8</data>
+        </node>
+        <node id="Split2">
+            <data key="graph_desc">../Code/IDL/split.idl</data>
+            <data key="name">Split2</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="memory_script">../Code/Script/ShuffleSplit.bsh</data>
+            <data key="arguments">
+                <argument name="Height" value="144"/>
+                <argument name="Width" value="176"/>
+                <argument name="NbSlice" value="8"/>
+                <argument name="Overlap" value="0"/>
+            </data>
+        </node>
+        <node id="sink3">
+            <data key="graph_desc"/>
+            <data key="name">sink3</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">8</data>
+        </node>
+        <node id="transmitter">
+            <data key="graph_desc"/>
+            <data key="name">transmitter</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">8</data>
+            <data key="memory_script">../Code/Script/sink.bsh</data>
+            <data key="arguments">
+                <argument name="size" value="3168"/>
+            </data>
+        </node>
+        <node id="sink4">
+            <data key="graph_desc"/>
+            <data key="name">sink4</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="nothing">
+            <data key="graph_desc"/>
+            <data key="name">nothing</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">8</data>
+        </node>
+        <node id="interleave0">
+            <data key="graph_desc"/>
+            <data key="name">interleave0</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="memory_script">../Code/Script/interleave.bsh</data>
+            <data key="arguments">
+                <argument name="interClusterSize" value="3168"/>
+                <argument name="N" value="8"/>
+                <argument name="clusterSize" value="3168"/>
+            </data>
+        </node>
+        <node id="interleave1">
+            <data key="graph_desc"/>
+            <data key="name">interleave1</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="memory_script">../Code/Script/desinterleave.bsh</data>
+            <data key="arguments">
+                <argument name="interClusterSize" value="3168"/>
+                <argument name="N" value="8"/>
+                <argument name="clusterSize" value="3168"/>
+            </data>
+        </node>
+        <node id="sink1">
+            <data key="graph_desc"/>
+            <data key="name">sink1</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">8</data>
+        </node>
+        <node id="sink5">
+            <data key="graph_desc"/>
+            <data key="name">sink5</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="sink6">
+            <data key="graph_desc"/>
+            <data key="name">sink6</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="br_Read_YUV_v">
+            <data key="name">br_Read_YUV_v</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="br_Read_YUV_u">
+            <data key="name">br_Read_YUV_u</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="br_display_oO">
+            <data key="name">br_display_oO</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <edge source="Read_YUV" sourceport="y" target="Split" targetport="input">
+            <data key="edge_cons">101376</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">101376</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Merge" sourceport="output" target="display" targetport="y">
+            <data key="edge_cons">101376</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">101376</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Sobel" sourceport="output" target="Merge" targetport="input">
+            <data key="edge_cons">107008</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">13376</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Split" sourceport="output" target="Sobel" targetport="input">
+            <data key="edge_cons">13376</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">107008</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Split1" sourceport="output" target="sink" targetport="u">
+            <data key="edge_cons">3520</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">28160</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="sink" sourceport="ooo" target="sink2" targetport="iii">
+            <data key="edge_cons">7040</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">7040</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Split2" sourceport="output" target="sink3" targetport="iii">
+            <data key="edge_cons">3168</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="transmitter" sourceport="ooo" target="sink4" targetport="ii">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">3168</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="nothing" sourceport="o" target="interleave0" targetport="i">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">3168</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="interleave0" sourceport="o" target="interleave1" targetport="i">
+            <data key="edge_cons">50688</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">50688</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="interleave1" sourceport="o" target="sink1" targetport="iii">
+            <data key="edge_cons">3168</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Read_YUV" sourceport="v" target="br_Read_YUV_v" targetport="in">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="br_Read_YUV_v" sourceport="out_0_0"
+            target="display" targetport="v">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="br_Read_YUV_v" sourceport="out_1_0"
+            target="Split2" targetport="input">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="br_Read_YUV_v" sourceport="out_2_0"
+            target="nothing" targetport="i">
+            <data key="edge_cons">3168</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="Read_YUV" sourceport="u" target="br_Read_YUV_u" targetport="in">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="br_Read_YUV_u" sourceport="out_0_0"
+            target="display" targetport="u">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="br_Read_YUV_u" sourceport="out_1_0"
+            target="Split1" targetport="input">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="br_Read_YUV_u" sourceport="out_2_0"
+            target="transmitter" targetport="u">
+            <data key="edge_cons">3168</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="display" sourceport="oO" target="br_display_oO" targetport="in">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="br_display_oO" sourceport="out_0_0" target="sink5" targetport="iI">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
+        <edge source="br_display_oO" sourceport="out_1_0" target="sink6" targetport="iI">
+            <data key="edge_cons">25344</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">25344</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+            <data key="Weight"/>
+        </edge>
+    </graph>
+</graphml>

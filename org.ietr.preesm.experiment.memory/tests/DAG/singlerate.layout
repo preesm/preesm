@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="source0" x="57" y="200"/>
+      <vertex id="swap" x="178" y="200"/>
+      <vertex id="fork" x="310" y="190"/>
+      <vertex id="join0" x="431" y="94"/>
+      <vertex id="join1" x="431" y="229"/>
+      <vertex id="sink0" x="545" y="104"/>
+      <vertex id="source1" x="310" y="75"/>
+      <vertex id="source2" x="310" y="325"/>
+      <vertex id="sink1" x="545" y="239"/>
+      <vertex id="source3" x="57" y="355"/>
+      <vertex id="source4" x="57" y="470"/>
+      <vertex id="join2" x="310" y="440"/>
+      <vertex id="2to1_0" x="178" y="355"/>
+      <vertex id="2to1_1" x="178" y="470"/>
+      <vertex id="sink2" x="431" y="364"/>
+      <vertex id="source5" x="57" y="595"/>
+      <vertex id="forkBroad" x="178" y="585"/>
+      <vertex id="fork1" x="310" y="575"/>
+      <vertex id="fork2" x="311" y="836"/>
+      <vertex id="sink3" x="431" y="479"/>
+      <vertex id="sink4" x="429" y="820"/>
+      <vertex id="source6" x="57" y="720"/>
+      <vertex id="1to2_1" x="431" y="614"/>
+      <vertex id="1to2_0" x="431" y="729"/>
+      <vertex id="broad" x="310" y="710"/>
+      <vertex id="sink" x="545" y="715"/>
+      <vertex id="join3" x="178" y="720"/>
+      <vertex id="source7" x="74" y="856"/>
+      <vertex id="sink5" x="423" y="923"/>
+   </vertices>
+</layout>
