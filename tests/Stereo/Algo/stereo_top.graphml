@@ -138,9 +138,11 @@
             <data key="name">Split</data>
             <data key="kind">vertex</data>
             <data key="graph_desc">../Code/IDL/split.idl</data>
+            <data key="memory_script">../Code/Scripts/split.bsh</data>
             <data key="arguments">
                 <argument name="height" value="height"/>
                 <argument name="nbSlice" value="nbSlice"/>
+                <argument name="overlap" value="1"/>
                 <argument name="width" value="width"/>
             </data>
         </node>
