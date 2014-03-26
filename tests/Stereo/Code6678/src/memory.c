@@ -9,6 +9,8 @@
 #include <memory.h>
 #include <ti/ipc/GateMP.h>
 
+#ifdef DYNAMIC_MEM_ALLOC
+
 inline int gapForAlignment(int size, unsigned long alignmentSize, int desiredAlignment) {
 	// End of data
 	unsigned long end = alignmentSize + size;
@@ -24,6 +26,7 @@ void* multiple_malloc(HeapMemMP_Handle sharedHeap, void** pointer, int size, int
 	cache_inv(pointer,1);
 	if(*pointer == 0){
 		*pointer =  (void*) merged_malloc(sharedHeap, pointer, size, nbFree, mutexID, align);
+		cache_wb(pointer,1);
 	}
 	sem_post(mutex);
 
@@ -60,3 +63,4 @@ void*  merged_free(HeapMemMP_Handle sharedHeap, void* pointer, int size){
 
 	return pointer;
 }
+#endif

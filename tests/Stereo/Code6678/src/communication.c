@@ -33,6 +33,7 @@ Semaphore_Handle interCoreSem[8];
 
 
 #pragma DATA_SECTION(barrier, ".MSMCSRAM")
+#pragma DATA_ALIGN(barrier, CACHE_LINE_SIZE);
 Char barrier = 0x00;
 
 Void callbackInterCoreCom(UInt16 procId, UInt16 lineId, UInt32 eventId,
@@ -108,16 +109,16 @@ void busy_barrier() {
 
 	cache_inv(&barrier, 1);
 	barrier |= (1 << procNumber);
-	cache_wbInvL2(&barrier, 1);
+	cache_wbInv(&barrier, 1);
 	CSL_semReleaseSemaphore(2);
 
 	if (procNumber == 0) {
 		while (barrier != (Char) 0xFF) {
 			Task_sleep(1);
-			cache_invL2(&barrier, 1);
+			cache_inv(&barrier, 1);
 		}
 		barrier = (Char)0x00;
-		cache_wbInvL2(&barrier, 1);
+		cache_wbInv(&barrier, 1);
 		sendStart(1);
 		receiveEnd(7);
 	} else {
