@@ -10,9 +10,12 @@
     <key attr.name="port_direction" attr.type="string" for="node"/>
     <key attr.name="graph_desc" attr.type="string" for="node"/>
     <key attr.name="nbRepeat" attr.type="int" for="node"/>
+    <key attr.name="memory_script" attr.type="string" for="node"/>
     <key attr.name="edge_cons" attr.type="string" for="edge"/>
     <key attr.name="edge_delay" attr.type="string" for="edge"/>
     <key attr.name="edge_prod" attr.type="string" for="edge"/>
+    <key attr.name="target_port_modifier" attr.type="string" for="edge"/>
+    <key attr.name="source_port_modifier" attr.type="string" for="edge"/>
     <key attr.name="data_type" attr.type="string" for="edge"/>
     <graph edgedefault="directed">
         <data key="name">stereo_top</data>
@@ -318,7 +321,7 @@
             <data key="edge_cons">height*width</data>
             <data key="data_type">uchar</data>
         </edge>
-        <edge source="lum2rgb2" sourceport="o" target="WritePPM" targetport="pixels">
+        <edge source="lum2rgb2" sourceport="o1" target="WritePPM" targetport="pixels">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
@@ -331,7 +334,7 @@
             <data key="edge_cons">height*width</data>
             <data key="data_type">uchar</data>
         </edge>
-        <edge source="lum2rgb2" sourceport="o" target="Display_rgb1" targetport="lum">
+        <edge source="lum2rgb2" sourceport="o0" target="Display_rgb1" targetport="lum">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
