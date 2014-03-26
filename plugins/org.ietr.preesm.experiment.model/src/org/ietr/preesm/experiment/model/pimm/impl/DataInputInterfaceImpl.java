@@ -36,11 +36,11 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.ecore.EClass;
-
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -74,6 +74,11 @@ public class DataInputInterfaceImpl extends InterfaceActorImpl implements
 	@Override
 	protected EClass eStaticClass() {
 		return PiMMPackage.Literals.DATA_INPUT_INTERFACE;
+	}
+	
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitDataInputInterface(this);
 	}
 
 } // SourceInterfaceImpl

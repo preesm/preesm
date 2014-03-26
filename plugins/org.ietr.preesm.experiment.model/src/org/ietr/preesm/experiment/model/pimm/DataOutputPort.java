@@ -35,6 +35,8 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
+
 
 /**
  * <!-- begin-user-doc -->
@@ -53,7 +55,7 @@ package org.ietr.preesm.experiment.model.pimm;
  * @model
  * @generated
  */
-public interface DataOutputPort extends Port {
+public interface DataOutputPort extends Port, PiMMVisitable {
 
 	/**
 	 * Returns the value of the '<em><b>Outgoing Fifo</b></em>' reference.

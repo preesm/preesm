@@ -45,6 +45,7 @@ import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 import com.singularsys.jep.EvaluationException;
 import com.singularsys.jep.Jep;
@@ -252,6 +253,11 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 		result.append(string);
 		result.append(')');
 		return result.toString();
+	}
+
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitExpression(this);
 	}
 
 	

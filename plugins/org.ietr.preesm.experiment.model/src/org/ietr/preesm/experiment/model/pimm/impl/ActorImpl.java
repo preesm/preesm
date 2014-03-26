@@ -41,7 +41,6 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
-
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -55,6 +54,7 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -291,6 +291,11 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 			return null;
 		else			
 			return (PiGraph) (resourceSet.getResource(uri, true).getContents().get(0));
+	}
+
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitAbstractActor(this);
 	}
 
 } // ActorImpl

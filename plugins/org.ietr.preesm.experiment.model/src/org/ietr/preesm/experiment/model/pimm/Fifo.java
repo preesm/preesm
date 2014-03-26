@@ -36,6 +36,7 @@
 package org.ietr.preesm.experiment.model.pimm;
 
 import org.eclipse.emf.ecore.EObject;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
 
 /**
  * <!-- begin-user-doc -->
@@ -56,7 +57,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model
  * @generated
  */
-public interface Fifo extends EObject {
+public interface Fifo extends EObject, PiMMVisitable {
 	/**
 	 * Returns the value of the '<em><b>Source Port</b></em>' reference.
 	 * It is bidirectional and its opposite is '{@link org.ietr.preesm.experiment.model.pimm.DataOutputPort#getOutgoingFifo <em>Outgoing Fifo</em>}'.

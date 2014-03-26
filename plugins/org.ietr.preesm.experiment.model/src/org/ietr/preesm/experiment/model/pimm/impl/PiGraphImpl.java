@@ -54,6 +54,7 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.adapter.GraphInterfaceObserver;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -339,6 +340,11 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 				actors.add((Actor) abactor);
 		}
 		return actors;
+	}
+
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitPiGraph(this);
 	}
 
 } // GraphImpl

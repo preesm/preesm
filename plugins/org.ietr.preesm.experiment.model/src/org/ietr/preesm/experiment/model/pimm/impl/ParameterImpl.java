@@ -56,6 +56,7 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.DependencyCycleDetector;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -495,6 +496,11 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 		result.append(configurationInterface);
 		result.append(')');
 		return result.toString();
+	}
+
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitParameter(this);
 	}
 
 } // ParameterImpl

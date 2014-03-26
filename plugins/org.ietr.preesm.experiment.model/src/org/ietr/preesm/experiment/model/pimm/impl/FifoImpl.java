@@ -48,6 +48,7 @@ import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -440,6 +441,11 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 				return isSetId();
 		}
 		return super.eIsSet(featureID);
+	}
+
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitFifo(this);
 	}
 
 } // FifoImpl

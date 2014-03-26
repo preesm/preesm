@@ -47,6 +47,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc -->
@@ -234,6 +235,11 @@ public class ConfigOutputPortImpl extends DataOutputPortImpl implements ConfigOu
 		// TODO: implement this method
 		// Ensure that you remove @generated or mark it @generated NOT
 		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitConfigOutputPort(this);
 	}
 
 } //ConfigOutputPortImpl

@@ -45,6 +45,7 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc -->
@@ -305,6 +306,11 @@ public class DataInputPortImpl extends PortImpl implements DataInputPort {
 				return expression != null;
 		}
 		return super.eIsSet(featureID);
+	}
+
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitDataInputPort(this);
 	}
 
 } //InputPortImpl

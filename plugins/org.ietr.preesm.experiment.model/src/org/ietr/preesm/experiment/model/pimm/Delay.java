@@ -35,6 +35,8 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
+
 
 /**
  * <!-- begin-user-doc -->
@@ -52,7 +54,7 @@ package org.ietr.preesm.experiment.model.pimm;
  * @model
  * @generated
  */
-public interface Delay extends Parameterizable {
+public interface Delay extends Parameterizable, PiMMVisitable {
 
 	/**
 	 * Returns the value of the '<em><b>Expression</b></em>' containment reference.

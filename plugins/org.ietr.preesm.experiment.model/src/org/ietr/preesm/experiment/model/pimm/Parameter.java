@@ -35,6 +35,8 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
+
 
 /**
  * <!-- begin-user-doc -->
@@ -55,7 +57,7 @@ package org.ietr.preesm.experiment.model.pimm;
  * @model
  * @generated
  */
-public interface Parameter extends AbstractVertex, ISetter {
+public interface Parameter extends AbstractVertex, ISetter, PiMMVisitable {
 	/**
 	 * Returns the value of the '<em><b>Locally Static</b></em>' attribute.
 	 * <!-- begin-user-doc -->

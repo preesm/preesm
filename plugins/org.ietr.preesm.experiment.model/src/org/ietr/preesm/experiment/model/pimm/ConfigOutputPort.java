@@ -35,6 +35,8 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
+
 
 /**
  * <!-- begin-user-doc -->
@@ -46,5 +48,5 @@ package org.ietr.preesm.experiment.model.pimm;
  * @model
  * @generated
  */
-public interface ConfigOutputPort extends DataOutputPort, ISetter {
+public interface ConfigOutputPort extends DataOutputPort, ISetter, PiMMVisitable {
 } // ConfigOutputPort

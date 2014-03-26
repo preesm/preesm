@@ -36,8 +36,8 @@
 package org.ietr.preesm.experiment.model.pimm;
 
 import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EObject;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
 
 /**
  * <!-- begin-user-doc -->
@@ -55,7 +55,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model abstract="true"
  * @generated
  */
-public interface Parameterizable extends EObject {
+public interface Parameterizable extends EObject, PiMMVisitable {
 	/**
 	 * Returns the value of the '<em><b>Config Input Ports</b></em>' containment reference list.
 	 * The list contents are of type {@link org.ietr.preesm.experiment.model.pimm.ConfigInputPort}.

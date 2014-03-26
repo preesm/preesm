@@ -36,18 +36,16 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.common.notify.Notification;
-
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc -->
@@ -327,6 +325,11 @@ public class DependencyImpl extends EObjectImpl implements Dependency {
 				return getter != null;
 		}
 		return super.eIsSet(featureID);
+	}
+
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitDependency(this);
 	}
 
 } //DependencyImpl

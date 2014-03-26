@@ -1,8 +1,8 @@
 /*******************************************************************************
  * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
- * Karol Desnos, Julien Heulot
+ * Karol Desnos, Julien Heulot, Clément Guy, Yaset Oliva Venegas
  * 
- * [mpelcat,jnezan,kdesnos,jheulot]@insa-rennes.fr
+ * [mpelcat,jnezan,kdesnos,jheulot,cguy,yoliva]@insa-rennes.fr
  * 
  * This software is a computer program whose purpose is to prototype
  * parallel applications.
@@ -33,19 +33,56 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.experiment.model.pimm;
+package org.ietr.preesm.experiment.model.pimm.util;
 
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
+import org.ietr.preesm.experiment.model.pimm.*;
 
-/**
- * <!-- begin-user-doc --> A representation of the model object '
- * <em><b>Config Output Interface</b></em>'. <!-- end-user-doc -->
- *
- *
- * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getConfigOutputInterface()
- * @model
- * @generated
- */
-public interface ConfigOutputInterface extends InterfaceActor, PiMMVisitable {
-	public static final String KIND = "cfg_out_iface";
-} // ConfigOutputInterface
+public abstract class PiMMVisitor {
+	public void visit(PiMMVisitable v) {
+		v.accept(this);
+	}
+
+	public abstract void visitAbstractActor(AbstractActor aa);
+
+	public abstract void visitAbstractVertex(AbstractVertex av);
+
+	public abstract void visitActor(Actor a);
+
+	public abstract void visitConfigInputInterface(ConfigInputInterface cii);
+
+	public abstract void visitConfigInputPort(ConfigInputPort cip);
+	
+	public abstract void visitConfigOutputInterface(ConfigOutputInterface coi);
+
+	public abstract void visitConfigOutputPort(ConfigOutputPort cop);
+
+	public abstract void visitDataInputInterface(DataInputInterface dii);
+
+	public abstract void visitDataInputPort(DataInputPort dip);
+
+	public abstract void visitDataOutputInterface(DataOutputInterface doi);
+	
+	public abstract void visitDataOutputPort(DataOutputPort dop);
+	
+	public abstract void visitDelay(Delay d);
+	
+	public abstract void visitDependency(Dependency d);
+	
+	public abstract void visitExpression(Expression e);
+	
+	public abstract void visitFifo(Fifo f);
+	
+	public abstract void visitInterfaceActor(InterfaceActor ia);
+	
+	public abstract void visitISetter(ISetter is);
+	
+	public abstract void visitParameter(Parameter p);
+	
+	public abstract void visitParameterizable(Parameterizable p);
+	
+	public abstract void visitPiGraph(PiGraph pg);
+	
+	public abstract void visitPort(Port p);
+	
+	public abstract void visitRefinement(Refinement r);
+}

@@ -37,6 +37,7 @@ package org.ietr.preesm.experiment.model.pimm;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
 
 /**
  * <!-- begin-user-doc --> A representation of the model object '
@@ -53,7 +54,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model
  * @generated
  */
-public interface Refinement extends EObject {
+public interface Refinement extends EObject, PiMMVisitable {
 	/**
 	 * Returns the value of the '<em><b>File Name</b></em>' attribute. <!--
 	 * begin-user-doc -->

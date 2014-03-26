@@ -1,8 +1,8 @@
 /*******************************************************************************
  * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
- * Karol Desnos, Julien Heulot
+ * Karol Desnos, Julien Heulot, Clément Guy, Yaset Oliva Venegas
  * 
- * [mpelcat,jnezan,kdesnos,jheulot]@insa-rennes.fr
+ * [mpelcat,jnezan,kdesnos,jheulot,cguy,yoliva]@insa-rennes.fr
  * 
  * This software is a computer program whose purpose is to prototype
  * parallel applications.
@@ -33,19 +33,8 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.experiment.model.pimm;
+package org.ietr.preesm.experiment.model.pimm.util;
 
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
-
-/**
- * <!-- begin-user-doc --> A representation of the model object '
- * <em><b>Config Output Interface</b></em>'. <!-- end-user-doc -->
- *
- *
- * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getConfigOutputInterface()
- * @model
- * @generated
- */
-public interface ConfigOutputInterface extends InterfaceActor, PiMMVisitable {
-	public static final String KIND = "cfg_out_iface";
-} // ConfigOutputInterface
+public interface PiMMVisitable {
+	public void accept(PiMMVisitor v);
+}

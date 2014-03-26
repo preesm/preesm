@@ -52,6 +52,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -247,6 +248,11 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 		result.append(fileName);
 		result.append(')');
 		return result.toString();
+	}
+
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitRefinement(this);
 	}
 
 } // RefinementImpl

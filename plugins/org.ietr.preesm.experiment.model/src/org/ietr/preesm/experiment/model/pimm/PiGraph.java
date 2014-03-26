@@ -38,6 +38,7 @@ package org.ietr.preesm.experiment.model.pimm;
 import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
 
 /**
  * <!-- begin-user-doc --> A representation of the model object '
@@ -57,7 +58,7 @@ import org.eclipse.emf.common.util.EList;
  * @model
  * @generated
  */
-public interface PiGraph extends AbstractActor {
+public interface PiGraph extends AbstractActor, PiMMVisitable {
 	/**
 	 * Returns the value of the '<em><b>Vertices</b></em>' containment reference
 	 * list. The list contents are of type
