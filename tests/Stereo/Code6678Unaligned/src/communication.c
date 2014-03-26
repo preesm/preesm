@@ -109,16 +109,16 @@ void busy_barrier() {
 
 	cache_inv(&barrier, 1);
 	barrier |= (1 << procNumber);
-	cache_wbInv(&barrier, 1);
+	cache_wbInvL2(&barrier, 1);
 	CSL_semReleaseSemaphore(2);
 
 	if (procNumber == 0) {
 		while (barrier != (Char) 0xFF) {
 			Task_sleep(1);
-			cache_inv(&barrier, 1);
+			cache_invL2(&barrier, 1);
 		}
 		barrier = (Char)0x00;
-		cache_wbInv(&barrier, 1);
+		cache_wbInvL2(&barrier, 1);
 		sendStart(1);
 		receiveEnd(7);
 	} else {
