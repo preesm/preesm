@@ -45,7 +45,7 @@ enum CheckPolicy {
 }
 
 class ScriptRunner {
-	
+
 	/**
 	 * Helper method to get the incoming {@link SDFEdge}s of an {@link 
 	 * SDFAbstractVertex}.
@@ -381,17 +381,17 @@ class ScriptRunner {
 
 		// Update output buffers for alignment
 		if (_alignment > 0) {
-			scriptResults.forEach [ vertex, result |				
+			scriptResults.forEach [ vertex, result |
 				// All outputs except the mergeable one linked only to pure_in 
 				// inputs within their actor must be enlarged 
-				result.value.filter[!(it.originallyMergeable && it.matchTable.values.flatten.forall[
-					it.remoteBuffer.originallyMergeable
-				])].
-				forEach [ buffer |
-						// Enlarge the buffer 
-						// New range mergeability is automatically handled by 
-						// setMinIndex(int)
-						enlargeForAlignment(buffer)
+				result.value.filter[
+					!(it.originallyMergeable && it.matchTable.values.flatten.forall [
+						it.remoteBuffer.originallyMergeable
+					])].forEach [ buffer |
+					// Enlarge the buffer 
+					// New range mergeability is automatically handled by 
+					// setMinIndex(int)
+					enlargeForAlignment(buffer)
 				]
 			]
 		}
@@ -405,27 +405,27 @@ class ScriptRunner {
 
 		// Identify groups of chained buffers from the scripts and dag
 		val groups = groupVertices()
-		
+
 		// Update input buffers on the group border for alignment
 		if (_alignment > 0) {
+
 			// For each group
-			groups.forEach[ group |
+			groups.forEach [ group |
 				// For each vertex of the group
-				group.forEach[ dagVertex |
+				group.forEach [ dagVertex |
 					// For each incoming edge of this vertex
-					dagVertex.incomingEdges.forEach[ edge |
+					dagVertex.incomingEdges.forEach [ edge |
 						// If the edge producer is not part of the group
-						if(!group.contains(edge.source)){
+						if (!group.contains(edge.source)) {
+
 							// Retrieve the corresponding buffer.
-							scriptResults.get(dagVertex).key.filter[ buffer |
+							scriptResults.get(dagVertex).key.filter [ buffer |
 								buffer.sdfEdge.source.name == edge.source.name
-							].forEach[
+							].forEach [
 								it.enlargeForAlignment
 							]
 						}
 					]
-						
-					
 				]
 			]
 		}
@@ -441,33 +441,33 @@ class ScriptRunner {
 				'''Identified «groups.size» groups. From «nbBuffersBefore» to «nbBuffersAfter» buffers.''' + "\n" + ''' Saving «sizeBefore»-«sizeAfter»=«sizeBefore -
 					sizeAfter» («(sizeBefore - sizeAfter as float) / sizeBefore»%).''')
 	}
-	
+
 	def enlargeForAlignment(Buffer buffer) {
-		if(printTodo){  
+		if (printTodo) {
 			println('''Alignment minus one is probably sufficient''')
 		}
 		val oldMinIndex = buffer.minIndex
 		if (oldMinIndex == 0 || (oldMinIndex) % alignment != 0) {
-			buffer.minIndex = ((oldMinIndex / _alignment) - 1) * _alignment 
-		
+			buffer.minIndex = ((oldMinIndex / _alignment) - 1) * _alignment
+
 			// New range is indivisible with end of buffer
 			buffer.indivisibleRanges.lazyUnion(new Range(buffer.minIndex, oldMinIndex + 1))
 		}
-		
+
 		val oldMaxIndex = buffer.maxIndex
-		if (oldMaxIndex == buffer.nbTokens*buffer.tokenSize || (oldMaxIndex) % alignment != 0) {
-			buffer.maxIndex = ((oldMaxIndex / _alignment) + 1) * _alignment 
-		
+		if (oldMaxIndex == buffer.nbTokens * buffer.tokenSize || (oldMaxIndex) % alignment != 0) {
+			buffer.maxIndex = ((oldMaxIndex / _alignment) + 1) * _alignment
+
 			// New range is indivisible with end of buffer
 			buffer.indivisibleRanges.lazyUnion(new Range(oldMaxIndex - 1, buffer.maxIndex))
 		}
-		
+
 		// Update matches of the buffer
 		// Since the updateMatches update the remote buffer matchTable of a match
 		// except the given match, we create a fake match with the current 
 		// buffer as a remote buffer
-		val fakeMatch = new Match(null,0,buffer,0,0)
-		updateMatches(fakeMatch)		
+		val fakeMatch = new Match(null, 0, buffer, 0, 0)
+		updateMatches(fakeMatch)
 		updateConflictingMatches(buffer.matchTable.values.flatten.toList)
 	}
 
@@ -1442,16 +1442,28 @@ class ScriptRunner {
 				val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_IN) || ((it.
 					targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED) &&
 					!(it.sourcePortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_OUT))
-				new Buffer(it, dagVertex, it.targetLabel, it.cons.intValue, dataTypes.get(it.dataType.toString).size,
-					isMergeable)].toList
+				try {
+					new Buffer(it, dagVertex, it.targetLabel, it.cons.intValue, dataTypes.get(it.dataType.toString).size,
+						isMergeable)
+				} catch (NullPointerException exc) {
+					throw new WorkflowException(
+						'''SDFEdge «it.source.name»_«it.sourceLabel»->«it.target.name»_«it.targetLabel» has unknows type «it.
+							dataType.toString». Add the corresponding data type to the scenario.''')
+				}].toList
 
 			val outputs = sdfVertex.outgoingEdges.map[
 				// An output buffer is mergeable if it is !(pure_out AND unused) or if its target port is not Pure_in 
 				val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_IN) || ((it.
 					targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED) &&
 					!(it.sourcePortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_OUT))
-				new Buffer(it, dagVertex, it.sourceLabel, it.prod.intValue, dataTypes.get(it.dataType.toString).size,
-					isMergeable)].toList
+				try {
+					new Buffer(it, dagVertex, it.sourceLabel, it.prod.intValue, dataTypes.get(it.dataType.toString).size,
+						isMergeable)
+				} catch (NullPointerException exc) {
+					throw new WorkflowException(
+						'''SDFEdge «it.source.name»_«it.sourceLabel»->«it.target.name»_«it.targetLabel» has unknows type «it.
+							dataType.toString». Add the corresponding data type to the scenario.''')
+				}].toList
 
 			// Import the necessary libraries
 			interpreter.eval("import " + Buffer.name + ";")
@@ -1495,9 +1507,9 @@ class ScriptRunner {
 	}
 
 	def updateMEG(MemoryExclusionGraph meg) {
-		
+
 		// Create a new property in the MEG to store the merged memory objects
-		val mergedMObjects = newHashMap		
+		val mergedMObjects = newHashMap
 		meg.propertyBean.setValue(MemoryExclusionGraph::HOST_MEMORY_OBJECT_PROPERTY, mergedMObjects)
 
 		// Process each group of buffers separately
@@ -1531,7 +1543,7 @@ class ScriptRunner {
 					// Also we will need to make sure that the code generation
 					// printerS are still functional 
 					throw new WorkflowException(
-						'''Aggregated DAG Edge not yet supported. Contact Preesm developers for more information.''')
+						'''Aggregated DAG Edge «mObj» not yet supported. Contact Preesm developers for more information.''')
 				}
 				bufferAndMObjectMap.put(buffer, mObj)
 			}
@@ -1552,16 +1564,16 @@ class ScriptRunner {
 						((buffer.minIndex / _alignment) - 1) * _alignment
 					}
 				mObj.setWeight(buffer.maxIndex - minIndex)
-				
+
 				// Add the mobj to the meg host list
-				mergedMObjects.put(mObj,newHashSet)				
-				
+				mergedMObjects.put(mObj, newHashSet)
+
 				// Save the real token range in the Mobj properties
-				val realTokenRange = new Range(0,buffer.tokenSize*buffer.nbTokens)
-				val actualRealTokenRange = new Range(-minIndex, buffer.tokenSize*buffer.nbTokens - minIndex)
+				val realTokenRange = new Range(0, buffer.tokenSize * buffer.nbTokens)
+				val actualRealTokenRange = new Range(-minIndex, buffer.tokenSize * buffer.nbTokens - minIndex)
 				val ranges = newArrayList
-				ranges.add(mObj -> (realTokenRange ->actualRealTokenRange))
-				mObj.setPropertyValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, ranges) 
+				ranges.add(mObj -> (realTokenRange -> actualRealTokenRange))
+				mObj.setPropertyValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, ranges)
 			}
 
 			// For each matched buffers
@@ -1578,14 +1590,14 @@ class ScriptRunner {
 				}
 
 				val mObj = bufferAndMObjectMap.get(buffer)
-				
+
 				// For buffer receiving a part of the current buffer
 				for (rootBuffer : rootBuffers.values.map[it.key]) {
 					val rootMObj = bufferAndMObjectMap.get(rootBuffer)
-					
+
 					// Update the meg hostList property
 					mergedMObjects.get(rootMObj).add(mObj)
-					
+
 					// Add exclusions between the rootMobj and all adjacent
 					// memory objects of MObj
 					for (excludingMObj : meg.getAdjacentVertexOf(mObj)) {
@@ -1593,14 +1605,14 @@ class ScriptRunner {
 							meg.addEdge(rootMObj, excludingMObj)
 						}
 					}
-				}				
+				}
 				meg.removeVertex(mObj)
-				
+
 				// Fill the mobj properties (i.e. save the matched buffer info)	
-				val List<Pair<MemoryExclusionVertex,Pair<Range,Range>>> mObjRoots = newArrayList
+				val List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> mObjRoots = newArrayList
 				mObj.setPropertyValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, mObjRoots)
-				val realTokenRange = new Range(0,buffer.tokenSize*buffer.nbTokens)
-				rootBuffers.entrySet.forEach[ entry |
+				val realTokenRange = new Range(0, buffer.tokenSize * buffer.nbTokens)
+				rootBuffers.entrySet.forEach [ entry |
 					val rootMObj = bufferAndMObjectMap.get(entry.value.key)
 					val localRange = entry.key.intersection(realTokenRange)
 					val translatedLocalRange = localRange.clone as Range
@@ -1608,7 +1620,7 @@ class ScriptRunner {
 					val remoteRange = entry.value.value.intersection(translatedLocalRange)
 					mObjRoots.add(rootMObj -> (localRange -> remoteRange))
 				]
-				
+
 			}
 		}
 	}
