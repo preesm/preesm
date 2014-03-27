@@ -44,13 +44,15 @@ void readPPMInit(int id, int height, int width) {
 
 }
 
-void readPPM(int id, int height, int width, unsigned char *r, unsigned char *g,
-		unsigned char *b) {
+void readPPM(int id, int height, int width, unsigned char *rgbPtr) {
 	const unsigned char* im_data = (id == 0) ? im0_data : im1_data;
 	int j;
 	static int i = 0;
 	static unsigned int time = 0;
 	unsigned int now;
+	unsigned char *r = rgbPtr;
+    unsigned char *g = rgbPtr+height*width;
+    unsigned char *b = rgbPtr+2*height*width;
 
 	if (i == 0) {
 		// 32bits precision is not sufficient here. Needs 64bits instead.

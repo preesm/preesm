@@ -1,12 +1,12 @@
 /*
- ============================================================================
- Name        : rgb2Gray.c
- Author      : kdesnos
- Version     : 1.0
- Copyright   : CECILL-C, IETR, INSA Rennes
- Description : Transformation of an RGB image into a gray-level image.
- ============================================================================
- */
+	============================================================================
+	Name        : rgb2Gray.c
+	Author      : kdesnos
+	Version     : 1.0
+	Copyright   : CECILL-C, IETR, INSA Rennes
+	Description : Transformation of an RGB image into a gray-level image.
+	============================================================================
+*/
 
 #include "rgb2Gray.h"
 
@@ -14,8 +14,12 @@
 #define RGB2GRAY_COEF_G 0.58704307445112
 #define RGB2GRAY_COEF_B 0.11402090425510
 
-void rgb2Gray(int size, unsigned char *r, unsigned char *g, unsigned char *b, float *gray){
+void rgb2Gray(int size, unsigned char *rgb, float *gray){
     int idx;
+    unsigned char *r = rgb;
+    unsigned char *g = rgb+size;
+    unsigned char *b = rgb+2*size;
+    
     for(idx=0; idx< size; idx++){
         gray[idx] = RGB2GRAY_COEF_R*(float)r[idx] +
                     RGB2GRAY_COEF_G*(float)g[idx] +
