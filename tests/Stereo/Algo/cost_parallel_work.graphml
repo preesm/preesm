@@ -151,6 +151,7 @@
             <data key="name">disparitySelect</data>
             <data key="kind">vertex</data>
             <data key="graph_desc">../Code/IDL/disparitySelect.idl</data>
+            <data key="memory_script">../Code/Scripts/disparitySelect.bsh</data>
             <data key="arguments">
                 <argument name="height" value="height"/>
                 <argument name="nbDisparities" value="maxDisparity-minDisparity"/>
