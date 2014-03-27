@@ -16,13 +16,10 @@
 
 void rgb2Gray(int size, unsigned char *rgb, float *gray){
     int idx;
-    unsigned char *r = rgb;
-    unsigned char *g = rgb+size;
-    unsigned char *b = rgb+2*size;
     
     for(idx=0; idx< size; idx++){
-        gray[idx] = RGB2GRAY_COEF_R*(float)r[idx] +
-                    RGB2GRAY_COEF_G*(float)g[idx] +
-                    RGB2GRAY_COEF_B*(float)b[idx];
+        gray[idx] = RGB2GRAY_COEF_R*(float)rgb[3*idx] +
+                    RGB2GRAY_COEF_G*(float)rgb[3*idx+1] +
+                    RGB2GRAY_COEF_B*(float)rgb[3*idx+2];
     }
 }
