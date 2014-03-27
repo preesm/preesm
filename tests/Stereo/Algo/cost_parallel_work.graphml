@@ -288,17 +288,10 @@
         </edge>
         <edge source="disparitySelect" sourceport="backBestCost"
             target="disparitySelect" targetport="bestCostFeed">
-            <data key="edge_prod">height*width</data>
-            <data key="edge_delay">height*width</data>
-            <data key="edge_cons">height*width</data>
+            <data key="edge_prod">height*width+1</data>
+            <data key="edge_delay">height*width+1</data>
+            <data key="edge_cons">height*width+1</data>
             <data key="data_type">float</data>
-        </edge>
-        <edge source="disparitySelect" sourceport="nextIter"
-            target="disparitySelect" targetport="iter">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">1</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">int</data>
         </edge>
         <edge source="disparityGen" sourceport="disparities"
             target="disparitySelect" targetport="disparity">
