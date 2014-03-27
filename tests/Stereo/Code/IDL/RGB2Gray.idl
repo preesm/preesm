@@ -2,6 +2,6 @@
 module rgb2Gray {
 	typedef long parameter ;
 	interface loop {
-		void rgb2Gray (in parameter size, in char r , in char g , in char b, out float gray);
+		void rgb2Gray (in parameter size, in char rgb, out float gray);
 	} ;
 } ;

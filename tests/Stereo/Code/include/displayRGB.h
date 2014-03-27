@@ -28,10 +28,24 @@
 * @param b
 *        Array containing the blue component of the displayed image.
 */
-void displayRGB(int id, unsigned char *r, unsigned char *g, unsigned char *b);
+void display3Components(int id, unsigned char *r, unsigned char *g, unsigned char *b);
 
 /**
-* Identical to display RGB, but receive only one component.
+* Function used to display an RGB image
+*
+* @param id
+*        The id of the displayed frame in the window.
+* @param height
+*        height of the frame
+* @param width
+*        width of the frame
+* @param rgb
+*        Array containing the 3 components of the displayed image.
+*/
+void displayRGB(int id, int height, int width, unsigned char *rgb);
+
+/**
+* Identical to display RGB, but receive only one luminance component.
 *
 * @param id
 *        The id of the displayed frame in the window.

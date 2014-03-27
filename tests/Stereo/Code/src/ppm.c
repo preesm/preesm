@@ -113,10 +113,13 @@ void readPPMInit(int id,int height, int width) {
     tick = clock();
 }
 
-void readPPM(int id,int height, int width, unsigned char *r, unsigned char *g, unsigned char *b){
+void readPPM(int id,int height, int width, unsigned char *rgbPtr){
     int idxPxl;
     int rgb;
     unsigned char *readBuffer;
+    unsigned char *r = rgbPtr;
+    unsigned char *g = rgbPtr+height*width;
+    unsigned char *b = rgbPtr+2*height*width;
 
 	if(id == 1){
 		tick = clock()-tick;
