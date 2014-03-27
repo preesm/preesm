@@ -132,6 +132,7 @@
             <data key="graph_desc">../Code/IDL/medianFilter.idl</data>
             <data key="arguments">
                 <argument name="height" value="height/nbSlice+2"/>
+                <argument name="topDownBorderSize" value="1"/>
                 <argument name="width" value="width"/>
             </data>
         </node>
@@ -144,16 +145,6 @@
                 <argument name="height" value="height"/>
                 <argument name="nbSlice" value="nbSlice"/>
                 <argument name="overlap" value="1"/>
-                <argument name="width" value="width"/>
-            </data>
-        </node>
-        <node id="Merge">
-            <data key="name">Merge</data>
-            <data key="kind">vertex</data>
-            <data key="graph_desc">../Code/IDL/merge.idl</data>
-            <data key="arguments">
-                <argument name="height" value="height"/>
-                <argument name="nbSlice" value="nbSlice"/>
                 <argument name="width" value="width"/>
             </data>
         </node>
@@ -198,13 +189,6 @@
             <data key="edge_prod">nbSlice*(height*width/nbSlice+2*width)</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width/nbSlice+2*width</data>
-            <data key="data_type">uchar</data>
-        </edge>
-        <edge source="medianFilter" sourceport="filteredDisparity"
-            target="Merge" targetport="input">
-            <data key="edge_prod">height*width/nbSlice+2*width</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">nbSlice*(height*width/nbSlice+2*width)</data>
             <data key="data_type">uchar</data>
         </edge>
         <edge source="Read_PPM0" sourceport="rgb" target="Display_rgb0" targetport="rgb">
@@ -257,17 +241,12 @@
             <data key="data_type">uchar</data>
             <data key="target_port_modifier">pure_in</data>
         </edge>
-        <edge source="Merge" sourceport="output" target="lum2rgb2" targetport="i">
-            <data key="edge_prod">height*width</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_cons">height*width</data>
-            <data key="data_type">uchar</data>
-        </edge>
         <edge source="lum2rgb2" sourceport="o0" target="Display_rgb1" targetport="lum">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">uchar</data>
+            <data key="target_port_modifier">pure_in</data>
         </edge>
         <edge source="Read_PPM0" sourceport="rgb"
             target="Cost_Parallel_Work" targetport="rgbL">
@@ -275,6 +254,14 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width*3</data>
             <data key="data_type">uchar</data>
+        </edge>
+        <edge source="medianFilter" sourceport="filteredDisparity"
+            target="lum2rgb2" targetport="i">
+            <data key="edge_prod">height*width/nbSlice</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width</data>
+            <data key="data_type">uchar</data>
+            <data key="target_port_modifier">pure_in</data>
         </edge>
     </graph>
 </graphml>

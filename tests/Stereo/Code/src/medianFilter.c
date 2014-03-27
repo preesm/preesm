@@ -43,12 +43,14 @@ void quickSort(int startIdx, int endIdx, unsigned char *values){
 	}	
 }
 
-void medianFilter (int height , int width, unsigned char *rawDisparity, unsigned char *filteredDisparity)
+void medianFilter (int height , int width, int topDownBorderSize, 
+                   unsigned char *rawDisparity,
+				   unsigned char *filteredDisparity)
 {	
 	int i,j;
 	int k,l;
 	// Process pixels one by one
-	for(j=0; j< height; j++){
+	for(j=topDownBorderSize; j< height-topDownBorderSize; j++){
 		for(i=0;i<width;i++){
 			unsigned char pixels[9];
 			// output pixel is the median of a 3x3 window
@@ -63,7 +65,7 @@ void medianFilter (int height , int width, unsigned char *rawDisparity, unsigned
 
 			// Sort the 9 values
 			quickSort(0, 8, pixels);
-			filteredDisparity[j*width+i] = pixels[9/2];
+			filteredDisparity[(j-topDownBorderSize)*width+i] = pixels[9/2];
 		}
 	}
 }
