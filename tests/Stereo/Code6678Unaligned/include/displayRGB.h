@@ -25,8 +25,10 @@
  *        Array containing the green component of the displayed image.
  * @param b
  *        Array containing the blue component of the displayed image.
+ * @param pixelStride
+ *        nb of bytes between successive pixels
  */
-void display3Components(int id, unsigned char *r, unsigned char *g, unsigned char *b);
+void display3Components(int id, unsigned char *r, unsigned char *g, unsigned char *b, int pixelStride);
 
 /**
 * Function used to display an RGB image
