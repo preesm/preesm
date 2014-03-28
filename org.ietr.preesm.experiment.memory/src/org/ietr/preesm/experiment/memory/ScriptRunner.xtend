@@ -1438,10 +1438,9 @@ class ScriptRunner {
 
 			// Create the input/output lists
 			val inputs = sdfVertex.incomingEdges.map[
-				// An input buffer is backward mergeable if it is Pure_in OR if it is unused and linked to a non pure_out source
+				// An input buffer is backward mergeable if it is Pure_in OR if it is unused
 				val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_IN) || ((it.
-					targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED) &&
-					!(it.sourcePortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_OUT))
+					targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED))
 				try {
 					new Buffer(it, dagVertex, it.targetLabel, it.cons.intValue, dataTypes.get(it.dataType.toString).size,
 						isMergeable)
@@ -1452,10 +1451,9 @@ class ScriptRunner {
 				}].toList
 
 			val outputs = sdfVertex.outgoingEdges.map[
-				// An output buffer is mergeable if it is !(pure_out AND unused) or if its target port is not Pure_in 
+				// An output buffer is mergeable if it is unused or if its target port is not Pure_in 
 				val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_IN) || ((it.
-					targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED) &&
-					!(it.sourcePortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_OUT))
+					targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED))
 				try {
 					new Buffer(it, dagVertex, it.sourceLabel, it.prod.intValue, dataTypes.get(it.dataType.toString).size,
 						isMergeable)
@@ -1512,6 +1510,9 @@ class ScriptRunner {
 		val mergedMObjects = newHashMap
 		meg.propertyBean.setValue(MemoryExclusionGraph::HOST_MEMORY_OBJECT_PROPERTY, mergedMObjects)
 
+		// List of the unused and pureout memobjects
+		val unusedMObjects = newArrayList
+
 		// Process each group of buffers separately
 		for (buffers : bufferGroups) {
 
@@ -1548,9 +1549,16 @@ class ScriptRunner {
 				bufferAndMObjectMap.put(buffer, mObj)
 			}
 
+			// For each unmatched buffer that did not receive matched buffers
+			// Filter unused buffers.
+			unusedMObjects.addAll(
+				buffers.filter [
+					it.matched == null && !it.host &&
+						(it.sdfEdge.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED) &&
+						(it.sdfEdge.sourcePortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_OUT)
+				].map[bufferAndMObjectMap.get(it)])
+
 			// For each unmatched buffer that received matched buffers
-			// (unmatched buffers that did not receive matched buffer
-			// can be left untouched in the MEG)
 			for (buffer : buffers.filter[it.matched == null && it.host]) {
 
 				// Enlarge the corresponding mObject to the required size
@@ -1623,6 +1631,12 @@ class ScriptRunner {
 
 			}
 		}
+
+		// Remove all exclusions between unused buffers
+		unusedMObjects.forEach [ mObj |
+			val unusedNeighbors = meg.getAdjacentVertexOf(mObj).filter[unusedMObjects.contains(it)].toList
+			unusedNeighbors.forEach[meg.removeEdge(mObj, it)]
+		]
 	}
 
 	/**

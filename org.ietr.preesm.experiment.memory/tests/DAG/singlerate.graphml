@@ -16,118 +16,270 @@
     <key attr.name="data_type" attr.type="string" for="edge"/>
     <key attr.name="source_port_modifier" attr.type="string" for="edge"/>
     <key attr.name="target_port_modifier" attr.type="string" for="edge"/>
-    <key attr.name="Weight" attr.type="string" for="edge"/>
     <graph edgedefault="directed" kind="sdf">
-        <data key="name">top_display</data>
+        <data key="name">stereo_top</data>
         <data key="kind">sdf</data>
         <data key="variables">
-            <variable name="stage2" value="0"/>
-            <variable name="stage3" value="0"/>
-            <variable name="stage4" value="0"/>
-            <variable name="ysize" value="288"/>
-            <variable name="stage1" value="0"/>
-            <variable name="xsize" value="352"/>
-            <variable name="N" value="8"/>
+            <variable name="scale" value="4"/>
+            <variable name="nbSlice" value="15"/>
+            <variable name="height" value="375"/>
+            <variable name="nbIterations" value="5"/>
+            <variable name="width" value="450"/>
+            <variable name="truncValue" value="12"/>
+            <variable name="minDisparity" value="0"/>
+            <variable name="maxDisparity" value="3"/>
         </data>
-        <node id="Read_YUV">
-            <data key="graph_desc">../Code/IDL/readYuv.idl</data>
-            <data key="name">Read_YUV</data>
+        <node id="Read_PPM0">
+            <data key="graph_desc">../Code/IDL/readPPM.idl</data>
+            <data key="name">Read_PPM0</data>
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
             <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="288"/>
+                <argument name="id" value="0"/>
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
             </data>
         </node>
-        <node id="display">
-            <data key="graph_desc">../Code/IDL/displayPic.idl</data>
-            <data key="name">display</data>
+        <node id="Display_rgb0">
+            <data key="graph_desc">../Code/IDL/displayRGB.idl</data>
+            <data key="name">Display_rgb0</data>
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
             <data key="arguments">
                 <argument name="index" value="0"/>
-                <argument name="ysize" value="288"/>
-                <argument name="xsize" value="352"/>
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
             </data>
         </node>
-        <node id="Sobel_0">
-            <data key="graph_desc">../Code/IDL/sobel.idl</data>
-            <data key="name">Sobel_0</data>
+        <node id="Read_PPM1">
+            <data key="graph_desc">../Code/IDL/readPPM.idl</data>
+            <data key="name">Read_PPM1</data>
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
             <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="38"/>
+                <argument name="id" value="1"/>
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
             </data>
         </node>
-        <node id="Sobel_1">
-            <data key="graph_desc">../Code/IDL/sobel.idl</data>
-            <data key="name">Sobel_1</data>
+        <node id="Display_rgb1">
+            <data key="graph_desc">../Code/IDL/displayLum.idl</data>
+            <data key="name">Display_rgb1</data>
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
             <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="38"/>
+                <argument name="index" value="1"/>
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
             </data>
         </node>
-        <node id="Sobel_2">
-            <data key="graph_desc">../Code/IDL/sobel.idl</data>
-            <data key="name">Sobel_2</data>
+        <node id="RGB2Gray_L">
+            <data key="graph_desc">../Code/IDL/RGB2Gray.idl</data>
+            <data key="name">RGB2Gray_L</data>
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
             <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="38"/>
+                <argument name="size" value="168750"/>
             </data>
         </node>
-        <node id="Sobel_3">
-            <data key="graph_desc">../Code/IDL/sobel.idl</data>
-            <data key="name">Sobel_3</data>
+        <node id="RGB2Gray_R">
+            <data key="graph_desc">../Code/IDL/RGB2Gray.idl</data>
+            <data key="name">RGB2Gray_R</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="memory_script">../Code/Scripts/rgb2gray.bsh</data>
+            <data key="arguments">
+                <argument name="size" value="168750"/>
+            </data>
+        </node>
+        <node id="Census_L">
+            <data key="graph_desc">../Code/IDL/census.idl</data>
+            <data key="name">Census_L</data>
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
             <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="38"/>
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
             </data>
         </node>
-        <node id="Sobel_4">
-            <data key="graph_desc">../Code/IDL/sobel.idl</data>
-            <data key="name">Sobel_4</data>
+        <node id="Census_R">
+            <data key="graph_desc">../Code/IDL/census.idl</data>
+            <data key="name">Census_R</data>
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
             <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="38"/>
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
             </data>
         </node>
-        <node id="Sobel_5">
-            <data key="graph_desc">../Code/IDL/sobel.idl</data>
-            <data key="name">Sobel_5</data>
+        <node id="lum2rgb2">
+            <data key="name">lum2rgb2</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="medianFilter_0">
+            <data key="graph_desc">../Code/IDL/medianFilter.idl</data>
+            <data key="name">medianFilter_0</data>
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
             <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="38"/>
+                <argument name="height" value="27"/>
+                <argument name="topDownBorderSize" value="1"/>
+                <argument name="width" value="450"/>
             </data>
         </node>
-        <node id="Sobel_6">
-            <data key="graph_desc">../Code/IDL/sobel.idl</data>
-            <data key="name">Sobel_6</data>
+        <node id="medianFilter_1">
+            <data key="graph_desc">../Code/IDL/medianFilter.idl</data>
+            <data key="name">medianFilter_1</data>
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
             <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="38"/>
+                <argument name="height" value="27"/>
+                <argument name="topDownBorderSize" value="1"/>
+                <argument name="width" value="450"/>
             </data>
         </node>
-        <node id="Sobel_7">
-            <data key="graph_desc">../Code/IDL/sobel.idl</data>
-            <data key="name">Sobel_7</data>
+        <node id="medianFilter_2">
+            <data key="graph_desc">../Code/IDL/medianFilter.idl</data>
+            <data key="name">medianFilter_2</data>
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
             <data key="arguments">
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="38"/>
+                <argument name="height" value="27"/>
+                <argument name="topDownBorderSize" value="1"/>
+                <argument name="width" value="450"/>
+            </data>
+        </node>
+        <node id="medianFilter_3">
+            <data key="graph_desc">../Code/IDL/medianFilter.idl</data>
+            <data key="name">medianFilter_3</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="27"/>
+                <argument name="topDownBorderSize" value="1"/>
+                <argument name="width" value="450"/>
+            </data>
+        </node>
+        <node id="medianFilter_4">
+            <data key="graph_desc">../Code/IDL/medianFilter.idl</data>
+            <data key="name">medianFilter_4</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="27"/>
+                <argument name="topDownBorderSize" value="1"/>
+                <argument name="width" value="450"/>
+            </data>
+        </node>
+        <node id="medianFilter_5">
+            <data key="graph_desc">../Code/IDL/medianFilter.idl</data>
+            <data key="name">medianFilter_5</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="27"/>
+                <argument name="topDownBorderSize" value="1"/>
+                <argument name="width" value="450"/>
+            </data>
+        </node>
+        <node id="medianFilter_6">
+            <data key="graph_desc">../Code/IDL/medianFilter.idl</data>
+            <data key="name">medianFilter_6</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="27"/>
+                <argument name="topDownBorderSize" value="1"/>
+                <argument name="width" value="450"/>
+            </data>
+        </node>
+        <node id="medianFilter_7">
+            <data key="graph_desc">../Code/IDL/medianFilter.idl</data>
+            <data key="name">medianFilter_7</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="27"/>
+                <argument name="topDownBorderSize" value="1"/>
+                <argument name="width" value="450"/>
+            </data>
+        </node>
+        <node id="medianFilter_8">
+            <data key="graph_desc">../Code/IDL/medianFilter.idl</data>
+            <data key="name">medianFilter_8</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="27"/>
+                <argument name="topDownBorderSize" value="1"/>
+                <argument name="width" value="450"/>
+            </data>
+        </node>
+        <node id="medianFilter_9">
+            <data key="graph_desc">../Code/IDL/medianFilter.idl</data>
+            <data key="name">medianFilter_9</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="27"/>
+                <argument name="topDownBorderSize" value="1"/>
+                <argument name="width" value="450"/>
+            </data>
+        </node>
+        <node id="medianFilter_10">
+            <data key="graph_desc">../Code/IDL/medianFilter.idl</data>
+            <data key="name">medianFilter_10</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="27"/>
+                <argument name="topDownBorderSize" value="1"/>
+                <argument name="width" value="450"/>
+            </data>
+        </node>
+        <node id="medianFilter_11">
+            <data key="graph_desc">../Code/IDL/medianFilter.idl</data>
+            <data key="name">medianFilter_11</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="27"/>
+                <argument name="topDownBorderSize" value="1"/>
+                <argument name="width" value="450"/>
+            </data>
+        </node>
+        <node id="medianFilter_12">
+            <data key="graph_desc">../Code/IDL/medianFilter.idl</data>
+            <data key="name">medianFilter_12</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="27"/>
+                <argument name="topDownBorderSize" value="1"/>
+                <argument name="width" value="450"/>
+            </data>
+        </node>
+        <node id="medianFilter_13">
+            <data key="graph_desc">../Code/IDL/medianFilter.idl</data>
+            <data key="name">medianFilter_13</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="27"/>
+                <argument name="topDownBorderSize" value="1"/>
+                <argument name="width" value="450"/>
+            </data>
+        </node>
+        <node id="medianFilter_14">
+            <data key="graph_desc">../Code/IDL/medianFilter.idl</data>
+            <data key="name">medianFilter_14</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="27"/>
+                <argument name="topDownBorderSize" value="1"/>
+                <argument name="width" value="450"/>
             </data>
         </node>
         <node id="Split">
@@ -135,463 +287,341 @@
             <data key="name">Split</data>
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/split.bsh</data>
+            <data key="memory_script">../Code/Scripts/split.bsh</data>
             <data key="arguments">
-                <argument name="Height" value="288"/>
-                <argument name="Width" value="352"/>
-                <argument name="NbSlice" value="8"/>
-                <argument name="Overlap" value="1"/>
+                <argument name="overlap" value="1"/>
+                <argument name="nbSlice" value="15"/>
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
             </data>
         </node>
-        <node id="Merge">
-            <data key="graph_desc">../Code/IDL/merge.idl</data>
-            <data key="name">Merge</data>
+        <node id="WritePPM">
+            <data key="graph_desc">../Code/IDL/writePPM.idl</data>
+            <data key="name">WritePPM</data>
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
             <data key="arguments">
-                <argument name="nbSlice" value="8"/>
-                <argument name="xSize" value="352"/>
-                <argument name="ySize" value="288"/>
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
             </data>
         </node>
-        <node id="sink_0">
-            <data key="graph_desc"/>
-            <data key="name">sink_0</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/sink.bsh</data>
-            <data key="arguments">
-                <argument name="size" value="7040"/>
-            </data>
-        </node>
-        <node id="sink_1">
-            <data key="graph_desc"/>
-            <data key="name">sink_1</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/sink.bsh</data>
-            <data key="arguments">
-                <argument name="size" value="7040"/>
-            </data>
-        </node>
-        <node id="sink_2">
-            <data key="graph_desc"/>
-            <data key="name">sink_2</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/sink.bsh</data>
-            <data key="arguments">
-                <argument name="size" value="7040"/>
-            </data>
-        </node>
-        <node id="sink_3">
-            <data key="graph_desc"/>
-            <data key="name">sink_3</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/sink.bsh</data>
-            <data key="arguments">
-                <argument name="size" value="7040"/>
-            </data>
-        </node>
-        <node id="sink_4">
-            <data key="graph_desc"/>
-            <data key="name">sink_4</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/sink.bsh</data>
-            <data key="arguments">
-                <argument name="size" value="7040"/>
-            </data>
-        </node>
-        <node id="sink_5">
-            <data key="graph_desc"/>
-            <data key="name">sink_5</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/sink.bsh</data>
-            <data key="arguments">
-                <argument name="size" value="7040"/>
-            </data>
-        </node>
-        <node id="sink_6">
-            <data key="graph_desc"/>
-            <data key="name">sink_6</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/sink.bsh</data>
-            <data key="arguments">
-                <argument name="size" value="7040"/>
-            </data>
-        </node>
-        <node id="sink_7">
-            <data key="graph_desc"/>
-            <data key="name">sink_7</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/sink.bsh</data>
-            <data key="arguments">
-                <argument name="size" value="7040"/>
-            </data>
-        </node>
-        <node id="Split1">
-            <data key="graph_desc">../Code/IDL/split.idl</data>
-            <data key="name">Split1</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/ShuffleSplit.bsh</data>
-            <data key="arguments">
-                <argument name="Height" value="144"/>
-                <argument name="Width" value="176"/>
-                <argument name="NbSlice" value="8"/>
-                <argument name="Overlap" value="1"/>
-            </data>
-        </node>
-        <node id="sink2_0">
-            <data key="graph_desc"/>
-            <data key="name">sink2_0</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink2_1">
-            <data key="graph_desc"/>
-            <data key="name">sink2_1</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink2_2">
-            <data key="graph_desc"/>
-            <data key="name">sink2_2</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink2_3">
-            <data key="graph_desc"/>
-            <data key="name">sink2_3</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink2_4">
-            <data key="graph_desc"/>
-            <data key="name">sink2_4</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink2_5">
-            <data key="graph_desc"/>
-            <data key="name">sink2_5</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink2_6">
-            <data key="graph_desc"/>
-            <data key="name">sink2_6</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink2_7">
-            <data key="graph_desc"/>
-            <data key="name">sink2_7</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="Split2">
-            <data key="graph_desc">../Code/IDL/split.idl</data>
-            <data key="name">Split2</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/ShuffleSplit.bsh</data>
-            <data key="arguments">
-                <argument name="Height" value="144"/>
-                <argument name="Width" value="176"/>
-                <argument name="NbSlice" value="8"/>
-                <argument name="Overlap" value="0"/>
-            </data>
-        </node>
-        <node id="sink3_0">
-            <data key="graph_desc"/>
-            <data key="name">sink3_0</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink3_1">
-            <data key="graph_desc"/>
-            <data key="name">sink3_1</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink3_2">
-            <data key="graph_desc"/>
-            <data key="name">sink3_2</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink3_3">
-            <data key="graph_desc"/>
-            <data key="name">sink3_3</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink3_4">
-            <data key="graph_desc"/>
-            <data key="name">sink3_4</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink3_5">
-            <data key="graph_desc"/>
-            <data key="name">sink3_5</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink3_6">
-            <data key="graph_desc"/>
-            <data key="name">sink3_6</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink3_7">
-            <data key="graph_desc"/>
-            <data key="name">sink3_7</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="transmitter_0">
-            <data key="graph_desc"/>
-            <data key="name">transmitter_0</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/sink.bsh</data>
-            <data key="arguments">
-                <argument name="size" value="3168"/>
-            </data>
-        </node>
-        <node id="transmitter_1">
-            <data key="graph_desc"/>
-            <data key="name">transmitter_1</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/sink.bsh</data>
-            <data key="arguments">
-                <argument name="size" value="3168"/>
-            </data>
-        </node>
-        <node id="transmitter_2">
-            <data key="graph_desc"/>
-            <data key="name">transmitter_2</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/sink.bsh</data>
-            <data key="arguments">
-                <argument name="size" value="3168"/>
-            </data>
-        </node>
-        <node id="transmitter_3">
-            <data key="graph_desc"/>
-            <data key="name">transmitter_3</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/sink.bsh</data>
-            <data key="arguments">
-                <argument name="size" value="3168"/>
-            </data>
-        </node>
-        <node id="transmitter_4">
-            <data key="graph_desc"/>
-            <data key="name">transmitter_4</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/sink.bsh</data>
-            <data key="arguments">
-                <argument name="size" value="3168"/>
-            </data>
-        </node>
-        <node id="transmitter_5">
-            <data key="graph_desc"/>
-            <data key="name">transmitter_5</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/sink.bsh</data>
-            <data key="arguments">
-                <argument name="size" value="3168"/>
-            </data>
-        </node>
-        <node id="transmitter_6">
-            <data key="graph_desc"/>
-            <data key="name">transmitter_6</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/sink.bsh</data>
-            <data key="arguments">
-                <argument name="size" value="3168"/>
-            </data>
-        </node>
-        <node id="transmitter_7">
-            <data key="graph_desc"/>
-            <data key="name">transmitter_7</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/sink.bsh</data>
-            <data key="arguments">
-                <argument name="size" value="3168"/>
-            </data>
-        </node>
-        <node id="sink4">
-            <data key="graph_desc"/>
-            <data key="name">sink4</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="nothing_0">
-            <data key="graph_desc"/>
-            <data key="name">nothing_0</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="nothing_1">
-            <data key="graph_desc"/>
-            <data key="name">nothing_1</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="nothing_2">
-            <data key="graph_desc"/>
-            <data key="name">nothing_2</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="nothing_3">
-            <data key="graph_desc"/>
-            <data key="name">nothing_3</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="nothing_4">
-            <data key="graph_desc"/>
-            <data key="name">nothing_4</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="nothing_5">
-            <data key="graph_desc"/>
-            <data key="name">nothing_5</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="nothing_6">
-            <data key="graph_desc"/>
-            <data key="name">nothing_6</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="nothing_7">
-            <data key="graph_desc"/>
-            <data key="name">nothing_7</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="interleave0">
-            <data key="graph_desc"/>
-            <data key="name">interleave0</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/interleave.bsh</data>
-            <data key="arguments">
-                <argument name="interClusterSize" value="3168"/>
-                <argument name="N" value="8"/>
-                <argument name="clusterSize" value="3168"/>
-            </data>
-        </node>
-        <node id="interleave1">
-            <data key="graph_desc"/>
-            <data key="name">interleave1</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-            <data key="memory_script">../Code/Script/desinterleave.bsh</data>
-            <data key="arguments">
-                <argument name="interClusterSize" value="3168"/>
-                <argument name="N" value="8"/>
-                <argument name="clusterSize" value="3168"/>
-            </data>
-        </node>
-        <node id="sink1_0">
-            <data key="graph_desc"/>
-            <data key="name">sink1_0</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink1_1">
-            <data key="graph_desc"/>
-            <data key="name">sink1_1</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink1_2">
-            <data key="graph_desc"/>
-            <data key="name">sink1_2</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink1_3">
-            <data key="graph_desc"/>
-            <data key="name">sink1_3</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink1_4">
-            <data key="graph_desc"/>
-            <data key="name">sink1_4</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink1_5">
-            <data key="graph_desc"/>
-            <data key="name">sink1_5</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink1_6">
-            <data key="graph_desc"/>
-            <data key="name">sink1_6</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink1_7">
-            <data key="graph_desc"/>
-            <data key="name">sink1_7</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink5">
-            <data key="graph_desc"/>
-            <data key="name">sink5</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="sink6">
-            <data key="graph_desc"/>
-            <data key="name">sink6</data>
-            <data key="kind">vertex</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="br_Read_YUV_v">
-            <data key="name">br_Read_YUV_v</data>
+        <node id="br_Read_PPM0_rgb">
+            <data key="name">br_Read_PPM0_rgb</data>
             <data key="kind">Broadcast</data>
             <data key="nbRepeat">1</data>
         </node>
-        <node id="br_Read_YUV_u">
-            <data key="name">br_Read_YUV_u</data>
+        <node id="br_RGB2Gray_L_gray">
+            <data key="name">br_RGB2Gray_L_gray</data>
             <data key="kind">Broadcast</data>
             <data key="nbRepeat">1</data>
         </node>
-        <node id="br_display_oO">
-            <data key="name">br_display_oO</data>
+        <node id="br_RGB2Gray_R_gray">
+            <data key="name">br_RGB2Gray_R_gray</data>
             <data key="kind">Broadcast</data>
             <data key="nbRepeat">1</data>
         </node>
-        <node id="implode_Merge_input">
-            <data key="name">implode_Merge_input</data>
-            <data key="kind">join</data>
+        <node id="Cost_Parallel_Work_0_CostConstruction_0">
+            <data key="graph_desc">../Code/IDL/costConstruction.idl</data>
+            <data key="name">Cost_Parallel_Work_0_CostConstruction_0</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
+                <argument name="truncValue" value="12"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_CostConstruction_1">
+            <data key="graph_desc">../Code/IDL/costConstruction.idl</data>
+            <data key="name">Cost_Parallel_Work_0_CostConstruction_1</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
+                <argument name="truncValue" value="12"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_CostConstruction_2">
+            <data key="graph_desc">../Code/IDL/costConstruction.idl</data>
+            <data key="name">Cost_Parallel_Work_0_CostConstruction_2</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
+                <argument name="truncValue" value="12"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_disparityGen">
+            <data key="graph_desc">../Code/IDL/disparityGen.idl</data>
+            <data key="name">Cost_Parallel_Work_0_disparityGen</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="minDisparity" value="0"/>
+                <argument name="maxDisparity" value="3"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_AggregateCost_0">
+            <data key="graph_desc">../Code/IDL/aggregateCost.idl</data>
+            <data key="name">Cost_Parallel_Work_0_AggregateCost_0</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="375"/>
+                <argument name="nbIterations" value="5"/>
+                <argument name="width" value="450"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_AggregateCost_1">
+            <data key="graph_desc">../Code/IDL/aggregateCost.idl</data>
+            <data key="name">Cost_Parallel_Work_0_AggregateCost_1</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="375"/>
+                <argument name="nbIterations" value="5"/>
+                <argument name="width" value="450"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_AggregateCost_2">
+            <data key="graph_desc">../Code/IDL/aggregateCost.idl</data>
+            <data key="name">Cost_Parallel_Work_0_AggregateCost_2</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="375"/>
+                <argument name="nbIterations" value="5"/>
+                <argument name="width" value="450"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_offsetGen">
+            <data key="graph_desc">../Code/IDL/offsetGen.idl</data>
+            <data key="name">Cost_Parallel_Work_0_offsetGen</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="nbIterations" value="5"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_broadcastOffsets">
+            <data key="name">Cost_Parallel_Work_0_broadcastOffsets</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="Cost_Parallel_Work_0_computeHorWeights_0">
+            <data key="graph_desc">../Code/IDL/computeWeights.idl</data>
+            <data key="name">Cost_Parallel_Work_0_computeHorWeights_0</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
+                <argument name="horOrVert" value="0"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_computeHorWeights_1">
+            <data key="graph_desc">../Code/IDL/computeWeights.idl</data>
+            <data key="name">Cost_Parallel_Work_0_computeHorWeights_1</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
+                <argument name="horOrVert" value="0"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_computeHorWeights_2">
+            <data key="graph_desc">../Code/IDL/computeWeights.idl</data>
+            <data key="name">Cost_Parallel_Work_0_computeHorWeights_2</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
+                <argument name="horOrVert" value="0"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_computeHorWeights_3">
+            <data key="graph_desc">../Code/IDL/computeWeights.idl</data>
+            <data key="name">Cost_Parallel_Work_0_computeHorWeights_3</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
+                <argument name="horOrVert" value="0"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_computeHorWeights_4">
+            <data key="graph_desc">../Code/IDL/computeWeights.idl</data>
+            <data key="name">Cost_Parallel_Work_0_computeHorWeights_4</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
+                <argument name="horOrVert" value="0"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_broadcastHWeights">
+            <data key="name">Cost_Parallel_Work_0_broadcastHWeights</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="Cost_Parallel_Work_0_computeVertWeights_0">
+            <data key="graph_desc">../Code/IDL/computeWeights.idl</data>
+            <data key="name">Cost_Parallel_Work_0_computeVertWeights_0</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
+                <argument name="horOrVert" value="1"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_computeVertWeights_1">
+            <data key="graph_desc">../Code/IDL/computeWeights.idl</data>
+            <data key="name">Cost_Parallel_Work_0_computeVertWeights_1</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
+                <argument name="horOrVert" value="1"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_computeVertWeights_2">
+            <data key="graph_desc">../Code/IDL/computeWeights.idl</data>
+            <data key="name">Cost_Parallel_Work_0_computeVertWeights_2</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
+                <argument name="horOrVert" value="1"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_computeVertWeights_3">
+            <data key="graph_desc">../Code/IDL/computeWeights.idl</data>
+            <data key="name">Cost_Parallel_Work_0_computeVertWeights_3</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
+                <argument name="horOrVert" value="1"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_computeVertWeights_4">
+            <data key="graph_desc">../Code/IDL/computeWeights.idl</data>
+            <data key="name">Cost_Parallel_Work_0_computeVertWeights_4</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="arguments">
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
+                <argument name="horOrVert" value="1"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_broadcastVWeights">
+            <data key="name">Cost_Parallel_Work_0_broadcastVWeights</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="Cost_Parallel_Work_0_disparitySelect_0">
+            <data key="graph_desc">../Code/IDL/disparitySelect.idl</data>
+            <data key="name">Cost_Parallel_Work_0_disparitySelect_0</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="memory_script">../Code/Scripts/disparitySelect.bsh</data>
+            <data key="arguments">
+                <argument name="scale" value="4"/>
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
+                <argument name="nbDisparities" value="3"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_disparitySelect_1">
+            <data key="graph_desc">../Code/IDL/disparitySelect.idl</data>
+            <data key="name">Cost_Parallel_Work_0_disparitySelect_1</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="memory_script">../Code/Scripts/disparitySelect.bsh</data>
+            <data key="arguments">
+                <argument name="scale" value="4"/>
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
+                <argument name="nbDisparities" value="3"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_disparitySelect_2">
+            <data key="graph_desc">../Code/IDL/disparitySelect.idl</data>
+            <data key="name">Cost_Parallel_Work_0_disparitySelect_2</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+            <data key="memory_script">../Code/Scripts/disparitySelect.bsh</data>
+            <data key="arguments">
+                <argument name="scale" value="4"/>
+                <argument name="height" value="375"/>
+                <argument name="width" value="450"/>
+                <argument name="nbDisparities" value="3"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work_0_broadcastResult_0">
+            <data key="name">Cost_Parallel_Work_0_broadcastResult_0</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="Cost_Parallel_Work_0_broadcastResult_1">
+            <data key="name">Cost_Parallel_Work_0_broadcastResult_1</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="Cost_Parallel_Work_0_broadcastResult_2">
+            <data key="name">Cost_Parallel_Work_0_broadcastResult_2</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="Cost_Parallel_Work_0_br_disparityGen_disparities">
+            <data key="name">Cost_Parallel_Work_0_br_disparityGen_disparities</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="Cost_Parallel_Work_0_br_offsetGen_offsets">
+            <data key="name">Cost_Parallel_Work_0_br_offsetGen_offsets</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="Cost_Parallel_Work_0_broadcast_grayL">
+            <data key="name">Cost_Parallel_Work_0_broadcast_grayL</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="Cost_Parallel_Work_0_broadcast_grayR">
+            <data key="name">Cost_Parallel_Work_0_broadcast_grayR</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="Cost_Parallel_Work_0_broadcast_cenL">
+            <data key="name">Cost_Parallel_Work_0_broadcast_cenL</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="Cost_Parallel_Work_0_broadcast_cenR">
+            <data key="name">Cost_Parallel_Work_0_broadcast_cenR</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="Cost_Parallel_Work_0_broadcast_rgbL">
+            <data key="name">Cost_Parallel_Work_0_broadcast_rgbL</data>
+            <data key="kind">Broadcast</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="Cost_Parallel_Work_0_roundBuffer_raw_disparity">
+            <data key="name">Cost_Parallel_Work_0_roundBuffer_raw_disparity</data>
+            <data key="kind">Broadcast</data>
             <data key="nbRepeat">1</data>
         </node>
         <node id="explode_Split_output">
@@ -599,1003 +629,1249 @@
             <data key="kind">fork</data>
             <data key="nbRepeat">1</data>
         </node>
-        <node id="explode_Split1_output">
-            <data key="name">explode_Split1_output</data>
-            <data key="kind">fork</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="explode_Split2_output">
-            <data key="name">explode_Split2_output</data>
-            <data key="kind">fork</data>
-            <data key="nbRepeat">1</data>
-        </node>
-        <node id="implode_sink4_ii">
-            <data key="name">implode_sink4_ii</data>
+        <node id="implode_lum2rgb2_i">
+            <data key="name">implode_lum2rgb2_i</data>
             <data key="kind">join</data>
             <data key="nbRepeat">1</data>
         </node>
-        <node id="implode_interleave0_i">
-            <data key="name">implode_interleave0_i</data>
+        <node id="implode_Cost_Parallel_Work_0_broadcastHWeights_i">
+            <data key="name">implode_Cost_Parallel_Work_0_broadcastHWeights_i</data>
             <data key="kind">join</data>
             <data key="nbRepeat">1</data>
         </node>
-        <node id="explode_interleave1_o">
-            <data key="name">explode_interleave1_o</data>
-            <data key="kind">fork</data>
+        <node id="implode_Cost_Parallel_Work_0_broadcastVWeights_i">
+            <data key="name">implode_Cost_Parallel_Work_0_broadcastVWeights_i</data>
+            <data key="kind">join</data>
             <data key="nbRepeat">1</data>
         </node>
-        <edge source="Read_YUV" sourceport="y" target="Split" targetport="input">
-            <data key="edge_cons">101376</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">101376</data>
-            <data key="data_type">uchar</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="Merge" sourceport="output" target="display" targetport="y">
-            <data key="edge_cons">101376</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">101376</data>
-            <data key="data_type">uchar</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="implode_Merge_input" sourceport="output"
-            target="Merge" targetport="input">
-            <data key="edge_cons">107008</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">107008</data>
-            <data key="data_type">uchar</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="Sobel_0" sourceport="output"
-            target="implode_Merge_input" targetport="input_0">
-            <data key="edge_cons">13376</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">13376</data>
-            <data key="data_type">uchar</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="Sobel_1" sourceport="output"
-            target="implode_Merge_input" targetport="input_13376">
-            <data key="edge_cons">13376</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">13376</data>
-            <data key="data_type">uchar</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="Sobel_2" sourceport="output"
-            target="implode_Merge_input" targetport="input_26752">
-            <data key="edge_cons">13376</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">13376</data>
-            <data key="data_type">uchar</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="Sobel_3" sourceport="output"
-            target="implode_Merge_input" targetport="input_40128">
-            <data key="edge_cons">13376</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">13376</data>
-            <data key="data_type">uchar</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="Sobel_4" sourceport="output"
-            target="implode_Merge_input" targetport="input_53504">
-            <data key="edge_cons">13376</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">13376</data>
-            <data key="data_type">uchar</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="Sobel_5" sourceport="output"
-            target="implode_Merge_input" targetport="input_66880">
-            <data key="edge_cons">13376</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">13376</data>
-            <data key="data_type">uchar</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="Sobel_6" sourceport="output"
-            target="implode_Merge_input" targetport="input_80256">
-            <data key="edge_cons">13376</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">13376</data>
-            <data key="data_type">uchar</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="Sobel_7" sourceport="output"
-            target="implode_Merge_input" targetport="input_93632">
-            <data key="edge_cons">13376</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">13376</data>
-            <data key="data_type">uchar</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
         <edge source="Split" sourceport="output"
-            target="explode_Split_output" targetport="input">
-            <data key="edge_cons">107008</data>
+            target="explode_Split_output" targetport="rawDisparity">
+            <data key="edge_cons">182250</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">107008</data>
+            <data key="edge_prod">182250</data>
             <data key="data_type">uchar</data>
-            <data key="source_port_modifier">pure_out</data>
+            <data key="source_port_modifier"/>
             <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
         </edge>
         <edge source="explode_Split_output" sourceport="output_0"
-            target="Sobel_0" targetport="input">
-            <data key="edge_cons">13376</data>
+            target="medianFilter_0" targetport="rawDisparity">
+            <data key="edge_cons">12150</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">13376</data>
-            <data key="data_type">uchar</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split_output" sourceport="output_13376"
-            target="Sobel_1" targetport="input">
-            <data key="edge_cons">13376</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">13376</data>
-            <data key="data_type">uchar</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split_output" sourceport="output_26752"
-            target="Sobel_2" targetport="input">
-            <data key="edge_cons">13376</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">13376</data>
-            <data key="data_type">uchar</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split_output" sourceport="output_40128"
-            target="Sobel_3" targetport="input">
-            <data key="edge_cons">13376</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">13376</data>
-            <data key="data_type">uchar</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split_output" sourceport="output_53504"
-            target="Sobel_4" targetport="input">
-            <data key="edge_cons">13376</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">13376</data>
-            <data key="data_type">uchar</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split_output" sourceport="output_66880"
-            target="Sobel_5" targetport="input">
-            <data key="edge_cons">13376</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">13376</data>
-            <data key="data_type">uchar</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split_output" sourceport="output_80256"
-            target="Sobel_6" targetport="input">
-            <data key="edge_cons">13376</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">13376</data>
-            <data key="data_type">uchar</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split_output" sourceport="output_93632"
-            target="Sobel_7" targetport="input">
-            <data key="edge_cons">13376</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">13376</data>
-            <data key="data_type">uchar</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="Split1" sourceport="output"
-            target="explode_Split1_output" targetport="u">
-            <data key="edge_cons">28160</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">28160</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split1_output" sourceport="output_0"
-            target="sink_0" targetport="u">
-            <data key="edge_cons">3520</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3520</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split1_output" sourceport="output_3520"
-            target="sink_1" targetport="u">
-            <data key="edge_cons">3520</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3520</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split1_output" sourceport="output_7040"
-            target="sink_2" targetport="u">
-            <data key="edge_cons">3520</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3520</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split1_output" sourceport="output_10560"
-            target="sink_3" targetport="u">
-            <data key="edge_cons">3520</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3520</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split1_output" sourceport="output_14080"
-            target="sink_4" targetport="u">
-            <data key="edge_cons">3520</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3520</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split1_output" sourceport="output_17600"
-            target="sink_5" targetport="u">
-            <data key="edge_cons">3520</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3520</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split1_output" sourceport="output_21120"
-            target="sink_6" targetport="u">
-            <data key="edge_cons">3520</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3520</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split1_output" sourceport="output_24640"
-            target="sink_7" targetport="u">
-            <data key="edge_cons">3520</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3520</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="sink_0" sourceport="ooo" target="sink2_0" targetport="iii">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="sink_1" sourceport="ooo" target="sink2_1" targetport="iii">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="sink_2" sourceport="ooo" target="sink2_2" targetport="iii">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="sink_3" sourceport="ooo" target="sink2_3" targetport="iii">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="sink_4" sourceport="ooo" target="sink2_4" targetport="iii">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="sink_5" sourceport="ooo" target="sink2_5" targetport="iii">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="sink_6" sourceport="ooo" target="sink2_6" targetport="iii">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="sink_7" sourceport="ooo" target="sink2_7" targetport="iii">
-            <data key="edge_cons">7040</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">7040</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="Split2" sourceport="output"
-            target="explode_Split2_output" targetport="iii">
-            <data key="edge_cons">25344</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split2_output" sourceport="output_0"
-            target="sink3_0" targetport="iii">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split2_output" sourceport="output_3168"
-            target="sink3_1" targetport="iii">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split2_output" sourceport="output_6336"
-            target="sink3_2" targetport="iii">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split2_output" sourceport="output_9504"
-            target="sink3_3" targetport="iii">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split2_output" sourceport="output_12672"
-            target="sink3_4" targetport="iii">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split2_output" sourceport="output_15840"
-            target="sink3_5" targetport="iii">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split2_output" sourceport="output_19008"
-            target="sink3_6" targetport="iii">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_Split2_output" sourceport="output_22176"
-            target="sink3_7" targetport="iii">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="implode_sink4_ii" sourceport="ooo" target="sink4" targetport="ii">
-            <data key="edge_cons">25344</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="transmitter_0" sourceport="ooo"
-            target="implode_sink4_ii" targetport="ii_0">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="transmitter_1" sourceport="ooo"
-            target="implode_sink4_ii" targetport="ii_3168">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="transmitter_2" sourceport="ooo"
-            target="implode_sink4_ii" targetport="ii_6336">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="transmitter_3" sourceport="ooo"
-            target="implode_sink4_ii" targetport="ii_9504">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="transmitter_4" sourceport="ooo"
-            target="implode_sink4_ii" targetport="ii_12672">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="transmitter_5" sourceport="ooo"
-            target="implode_sink4_ii" targetport="ii_15840">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="transmitter_6" sourceport="ooo"
-            target="implode_sink4_ii" targetport="ii_19008">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="transmitter_7" sourceport="ooo"
-            target="implode_sink4_ii" targetport="ii_22176">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="implode_interleave0_i" sourceport="o"
-            target="interleave0" targetport="i">
-            <data key="edge_cons">25344</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="nothing_0" sourceport="o"
-            target="implode_interleave0_i" targetport="i_0">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="nothing_1" sourceport="o"
-            target="implode_interleave0_i" targetport="i_3168">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="nothing_2" sourceport="o"
-            target="implode_interleave0_i" targetport="i_6336">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="nothing_3" sourceport="o"
-            target="implode_interleave0_i" targetport="i_9504">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="nothing_4" sourceport="o"
-            target="implode_interleave0_i" targetport="i_12672">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="nothing_5" sourceport="o"
-            target="implode_interleave0_i" targetport="i_15840">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="nothing_6" sourceport="o"
-            target="implode_interleave0_i" targetport="i_19008">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="nothing_7" sourceport="o"
-            target="implode_interleave0_i" targetport="i_22176">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="interleave0" sourceport="o" target="interleave1" targetport="i">
-            <data key="edge_cons">50688</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">50688</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="interleave1" sourceport="o"
-            target="explode_interleave1_o" targetport="iii">
-            <data key="edge_cons">25344</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_interleave1_o" sourceport="o_0"
-            target="sink1_0" targetport="iii">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_interleave1_o" sourceport="o_3168"
-            target="sink1_1" targetport="iii">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_interleave1_o" sourceport="o_6336"
-            target="sink1_2" targetport="iii">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_interleave1_o" sourceport="o_9504"
-            target="sink1_3" targetport="iii">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_interleave1_o" sourceport="o_12672"
-            target="sink1_4" targetport="iii">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_interleave1_o" sourceport="o_15840"
-            target="sink1_5" targetport="iii">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_interleave1_o" sourceport="o_19008"
-            target="sink1_6" targetport="iii">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="explode_interleave1_o" sourceport="o_22176"
-            target="sink1_7" targetport="iii">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="Read_YUV" sourceport="v" target="br_Read_YUV_v" targetport="in">
-            <data key="edge_cons">25344</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="br_Read_YUV_v" sourceport="out_0_0"
-            target="display" targetport="v">
-            <data key="edge_cons">25344</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
+            <data key="edge_prod">12150</data>
             <data key="data_type">uchar</data>
             <data key="source_port_modifier">pure_out</data>
             <data key="target_port_modifier"/>
-            <data key="Weight"/>
         </edge>
-        <edge source="br_Read_YUV_v" sourceport="out_1_0"
-            target="Split2" targetport="input">
-            <data key="edge_cons">25344</data>
+        <edge source="explode_Split_output" sourceport="output_12150"
+            target="medianFilter_1" targetport="rawDisparity">
+            <data key="edge_cons">12150</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="br_Read_YUV_v" sourceport="out_2_0_0"
-            target="nothing_0" targetport="i">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="br_Read_YUV_v" sourceport="out_2_0_3168"
-            target="nothing_1" targetport="i">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="br_Read_YUV_v" sourceport="out_2_0_6336"
-            target="nothing_2" targetport="i">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="br_Read_YUV_v" sourceport="out_2_0_9504"
-            target="nothing_3" targetport="i">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="br_Read_YUV_v" sourceport="out_2_0_12672"
-            target="nothing_4" targetport="i">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="br_Read_YUV_v" sourceport="out_2_0_15840"
-            target="nothing_5" targetport="i">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="br_Read_YUV_v" sourceport="out_2_0_19008"
-            target="nothing_6" targetport="i">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="br_Read_YUV_v" sourceport="out_2_0_22176"
-            target="nothing_7" targetport="i">
-            <data key="edge_cons">3168</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
-        </edge>
-        <edge source="Read_YUV" sourceport="u" target="br_Read_YUV_u" targetport="in">
-            <data key="edge_cons">25344</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier"/>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
-        </edge>
-        <edge source="br_Read_YUV_u" sourceport="out_0_0"
-            target="display" targetport="u">
-            <data key="edge_cons">25344</data>
-            <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
+            <data key="edge_prod">12150</data>
             <data key="data_type">uchar</data>
             <data key="source_port_modifier">pure_out</data>
             <data key="target_port_modifier"/>
-            <data key="Weight"/>
         </edge>
-        <edge source="br_Read_YUV_u" sourceport="out_1_0"
-            target="Split1" targetport="input">
-            <data key="edge_cons">25344</data>
+        <edge source="explode_Split_output" sourceport="output_24300"
+            target="medianFilter_2" targetport="rawDisparity">
+            <data key="edge_cons">12150</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
-            <data key="data_type">char</data>
+            <data key="edge_prod">12150</data>
+            <data key="data_type">uchar</data>
             <data key="source_port_modifier">pure_out</data>
             <data key="target_port_modifier"/>
-            <data key="Weight"/>
         </edge>
-        <edge source="br_Read_YUV_u" sourceport="out_2_0_0"
-            target="transmitter_0" targetport="u">
-            <data key="edge_cons">3168</data>
+        <edge source="explode_Split_output" sourceport="output_36450"
+            target="medianFilter_3" targetport="rawDisparity">
+            <data key="edge_cons">12150</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
+            <data key="edge_prod">12150</data>
+            <data key="data_type">uchar</data>
             <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
+            <data key="target_port_modifier"/>
         </edge>
-        <edge source="br_Read_YUV_u" sourceport="out_2_0_3168"
-            target="transmitter_1" targetport="u">
-            <data key="edge_cons">3168</data>
+        <edge source="explode_Split_output" sourceport="output_48600"
+            target="medianFilter_4" targetport="rawDisparity">
+            <data key="edge_cons">12150</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
+            <data key="edge_prod">12150</data>
+            <data key="data_type">uchar</data>
             <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
+            <data key="target_port_modifier"/>
         </edge>
-        <edge source="br_Read_YUV_u" sourceport="out_2_0_6336"
-            target="transmitter_2" targetport="u">
-            <data key="edge_cons">3168</data>
+        <edge source="explode_Split_output" sourceport="output_60750"
+            target="medianFilter_5" targetport="rawDisparity">
+            <data key="edge_cons">12150</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
+            <data key="edge_prod">12150</data>
+            <data key="data_type">uchar</data>
             <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
+            <data key="target_port_modifier"/>
         </edge>
-        <edge source="br_Read_YUV_u" sourceport="out_2_0_9504"
-            target="transmitter_3" targetport="u">
-            <data key="edge_cons">3168</data>
+        <edge source="explode_Split_output" sourceport="output_72900"
+            target="medianFilter_6" targetport="rawDisparity">
+            <data key="edge_cons">12150</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
+            <data key="edge_prod">12150</data>
+            <data key="data_type">uchar</data>
             <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
+            <data key="target_port_modifier"/>
         </edge>
-        <edge source="br_Read_YUV_u" sourceport="out_2_0_12672"
-            target="transmitter_4" targetport="u">
-            <data key="edge_cons">3168</data>
+        <edge source="explode_Split_output" sourceport="output_85050"
+            target="medianFilter_7" targetport="rawDisparity">
+            <data key="edge_cons">12150</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
+            <data key="edge_prod">12150</data>
+            <data key="data_type">uchar</data>
             <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
+            <data key="target_port_modifier"/>
         </edge>
-        <edge source="br_Read_YUV_u" sourceport="out_2_0_15840"
-            target="transmitter_5" targetport="u">
-            <data key="edge_cons">3168</data>
+        <edge source="explode_Split_output" sourceport="output_97200"
+            target="medianFilter_8" targetport="rawDisparity">
+            <data key="edge_cons">12150</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
+            <data key="edge_prod">12150</data>
+            <data key="data_type">uchar</data>
             <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
+            <data key="target_port_modifier"/>
         </edge>
-        <edge source="br_Read_YUV_u" sourceport="out_2_0_19008"
-            target="transmitter_6" targetport="u">
-            <data key="edge_cons">3168</data>
+        <edge source="explode_Split_output" sourceport="output_109350"
+            target="medianFilter_9" targetport="rawDisparity">
+            <data key="edge_cons">12150</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
+            <data key="edge_prod">12150</data>
+            <data key="data_type">uchar</data>
             <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
+            <data key="target_port_modifier"/>
         </edge>
-        <edge source="br_Read_YUV_u" sourceport="out_2_0_22176"
-            target="transmitter_7" targetport="u">
-            <data key="edge_cons">3168</data>
+        <edge source="explode_Split_output" sourceport="output_121500"
+            target="medianFilter_10" targetport="rawDisparity">
+            <data key="edge_cons">12150</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">3168</data>
-            <data key="data_type">char</data>
+            <data key="edge_prod">12150</data>
+            <data key="data_type">uchar</data>
             <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
+            <data key="target_port_modifier"/>
         </edge>
-        <edge source="display" sourceport="oO" target="br_display_oO" targetport="in">
-            <data key="edge_cons">25344</data>
+        <edge source="explode_Split_output" sourceport="output_133650"
+            target="medianFilter_11" targetport="rawDisparity">
+            <data key="edge_cons">12150</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
-            <data key="data_type">char</data>
+            <data key="edge_prod">12150</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="explode_Split_output" sourceport="output_145800"
+            target="medianFilter_12" targetport="rawDisparity">
+            <data key="edge_cons">12150</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">12150</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="explode_Split_output" sourceport="output_157950"
+            target="medianFilter_13" targetport="rawDisparity">
+            <data key="edge_cons">12150</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">12150</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="explode_Split_output" sourceport="output_170100"
+            target="medianFilter_14" targetport="rawDisparity">
+            <data key="edge_cons">12150</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">12150</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Read_PPM1" sourceport="rgb" target="RGB2Gray_R" targetport="rgb">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="lum2rgb2" sourceport="o1" target="WritePPM" targetport="pixels">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
         </edge>
-        <edge source="br_display_oO" sourceport="out_0_0" target="sink5" targetport="iI">
-            <data key="edge_cons">25344</data>
+        <edge source="lum2rgb2" sourceport="o0" target="Display_rgb1" targetport="lum">
+            <data key="edge_cons">168750</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
-            <data key="data_type">char</data>
-            <data key="source_port_modifier">pure_out</data>
-            <data key="target_port_modifier"/>
-            <data key="Weight"/>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
         </edge>
-        <edge source="br_display_oO" sourceport="out_1_0" target="sink6" targetport="iI">
-            <data key="edge_cons">25344</data>
+        <edge source="implode_lum2rgb2_i" sourceport="filteredDisparity"
+            target="lum2rgb2" targetport="i">
+            <data key="edge_cons">168750</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">25344</data>
-            <data key="data_type">char</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
             <data key="source_port_modifier">pure_out</data>
             <data key="target_port_modifier">pure_in</data>
-            <data key="Weight"/>
+        </edge>
+        <edge source="medianFilter_0" sourceport="filteredDisparity"
+            target="implode_lum2rgb2_i" targetport="i_0">
+            <data key="edge_cons">11250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">11250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="medianFilter_1" sourceport="filteredDisparity"
+            target="implode_lum2rgb2_i" targetport="i_11250">
+            <data key="edge_cons">11250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">11250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="medianFilter_2" sourceport="filteredDisparity"
+            target="implode_lum2rgb2_i" targetport="i_22500">
+            <data key="edge_cons">11250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">11250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="medianFilter_3" sourceport="filteredDisparity"
+            target="implode_lum2rgb2_i" targetport="i_33750">
+            <data key="edge_cons">11250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">11250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="medianFilter_4" sourceport="filteredDisparity"
+            target="implode_lum2rgb2_i" targetport="i_45000">
+            <data key="edge_cons">11250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">11250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="medianFilter_5" sourceport="filteredDisparity"
+            target="implode_lum2rgb2_i" targetport="i_56250">
+            <data key="edge_cons">11250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">11250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="medianFilter_6" sourceport="filteredDisparity"
+            target="implode_lum2rgb2_i" targetport="i_67500">
+            <data key="edge_cons">11250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">11250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="medianFilter_7" sourceport="filteredDisparity"
+            target="implode_lum2rgb2_i" targetport="i_78750">
+            <data key="edge_cons">11250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">11250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="medianFilter_8" sourceport="filteredDisparity"
+            target="implode_lum2rgb2_i" targetport="i_90000">
+            <data key="edge_cons">11250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">11250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="medianFilter_9" sourceport="filteredDisparity"
+            target="implode_lum2rgb2_i" targetport="i_101250">
+            <data key="edge_cons">11250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">11250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="medianFilter_10" sourceport="filteredDisparity"
+            target="implode_lum2rgb2_i" targetport="i_112500">
+            <data key="edge_cons">11250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">11250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="medianFilter_11" sourceport="filteredDisparity"
+            target="implode_lum2rgb2_i" targetport="i_123750">
+            <data key="edge_cons">11250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">11250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="medianFilter_12" sourceport="filteredDisparity"
+            target="implode_lum2rgb2_i" targetport="i_135000">
+            <data key="edge_cons">11250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">11250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="medianFilter_13" sourceport="filteredDisparity"
+            target="implode_lum2rgb2_i" targetport="i_146250">
+            <data key="edge_cons">11250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">11250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="medianFilter_14" sourceport="filteredDisparity"
+            target="implode_lum2rgb2_i" targetport="i_157500">
+            <data key="edge_cons">11250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">11250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Read_PPM0" sourceport="rgb"
+            target="br_Read_PPM0_rgb" targetport="in">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="br_Read_PPM0_rgb" sourceport="out_0_0"
+            target="RGB2Gray_L" targetport="rgb">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="br_Read_PPM0_rgb" sourceport="out_1_0"
+            target="Display_rgb0" targetport="rgb">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="RGB2Gray_L" sourceport="gray"
+            target="br_RGB2Gray_L_gray" targetport="in">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="br_RGB2Gray_L_gray" sourceport="out_0_0"
+            target="Census_L" targetport="gray">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="RGB2Gray_R" sourceport="gray"
+            target="br_RGB2Gray_R_gray" targetport="in">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="br_RGB2Gray_R_gray" sourceport="out_0_0"
+            target="Census_R" targetport="gray">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_CostConstruction_0"
+            sourceport="disparityError"
+            target="Cost_Parallel_Work_0_AggregateCost_0" targetport="disparityError">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_CostConstruction_1"
+            sourceport="disparityError"
+            target="Cost_Parallel_Work_0_AggregateCost_1" targetport="disparityError">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_CostConstruction_2"
+            sourceport="disparityError"
+            target="Cost_Parallel_Work_0_AggregateCost_2" targetport="disparityError">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcastOffsets"
+            sourceport="o_0"
+            target="Cost_Parallel_Work_0_AggregateCost_0" targetport="offsets">
+            <data key="edge_cons">5</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">5</data>
+            <data key="data_type">int</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcastOffsets"
+            sourceport="o_5"
+            target="Cost_Parallel_Work_0_AggregateCost_1" targetport="offsets">
+            <data key="edge_cons">5</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">5</data>
+            <data key="data_type">int</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcastOffsets"
+            sourceport="o_10"
+            target="Cost_Parallel_Work_0_AggregateCost_2" targetport="offsets">
+            <data key="edge_cons">5</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">5</data>
+            <data key="data_type">int</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="implode_Cost_Parallel_Work_0_broadcastHWeights_i"
+            sourceport="weights"
+            target="Cost_Parallel_Work_0_broadcastHWeights" targetport="i">
+            <data key="edge_cons">2531250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">2531250</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_computeHorWeights_0"
+            sourceport="weights"
+            target="implode_Cost_Parallel_Work_0_broadcastHWeights_i" targetport="i_0">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_computeHorWeights_1"
+            sourceport="weights"
+            target="implode_Cost_Parallel_Work_0_broadcastHWeights_i" targetport="i_506250">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_computeHorWeights_2"
+            sourceport="weights"
+            target="implode_Cost_Parallel_Work_0_broadcastHWeights_i" targetport="i_1012500">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_computeHorWeights_3"
+            sourceport="weights"
+            target="implode_Cost_Parallel_Work_0_broadcastHWeights_i" targetport="i_1518750">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_computeHorWeights_4"
+            sourceport="weights"
+            target="implode_Cost_Parallel_Work_0_broadcastHWeights_i" targetport="i_2025000">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcastHWeights"
+            sourceport="o_0"
+            target="Cost_Parallel_Work_0_AggregateCost_0" targetport="hWeights">
+            <data key="edge_cons">2531250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">2531250</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcastHWeights"
+            sourceport="o_2531250"
+            target="Cost_Parallel_Work_0_AggregateCost_1" targetport="hWeights">
+            <data key="edge_cons">2531250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">2531250</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcastHWeights"
+            sourceport="o_5062500"
+            target="Cost_Parallel_Work_0_AggregateCost_2" targetport="hWeights">
+            <data key="edge_cons">2531250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">2531250</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="implode_Cost_Parallel_Work_0_broadcastVWeights_i"
+            sourceport="weights"
+            target="Cost_Parallel_Work_0_broadcastVWeights" targetport="i">
+            <data key="edge_cons">2531250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">2531250</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_computeVertWeights_0"
+            sourceport="weights"
+            target="implode_Cost_Parallel_Work_0_broadcastVWeights_i" targetport="i_0">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_computeVertWeights_1"
+            sourceport="weights"
+            target="implode_Cost_Parallel_Work_0_broadcastVWeights_i" targetport="i_506250">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_computeVertWeights_2"
+            sourceport="weights"
+            target="implode_Cost_Parallel_Work_0_broadcastVWeights_i" targetport="i_1012500">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_computeVertWeights_3"
+            sourceport="weights"
+            target="implode_Cost_Parallel_Work_0_broadcastVWeights_i" targetport="i_1518750">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_computeVertWeights_4"
+            sourceport="weights"
+            target="implode_Cost_Parallel_Work_0_broadcastVWeights_i" targetport="i_2025000">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcastVWeights"
+            sourceport="o_0"
+            target="Cost_Parallel_Work_0_AggregateCost_0" targetport="vWeights">
+            <data key="edge_cons">2531250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">2531250</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcastVWeights"
+            sourceport="o_2531250"
+            target="Cost_Parallel_Work_0_AggregateCost_1" targetport="vWeights">
+            <data key="edge_cons">2531250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">2531250</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcastVWeights"
+            sourceport="o_5062500"
+            target="Cost_Parallel_Work_0_AggregateCost_2" targetport="vWeights">
+            <data key="edge_cons">2531250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">2531250</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_AggregateCost_0"
+            sourceport="aggregatedDisparity"
+            target="Cost_Parallel_Work_0_disparitySelect_0" targetport="aggregatedDisparity">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_AggregateCost_1"
+            sourceport="aggregatedDisparity"
+            target="Cost_Parallel_Work_0_disparitySelect_1" targetport="aggregatedDisparity">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_AggregateCost_2"
+            sourceport="aggregatedDisparity"
+            target="Cost_Parallel_Work_0_disparitySelect_2" targetport="aggregatedDisparity">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_disparitySelect_0"
+            sourceport="backBestCost"
+            target="Cost_Parallel_Work_0_disparitySelect_1" targetport="bestCostFeed">
+            <data key="edge_cons">168751</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168751</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_disparitySelect_1"
+            sourceport="backBestCost"
+            target="Cost_Parallel_Work_0_disparitySelect_2" targetport="bestCostFeed">
+            <data key="edge_cons">168751</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168751</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_disparitySelect_2"
+            sourceport="backBestCost"
+            target="Cost_Parallel_Work_0_disparitySelect_0" targetport="bestCostFeed">
+            <data key="edge_cons">168751</data>
+            <data key="edge_delay">168751</data>
+            <data key="edge_prod">168751</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_disparitySelect_0"
+            sourceport="result"
+            target="Cost_Parallel_Work_0_broadcastResult_0" targetport="i">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_disparitySelect_1"
+            sourceport="result"
+            target="Cost_Parallel_Work_0_broadcastResult_1" targetport="i">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_disparitySelect_2"
+            sourceport="result"
+            target="Cost_Parallel_Work_0_broadcastResult_2" targetport="i">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcastResult_0"
+            sourceport="o1"
+            target="Cost_Parallel_Work_0_disparitySelect_1" targetport="currentResult">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcastResult_1"
+            sourceport="o1"
+            target="Cost_Parallel_Work_0_disparitySelect_2" targetport="currentResult">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcastResult_2"
+            sourceport="o1"
+            target="Cost_Parallel_Work_0_disparitySelect_0" targetport="currentResult">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">168750</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_disparityGen"
+            sourceport="disparities"
+            target="Cost_Parallel_Work_0_br_disparityGen_disparities" targetport="in">
+            <data key="edge_cons">3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">3</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_br_disparityGen_disparities"
+            sourceport="out_0_0_0"
+            target="Cost_Parallel_Work_0_CostConstruction_0" targetport="disparity">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_br_disparityGen_disparities"
+            sourceport="out_0_0_1"
+            target="Cost_Parallel_Work_0_CostConstruction_1" targetport="disparity">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_br_disparityGen_disparities"
+            sourceport="out_0_0_2"
+            target="Cost_Parallel_Work_0_CostConstruction_2" targetport="disparity">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_br_disparityGen_disparities"
+            sourceport="out_1_0_0"
+            target="Cost_Parallel_Work_0_disparitySelect_0" targetport="disparity">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_br_disparityGen_disparities"
+            sourceport="out_1_0_1"
+            target="Cost_Parallel_Work_0_disparitySelect_1" targetport="disparity">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_br_disparityGen_disparities"
+            sourceport="out_1_0_2"
+            target="Cost_Parallel_Work_0_disparitySelect_2" targetport="disparity">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_offsetGen"
+            sourceport="offsets"
+            target="Cost_Parallel_Work_0_br_offsetGen_offsets" targetport="in">
+            <data key="edge_cons">5</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">5</data>
+            <data key="data_type">int</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_br_offsetGen_offsets"
+            sourceport="out_0_0"
+            target="Cost_Parallel_Work_0_broadcastOffsets" targetport="i">
+            <data key="edge_cons">5</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">5</data>
+            <data key="data_type">int</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_br_offsetGen_offsets"
+            sourceport="out_1_0_0"
+            target="Cost_Parallel_Work_0_computeHorWeights_0" targetport="offset">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">int</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_br_offsetGen_offsets"
+            sourceport="out_1_0_1"
+            target="Cost_Parallel_Work_0_computeHorWeights_1" targetport="offset">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">int</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_br_offsetGen_offsets"
+            sourceport="out_1_0_2"
+            target="Cost_Parallel_Work_0_computeHorWeights_2" targetport="offset">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">int</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_br_offsetGen_offsets"
+            sourceport="out_1_0_3"
+            target="Cost_Parallel_Work_0_computeHorWeights_3" targetport="offset">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">int</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_br_offsetGen_offsets"
+            sourceport="out_1_0_4"
+            target="Cost_Parallel_Work_0_computeHorWeights_4" targetport="offset">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">int</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_br_offsetGen_offsets"
+            sourceport="out_2_0_0"
+            target="Cost_Parallel_Work_0_computeVertWeights_0" targetport="offset">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">int</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_br_offsetGen_offsets"
+            sourceport="out_2_0_1"
+            target="Cost_Parallel_Work_0_computeVertWeights_1" targetport="offset">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">int</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_br_offsetGen_offsets"
+            sourceport="out_2_0_2"
+            target="Cost_Parallel_Work_0_computeVertWeights_2" targetport="offset">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">int</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_br_offsetGen_offsets"
+            sourceport="out_2_0_3"
+            target="Cost_Parallel_Work_0_computeVertWeights_3" targetport="offset">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">int</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_br_offsetGen_offsets"
+            sourceport="out_2_0_4"
+            target="Cost_Parallel_Work_0_computeVertWeights_4" targetport="offset">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">int</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="br_RGB2Gray_L_gray" sourceport="out_1_0"
+            target="Cost_Parallel_Work_0_broadcast_grayL" targetport="in">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_grayL"
+            sourceport="out_0_0_0"
+            target="Cost_Parallel_Work_0_CostConstruction_0" targetport="grayL">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_grayL"
+            sourceport="out_0_0_168750"
+            target="Cost_Parallel_Work_0_CostConstruction_1" targetport="grayL">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_grayL"
+            sourceport="out_0_0_337500"
+            target="Cost_Parallel_Work_0_CostConstruction_2" targetport="grayL">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="br_RGB2Gray_R_gray" sourceport="out_1_0"
+            target="Cost_Parallel_Work_0_broadcast_grayR" targetport="in">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_grayR"
+            sourceport="out_0_0_0"
+            target="Cost_Parallel_Work_0_CostConstruction_0" targetport="grayR">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_grayR"
+            sourceport="out_0_0_168750"
+            target="Cost_Parallel_Work_0_CostConstruction_1" targetport="grayR">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_grayR"
+            sourceport="out_0_0_337500"
+            target="Cost_Parallel_Work_0_CostConstruction_2" targetport="grayR">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">float</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Census_L" sourceport="cen"
+            target="Cost_Parallel_Work_0_broadcast_cenL" targetport="in">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_cenL"
+            sourceport="out_0_0_0"
+            target="Cost_Parallel_Work_0_CostConstruction_0" targetport="cenL">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_cenL"
+            sourceport="out_0_0_168750"
+            target="Cost_Parallel_Work_0_CostConstruction_1" targetport="cenL">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_cenL"
+            sourceport="out_0_0_337500"
+            target="Cost_Parallel_Work_0_CostConstruction_2" targetport="cenL">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Census_R" sourceport="cen"
+            target="Cost_Parallel_Work_0_broadcast_cenR" targetport="in">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_cenR"
+            sourceport="out_0_0_0"
+            target="Cost_Parallel_Work_0_CostConstruction_0" targetport="cenR">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_cenR"
+            sourceport="out_0_0_168750"
+            target="Cost_Parallel_Work_0_CostConstruction_1" targetport="cenR">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_cenR"
+            sourceport="out_0_0_337500"
+            target="Cost_Parallel_Work_0_CostConstruction_2" targetport="cenR">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="br_Read_PPM0_rgb" sourceport="out_2_0"
+            target="Cost_Parallel_Work_0_broadcast_rgbL" targetport="in">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_rgbL"
+            sourceport="out_0_0_0"
+            target="Cost_Parallel_Work_0_computeHorWeights_0" targetport="rgbL">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_rgbL"
+            sourceport="out_0_0_506250"
+            target="Cost_Parallel_Work_0_computeHorWeights_1" targetport="rgbL">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_rgbL"
+            sourceport="out_0_0_1012500"
+            target="Cost_Parallel_Work_0_computeHorWeights_2" targetport="rgbL">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_rgbL"
+            sourceport="out_0_0_1518750"
+            target="Cost_Parallel_Work_0_computeHorWeights_3" targetport="rgbL">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_rgbL"
+            sourceport="out_0_0_2025000"
+            target="Cost_Parallel_Work_0_computeHorWeights_4" targetport="rgbL">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_rgbL"
+            sourceport="out_1_0_0"
+            target="Cost_Parallel_Work_0_computeVertWeights_0" targetport="rgbL">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_rgbL"
+            sourceport="out_1_0_506250"
+            target="Cost_Parallel_Work_0_computeVertWeights_1" targetport="rgbL">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_rgbL"
+            sourceport="out_1_0_1012500"
+            target="Cost_Parallel_Work_0_computeVertWeights_2" targetport="rgbL">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_rgbL"
+            sourceport="out_1_0_1518750"
+            target="Cost_Parallel_Work_0_computeVertWeights_3" targetport="rgbL">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcast_rgbL"
+            sourceport="out_1_0_2025000"
+            target="Cost_Parallel_Work_0_computeVertWeights_4" targetport="rgbL">
+            <data key="edge_cons">506250</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">506250</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_roundBuffer_raw_disparity"
+            sourceport="out" target="Split" targetport="input">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcastResult_0"
+            sourceport="o0"
+            target="Cost_Parallel_Work_0_roundBuffer_raw_disparity" targetport="in0_0_0">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">unused</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcastResult_1"
+            sourceport="o0"
+            target="Cost_Parallel_Work_0_roundBuffer_raw_disparity" targetport="in0_0_168750">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">unused</data>
+        </edge>
+        <edge source="Cost_Parallel_Work_0_broadcastResult_2"
+            sourceport="o0"
+            target="Cost_Parallel_Work_0_roundBuffer_raw_disparity" targetport="in0_0_337500">
+            <data key="edge_cons">168750</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">168750</data>
+            <data key="data_type">uchar</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">pure_in</data>
         </edge>
     </graph>
 </graphml>
