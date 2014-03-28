@@ -103,7 +103,7 @@ public class MemoryExclusionGraph extends
 	public static final String WORKING_MEM_ALLOCATION = "working_mem_allocation";
 
 	public static final String SOURCE_DAG = "source_dag";
-	
+
 	/**
 	 * Property to store the merged memory objects resulting from the script
 	 * processing. The stored object is a:<br>
@@ -915,6 +915,43 @@ public class MemoryExclusionGraph extends
 		for (HashSet<MemoryExclusionVertex> backup : adjacentVerticesBackup
 				.values()) {
 			result |= backup.removeAll(arg0);
+		}
+		return result;
+	}
+
+	@Override
+	public DefaultEdge removeEdge(MemoryExclusionVertex arg0,
+			MemoryExclusionVertex arg1) {
+		DefaultEdge result = super.removeEdge(arg0, arg1);
+		if (result != null) {
+			HashSet<MemoryExclusionVertex> arg0Neighbors = adjacentVerticesBackup
+					.get(arg0);
+			if (arg0Neighbors != null)
+				arg0Neighbors.remove(arg1);
+			HashSet<MemoryExclusionVertex> arg1Neighbors = adjacentVerticesBackup
+					.get(arg1);
+			if (arg1Neighbors != null)
+				arg1Neighbors.remove(arg0);
+		}
+
+		return result;
+	}
+
+	@Override
+	public boolean removeEdge(DefaultEdge arg0) {
+		MemoryExclusionVertex source = this.getEdgeSource(arg0);
+		MemoryExclusionVertex target = this.getEdgeTarget(arg0);
+
+		boolean result = super.removeEdge(arg0);
+		if (result) {
+			HashSet<MemoryExclusionVertex> targetNeighbors = adjacentVerticesBackup
+					.get(target);
+			if (targetNeighbors != null)
+				targetNeighbors.remove(source);
+			HashSet<MemoryExclusionVertex> sourceNeighbors = adjacentVerticesBackup
+					.get(source);
+			if (sourceNeighbors != null)
+				sourceNeighbors.remove(target);
 		}
 		return result;
 	}
