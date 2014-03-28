@@ -168,11 +168,26 @@ class ScriptRunner {
 			// for all matcheSet  
 			localBuffer.reciprocal
 		]
-		if (!res1) {
+		if (!res1 && checkPolicy == CheckPolicy::FAST) {
 			val logger = WorkflowLogger.logger
 			logger.log(Level.WARNING,
 				"Error in " + script + ":\nOne or more match is not reciprocal." +
 					" Please set matches only by using Buffer.matchWith() methods.")
+		} else if (!res1 && checkPolicy == CheckPolicy::THOROUGH) {
+			allBuffers.forEach [ localBuffer |
+				// for all matcheSet  
+				val res = localBuffer.reciprocal
+				if (!res && checkPolicy == CheckPolicy::THOROUGH) {
+					val logger = WorkflowLogger.logger
+					logger.log(Level.WARNING,
+						"Error in " + script + ":\nBuffer " + localBuffer + " has nonreciprocal matches:\n" + localBuffer.
+							matchTable.values.flatten.filter[match|
+								val remoteMatches = match.remoteBuffer.matchTable.get(match.remoteIndex)
+								!(remoteMatches != null && remoteMatches.contains(
+									new Match(match.remoteBuffer, match.remoteIndex, localBuffer, match.localIndex,
+										match.length)))] + "\nPlease set matches only by using Buffer.matchWith() methods.")
+				}
+			]
 		}
 
 		// Find inter-inputs and inter-outputs matches
@@ -185,11 +200,32 @@ class ScriptRunner {
 				result.key.contains(match.remoteBuffer)
 			]
 		]
-		if (!res2) {
+		if (!res2 && checkPolicy == CheckPolicy::FAST) {
 			val logger = WorkflowLogger.logger
 			logger.log(Level.WARNING,
 				"Error in " + script + ":\nOne or more match links an input (or an output) to another." +
-					" Please set matches only between inputs and outputs.")
+					"\nPlease set matches only between inputs and outputs.")
+		} else if (!res2 && checkPolicy == CheckPolicy::THOROUGH) {
+			result.key.forEach [ buffer |
+				buffer.matchTable.values.flatten.forEach [ match |
+					if (!result.value.contains(match.remoteBuffer)) {
+						val logger = WorkflowLogger.logger
+						logger.log(Level.WARNING,
+							"Error in " + script + ":\nMatch " + match + " links an input to another." +
+								"\nPlease set matches only between inputs and outputs.")
+					}
+				]
+			]
+			result.value.forEach [ buffer |
+				buffer.matchTable.values.flatten.forEach [ match |
+					if (!result.key.contains(match.remoteBuffer)) {
+						val logger = WorkflowLogger.logger
+						logger.log(Level.WARNING,
+							"Error in " + script + ":\nMatch " + match + " links an output to another." +
+								"\nPlease set matches only between inputs and outputs.")
+					}
+				]
+			]
 		}
 
 		// Find ranges from input and output with multiple matches
@@ -199,56 +235,22 @@ class ScriptRunner {
 		val res3 = multipleRanges.forall [
 			result.key.contains(it.key) || it.value.size == 0
 		]
-		if (!res3) {
+		if (!res3 && checkPolicy == CheckPolicy::FAST) {
 			val logger = WorkflowLogger.logger
 			logger.log(Level.WARNING,
 				"Error in " + script + ":\nMatching multiple times a range of an output buffer is not allowed.")
+		} else if (!res3 && checkPolicy == CheckPolicy::THOROUGH) {
+			multipleRanges.forEach [
+				if (!(result.key.contains(it.key) || it.value.size == 0)) {
+					val logger = WorkflowLogger.logger
+					logger.log(Level.WARNING,
+						"Error in " + script + ":\nMatching multiple times output buffer " + it.key + " is not allowed." +
+							"\nRange matched multiple times:" + it.value)
+				}
+			]
 		}
 
-		// Check: If a[i] is matched with b[j], b[k], and c[l] then b[j] (or 
-		// b[k] or c[l]) cannot be matched with a buffer different than a[i].
-		// forall inputs -> forall elements -> forall multiple matches
-		// check that other side of the match has a unique match (implicitly: 
-		// with the current multiple match).		
-		val res4 = multipleRanges.forall [ multipleRange |
-			if (multipleRange.value.size != 0) {
-
-				// If the current buffer has multiple ranges
-				multipleRange.value.forall [ r |
-					// Fill a list that contains Pair
-					// Each pair is composed of a remote buffer and a remote range
-					// This range is matched with a multiple matched range from
-					// the current local buffer. Consequently, this remote 
-					// range must not be part of a remote multiple matched range.
-					val matchFromMultRange = newArrayList;
-					multipleRange.key.matchTable.forEach [ localIdx, matches |
-						matches.forEach [
-							if (r.hasOverlap(it.localRange)) {
-								val localInter = r.intersection(it.localRange)
-								val remoteRangeStart = it.remoteIndex + localInter.start - localIdx
-								val remoteRange = new Range(remoteRangeStart, remoteRangeStart + localInter.length)
-								matchFromMultRange.add(it.remoteBuffer -> remoteRange)
-							}
-						]
-					]
-					matchFromMultRange.forall [
-						val buffer = it.key
-						val range = it.value
-						val intersect = multipleRanges.get(allBuffers.indexOf(buffer)).value.intersection(range)
-						intersect.size == 0
-					]
-				]
-			} else
-				true // No multiple range for this buffer
-		]
-
-		if (!res4) {
-			val logger = WorkflowLogger.logger
-			logger.log(Level.WARNING,
-				"Error in " + script + ":\nA buffer element matched multiple times cannot" +
-					" be matched with an element that is itself matched multiple times.")
-		}
-		res1 && res2 && res3 && res4
+		res1 && res2 && res3 
 	}
 
 	/**

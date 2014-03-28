@@ -61,7 +61,7 @@
     <dftools:task
         pluginId="org.ietr.preesm.experiment.memory.MemoryScriptTask" taskId="Scripts">
         <dftools:data key="variables">
-            <dftools:variable name="Check" value="Fast"/>
+            <dftools:variable name="Check" value="Thorough"/>
             <dftools:variable name="Data alignment" value="None"/>
             <dftools:variable name="Verbose" value="True"/>
         </dftools:data>
