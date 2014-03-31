@@ -250,7 +250,7 @@ class ScriptRunner {
 			]
 		}
 
-		res1 && res2 && res3 
+		res1 && res2 && res3
 	}
 
 	/**
@@ -1512,9 +1512,6 @@ class ScriptRunner {
 		val mergedMObjects = newHashMap
 		meg.propertyBean.setValue(MemoryExclusionGraph::HOST_MEMORY_OBJECT_PROPERTY, mergedMObjects)
 
-		// List of the unused and pureout memobjects
-		val unusedMObjects = newArrayList
-
 		// Process each group of buffers separately
 		for (buffers : bufferGroups) {
 
@@ -1550,15 +1547,6 @@ class ScriptRunner {
 				}
 				bufferAndMObjectMap.put(buffer, mObj)
 			}
-
-			// For each unmatched buffer that did not receive matched buffers
-			// Filter unused buffers.
-			unusedMObjects.addAll(
-				buffers.filter [
-					it.matched == null && !it.host &&
-						(it.sdfEdge.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED) &&
-						(it.sdfEdge.sourcePortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_OUT)
-				].map[bufferAndMObjectMap.get(it)])
 
 			// For each unmatched buffer that received matched buffers
 			for (buffer : buffers.filter[it.matched == null && it.host]) {
@@ -1633,6 +1621,32 @@ class ScriptRunner {
 
 			}
 		}
+
+		// List of the unused and pureout memobjects
+		val unusedMObjects = newArrayList
+
+		// Find unusedMObjects that were not processed by the scripts.
+		unusedMObjects.addAll(
+			meg.vertexSet.filter [ mObj |
+				if (mObj.edge != null) {
+
+					// Find unused pure_out edges
+					val aggregate = mObj.edge.aggregate
+					aggregate.forall [ sdfEdge |
+						((sdfEdge as SDFEdge).getPropertyStringValue(SDFEdge::SOURCE_PORT_MODIFIER) ?: "").
+							contains(SDFEdge::MODIFIER_PURE_OUT) && ((sdfEdge as SDFEdge).
+							getPropertyStringValue(SDFEdge::TARGET_PORT_MODIFIER) ?: "").contains(SDFEdge::MODIFIER_UNUSED)
+					]
+				} else
+					false
+			].filter [ mObj |
+				// keep only those that are not host. (matched ones have already been removed from the MEG)
+				val correspondingBuffer = bufferGroups.flatten.findFirst[mObj.edge.aggregate.contains(it.sdfEdge)]
+				if (correspondingBuffer != null) {
+					!correspondingBuffer.host
+				} else
+					true
+			].toList)
 
 		// Remove all exclusions between unused buffers
 		unusedMObjects.forEach [ mObj |
