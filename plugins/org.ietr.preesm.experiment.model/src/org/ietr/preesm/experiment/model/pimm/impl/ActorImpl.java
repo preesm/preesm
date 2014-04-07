@@ -295,7 +295,7 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 
 	@Override
 	public void accept(PiMMVisitor v) {
-		v.visitAbstractActor(this);
+		v.visitActor(this);
 	}
 
 } // ActorImpl
