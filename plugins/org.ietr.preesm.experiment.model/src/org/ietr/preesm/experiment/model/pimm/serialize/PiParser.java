@@ -553,15 +553,18 @@ public class PiParser {
 						+ vertex.getName());
 			}
 
-			DataInputPort iPort = PiMMFactory.eINSTANCE.createDataInputPort();
-			iPort.setName(portName);
-			iPort.getExpression().setString(elt.getAttribute("expr"));
+			DataInputPort iPort;			
 									
-			// Do not parse data ports for InterfaceActor since the unique port
+			// Do not create data ports for InterfaceActor since the unique port
 			// is automatically created when the vertex is instantiated
 			if (!(vertex instanceof InterfaceActor)) {
+				iPort = PiMMFactory.eINSTANCE.createDataInputPort();
 				((AbstractActor) vertex).getDataInputPorts().add(iPort);
+			} else {
+				iPort = ((AbstractActor) vertex).getDataInputPorts().get(0);
 			}
+			iPort.setName(portName);
+			iPort.getExpression().setString(elt.getAttribute("expr"));
 
 			break;
 		case "output":
@@ -572,15 +575,19 @@ public class PiParser {
 						+ vertex.getName());
 			}
 
-			DataOutputPort oPort = PiMMFactory.eINSTANCE.createDataOutputPort();
+			DataOutputPort oPort;
+			
+			// Do not create data ports for InterfaceActor since the unique port
+			// is automatically created when the vertex is instantiated
+			if (!(vertex instanceof InterfaceActor)) {
+				oPort = PiMMFactory.eINSTANCE.createDataOutputPort();				
+				((AbstractActor) vertex).getDataOutputPorts().add(oPort);
+			} else {
+				oPort = ((AbstractActor) vertex).getDataOutputPorts().get(0);				
+			}
 			oPort.setName(portName);
 			oPort.getExpression().setString(elt.getAttribute("expr"));
 			
-			// Do not parse data ports for InterfaceActor since the unique port
-			// is automatically created when the vertex is instantiated
-			if (!(vertex instanceof InterfaceActor)) {
-				((AbstractActor) vertex).getDataOutputPorts().add(oPort);
-			}
 			break;
 		case "cfg_input":
 			ConfigInputPort iCfgPort = PiMMFactory.eINSTANCE
