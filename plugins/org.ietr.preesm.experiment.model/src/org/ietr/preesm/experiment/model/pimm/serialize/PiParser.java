@@ -111,8 +111,8 @@ public class PiParser {
 	}
 
 	/**
-	 * Parse the PiMM {@link PiGraph} from the given {@link InputStream} using the
-	 * Pi format.
+	 * Parse the PiMM {@link PiGraph} from the given {@link InputStream} using
+	 * the Pi format.
 	 * 
 	 * @param inputStream
 	 *            The Parsed input stream
@@ -179,7 +179,7 @@ public class PiParser {
 		// Instantiate the new Config Input Interface
 		Parameter param = PiMMFactory.eINSTANCE.createParameter();
 		param.setConfigurationInterface(true);
-		//param.setLocallyStatic(true);
+		// param.setLocallyStatic(true);
 
 		// Get the actor properties
 		param.setName(nodeElt.getAttribute("id"));
@@ -335,8 +335,10 @@ public class PiParser {
 		sourcePortName = (sourcePortName == "") ? null : sourcePortName;
 		String targetPortName = edgeElt.getAttribute("targetport");
 		targetPortName = (targetPortName == "") ? null : targetPortName;
-		DataOutputPort oPort = (DataOutputPort) source.getPortNamed(sourcePortName);
-		DataInputPort iPort = (DataInputPort) target.getPortNamed(targetPortName);
+		DataOutputPort oPort = (DataOutputPort) source
+				.getPortNamed(sourcePortName);
+		DataInputPort iPort = (DataInputPort) target
+				.getPortNamed(targetPortName);
 
 		if (iPort == null) {
 			throw new RuntimeException("Edge target port " + targetPortName
@@ -502,7 +504,7 @@ public class PiParser {
 		Parameter param = PiMMFactory.eINSTANCE.createParameter();
 		param.getExpression().setString(nodeElt.getAttribute("expr"));
 		param.setConfigurationInterface(false);
-		//param.setLocallyStatic(true);
+		// param.setLocallyStatic(true);
 		param.setGraphPort(null); // No port of the graph corresponds to this
 									// parameter
 
@@ -553,17 +555,17 @@ public class PiParser {
 						+ vertex.getName());
 			}
 
-			DataInputPort iPort;			
-									
+			DataInputPort iPort;
+
 			// Do not create data ports for InterfaceActor since the unique port
 			// is automatically created when the vertex is instantiated
 			if (!(vertex instanceof InterfaceActor)) {
 				iPort = PiMMFactory.eINSTANCE.createDataInputPort();
 				((AbstractActor) vertex).getDataInputPorts().add(iPort);
+				iPort.setName(portName);
 			} else {
 				iPort = ((AbstractActor) vertex).getDataInputPorts().get(0);
 			}
-			iPort.setName(portName);
 			iPort.getExpression().setString(elt.getAttribute("expr"));
 
 			break;
@@ -576,16 +578,16 @@ public class PiParser {
 			}
 
 			DataOutputPort oPort;
-			
+
 			// Do not create data ports for InterfaceActor since the unique port
 			// is automatically created when the vertex is instantiated
 			if (!(vertex instanceof InterfaceActor)) {
-				oPort = PiMMFactory.eINSTANCE.createDataOutputPort();				
+				oPort = PiMMFactory.eINSTANCE.createDataOutputPort();
 				((AbstractActor) vertex).getDataOutputPorts().add(oPort);
+				oPort.setName(portName);
 			} else {
-				oPort = ((AbstractActor) vertex).getDataOutputPorts().get(0);				
+				oPort = ((AbstractActor) vertex).getDataOutputPorts().get(0);
 			}
-			oPort.setName(portName);
 			oPort.getExpression().setString(elt.getAttribute("expr"));
 			
 			break;
