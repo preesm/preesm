@@ -6,12 +6,10 @@ Bundle-Version: 1.1.0.qualifier
 Bundle-Activator: org.ietr.preesm.experiment.pimm.subgraph.connector.Activator
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.core.runtime,
- org.scala-ide.scala.library,
  org.ietr.preesm.experiment.model,
  org.ietr.dftools.workflow,
  org.ietr.preesm.algorithm,
- org.jgrapht,
- org.ietr.preesm.experiment.pimm.visitor.scala
+ org.jgrapht
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.ietr.preesm.experiment.pimm.subgraph.connector

@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.experiment.pimm.cppgenerator.scala;
+package org.ietr.preesm.experiment.pimm.cppgenerator;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -50,13 +50,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.preesm.experiment.core.piscenario.PiScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.pimm.cppgenerator.scala.visitor.CPPCodeGenerationLauncher;
+import org.ietr.preesm.experiment.pimm.cppgenerator.visitor.CPPCodeGenerationLauncher;
 
 public class PiMMCppGenerationTask extends AbstractTaskImplementation {
 
-	private static String graph_key = "PiMM";
-	private static String scenario_key = "scenario";
+	private final static String PISCENARIO_KEY = "scenario";
+	private final static String PIGRAPH_KEY = "PiMM";
 
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
@@ -64,9 +65,8 @@ public class PiMMCppGenerationTask extends AbstractTaskImplementation {
 			String nodeName, Workflow workflow) throws WorkflowException {
 
 		// Retrieve inputs
-		// TODO: Correct when PiScenario are added as automatic inputs
-		// PreesmScenario scenario = (PreesmScenario) inputs.get(scenario_key);
-		PiGraph pg = (PiGraph) inputs.get(graph_key);
+		PiScenario scenario = (PiScenario) inputs.get(PISCENARIO_KEY);
+		PiGraph pg = (PiGraph) inputs.get(PIGRAPH_KEY);
 
 		CPPCodeGenerationLauncher launcher = new CPPCodeGenerationLauncher();
 

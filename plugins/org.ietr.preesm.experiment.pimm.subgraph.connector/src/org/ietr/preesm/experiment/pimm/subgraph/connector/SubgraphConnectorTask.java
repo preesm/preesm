@@ -49,29 +49,32 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 public class SubgraphConnectorTask extends AbstractTaskImplementation {
 
 	public static String GRAPH_KEY = "PiMM";
-	
+
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName, Workflow workflow) throws WorkflowException {
-		
-		//Get the input
+
+		// Get the input
 		PiGraph pg = (PiGraph) inputs.get(GRAPH_KEY);
-		
-		//Visit it with the subgraph connector
+
+		// Visit it with the subgraph connector
 		SubgraphConnector connector = new SubgraphConnector();
 		connector.visit(pg);
-		
-		//Replace Actors with refinement by PiGraphs in pg and all its subgraphs
-		Map<PiGraph, List<ActorByGraphReplacement>> replacements = connector.getGraphReplacements();
+
+		// Replace Actors with refinement by PiGraphs in pg and all its
+		// subgraphs
+		Map<PiGraph, List<SubgraphConnector.ActorByGraphReplacement>> replacements = connector
+				.getGraphReplacements();
 		for (PiGraph key : replacements.keySet()) {
-			for (ActorByGraphReplacement r : replacements.get(key)) {
-				key.getVertices().remove(r.toBeRemoved());
-				key.getVertices().add(r.toBeAdded());
+			for (SubgraphConnector.ActorByGraphReplacement r : replacements
+					.get(key)) {
+				key.getVertices().remove(r.toBeRemoved);
+				key.getVertices().add(r.toBeAdded);
 			}
 		}
-		
-		//Return pg
+
+		// Return pg
 		Map<String, Object> outputs = new HashMap<String, Object>();
 		outputs.put(GRAPH_KEY, pg);
 		return outputs;

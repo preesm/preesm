@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.experiment.pimm.cppgenerator.scala;
+package org.ietr.preesm.experiment.pimm.cppgenerator;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

@@ -4,9 +4,9 @@
    <extension
          point="org.ietr.dftools.workflow.tasks">
       <task
-            id="org.ietr.preesm.experiment.pimm.cppgenerator.scala.PiMMCppGenerationTask"
+            id="org.ietr.preesm.experiment.pimm.cppgenerator.PiMMCppGenerationTask"
             name="C++ Code Generation from PiMM Models Task"
-            type="org.ietr.preesm.experiment.pimm.cppgenerator.scala.PiMMCppGenerationTask">
+            type="org.ietr.preesm.experiment.pimm.cppgenerator.PiMMCppGenerationTask">
          <inputs>
             <input
                   id="PiMM"
