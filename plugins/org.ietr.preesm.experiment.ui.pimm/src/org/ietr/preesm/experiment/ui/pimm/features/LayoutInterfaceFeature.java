@@ -50,10 +50,10 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
-import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 
 /**
  * Layout Feature for {@link InterfaceActor} and Config Input Interface (i.e.
