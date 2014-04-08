@@ -64,10 +64,11 @@ import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 /**
  * @author Romina Racca
  * @author jheulot
- *
+ * 
  */
-public class Section extends GFPropertySection implements ITabbedPropertyConstants{
-	
+public class Section extends GFPropertySection implements
+		ITabbedPropertyConstants {
+
 	private CLabel lblName;
 	private CLabel lblNameObj;
 	private CLabel lblExpression;
@@ -75,35 +76,36 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 	private CLabel lblValueObj;
 
 	private final int FIRST_COLUMN_WIDTH = 125;
-	
+
 	/**
-	 * A text expression can be as an expression: value numbers, trigonometric functions,
-	 *  expression of condition "if (cond, true value, false value)"
+	 * A text expression can be as an expression: value numbers, trigonometric
+	 * functions, expression of condition "if (cond, true value, false value)"
 	 */
 	private Text txtExpression;
-	
+
 	@Override
-	public void createControls(Composite parent, TabbedPropertySheetPage tabbedPropertySheetPage) {
+	public void createControls(Composite parent,
+			TabbedPropertySheetPage tabbedPropertySheetPage) {
 
 		super.createControls(parent, tabbedPropertySheetPage);
-	
+
 		TabbedPropertySheetWidgetFactory factory = getWidgetFactory();
 		Composite composite = factory.createFlatFormComposite(parent);
 		FormData data;
-		
+
 		/**** NAME ****/
 		lblNameObj = factory.createCLabel(composite, " ");
 		data = new FormData();
 		data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
 		data.right = new FormAttachment(100, 0);
 		lblNameObj.setLayoutData(data);
-		
+
 		lblName = factory.createCLabel(composite, "Name:");
 		data = new FormData();
 		data.left = new FormAttachment(0, 0);
 		data.right = new FormAttachment(lblNameObj, -HSPACE);
 		lblName.setLayoutData(data);
-		
+
 		/**** EXPRESION ****/
 		txtExpression = factory.createText(composite, "");
 		data = new FormData();
@@ -112,14 +114,14 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 		data.top = new FormAttachment(lblNameObj);
 		txtExpression.setLayoutData(data);
 		txtExpression.setEnabled(true);
-		
+
 		lblExpression = factory.createCLabel(composite, "Expression:");
 		data = new FormData();
 		data.left = new FormAttachment(0, 0);
 		data.right = new FormAttachment(txtExpression, -HSPACE);
 		data.top = new FormAttachment(lblName);
 		lblExpression.setLayoutData(data);
-		
+
 		/**** VALUE ****/
 		lblValueObj = factory.createCLabel(composite, "");
 		data = new FormData();
@@ -127,85 +129,138 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 		data.right = new FormAttachment(100, 0);
 		data.top = new FormAttachment(txtExpression);
 		lblValueObj.setLayoutData(data);
-		
+
 		lblValue = factory.createCLabel(composite, "Default Value:");
 		data = new FormData();
 		data.left = new FormAttachment(0, 0);
 		data.right = new FormAttachment(lblValueObj, -HSPACE);
 		data.top = new FormAttachment(lblExpression);
 		lblValue.setLayoutData(data);
-		
+
 		txtExpression.addModifyListener(new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent e) {
-				updateProperties();			
+				updateProperties();
 			}
-		});		
+		});
 	}
-	
+
 	/**
-	 * Update the {@link Port}/{@link Delay}/{@link Parameter} {@link Expression} 
-	 * with the value stored in the txtEpression 
+	 * Update the {@link Port}/{@link Delay}/{@link Parameter}
+	 * {@link Expression} with the value stored in the txtEpression
 	 */
-	private void updateProperties(){
+	private void updateProperties() {
 		PictogramElement pe = getSelectedPictogramElement();
 		if (pe != null) {
-			EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+			EObject bo = Graphiti.getLinkService()
+					.getBusinessObjectForLinkedPictogramElement(pe);
 			if (bo == null)
 				return;
-			
-			if(bo instanceof Parameter){
-				Parameter param = (Parameter) bo;
-				if(param.getExpression().getString().compareTo(txtExpression.getText()) != 0){
-					setNewExpression(param.getExpression(), txtExpression.getText());
-					getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
-				}
-			}//end Parameter
 
-			if(bo instanceof DataOutputPort){
+			if (bo instanceof Parameter) {
+				Parameter param = (Parameter) bo;
+				if (param.getExpression().getString()
+						.compareTo(txtExpression.getText()) != 0) {
+					setNewExpression(param.getExpression(),
+							txtExpression.getText());
+					getDiagramTypeProvider().getDiagramBehavior()
+							.refreshRenderingDecorators(pe);
+				}
+			}// end Parameter
+
+			if (bo instanceof DataOutputPort) {
 				DataOutputPort oPort = (DataOutputPort) bo;
-				if(oPort.getExpression().getString().compareTo(txtExpression.getText()) != 0){
-					setNewExpression(oPort.getExpression(), txtExpression.getText());
-					getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators((PictogramElement)(pe.eContainer()));
+				if (oPort.getExpression().getString()
+						.compareTo(txtExpression.getText()) != 0) {
+					setNewExpression(oPort.getExpression(),
+							txtExpression.getText());
+					getDiagramTypeProvider().getDiagramBehavior()
+							.refreshRenderingDecorators(
+									(PictogramElement) (pe.eContainer()));
+					// If oPort is contained by an DataInputInterface, we should
+					// also update the graph port of the DataInputInterface
+					if (oPort.eContainer() instanceof DataInputInterface) {
+						DataInputInterface dii = (DataInputInterface) oPort
+								.eContainer();
+						DataInputPort iPort = (DataInputPort) dii
+								.getGraphPort();
+
+						if (iPort.getExpression().getString()
+								.compareTo(txtExpression.getText()) != 0) {
+							setNewExpression(iPort.getExpression(),
+									txtExpression.getText());
+							getDiagramTypeProvider()
+									.getDiagramBehavior()
+									.refreshRenderingDecorators(
+											(PictogramElement) (pe.eContainer()));
+						}
+					}
 				}
-			}//end OutputPort
-			
-			if(bo instanceof DataInputPort){
+			}// end OutputPort
+
+			if (bo instanceof DataInputPort) {
 				DataInputPort iPort = (DataInputPort) bo;
-				if(iPort.getExpression().getString().compareTo(txtExpression.getText()) != 0){
-					setNewExpression(iPort.getExpression(), txtExpression.getText());
-					getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators((PictogramElement)(pe.eContainer()));
+				if (iPort.getExpression().getString()
+						.compareTo(txtExpression.getText()) != 0) {
+					setNewExpression(iPort.getExpression(),
+							txtExpression.getText());
+					getDiagramTypeProvider().getDiagramBehavior()
+							.refreshRenderingDecorators(
+									(PictogramElement) (pe.eContainer()));
+					// If oPort is contained by an DataInputInterface, we should
+					// also update the graph port of the DataInputInterface
+					if (iPort.eContainer() instanceof DataOutputInterface) {
+						DataOutputInterface doi = (DataOutputInterface) iPort
+								.eContainer();
+						DataOutputPort oPort = (DataOutputPort) doi
+								.getGraphPort();
+
+						if (oPort.getExpression().getString()
+								.compareTo(txtExpression.getText()) != 0) {
+							setNewExpression(oPort.getExpression(),
+									txtExpression.getText());
+							getDiagramTypeProvider()
+									.getDiagramBehavior()
+									.refreshRenderingDecorators(
+											(PictogramElement) (pe.eContainer()));
+						}
+					}
 				}
-			}//end InputPort
-			
-			if(bo instanceof Delay){
+			}// end InputPort
+
+			if (bo instanceof Delay) {
 				Delay delay = (Delay) bo;
-				if(delay.getExpression().getString().compareTo(txtExpression.getText()) != 0){
-					setNewExpression(delay.getExpression(), txtExpression.getText());
-					getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
+				if (delay.getExpression().getString()
+						.compareTo(txtExpression.getText()) != 0) {
+					setNewExpression(delay.getExpression(),
+							txtExpression.getText());
+					getDiagramTypeProvider().getDiagramBehavior()
+							.refreshRenderingDecorators(pe);
 				}
-			}//end Delay
+			}// end Delay			
 		}
-		
 		refresh();
 	}
 
 	/**
 	 * Safely set an {@link Expression} with the given value.
-	 * @param e 		{@link Expression} to set
-	 * @param value		String value
+	 * 
+	 * @param e
+	 *            {@link Expression} to set
+	 * @param value
+	 *            String value
 	 */
-	private void setNewExpression(final Expression e, final String value){
-		TransactionalEditingDomain editingDomain = getDiagramTypeProvider().getDiagramBehavior().getEditingDomain(); 
+	private void setNewExpression(final Expression e, final String value) {
+		TransactionalEditingDomain editingDomain = getDiagramTypeProvider()
+				.getDiagramBehavior().getEditingDomain();
 		editingDomain.getCommandStack().execute(
-					new RecordingCommand(editingDomain) {
-						
-						@Override
-						protected void doExecute() {
-							e.setString(value);
-						}
+				new RecordingCommand(editingDomain) {
+
+					@Override
+					protected void doExecute() {
+						e.setString(value);
 					}
-				);
+				});
 	}
 
 	@Override
@@ -215,80 +270,79 @@ public class Section extends GFPropertySection implements ITabbedPropertyConstan
 		Expression e = null;
 		boolean expressionFocus = txtExpression.isFocusControl();
 		txtExpression.setEnabled(false);
-		
+
 		if (pe != null) {
-			Object bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+			Object bo = Graphiti.getLinkService()
+					.getBusinessObjectForLinkedPictogramElement(pe);
 			if (bo == null)
 				return;
-		
-			if (bo instanceof Parameter){	
-				name = ((Parameter) bo).getName();											
+
+			if (bo instanceof Parameter) {
+				name = ((Parameter) bo).getName();
 				e = ((Parameter) bo).getExpression();
-			}//end Parameter
-			
-			if(bo instanceof DataOutputPort){
+			}// end Parameter
+
+			if (bo instanceof DataOutputPort) {
 				DataOutputPort oPort = ((DataOutputPort) bo);
-				
-				if(oPort.eContainer() instanceof DataInputInterface){
-					name = ((DataInputInterface) oPort.eContainer()).getName();					
-				}else{
+
+				if (oPort.eContainer() instanceof DataInputInterface) {
+					name = ((DataInputInterface) oPort.eContainer()).getName();
+				} else {
 					name = oPort.getName();
 				}
 
 				e = oPort.getExpression();
-			}//end OutputPort
-			
-			
-			if(bo instanceof DataInputPort){
+			}// end OutputPort
+
+			if (bo instanceof DataInputPort) {
 				DataInputPort iPort = ((DataInputPort) bo);
-				
-				if(iPort.eContainer() instanceof DataOutputInterface){
-					name = ((DataOutputInterface) iPort.eContainer()).getName();					
-				}else{
+
+				if (iPort.eContainer() instanceof DataOutputInterface) {
+					name = ((DataOutputInterface) iPort.eContainer()).getName();
+				} else {
 					name = iPort.getName();
 				}
 
 				e = iPort.getExpression();
-				
-			}//end InputPort
-			
-			if(bo instanceof InterfaceActor){
+
+			}// end InputPort
+
+			if (bo instanceof InterfaceActor) {
 				InterfaceActor iface = ((InterfaceActor) bo);
 				name = iface.getName();
-							
-				if(iface instanceof DataInputInterface){
+
+				if (iface instanceof DataInputInterface) {
 					e = iface.getDataOutputPorts().get(0).getExpression();
-				}else if(iface instanceof DataOutputInterface){
+				} else if (iface instanceof DataOutputInterface) {
 					e = iface.getDataInputPorts().get(0).getExpression();
-				}else{
+				} else {
 					e = null;
 				}
-								
-			}//end InterfaceActor
 
-			if(bo instanceof Delay){
-				if(((Delay) bo).eContainer() instanceof Fifo){
-					Fifo fifo = (Fifo) ((Delay) bo).eContainer();					
-					name = fifo.getId();									
+			}// end InterfaceActor
+
+			if (bo instanceof Delay) {
+				if (((Delay) bo).eContainer() instanceof Fifo) {
+					Fifo fifo = (Fifo) ((Delay) bo).eContainer();
+					name = fifo.getId();
 					e = fifo.getDelay().getExpression();
 				}
-			}//end Delay
-			
+			}// end Delay
 
 			lblNameObj.setText(name == null ? " " : name);
-			if( e != null){
-				if(!(bo instanceof InterfaceActor))
+			if (e != null) {
+				if (!(bo instanceof InterfaceActor))
 					txtExpression.setEnabled(true);
-				
-				if(txtExpression.getText().compareTo(e.getString()) != 0){
+
+				if (txtExpression.getText().compareTo(e.getString()) != 0) {
 					txtExpression.setText(e.getString());
-				}				
-							
+				}
+
 				lblValueObj.setText(e.evaluate());
-				
-				if(expressionFocus)
+
+				if (expressionFocus)
 					txtExpression.setFocus();
 			}
 		}
 	}
-}	
+}
