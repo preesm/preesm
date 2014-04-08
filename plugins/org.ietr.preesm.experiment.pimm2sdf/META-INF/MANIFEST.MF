@@ -1,13 +1,17 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PiMM2SDF transformation
-Bundle-SymbolicName: org.ietr.preesm.experiment.pimm2sdf
+Bundle-SymbolicName: org.ietr.preesm.experiment.pimm2sdf;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.ietr.preesm.experiment.pimm2sdf.Activator
 Bundle-Vendor: IETR/INSA Rennes
-Require-Bundle: org.ietr.dftools.algorithm;bundle-version="1.1.0",
+Require-Bundle: org.ietr.dftools.algorithm,
  org.eclipse.core.runtime,
  org.ietr.preesm.experiment.model,
- org.jgrapht;bundle-version="0.8.2"
+ org.jgrapht;bundle-version="0.8.2",
+ org.ietr.dftools.workflow,
+ org.ietr.preesm.experiment.core,
+ org.eclipse.core.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
+Export-Package: org.ietr.preesm.experiment.pimm2sdf

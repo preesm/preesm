@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.ietr.dftools.workflow.tasks">
+      <task
+            id="org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask"
+            name="PiMM to SDF transformation"
+            type="org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask">
+         <inputs>
+            <input
+                  id="PiMM"
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.experiment.core.piscenario.PiScenario">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="SDFs"
+                  object="java.util.Set&lt;SDFGraph&gt;">
+            </output></outputs>
+      </task>
+   </extension>
+
+</plugin>
