@@ -84,15 +84,18 @@ public class SubgraphConnector extends PiMMVisitor {
 	 * Connect all the ports of the PiGraph to the Fifos and Dependencies
 	 * connected to the ports of the Actor
 	 */
-	private void reconnectPiGraph(Actor a, PiGraph pg) {		
+	private void reconnectPiGraph(Actor a, PiGraph pg) {
 		boolean found = false;
-		for (DataInputPort dip1 : a.getDataInputPorts()) {			
+		for (DataInputPort dip1 : a.getDataInputPorts()) {
 			found = false;
 			for (DataInputPort dip2 : pg.getDataInputPorts()) {
 				if (dip1.getName().equals(dip2.getName())) {
 					Fifo fifo = dip1.getIncomingFifo();
 					dip2.setIncomingFifo(fifo);
 					fifo.setTargetPort(dip2);
+					
+					dip2.setExpression(dip1.getExpression());
+										
 					found = true;
 					break;
 				}
@@ -110,6 +113,9 @@ public class SubgraphConnector extends PiMMVisitor {
 					Fifo fifo = dop1.getOutgoingFifo();
 					dop2.setOutgoingFifo(fifo);
 					fifo.setSourcePort(dop2);
+					
+					dop2.setExpression(dop1.getExpression());
+					
 					found = true;
 					break;
 				}
@@ -126,7 +132,7 @@ public class SubgraphConnector extends PiMMVisitor {
 				if (cip1.getName().equals(cip2.getName())) {
 					Dependency dep = cip1.getIncomingDependency();
 					cip2.setIncomingDependency(dep);
-					dep.setGetter(cip2);
+					dep.setGetter(cip2);										
 					found = true;
 					break;
 				}
@@ -143,7 +149,7 @@ public class SubgraphConnector extends PiMMVisitor {
 				if (cop1.getName().equals(cop2.getName())) {
 					for (Dependency dep : cop1.getOutgoingDependencies()) {
 						cop2.getOutgoingDependencies().add(dep);
-						dep.setSetter(cop2);
+						dep.setSetter(cop2);						
 					}
 					found = true;
 					break;
