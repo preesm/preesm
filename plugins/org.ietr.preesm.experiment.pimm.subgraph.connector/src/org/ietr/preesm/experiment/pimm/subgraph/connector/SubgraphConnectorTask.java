@@ -48,15 +48,13 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 public class SubgraphConnectorTask extends AbstractTaskImplementation {
 
-	public static String GRAPH_KEY = "PiMM";
-
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName, Workflow workflow) throws WorkflowException {
 
 		// Get the input
-		PiGraph pg = (PiGraph) inputs.get(GRAPH_KEY);
+		PiGraph pg = (PiGraph) inputs.get(PI_GRAPH_KEY);
 
 		// Visit it with the subgraph connector
 		SubgraphConnector connector = new SubgraphConnector();
@@ -76,7 +74,7 @@ public class SubgraphConnectorTask extends AbstractTaskImplementation {
 
 		// Return pg
 		Map<String, Object> outputs = new HashMap<String, Object>();
-		outputs.put(GRAPH_KEY, pg);
+		outputs.put(PI_GRAPH_KEY, pg);
 		return outputs;
 	}
 

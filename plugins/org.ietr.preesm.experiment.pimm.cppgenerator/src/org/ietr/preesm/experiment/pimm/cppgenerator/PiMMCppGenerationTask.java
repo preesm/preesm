@@ -56,17 +56,14 @@ import org.ietr.preesm.experiment.pimm.cppgenerator.visitor.CPPCodeGenerationLau
 
 public class PiMMCppGenerationTask extends AbstractTaskImplementation {
 
-	private final static String PISCENARIO_KEY = "scenario";
-	private final static String PIGRAPH_KEY = "PiMM";
-
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName, Workflow workflow) throws WorkflowException {
 
 		// Retrieve inputs
-		PiScenario scenario = (PiScenario) inputs.get(PISCENARIO_KEY);
-		PiGraph pg = (PiGraph) inputs.get(PIGRAPH_KEY);
+		PiScenario scenario = (PiScenario) inputs.get(PI_SCENARIO_KEY);
+		PiGraph pg = (PiGraph) inputs.get(PI_GRAPH_KEY);
 
 		CPPCodeGenerationLauncher launcher = new CPPCodeGenerationLauncher();
 
