@@ -95,6 +95,9 @@ public class PiScenarioHandler extends DefaultHandler {
 		case "architecture":
 			piscenario.setArchitectureURL(attributes.getValue("url"));
 			break;
+		case "simulation":
+			piscenario.setNumberOfTopLevelExecutions(Integer.parseInt(attributes.getValue("nbExecutions")));
+			break;
 		case "actorTree":
 			piscenario.update();
 			currentActorNode = null;
@@ -173,13 +176,10 @@ public class PiScenarioHandler extends DefaultHandler {
 			throws SAXException{
 		switch(qName){
 		case "piscenario":
-			break;
 		case "files":
-			break;
 		case "algorithm":
-			break;
 		case "architecture":
-			break;
+		case "simulation":
 		case "actorTree":
 			break;
 		case "actor":
