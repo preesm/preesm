@@ -134,7 +134,8 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 			} catch (SDF4JException e) {
 				e.printStackTrace();
 			}
-			result = toHsdf.getOutput();
+			if (toHsdf.hasChanged())
+				result = toHsdf.getOutput();
 
 			// Then visit the subgraphs of pg once for each duplicates of
 			// their corresponding SDFAbstractVertex created by single rate
