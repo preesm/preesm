@@ -39,15 +39,9 @@ package org.ietr.preesm.algorithm.exportXml;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.ietr.dftools.algorithm.exporter.GMLSDFExporter;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
@@ -67,24 +61,9 @@ public class SDFExporter extends AbstractTaskImplementation {
 		IPath xmlPath = new Path(sXmlPath);
 
 		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
-		GMLSDFExporter exporter = new GMLSDFExporter();
-		SDFGraph clone = ((SDFGraph) (algorithm)).clone();
-		if (xmlPath.getFileExtension() == null
-				|| !xmlPath.getFileExtension().equals("graphml")) {
-			xmlPath = xmlPath.addFileExtension("graphml");
-		}
-
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-
-		IFile iFile = workspace.getRoot().getFile(xmlPath);
-		try {
-			if (!iFile.exists()) {
-				iFile.create(null, false, new NullProgressMonitor());
-			}
-			exporter.export(clone, iFile.getRawLocation().toOSString());
-		} catch (CoreException e1) {
-			e1.printStackTrace();
-		}
+		
+		SDF2GraphmlExporter exporter = new SDF2GraphmlExporter();
+		exporter.export(algorithm, xmlPath);
 
 		Activator.updateWorkspace();
 
