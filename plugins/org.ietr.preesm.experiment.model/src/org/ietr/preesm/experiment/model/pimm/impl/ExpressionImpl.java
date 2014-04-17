@@ -167,7 +167,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 				}
 			}
 			
-			jep.parse(allExpression);
+			jep.parse(allExpression);			
 			return jep.evaluate().toString();
 			
 		} catch (ParseException e) {

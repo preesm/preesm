@@ -95,7 +95,7 @@ public class SubgraphConnector extends PiMMVisitor {
 					fifo.setTargetPort(dip2);
 					
 					dip2.setExpression(dip1.getExpression());
-										
+					
 					found = true;
 					break;
 				}
