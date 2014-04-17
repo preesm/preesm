@@ -48,6 +48,8 @@ import org.ietr.dftools.algorithm.model.parameters.ExpressionValue;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFExpressionEdgePropertyType;
 import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
@@ -97,6 +99,9 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 	// Set of subgraphs to visit afterwards
 	private Set<PiGraph> subgraphs = new HashSet<PiGraph>();
 
+	// Factory for creation of new Pi Expressions
+	private PiMMFactory piFactory = PiMMFactory.eINSTANCE;
+
 	public PiMM2SDFVisitor(PiGraphExecution execution) {
 		this.execution = execution;
 	}
@@ -112,7 +117,10 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 			result.setName(pg.getName());
 
 			// Set these values into the parameters of pg when possible
-			setParameterValues(pg, execution);
+			for (Parameter p : pg.getParameters()) {
+				p.accept(this);
+			}
+			computeDerivedParameterValues(pg, execution);
 
 			// Visit each of the vertices of pg with the values set
 			for (AbstractActor aa : pg.getVertices()) {
@@ -167,26 +175,31 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 	 * @param execution
 	 *            the list of available values for each parameter
 	 */
-	private void setParameterValues(PiGraph graph, PiGraphExecution execution) {
-		// Factory for creation of new Pi Expressions
-		PiMMFactory piFactory = PiMMFactory.eINSTANCE;
-		// If there is only one value available for Parameter p, we can set it
-		for (Parameter p : graph.getParameters()) {
-			Integer value = execution.getUniqueValue(p);
-			if (value != null) {
-				Expression pExp = piFactory.createExpression();
-				pExp.setString(value.toString());
-				p.setExpression(pExp);
-			}
-		}
+	private void computeDerivedParameterValues(PiGraph graph,
+			PiGraphExecution execution) {
 		// If there is no list of value for one Parameter, the value of the
 		// parameter is derived (i.e., computed from other parameters values),
 		// we can evaluate it (after the values of other parameters have been
 		// fixed)
 		for (Parameter p : graph.getParameters()) {
 			if (!execution.hasValue(p)) {
-				p.getExpression().evaluate();
+				// Evaluate the expression wrt. the current values of the
+				// parameters and set the result as new expression
+				Expression pExp = piFactory.createExpression();
+				pExp.setString(p.getExpression().evaluate());
+				p.setExpression(pExp);
 			}
+		}
+	}
+
+	@Override
+	public void visitParameter(Parameter p) {
+		// If there is only one value available for Parameter p, we can set it
+		Integer value = execution.getUniqueValue(p);
+		if (value != null) {
+			Expression pExp = piFactory.createExpression();
+			pExp.setString(value.toString());
+			p.setExpression(pExp);
 		}
 	}
 
@@ -248,11 +261,9 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 	public void visitAbstractActor(AbstractActor aa) {
 		for (DataInputPort dip : aa.getDataInputPorts()) {
 			piPort2Vx.put(dip, aa);
-			dip.accept(this);
 		}
 		for (DataOutputPort dop : aa.getDataOutputPorts()) {
 			piPort2Vx.put(dop, aa);
-			dop.accept(this);
 		}
 		for (ConfigOutputPort cop : aa.getConfigOutputPorts()) {
 			piPort2Vx.put(cop, aa);
@@ -267,34 +278,16 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitActor(Actor a) {
-		SDFVertex v = new SDFVertex();
-		v.setName(a.getName());
+		if (!a.isConfigurationActor()) {
+			SDFVertex v = new SDFVertex();
+			v.setName(a.getName());
 
-		visitAbstractActor(a);
+			visitAbstractActor(a);
 
-		result.addVertex(v);
-		piVx2SDFVx.put(a, v);
-	}
+			result.addVertex(v);
+			piVx2SDFVx.put(a, v);
+		}
 
-	@Override
-	public void visitDataOutputPort(DataOutputPort dop) {
-		dop.getExpression().accept(this);
-	}
-
-	@Override
-	public void visitDelay(Delay d) {
-		d.getExpression().accept(this);
-	}
-
-	@Override
-	public void visitDataInputPort(DataInputPort dip) {
-		dip.getExpression().accept(this);
-	}
-
-	@Override
-	public void visitExpression(Expression e) {
-		// Evaluate e wrt. the current values of the parameters
-		e.evaluate();
 	}
 
 	@Override
@@ -305,28 +298,36 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 		if (source instanceof AbstractVertex
 				&& target instanceof AbstractVertex) {
 
-			AbstractEdgePropertyType<ExpressionValue> delay;
-			AbstractEdgePropertyType<ExpressionValue> prod;
-			AbstractEdgePropertyType<ExpressionValue> cons;
-			DataInputPort tgtPort = f.getTargetPort();
-			DataOutputPort srcPort = f.getSourcePort();
+			DataInputPort piTgtPort = f.getTargetPort();
+			DataOutputPort piSrcPort = f.getSourcePort();
 
+			SDFSinkInterfaceVertex sdfSrcPort = new SDFSinkInterfaceVertex();
+			sdfSrcPort.setName(piSrcPort.getName());
+			SDFSourceInterfaceVertex sdfTgtPort = new SDFSourceInterfaceVertex();
+			sdfTgtPort.setName(piTgtPort.getName());
+
+			AbstractEdgePropertyType<ExpressionValue> delay;
 			if (f.getDelay() != null) {
-				f.getDelay().accept(this);
-				delay = new SDFExpressionEdgePropertyType(new ExpressionValue(f
-						.getDelay().getExpression().getString()));
+				// Evaluate the expression wrt. the current values of the
+				// parameters
+				String piDelay = f.getDelay().getExpression().evaluate();
+				delay = new SDFExpressionEdgePropertyType(new ExpressionValue(
+						piDelay));
 			} else {
 				delay = new SDFExpressionEdgePropertyType(new ExpressionValue(
-						new Integer(0).toString()));
+						"0"));
 			}
+			// Evaluate the expression wrt. the current values of the parameters
+			String piProd = piTgtPort.getExpression().evaluate();
+			AbstractEdgePropertyType<ExpressionValue> prod = new SDFExpressionEdgePropertyType(
+					new ExpressionValue(piProd));
+			// Evaluate the expression wrt. the current values of the parameters
+			String piCons = piSrcPort.getExpression().evaluate();
+			AbstractEdgePropertyType<ExpressionValue> cons = new SDFExpressionEdgePropertyType(
+					new ExpressionValue(piCons));
 
-			prod = new SDFExpressionEdgePropertyType(new ExpressionValue(
-					tgtPort.getExpression().getString()));
-			cons = new SDFExpressionEdgePropertyType(new ExpressionValue(
-					srcPort.getExpression().getString()));
-
-			result.addEdge(piVx2SDFVx.get(source), piVx2SDFVx.get(target),
-					prod, cons, delay);
+			result.addEdge(piVx2SDFVx.get(source), sdfSrcPort,
+					piVx2SDFVx.get(target), sdfTgtPort, prod, cons, delay);
 		}
 
 	}
@@ -372,6 +373,26 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 	 */
 
 	@Override
+	public void visitDataOutputPort(DataOutputPort dop) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void visitDelay(Delay d) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void visitDataInputPort(DataInputPort dip) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void visitExpression(Expression e) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public void visitConfigInputPort(ConfigInputPort cip) {
 		throw new UnsupportedOperationException();
 	}
@@ -388,11 +409,6 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitISetter(ISetter is) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void visitParameter(Parameter p) {
 		throw new UnsupportedOperationException();
 	}
 
