@@ -222,21 +222,24 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 				duplicates.add(piVx2SDFVx.get(subgraph));
 			}
 
-			int i = 0;
+			int duplicateIndex = 0;
 			// For each of the duplicates
 			for (SDFAbstractVertex duplicate : duplicates) {
+				int selector = duplicateIndex + duplicates.size()
+						* execution.getExecutionNumber();
 				// Obtain a new PiGraphExecution fixing values for Parameters
 				// directly contained by subgraph
 				PiGraphExecution innerExecution = execution
-						.extractInnerExecution(subgraph, i);
+						.extractInnerExecution(subgraph, selector);
 				// Visit subgraph with the PiGraphExecution
 				PiMM2SDFVisitor innerVisitor = new PiMM2SDFVisitor(
 						innerExecution);
 				innerVisitor.visit(subgraph);
 				// Set the obtained SDFGraph as refinement for duplicate
-				duplicate.setRefinement(innerVisitor.getResult());
-
-				i++;
+				SDFGraph sdf = innerVisitor.getResult();
+				sdf.setName(sdf.getName() + innerExecution.getExecutionLabel());
+				duplicate.setGraphDescription(sdf);
+				duplicateIndex++;
 			}
 		}
 	}
