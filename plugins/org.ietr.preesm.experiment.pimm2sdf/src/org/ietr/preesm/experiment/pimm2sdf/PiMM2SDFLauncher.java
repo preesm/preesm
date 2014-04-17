@@ -64,25 +64,23 @@ public class PiMM2SDFLauncher {
 
 	public Set<SDFGraph> launch() {
 		Set<SDFGraph> result = new HashSet<SDFGraph>();
-
+		
 		ActorTree tree = piscenario.getActorTree();
 		// Get all the available values for all the parameters
 		Map<String, List<Integer>> parametersValues = getAllDynamicParametersValues(tree);
 		// Get the values for Parameters directly contained by graph (top-level
 		// parameters), if any
 		Map<String, List<Integer>> outerParametersValues = new HashMap<String, List<Integer>>();
-		// The number of time we need to execute, and thus visit graph, depends
-		// on the maximum number of values for all the top-level parameters
-		int nbExecutions = 1;
+		// The number of time we need to execute, and thus visit graph
+		int nbExecutions = piscenario.getNumberOfTopLevelExecutions();
+
 		for (Parameter param : graph.getParameters()) {
 			List<Integer> pValues = parametersValues.get(param.getName());
 			if (pValues != null) {
 				outerParametersValues.put(param.getName(), pValues);
-				int nbPValues = pValues.size();
-				if (nbPValues > nbExecutions)
-					nbExecutions = nbPValues;
 			}
 		}
+
 		// Visitor creating the SDFGraphs
 		PiMM2SDFVisitor visitor;
 		PiGraphExecution execution;
@@ -98,16 +96,20 @@ public class PiMM2SDFLauncher {
 				List<Integer> availableValues = outerParametersValues.get(s);
 				int nbValues = availableValues.size();
 				if (nbValues > 0) {
-					Integer value = availableValues.get(i % nbValues);
+					ArrayList<Integer> value = new ArrayList<Integer>();
+					value.add(availableValues.get(i % nbValues));
 					currentValues.put(s, new ArrayList<Integer>(value));
 				}
 			}
 
-			execution = new PiGraphExecution(graph, currentValues);
+			execution = new PiGraphExecution(graph, currentValues, "_" + i, i);
 			visitor = new PiMM2SDFVisitor(execution);
 			graph.accept(visitor);
 
-			result.add(visitor.getResult());
+			SDFGraph sdf = visitor.getResult();
+			sdf.setName(sdf.getName() + "_" + i);
+
+			result.add(sdf);
 		}
 
 		return result;
