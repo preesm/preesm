@@ -49,17 +49,14 @@ import org.ietr.preesm.experiment.core.piscenario.PiScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 public class PiMM2SDFTask extends AbstractTaskImplementation {
-
-	private final static String PISCENARIO_KEY = "scenario";
-	private final static String PIGRAPH_KEY = "PiMM";
 	
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName, Workflow workflow) throws WorkflowException {
 		
-		PiScenario piscenario = (PiScenario) inputs.get(PISCENARIO_KEY);
-		PiGraph graph = (PiGraph) inputs.get(PIGRAPH_KEY);
+		PiScenario piscenario = (PiScenario) inputs.get(PI_SCENARIO_KEY);
+		PiGraph graph = (PiGraph) inputs.get(PI_GRAPH_KEY);
 		
 		PiMM2SDFLauncher launcher = new PiMM2SDFLauncher(piscenario, graph);
 		Set<SDFGraph> result = launcher.launch();
