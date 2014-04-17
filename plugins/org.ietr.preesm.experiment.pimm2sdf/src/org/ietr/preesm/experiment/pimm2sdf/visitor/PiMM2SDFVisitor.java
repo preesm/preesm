@@ -140,6 +140,8 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 			try {
 				result.accept(toHsdf);
 			} catch (SDF4JException e) {
+				// TODO: handle the exception in order to stop the execution and
+				// inform the user
 				e.printStackTrace();
 			}
 			if (toHsdf.hasChanged())
