@@ -56,11 +56,17 @@ public class PiGraphExecution {
 
 	private PiGraph executedPiGraph;
 
+	private String executionLabel;
+	
+	private int executionNumber;
+	
 	private Map<String, List<Integer>> parameterValues;
 
-	public PiGraphExecution(PiGraph graph, Map<String, List<Integer>> values) {
+	public PiGraphExecution(PiGraph graph, Map<String, List<Integer>> values, String label, int number) {
 		this.executedPiGraph = graph;
 		this.parameterValues = values;
+		this.executionLabel = label;
+		this.executionNumber = number;
 	}
 
 	public List<Integer> getValues(Parameter p) {
@@ -93,19 +99,21 @@ public class PiGraphExecution {
 	}
 
 	public PiGraphExecution extractInnerExecution(PiGraph subgraph,
-			int executionIndex) {
+			int selector) {
 		Map<String, List<Integer>> innerParameterValues = new HashMap<String, List<Integer>>();
-		for (String s : parameterValues.keySet()) {
+		for (String s : parameterValues.keySet()) {			
 			if (getSubgraphParametersNames(subgraph).contains(s)) {
 				int size = parameterValues.get(s).size();
-				Integer value = parameterValues.get(s).get(
-						executionIndex % size);
-				innerParameterValues.put(s, new ArrayList<Integer>(value));
+				List<Integer> value = new ArrayList<Integer>();
+				value.add(parameterValues.get(s).get(
+						selector % size));
+				innerParameterValues.put(s, value);
+				
 			} else {
 				innerParameterValues.put(s, parameterValues.get(s));
-			}
+			}			
 		}
-		return new PiGraphExecution(executedPiGraph, innerParameterValues);
+		return new PiGraphExecution(executedPiGraph, innerParameterValues, executionLabel + "_" + selector, selector);
 	}
 
 	private Set<String> getSubgraphParametersNames(PiGraph subgraph) {
@@ -113,5 +121,13 @@ public class PiGraphExecution {
 		for (Parameter p : subgraph.getParameters())
 			parametersNames.add(p.getName());
 		return parametersNames;
+	}
+
+	public String getExecutionLabel() {
+		return executionLabel;
+	}
+
+	public int getExecutionNumber() {
+		return executionNumber;
 	}
 }
