@@ -62,8 +62,8 @@ public class PiMMCppGenerationTask extends AbstractTaskImplementation {
 			String nodeName, Workflow workflow) throws WorkflowException {
 
 		// Retrieve inputs
-		PiScenario scenario = (PiScenario) inputs.get(PI_SCENARIO_KEY);
-		PiGraph pg = (PiGraph) inputs.get(PI_GRAPH_KEY);
+		PiScenario scenario = (PiScenario) inputs.get(KEY_PI_SCENARIO);
+		PiGraph pg = (PiGraph) inputs.get(KEY_PI_GRAPH);
 
 		CPPCodeGenerationLauncher launcher = new CPPCodeGenerationLauncher();
 

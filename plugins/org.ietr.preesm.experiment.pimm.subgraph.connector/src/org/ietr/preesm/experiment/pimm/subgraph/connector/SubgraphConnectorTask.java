@@ -54,7 +54,7 @@ public class SubgraphConnectorTask extends AbstractTaskImplementation {
 			String nodeName, Workflow workflow) throws WorkflowException {
 
 		// Get the input
-		PiGraph pg = (PiGraph) inputs.get(PI_GRAPH_KEY);
+		PiGraph pg = (PiGraph) inputs.get(KEY_PI_GRAPH);
 
 		// Visit it with the subgraph connector
 		SubgraphConnector connector = new SubgraphConnector();
@@ -74,7 +74,7 @@ public class SubgraphConnectorTask extends AbstractTaskImplementation {
 
 		// Return pg
 		Map<String, Object> outputs = new HashMap<String, Object>();
-		outputs.put(PI_GRAPH_KEY, pg);
+		outputs.put(KEY_PI_GRAPH, pg);
 		return outputs;
 	}
 

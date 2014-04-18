@@ -29,7 +29,7 @@ public class MultiHierarchyFlattening extends AbstractTaskImplementation {
 
 		Set<SDFGraph> result = new HashSet<SDFGraph>();
 		Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs
-				.get(SDF_GRAPHS_SET_KEY);
+				.get(KEY_SDF_GRAPHS_SET);
 		String depthS = parameters.get(DEPTH_KEY);
 
 		int depth;
@@ -86,7 +86,7 @@ public class MultiHierarchyFlattening extends AbstractTaskImplementation {
 		}
 
 		Map<String, Object> outputs = new HashMap<String, Object>();
-		outputs.put(SDF_GRAPHS_SET_KEY, result);
+		outputs.put(KEY_SDF_GRAPHS_SET, result);
 		return outputs;
 	}
 

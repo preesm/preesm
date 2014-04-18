@@ -55,8 +55,8 @@ public class PiMM2SDFTask extends AbstractTaskImplementation {
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName, Workflow workflow) throws WorkflowException {
 		
-		PiScenario piscenario = (PiScenario) inputs.get(PI_SCENARIO_KEY);
-		PiGraph graph = (PiGraph) inputs.get(PI_GRAPH_KEY);
+		PiScenario piscenario = (PiScenario) inputs.get(KEY_PI_SCENARIO);
+		PiGraph graph = (PiGraph) inputs.get(KEY_PI_GRAPH);
 		
 		PiMM2SDFLauncher launcher = new PiMM2SDFLauncher(piscenario, graph);
 		Set<SDFGraph> result = launcher.launch();

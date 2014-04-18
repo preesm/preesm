@@ -26,7 +26,7 @@ public class MultiSDFExporter extends AbstractTaskImplementation {
 		String sXmlPath;
 		IPath xmlPath;
 
-		Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs.get(SDF_GRAPHS_SET_KEY);
+		Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs.get(KEY_SDF_GRAPHS_SET);
 		SDF2GraphmlExporter exporter = new SDF2GraphmlExporter();
 		
 		for (SDFGraph algorithm : algorithms) {
