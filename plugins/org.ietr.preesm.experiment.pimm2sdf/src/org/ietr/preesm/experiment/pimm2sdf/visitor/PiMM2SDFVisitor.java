@@ -363,12 +363,57 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitDataInputInterface(DataInputInterface dii) {
-		visitInterfaceActor(dii);
+		// Do not create a vertex for dii if it is only connected to
+		// ConfigurationActors
+//		if (!isConfiguratorInput(dii)) {
+			SDFSourceInterfaceVertex v = new SDFSourceInterfaceVertex();
+			v.setName(dii.getName());
+
+			visitAbstractActor(dii);
+
+			result.addVertex(v);
+			piVx2SDFVx.put(dii, v);
+//		}
+	}
+
+	/**
+	 * Checks all the targets of outgoing fifos of a DataInputInterface
+	 * 
+	 * @param dii
+	 *            the DataInputInterface we need to check
+	 * @return true if all the targets are ConfigurationActors, false otherwise
+	 */
+	private boolean isConfiguratorInput(DataInputInterface dii) {
+		boolean isConnectedOnlyToConfiguractor = true;
+		for (DataOutputPort dop : dii.getDataOutputPorts()) {
+			EObject container = dop.getOutgoingFifo().getTargetPort()
+					.eContainer();
+			if (container instanceof Actor) {
+				isConnectedOnlyToConfiguractor = ((Actor) container)
+						.isConfigurationActor();
+			} else {
+				isConnectedOnlyToConfiguractor = false;
+			}
+			if (!isConnectedOnlyToConfiguractor) {
+				break;
+			}
+		}
+		return isConnectedOnlyToConfiguractor;
 	}
 
 	@Override
 	public void visitDataOutputInterface(DataOutputInterface doi) {
-		visitInterfaceActor(doi);
+		SDFSinkInterfaceVertex v = new SDFSinkInterfaceVertex();
+		v.setName(doi.getName());
+
+		visitAbstractActor(doi);
+
+		result.addVertex(v);
+		piVx2SDFVx.put(doi, v);
+	}
+
+	public SDFGraph getResult() {
+		return result;
 	}
 
 	/**
