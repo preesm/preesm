@@ -24,6 +24,13 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: IETR/INSA Rennes
 Export-Package: org.ietr.preesm.mapper,
+ org.ietr.preesm.mapper.abc,
+ org.ietr.preesm.mapper.abc.impl.latency,
+ org.ietr.preesm.mapper.abc.taskscheduling,
+ org.ietr.preesm.mapper.algo.list,
  org.ietr.preesm.mapper.exporter,
+ org.ietr.preesm.mapper.graphtransfo,
+ org.ietr.preesm.mapper.model,
+ org.ietr.preesm.mapper.params,
  org.ietr.preesm.mapper.scenariogen,
  org.ietr.preesm.mapper.ui.stats

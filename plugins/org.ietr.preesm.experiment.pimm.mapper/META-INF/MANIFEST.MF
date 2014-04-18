@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Mapper
+Bundle-SymbolicName: org.ietr.preesm.experiment.pimm.mapper
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.ietr.preesm.experiment.pimm.mapper.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.ietr.preesm.mapper,
+ org.ietr.dftools.workflow,
+ org.ietr.dftools.architecture,
+ org.ietr.dftools.algorithm,
+ org.ietr.preesm.core,
+ org.ietr.preesm.experiment.core
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
