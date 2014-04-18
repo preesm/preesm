@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="kind" attr.type="string" for="graph"/>
+    <key attr.name="name" attr.type="string" for="node"/>
+    <key attr.name="kind" attr.type="string" for="node"/>
+    <key attr.name="port_direction" attr.type="string" for="node"/>
+    <key attr.name="nbRepeat" attr.type="int" for="node"/>
+    <key attr.name="edge_cons" attr.type="string" for="edge"/>
+    <key attr.name="edge_delay" attr.type="string" for="edge"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge"/>
+    <key attr.name="data_type" attr.type="string" for="edge"/>
+    <key attr.name="source_port_modifier" attr.type="string" for="edge"/>
+    <key attr.name="target_port_modifier" attr.type="string" for="edge"/>
+    <graph edgedefault="directed" kind="sdf">
+        <data key="name">doubleLoopL1_3_21.graphml</data>
+        <data key="kind">sdf</data>
+        <node id="M_in" port_direction="Input">
+            <data key="name">M_in</data>
+            <data key="kind">port</data>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="Line_in" port_direction="Input">
+            <data key="name">Line_in</data>
+            <data key="kind">port</data>
+            <data key="port_direction">Input</data>
+        </node>
+        <node id="ConfigM">
+            <data key="name">ConfigM</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="InitMLoop">
+            <data key="name">InitMLoop</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="F">
+            <data key="name">F</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="EndMLoop">
+            <data key="name">EndMLoop</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+        </node>
+        <node id="Line_out" port_direction="Output">
+            <data key="name">Line_out</data>
+            <data key="kind">port</data>
+            <data key="port_direction">Output</data>
+        </node>
+        <edge source="M_in" sourceport="" target="ConfigM" targetport="M">
+            <data key="edge_cons">1.0</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1.0</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="Line_in" sourceport="" target="InitMLoop" targetport="Line">
+            <data key="edge_cons">1.0</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1.0</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="InitMLoop" sourceport="Line_out" target="F" targetport="In">
+            <data key="edge_cons">1.0</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1.0</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="F" sourceport="Out" target="EndMLoop" targetport="Line_in">
+            <data key="edge_cons">1.0</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1.0</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+        </edge>
+        <edge source="EndMLoop" sourceport="Line_out" target="Line_out" targetport="">
+            <data key="edge_cons">1.0</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1.0</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier"/>
+        </edge>
+    </graph>
+</graphml>

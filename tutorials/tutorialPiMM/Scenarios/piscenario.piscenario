@@ -2,28 +2,20 @@
     <files>
         <algorithm url="/tutorialPiMM/Algo/doubleLoopL0.pi"/>
         <architecture url="/tutorialPiMM/Archi/1CoreX86.slam"/>
+        <simulation nbExecutions="4"/>
     </files>
     <actorTree>
         <actor name="doubleLoop">
             <actor name="ReadFile">
                 <timing coreType="x86" value="100"/>
             </actor>
-            <actor name="MLoop">
-                <actor name="EndMLoop">
-                    <timing coreType="x86" value="100"/>
-                </actor>
-                <actor name="F">
-                    <timing coreType="x86" value="100"/>
-                </actor>
-                <actor name="InitMLoop">
-                    <timing coreType="x86" value="100"/>
-                </actor>
-                <actor name="ConfigM">
-                    <timing coreType="x86" value="100"/>
-                </actor>
-                <parameter name="M" type="DYNAMIC" value="[]"/>
+            <actor name="RB1">
+                <timing coreType="x86" value="100"/>
             </actor>
             <actor name="EndNLoop">
+                <timing coreType="x86" value="100"/>
+            </actor>
+            <actor name="InitNLoop">
                 <timing coreType="x86" value="100"/>
             </actor>
             <actor name="BroadCast">
@@ -35,13 +27,22 @@
             <actor name="RB0">
                 <timing coreType="x86" value="100"/>
             </actor>
-            <actor name="RB1">
-                <timing coreType="x86" value="100"/>
+            <actor name="MLoop">
+                <actor name="InitMLoop">
+                    <timing coreType="x86" value="100"/>
+                </actor>
+                <actor name="EndMLoop">
+                    <timing coreType="x86" value="100"/>
+                </actor>
+                <actor name="ConfigM">
+                    <timing coreType="x86" value="100"/>
+                </actor>
+                <actor name="F">
+                    <timing coreType="x86" value="100"/>
+                </actor>
+                <parameter name="M" type="DYNAMIC" value="[1, 2, 3]"/>
             </actor>
-            <actor name="InitNLoop">
-                <timing coreType="x86" value="100"/>
-            </actor>
-            <parameter name="N" type="DYNAMIC" value="[]"/>
+            <parameter name="N" type="DYNAMIC" value="[4, 6]"/>
         </actor>
     </actorTree>
 </piscenario>

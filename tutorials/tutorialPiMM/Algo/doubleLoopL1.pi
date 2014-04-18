@@ -9,35 +9,35 @@
         <data key="name">doubleLoopL1</data>
         <node expr="0" id="M" kind="param"/>
         <node id="M_in" kind="src">
-            <port expr="0" kind="output" name=""/>
+            <port expr="1" kind="output" name=""/>
         </node>
         <node id="Line_in" kind="src">
-            <port expr="0" kind="output" name=""/>
+            <port expr="1" kind="output" name=""/>
         </node>
         <node id="ConfigM" kind="actor">
             <data key="graph_desc"/>
             <port kind="cfg_output" name="M_out"/>
-            <port expr="0" kind="input" name="M"/>
+            <port expr="1" kind="input" name="M"/>
         </node>
         <node id="InitMLoop" kind="actor">
             <data key="graph_desc"/>
             <port kind="cfg_input" name="M"/>
-            <port expr="0" kind="input" name="Line"/>
-            <port expr="0" kind="output" name="Line_out"/>
+            <port expr="1" kind="input" name="Line"/>
+            <port expr="M" kind="output" name="Line_out"/>
         </node>
         <node id="F" kind="actor">
             <data key="graph_desc"/>
-            <port expr="0" kind="input" name="In"/>
-            <port expr="0" kind="output" name="Out"/>
+            <port expr="1" kind="input" name="In"/>
+            <port expr="1" kind="output" name="Out"/>
         </node>
         <node id="EndMLoop" kind="actor">
             <data key="graph_desc"/>
             <port kind="cfg_input" name="M"/>
-            <port expr="0" kind="input" name="Line_in"/>
-            <port expr="0" kind="output" name="Line_out"/>
+            <port expr="M" kind="input" name="Line_in"/>
+            <port expr="1" kind="output" name="Line_out"/>
         </node>
         <node id="Line_out" kind="snk">
-            <port expr="0" kind="input" name=""/>
+            <port expr="1" kind="input" name=""/>
         </node>
         <edge kind="fifo" source="M_in" sourceport="" target="ConfigM" targetport="M"/>
         <edge kind="fifo" source="Line_in" sourceport=""
