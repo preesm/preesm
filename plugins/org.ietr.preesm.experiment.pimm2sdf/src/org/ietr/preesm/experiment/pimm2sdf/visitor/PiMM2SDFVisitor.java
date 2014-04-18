@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.eclipse.emf.ecore.EObject;
 import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
 import org.ietr.dftools.algorithm.model.parameters.ExpressionValue;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
@@ -87,7 +88,7 @@ import org.ietr.preesm.experiment.pimm2sdf.PiGraphExecution;
  * 
  */
 public class PiMM2SDFVisitor extends PiMMVisitor {
-	// List of all instances created from the outer graph
+	// SDFGraph created from the outer graph
 	private SDFGraph result;
 	// Original list of fixed values for all the parameters of the graph
 	private PiGraphExecution execution;
@@ -299,7 +300,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 
 		if (source instanceof AbstractVertex
 				&& target instanceof AbstractVertex) {
-
+			
 			DataInputPort piTgtPort = f.getTargetPort();
 			DataOutputPort piSrcPort = f.getSourcePort();
 
@@ -340,10 +341,6 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 		for (ConfigInputPort cip : p.getConfigInputPorts()) {
 			piPort2Vx.put(cip, p);
 		}
-	}
-
-	public SDFGraph getResult() {
-		return result;
 	}
 
 	@Override
@@ -417,7 +414,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 	}
 
 	/**
-	 * Methods below are unimplemented visit methods
+	 * Methods below are unused and unimplemented visit methods
 	 */
 
 	@Override
