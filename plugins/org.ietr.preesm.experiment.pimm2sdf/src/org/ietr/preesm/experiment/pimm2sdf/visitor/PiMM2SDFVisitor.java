@@ -280,7 +280,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitActor(Actor a) {
-		if (!a.isConfigurationActor()) {
+//		if (!a.isConfigurationActor()) {
 			SDFVertex v = new SDFVertex();
 			v.setName(a.getName());
 
@@ -288,7 +288,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 
 			result.addVertex(v);
 			piVx2SDFVx.put(a, v);
-		}
+//		}
 
 	}
 
