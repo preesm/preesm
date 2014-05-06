@@ -1607,6 +1607,10 @@ class ScriptRunner {
 				}
 
 				val mObj = bufferAndMObjectMap.get(buffer)
+				
+				// Enlarge the memory object (if needed)
+				mObj.setWeight(buffer.maxIndex - buffer.minIndex)
+				mObj.setPropertyValue(MemoryExclusionVertex::EMPTY_SPACE_BEFORE, -buffer.minIndex)
 
 				// For buffer receiving a part of the current buffer
 				for (rootBuffer : rootBuffers.values.map[it.key]) {
@@ -1629,12 +1633,18 @@ class ScriptRunner {
 				val List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> mObjRoots = newArrayList
 				mObj.setPropertyValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, mObjRoots)
 				val realTokenRange = new Range(0, buffer.tokenSize * buffer.nbTokens)
+				// For each subrange of real tokens, save the corresponding remote buffer
+				// and range.
 				rootBuffers.entrySet.forEach [ entry |
 					val rootMObj = bufferAndMObjectMap.get(entry.value.key)
 					val localRange = entry.key.intersection(realTokenRange)
 					val translatedLocalRange = localRange.clone as Range
 					translatedLocalRange.translate(entry.value.value.start - entry.key.start)
 					val remoteRange = entry.value.value.intersection(translatedLocalRange)
+					if(remoteRange != translatedLocalRange){
+						// Should always be the case
+						throw new RuntimeException("Unexpected error !")
+					}
 					mObjRoots.add(rootMObj -> (localRange -> remoteRange))
 				]
 
