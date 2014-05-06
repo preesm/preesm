@@ -665,6 +665,20 @@ public class CodegenModelGenerator {
 				// Their allocation was taken care of in the MemoryAllocator
 				for (MemoryExclusionVertex vertex : vertices) {
 					memEx.addVertex(vertex);
+					if(vertex.getWeight() != 0){
+						// Put the vertex back to its real size
+						List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> tokenRanges = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) vertex.getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+						vertex.setWeight(tokenRanges.get(0).getValue().getKey().getLength());
+						// And set the allocated offset 
+						int allocatedOffset = (int) vertex.getPropertyBean().getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
+						int emptySpace =  (int) vertex.getPropertyBean().getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
+						vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, allocatedOffset + emptySpace);
+						@SuppressWarnings("unchecked")
+						Map<DAGEdge, Integer> dagEdgeAllocation = (Map<DAGEdge, Integer>) memEx
+								.getPropertyBean().getValue(
+										MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
+						dagEdgeAllocation.put(vertex.getEdge(), allocatedOffset + emptySpace);
+					}
 				}
 
 				// Put the hostVertex back to its real size

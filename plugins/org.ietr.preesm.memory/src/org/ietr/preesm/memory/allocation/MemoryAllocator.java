@@ -448,13 +448,21 @@ public abstract class MemoryAllocator {
 
 			// If the Mobject is not splitted
 			if (realTokenRange.size() == 1) {
-				int startOffset =  realTokenRange.get(0).getValue().getValue().getStart();
-				
+				int startOffset = realTokenRange.get(0).getValue().getValue()
+						.getStart();
+				int emptySpace = (int) vertex.getPropertyBean().getValue(
+						MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
+
 				// Allocate it at the right place
-				memExNodeAllocation.put(vertex, offset + startOffset + hostZeroIndexOffset);
-				edgeAllocation.put(vertex.getEdge(), offset + startOffset + hostZeroIndexOffset);
-				vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
-						offset + startOffset + hostZeroIndexOffset);
+				memExNodeAllocation.put(vertex, offset + startOffset
+						+ hostZeroIndexOffset - emptySpace);
+				edgeAllocation.put(vertex.getEdge(), offset + startOffset
+						+ hostZeroIndexOffset - emptySpace);
+				vertex.setPropertyValue(
+						MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, offset
+								+ startOffset + hostZeroIndexOffset
+								- emptySpace);
+
 			} else {
 				// If the Mobject is splitted
 				// Null buffer since the memory of this MObj is no longer 

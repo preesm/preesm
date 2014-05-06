@@ -92,6 +92,15 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	public static final String ADJACENT_VERTICES_BACKUP = "adjacent_vertices_backup";
 
 	/**
+	 * Property of the {@link MemoryExclusionVertex}. The object associated to
+	 * this property is an {@link Integer} that corresponds to the space in
+	 * bytes between the offset at which the {@link MemoryExclusionVertex} is
+	 * allocated and the actual beginning of the real token ranges. This
+	 * property is set after the memory script execution.
+	 */
+	public static final String EMPTY_SPACE_BEFORE = "empty_space_before";
+
+	/**
 	 * This Map is used as a reference of dataTypes size when creating an vertex
 	 * from a DAGEdge
 	 */
