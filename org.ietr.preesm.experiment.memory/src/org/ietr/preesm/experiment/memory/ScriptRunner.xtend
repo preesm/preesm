@@ -1609,7 +1609,16 @@ class ScriptRunner {
 				val mObj = bufferAndMObjectMap.get(buffer)
 				
 				// Enlarge the memory object (if needed)
-				mObj.setWeight(buffer.maxIndex - buffer.minIndex)
+				if(ScriptRunner::printTodo){
+					println("We do not need to enlarge the buffer so much. We just need to enlarge it so that the minIndex is aligned (if alignement is needed)")
+					// Change the emptyspace before to make sure that the buffer is aligned in the host buffer
+					// for non-divided buffers only :
+					// realTokenRange.start - EmptySpaceBefore must be modulo of alignement.
+					// This condition will be sufficient to guarantee that other Mobject of the MEG
+					// Will never share the same cache line as the merged Mobject. (For other buffer involved in the
+					// Merge operation, this rule is guaranteed during the script execution.)
+				}
+				mObj.setWeight(mObj.getWeight - buffer.minIndex)
 				mObj.setPropertyValue(MemoryExclusionVertex::EMPTY_SPACE_BEFORE, -buffer.minIndex)
 
 				// For buffer receiving a part of the current buffer
