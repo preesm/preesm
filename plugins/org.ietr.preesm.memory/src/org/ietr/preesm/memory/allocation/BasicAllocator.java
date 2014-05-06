@@ -36,6 +36,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.memory.allocation;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 
@@ -70,7 +73,11 @@ public class BasicAllocator extends MemoryAllocator {
 		int offset = 0;
 
 		if (inputExclusionGraph != null) {
-			for (MemoryExclusionVertex vertex : inputExclusionGraph.vertexSet()) {
+			// Iterate on a copy of the vertex set because the meg might be
+			// modified during graph allocation.
+			Set<MemoryExclusionVertex> vertexList = new HashSet<MemoryExclusionVertex>(
+					inputExclusionGraph.vertexSet());
+			for (MemoryExclusionVertex vertex : vertexList) {
 				// If a data alignment is required
 				Integer typeSize = (Integer) vertex.getPropertyBean().getValue(
 						MemoryExclusionVertex.TYPE_SIZE, Integer.class);
