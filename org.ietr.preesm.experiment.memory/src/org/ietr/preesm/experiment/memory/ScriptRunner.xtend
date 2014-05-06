@@ -817,7 +817,8 @@ class ScriptRunner {
 	 */
 	def processGroupStep2(List<Buffer> buffers) {
 		val candidates = newLinkedHashMap
-
+		val involved =  newArrayList
+		
 		for (candidate : buffers) {
 			val iterType = #[MatchType::FORWARD, MatchType::BACKWARD].iterator
 			var test = false
@@ -841,11 +842,14 @@ class ScriptRunner {
 				// and is both backward and forward applicable
 				test = test && matches.head.applicable && matches.head.reciprocate.applicable
 
-				// and remote buffer is not already in the candidates list
-				test = test && !candidates.keySet.contains(matches.head.remoteBuffer)
+				// and remote buffer is not already involved in a match 
+				test = test && !involved.contains(matches.head.remoteBuffer)
+				test = test && !involved.contains(candidate)
 
 				if (test) {
 					candidates.put(candidate, currentType)
+					involved.add(matches.head.remoteBuffer)
+					involved.add(candidate)
 				}
 			}
 		}
@@ -953,6 +957,7 @@ class ScriptRunner {
 	 */
 	def processGroupStep4(List<Buffer> buffers) {
 		val candidates = newArrayList
+		val involved =  newArrayList
 
 		for (candidate : buffers) {
 
@@ -983,11 +988,14 @@ class ScriptRunner {
 					candidate.mergeableRanges.head.end == candidate.maxIndex
 			}
 
-			// and remote buffer is not already in the candidates list
-			test = test && !candidates.contains(entry.value.head.remoteBuffer)
+			// and remote and local buffer are not already in the candidates list
+			test = test && !involved.contains(entry.value.head.remoteBuffer)
+			test = test && !involved.contains(candidate)
 
 			if (test) {
 				candidates.add(candidate)
+				involved.add(entry.value.head.remoteBuffer)
+				involved.add(candidate)
 			}
 		}
 
@@ -1096,6 +1104,7 @@ class ScriptRunner {
 	def processGroupStep6(List<Buffer> buffers) {
 
 		val candidates = newLinkedHashMap
+		val involved = newArrayList
 
 		// Largest buffers first for this step.
 		buffers.sortInplace [ a, b |
@@ -1141,11 +1150,14 @@ class ScriptRunner {
 					match.conflictingMatches.forall[!candidates.keySet.contains(it.localBuffer)]
 				}
 
-				// and remote buffer is not already in the candidates list
-				test = test && !candidates.keySet.contains(matches.head.remoteBuffer)
+				// and buffers are not already in the candidates list
+				test = test && !involved.contains(matches.head.remoteBuffer)
+				test = test && !involved.contains(candidate)
 
 				if (test) {
 					candidates.put(candidate, currentType)
+					involved.add(matches.head.remoteBuffer)
+					involved.add(candidate)
 				}
 			}
 		}
