@@ -1559,6 +1559,13 @@ class ScriptRunner {
 				}
 				bufferAndMObjectMap.put(buffer, mObj)
 			}
+			
+			// Backup neighbors of each buffer
+			for (buffer : buffers) {
+				val mObj = bufferAndMObjectMap.get(buffer)
+				val neighbors = new ArrayList<MemoryExclusionVertex>(meg.getAdjacentVertexOf(mObj))
+				mObj.setPropertyValue(MemoryExclusionVertex::ADJACENT_VERTICES_BACKUP, neighbors)
+			}
 
 			// For each unmatched buffer that received matched buffers
 			for (buffer : buffers.filter[it.matched == null && it.host]) {
@@ -1584,13 +1591,6 @@ class ScriptRunner {
 				val ranges = newArrayList
 				ranges.add(mObj -> (realTokenRange -> actualRealTokenRange))
 				mObj.setPropertyValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, ranges)
-			}
-			
-			// Backup neighbors of each matched buffers
-			for (buffer : buffers.filter[it.matched != null]) {
-				val mObj = bufferAndMObjectMap.get(buffer)
-				val neighbors = new ArrayList<MemoryExclusionVertex>(meg.getAdjacentVertexOf(mObj))
-				mObj.setPropertyValue(MemoryExclusionVertex::ADJACENT_VERTICES_BACKUP, neighbors)
 			}
 
 			// For each matched buffers
