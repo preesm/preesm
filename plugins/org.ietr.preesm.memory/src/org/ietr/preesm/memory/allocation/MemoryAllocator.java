@@ -345,7 +345,11 @@ public abstract class MemoryAllocator {
 	 * This method does not call {@link #alignSubBuffers(MemoryExclusionGraph)}.
 	 * To ensure a correct alignment, the
 	 * {@link #alignSubBuffers(MemoryExclusionGraph)} method must be called
-	 * before the {@link #allocate()} method.
+	 * before the {@link #allocate()} method. The {@link #inputExclusionGraph}
+	 * might be modified by calling this function. (new
+	 * {@link MemoryExclusionVertex} might be added because of
+	 * HostMemoryObjects). To put the {@link #inputExclusionGraph} back in its
+	 * original state, call the deallocate method.
 	 */
 	public abstract void allocate();
 
@@ -429,14 +433,16 @@ public abstract class MemoryAllocator {
 		// from the graph)
 		// - Special processing for vertices that were splitted => needs to
 		// create several MObj for them
-		
-		int hostZeroIndexOffset = ((List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>)hostVertex.getPropertyBean().getValue(
-				MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY)).get(0).getValue().getValue().getStart();
-		
+
+		int hostZeroIndexOffset = ((List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) hostVertex
+				.getPropertyBean().getValue(
+						MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY))
+				.get(0).getValue().getValue().getStart();
+
 		// For each vertex of the group
 		for (MemoryExclusionVertex vertex : vertices) {
-			
-			// Cannot put the vertex back in the MEG because most allocators 
+
+			// Cannot put the vertex back in the MEG because most allocators
 			// iterate on the vertices of the graph. (And it's forbidden to
 			// modify a list while iterating on it)
 
@@ -462,6 +468,37 @@ public abstract class MemoryAllocator {
 						MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, offset
 								+ startOffset + hostZeroIndexOffset
 								- emptySpace);
+
+				// Put the MObject Back in the MEG
+				inputExclusionGraph.addVertex(vertex);
+
+				// Put back the exclusions with all neighbors
+				@SuppressWarnings("unchecked")
+				List<MemoryExclusionVertex> neighbors = (List<MemoryExclusionVertex>) vertex
+						.getPropertyBean().getValue(
+								MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
+				for (MemoryExclusionVertex neighbor : neighbors) {
+					// If the neighbor is not part of the same merge operation
+					if (!vertices.contains(neighbor) && neighbor != hostVertex) {
+						// Restore its old exclusions
+						if (inputExclusionGraph.containsVertex(neighbor)) {
+							inputExclusionGraph.addEdge(vertex, neighbor);
+						} else {
+							// The neighbor is not in the graph, it must be
+							// hosted by another mObject or divided.
+							// In both case, add exclusion with the host(s)
+							@SuppressWarnings("unchecked")
+							List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> neighborHosts = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) neighbor
+									.getPropertyBean()
+									.getValue(
+											MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+							for (Pair<MemoryExclusionVertex, Pair<Range, Range>> neighborHost : neighborHosts) {
+								inputExclusionGraph.addEdge(vertex,
+										neighborHost.getKey());
+							}
+						}
+					}
+				}
 
 			} else {
 				// If the Mobject is splitted
@@ -493,9 +530,16 @@ public abstract class MemoryAllocator {
 			for (MemoryExclusionVertex memObj : inputExclusionGraph.vertexSet()) {
 				int offset = memExNodeAllocation.get(memObj);
 
+				// Check if the buffer was merged as a result of memory script
+				// execution.
+				boolean isMerged = memObj.getPropertyBean().getValue(
+						MemoryExclusionVertex.EMPTY_SPACE_BEFORE) != null;
+
 				// Check alignment of DAGEdge (that may involve subbuffers)
+				// Do not perform the test for buffers involved in a merge
+				// operation
 				DAGEdge edge = memObj.getEdge();
-				if (edge != null) {
+				if (edge != null && !isMerged) {
 					BufferAggregate buffers = (BufferAggregate) edge
 							.getPropertyBean().getValue(
 									BufferAggregate.propertyBeanName);
@@ -630,6 +674,7 @@ public abstract class MemoryAllocator {
 		memExNodeAllocation.clear();
 		inputExclusionGraph.setPropertyValue(
 				MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE, 0);
+		inputExclusionGraph.deallocate();
 	}
 
 	/**
