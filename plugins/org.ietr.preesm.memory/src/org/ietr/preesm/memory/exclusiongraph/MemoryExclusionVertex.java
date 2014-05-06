@@ -79,6 +79,19 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	public static final String REAL_TOKEN_RANGE_PROPERTY = "real_token_range";
 
 	/**
+	 * Property of the {@link MemoryExclusionVertex}. The object associated to
+	 * this property is:<br>
+	 * <code>
+	 * List&lt;MemoryExclusionVertex&gt;</code><br>
+	 * This {@link List} stores {@link MemoryExclusionVertex} corresponding to
+	 * the
+	 * {@link MemoryExclusionGraph#getAdjacentVertexOf(MemoryExclusionVertex)
+	 * adjacent vertices} of the current {@link MemoryExclusionVertex} before it
+	 * was merged as a result of memory scripts execution.
+	 */
+	public static final String ADJACENT_VERTICES_BACKUP = "adjacent_vertices_backup";
+
+	/**
 	 * This Map is used as a reference of dataTypes size when creating an vertex
 	 * from a DAGEdge
 	 */
