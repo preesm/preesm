@@ -80,6 +80,11 @@ public class PreesmScenario {
 	private CodegenManager codegenManager = null;
 
 	/**
+	 * Manager of parameters values for PiGraphs
+	 */
+	private ParameterValueManager parameterValueManager = null;
+	
+	/**
 	 * Path to the algorithm file
 	 */
 	private String algorithmURL = "";
@@ -108,6 +113,7 @@ public class PreesmScenario {
 		simulationManager = new SimulationManager();
 		codegenManager = new CodegenManager();
 		variablesManager = new VariablesManager();
+		parameterValueManager = new ParameterValueManager();
 	}
 
 	public VariablesManager getVariablesManager() {
@@ -193,5 +199,13 @@ public class PreesmScenario {
 
 	public void setComNodeIds(Set<String> comNodeIds) {
 		this.comNodeIds = comNodeIds;
+	}
+
+	public ParameterValueManager getParameterValueManager() {
+		return parameterValueManager;
+	}
+
+	public void setParameterValueManager(ParameterValueManager parameterValueManager) {
+		this.parameterValueManager = parameterValueManager;
 	}
 }
