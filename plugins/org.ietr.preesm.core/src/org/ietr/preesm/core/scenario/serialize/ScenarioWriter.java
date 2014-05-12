@@ -198,6 +198,10 @@ public class ScenarioWriter {
 				.getSpecialVertexOperatorIds()) {
 			addSpecialVertexOperator(sVOperators, opId);
 		}
+		
+		Element nbExec = dom.createElement("numberOfTopExecutions");
+		params.appendChild(nbExec);
+		nbExec.setTextContent(String.valueOf(scenario.getSimulationManager().getNumberOfTopExecutions()));
 	}
 
 	private void addDataType(Element parent, DataType dataType) {

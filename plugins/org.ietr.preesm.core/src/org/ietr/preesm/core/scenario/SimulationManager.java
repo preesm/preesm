@@ -75,6 +75,11 @@ public class SimulationManager {
 	 */
 	private Set<String> specialVertexOperatorIds;
 
+	/**
+	 * Number of executions of the top graph when simulating PiGraphs
+	 */
+	private int numberOfTopExecutions;
+	
 	public SimulationManager() {
 		super();
 
@@ -158,6 +163,14 @@ public class SimulationManager {
 			}
 		}
 		return false;
+	}
+
+	public int getNumberOfTopExecutions() {
+		return numberOfTopExecutions;
+	}
+
+	public void setNumberOfTopExecutions(int numberOfTopExecutions) {
+		this.numberOfTopExecutions = numberOfTopExecutions;
 	}
 
 }

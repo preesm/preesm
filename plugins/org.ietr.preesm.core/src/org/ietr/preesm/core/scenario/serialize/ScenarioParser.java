@@ -342,18 +342,27 @@ public class ScenarioParser {
 				Element elt = (Element) node;
 				String type = elt.getTagName();
 				String content = elt.getTextContent();
-				if (type.equals("mainCore")) {
+				switch (type) {
+				case "mainCore":
 					scenario.getSimulationManager()
 							.setMainOperatorName(content);
-				} else if (type.equals("mainComNode")) {
+					break;
+				case "mainComNode":
 					scenario.getSimulationManager().setMainComNodeName(content);
-				} else if (type.equals("averageDataSize")) {
+					break;
+				case "averageDataSize":
 					scenario.getSimulationManager().setAverageDataSize(
 							Long.valueOf(content));
-				} else if (type.equals("dataTypes")) {
+					break;
+				case "dataTypes":
 					parseDataTypes(elt);
-				} else if (type.equals("specialVertexOperators")) {
+					break;
+				case "specialVertexOperators":
 					parseSpecialVertexOperators(elt);
+					break;
+				case "numberOfTopExecutions":
+					scenario.getSimulationManager().setNumberOfTopExecutions(Integer.parseInt(content));
+					break;
 				}
 			}
 
