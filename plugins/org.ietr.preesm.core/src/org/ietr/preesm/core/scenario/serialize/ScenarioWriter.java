@@ -44,6 +44,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.ietr.dftools.algorithm.model.parameters.Variable;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
+import org.ietr.preesm.core.scenario.ParameterValue;
+import org.ietr.preesm.core.scenario.ParameterValueManager;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.RelativeConstraintManager;
 import org.ietr.preesm.core.scenario.Timing;
@@ -99,8 +101,42 @@ public class ScenarioWriter {
 		addTimings(root);
 		addSimuParams(root);
 		addVariables(root);
+		addParameterValues(root);
 
 		return dom;
+	}
+
+	private void addParameterValues(Element parent) {
+		Element valuesElt = dom.createElement("parameterValues");
+		parent.appendChild(valuesElt);
+
+		ParameterValueManager manager = scenario.getParameterValueManager();
+
+		for (ParameterValue value : manager.getParameterValues()) {
+			addParameterValue(valuesElt, value);
+		}
+	}
+
+	private void addParameterValue(Element parent, ParameterValue value) {
+		Element valueElt = dom.createElement("parameter");
+		parent.appendChild(valueElt);
+		
+		valueElt.setAttribute("name", value.getName());
+		valueElt.setAttribute("parent", value.getParentVertex());
+		valueElt.setAttribute("type", value.getType().toString());
+		String valueToPrint = "";
+		switch (value.getType()) {
+		case STATIC:			
+			valueToPrint = "" + value.getValue();
+			break;
+		case DYNAMIC:
+			valueToPrint = value.getValues().toString();
+			break;
+		case DEPENDENT:
+			valueToPrint = value.getExpression();
+			break;
+		}
+		valueElt.setAttribute("value", valueToPrint);
 	}
 
 	private void addVariables(Element parent) {

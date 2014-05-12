@@ -39,7 +39,9 @@ package org.ietr.preesm.core.scenario.serialize;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -163,6 +165,9 @@ public class ScenarioParser {
 					case "variables":
 						parseVariables(elt);
 						break;
+					case "parameterValues":
+						parseParameterValues(elt);
+						break;
 					}
 				}
 
@@ -174,6 +179,77 @@ public class ScenarioParser {
 		return scenario;
 	}
 
+	/**
+	 * Retrieves all the parameter values
+	 */
+	private void parseParameterValues(Element paramValuesElt) {
+
+		Node node = paramValuesElt.getFirstChild();
+
+		while (node != null) {
+			if (node instanceof Element) {
+				Element elt = (Element) node;
+				String type = elt.getTagName();
+				if (type.equals("parameter")) {
+					parseParameterValue(elt);
+				}
+			}
+
+			node = node.getNextSibling();
+		}
+	}
+
+	/**
+	 * Retrieve a ParameterValue
+	 */
+	private void parseParameterValue(Element paramValueElt) {
+		Node node = paramValueElt.getFirstChild();
+
+		while (node != null) {
+
+			if (node instanceof Element) {
+				Element elt = (Element) node;
+				String type = elt.getAttribute("type");
+				String parent = elt.getAttribute("parent");
+				String name = elt.getAttribute("name");
+				String stringValue = elt.getAttribute("value");
+				switch (type) {
+				case "STATIC":
+					scenario.getParameterValueManager().addParameterValue(name,
+							Integer.parseInt(stringValue), parent);
+					break;
+				case "DYNAMIC":
+					if (stringValue.charAt(0) == '['
+							&& stringValue.charAt(stringValue.length() - 1) == ']') {
+						stringValue = stringValue.substring(1,
+								stringValue.length() - 1);
+						String[] values = stringValue.split(",");
+
+						Set<Integer> newValues = new HashSet<Integer>();
+
+						try {
+							for (String val : values) {
+								newValues.add(Integer.parseInt(val.trim()));
+							}
+						} catch (NumberFormatException e) {
+							// TODO: Do smthg
+						}
+						scenario.getParameterValueManager().addParameterValue(
+								name, newValues, parent);
+					}
+					break;
+				case "DEPENDENT":
+					// TODO: Extract input parameters?
+					scenario.getParameterValueManager().addParameterValue(name,
+							stringValue, new HashSet<String>(), parent);
+					break;
+				}
+			}
+
+			node = node.getNextSibling();
+		}
+
+	}
 
 	/**
 	 * Retrieves the timings
