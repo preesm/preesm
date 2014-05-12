@@ -40,7 +40,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.ietr.dftools.architecture.slam.Design;
+import org.ietr.dftools.architecture.slam.SlamPackage;
+import org.ietr.dftools.architecture.slam.serialize.IPXACTResourceFactoryImpl;
+import org.ietr.preesm.core.architecture.util.DesignTools;
+import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 
 /**
  * Storing all information of a scenario
@@ -207,5 +216,39 @@ public class PreesmScenario {
 
 	public void setParameterValueManager(ParameterValueManager parameterValueManager) {
 		this.parameterValueManager = parameterValueManager;
+	}
+	
+	/**
+	 * From PiScenario
+	 */
+	
+	public void update() {
+		if (architectureURL.endsWith(".slam")) {
+			Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE
+					.getExtensionToFactoryMap();
+			Object instance = extToFactoryMap.get("slam");
+			if (instance == null) {
+				instance = new IPXACTResourceFactoryImpl();
+				extToFactoryMap.put("slam", instance);
+			}
+
+			if (!EPackage.Registry.INSTANCE.containsKey(SlamPackage.eNS_URI)) {
+				EPackage.Registry.INSTANCE.put(SlamPackage.eNS_URI,
+						SlamPackage.eINSTANCE);
+			}
+
+			// Extract the root object from the resource.
+			Design design = ScenarioParser.parseSlamDesign(architectureURL);
+
+			operatorIds.clear();
+			operatorIds.addAll(DesignTools.getOperatorInstanceIds(design));
+			
+			operatorDefinitionIds.clear();
+			operatorDefinitionIds.addAll(DesignTools.getOperatorComponentIds(design));
+
+		} else {
+			operatorIds.clear();
+			operatorDefinitionIds.clear();
+		}
 	}
 }
