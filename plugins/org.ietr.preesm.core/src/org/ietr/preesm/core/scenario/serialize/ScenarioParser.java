@@ -109,7 +109,8 @@ public class ScenarioParser {
 	/**
 	 * Retrieves the DOM document
 	 */
-	public PreesmScenario parseXmlFile(IFile file) throws InvalidModelException,FileNotFoundException {
+	public PreesmScenario parseXmlFile(IFile file)
+			throws InvalidModelException, FileNotFoundException {
 		// get the factory
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -143,18 +144,25 @@ public class ScenarioParser {
 				if (node instanceof Element) {
 					Element elt = (Element) node;
 					String type = elt.getTagName();
-					if (type.equals("files")) {
+					switch (type) {
+					case "files":
 						parseFileNames(elt);
-					} else if (type.equals("constraints")) {
+						break;
+					case "constraints":
 						parseConstraintGroups(elt);
-					} else if (type.equals("relativeconstraints")) {
+						break;
+					case "relativeconstraints":
 						parseRelativeConstraints(elt);
-					} else if (type.equals("timings")) {
+						break;
+					case "timings":
 						parseTimings(elt);
-					} else if (type.equals("simuParams")) {
+						break;
+					case "simuParams":
 						parseSimuParams(elt);
-					} else if (type.equals("variables")) {
+						break;
+					case "variables":
 						parseVariables(elt);
+						break;
 					}
 				}
 
@@ -209,13 +217,14 @@ public class ScenarioParser {
 				} catch (NumberFormatException e) {
 					group = -1;
 				}
-			
-				scenario.getRelativeconstraintManager().addConstraint(vertexpath, group);
+
+				scenario.getRelativeconstraintManager().addConstraint(
+						vertexpath, group);
 			}
 
 		}
 	}
-	
+
 	/**
 	 * Retrieves the timings
 	 */
@@ -345,7 +354,8 @@ public class ScenarioParser {
 	/**
 	 * Parses the archi and algo files and retrieves the file contents
 	 */
-	private void parseFileNames(Element filesElt) throws InvalidModelException,FileNotFoundException {
+	private void parseFileNames(Element filesElt) throws InvalidModelException,
+			FileNotFoundException {
 
 		Node node = filesElt.getFirstChild();
 
@@ -429,7 +439,8 @@ public class ScenarioParser {
 		return design;
 	}
 
-	public static SDFGraph getAlgorithm(String path) throws InvalidModelException,FileNotFoundException {
+	public static SDFGraph getAlgorithm(String path)
+			throws InvalidModelException, FileNotFoundException {
 		SDFGraph algorithm = null;
 		GMLSDFImporter importer = new GMLSDFImporter();
 
@@ -549,8 +560,7 @@ public class ScenarioParser {
 					Timing timing = getTiming(elt);
 					if (timing != null)
 						scenario.getTimingManager().addTiming(timing);
-				}
-				else if (type.equals("memcpyspeed")) {
+				} else if (type.equals("memcpyspeed")) {
 					retrieveMemcpySpeed(scenario.getTimingManager(), elt);
 				}
 			}
@@ -601,14 +611,16 @@ public class ScenarioParser {
 	}
 
 	/**
-	 * Retrieves one memcopy speed composed of integer setup time and timeperunit
+	 * Retrieves one memcopy speed composed of integer setup time and
+	 * timeperunit
 	 */
-	private void retrieveMemcpySpeed(TimingManager timingManager, Element timingElt) {
+	private void retrieveMemcpySpeed(TimingManager timingManager,
+			Element timingElt) {
 
 		if (algo != null) {
 
 			String type = timingElt.getTagName();
-			if(type.equals("memcpyspeed")) {
+			if (type.equals("memcpyspeed")) {
 				String opdefname = timingElt.getAttribute("opname");
 				String sSetupTime = timingElt.getAttribute("setuptime");
 				String sTimePerUnit = timingElt.getAttribute("timeperunit");
@@ -623,9 +635,10 @@ public class ScenarioParser {
 					timePerUnit = -1;
 				}
 
-				if (scenario.getOperatorDefinitionIds().contains(
-								opdefname) && setupTime >= 0 && timePerUnit >= 0) {
-					MemCopySpeed speed = new MemCopySpeed(opdefname, setupTime, timePerUnit);
+				if (scenario.getOperatorDefinitionIds().contains(opdefname)
+						&& setupTime >= 0 && timePerUnit >= 0) {
+					MemCopySpeed speed = new MemCopySpeed(opdefname, setupTime,
+							timePerUnit);
 					timingManager.putMemcpySpeed(speed);
 				}
 			}
