@@ -103,7 +103,6 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 	 */
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		// TODO Auto-generated method stub
 		super.createFormContent(managedForm);
 
 		ScrolledForm form = managedForm.getForm();
