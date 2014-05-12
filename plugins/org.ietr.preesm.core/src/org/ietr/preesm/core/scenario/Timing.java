@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -119,6 +120,7 @@ public class Timing {
 		this(operatorId, vertexId);
 		this.stringValue = expression;
 		this.isEvaluated = false;
+		this.tryToEvaluateWith(new HashMap<String, Integer>());
 	}
 
 	public Timing(String operatorId, String vertexId, String expression,
@@ -127,6 +129,7 @@ public class Timing {
 		this.stringValue = expression;
 		this.isEvaluated = false;
 		this.inputParameters = inputParameters;
+		this.tryToEvaluateWith(new HashMap<String, Integer>());
 	}
 
 	public String getOperatorDefinitionId() {
@@ -185,6 +188,7 @@ public class Timing {
 	public void setStringValue(String stringValue) {
 		this.stringValue = stringValue;
 		this.isEvaluated = false;
+		this.tryToEvaluateWith(new HashMap<String, Integer>());
 	}
 
 	public boolean isEvaluated() {
