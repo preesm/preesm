@@ -572,10 +572,12 @@ public class ScenarioParser {
 			if (type.equals("timing")) {
 				String vertexpath = timingElt.getAttribute("vertexname");
 				String opdefname = timingElt.getAttribute("opname");
-				int time;
-
+				long time;
+				String stringValue = timingElt.getAttribute("time");
+				boolean isEvaluated = false;
 				try {
-					time = Integer.parseInt(timingElt.getAttribute("time"));
+					time = Long.parseLong(stringValue);
+					isEvaluated = true;
 				} catch (NumberFormatException e) {
 					time = -1;
 				}
@@ -585,8 +587,12 @@ public class ScenarioParser {
 
 				if (vertex != null
 						&& scenario.getOperatorDefinitionIds().contains(
-								opdefname) && time >= 0) {
-					timing = new Timing(opdefname, vertex.getName(), time);
+								opdefname)) {
+					if (isEvaluated) {
+						timing = new Timing(opdefname, vertex.getName(), time);
+					} else {
+						timing = new Timing(opdefname, vertex.getName(), stringValue);
+					}
 				}
 			}
 		}

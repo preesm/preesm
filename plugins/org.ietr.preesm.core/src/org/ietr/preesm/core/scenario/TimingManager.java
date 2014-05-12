@@ -132,7 +132,7 @@ public class TimingManager {
 
 		if (sdfVertex.getGraphDescription() == null) {
 			for (Timing timing : timings) {
-				if (timing.getSdfVertexId().equals(sdfVertex.getId())) {
+				if (timing.getVertexId().equals(sdfVertex.getId())) {
 					vals.add(timing);
 				}
 			}
@@ -153,7 +153,7 @@ public class TimingManager {
 
 	private Timing getVertexTiming(SDFAbstractVertex sdfVertex, String opDefId) {
 		for (Timing timing : timings) {
-			if (timing.getSdfVertexId().equals(sdfVertex.getName())
+			if (timing.getVertexId().equals(sdfVertex.getName())
 					&& timing.getOperatorDefinitionId().equals(opDefId)) {
 				return timing;
 			}
@@ -210,7 +210,7 @@ public class TimingManager {
 		Timing val = null;
 
 		for (Timing timing : timings) {
-			if (timing.getSdfVertexId().equals(sdfVertexId)
+			if (timing.getVertexId().equals(sdfVertexId)
 					&& timing.getOperatorDefinitionId().equals(
 							operatorDefinitionId)) {
 				val = timing;

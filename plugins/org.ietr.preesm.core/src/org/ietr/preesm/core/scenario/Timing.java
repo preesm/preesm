@@ -36,13 +36,21 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
+import com.singularsys.jep.Jep;
+import com.singularsys.jep.JepException;
+import com.singularsys.jep.ParseException;
+
 /**
- * A timing links a SDF vertex and an operator definition to a time. Ids are
- * used to make the scenario independent from model implementations.
+ * A timing links a vertex (either from SDFGraph or from PiGraph) and an
+ * operator definition to a time. Ids are used to make the scenario independent
+ * from model implementations.
  * 
  * @author mpelcat
  */
@@ -51,81 +59,214 @@ public class Timing {
 	public static final Timing UNAVAILABLE = null;
 	public static final long DEFAULT_TASK_TIME = 100;
 	public static final long DEFAULT_SPECIAL_VERTEX_TIME = 10;
+	private static final String DEFAULT_EXPRESSION_VALUE = "100";
+	public static final String DEFAULT_SPECIAL_VERTEX_EXPRESSION_VALUE = "10";
 
 	/**
-	 * related operator
-	 */
-	private String operatorDefinitionId;
-
-	/**
-	 * Definition of the timing
+	 * Long value of the timing, only available if isEvaluated is at true
 	 */
 	private long time;
 
 	/**
-	 * related Graph
+	 * String expression of the timing, can contains parameters from input
+	 * parameters
 	 */
-	private String sdfVertexId;
+	private String stringValue;
 
-	public Timing(String operatorDefinitionId, String sdfVertexId) {
+	/**
+	 * Boolean indicatin if the expression has been evaluated and thus if the
+	 * time is available
+	 */
+	private boolean isEvaluated;
 
+	/**
+	 * Operator to which the timing is related (i.e., processing element on
+	 * which the vertex of the graph takes the given time to execute)
+	 */
+	private String operatorDefinitionId;
+
+	/**
+	 * Set of Usable Parameters for the expression
+	 */
+	private Set<String> inputParameters;
+
+	/**
+	 * Vertex for which the timing is given
+	 */
+	private String vertexId;
+
+	/**
+	 * Constructors
+	 */
+
+	public Timing(String operatorDefinitionId, String vertexId) {
 		time = DEFAULT_TASK_TIME;
+		stringValue = DEFAULT_EXPRESSION_VALUE;
+		inputParameters = new HashSet<String>();
 		this.operatorDefinitionId = operatorDefinitionId;
-		this.sdfVertexId = sdfVertexId;
+		this.vertexId = vertexId;
+		this.isEvaluated = true;
 	}
 
 	public Timing(String operatorId, String sdfVertexId, long time) {
 		this(operatorId, sdfVertexId);
 		this.time = time;
+		this.stringValue = String.valueOf(time);
+		this.isEvaluated = false;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
+	public Timing(String operatorId, String vertexId, String expression) {
+		this(operatorId, vertexId);
+		this.stringValue = expression;
+		this.isEvaluated = false;
+	}
 
-		boolean equals = false;
-
-		if (obj instanceof Timing) {
-			Timing otherT = (Timing) obj;
-			equals = operatorDefinitionId.equals(otherT
-					.getOperatorDefinitionId());
-			equals &= sdfVertexId.equals((otherT.getSdfVertexId()));
-		}
-
-		return equals;
+	public Timing(String operatorId, String vertexId, String expression,
+			Set<String> inputParameters) {
+		this(operatorId, vertexId);
+		this.stringValue = expression;
+		this.isEvaluated = false;
+		this.inputParameters = inputParameters;
 	}
 
 	public String getOperatorDefinitionId() {
 		return operatorDefinitionId;
 	}
 
+	/**
+	 * @return time, only if it is available (if the expression have been
+	 *         evaluated)
+	 */
 	public long getTime() {
-
-		return time;
+		if (isEvaluated)
+			return time;
+		else
+			return -1;
 	}
 
-	public String getSdfVertexId() {
-		return sdfVertexId;
+	public String getVertexId() {
+		return vertexId;
 	}
 
 	/**
-	 * The given time is set if it is strictly positive. Otherwise, 1 is set.
+	 * The given time is set if it is strictly positive. Otherwise, 1 is set. In
+	 * every cases, the expression is set as the corresponding string and
+	 * considered evaluated
 	 * 
 	 * @param time
+	 *            the new time we want to set
 	 */
 	public void setTime(long time) {
-		if(time > 0){
+		if (time > 0) {
 			this.time = time;
-		}
-		else{
-			WorkflowLogger.getLogger().log(Level.WARNING,"Trying to set a non strictly positive time for vertex " + sdfVertexId);
+		} else {
+			WorkflowLogger.getLogger().log(
+					Level.WARNING,
+					"Trying to set a non strictly positive time for vertex "
+							+ vertexId);
 			this.time = 1;
+		}
+		this.stringValue = String.valueOf(this.time);
+		this.isEvaluated = true;
+	}
+
+	public Set<String> getInputParameters() {
+		return inputParameters;
+	}
+
+	public void setInputParameters(Set<String> inputParameters) {
+		this.inputParameters = inputParameters;
+	}
+
+	public String getStringValue() {
+		return stringValue;
+	}
+
+	public void setStringValue(String stringValue) {
+		this.stringValue = stringValue;
+		this.isEvaluated = false;
+	}
+
+	public boolean isEvaluated() {
+		return isEvaluated;
+	}
+
+	/**
+	 * Test if the {@link Timing} can be parsed (Check Syntax Errors).
+	 * 
+	 * @return true if it can be parsed.
+	 */
+	public boolean canParse() {
+		Jep jep = new Jep();
+		try {
+			jep.parse(stringValue);
+		} catch (ParseException e) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Test if the {@link Timing} can be evaluated (Check Parameters Errors).
+	 * 
+	 * @return true if it can be evaluated.
+	 */
+	public boolean canEvaluate() {
+		Jep jep = new Jep();
+		try {
+			for (String parameter : inputParameters)
+				jep.addVariable(parameter, 1);
+			jep.parse(stringValue);
+			jep.evaluate();
+			return true;
+		} catch (JepException e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Evaluate the timing expression with the given values for parameters. If
+	 * the evaluation is successful, isEvaluated is set to true
+	 * 
+	 * @param parametersValues
+	 *            the map of parameters names and associated values with which
+	 *            we want to evaluate the expression
+	 */
+	public void tryToEvaluateWith(Map<String, Integer> parametersValues) {
+		Jep jep = new Jep();
+		try {
+			for (String parameter : parametersValues.keySet())
+				jep.addVariable(parameter, parametersValues.get(parameter));
+			jep.parse(stringValue);
+			long result = (long) jep.evaluate();
+			this.time = result;
+			this.isEvaluated = true;
+		} catch (JepException e) {
+			this.isEvaluated = false;
 		}
 	}
 
 	@Override
-	public String toString() {
-		return "{" + sdfVertexId + "," + operatorDefinitionId + "," + time
-				+ "}";
+	public boolean equals(Object obj) {
+		boolean equals = false;
+
+		if (obj instanceof Timing) {
+			Timing otherT = (Timing) obj;
+			equals = operatorDefinitionId.equals(otherT
+					.getOperatorDefinitionId());
+			equals &= vertexId.equals((otherT.getVertexId()));
+		}
+
+		return equals;
 	}
 
+	@Override
+	public String toString() {
+		if (isEvaluated)
+			return "{" + vertexId + "," + operatorDefinitionId + "," + time
+					+ "}";
+		else
+			return "{" + vertexId + "," + operatorDefinitionId + ","
+					+ stringValue + "}";
+	}
 }
