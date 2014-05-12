@@ -175,16 +175,6 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 				Messages.getString("Simulation.mainMediumSelectionTooltip"),
 				"comNode");
 
-		// Data type section
-		createDataTypesSection(managedForm,
-				Messages.getString("Simulation.DataTypes.title"),
-				Messages.getString("Simulation.DataTypes.description"));
-
-		// Cores to execute broadcast/fork/join selection
-		createSpecialVertexSection(managedForm,
-				Messages.getString("Simulation.SpecialVertex.title"),
-				Messages.getString("Simulation.SpecialVertex.description"));
-
 		// Text modification listener that updates the average data size
 		ModifyListener averageDataSizeListener = new ModifyListener() {
 			@Override
@@ -205,7 +195,41 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 		createIntegerSection(managedForm,
 				Messages.getString("Simulation.DataAverageSize.title"),
 				Messages.getString("Simulation.DataAverageSize.description"),
-				averageDataSizeListener);
+				averageDataSizeListener, String.valueOf(scenario
+						.getSimulationManager().getAverageDataSize()));
+
+		// Text modification listener that updates the average data size
+		ModifyListener numberOfTopExecutionsListener = new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				Text text = (Text) e.getSource();
+				int number = 0;
+				try {
+					number = Integer.valueOf(text.getText());
+					scenario.getSimulationManager().setNumberOfTopExecutions(
+							number);
+					propertyChanged(this, IEditorPart.PROP_DIRTY);
+				} catch (NumberFormatException e1) {
+				}
+			}
+		};
+
+		// Number of top-level execution section
+		createIntegerSection(managedForm,
+				Messages.getString("Overview.simulationTitle"),
+				Messages.getString("Overview.simulationDescription"),
+				numberOfTopExecutionsListener, String.valueOf(scenario
+						.getSimulationManager().getNumberOfTopExecutions()));
+
+		// Data type section
+		createDataTypesSection(managedForm,
+				Messages.getString("Simulation.DataTypes.title"),
+				Messages.getString("Simulation.DataTypes.description"));
+
+		// Cores to execute broadcast/fork/join selection
+		createSpecialVertexSection(managedForm,
+				Messages.getString("Simulation.SpecialVertex.title"),
+				Messages.getString("Simulation.SpecialVertex.description"));
 
 		managedForm.refresh();
 		managedForm.reflow(true);
@@ -215,15 +239,14 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 	 * Creates the section editing the average data size
 	 */
 	private void createIntegerSection(IManagedForm managedForm, String title,
-			String desc, ModifyListener modifListener) {
+			String desc, ModifyListener modifListener, String firstValue) {
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL
 				| GridData.VERTICAL_ALIGN_BEGINNING);
 		Composite client = createSection(managedForm, title, desc, 2, gridData);
 
 		FormToolkit toolkit = managedForm.getToolkit();
 
-		Text text = toolkit.createText(client, String.valueOf(scenario
-				.getSimulationManager().getAverageDataSize()), SWT.SINGLE);
+		Text text = toolkit.createText(client, firstValue, SWT.SINGLE);
 		text.setData(title);
 		text.addModifyListener(modifListener);
 
