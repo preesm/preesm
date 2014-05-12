@@ -77,7 +77,7 @@ public class SDFListContentProvider implements IStructuredContentProvider {
 			PreesmScenario inputScenario) throws InvalidModelException,FileNotFoundException {
 		Set<SDFAbstractVertex> sortedVertices = null;
 		// Opening algorithm from file
-		SDFGraph currentGraph = ScenarioParser.getAlgorithm(inputScenario
+		SDFGraph currentGraph = ScenarioParser.getSDFGraph(inputScenario
 				.getAlgorithmURL());
 
 		// Displays the task names in alphabetical order

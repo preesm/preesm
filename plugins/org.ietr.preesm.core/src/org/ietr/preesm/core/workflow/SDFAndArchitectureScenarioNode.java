@@ -84,7 +84,7 @@ public class SDFAndArchitectureScenarioNode extends
 		try {
 			scenario = scenarioParser.parseXmlFile(file);
 
-			algorithm = ScenarioParser.getAlgorithm(scenario.getAlgorithmURL());
+			algorithm = ScenarioParser.getSDFGraph(scenario.getAlgorithmURL());
 		} catch (Exception e) {
 			throw new WorkflowException(e.getMessage());
 		}

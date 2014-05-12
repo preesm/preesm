@@ -137,7 +137,7 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 
 			// Opening algorithm from file
 			try {
-				currentGraph = ScenarioParser.getAlgorithm(inputScenario
+				currentGraph = ScenarioParser.getSDFGraph(inputScenario
 						.getAlgorithmURL());
 			} catch (Exception e) {
 				e.printStackTrace();

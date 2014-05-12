@@ -72,6 +72,7 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.core.scenario.TimingManager;
 import org.ietr.preesm.core.types.DataType;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -444,7 +445,7 @@ public class ScenarioParser {
 				if (url.length() > 0) {
 					if (type.equals("algorithm")) {
 						scenario.setAlgorithmURL(url);
-						algo = getAlgorithm(url);
+						algo = getSDFGraph(url);
 					} else if (type.equals("architecture")) {
 						scenario.setArchitectureURL(url);
 						initializeArchitectureInformation(url);
@@ -515,7 +516,7 @@ public class ScenarioParser {
 		return design;
 	}
 
-	public static SDFGraph getAlgorithm(String path)
+	public static SDFGraph getSDFGraph(String path)
 			throws InvalidModelException, FileNotFoundException {
 		SDFGraph algorithm = null;
 		GMLSDFImporter importer = new GMLSDFImporter();
@@ -536,6 +537,25 @@ public class ScenarioParser {
 		}
 
 		return algorithm;
+	}
+	
+	/**
+	 * 
+	 * @param url URL of the Algorithm.
+	 * @return the {@link PiGraph} algorithm.
+	 * @throws InvalidModelException
+	 * @throws CoreException
+	 */
+	public static PiGraph getPiGraph(String url) throws InvalidModelException,CoreException {
+		PiGraph pigraph = null;
+		ResourceSet resourceSet = new ResourceSetImpl();
+		
+		URI uri = URI.createPlatformResourceURI(url, true);
+		if(uri.fileExtension() == null || !uri.fileExtension().contentEquals("pi")) return null;
+		Resource ressource = resourceSet.getResource(uri, true);					
+		pigraph = (PiGraph) (ressource.getContents().get(0));
+
+		return pigraph;
 	}
 
 	/**

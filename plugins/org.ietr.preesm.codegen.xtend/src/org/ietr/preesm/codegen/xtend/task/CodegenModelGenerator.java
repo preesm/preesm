@@ -273,7 +273,7 @@ public class CodegenModelGenerator {
 		this.communications = new HashMap<String, List<Communication>>();
 		this.popFifoCalls = new HashMap<SDFInitVertex, FifoCall>();
 		try {
-			originalSDF = ScenarioParser.getAlgorithm(scenario
+			originalSDF = ScenarioParser.getSDFGraph(scenario
 					.getAlgorithmURL());
 		} catch (Exception e) {
 			// This exception should never happen here. as the algorithm is

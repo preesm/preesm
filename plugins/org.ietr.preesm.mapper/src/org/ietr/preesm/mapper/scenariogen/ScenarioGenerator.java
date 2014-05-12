@@ -81,7 +81,7 @@ public class ScenarioGenerator extends AbstractTaskImplementation {
 			try {
 				scenario = parser.parseXmlFile(file);
 
-				algo = ScenarioParser.getAlgorithm(scenario
+				algo = ScenarioParser.getSDFGraph(scenario
 						.getAlgorithmURL());
 			} catch (Exception e) {
 				throw new WorkflowException(e.getMessage());
