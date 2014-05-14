@@ -50,8 +50,8 @@ import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.adapter.GraphInterfaceObserver;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
@@ -345,6 +345,28 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 	@Override
 	public void accept(PiMMVisitor v) {
 		v.visitPiGraph(this);
+	}
+
+	/**
+	 * Returns an Actor indicated through a path where separators are "/"
+	 */
+	@Override
+	public AbstractActor getHierarchicalActorFromPath(String path) {
+		String[] splitPath = path.split("/");
+		String currentName = splitPath[0];
+		String currentPath = "";
+		for (int i = 1; i < splitPath.length; i++) currentPath += splitPath[i];
+		for (AbstractActor a : this.getVertices()) {
+			if (a.getName().equals(currentName)) {
+				if (currentPath.equals("")) {
+					// We found the actor
+					return a;
+				} else if (a instanceof PiGraph) {
+					return ((PiGraph) a).getHierarchicalActorFromPath(currentPath);
+				}
+			}
+		}
+		return null;
 	}
 
 } // GraphImpl

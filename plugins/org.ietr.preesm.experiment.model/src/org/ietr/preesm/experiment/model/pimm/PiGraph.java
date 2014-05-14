@@ -180,6 +180,8 @@ public interface PiGraph extends AbstractActor, PiMMVisitable {
 	 * @return the set of {@link Actor}
 	 */
 	public Set<Actor> getActors();
+
+	public AbstractActor getHierarchicalActorFromPath(String path);
 	
 	
 } // Graph
