@@ -36,6 +36,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.ui.scenario.editor.timings;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -90,6 +93,8 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 
 	final PreesmScenario scenario;
 	TableViewer tableViewer = null;
+	
+	private final String[] COLUMN_NAMES = {"Actors","Parsing","Evaluation","Input Parameters","Expression"};
 
 	public TimingsPage(PreesmScenario scenario, FormEditor editor, String id,
 			String title) {
@@ -152,7 +157,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 	/**
 	 * Adds a table to edit memcopy speeds
 	 */
-	protected void addMemcopySpeedsTable(Composite parent, FormToolkit toolkit) {
+	private void addMemcopySpeedsTable(Composite parent, FormToolkit toolkit) {
 
 		Composite tablecps = toolkit.createComposite(parent);
 		tablecps.setVisible(true);
@@ -178,10 +183,12 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		column1.setText(Messages.getString("Timings.MemcopySpeeds.opDefColumn"));
 
 		final TableColumn column2 = new TableColumn(table, SWT.NONE, 1);
-		column2.setText(Messages.getString("Timings.MemcopySpeeds.setupTimeColumn"));
+		column2.setText(Messages
+				.getString("Timings.MemcopySpeeds.setupTimeColumn"));
 
 		final TableColumn column3 = new TableColumn(table, SWT.NONE, 2);
-		column3.setText(Messages.getString("Timings.MemcopySpeeds.timePerUnitColumn"));
+		column3.setText(Messages
+				.getString("Timings.MemcopySpeeds.timePerUnitColumn"));
 
 		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent e) {
@@ -211,14 +218,14 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 				Point oldSize = tref.getSize();
 				if (oldSize.x > area.width) {
 					column1.setWidth(width / 4 - 1);
-					column2.setWidth((width - column1.getWidth())/2);
-					column3.setWidth((width - column1.getWidth())/2);
+					column2.setWidth((width - column1.getWidth()) / 2);
+					column3.setWidth((width - column1.getWidth()) / 2);
 					tref.setSize(area.width, area.height);
 				} else {
 					tref.setSize(area.width, area.height);
 					column1.setWidth(width / 4 - 1);
-					column2.setWidth((width - column1.getWidth())/2);
-					column3.setWidth((width - column1.getWidth())/2);
+					column2.setWidth((width - column1.getWidth()) / 2);
+					column3.setWidth((width - column1.getWidth()) / 2);
 				}
 			}
 		});
@@ -244,41 +251,13 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		FormToolkit toolkit = managedForm.getToolkit();
 
 		Combo coreCombo = addCoreSelector(container, toolkit);
-		addTable(container, toolkit, coreCombo);
-	}
-
-	/**
-	 * Creates a generic section
-	 */
-	public Composite createSection(IManagedForm mform, String title,
-			String desc, int numColumns, GridData gridData) {
-
-		final ScrolledForm form = mform.getForm();
-		FormToolkit toolkit = mform.getToolkit();
-		Section section = toolkit.createSection(form.getBody(), Section.TWISTIE
-				| Section.TITLE_BAR | Section.DESCRIPTION | Section.EXPANDED);
-		section.setText(title);
-		section.setDescription(desc);
-		toolkit.createCompositeSeparator(section);
-		Composite client = toolkit.createComposite(section);
-		GridLayout layout = new GridLayout();
-		layout.marginWidth = layout.marginHeight = 0;
-		layout.numColumns = numColumns;
-		client.setLayout(layout);
-		section.setClient(client);
-		section.addExpansionListener(new ExpansionAdapter() {
-			public void expansionStateChanged(ExpansionEvent e) {
-				form.reflow(false);
-			}
-		});
-		section.setLayoutData(gridData);
-		return client;
+		addTimingsTable(container, toolkit, coreCombo);
 	}
 
 	/**
 	 * Adds a combo box for the core selection
 	 */
-	protected Combo addCoreSelector(Composite parent, FormToolkit toolkit) {
+	private Combo addCoreSelector(Composite parent, FormToolkit toolkit) {
 		Composite combocps = toolkit.createComposite(parent);
 		combocps.setLayout(new FillLayout());
 		combocps.setVisible(true);
@@ -291,7 +270,6 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 			@Override
 			public void focusGained(FocusEvent e) {
 				comboDataInit((Combo) e.getSource());
-
 			}
 
 			@Override
@@ -303,7 +281,6 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 	}
 
 	private void comboDataInit(Combo combo) {
-
 		combo.removeAll();
 		for (String defId : scenario.getOperatorDefinitionIds())
 			combo.add(defId);
@@ -312,7 +289,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 	/**
 	 * Adds a table to edit timings
 	 */
-	protected void addTable(Composite parent, FormToolkit toolkit,
+	private void addTimingsTable(Composite parent, FormToolkit toolkit,
 			Combo coreCombo) {
 
 		Composite tablecps = toolkit.createComposite(parent);
@@ -334,12 +311,15 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		coreCombo.addSelectionListener(labelProvider);
 
 		// Create columns
-		final TableColumn column1 = new TableColumn(table, SWT.NONE, 0);
-		column1.setText(Messages.getString("Timings.taskColumn"));
+		List<TableColumn> columns = new ArrayList<TableColumn>();
+		for (int i = 0; i < COLUMN_NAMES.length; i++) {
+			TableColumn column = new TableColumn(table, SWT.NONE, i);
+			column.setText(COLUMN_NAMES[i]);
+			columns.add(column);
+		}		
 
-		final TableColumn column2 = new TableColumn(table, SWT.NONE, 1);
-		column2.setText(Messages.getString("Timings.timeColumn"));
-
+		// Make the last column (Expression) editable
+		// XXX: Through an other way than double clicking (direct editing)		
 		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent e) {
 				labelProvider.handleDoubleClick((IStructuredSelection) e
@@ -349,6 +329,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 
 		final Table tref = table;
 		final Composite comp = tablecps;
+		final List<TableColumn> fColumns = columns;
 
 		// Setting the column width
 		tablecps.addControlListener(new ControlAdapter() {
@@ -363,13 +344,19 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 				}
 				Point oldSize = tref.getSize();
 				if (oldSize.x > area.width) {
-					column1.setWidth(width / 4 - 1);
-					column2.setWidth(width - column1.getWidth());
+					for (TableColumn col : fColumns) {
+						col.setWidth(width/5-1);
+					}
+//					columnActors.setWidth(width / 4 - 1);
+//					column2.setWidth(width - columnActors.getWidth());
 					tref.setSize(area.width, area.height);
 				} else {
 					tref.setSize(area.width, area.height);
-					column1.setWidth(width / 4 - 1);
-					column2.setWidth(width - column1.getWidth());
+					for (TableColumn col : fColumns) {
+						col.setWidth(width/5-1);
+					}
+//					columnActors.setWidth(width / 4 - 1);
+//					column2.setWidth(width - columnActors.getWidth());
 				}
 			}
 		});
@@ -383,13 +370,10 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 
 		// Tree is refreshed in case of algorithm modifications
 		parent.addPaintListener(new PaintListener() {
-
 			@Override
 			public void paintControl(PaintEvent e) {
 				tableViewer.refresh();
-
 			}
-
 		});
 	}
 
@@ -503,5 +487,33 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 				Messages.getString("Timings.timingExportExcel"), SWT.PUSH);
 		exportButton.addSelectionListener(new ExcelTimingWriter(scenario));
 
+	}
+
+	/**
+	 * Creates a generic section
+	 */
+	public Composite createSection(IManagedForm mform, String title,
+			String desc, int numColumns, GridData gridData) {
+
+		final ScrolledForm form = mform.getForm();
+		FormToolkit toolkit = mform.getToolkit();
+		Section section = toolkit.createSection(form.getBody(), Section.TWISTIE
+				| Section.TITLE_BAR | Section.DESCRIPTION | Section.EXPANDED);
+		section.setText(title);
+		section.setDescription(desc);
+		toolkit.createCompositeSeparator(section);
+		Composite client = toolkit.createComposite(section);
+		GridLayout layout = new GridLayout();
+		layout.marginWidth = layout.marginHeight = 0;
+		layout.numColumns = numColumns;
+		client.setLayout(layout);
+		section.setClient(client);
+		section.addExpansionListener(new ExpansionAdapter() {
+			public void expansionStateChanged(ExpansionEvent e) {
+				form.reflow(false);
+			}
+		});
+		section.setLayoutData(gridData);
+		return client;
 	}
 }

@@ -72,6 +72,7 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.core.scenario.TimingManager;
 import org.ietr.preesm.core.types.DataType;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -98,7 +99,8 @@ public class ScenarioParser {
 	/**
 	 * current algorithm
 	 */
-	private SDFGraph algo = null;
+	private SDFGraph algoSDF = null;
+	private PiGraph algoPi = null;
 
 	public ScenarioParser() {
 
@@ -113,18 +115,16 @@ public class ScenarioParser {
 	 * Retrieves the DOM document
 	 */
 	public PreesmScenario parseXmlFile(IFile file)
-			throws InvalidModelException, FileNotFoundException {
+			throws InvalidModelException, FileNotFoundException, CoreException {
 		// get the factory
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
 		try {
-
 			// Using factory get an instance of document builder
 			DocumentBuilder db = dbf.newDocumentBuilder();
 
 			// parse using builder to get DOM representation of the XML file
 			dom = db.parse(file.getContents());
-
 		} catch (ParserConfigurationException pce) {
 			pce.printStackTrace();
 		} catch (SAXException se) {
@@ -132,7 +132,6 @@ public class ScenarioParser {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -283,8 +282,7 @@ public class ScenarioParser {
 
 		int group = -1;
 
-		if (algo != null) {
-
+		if (algoSDF != null) {
 			String type = timingElt.getTagName();
 			if (type.equals("relativeconstraint")) {
 				String vertexpath = timingElt.getAttribute("vertexname");
@@ -361,7 +359,8 @@ public class ScenarioParser {
 					parseSpecialVertexOperators(elt);
 					break;
 				case "numberOfTopExecutions":
-					scenario.getSimulationManager().setNumberOfTopExecutions(Integer.parseInt(content));
+					scenario.getSimulationManager().setNumberOfTopExecutions(
+							Integer.parseInt(content));
 					break;
 				}
 			}
@@ -441,7 +440,7 @@ public class ScenarioParser {
 	 * Parses the archi and algo files and retrieves the file contents
 	 */
 	private void parseFileNames(Element filesElt) throws InvalidModelException,
-			FileNotFoundException {
+			FileNotFoundException, CoreException {
 
 		Node node = filesElt.getFirstChild();
 
@@ -454,7 +453,13 @@ public class ScenarioParser {
 				if (url.length() > 0) {
 					if (type.equals("algorithm")) {
 						scenario.setAlgorithmURL(url);
-						algo = getSDFGraph(url);
+						if (url.endsWith(".graphml")) {
+							algoSDF = getSDFGraph(url);
+							algoPi = null;
+						} else if (url.endsWith(".pi")) {
+							algoPi = getPiGraph(url);
+							algoSDF = null;
+						}
 					} else if (type.equals("architecture")) {
 						scenario.setArchitectureURL(url);
 						initializeArchitectureInformation(url);
@@ -547,21 +552,25 @@ public class ScenarioParser {
 
 		return algorithm;
 	}
-	
+
 	/**
 	 * 
-	 * @param url URL of the Algorithm.
+	 * @param url
+	 *            URL of the Algorithm.
 	 * @return the {@link PiGraph} algorithm.
 	 * @throws InvalidModelException
 	 * @throws CoreException
 	 */
-	public static PiGraph getPiGraph(String url) throws InvalidModelException,CoreException {
+	public static PiGraph getPiGraph(String url) throws InvalidModelException,
+			CoreException {
 		PiGraph pigraph = null;
 		ResourceSet resourceSet = new ResourceSetImpl();
-		
+
 		URI uri = URI.createPlatformResourceURI(url, true);
-		if(uri.fileExtension() == null || !uri.fileExtension().contentEquals("pi")) return null;
-		Resource ressource = resourceSet.getResource(uri, true);					
+		if (uri.fileExtension() == null
+				|| !uri.fileExtension().contentEquals("pi"))
+			return null;
+		Resource ressource = resourceSet.getResource(uri, true);
 		pigraph = (PiGraph) (ressource.getContents().get(0));
 
 		return pigraph;
@@ -617,30 +626,26 @@ public class ScenarioParser {
 
 		ConstraintGroup cg = new ConstraintGroup();
 
-		if (algo != null) {
-
+		if (algoSDF != null || algoPi != null) {
 			Node node = cstGroupElt.getFirstChild();
 
 			while (node != null) {
-
 				if (node instanceof Element) {
 					Element elt = (Element) node;
 					String type = elt.getTagName();
 					String name = elt.getAttribute("name");
 					if (type.equals("task")) {
-						SDFAbstractVertex vertex = algo
-								.getHierarchicalVertexFromPath(name);
-						if (vertex != null)
-							cg.addVertexPath(name);
+						if (getActorFromPath(name) != null)
+							cg.addActorPath(name);
 					} else if (type.equals("operator")
 							&& scenario.getOperatorIds() != null) {
 						if (scenario.getOperatorIds().contains(name))
 							cg.addOperatorId(name);
 					}
 				}
-
 				node = node.getNextSibling();
 			}
+			return cg;
 		}
 
 		return cg;
@@ -681,7 +686,7 @@ public class ScenarioParser {
 
 		Timing timing = null;
 
-		if (algo != null) {
+		if (algoSDF != null || algoPi != null) {
 
 			String type = timingElt.getTagName();
 			if (type.equals("timing")) {
@@ -697,16 +702,15 @@ public class ScenarioParser {
 					time = -1;
 				}
 
-				SDFAbstractVertex vertex = algo
-						.getHierarchicalVertex(vertexpath);
+				String actorName = getActorNameFromPath(vertexpath);
 
-				if (vertex != null
+				if (actorName != null
 						&& scenario.getOperatorDefinitionIds().contains(
 								opdefname)) {
 					if (isEvaluated) {
-						timing = new Timing(opdefname, vertex.getName(), time);
+						timing = new Timing(opdefname, actorName, time);
 					} else {
-						timing = new Timing(opdefname, vertex.getName(), stringValue);
+						timing = new Timing(opdefname, actorName, stringValue);
 					}
 				}
 			}
@@ -716,13 +720,51 @@ public class ScenarioParser {
 	}
 
 	/**
+	 * Returns an actor Object (either SDFAbstractVertex from SDFGraph or
+	 * AbstractActor from PiGraph) from the path in its container graph
+	 * 
+	 * @param path
+	 *            the path to the actor, where its segment is the name of an
+	 *            actor and separators are "/"
+	 * @return the wanted actor, if existing, null otherwise
+	 */
+	private Object getActorFromPath(String path) {
+		Object result = null;
+		if (algoSDF != null)
+			result = algoSDF.getHierarchicalVertexFromPath(path);
+		else if (algoPi != null)
+			result = algoPi.getHierarchicalActorFromPath(path);
+		return result;
+	}
+
+	/**
+	 * Returns the name of an actor (either SDFAbstractVertex from SDFGraph or
+	 * AbstractActor from PiGraph) from the path in its container graph
+	 * 
+	 * @param path
+	 *            the path to the actor, where its segment is the name of an
+	 *            actor and separators are "/"
+	 * @return the name of the wanted actor, if we found it
+	 */
+	private String getActorNameFromPath(String path) {
+		Object actor = getActorFromPath(path);
+		if (actor != null) {
+			if (actor instanceof SDFAbstractVertex)
+				return ((SDFAbstractVertex) actor).getName();
+			else if (actor instanceof AbstractActor)
+				return ((AbstractActor) actor).getName();
+		}
+		return null;
+	}
+
+	/**
 	 * Retrieves one memcopy speed composed of integer setup time and
 	 * timeperunit
 	 */
 	private void retrieveMemcpySpeed(TimingManager timingManager,
 			Element timingElt) {
 
-		if (algo != null) {
+		if (algoSDF != null || algoPi != null) {
 
 			String type = timingElt.getTagName();
 			if (type.equals("memcpyspeed")) {

@@ -242,7 +242,7 @@ public class Timing {
 			for (String parameter : parametersValues.keySet())
 				jep.addVariable(parameter, parametersValues.get(parameter));
 			jep.parse(stringValue);
-			long result = (long) jep.evaluate();
+			long result = ((Double) jep.evaluate()).longValue();
 			this.time = result;
 			this.isEvaluated = true;
 		} catch (JepException e) {

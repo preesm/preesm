@@ -36,8 +36,13 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.ui.scenario.editor.timings;
 
+import java.net.URL;
+
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -53,7 +58,10 @@ import org.eclipse.ui.PlatformUI;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.ui.scenario.editor.Messages;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * Displays the labels for tasks timings. These labels are the time of each task
@@ -69,6 +77,8 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 
 	private TableViewer tableViewer = null;
 
+	private Image imageOk, imageError;
+
 	/**
 	 * Constraints page used as a property listener to change the dirty state
 	 */
@@ -80,11 +90,40 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 		this.scenario = scenario;
 		this.tableViewer = tableViewer;
 		this.propertyListener = propertyListener;
+
+		Bundle bundle = FrameworkUtil.getBundle(SDFTableLabelProvider.class);
+
+		URL url = FileLocator.find(bundle, new Path("icons/error.png"), null);
+		ImageDescriptor imageDcr = ImageDescriptor.createFromURL(url);
+		this.imageError = imageDcr.createImage();
+
+		url = FileLocator.find(bundle, new Path("icons/ok.png"), null);
+		imageDcr = ImageDescriptor.createFromURL(url);
+		this.imageOk = imageDcr.createImage();
 	}
 
 	@Override
 	public Image getColumnImage(Object element, int columnIndex) {
-		// TODO Auto-generated method stub
+		if (element instanceof SDFAbstractVertex && currentOpDefId != null) {
+			SDFAbstractVertex vertex = (SDFAbstractVertex) element;
+
+			Timing timing = scenario.getTimingManager().getTimingOrDefault(
+					vertex.getName(), currentOpDefId);
+			switch (columnIndex) {
+			case 1:// Parsing column
+				if (timing.canParse())
+					return imageOk;
+				else
+					return imageError;
+			case 2:// Evaluation column
+				if (timing.canEvaluate())
+					return imageOk;
+				else
+					return imageError;
+			default:// Others
+				break;
+			}
+		}
 		return null;
 	}
 
@@ -92,17 +131,32 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 	public String getColumnText(Object element, int columnIndex) {
 		String text = "";
 
-		if (element instanceof SDFAbstractVertex) {
+		if (element instanceof SDFAbstractVertex && currentOpDefId != null) {
 			SDFAbstractVertex vertex = (SDFAbstractVertex) element;
 
-			if (columnIndex == 0)
-				text = vertex.getName();
-			else if (columnIndex == 1 && scenario != null
-					&& currentOpDefId != null) {
-				long time = scenario.getTimingManager().getTimingOrDefault(
-						vertex.getName(), currentOpDefId);
+			Timing timing = scenario.getTimingManager().getTimingOrDefault(
+					vertex.getName(), currentOpDefId);
 
-				text = Long.toString(time);
+			switch (columnIndex) {
+			case 0:
+				return vertex.getName();
+			case 1: // Parsing Column
+			case 2: // Evaluation Column
+				return null;
+			case 3: // Variables Column
+				if (timing != null) {
+					if (timing.getInputParameters().isEmpty())
+						text = "-";
+					else
+						text = timing.getInputParameters().toString();
+				}
+				break;
+			case 4: // Expression Column
+				if (timing != null)
+					text = timing.getStringValue();
+				break;
+			default:// Others
+				break;
 			}
 		}
 
@@ -154,26 +208,22 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 	}
 
 	public void handleDoubleClick(IStructuredSelection selection) {
-
 		IInputValidator validator = new IInputValidator() {
-
 			public String isValid(String newText) {
 				String message = null;
-				int time = 0;
-
-				try {
-					time = Integer.valueOf(newText);
-				} catch (NumberFormatException e) {
-					time = 0;
-				}
-
-				if (time == 0)
-					message = Messages
-							.getString("Timings.invalid");
+				// int time = 0;
+				//
+				// try {
+				// time = Integer.valueOf(newText);
+				// } catch (NumberFormatException e) {
+				// time = 0;
+				// }
+				//
+				// if (time == 0)
+				// message = Messages.getString("Timings.invalid");
 
 				return message;
 			}
-
 		};
 
 		if (selection.getFirstElement() instanceof SDFVertex
@@ -183,8 +233,9 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 			String title = Messages.getString("Timings.dialog.title");
 			String message = Messages.getString("Timings.dialog.message")
 					+ vertex.getName();
-			String init = String.valueOf(scenario.getTimingManager()
-					.getTimingOrDefault(vertex.getName(), currentOpDefId));
+			String init = scenario.getTimingManager()
+					.getTimingOrDefault(vertex.getName(), currentOpDefId)
+					.getStringValue();
 
 			InputDialog dialog = new InputDialog(PlatformUI.getWorkbench()
 					.getActiveWorkbenchWindow().getShell(), title, message,
@@ -193,7 +244,7 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 				String value = dialog.getValue();
 
 				scenario.getTimingManager().setTiming(vertex.getName(),
-						currentOpDefId, Integer.valueOf(value));
+						currentOpDefId, value);
 
 				tableViewer.refresh();
 				propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);

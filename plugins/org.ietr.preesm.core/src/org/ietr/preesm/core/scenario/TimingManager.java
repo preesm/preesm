@@ -70,7 +70,7 @@ public class TimingManager {
 	 * Path to a file containing timings
 	 */
 	private String excelFileURL = "";
-	
+
 	/**
 	 * Storing setup time and speed of memcpy for each type of operator
 	 */
@@ -108,8 +108,12 @@ public class TimingManager {
 
 	public void setTiming(String sdfVertexId, String operatorDefinitionId,
 			long time) {
-
 		addTiming(sdfVertexId, operatorDefinitionId).setTime(time);
+	}
+
+	public void setTiming(String sdfVertexId, String operatorDefinitionId,
+			String value) {
+		addTiming(sdfVertexId, operatorDefinitionId).setStringValue(value);
 	}
 
 	public Timing addTiming(Timing newt) {
@@ -205,7 +209,7 @@ public class TimingManager {
 	 * Looks for a timing entered in scenario editor. If there is none, returns
 	 * a default value
 	 */
-	public long getTimingOrDefault(String sdfVertexId,
+	public Timing getTimingOrDefault(String sdfVertexId,
 			String operatorDefinitionId) {
 		Timing val = null;
 
@@ -221,7 +225,7 @@ public class TimingManager {
 			val = defaultTiming;
 		}
 
-		return val.getTime();
+		return val;
 	}
 
 	public List<Timing> getTimings() {

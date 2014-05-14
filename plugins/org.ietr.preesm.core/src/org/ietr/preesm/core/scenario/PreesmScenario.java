@@ -36,20 +36,28 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.scenario;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.ietr.dftools.algorithm.importer.InvalidModelException;
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.architecture.slam.SlamPackage;
 import org.ietr.dftools.architecture.slam.serialize.IPXACTResourceFactoryImpl;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 /**
  * Storing all information of a scenario
@@ -123,6 +131,42 @@ public class PreesmScenario {
 		codegenManager = new CodegenManager();
 		variablesManager = new VariablesManager();
 		parameterValueManager = new ParameterValueManager();
+	}
+
+	public Set<String> getActorNames() {
+		if (algorithmURL.endsWith(".pi")) {
+			return getPiActorNames();
+		} else if (algorithmURL.endsWith(".graphml")) {
+			return getSDFActorNames();
+		} else {
+			return null;
+		}
+	}
+	
+	private Set<String> getSDFActorNames() {
+		Set<String> result = new HashSet<String>();
+		try {			
+			SDFGraph graph = ScenarioParser.getSDFGraph(algorithmURL);			
+			for (SDFAbstractVertex vertex : graph.vertexSet()) {
+				result.add(vertex.getName());
+			}			
+		} catch (FileNotFoundException | InvalidModelException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	private Set<String> getPiActorNames() {
+		Set<String> result = new HashSet<String>();
+		try {			
+			PiGraph graph = ScenarioParser.getPiGraph(algorithmURL);			
+			for (AbstractActor vertex : graph.getVertices()) {
+				result.add(vertex.getName());
+			}			
+		} catch (CoreException | InvalidModelException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 	public VariablesManager getVariablesManager() {

@@ -60,6 +60,7 @@ import org.eclipse.ui.PlatformUI;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.core.scenario.serialize.SDFListContentProvider;
 import org.ietr.preesm.ui.scenario.editor.ExcelWriter;
 import org.ietr.preesm.ui.scenario.editor.SaveAsWizard;
@@ -130,8 +131,8 @@ public class ExcelTimingWriter extends ExcelWriter {
 				for (SDFAbstractVertex vertex : vSet) {
 					String vertexName = vertex.getName();
 
-					long time = scenario.getTimingManager().getTimingOrDefault(
-							vertex.getName(), opDefId);
+					Timing timing = scenario.getTimingManager()
+							.getTimingOrDefault(vertex.getName(), opDefId);
 
 					WritableCell opCell = (WritableCell) sheet
 							.findCell(opDefId), vCell = (WritableCell) sheet
@@ -150,14 +151,21 @@ public class ExcelTimingWriter extends ExcelWriter {
 							maxVOrdinate++;
 						}
 
-						WritableCell timeCell = new Number(opCell.getColumn(),
-								vCell.getRow(), time);
+						WritableCell timeCell;
+						if (timing.isEvaluated()) {
+							long time = timing.getTime();
+							timeCell = new Number(opCell.getColumn(),
+									vCell.getRow(), time);
+						} else {
+							String time = timing.getStringValue();
+							timeCell = new Label(opCell.getColumn(),
+									vCell.getRow(), time);
+						}
+
 						sheet.addCell(timeCell);
 					} catch (RowsExceededException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (WriteException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}

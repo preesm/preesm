@@ -81,10 +81,10 @@ public class ConstraintGroupManager {
 		if (cgSet.isEmpty()) {
 			ConstraintGroup cg = new ConstraintGroup();
 			cg.addOperatorId(opId);
-			cg.addVertexPath(vertex.getInfo());
+			cg.addActorPath(vertex.getInfo());
 			constraintgroups.add(cg);
 		} else {
-			((ConstraintGroup) cgSet.toArray()[0]).addVertexPath(vertex
+			((ConstraintGroup) cgSet.toArray()[0]).addActorPath(vertex
 					.getInfo());
 		}
 	}
