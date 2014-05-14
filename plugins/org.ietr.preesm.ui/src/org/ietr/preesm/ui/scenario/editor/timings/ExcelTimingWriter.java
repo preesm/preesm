@@ -69,7 +69,7 @@ import org.ietr.preesm.ui.scenario.editor.SaveAsWizard;
  * 
  * @author mpelcat
  */
-public class ExcelTimingWriter extends ExcelWriter{
+public class ExcelTimingWriter extends ExcelWriter {
 
 	private PreesmScenario scenario;
 
@@ -117,7 +117,8 @@ public class ExcelTimingWriter extends ExcelWriter{
 	/**
 	 * Add timing cells to the newly created file
 	 */
-	protected void addCells(WritableSheet sheet) throws InvalidModelException,FileNotFoundException {
+	protected void addCells(WritableSheet sheet) throws InvalidModelException,
+			FileNotFoundException {
 		if (sheet != null) {
 
 			int maxOpAbscissa = 1, maxVOrdinate = 1;

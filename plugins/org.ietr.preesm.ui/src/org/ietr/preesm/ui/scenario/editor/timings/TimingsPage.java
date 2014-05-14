@@ -127,19 +127,17 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		createMemcopySpeedsSection(managedForm,
 				Messages.getString("Timings.MemcopySpeeds.title"),
 				Messages.getString("Timings.MemcopySpeeds.description"));
-		
+
 		managedForm.refresh();
 		managedForm.reflow(true);
 
 	}
 
-
-
 	/**
 	 * Creates the section editing memcopy speeds
 	 */
-	private void createMemcopySpeedsSection(IManagedForm managedForm, String title,
-			String desc) {
+	private void createMemcopySpeedsSection(IManagedForm managedForm,
+			String title, String desc) {
 
 		// Creates the section
 		managedForm.getForm().setLayout(new FillLayout());
@@ -232,7 +230,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		gd.widthHint = 250;
 		tablecps.setLayoutData(gd);
 	}
-	
+
 	/**
 	 * Creates the section editing timings
 	 */
@@ -307,10 +305,8 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 	private void comboDataInit(Combo combo) {
 
 		combo.removeAll();
-
-		for (String defId : scenario.getOperatorDefinitionIds()) {
+		for (String defId : scenario.getOperatorDefinitionIds())
 			combo.add(defId);
-		}
 	}
 
 	/**

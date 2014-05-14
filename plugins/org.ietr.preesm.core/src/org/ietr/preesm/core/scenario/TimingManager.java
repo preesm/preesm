@@ -74,7 +74,7 @@ public class TimingManager {
 	/**
 	 * Storing setup time and speed of memcpy for each type of operator
 	 */
-	private Map<String,MemCopySpeed> memcpySpeeds;
+	private Map<String, MemCopySpeed> memcpySpeeds;
 
 	/**
 	 * Default value for a memcpy setup time
@@ -88,7 +88,7 @@ public class TimingManager {
 
 	public TimingManager() {
 		timings = new ArrayList<Timing>();
-		memcpySpeeds = new HashMap<String,MemCopySpeed>();
+		memcpySpeeds = new HashMap<String, MemCopySpeed>();
 		defaultTiming = new Timing("default", "default",
 				Timing.DEFAULT_TASK_TIME);
 	}
@@ -245,7 +245,7 @@ public class TimingManager {
 	public void importTimings(PreesmScenario currentScenario) {
 		if (!excelFileURL.isEmpty() && currentScenario != null) {
 			ExcelTimingParser parser = new ExcelTimingParser(currentScenario);
-			
+
 			try {
 				parser.parse(excelFileURL,
 						currentScenario.getOperatorDefinitionIds());
@@ -258,33 +258,35 @@ public class TimingManager {
 	/**
 	 * For a type of operator, sets a memcopy setup time and speed
 	 */
-	public void putMemcpySpeed(MemCopySpeed speed){
+	public void putMemcpySpeed(MemCopySpeed speed) {
 		memcpySpeeds.put(speed.getOperatorDef(), speed);
 	}
 
 	/**
 	 * For a type of operator, gets a memcopy setup time
 	 */
-	public long getMemcpySetupTime(String operatorDef){
+	public long getMemcpySetupTime(String operatorDef) {
 		return memcpySpeeds.get(operatorDef).getSetupTime();
 	}
 
 	/**
-	 * For a type of operator, gets the INVERSED memcopy speed (time per memory unit
+	 * For a type of operator, gets the INVERSED memcopy speed (time per memory
+	 * unit
 	 */
-	public float getMemcpyTimePerUnit(String operatorDef){
+	public float getMemcpyTimePerUnit(String operatorDef) {
 		return memcpySpeeds.get(operatorDef).getTimePerUnit();
 	}
-	
-	public Map<String,MemCopySpeed> getMemcpySpeeds(){
+
+	public Map<String, MemCopySpeed> getMemcpySpeeds() {
 		return memcpySpeeds;
 	}
-	
-	public boolean hasMemCpySpeed(String operatorDef){
+
+	public boolean hasMemCpySpeed(String operatorDef) {
 		return memcpySpeeds.keySet().contains(operatorDef);
 	}
-	
-	public void setDefaultMemCpySpeed(String operatorDef){
-		putMemcpySpeed(new MemCopySpeed(operatorDef, DEFAULTMEMCPYSETUPTIME, DEFAULTMEMCPYTIMEPERUNIT));
+
+	public void setDefaultMemCpySpeed(String operatorDef) {
+		putMemcpySpeed(new MemCopySpeed(operatorDef, DEFAULTMEMCPYSETUPTIME,
+				DEFAULTMEMCPYTIMEPERUNIT));
 	}
 }
