@@ -100,6 +100,7 @@ public class OverviewPage extends FormPage {
 		form.getBody().setLayout(layout);
 
 		Set<String> algoExtensions = new HashSet<String>();
+		algoExtensions.add("pi");
 		algoExtensions.add("graphml");
 
 		// Algorithm file chooser section
