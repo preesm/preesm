@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">mpSched</data>
+        <node expr="0" id="N" kind="param"/>
+        <node expr="0" id="NMAX" kind="param"/>
+        <node expr="0" id="nbSamples" kind="param"/>
+        <node id="UserFIRs" kind="actor">
+            <data key="graph_desc">userFIRs.pi</data>
+            <port kind="cfg_input" name="nbSamples2"/>
+            <port expr="1" kind="input" name="M_in"/>
+            <port expr="0" kind="input" name="in"/>
+            <port expr="0" kind="output" name="out"/>
+        </node>
+        <node id="config" kind="actor">
+            <data key="graph_desc"/>
+            <port kind="cfg_input" name="NMAX"/>
+            <port kind="cfg_output" name="N"/>
+            <port expr="NMAX" kind="output" name="M"/>
+        </node>
+        <node id="MFilter" kind="actor">
+            <data key="graph_desc"/>
+            <port kind="cfg_input" name="NMAX"/>
+            <port kind="cfg_input" name="N"/>
+            <port expr="NMAX" kind="input" name="M_in"/>
+            <port expr="N" kind="output" name="M_out"/>
+        </node>
+        <node id="Src" kind="actor">
+            <data key="graph_desc"/>
+            <port kind="cfg_input" name="N"/>
+            <port kind="cfg_input" name="nbSamples"/>
+            <port expr="0" kind="output" name="src"/>
+        </node>
+        <node id="Snk" kind="actor">
+            <data key="graph_desc"/>
+            <port kind="cfg_input" name="nbSamples"/>
+            <port kind="cfg_input" name="N"/>
+            <port expr="0" kind="input" name="snk"/>
+        </node>
+        <edge kind="fifo" source="config" sourceport="M"
+            target="MFilter" targetport="M_in"/>
+        <edge kind="fifo" source="MFilter" sourceport="M_out"
+            target="UserFIRs" targetport="M_in"/>
+        <edge kind="fifo" source="Src" sourceport="src"
+            target="UserFIRs" targetport="in"/>
+        <edge kind="fifo" source="UserFIRs" sourceport="out"
+            target="Snk" targetport="snk"/>
+        <edge kind="dependency" source="NMAX" target="config" targetport="NMAX"/>
+        <edge kind="dependency" source="NMAX" target="MFilter" targetport="NMAX"/>
+        <edge kind="dependency" source="N" target="MFilter" targetport="N"/>
+        <edge kind="dependency" source="N" target="Src" targetport="N"/>
+        <edge kind="dependency" source="nbSamples" target="Src" targetport="nbSamples"/>
+        <edge kind="dependency" source="N" target="Snk" targetport="N"/>
+        <edge kind="dependency" source="nbSamples" target="Snk" targetport="nbSamples"/>
+        <edge kind="dependency" source="nbSamples" target="UserFIRs" targetport="nbSamples2"/>
+        <edge kind="dependency" source="config" sourceport="N" target="N"/>
+    </graph>
+</graphml>

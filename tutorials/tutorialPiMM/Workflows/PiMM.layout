@@ -9,5 +9,6 @@
       <vertex id="MultiSDFHierarchyFlattening" x="691" y="305"/>
       <vertex id="MultiHSDFTransformation" x="941" y="358"/>
       <vertex id="MultiSDFExporter2" x="1184" y="376"/>
+      <vertex id="CPPGen" x="516" y="456"/>
    </vertices>
 </layout>
