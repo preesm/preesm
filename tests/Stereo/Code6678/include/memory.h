@@ -2,7 +2,7 @@
 	============================================================================
 	Name        : memory.h
 	Author      : kdesnos
-	Version     : 1.0
+	Version     : 1.1
 	Copyright   : CECILL-C
 	Description : Dynamic memory allocation primitives for C6678.
 	              These functions replace the regular malloc() and free()
@@ -18,7 +18,17 @@
 #include <ti/ipc/HeapMemMP.h>
 #include <ti/ipc/GateMP.h>
 
+#include <cache.h>
 #include <semaphore6678.h>
+
+// Remember to activate SharedRegion 1 in the .cfg file to activate dynamic memory allocation.
+//#define DYNAMIC_MEM_ALLOC
+
+#ifdef DYNAMIC_MEM_ALLOC
+#ifdef L2
+#warn "Using L2 cache with dynamic memory allocation may lead to data corruption for a unknown reason. Contact Preesm developer for more information."
+#endif
+
 
 /**
 * Allocation function used when a single pointer is allocated several times.
@@ -99,4 +109,5 @@ void* merged_malloc(HeapMemMP_Handle sharedheap, void** pointer, int size, int n
 */
 void*  merged_free(HeapMemMP_Handle sharedheap, void* pointer, int size);
 
+#endif // DYNAMIC_MEM_ALLOC
 #endif

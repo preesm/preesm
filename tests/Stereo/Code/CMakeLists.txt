@@ -16,7 +16,7 @@ endif()
 
 project(Stereo)
 set(LIBS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
-set(CMAKE_C_FLAGS "-std=c99") 
+set(CMAKE_C_FLAGS "-std=c99 -DX4_CORES") 
 
 # *******************************************
 # ************** SDL LIBRARY ****************

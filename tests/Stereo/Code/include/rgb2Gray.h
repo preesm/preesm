@@ -16,16 +16,11 @@
 * 
 * @param size
 *        Total number of pixel of the input image
-* @param r
-*        Red component of the input image
-* @param g
-*        Green component of the input image
-* @param b
-*        Blue component of the input image
+* @param rgb
+*        3 components of the input image
 * @param gray
 *        Output buffer for the gray image.
 */
-void rgb2Gray(int size, unsigned char *r, unsigned char *g, unsigned char *b,
-			  float *gray);
+void rgb2Gray(int size, unsigned char *rgb, float *gray);
 
 #endif

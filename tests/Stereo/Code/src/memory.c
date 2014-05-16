@@ -5,12 +5,13 @@
 	Version     : 1.0
 	Copyright   : CECILL-C
 	Description : Dynamic memory allocation primitives.
-	              These functions replace the regular malloc() and free() 
+	              These functions replace the regular malloc() and free()
 				  functions when code is printed with dynamic allocation and
 				  mergeable broadcast and roundbuffers is activated.
 	============================================================================
 */
-
+#include <stdlib.h>
+#include <pthread.h>
 #include <semaphore.h>
 #include <memory.h>
 
@@ -30,11 +31,11 @@ void * merged_malloc(int size, int nbFree){
 
 void* multiple_malloc(void **pointer, int size, int nbFree, sem_t* mutex)
 {
-	
+
 	sem_wait(mutex);
 	if(*pointer == 0){
 		*pointer =  (void*) merged_malloc(size,nbFree);
-	} 
+	}
 	sem_post(mutex);
 
 	return *pointer;

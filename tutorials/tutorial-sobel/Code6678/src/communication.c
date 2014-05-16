@@ -33,6 +33,7 @@ Semaphore_Handle interCoreSem[8];
 
 
 #pragma DATA_SECTION(barrier, ".MSMCSRAM")
+#pragma DATA_ALIGN(barrier, CACHE_LINE_SIZE);
 Char barrier = 0x00;
 
 Void callbackInterCoreCom(UInt16 procId, UInt16 lineId, UInt32 eventId,

@@ -5,7 +5,7 @@
 	Version     : 1.0
 	Copyright   : CECILL-C
 	Description : Dynamic memory allocation primitives.
-	              These functions replace the regular malloc() and free() 
+	              These functions replace the regular malloc() and free()
 				  functions when code is printed with dynamic allocation and
 				  mergeable broadcast and roundbuffers is activated.
 	============================================================================
@@ -16,7 +16,7 @@
 
 /**
 * Allocation function used when a single pointer is allocated several times.
-* This method ensures that only its first call actually performs the 
+* This method ensures that only its first call actually performs the
 * allocation.
 *
 * @param pointer
@@ -29,12 +29,12 @@
 *       more memory than this value in order to store a semaphore used to
 *       ensure that the number of free is correct.
 * @param nbFree
-*       Number of call to the merged_free function for this buffer. Only the 
+*       Number of call to the merged_free function for this buffer. Only the
 *       last call will actually free the memory.
 * @param mutex
 *       Semaphore (used as a mutex) used to ensure that no concurrent
 *       calls to multiple_malloc() are effectively running.
-* 
+*
 * @return a pointer to the allocated memory.
 *
 */
@@ -49,10 +49,10 @@ void* multiple_malloc(void** pointer, int size, int nbFree, sem_t* mutex);
 *       more memory than this value in order to store a semaphore used to
 *       ensure that the number of free is correct.
 * @param nbFree
-*       Number of call to the merged_free function for this buffer. Only the 
+*       Number of call to the merged_free function for this buffer. Only the
 *       last call will actually free the memory.
 *
-* @return a pointer to the allocated memory     
+* @return a pointer to the allocated memory
 *
 */
 void* merged_malloc(int size, int nbFree);
@@ -66,9 +66,9 @@ void* merged_malloc(int size, int nbFree);
 *       more memory than this value in order to store a semaphore used to
 *       ensure that the number of free is correct.
 *
-* @return a pointer to the allocated memory or 0 if the memory was freed.    
+* @return a pointer to the allocated memory or 0 if the memory was freed.
 *
 */
-void*  merged_free(void* pointer);
+void*  merged_free(void* pointer, int size);
 
 #endif
