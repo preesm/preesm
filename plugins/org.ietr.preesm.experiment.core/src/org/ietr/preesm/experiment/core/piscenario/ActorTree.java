@@ -82,6 +82,23 @@ public class ActorTree {
 		return root;
 	}
 
+	public Set<ActorNode> getAllActorNodes() {
+		Set<ActorNode> result = new HashSet<ActorNode>();
+		if(root != null)
+			getAllActorNodes(result, root);
+		result.add(root);
+		return result;
+	}
+	
+	private void getAllActorNodes(Set<ActorNode> result, ActorNode currentNode) {
+		for(ActorNode child : currentNode.getChildren()){
+			result.add(child);
+			if(!child.getChildren().isEmpty()){
+				getAllActorNodes(result, child);
+			}
+		}
+	}
+
 	/**
 	 * Return the set of checked {@link ActorNode} for the given operator.
 	 * @param currentOperator The operator

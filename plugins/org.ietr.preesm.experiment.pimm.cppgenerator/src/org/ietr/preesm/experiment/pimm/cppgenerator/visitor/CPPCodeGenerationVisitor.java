@@ -120,6 +120,13 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 	private Map<Dependency, DependencyDescription> dependencyMap;
 	// Map linking Fifos to their C++ position in their graph collection
 	private Map<Fifo, Integer> fifoMap;
+	// Map from Actor names to pairs of CoreType numbers and Timing expressions
+	private Map<String, Map<Integer, String>> timings;
+
+	// Index of functions to call in C code
+	// TODO: Complete with generation of a table associating indices with
+	// pointers of functions
+	private int functionIndex = 0;
 
 	// Shortcut for currentMethod.append()
 	private void append(Object a) {
@@ -127,12 +134,14 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 	}
 
 	public CPPCodeGenerationVisitor(StringBuilder topMethod,
-			CPPCodeGenerationPreProcessVisitor prepocessor) {
+			CPPCodeGenerationPreProcessVisitor prepocessor,
+			Map<String, Map<Integer, String>> timings) {
 		this.currentMethod = topMethod;
 		this.preprocessor = prepocessor;
 		this.dataPortMap = preprocessor.getDataPortMap();
 		this.dependencyMap = preprocessor.getDependencyMap();
 		this.fifoMap = preprocessor.getFifoMap();
+		this.timings = timings;
 	}
 
 	/**
@@ -206,7 +215,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 		// The method accept as parameter a pointer to the PiSDFGraph graph it
 		// will build and a pointer to the parent actor of graph (i.e., the
 		// hierarchical actor)
-		signature.append("(PiSDFGraph* graph, BaseVertex* parentVertex)");
+		signature.append("(PiSDFGraph* _graphs)");
 		prototypes.add(signature.toString());
 		append(signature);
 	}
@@ -217,24 +226,28 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 	 */
 	private void generateMethodBody(PiGraph pg) {
 		append("{");
+
 		// Generating parameters
-		append("\n\n\t//Parameters");
+		append("\n\t//Parameters");
 		for (Parameter p : pg.getParameters()) {
 			p.accept(this);
+			append("\n");
 		}
 		// Generating vertices
-		append("\n\n\t//Vertices");
+		append("\n\t//Vertices");
 		for (AbstractActor v : pg.getVertices()) {
 			v.accept(this);
+			append("\n");
 		}
 		// Generating edges
-		append("\n\n\t//Edges");
+		append("\n\t//Edges");
 		for (Fifo f : pg.getFifos()) {
 			f.accept(this);
+			append("\n");
 		}
 		// Generating call to methods generated for subgraphs, if any
 		if (!currentSubGraphs.isEmpty()) {
-			append("\n\n\t//Subgraphs");
+			append("\n\t//Subgraphs");
 			generateCallsToSubgraphs();
 		}
 		append("\n}\n");
@@ -250,18 +263,12 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 			// Get the pointer to the subgraph
 			append("\n\tPiSDFGraph *");
 			append(sgName);
-			append(" = &graphs[nb_graphs];");
-			// Increment the graph counter
-			append("\n\tnb_graphs++;");
-			// Call the building method of sg with the pointer
+			append(" = addGraph();");
+			// Call the building method of sg with the pointer to the subgraph
 			append("\n\t");
 			append(nameGen.getMethodName(sg));
 			append("(");
-			// Pass the pointer to the subgraph
-			append(sgName);
-			append(",");
-			// Pass the parent vertex
-			append(vxName);
+			append(sgName);			
 			append(");");
 			append("\n\t");
 			// Set the subgraph as subgraph of the vertex
@@ -269,6 +276,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 			append("->setSubGraph(");
 			append(sgName);
 			append(");");
+			append("\n");
 		}
 	}
 
@@ -282,11 +290,13 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 			currentAbstractActorType = "config_vertex";
 		}
 
+		String vertexName = nameGen.getVertexName(aa);
+
 		// Call the addVertex method on the current graph
 		append("\n\t");
 		append(currentAbstractActorClass);
 		append(" *");
-		append(nameGen.getVertexName(aa));
+		append(vertexName);
 		append(" = (");
 		append(currentAbstractActorClass);
 		append("*)graph->addVertex(\"");
@@ -300,7 +310,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 		for (ConfigOutputPort cop : aa.getConfigOutputPorts()) {
 			for (Dependency d : cop.getOutgoingDependencies()) {
 				append("\n\t");
-				append(nameGen.getVertexName(aa));
+				append(vertexName);
 				append("->addRelatedParam(");
 				append(dependencyMap.get(d).tgtName);
 				append(");");
@@ -310,11 +320,33 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 		// Add connections from parameters if necessary
 		for (ConfigInputPort cip : aa.getConfigInputPorts()) {
 			append("\n\t");
-			append(nameGen.getVertexName(aa));
+			append(vertexName);
 			append("->addParameter(");
 			append(dependencyMap.get(cip.getIncomingDependency()).srcName);
 			append(");");
 		}
+
+		// Set Timings, if any
+		Map<Integer, String> aaTimings = timings.get(aa.getName());
+		if (aaTimings != null) {
+			for (Integer coreTypeCode : aaTimings.keySet()) {
+				append("\n\t");
+				append(vertexName);
+				append("->setTiming(");
+				append(coreTypeCode);
+				append(", \"");
+				append(timings.get(aa.getName()).get(coreTypeCode));
+				append("\");");
+			}
+		}
+
+		// Set function index
+		append("\n\t");
+		append(vertexName);
+		append("->setFunction_index(");
+		append(functionIndex);
+		functionIndex++;
+		append(");");
 	}
 
 	@Override
@@ -365,6 +397,11 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 					+ dii.getName() + " is not a DataInputPort.");
 		}
 		append(");");
+
+		// Set function index
+		append("\n\t");
+		append(vertexName);
+		append("->setFunction_index(IF_FUNCT_IX);");
 	}
 
 	@Override
@@ -408,6 +445,11 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 					+ doi.getName() + " is not a DataOutputPort.");
 		}
 		append(");");
+
+		// Set function index
+		append("\n\t");
+		append(vertexName);
+		append("->setFunction_index(IF_FUNCT_IX);");
 	}
 
 	/**
@@ -422,7 +464,10 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 		// about the source node
 		DataPortDescription src = dataPortMap.get(f.getSourcePort());
 		// Pass the name of the source node
-		append(src.nodeName);
+		append(src.actor.getName());
+		append(", ");
+		// Pass the index of the source port
+		append(src.index);
 		append(", \"");
 		// Pass the production of the source node
 		append(src.expression);
@@ -431,7 +476,10 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 		// about the target node
 		DataPortDescription tgt = dataPortMap.get(f.getTargetPort());
 		// Pass the name of the target node
-		append(tgt.nodeName);
+		append(tgt.actor.getName());
+		append(", ");
+		// Pass the index of the target port
+		append(tgt.index);
 		append(", \"");
 		// Pass the consumption of the target node
 		append(tgt.expression);
@@ -450,17 +498,26 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 	 */
 	@Override
 	public void visitParameter(Parameter p) {
+		String paramName = nameGen.getParameterName(p);
+
 		append("\n\tPiSDFParameter *");
-		append(nameGen.getParameterName(p));
+		append(paramName);
 		append(" = graph->addParameter(\"");
 		append(p.getName());
 		append("\");");
+		if (p.isLocallyStatic()) {
+			append("\n\t");
+			append(paramName);
+			append("->setValue(");
+			append(p.getExpression().evaluate());
+			append(")");
+		}
 	}
 
 	@Override
 	public void visitConfigOutputInterface(ConfigOutputInterface coi) {
 		// TODO: Handle ConfigOutputInterface wrt. the COMPA runtime needs (cf.
-		// Yaset)
+		// Yaset & Julien)
 		throw new UnsupportedOperationException();
 	}
 
@@ -538,14 +595,14 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 	 * Class allowing to stock necessary information about graphs when moving
 	 * through the graph hierarchy
 	 */
-//	private class GraphDescription {
-//		List<PiGraph> subGraphs;
-//		StringBuilder method;
-//
-//		public GraphDescription(List<PiGraph> subGraphs, StringBuilder method) {
-//			this.subGraphs = subGraphs;
-//			this.method = method;
-//		}
-//
-//	}
+	// private class GraphDescription {
+	// List<PiGraph> subGraphs;
+	// StringBuilder method;
+	//
+	// public GraphDescription(List<PiGraph> subGraphs, StringBuilder method) {
+	// this.subGraphs = subGraphs;
+	// this.method = method;
+	// }
+	//
+	// }
 }

@@ -37,6 +37,12 @@
  */
 package org.ietr.preesm.experiment.pimm.cppgenerator.visitor;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.ietr.preesm.experiment.core.piscenario.ActorNode;
+import org.ietr.preesm.experiment.core.piscenario.PiScenario;
+import org.ietr.preesm.experiment.core.piscenario.Timing;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.pimm.cppgenerator.utils.CPPNameGenerator;
 
@@ -45,6 +51,16 @@ public class CPPCodeGenerationLauncher {
 	CPPNameGenerator nameGen = new CPPNameGenerator();
 
 	StringBuilder topMethod = new StringBuilder();
+	
+	private PiScenario scenario;
+
+	private Map<String, Integer> coreTypesCodes;
+	
+	private Map<String, Map<Integer, String>> timings;
+	
+	public CPPCodeGenerationLauncher(PiScenario scenario) {
+		this.scenario = scenario;
+	}
 
 	// Shortcut to stringBuilder.append
 	private void append(Object a) {
@@ -56,10 +72,14 @@ public class CPPCodeGenerationLauncher {
 	 * license, includes, constants and top method generation
 	 */
 	public String generateCPPCode(PiGraph pg) {
+		
+		generateCoreTypesCodes();
+		timings = extractTimings();
+		
 		CPPCodeGenerationPreProcessVisitor preprocessor = new CPPCodeGenerationPreProcessVisitor();
 		StringBuilder tmp = new StringBuilder();
 		CPPCodeGenerationVisitor codeGenerator = new CPPCodeGenerationVisitor(
-				tmp, preprocessor);
+				tmp, preprocessor, timings);
 		// Preprocess PiGraph pg in order to collect information on sources and
 		// targets of Fifos and Dependecies
 		preprocessor.visit(pg);
@@ -78,7 +98,7 @@ public class CPPCodeGenerationLauncher {
 
 		// Generate the top method from which the C++ graph building is launch
 		openTopMehod(pg);
-		append(tmp);
+		//append(tmp);
 		closeTopMethod(pg);
 		// Concatenate the results
 		for (StringBuilder m : codeGenerator.getMethods()) {
@@ -88,12 +108,38 @@ public class CPPCodeGenerationLauncher {
 		return topMethod.toString();
 	}
 
+	private void generateCoreTypesCodes() {
+		if (coreTypesCodes == null) {
+			coreTypesCodes = new HashMap<String, Integer>();
+			int i = 0;
+			for (String coreType : scenario.getOperatorTypes()) {
+				coreTypesCodes.put(coreType, i);
+				i++;
+			}
+		}
+	}
+
+	private Map<String, Map<Integer, String>> extractTimings() {
+		Map<String, Map<Integer, String>> timings = new HashMap<String, Map<Integer, String>>();
+		
+		for (ActorNode node : scenario.getActorTree().getAllActorNodes()) {
+			Map<Integer, String> nodeTimings = new HashMap<Integer, String>();			
+			for (String operator : node.getTimings().keySet()) {
+				Timing timing = node.getTimings().get(operator);
+				nodeTimings.put(coreTypesCodes.get(operator), timing.getStringValue());
+			}
+			timings.put(node.getName(), nodeTimings);
+		}
+		
+		return timings;
+	}
+
 	/**
 	 * Generate the header of the final C++ file (license, includes and
 	 * constants)
 	 */
 	private void generateHeader() {
-		append(license);
+		append(getLicense());
 		append("\n");
 		generateIncludes();
 		append("\n");
@@ -106,14 +152,15 @@ public class CPPCodeGenerationLauncher {
 	private void generateIncludes() {
 		append("\n#include <string.h>");
 		append("\n#include <graphs/PiSDF/PiSDFGraph.h>");
+		append("\n#include <addGraph.h>");
 	}
 
 	/**
 	 * Generate the needed constants for the final C++ file
 	 */
 	private void generateConstants() {
-		append("\nstatic PiSDFGraph graphs[MAX_NB_PiSDF_SUB_GRAPHS];");
-		append("\nstatic UINT8 nb_graphs = 0;");
+		append("\nstatic PiSDFGraph* graphs;");
+		append("\nstatic int nb_graphs = 0;");
 	}
 
 	/**
@@ -125,46 +172,90 @@ public class CPPCodeGenerationLauncher {
 		append("\n * This is the method you need to call to build a complete PiSDF graph.");
 		append("\n */");
 		// The method does not return anything and is named top
-		append("\nvoid top");
+		append("\nPiSDFGraph* top");
 		// The method accept as parameter a pointer to the PiSDFGraph graph it
 		// will build
-		append("(PiSDFGraph* graph, Scenario *scenario){");
+		append("(PiSDFGraph* _graphs){");
 	}
 
 	private void closeTopMethod(PiGraph pg) {
 		String sgName = nameGen.getSubraphName(pg);
-		String vxName = nameGen.getVertexName(pg);
 
+		String topGraphName = "top";
+		String topVertexName = "vxTop";
+		
+		// Create a top graph and a top vertex
+		append("\n\t");
+		append("graphs = _graphs");
+		append("\n\t");
+		append("PiSDFGraph* ");
+		append(topGraphName);
+		append(" = addGraph()");
+		append("\n\t");
+		append("PiSDFVertex* ");
+		append(topVertexName);
+		append(" = (PiSDFVertex *)");
+		append(topGraphName);
+		append("->addVertex(\"");
+		append(topVertexName);
+		append("\", pisdf_vertex);");
+		
 		// Get the pointer to the subgraph
-		append("\n\tPiSDFGraph *");
+		append("\n\t");
+		append("PiSDFGraph *");
 		append(sgName);
-		append(" = &graphs[nb_graphs];");
-		// Increment the graph counter
-		append("\n\tnb_graphs++;");
+		append(" = addGraph();");
+		
+		// Add the pointer to top vertex as subgraph
+		append("\n\t");
+		append(topVertexName);
+		append("->setSubgraph(");
+		append(sgName);
+		append(";");
+		append("\n\t");
+		append(sgName);
+		append("->setParentVertex(");
+		append(topVertexName);
+		append(";");
+		
 		// Call the building method of sg with the pointer
 		append("\n\t");
 		append(nameGen.getMethodName(pg));
 		append("(");
 		// Pass the pointer to the subgraph
 		append(sgName);
-		append(",");
-		// Pass the parent vertex
-		append(vxName);
-		append(");");
-		append("\n\t");
-		// Set the subgraph as subgraph of the vertex
-		append(vxName);
-		append("->setSubGraph(");
-		append(sgName);
 		append(");");
 
+		// Return the top graph
+		append("\n\t");
+		append("return ");
+		append(topGraphName);
+		append(";");
 		append("\n}\n");
 	}
 
+	public String addGraph() {
+		StringBuilder result = new StringBuilder();
+		// Put license
+		result.append(getLicense());
+		// Declare global variables
+		result.append("\n\nstatic PiSDFGraph* graphs;");
+		result.append("\nstatic int nbGraphs = 0;");
+		// Declare the addGraph method
+		result.append("\n\nPiSDFGraph* addGraph() {");
+		result.append("\n\tif(nbGraphs >= MAX_NB_PiSDF_GRAPHS) exitWithCode(1054);");
+		result.append("\n\tPiSDFGraph* graph = &(graphs[nbGraphs++]);");
+		result.append("\n\tgraph->reset();");
+		result.append("\n\treturn graph;");
+		result.append("\n}");
+		return result.toString();
+	}
+	
 	/**
 	 * License for PREESM
 	 */
-	private String license = "/**\n"
+	public String getLicense() {
+		return "/**\n"
 			+ " * *****************************************************************************\n"
 			+ " * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,\n"
 			+ " * Karol Desnos, Julien Heulot, Clément Guy, Yaset Oliva Venegas\n"
@@ -201,5 +292,13 @@ public class CPPCodeGenerationLauncher {
 			+ " * knowledge of the CeCILL-C license and that you accept its terms.\n"
 			+ " * ****************************************************************************\n"
 			+ " */";
+	}
 
+	public Map<String, Integer> getCoreTypesCodes() {
+		return coreTypesCodes;
+	}
+
+	public Map<String, Map<Integer, String>> getTimings() {
+		return timings;
+	}
 }
