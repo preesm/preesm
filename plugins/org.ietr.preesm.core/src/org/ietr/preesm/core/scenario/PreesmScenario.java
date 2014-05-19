@@ -133,14 +133,20 @@ public class PreesmScenario {
 		parameterValueManager = new ParameterValueManager();
 	}
 
+	public boolean isPISDFScenario() {
+		if (algorithmURL.endsWith(".pi")) return true;
+		else return false;
+	}
+	
+	public boolean isIBSDFScenario() {
+		if (algorithmURL.endsWith(".graphml")) return true;
+		else return false;
+	}
+	
 	public Set<String> getActorNames() {
-		if (algorithmURL.endsWith(".pi")) {
-			return getPiActorNames();
-		} else if (algorithmURL.endsWith(".graphml")) {
-			return getSDFActorNames();
-		} else {
-			return null;
-		}
+		if (isPISDFScenario()) return getPiActorNames();
+		else if (isIBSDFScenario()) return getSDFActorNames();
+		else return null;
 	}
 	
 	private Set<String> getSDFActorNames() {
