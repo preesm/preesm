@@ -12,6 +12,10 @@
                   id="PiMM"
                   object="org.ietr.preesm.experiment.model.pimm.PiGraph">
             </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.experiment.core.piscenario.PiScenario">
+            </input>
          </inputs>
       </task>
    </extension>

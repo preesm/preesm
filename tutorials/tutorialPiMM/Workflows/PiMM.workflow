@@ -39,6 +39,10 @@
             <dftools:variable name="path" value="HSDF/"/>
         </dftools:data>
     </dftools:task>
+    <dftools:task
+        pluginId="org.ietr.preesm.experiment.pimm.cppgenerator.PiMMCppGenerationTask" taskId="CPPGen">
+        <dftools:data key="variables"/>
+    </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="PiMM"
         targetport="PiMM" to="PiMM2IBSDF"/>
     <dftools:dataTransfer from="scenario" sourceport="PiMM"
@@ -55,4 +59,8 @@
         sourceport="SDFs" targetport="SDFs" to="MultiHSDFTransformation"/>
     <dftools:dataTransfer from="MultiHSDFTransformation"
         sourceport="SDFs" targetport="SDFs" to="MultiSDFExporter2"/>
+    <dftools:dataTransfer from="SubgraphConnector" sourceport="PiMM"
+        targetport="PiMM" to="CPPGen"/>
+    <dftools:dataTransfer from="scenario" sourceport="scenario"
+        targetport="scenario" to="CPPGen"/>
 </dftools:workflow>

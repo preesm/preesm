@@ -5,6 +5,6 @@ module displayRGB {
 		void displayRGBInit (in parameter index, in parameter height , in parameter width);
 	} ;
 	interface loop {
-		void displayRGB (in parameter index , in char r , in char g , in char b);
+		void displayRGB (in parameter index , in parameter height , in parameter width, in char rgb);
 	} ;
 } ;

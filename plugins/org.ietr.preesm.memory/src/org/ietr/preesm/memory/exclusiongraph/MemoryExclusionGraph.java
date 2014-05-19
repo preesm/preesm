@@ -517,7 +517,9 @@ public class MemoryExclusionGraph extends
 				this.addVertex(headMemoryNode);
 
 				// Compute the list of all edges between init and end
+				// Also compute the list of actors
 				Set<DAGEdge> between;
+				Set<MemoryExclusionVertex> betweenVert;
 				{
 					Set<DAGEdge> endPredecessors = dag
 							.getPredecessorEdgesOf(dagEndVertex);
@@ -525,15 +527,42 @@ public class MemoryExclusionGraph extends
 							.getSuccessorEdgesOf(vertex);
 					between = (new HashSet<DAGEdge>(initSuccessors));
 					between.retainAll(endPredecessors);
+
+					Set<MemoryExclusionVertex> endPredecessorsVert = new HashSet<MemoryExclusionVertex>();
+					for (DAGEdge edge : endPredecessors) {
+						endPredecessorsVert.add(new MemoryExclusionVertex(edge
+								.getSource().getName(), edge.getSource()
+								.getName(), 0));
+					}
+					Set<MemoryExclusionVertex> initSuccessorsVert = new HashSet<MemoryExclusionVertex>();
+					for (DAGEdge edge : initSuccessors) {
+						initSuccessorsVert.add(new MemoryExclusionVertex(edge
+								.getTarget().getName(), edge.getTarget()
+								.getName(), 0));
+					}
+					betweenVert = (new HashSet<MemoryExclusionVertex>(
+							initSuccessorsVert));
+					betweenVert.retainAll(endPredecessorsVert);
 				}
 
 				// Add exclusions between the head node and ALL MemoryObjects
-				// that do not correspond to edges in the between list.
+				// that do not correspond to edges in the between list or to
+				// the working memory of an actor in the betweenVert list.
 				for (MemoryExclusionVertex memObject : this.vertexSet()) {
 					DAGEdge correspondingEdge = memObject.getEdge();
-					if (memObject != headMemoryNode
-							&& (correspondingEdge == null || !between
-									.contains(correspondingEdge))) {
+					// For Edges
+					if (correspondingEdge != null) {
+						if (!between.contains(correspondingEdge)) {
+							this.addEdge(headMemoryNode, memObject);
+						}
+					}
+
+					// For Working memory
+					else if (memObject.getSource() == memObject.getSink()) {
+						if (!betweenVert.contains(memObject)) {
+							this.addEdge(headMemoryNode, memObject);
+						}
+					} else if (memObject != headMemoryNode) {
 						this.addEdge(headMemoryNode, memObject);
 					}
 				}

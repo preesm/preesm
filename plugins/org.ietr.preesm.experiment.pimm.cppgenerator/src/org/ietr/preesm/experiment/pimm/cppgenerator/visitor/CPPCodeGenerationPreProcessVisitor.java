@@ -64,7 +64,6 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 import org.ietr.preesm.experiment.pimm.cppgenerator.utils.CPPNameGenerator;
-import org.ietr.preesm.experiment.pimm.cppgenerator.utils.EdgeKind;
 
 public class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor {
 
@@ -77,6 +76,9 @@ public class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor {
 	// Map linking data ports to their corresponding description
 	private Map<Port, DataPortDescription> dataPortMap = new HashMap<Port, DataPortDescription>();
 
+	private Map<AbstractActor, Integer> inPortIndices = new HashMap<AbstractActor, Integer>();
+	private Map<AbstractActor, Integer> outPortIndices = new HashMap<AbstractActor, Integer>();
+	
 	public Map<Port, DataPortDescription> getDataPortMap() {
 		return dataPortMap;
 	}
@@ -122,6 +124,8 @@ public class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor {
 		currentAbstractActor = aa;
 		// Fix currentAbstractVertexName
 		currentAbstractVertexName = nameGen.getVertexName(aa);
+		inPortIndices.put(aa, 0);
+		outPortIndices.put(aa, 0);
 		// Visit configuration input ports to fill cfgInPortMap
 		visitAbstractVertex(aa);
 		// Visit data ports to fill the dataPortMap
@@ -175,12 +179,13 @@ public class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor {
 		// Get the position of the incoming fifo of dip wrt.
 		// currentAbstractActor
 		Fifo f = dip.getIncomingFifo();
-		fifoMap.put(f,
-				nameGen.getEdgeNumber(currentAbstractActor, f, EdgeKind.in));
+		int index = inPortIndices.get(currentAbstractActor);
+		inPortIndices.put(currentAbstractActor, index+1);
+		fifoMap.put(f, index);
 
 		// Fill dataPortMap
-		dataPortMap.put(dip, new DataPortDescription(currentAbstractVertexName,
-				dip.getExpression().getString()));
+		dataPortMap.put(dip, new DataPortDescription(currentAbstractActor,
+				dip.getExpression().getString(), index));
 	}
 
 	@Override
@@ -192,12 +197,13 @@ public class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor {
 		// Get the position of the outgoing fifo of dop wrt.
 		// currentAbstractActor
 		Fifo f = dop.getOutgoingFifo();
-		fifoMap.put(f,
-				nameGen.getEdgeNumber(currentAbstractActor, f, EdgeKind.out));
+		int index = outPortIndices.get(currentAbstractActor);
+		outPortIndices.put(currentAbstractActor, index+1);
+		fifoMap.put(f, index);
 
 		// Fill dataPortMap
-		dataPortMap.put(dop, new DataPortDescription(currentAbstractVertexName,
-				dop.getExpression().getString()));
+		dataPortMap.put(dop, new DataPortDescription(currentAbstractActor,
+				dop.getExpression().getString(), index));
 	}
 
 	@Override
@@ -283,12 +289,14 @@ public class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor {
 	 * edges generation
 	 */
 	public class DataPortDescription {
-		public String nodeName;
+		public AbstractActor actor;
 		public String expression;
+		public int index;
 
-		public DataPortDescription(String nodeName, String expression) {
-			this.nodeName = nodeName;
+		public DataPortDescription(AbstractActor actor, String expression, int index) {
+			this.actor = actor;
 			this.expression = expression;
+			this.index = index;
 		}
 	}
 

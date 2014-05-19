@@ -113,10 +113,9 @@ void readPPMInit(int id,int height, int width) {
     tick = clock();
 }
 
-void readPPM(int id,int height, int width, unsigned char *r, unsigned char *g, unsigned char *b){
+void readPPM(int id,int height, int width, unsigned char *rgbPtr){
     int idxPxl;
     int rgb;
-    unsigned char *readBuffer;
 
 	if(id == 1){
 		tick = clock()-tick;
@@ -126,24 +125,5 @@ void readPPM(int id,int height, int width, unsigned char *r, unsigned char *g, u
 
     fseek(ptfile[id],imageStartPosition[id], SEEK_SET);
 
-    readBuffer = malloc(3*height*width*sizeof(char));
-
-    fread(readBuffer,sizeof(char), 3*width*height, ptfile[id]);
-    rgb = 0;
-    for(idxPxl = 0; idxPxl < 3*height*width; idxPxl++){
-        switch(rgb){
-        case 0:
-            *(r+idxPxl/3) = *(readBuffer+idxPxl);
-            break;
-        case 1:
-            *(g+idxPxl/3) = *(readBuffer+idxPxl);
-            break;
-        case 2:
-            *(b+idxPxl/3) = *(readBuffer+idxPxl);
-            break;
-        }
-        rgb = (rgb + 1)%3;
-    }
-
-	free(readBuffer);
+    fread(rgbPtr,sizeof(char), 3*width*height, ptfile[id]);    
 }

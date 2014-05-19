@@ -10,9 +10,12 @@
     <key attr.name="port_direction" attr.type="string" for="node"/>
     <key attr.name="graph_desc" attr.type="string" for="node"/>
     <key attr.name="nbRepeat" attr.type="int" for="node"/>
+    <key attr.name="memory_script" attr.type="string" for="node"/>
     <key attr.name="edge_cons" attr.type="string" for="edge"/>
     <key attr.name="edge_delay" attr.type="string" for="edge"/>
     <key attr.name="edge_prod" attr.type="string" for="edge"/>
+    <key attr.name="target_port_modifier" attr.type="string" for="edge"/>
+    <key attr.name="source_port_modifier" attr.type="string" for="edge"/>
     <key attr.name="data_type" attr.type="string" for="edge"/>
     <graph edgedefault="directed">
         <data key="name">cost_parallel_work</data>
@@ -285,17 +288,10 @@
         </edge>
         <edge source="disparitySelect" sourceport="backBestCost"
             target="disparitySelect" targetport="bestCostFeed">
-            <data key="edge_prod">height*width</data>
-            <data key="edge_delay">height*width</data>
-            <data key="edge_cons">height*width</data>
+            <data key="edge_prod">height*width+1</data>
+            <data key="edge_delay">height*width+1</data>
+            <data key="edge_cons">height*width+1</data>
             <data key="data_type">float</data>
-        </edge>
-        <edge source="disparitySelect" sourceport="nextIter"
-            target="disparitySelect" targetport="iter">
-            <data key="edge_prod">1</data>
-            <data key="edge_delay">1</data>
-            <data key="edge_cons">1</data>
-            <data key="data_type">int</data>
         </edge>
         <edge source="disparityGen" sourceport="disparities"
             target="disparitySelect" targetport="disparity">
@@ -311,7 +307,7 @@
             <data key="edge_cons">height*width</data>
             <data key="data_type">uchar</data>
         </edge>
-        <edge source="broadcastResult" sourceport="o"
+        <edge source="broadcastResult" sourceport="o1"
             target="disparitySelect" targetport="currentResult">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">height*width</data>
@@ -319,7 +315,7 @@
             <data key="data_type">uchar</data>
             <data key="target_port_modifier">pure_in</data>
         </edge>
-        <edge source="broadcastResult" sourceport="o"
+        <edge source="broadcastResult" sourceport="o0"
             target="raw_disparity" targetport="">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>

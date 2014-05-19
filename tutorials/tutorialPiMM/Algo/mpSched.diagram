@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="ASCII"?>
+<pi:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:al="http://eclipse.org/graphiti/mm/algorithms" xmlns:pi="http://eclipse.org/graphiti/mm/pictograms" visible="true" gridUnit="10" diagramTypeId="PiMM" name="mpSched" snapToGrid="true" pictogramLinks="//@children.0/@link //@children.0/@children.0/@link //@children.1/@link //@children.1/@children.0/@link //@children.1/@anchors.0/@link //@children.2/@link //@children.2/@children.0/@link //@children.2/@anchors.0/@link //@children.3/@link //@children.3/@children.0/@link //@children.3/@anchors.0/@link //@children.4/@link //@children.4/@children.0/@link //@children.5/@link //@children.5/@children.0/@link //@children.6/@link //@children.6/@children.0/@link //@children.7/@link //@children.7/@children.0/@link //@children.4/@anchors.0/@link //@connections.0/@link //@children.5/@anchors.0/@link //@connections.1/@link //@children.5/@anchors.1/@link //@connections.2/@link //@children.6/@anchors.0/@link //@connections.3/@link //@children.6/@anchors.1/@link //@connections.4/@link //@children.7/@anchors.1/@link //@connections.5/@link //@children.7/@anchors.0/@link //@connections.6/@link //@children.0/@anchors.0/@link //@connections.7/@link //@children.4/@anchors.1/@link //@children.5/@anchors.2/@link //@connections.8/@link //@children.5/@anchors.3/@link //@children.0/@anchors.1/@link //@connections.9/@link //@children.6/@anchors.2/@link //@children.0/@anchors.2/@link //@connections.10/@link //@children.0/@anchors.3/@link //@children.7/@anchors.2/@link //@connections.11/@link //@children.4/@anchors.2/@link //@connections.12/@link" version="0.10.0">
+  <graphicsAlgorithm xsi:type="al:Rectangle" background="//@colors.1" foreground="//@colors.0" lineWidth="1" transparency="0.0" width="1000" height="1000"/>
+  <link>
+    <businessObjects href="mpSched.pi#/"/>
+  </link>
+  <children xsi:type="pi:ContainerShape" visible="true" active="true">
+    <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.1" foreground="//@colors.9" lineWidth="2" transparency="0.0" width="102" height="57" x="610" y="450" cornerHeight="5" cornerWidth="5"/>
+    <link>
+      <businessObjects href="mpSched.pi#//@vertices.0"/>
+    </link>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.7" referencedGraphicsAlgorithm="//@children.0/@graphicsAlgorithm" relativeHeight="0.3157894736842105">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="69" height="13">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="61" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="nbSamples2"/>
+        <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.2" lineWidth="0" filled="true" transparency="0.0" y="1">
+          <points/>
+          <points x="8" y="5"/>
+          <points y="10"/>
+        </graphicsAlgorithmChildren>
+      </graphicsAlgorithm>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.0/@configInputPorts.0"/>
+      </link>
+    </anchors>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.9" referencedGraphicsAlgorithm="//@children.0/@graphicsAlgorithm" relativeHeight="0.543859649122807">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="33" height="13">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="25" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="M_in"/>
+        <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.8" foreground="//@colors.2" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
+      </graphicsAlgorithm>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.0/@dataInputPorts.0"/>
+      </link>
+    </anchors>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.10" referencedGraphicsAlgorithm="//@children.0/@graphicsAlgorithm" relativeHeight="0.7719298245614035">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="18" height="13">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="10" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="in"/>
+        <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.8" foreground="//@colors.2" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
+      </graphicsAlgorithm>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.0/@dataInputPorts.1"/>
+      </link>
+    </anchors>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.11" referencedGraphicsAlgorithm="//@children.0/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.543859649122807">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="25" height="13" x="-25">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="17" height="13" font="//@fonts.1" value="out"/>
+        <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.2" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="17" y="2"/>
+      </graphicsAlgorithm>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.0/@dataOutputPorts.0"/>
+      </link>
+    </anchors>
+    <children visible="true">
+      <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="102" height="20" font="//@fonts.2" horizontalAlignment="ALIGNMENT_CENTER" value="UserFIRs"/>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.0"/>
+      </link>
+    </children>
+  </children>
+  <children xsi:type="pi:ContainerShape" visible="true" active="true">
+    <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.6" lineWidth="2" filled="true" transparency="0.0" width="33" height="40" x="390" y="200">
+      <points x="16"/>
+      <points x="33" y="26"/>
+      <points x="33" y="40"/>
+      <points y="40"/>
+      <points y="26"/>
+    </graphicsAlgorithm>
+    <link>
+      <businessObjects href="mpSched.pi#//@parameters.0"/>
+    </link>
+    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.2 //@connections.3 //@connections.5" incomingConnections="//@connections.12">
+      <link>
+        <businessObjects href="mpSched.pi#//@parameters.0"/>
+      </link>
+    </anchors>
+    <children visible="true">
+      <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="33" height="20" y="22" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" value="N"/>
+      <link>
+        <businessObjects href="mpSched.pi#//@parameters.0"/>
+      </link>
+    </children>
+  </children>
+  <children xsi:type="pi:ContainerShape" visible="true" active="true">
+    <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.6" lineWidth="2" filled="true" transparency="0.0" width="38" height="40" x="480" y="110">
+      <points x="19"/>
+      <points x="38" y="26"/>
+      <points x="38" y="40"/>
+      <points y="40"/>
+      <points y="26"/>
+    </graphicsAlgorithm>
+    <link>
+      <businessObjects href="mpSched.pi#//@parameters.1"/>
+    </link>
+    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.0 //@connections.1">
+      <link>
+        <businessObjects href="mpSched.pi#//@parameters.1"/>
+      </link>
+    </anchors>
+    <children visible="true">
+      <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="38" height="20" y="22" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" value="NMAX"/>
+      <link>
+        <businessObjects href="mpSched.pi#//@parameters.1"/>
+      </link>
+    </children>
+  </children>
+  <children xsi:type="pi:ContainerShape" visible="true" active="true">
+    <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.6" lineWidth="2" filled="true" transparency="0.0" width="64" height="40" x="560" y="110">
+      <points x="32"/>
+      <points x="64" y="26"/>
+      <points x="64" y="40"/>
+      <points y="40"/>
+      <points y="26"/>
+    </graphicsAlgorithm>
+    <link>
+      <businessObjects href="mpSched.pi#//@parameters.2"/>
+    </link>
+    <anchors xsi:type="pi:ChopboxAnchor" outgoingConnections="//@connections.4 //@connections.6 //@connections.7">
+      <link>
+        <businessObjects href="mpSched.pi#//@parameters.2"/>
+      </link>
+    </anchors>
+    <children visible="true">
+      <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="64" height="20" y="22" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" value="nbSamples"/>
+      <link>
+        <businessObjects href="mpSched.pi#//@parameters.2"/>
+      </link>
+    </children>
+  </children>
+  <children xsi:type="pi:ContainerShape" visible="true" active="true">
+    <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.3" foreground="//@colors.2" lineWidth="2" transparency="0.0" width="68" height="44" x="270" y="366" cornerHeight="5" cornerWidth="5"/>
+    <link>
+      <businessObjects href="mpSched.pi#//@vertices.1"/>
+    </link>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.0" referencedGraphicsAlgorithm="//@children.4/@graphicsAlgorithm" relativeHeight="0.4090909090909091">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="41" height="13">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="33" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="NMAX"/>
+        <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.2" lineWidth="0" filled="true" transparency="0.0" y="1">
+          <points/>
+          <points x="8" y="5"/>
+          <points y="10"/>
+        </graphicsAlgorithmChildren>
+      </graphicsAlgorithm>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.1/@configInputPorts.0"/>
+      </link>
+    </anchors>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.8" referencedGraphicsAlgorithm="//@children.4/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.7045454545454546">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="19" height="13" x="-19">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="11" height="13" font="//@fonts.1" value="M"/>
+        <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.2" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="11" y="2"/>
+      </graphicsAlgorithm>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.1/@dataOutputPorts.0"/>
+      </link>
+    </anchors>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.12" referencedGraphicsAlgorithm="//@children.4/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.4090909090909091">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="18" height="13" x="-18">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="10" height="13" font="//@fonts.1" value="N"/>
+        <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.10" foreground="//@colors.2" lineWidth="0" filled="true" transparency="0.0" x="9" y="1">
+          <points y="5"/>
+          <points x="8"/>
+          <points x="8" y="10"/>
+        </graphicsAlgorithmChildren>
+      </graphicsAlgorithm>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.1/@configOutputPorts.0"/>
+      </link>
+    </anchors>
+    <children visible="true">
+      <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="68" height="20" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" value="config"/>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.1"/>
+      </link>
+    </children>
+  </children>
+  <children xsi:type="pi:ContainerShape" visible="true" active="true">
+    <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.3" foreground="//@colors.2" lineWidth="2" transparency="0.0" width="89" height="57" x="450" y="353" cornerHeight="5" cornerWidth="5"/>
+    <link>
+      <businessObjects href="mpSched.pi#//@vertices.2"/>
+    </link>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.1" referencedGraphicsAlgorithm="//@children.5/@graphicsAlgorithm" relativeHeight="0.3157894736842105">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="41" height="13">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="33" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="NMAX"/>
+        <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.2" lineWidth="0" filled="true" transparency="0.0" y="1">
+          <points/>
+          <points x="8" y="5"/>
+          <points y="10"/>
+        </graphicsAlgorithmChildren>
+      </graphicsAlgorithm>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.2/@configInputPorts.0"/>
+      </link>
+    </anchors>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.2" referencedGraphicsAlgorithm="//@children.5/@graphicsAlgorithm" relativeHeight="0.543859649122807">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="18" height="13">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="10" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="N"/>
+        <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.2" lineWidth="0" filled="true" transparency="0.0" y="1">
+          <points/>
+          <points x="8" y="5"/>
+          <points y="10"/>
+        </graphicsAlgorithmChildren>
+      </graphicsAlgorithm>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.2/@configInputPorts.1"/>
+      </link>
+    </anchors>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.8" referencedGraphicsAlgorithm="//@children.5/@graphicsAlgorithm" relativeHeight="0.7719298245614035">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="33" height="13">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="25" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="M_in"/>
+        <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.8" foreground="//@colors.2" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
+      </graphicsAlgorithm>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.2/@dataInputPorts.0"/>
+      </link>
+    </anchors>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.9" referencedGraphicsAlgorithm="//@children.5/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.7719298245614035">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="40" height="13" x="-40">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="32" height="13" font="//@fonts.1" value="M_out"/>
+        <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.2" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="32" y="2"/>
+      </graphicsAlgorithm>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.2/@dataOutputPorts.0"/>
+      </link>
+    </anchors>
+    <children visible="true">
+      <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="89" height="20" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" value="MFilter"/>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.2"/>
+      </link>
+    </children>
+  </children>
+  <children xsi:type="pi:ContainerShape" visible="true" active="true">
+    <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.3" foreground="//@colors.2" lineWidth="2" transparency="0.0" width="95" height="57" x="440" y="480" cornerHeight="5" cornerWidth="5"/>
+    <link>
+      <businessObjects href="mpSched.pi#//@vertices.3"/>
+    </link>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.3" referencedGraphicsAlgorithm="//@children.6/@graphicsAlgorithm" relativeHeight="0.3157894736842105">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="18" height="13">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="10" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="N"/>
+        <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.2" lineWidth="0" filled="true" transparency="0.0" y="1">
+          <points/>
+          <points x="8" y="5"/>
+          <points y="10"/>
+        </graphicsAlgorithmChildren>
+      </graphicsAlgorithm>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.3/@configInputPorts.0"/>
+      </link>
+    </anchors>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.4" referencedGraphicsAlgorithm="//@children.6/@graphicsAlgorithm" relativeHeight="0.543859649122807">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="63" height="13">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="55" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="nbSamples"/>
+        <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.2" lineWidth="0" filled="true" transparency="0.0" y="1">
+          <points/>
+          <points x="8" y="5"/>
+          <points y="10"/>
+        </graphicsAlgorithmChildren>
+      </graphicsAlgorithm>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.3/@configInputPorts.1"/>
+      </link>
+    </anchors>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" outgoingConnections="//@connections.10" referencedGraphicsAlgorithm="//@children.6/@graphicsAlgorithm" relativeWidth="1.0" relativeHeight="0.7719298245614035">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="24" height="13" x="-24">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="16" height="13" font="//@fonts.1" value="src"/>
+        <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.7" foreground="//@colors.2" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" x="16" y="2"/>
+      </graphicsAlgorithm>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.3/@dataOutputPorts.0"/>
+      </link>
+    </anchors>
+    <children visible="true">
+      <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="95" height="20" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" value="Src"/>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.3"/>
+      </link>
+    </children>
+  </children>
+  <children xsi:type="pi:ContainerShape" visible="true" active="true">
+    <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.3" foreground="//@colors.2" lineWidth="2" transparency="0.0" width="71" height="57" x="760" y="440" cornerHeight="5" cornerWidth="5"/>
+    <link>
+      <businessObjects href="mpSched.pi#//@vertices.4"/>
+    </link>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.6" referencedGraphicsAlgorithm="//@children.7/@graphicsAlgorithm" relativeHeight="0.3157894736842105">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="63" height="13">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="55" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="nbSamples"/>
+        <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.2" lineWidth="0" filled="true" transparency="0.0" y="1">
+          <points/>
+          <points x="8" y="5"/>
+          <points y="10"/>
+        </graphicsAlgorithmChildren>
+      </graphicsAlgorithm>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.4/@configInputPorts.0"/>
+      </link>
+    </anchors>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.5" referencedGraphicsAlgorithm="//@children.7/@graphicsAlgorithm" relativeHeight="0.543859649122807">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="18" height="13">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="10" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="N"/>
+        <graphicsAlgorithmChildren xsi:type="al:Polygon" background="//@colors.5" foreground="//@colors.2" lineWidth="0" filled="true" transparency="0.0" y="1">
+          <points/>
+          <points x="8" y="5"/>
+          <points y="10"/>
+        </graphicsAlgorithmChildren>
+      </graphicsAlgorithm>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.4/@configInputPorts.1"/>
+      </link>
+    </anchors>
+    <anchors xsi:type="pi:BoxRelativeAnchor" visible="true" active="true" incomingConnections="//@connections.11" referencedGraphicsAlgorithm="//@children.7/@graphicsAlgorithm" relativeHeight="0.7719298245614035">
+      <graphicsAlgorithm xsi:type="al:Rectangle" lineWidth="1" filled="false" lineVisible="false" transparency="0.0" width="26" height="13">
+        <graphicsAlgorithmChildren xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="18" height="13" x="8" font="//@fonts.1" horizontalAlignment="ALIGNMENT_RIGHT" value="snk"/>
+        <graphicsAlgorithmChildren xsi:type="al:Rectangle" background="//@colors.8" foreground="//@colors.2" lineWidth="1" lineStyle="UNSPECIFIED" width="8" height="8" y="2"/>
+      </graphicsAlgorithm>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.4/@dataInputPorts.0"/>
+      </link>
+    </anchors>
+    <children visible="true">
+      <graphicsAlgorithm xsi:type="al:Text" foreground="//@colors.4" lineWidth="1" filled="false" transparency="0.0" width="71" height="20" font="//@fonts.0" horizontalAlignment="ALIGNMENT_CENTER" value="Snk"/>
+      <link>
+        <businessObjects href="mpSched.pi#//@vertices.4"/>
+      </link>
+    </children>
+  </children>
+  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.4/@anchors.0">
+    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.6" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
+    <link>
+      <businessObjects href="mpSched.pi#//@dependencies.0"/>
+    </link>
+    <connectionDecorators visible="true" locationRelative="true" location="1.0">
+      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.6" lineWidth="2" lineStyle="UNSPECIFIED">
+        <points x="-10" y="5"/>
+        <points/>
+        <points x="-10" y="-5"/>
+      </graphicsAlgorithm>
+    </connectionDecorators>
+    <bendpoints x="498" y="182"/>
+    <bendpoints x="250" y="182"/>
+    <bendpoints x="250" y="389"/>
+  </connections>
+  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.2/@anchors.0" end="//@children.5/@anchors.0">
+    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.6" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
+    <link>
+      <businessObjects href="mpSched.pi#//@dependencies.1"/>
+    </link>
+    <connectionDecorators visible="true" locationRelative="true" location="1.0">
+      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.6" lineWidth="2" lineStyle="UNSPECIFIED">
+        <points x="-10" y="5"/>
+        <points/>
+        <points x="-10" y="-5"/>
+      </graphicsAlgorithm>
+    </connectionDecorators>
+    <bendpoints x="498" y="277"/>
+    <bendpoints x="430" y="277"/>
+    <bendpoints x="430" y="376"/>
+  </connections>
+  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.5/@anchors.1">
+    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.6" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
+    <link>
+      <businessObjects href="mpSched.pi#//@dependencies.2"/>
+    </link>
+    <connectionDecorators visible="true" locationRelative="true" location="1.0">
+      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.6" lineWidth="2" lineStyle="UNSPECIFIED">
+        <points x="-10" y="5"/>
+        <points/>
+        <points x="-10" y="-5"/>
+      </graphicsAlgorithm>
+    </connectionDecorators>
+    <bendpoints x="407" y="389"/>
+  </connections>
+  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.6/@anchors.0">
+    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.6" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
+    <link>
+      <businessObjects href="mpSched.pi#//@dependencies.3"/>
+    </link>
+    <connectionDecorators visible="true" locationRelative="true" location="1.0">
+      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.6" lineWidth="2" lineStyle="UNSPECIFIED">
+        <points x="-10" y="5"/>
+        <points/>
+        <points x="-10" y="-5"/>
+      </graphicsAlgorithm>
+    </connectionDecorators>
+    <bendpoints x="407" y="503"/>
+  </connections>
+  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.3/@anchors.0" end="//@children.6/@anchors.1">
+    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.6" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
+    <link>
+      <businessObjects href="mpSched.pi#//@dependencies.4"/>
+    </link>
+    <connectionDecorators visible="true" locationRelative="true" location="1.0">
+      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.6" lineWidth="2" lineStyle="UNSPECIFIED">
+        <points x="-10" y="5"/>
+        <points/>
+        <points x="-10" y="-5"/>
+      </graphicsAlgorithm>
+    </connectionDecorators>
+    <bendpoints x="591" y="257"/>
+    <bendpoints x="369" y="257"/>
+    <bendpoints x="369" y="517"/>
+  </connections>
+  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.1/@anchors.0" end="//@children.7/@anchors.1">
+    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.6" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
+    <link>
+      <businessObjects href="mpSched.pi#//@dependencies.5"/>
+    </link>
+    <connectionDecorators visible="true" locationRelative="true" location="1.0">
+      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.6" lineWidth="2" lineStyle="UNSPECIFIED">
+        <points x="-10" y="5"/>
+        <points/>
+        <points x="-10" y="-5"/>
+      </graphicsAlgorithm>
+    </connectionDecorators>
+    <bendpoints x="407" y="320"/>
+    <bendpoints x="716" y="320"/>
+    <bendpoints x="716" y="477"/>
+  </connections>
+  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.3/@anchors.0" end="//@children.7/@anchors.0">
+    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.6" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
+    <link>
+      <businessObjects href="mpSched.pi#//@dependencies.6"/>
+    </link>
+    <connectionDecorators visible="true" locationRelative="true" location="1.0">
+      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.6" lineWidth="2" lineStyle="UNSPECIFIED">
+        <points x="-10" y="5"/>
+        <points/>
+        <points x="-10" y="-5"/>
+      </graphicsAlgorithm>
+    </connectionDecorators>
+    <bendpoints x="592" y="237"/>
+    <bendpoints x="740" y="237"/>
+    <bendpoints x="740" y="463"/>
+  </connections>
+  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.3/@anchors.0" end="//@children.0/@anchors.0">
+    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.6" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
+    <link>
+      <businessObjects href="mpSched.pi#//@dependencies.7"/>
+    </link>
+    <connectionDecorators visible="true" locationRelative="true" location="1.0">
+      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.6" lineWidth="2" lineStyle="UNSPECIFIED">
+        <points x="-10" y="5"/>
+        <points/>
+        <points x="-10" y="-5"/>
+      </graphicsAlgorithm>
+    </connectionDecorators>
+    <bendpoints x="591" y="430"/>
+    <bendpoints x="590" y="473"/>
+  </connections>
+  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.4/@anchors.1" end="//@children.5/@anchors.2">
+    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" filled="false" transparency="0.0"/>
+    <link>
+      <businessObjects href="mpSched.pi#//@fifos.0"/>
+    </link>
+    <connectionDecorators visible="true" locationRelative="true" location="1.0">
+      <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
+        <points x="-10" y="5"/>
+        <points/>
+        <points x="-10" y="-5"/>
+      </graphicsAlgorithm>
+    </connectionDecorators>
+    <bendpoints x="430" y="402"/>
+  </connections>
+  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.5/@anchors.3" end="//@children.0/@anchors.1">
+    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" filled="false" transparency="0.0"/>
+    <link>
+      <businessObjects href="mpSched.pi#//@fifos.1"/>
+    </link>
+    <connectionDecorators visible="true" locationRelative="true" location="1.0">
+      <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
+        <points x="-10" y="5"/>
+        <points/>
+        <points x="-10" y="-5"/>
+      </graphicsAlgorithm>
+    </connectionDecorators>
+    <bendpoints x="560" y="403"/>
+    <bendpoints x="590" y="486"/>
+  </connections>
+  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.6/@anchors.2" end="//@children.0/@anchors.2">
+    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" filled="false" transparency="0.0"/>
+    <link>
+      <businessObjects href="mpSched.pi#//@fifos.2"/>
+    </link>
+    <connectionDecorators visible="true" locationRelative="true" location="1.0">
+      <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
+        <points x="-10" y="5"/>
+        <points/>
+        <points x="-10" y="-5"/>
+      </graphicsAlgorithm>
+    </connectionDecorators>
+    <bendpoints x="560" y="530"/>
+    <bendpoints x="590" y="499"/>
+  </connections>
+  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.0/@anchors.3" end="//@children.7/@anchors.2">
+    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.2" lineWidth="2" filled="false" transparency="0.0"/>
+    <link>
+      <businessObjects href="mpSched.pi#//@fifos.3"/>
+    </link>
+    <connectionDecorators visible="true" locationRelative="true" location="1.0">
+      <graphicsAlgorithm xsi:type="al:Polygon" background="//@colors.2" foreground="//@colors.2" lineWidth="2" lineStyle="UNSPECIFIED">
+        <points x="-10" y="5"/>
+        <points/>
+        <points x="-10" y="-5"/>
+      </graphicsAlgorithm>
+    </connectionDecorators>
+    <bendpoints x="732" y="486"/>
+  </connections>
+  <connections xsi:type="pi:FreeFormConnection" visible="true" active="true" start="//@children.4/@anchors.2" end="//@children.1/@anchors.0">
+    <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.6" lineWidth="2" lineStyle="DASH" filled="false" transparency="0.0"/>
+    <link>
+      <businessObjects href="mpSched.pi#//@dependencies.8"/>
+    </link>
+    <connectionDecorators visible="true" locationRelative="true" location="1.0">
+      <graphicsAlgorithm xsi:type="al:Polyline" foreground="//@colors.6" lineWidth="2" lineStyle="UNSPECIFIED">
+        <points x="-10" y="5"/>
+        <points/>
+        <points x="-10" y="-5"/>
+      </graphicsAlgorithm>
+    </connectionDecorators>
+    <bendpoints x="358" y="390"/>
+    <bendpoints x="358" y="230"/>
+  </connections>
+  <colors red="227" green="238" blue="249"/>
+  <colors red="255" green="255" blue="255"/>
+  <colors red="100" green="100" blue="100"/>
+  <colors red="237" green="237" blue="237"/>
+  <colors/>
+  <colors red="187" green="218" blue="247"/>
+  <colors red="98" green="131" blue="167"/>
+  <colors red="234" green="153" blue="153"/>
+  <colors red="182" green="215" blue="122"/>
+  <colors red="128" green="100" blue="162"/>
+  <colors red="255" green="229" blue="153"/>
+  <fonts name="Arial" size="8" bold="true"/>
+  <fonts name="Arial" size="8"/>
+  <fonts name="Arial" size="8" italic="true" bold="true"/>
+</pi:Diagram>

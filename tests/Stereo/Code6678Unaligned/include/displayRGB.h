@@ -14,7 +14,6 @@
 #define DISPLAY_W 450*NB_DISPLAY
 #define DISPLAY_H 375
 
-#define INIT_OVERLAY {NULL, NULL} // must be se same size as NB_DISPLAY
 /**
  * Function used to display an RGB image
  *
@@ -26,8 +25,24 @@
  *        Array containing the green component of the displayed image.
  * @param b
  *        Array containing the blue component of the displayed image.
+ * @param pixelStride
+ *        nb of bytes between successive pixels
  */
-void displayRGB(int id, unsigned char *r, unsigned char *g, unsigned char *b);
+void display3Components(int id, unsigned char *r, unsigned char *g, unsigned char *b, int pixelStride);
+
+/**
+* Function used to display an RGB image
+*
+* @param id
+*        The id of the displayed frame in the window.
+* @param height
+*        height of the frame
+* @param width
+*        width of the frame
+* @param rgb
+*        Array containing the 3 components of the displayed image.
+*/
+void displayRGB(int id, int height, int width, unsigned char *rgb);
 
 /**
  * Identical to display RGB, but receive only one component.

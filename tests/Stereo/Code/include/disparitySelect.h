@@ -29,8 +29,6 @@
 * @param[in] scale
 *        Disparities are multiplied by this scale before they are written in 
 *        the result array.
-* @param[in] iter
-*        Indicate that the current call is the (iter)nth call to this function.
 * @param[in] disparity
 *        The disparity corresponding to the costs contained in the
 *        aggregatedDisparity array.
@@ -38,21 +36,20 @@
 *        Height*width costs computed by aggregateCost()
 * @param[in] bestCostFeed
 *        Array of the best (smallest) costs found during previous calls to the
-*        function. (size:= height*width)
+*        function. Last element of the array is the iteration index (int)
+         (size:= height*width+1)
 * @param[in] currentResult
 *        Array of the disparities corresponding to the bestCostFeed costs.
-* @param[out] nextIter
-*        Index of the next iterative call the the function.
 * @param[out] result
 *        Array of the disparities with the lowest costs. (size=height*width)
 * @param[out] backBestCost
-*        Array of the the lowest costs. (size=height*width)
+*        Array of the the lowest costs (+index). (size=height*width+1)
 */
 void disparitySelect (int height, int width, int nbDisparities, int scale,
-                      int *iter, unsigned char *disparity, 
+                      unsigned char *disparity, 
 					  float *aggregatedDisparity,
                       float *bestCostFeed, unsigned char *currentResult,
-                      int *nextIter, unsigned char *result,
+                      unsigned char *result,
 					  float *backBestCost);
 
 #endif

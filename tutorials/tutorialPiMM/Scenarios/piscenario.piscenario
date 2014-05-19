@@ -1,47 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?><piscenario>
     <files>
-        <algorithm url="/tutorialPiMM/Algo/doubleLoopL0.pi"/>
+        <algorithm url="/tutorialPiMM/Algo/mpSched.pi"/>
         <architecture url="/tutorialPiMM/Archi/1CoreX86.slam"/>
-        <simulation nbExecutions="4"/>
+        <simulation nbExecutions="2"/>
     </files>
     <actorTree>
-        <actor name="doubleLoop">
-            <actor name="ReadFile">
+        <actor name="mpSched">
+            <actor name="Snk">
                 <timing coreType="x86" value="100"/>
             </actor>
-            <actor name="RB1">
+            <actor name="Src">
                 <timing coreType="x86" value="100"/>
             </actor>
-            <actor name="EndNLoop">
+            <actor name="config">
                 <timing coreType="x86" value="100"/>
             </actor>
-            <actor name="InitNLoop">
+            <actor name="MFilter">
                 <timing coreType="x86" value="100"/>
             </actor>
-            <actor name="BroadCast">
-                <timing coreType="x86" value="100"/>
-            </actor>
-            <actor name="WriteFile">
-                <timing coreType="x86" value="100"/>
-            </actor>
-            <actor name="RB0">
-                <timing coreType="x86" value="100"/>
-            </actor>
-            <actor name="MLoop">
-                <actor name="InitMLoop">
+            <actor name="UserFIRs">
+                <actor name="FIR">
                     <timing coreType="x86" value="100"/>
                 </actor>
-                <actor name="EndMLoop">
+                <actor name="setM">
                     <timing coreType="x86" value="100"/>
                 </actor>
-                <actor name="ConfigM">
+                <actor name="BroadCast">
                     <timing coreType="x86" value="100"/>
                 </actor>
-                <actor name="F">
+                <actor name="InitSwitch">
                     <timing coreType="x86" value="100"/>
                 </actor>
-                <parameter name="M" type="DYNAMIC" value="[1, 2, 3]"/>
+                <actor name="Switch">
+                    <timing coreType="x86" value="100"/>
+                </actor>
+                <parameter name="M" type="DYNAMIC" value="[2]"/>
+                <parameter name="nbSamples2" type="STATIC" value="0"/>
             </actor>
+            <parameter name="NMAX" type="STATIC" value="0"/>
+            <parameter name="nbSamples" type="STATIC" value="0"/>
             <parameter name="N" type="DYNAMIC" value="[4, 6]"/>
         </actor>
     </actorTree>

@@ -65,9 +65,10 @@ public class PiMMCppGenerationTask extends AbstractTaskImplementation {
 		PiScenario scenario = (PiScenario) inputs.get(KEY_PI_SCENARIO);
 		PiGraph pg = (PiGraph) inputs.get(KEY_PI_GRAPH);
 
-		CPPCodeGenerationLauncher launcher = new CPPCodeGenerationLauncher();
+		CPPCodeGenerationLauncher launcher = new CPPCodeGenerationLauncher(scenario);
 
 		String finalResult = launcher.generateCPPCode(pg);
+		String addGraph = launcher.addGraph();
 
 		// Get the root of the workspace
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -85,16 +86,23 @@ public class PiMMCppGenerationTask extends AbstractTaskImplementation {
 		File parent = new File(folderPath);
 		parent.mkdirs();
 
-		// Create the file
+		// Create the files
 		String filePath = pg.getName() + ".h";
 		File file = new File(parent, filePath);
 
-		// Write the file
+		String addGraphFilePath = "addGraph.h";
+		File addGraphFile = new File(parent, addGraphFilePath);
+		
+		// Write the files
 		FileWriter out;
+		FileWriter addGraphOut;
 		try {
 			out = new FileWriter(file);
 			out.write(finalResult);
 			out.close();
+			addGraphOut = new FileWriter(addGraphFile);
+			addGraphOut.write(addGraph);
+			addGraphOut.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

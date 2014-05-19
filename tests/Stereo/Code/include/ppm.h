@@ -38,15 +38,10 @@ void readPPMInit(int id, int height, int width);
 *        The height of the read image.
 * @param width
 *        The width of the read image.
-* @param r
-*        Output array of size height*width for the red component
-* @param g
-*        Output array of size height*width for the green component
-* @param b
-*        Output array of size height*width for the blue component
+* @param rgb
+*        Output array of size height*width for the each 3 components
 */
-void readPPM(int id, int height, int width, 
-			 unsigned char *r, unsigned char *g, unsigned char *b);
+void readPPM(int id, int height, int width, unsigned char *rgb);
 
 /**
 * Write a gray image into a file.

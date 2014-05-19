@@ -17,14 +17,14 @@
 #define max(x,y) (((x)<(y))?(y):(x))
 
 void disparitySelect(int height, int width, int nbDisparities, int scale,
-		int *iter, unsigned char *disparity, float *aggregatedDisparity,
-		float *bestCostFeed, unsigned char *currentResult, int *nextIter,
+		unsigned char *disparity, float *aggregatedDisparity,
+		float *bestCostFeed, unsigned char *currentResult,
 		unsigned char *result, float *backBestCost) {
 	int i, j;
 	int nIter;
 
 	// Special processng for the first iteration
-	if (LOAD_INT(iter) == 0) {
+	if (LOAD_INT(bestCostFeed+height*width) == 0) {
 		// Copy the input aggregated disparity in the feedback
 		memcpy((char*) backBestCost, (char*) aggregatedDisparity,
 				height * width * sizeof(float));
@@ -50,6 +50,6 @@ void disparitySelect(int height, int width, int nbDisparities, int scale,
 			}
 		}
 	}
-	nIter = (LOAD_INT(iter) + 1) % nbDisparities;
-	STORE_INT(nextIter, &nIter);
+	nIter = (LOAD_INT(bestCostFeed+height*width) + 1) % nbDisparities;
+	STORE_INT(backBestCost+height*width, &nIter);
 }
