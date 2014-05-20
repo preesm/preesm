@@ -73,7 +73,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.serialize.SDFListContentProvider;
+import org.ietr.preesm.core.scenario.serialize.PreesmAlgorithmListContentProvider;
 import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 
@@ -185,7 +185,7 @@ public class RelativeConstraintsPage extends FormPage implements IPropertyListen
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
-		tableViewer.setContentProvider(new SDFListContentProvider());
+		tableViewer.setContentProvider(new PreesmAlgorithmListContentProvider());
 
 		final SDFTableLabelProvider labelProvider = new SDFTableLabelProvider(
 				scenario, tableViewer, this);

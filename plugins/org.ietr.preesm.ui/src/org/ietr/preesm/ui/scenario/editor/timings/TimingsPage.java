@@ -79,7 +79,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.serialize.SDFListContentProvider;
+import org.ietr.preesm.core.scenario.serialize.PreesmAlgorithmListContentProvider;
 import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 
@@ -94,7 +94,9 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 	final PreesmScenario scenario;
 	TableViewer tableViewer = null;
 	
-	private final String[] COLUMN_NAMES = {"Actors","Parsing","Evaluation","Input Parameters","Expression"};
+	private final String[] PISDF_COLUMN_NAMES = {"Actors","Parsing","Evaluation","Input Parameters","Expression"};
+	
+	private final String[] IBSDF_COLUMN_NAMES = {"Actors","Expression"};
 
 	public TimingsPage(PreesmScenario scenario, FormEditor editor, String id,
 			String title) {
@@ -303,21 +305,29 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
-		tableViewer.setContentProvider(new SDFListContentProvider());
+		tableViewer.setContentProvider(new PreesmAlgorithmListContentProvider());
 
-		final SDFTableLabelProvider labelProvider = new SDFTableLabelProvider(
+		final TimingsTableLabelProvider labelProvider = new TimingsTableLabelProvider(
 				scenario, tableViewer, this);
 		tableViewer.setLabelProvider(labelProvider);
 		coreCombo.addSelectionListener(labelProvider);
 
 		// Create columns
+		String[] COLUMN_NAMES = {};
+		if (scenario.isPISDFScenario()) {
+			COLUMN_NAMES = PISDF_COLUMN_NAMES;
+		}
+		if (scenario.isIBSDFScenario()) {
+			COLUMN_NAMES = IBSDF_COLUMN_NAMES;
+		}
+		
 		List<TableColumn> columns = new ArrayList<TableColumn>();
 		for (int i = 0; i < COLUMN_NAMES.length; i++) {
 			TableColumn column = new TableColumn(table, SWT.NONE, i);
 			column.setText(COLUMN_NAMES[i]);
 			columns.add(column);
 		}		
-
+		
 		// Make the last column (Expression) editable
 		// XXX: Through an other way than double clicking (direct editing)		
 		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
@@ -347,20 +357,16 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 					for (TableColumn col : fColumns) {
 						col.setWidth(width/5-1);
 					}
-//					columnActors.setWidth(width / 4 - 1);
-//					column2.setWidth(width - columnActors.getWidth());
 					tref.setSize(area.width, area.height);
 				} else {
 					tref.setSize(area.width, area.height);
 					for (TableColumn col : fColumns) {
 						col.setWidth(width/5-1);
 					}
-//					columnActors.setWidth(width / 4 - 1);
-//					column2.setWidth(width - columnActors.getWidth());
 				}
 			}
 		});
-
+		
 		tableViewer.setInput(scenario);
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL
 				| GridData.VERTICAL_ALIGN_BEGINNING);
@@ -382,7 +388,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 	 */
 	@Override
 	public void propertyChanged(Object source, int propId) {
-		if (source instanceof SDFTableLabelProvider && propId == PROP_DIRTY)
+		if (source instanceof TimingsTableLabelProvider && propId == PROP_DIRTY)
 			firePropertyChange(PROP_DIRTY);
 
 	}
