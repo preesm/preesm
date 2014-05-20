@@ -37,10 +37,13 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.scenario.serialize;
 
 import java.io.FileNotFoundException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
@@ -48,13 +51,15 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.tools.NameComparator;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 /**
  * Provides the elements contained in the timing editor
  * 
  * @author mpelcat
  */
-public class SDFListContentProvider implements IStructuredContentProvider {
+public class PreesmAlgorithmListContentProvider implements IStructuredContentProvider {
 
 	@Override
 	public Object[] getElements(Object inputElement) {
@@ -65,7 +70,8 @@ public class SDFListContentProvider implements IStructuredContentProvider {
 			PreesmScenario inputScenario = (PreesmScenario) inputElement;
 
 			try {
-				elementTable = getSortedVertices(inputScenario).toArray();
+				if (inputScenario.isIBSDFScenario()) elementTable = getSortedIBSDFVertices(inputScenario).toArray();
+				else if (inputScenario.isPISDFScenario()) elementTable = getSortedPISDFVertices(inputScenario).toArray();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -73,7 +79,26 @@ public class SDFListContentProvider implements IStructuredContentProvider {
 		return elementTable;
 	}
 
-	static public Set<SDFAbstractVertex> getSortedVertices(
+	private Set<AbstractActor> getSortedPISDFVertices(
+			PreesmScenario inputScenario) throws InvalidModelException, CoreException {
+		PiGraph currentGraph = ScenarioParser.getPiGraph(inputScenario.getAlgorithmURL());
+		return filterVertices(currentGraph.getVertices());
+	}
+
+	private Set<AbstractActor> filterVertices(EList<AbstractActor> vertices) {
+		Set<AbstractActor> result = new HashSet<AbstractActor>();
+		
+		for (AbstractActor vertex : vertices) {
+			// TODO: Filter out broadcast actors (join and fork actors too?)
+//			if (vertex instanceof Broadcast) {
+				result.add(vertex);
+//			}
+		}
+		
+		return result;
+	}
+
+	public Set<SDFAbstractVertex> getSortedIBSDFVertices(
 			PreesmScenario inputScenario) throws InvalidModelException,FileNotFoundException {
 		Set<SDFAbstractVertex> sortedVertices = null;
 		// Opening algorithm from file
@@ -101,7 +126,7 @@ public class SDFListContentProvider implements IStructuredContentProvider {
 	/**
 	 * Depending on the kind of vertex, timings are edited or not
 	 */
-	static public void filterVertices(Set<SDFAbstractVertex> vertices) {
+	public void filterVertices(Set<SDFAbstractVertex> vertices) {
 
 		Iterator<SDFAbstractVertex> iterator = vertices.iterator();
 

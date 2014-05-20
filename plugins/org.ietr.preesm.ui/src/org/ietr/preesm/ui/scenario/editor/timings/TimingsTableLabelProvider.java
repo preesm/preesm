@@ -59,6 +59,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -68,7 +69,7 @@ import org.osgi.framework.FrameworkUtil;
  * 
  * @author mpelcat
  */
-public class SDFTableLabelProvider implements ITableLabelProvider,
+public class TimingsTableLabelProvider implements ITableLabelProvider,
 		SelectionListener {
 
 	private PreesmScenario scenario = null;
@@ -84,14 +85,14 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 	 */
 	private IPropertyListener propertyListener = null;
 
-	public SDFTableLabelProvider(PreesmScenario scenario,
+	public TimingsTableLabelProvider(PreesmScenario scenario,
 			TableViewer tableViewer, IPropertyListener propertyListener) {
 		super();
 		this.scenario = scenario;
 		this.tableViewer = tableViewer;
 		this.propertyListener = propertyListener;
 
-		Bundle bundle = FrameworkUtil.getBundle(SDFTableLabelProvider.class);
+		Bundle bundle = FrameworkUtil.getBundle(TimingsTableLabelProvider.class);
 
 		URL url = FileLocator.find(bundle, new Path("icons/error.png"), null);
 		ImageDescriptor imageDcr = ImageDescriptor.createFromURL(url);
@@ -104,8 +105,13 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 
 	@Override
 	public Image getColumnImage(Object element, int columnIndex) {
-		if (element instanceof SDFAbstractVertex && currentOpDefId != null) {
-			SDFAbstractVertex vertex = (SDFAbstractVertex) element;
+		if (scenario.isPISDFScenario()) return getPISDFColumnImage(element, columnIndex);
+		else return null;
+	}
+
+	private Image getPISDFColumnImage(Object element, int columnIndex) {
+		if (element instanceof AbstractActor && currentOpDefId != null) {
+			AbstractActor vertex = (AbstractActor) element;
 
 			Timing timing = scenario.getTimingManager().getTimingOrDefault(
 					vertex.getName(), currentOpDefId);
@@ -129,10 +135,36 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 
 	@Override
 	public String getColumnText(Object element, int columnIndex) {
-		String text = "";
+		if (scenario.isPISDFScenario()) return getPISDFColumnText(element, columnIndex);
+		else if (scenario.isIBSDFScenario()) return getIBSDFColumnText(element, columnIndex);
+		else return null;
+	}
 
-		if (element instanceof SDFAbstractVertex && currentOpDefId != null) {
+	private String getIBSDFColumnText(Object element, int columnIndex) {
+		String text = "";
+		if (element instanceof SDFAbstractVertex && currentOpDefId != null) {			
 			SDFAbstractVertex vertex = (SDFAbstractVertex) element;
+			
+			Timing timing = scenario.getTimingManager().getTimingOrDefault(
+					vertex.getName(), currentOpDefId);
+			switch (columnIndex) {
+			case 0:
+				return vertex.getName();	
+			case 1: // Expression Column
+				if (timing != null)
+					text = timing.getStringValue();
+				break;
+			default:// Others
+				break;
+			}
+		}
+		return text;
+	}
+
+	private String getPISDFColumnText(Object element, int columnIndex) {
+		String text = "";
+		if (element instanceof AbstractActor && currentOpDefId != null) {
+			AbstractActor vertex = (AbstractActor) element;
 
 			Timing timing = scenario.getTimingManager().getTimingOrDefault(
 					vertex.getName(), currentOpDefId);
@@ -159,7 +191,6 @@ public class SDFTableLabelProvider implements ITableLabelProvider,
 				break;
 			}
 		}
-
 		return text;
 	}
 
