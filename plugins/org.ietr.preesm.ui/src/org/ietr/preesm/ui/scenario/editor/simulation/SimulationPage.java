@@ -214,12 +214,14 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 			}
 		};
 
-		// Number of top-level execution section
-		createIntegerSection(managedForm,
-				Messages.getString("Overview.simulationTitle"),
-				Messages.getString("Overview.simulationDescription"),
-				numberOfTopExecutionsListener, String.valueOf(scenario
-						.getSimulationManager().getNumberOfTopExecutions()));
+		if (scenario.isPISDFScenario()) {
+			// Number of top-level execution section, added only for PiSDF algorithms
+			createIntegerSection(managedForm,
+					Messages.getString("Overview.simulationTitle"),
+					Messages.getString("Overview.simulationDescription"),
+					numberOfTopExecutionsListener, String.valueOf(scenario
+							.getSimulationManager().getNumberOfTopExecutions()));
+		}
 
 		// Data type section
 		createDataTypesSection(managedForm,
