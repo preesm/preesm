@@ -53,6 +53,7 @@ import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.adapter.GraphInterfaceObserver;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
@@ -353,16 +354,35 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 	@Override
 	public AbstractActor getHierarchicalActorFromPath(String path) {
 		String[] splitPath = path.split("/");
-		String currentName = splitPath[0];
+		int index = 0;
+		String currentName = splitPath[index];
+		index++;
 		String currentPath = "";
-		for (int i = 1; i < splitPath.length; i++) currentPath += splitPath[i];
-		for (AbstractActor a : this.getVertices()) {
-			if (a.getName().equals(currentName)) {
+		if (this.getName().equals(currentName)) {
+			currentName = splitPath[index];
+			index++;
+		}	
+		for (int i = index; i < splitPath.length; i++) {
+			if (i > index) {
+				currentPath += "/";
+			}
+			currentPath += splitPath[i];
+		}
+		for (AbstractActor a : this.getVertices()) {		
+			if (a.getName().equals(currentName)) {				
 				if (currentPath.equals("")) {
 					// We found the actor
 					return a;
 				} else if (a instanceof PiGraph) {
 					return ((PiGraph) a).getHierarchicalActorFromPath(currentPath);
+				} else if (a instanceof Actor) {
+					Refinement refinement = ((Actor) a).getRefinement();
+					if (refinement != null) {
+						AbstractActor subGraph = refinement.getAbstractActor();
+						if (subGraph != null && subGraph instanceof PiGraph) {
+							return ((PiGraph) subGraph).getHierarchicalActorFromPath(currentPath);
+						}
+					}
 				}
 			}
 		}
