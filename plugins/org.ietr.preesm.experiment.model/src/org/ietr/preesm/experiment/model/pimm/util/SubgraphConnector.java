@@ -1,4 +1,4 @@
-package org.ietr.preesm.experiment.pimm.subgraph.connector;
+package org.ietr.preesm.experiment.model.pimm.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +42,19 @@ public class SubgraphConnector extends PiMMVisitor {
 
 	private PiGraph currentGraph = null;
 
+	public void connectSubgraphs(PiGraph pg) {
+		pg.accept(this);
+		// Replace Actors with refinement by PiGraphs in pg and all its
+		// subgraphs
+		for (PiGraph key : graphReplacements.keySet()) {
+			for (SubgraphConnector.ActorByGraphReplacement r : graphReplacements
+					.get(key)) {
+				key.getVertices().remove(r.toBeRemoved);
+				key.getVertices().add(r.toBeAdded);
+			}
+		}
+	}
+	
 	@Override
 	public void visitPiGraph(PiGraph pg) {
 		PiGraph oldGraph = currentGraph;

@@ -37,7 +37,6 @@ package org.ietr.preesm.experiment.pimm.subgraph.connector;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -45,6 +44,7 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.util.SubgraphConnector;
 
 public class SubgraphConnectorTask extends AbstractTaskImplementation {
 
@@ -58,19 +58,7 @@ public class SubgraphConnectorTask extends AbstractTaskImplementation {
 
 		// Visit it with the subgraph connector
 		SubgraphConnector connector = new SubgraphConnector();
-		connector.visit(pg);
-
-		// Replace Actors with refinement by PiGraphs in pg and all its
-		// subgraphs
-		Map<PiGraph, List<SubgraphConnector.ActorByGraphReplacement>> replacements = connector
-				.getGraphReplacements();
-		for (PiGraph key : replacements.keySet()) {
-			for (SubgraphConnector.ActorByGraphReplacement r : replacements
-					.get(key)) {
-				key.getVertices().remove(r.toBeRemoved);
-				key.getVertices().add(r.toBeAdded);
-			}
-		}
+		connector.connectSubgraphs(pg);
 
 		// Return pg
 		Map<String, Object> outputs = new HashMap<String, Object>();
