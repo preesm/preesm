@@ -74,6 +74,7 @@ import org.ietr.preesm.core.scenario.TimingManager;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.util.SubgraphConnector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -573,6 +574,9 @@ public class ScenarioParser {
 		Resource ressource = resourceSet.getResource(uri, true);
 		pigraph = (PiGraph) (ressource.getContents().get(0));
 
+		SubgraphConnector connector = new SubgraphConnector();
+		connector.connectSubgraphs(pigraph);
+		
 		return pigraph;
 	}
 
