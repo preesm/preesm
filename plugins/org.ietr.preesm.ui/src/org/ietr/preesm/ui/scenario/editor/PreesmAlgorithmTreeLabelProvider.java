@@ -38,13 +38,14 @@ package org.ietr.preesm.ui.scenario.editor;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 
 /**
  * The label provider displays the name of the vertex displayed in a SDF tree
  * 
  * @author mpelcat
  */
-public class SDFTreeLabelProvider extends LabelProvider {
+public class PreesmAlgorithmTreeLabelProvider extends LabelProvider {
 
 	@Override
 	public String getText(Object element) {
@@ -53,6 +54,8 @@ public class SDFTreeLabelProvider extends LabelProvider {
 			name = ((HierarchicalSDFVertex) element).getName();
 		} else if (element instanceof SDFGraph) {
 			name = "graph";
+		} else if (element instanceof AbstractActor) {
+			name = ((AbstractActor) element).getName();
 		}
 
 		return name;

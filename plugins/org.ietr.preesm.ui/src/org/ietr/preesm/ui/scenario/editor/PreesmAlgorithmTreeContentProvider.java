@@ -37,10 +37,12 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.ui.scenario.editor;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -48,9 +50,12 @@ import org.ietr.dftools.algorithm.model.IRefinement;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
-import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.Refinement;
 
 /**
  * This class provides the elements displayed in {@link SDFTreeSection}. Each
@@ -59,16 +64,20 @@ import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
  * 
  * @author mpelcat
  */
-public class SDFTreeContentProvider implements ITreeContentProvider {
+public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider {
 
-	private SDFGraph currentGraph = null;
+	private SDFGraph currentIBSDFGraph = null;
+
+	private PiGraph currentPISDFGraph = null;
+
+	private PreesmScenario scenario;
 
 	/**
 	 * This map keeps the VertexWithPath used as a tree content for each vertex.
 	 */
 	private Map<String, HierarchicalSDFVertex> correspondingVertexWithMap = null;
 
-	public SDFTreeContentProvider(CheckboxTreeViewer treeViewer) {
+	public PreesmAlgorithmTreeContentProvider(CheckboxTreeViewer treeViewer) {
 		super();
 		correspondingVertexWithMap = new HashMap<String, HierarchicalSDFVertex>();
 	}
@@ -77,20 +86,40 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 	public Object[] getChildren(Object parentElement) {
 		Object table[] = null;
 
-		if (parentElement instanceof SDFGraph) {
-			SDFGraph graph = (SDFGraph) parentElement;
+		if (scenario.isIBSDFScenario()) {
+			if (parentElement instanceof SDFGraph) {
+				SDFGraph graph = (SDFGraph) parentElement;
 
-			// Some types of vertices are ignored in the constraints view
-			table = keepAndConvertAppropriateChildren(graph.vertexSet())
-					.toArray();
-		} else if (parentElement instanceof HierarchicalSDFVertex) {
-			HierarchicalSDFVertex vertex = (HierarchicalSDFVertex) parentElement;
-			IRefinement refinement = vertex.getStoredVertex().getRefinement();
+				// Some types of vertices are ignored in the constraints view
+				table = filterIBSDFChildren(graph.vertexSet()).toArray();
+			} else if (parentElement instanceof HierarchicalSDFVertex) {
+				HierarchicalSDFVertex vertex = (HierarchicalSDFVertex) parentElement;
+				IRefinement refinement = vertex.getStoredVertex()
+						.getRefinement();
 
-			if (refinement != null && refinement instanceof SDFGraph) {
-				SDFGraph graph = (SDFGraph) refinement;
-				table = keepAndConvertAppropriateChildren(graph.vertexSet())
-						.toArray();
+				if (refinement != null && refinement instanceof SDFGraph) {
+					SDFGraph graph = (SDFGraph) refinement;
+					table = filterIBSDFChildren(graph.vertexSet()).toArray();
+				}
+			}
+		} else if (scenario.isPISDFScenario()) {
+			if (parentElement instanceof PiGraph) {
+				PiGraph graph = (PiGraph) parentElement;
+				// Some types of vertices are ignored in the constraints view
+				table = filterPISDFChildren(graph.getVertices()).toArray();
+			} else if (parentElement instanceof Actor) {
+				Actor actor = (Actor) parentElement;
+				Refinement refinement = actor.getRefinement();
+
+				if (refinement != null) {
+					AbstractActor subgraph = refinement.getAbstractActor();
+					if (subgraph instanceof PiGraph) {
+						PiGraph graph = (PiGraph) subgraph;
+						table = filterPISDFChildren(graph.getVertices())
+								.toArray();
+					}
+				}
+
 			}
 		}
 
@@ -105,23 +134,27 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 
 	@Override
 	public boolean hasChildren(Object element) {
-
 		boolean hasChildren = false;
 
-		if (element instanceof SDFGraph) {
-			SDFGraph graph = (SDFGraph) element;
-			hasChildren = !graph.vertexSet().isEmpty();
-		} else if (element instanceof HierarchicalSDFVertex) {
-			SDFAbstractVertex sdfVertex = ((HierarchicalSDFVertex) element)
-					.getStoredVertex();
-			if (sdfVertex instanceof SDFBroadcastVertex) {
-				// SDFAbstractVertex vertex = (SDFAbstractVertex)element;
-				hasChildren = false;
-			} else if (sdfVertex instanceof SDFVertex) {
-				SDFVertex vertex = (SDFVertex) sdfVertex;
-				IRefinement refinement = vertex.getRefinement();
-
-				hasChildren = (refinement != null);
+		if (scenario.isIBSDFScenario()) {
+			if (element instanceof SDFGraph) {
+				SDFGraph graph = (SDFGraph) element;
+				hasChildren = !graph.vertexSet().isEmpty();
+			} else if (element instanceof HierarchicalSDFVertex) {
+				SDFAbstractVertex sdfVertex = ((HierarchicalSDFVertex) element)
+						.getStoredVertex();
+				if (sdfVertex instanceof SDFVertex) {
+					SDFVertex vertex = (SDFVertex) sdfVertex;
+					hasChildren = vertex.getRefinement() != null;
+				}
+			}
+		} else if (scenario.isPISDFScenario()) {
+			if (element instanceof PiGraph) {
+				PiGraph graph = (PiGraph) element;
+				hasChildren = !graph.getVertices().isEmpty();
+			} else if (element instanceof Actor) {
+				Actor actor = (Actor) element;
+				hasChildren = actor.getRefinement() != null;
 			}
 		}
 
@@ -133,22 +166,35 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 		Object[] table = new Object[1];
 
 		if (inputElement instanceof PreesmScenario) {
-			PreesmScenario inputScenario = (PreesmScenario) inputElement;
-
+			scenario = (PreesmScenario) inputElement;
 			// Opening algorithm from file
-			try {
-				currentGraph = ScenarioParser.getSDFGraph(inputScenario
-						.getAlgorithmURL());
-			} catch (Exception e) {
-				e.printStackTrace();
+			if (scenario.isIBSDFScenario()) {
+				try {
+					currentIBSDFGraph = ScenarioParser.getSDFGraph(scenario
+							.getAlgorithmURL());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				table[0] = currentIBSDFGraph;
+			} else if (scenario.isPISDFScenario()) {
+				try {
+					currentPISDFGraph = ScenarioParser.getPiGraph(scenario
+							.getAlgorithmURL());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				table[0] = currentPISDFGraph;
 			}
-			table[0] = currentGraph;
 		}
 		return table;
 	}
 
-	public SDFGraph getCurrentGraph() {
-		return currentGraph;
+	public SDFGraph getIBSDFCurrentGraph() {
+		return currentIBSDFGraph;
+	}
+	
+	public PiGraph getPISDFCurrentGraph() {
+		return currentPISDFGraph;
 	}
 
 	@Override
@@ -165,7 +211,17 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 	/**
 	 * Filters the children to display in the tree
 	 */
-	public Set<HierarchicalSDFVertex> keepAndConvertAppropriateChildren(
+	public Set<AbstractActor> filterPISDFChildren(
+			EList<AbstractActor> vertices) {
+		Set<AbstractActor> result = new HashSet<AbstractActor>();
+		for (AbstractActor actor : vertices) {
+			// TODO: Filter if needed
+			result.add(actor);
+		}
+		return result;
+	}
+	
+	public Set<HierarchicalSDFVertex> filterIBSDFChildren(
 			Set<SDFAbstractVertex> children) {
 
 		ConcurrentSkipListSet<HierarchicalSDFVertex> appropriateChildren = new ConcurrentSkipListSet<HierarchicalSDFVertex>(
@@ -173,14 +229,14 @@ public class SDFTreeContentProvider implements ITreeContentProvider {
 
 		for (SDFAbstractVertex v : children) {
 			if (v.getKind().equalsIgnoreCase("vertex")) {
-				appropriateChildren.add(convertChild(v));
+				appropriateChildren.add(convertSDFChild(v));
 			}
 		}
 
 		return appropriateChildren;
 	}
 
-	public HierarchicalSDFVertex convertChild(SDFAbstractVertex child) {
+	public HierarchicalSDFVertex convertSDFChild(SDFAbstractVertex child) {
 		if (!correspondingVertexWithMap.containsKey(child.getInfo()))
 			correspondingVertexWithMap.put(child.getInfo(),
 					new HierarchicalSDFVertex(child));

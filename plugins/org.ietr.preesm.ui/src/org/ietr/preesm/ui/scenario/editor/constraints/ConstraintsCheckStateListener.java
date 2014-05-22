@@ -59,10 +59,15 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.ui.scenario.editor.HierarchicalSDFVertex;
 import org.ietr.preesm.ui.scenario.editor.ISDFCheckStateListener;
 import org.ietr.preesm.ui.scenario.editor.Messages;
-import org.ietr.preesm.ui.scenario.editor.SDFTreeContentProvider;
+import org.ietr.preesm.ui.scenario.editor.PreesmAlgorithmTreeContentProvider;
 
 /**
  * Listener of the check state of the SDF tree but also of the selection
@@ -96,7 +101,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	/**
 	 * Content provider used to get the elements currently displayed
 	 */
-	private SDFTreeContentProvider contentProvider = null;
+	private PreesmAlgorithmTreeContentProvider contentProvider = null;
 
 	/**
 	 * Constraints page used as a property listener to change the dirty state
@@ -114,7 +119,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	 * Sets the different necessary attributes
 	 */
 	public void setTreeViewer(CheckboxTreeViewer treeViewer,
-			SDFTreeContentProvider contentProvider,
+			PreesmAlgorithmTreeContentProvider contentProvider,
 			IPropertyListener propertyListener) {
 		this.treeViewer = treeViewer;
 		this.contentProvider = contentProvider;
@@ -128,26 +133,38 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	public void checkStateChanged(CheckStateChangedEvent event) {
 		final Object element = event.getElement();
 		final boolean isChecked = event.getChecked();
+				
 		BusyIndicator.showWhile(section.getDisplay(), new Runnable() {
 
 			public void run() {
-				if (element instanceof SDFGraph) {
-					SDFGraph graph = (SDFGraph) element;
-					fireOnCheck(graph, isChecked);
-					// updateConstraints(null,
-					// contentProvider.getCurrentGraph());
-					updateCheck();
-				} else if (element instanceof HierarchicalSDFVertex) {
-					HierarchicalSDFVertex vertex = (HierarchicalSDFVertex) element;
-					fireOnCheck(vertex, isChecked);
-					// updateConstraints(null,
-					// contentProvider.getCurrentGraph());
-					updateCheck();
+				if (scenario.isIBSDFScenario()) {
+					if (element instanceof SDFGraph) {
+						SDFGraph graph = (SDFGraph) element;
+						fireOnCheck(graph, isChecked);
+						// updateConstraints(null,
+						// contentProvider.getCurrentGraph());
+						updateCheck();
+					} else if (element instanceof HierarchicalSDFVertex) {
+						HierarchicalSDFVertex vertex = (HierarchicalSDFVertex) element;
+						fireOnCheck(vertex, isChecked);
+						// updateConstraints(null,
+						// contentProvider.getCurrentGraph());
+						updateCheck();
 
+					}
+				} else if (scenario.isPISDFScenario()) {
+					if (element instanceof PiGraph) {
+						PiGraph graph = (PiGraph) element;
+						fireOnCheck(graph, isChecked);
+						updateCheck();
+					} else if (element instanceof AbstractActor) {
+						AbstractActor actor = (AbstractActor) element;
+						fireOnCheck(actor, isChecked);
+						updateCheck();
+					}
 				}
 			}
 		});
-
 		propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
 	}
 
@@ -157,12 +174,22 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	 */
 	public void fireOnCheck(SDFGraph graph, boolean isChecked) {
 		if (currentOpId != null) {
-
 			// Checks the children of the current graph
 			for (HierarchicalSDFVertex v : contentProvider
-					.keepAndConvertAppropriateChildren(graph.vertexSet())) {
+					.filterIBSDFChildren(graph.vertexSet())) {
 				fireOnCheck(v, isChecked);
 			}
+		}
+	}
+
+	private void fireOnCheck(PiGraph graph, boolean isChecked) {
+		if (currentOpId != null) {
+			// Checks the children of the current graph
+			for (AbstractActor v : contentProvider.filterPISDFChildren(graph
+					.getVertices())) {
+				fireOnCheck(v, isChecked);
+			}
+			fireOnCheck((AbstractActor) graph, isChecked);
 		}
 	}
 
@@ -186,8 +213,36 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 			SDFGraph graph = (SDFGraph) refinement;
 
 			for (HierarchicalSDFVertex v : contentProvider
-					.keepAndConvertAppropriateChildren(graph.vertexSet())) {
+					.filterIBSDFChildren(graph.vertexSet())) {
 				fireOnCheck(v, isChecked);
+			}
+		}
+	}
+
+	private void fireOnCheck(AbstractActor actor, boolean isChecked) {
+		if (currentOpId != null) {
+			if (isChecked) {
+				scenario.getConstraintGroupManager().addConstraint(currentOpId,
+						actor);
+			} else {
+				scenario.getConstraintGroupManager().removeConstraint(
+						currentOpId, actor);
+			}
+		}
+
+		// Checks the children of the current vertex
+		if (actor instanceof Actor) {
+			Refinement refinement = ((Actor) actor).getRefinement();
+			if (refinement != null) {
+				AbstractActor subGraph = refinement.getAbstractActor();
+				if (subGraph instanceof PiGraph) {
+					PiGraph graph = (PiGraph) subGraph;
+
+					for (AbstractActor v : contentProvider
+							.filterPISDFChildren(graph.getVertices())) {
+						fireOnCheck(v, isChecked);
+					}
+				}
 			}
 		}
 	}
@@ -217,8 +272,49 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	 * Update the check status of the whole tree
 	 */
 	public void updateCheck() {
-		SDFGraph currentGraph = contentProvider.getCurrentGraph();
-		if (scenario != null && currentOpId != null && currentGraph != null) {
+		if (scenario != null) {
+			if (scenario.isIBSDFScenario()) {
+				updateCheckIBSDF();
+			} else if (scenario.isPISDFScenario()) {
+				updateCheckPISDF();
+			}
+		}
+	}
+
+	private void updateCheckPISDF() {
+		PiGraph currentGraph = contentProvider.getPISDFCurrentGraph();
+		if (currentOpId != null && currentGraph != null) {
+			Set<AbstractVertex> cgSet = new HashSet<AbstractVertex>();
+
+			for (ConstraintGroup cg : scenario.getConstraintGroupManager()
+					.getOpConstraintGroups(currentOpId)) {
+				
+				// Retrieves the elements in the tree that have the same name as
+				// the ones to select in the constraint group
+				for (String vertexId : cg.getVertexPaths()) {
+					AbstractVertex v = currentGraph.getHierarchicalActorFromPath(vertexId);					
+					if (v != null) cgSet.add(v);
+				}
+			}			
+			
+			treeViewer.setCheckedElements(cgSet.toArray());
+
+			// If all the children of a graph are checked, it is checked itself
+			boolean allChildrenChecked = true;
+			for (AbstractActor v : contentProvider
+					.filterPISDFChildren(currentGraph.getVertices())) {
+				allChildrenChecked &= treeViewer.getChecked(v);
+			}
+
+			if (allChildrenChecked)
+				treeViewer.setChecked(currentGraph, true);
+
+		}
+	}
+
+	private void updateCheckIBSDF() {
+		SDFGraph currentGraph = contentProvider.getIBSDFCurrentGraph();
+		if (currentOpId != null && currentGraph != null) {
 			Set<HierarchicalSDFVertex> cgSet = new HashSet<HierarchicalSDFVertex>();
 
 			for (ConstraintGroup cg : scenario.getConstraintGroupManager()
@@ -231,17 +327,17 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 							.getHierarchicalVertexFromPath(vertexId);
 
 					if (v != null) {
-						cgSet.add(contentProvider.convertChild(v));
+						cgSet.add(contentProvider.convertSDFChild(v));
 					}
 				}
 			}
 
 			treeViewer.setCheckedElements(cgSet.toArray());
-
+			
 			// If all the children of a graph are checked, it is checked itself
 			boolean allChildrenChecked = true;
 			for (HierarchicalSDFVertex v : contentProvider
-					.keepAndConvertAppropriateChildren(currentGraph.vertexSet())) {
+					.filterIBSDFChildren(currentGraph.vertexSet())) {
 				allChildrenChecked &= treeViewer.getChecked(v);
 			}
 
