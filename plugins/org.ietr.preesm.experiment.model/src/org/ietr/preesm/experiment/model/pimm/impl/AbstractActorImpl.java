@@ -272,6 +272,13 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements
 		}
 		return null;
 	}
+
+	public String getPath() {
+		if (eContainer != null && eContainer instanceof AbstractActor) {
+			return ((AbstractActor) eContainer).getPath() + "/" + getName();
+		}
+		return getName();
+	}
 	
 	@Override
 	public void accept(PiMMVisitor v) {

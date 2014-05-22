@@ -104,4 +104,6 @@ public interface AbstractActor extends AbstractVertex, PiMMVisitable {
 	 */
 	EList<ConfigOutputPort> getConfigOutputPorts();
 
+	public String getPath();
+
 } // AbstractActor
