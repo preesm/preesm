@@ -416,4 +416,24 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 		}
 		return null;
 	}
+
+	@Override
+	public Set<Parameter> getAllParameters() {
+		Set<Parameter> result = new HashSet<Parameter>();
+		for (AbstractActor aa : vertices) {
+			if (aa instanceof PiGraph) {
+				result.addAll(((PiGraph) aa).getAllParameters());
+			} else if (aa instanceof Actor) {
+				Refinement refinement = ((Actor) aa).getRefinement();
+				if (refinement != null) {
+					AbstractActor subGraph = refinement.getAbstractActor();
+					if (subGraph != null && subGraph instanceof PiGraph) {
+						result.addAll(((PiGraph) subGraph).getAllParameters());
+					}
+				}
+			}
+		}
+		result.addAll(parameters);
+		return result;
+	}
 } // GraphImpl

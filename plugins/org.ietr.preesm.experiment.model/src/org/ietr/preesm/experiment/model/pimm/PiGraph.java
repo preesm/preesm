@@ -192,4 +192,6 @@ public interface PiGraph extends AbstractActor, PiMMVisitable {
 	 */
 	public Parameter getParameterNamed(String name);
 
+	public Set<Parameter> getAllParameters();
+
 } // Graph
