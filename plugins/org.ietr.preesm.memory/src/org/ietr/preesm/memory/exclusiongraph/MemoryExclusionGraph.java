@@ -606,18 +606,21 @@ public class MemoryExclusionGraph extends
 	 * during memory allocation.
 	 */
 	public void deallocate() {
-		
+
 		@SuppressWarnings("unchecked")
 		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostVertices = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) this
 				.getPropertyBean().getValue(HOST_MEMORY_OBJECT_PROPERTY);
 		// Scan host vertices
-		for(MemoryExclusionVertex hostVertex : hostVertices.keySet()){
-			// Scan merge vertices
-			for(MemoryExclusionVertex mergedVertex : hostVertices.get(hostVertex)){
-				// If the merged vertex is not split
-				if(mergedVertex.getWeight() != 0){
-					// Remove it from the MEG
-					this.removeVertex(mergedVertex);
+		if (hostVertices != null) {
+			for (MemoryExclusionVertex hostVertex : hostVertices.keySet()) {
+				// Scan merge vertices
+				for (MemoryExclusionVertex mergedVertex : hostVertices
+						.get(hostVertex)) {
+					// If the merged vertex is not split
+					if (mergedVertex.getWeight() != 0) {
+						// Remove it from the MEG
+						this.removeVertex(mergedVertex);
+					}
 				}
 			}
 		}
