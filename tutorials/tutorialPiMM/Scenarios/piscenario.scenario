@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/tutorialPiMM/Algo/mpSched.pi"/>
+        <architecture url="/tutorialPiMM/Archi/1CoreX86.slam"/>
+        <codegenDirectory url=""/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+        </constraintGroup>
+    </constraints>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl=""/>
+    <simuParams>
+        <mainCore/>
+        <mainComNode/>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes/>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+        <numberOfTopExecutions>0</numberOfTopExecutions>
+    </simuParams>
+    <variables excelUrl=""/>
+    <parameterValues>
+        <parameter name="N" parent="mpSched" type="DYNAMIC" value="[]"/>
+        <parameter name="nbSamples2" parent="UserFIRs" type="STATIC" value="0"/>
+        <parameter name="nbSamples" parent="mpSched" type="STATIC" value="0"/>
+        <parameter name="NMAX" parent="mpSched" type="STATIC" value="0"/>
+        <parameter name="M" parent="UserFIRs" type="DYNAMIC" value="[]"/>
+    </parameterValues>
+</scenario>

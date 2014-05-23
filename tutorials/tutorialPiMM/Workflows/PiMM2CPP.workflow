@@ -2,10 +2,6 @@
 <dftools:workflow xmlns:dftools="http://net.sf.dftools">
     <dftools:scenario pluginId="org.ietr.preesm.experiment.model.transformation.PiMMAndS-LAM"/>
     <dftools:task
-        pluginId="org.ietr.preesm.experiment.pimm.subgraph.connector.SubgraphConnectorTask" taskId="SubgraphConnector">
-        <dftools:data key="variables"/>
-    </dftools:task>
-    <dftools:task
         pluginId="org.ietr.preesm.algorithm.exportXml.MultiSDFExporter" taskId="MultiSDFExporter2">
         <dftools:data key="variables">
             <dftools:variable name="path" value="HSDF/"/>
@@ -15,10 +11,8 @@
         pluginId="org.ietr.preesm.experiment.pimm.cppgenerator.PiMMCppGenerationTask" taskId="CPPGen">
         <dftools:data key="variables"/>
     </dftools:task>
-    <dftools:dataTransfer from="scenario" sourceport="PiMM"
-        targetport="PiMM" to="SubgraphConnector"/>
-    <dftools:dataTransfer from="SubgraphConnector" sourceport="PiMM"
-        targetport="PiMM" to="CPPGen"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="CPPGen"/>
+    <dftools:dataTransfer from="scenario" sourceport="PiMM"
+        targetport="PiMM" to="CPPGen"/>
 </dftools:workflow>

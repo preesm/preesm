@@ -2,7 +2,6 @@
 <layout>
    <vertices>
       <vertex id="scenario" x="57" y="176"/>
-      <vertex id="SubgraphConnector" x="194" y="210"/>
       <vertex id="MultiSDFExporter2" x="1094" y="199"/>
       <vertex id="CPPGen" x="408" y="269"/>
    </vertices>
