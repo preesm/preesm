@@ -73,6 +73,7 @@ import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.core.scenario.TimingManager;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.util.SubgraphConnector;
 import org.w3c.dom.Document;
@@ -240,9 +241,20 @@ public class ScenarioParser {
 					}
 					break;
 				case "DEPENDENT":
-					// TODO: Extract input parameters?
+					Set<String> inputParameters = new HashSet<String>();
+					try {
+						Parameter p = ScenarioParser.getPiGraph(
+								scenario.getAlgorithmURL()).getParameterNamed(name);
+
+						for (Parameter input : p.getInputParameters()) {
+							inputParameters.add(input.getName());
+						}
+
+					} catch (InvalidModelException | CoreException e) {
+						e.printStackTrace();
+					}
 					scenario.getParameterValueManager().addParameterValue(name,
-							stringValue, new HashSet<String>(), parent);
+							stringValue, inputParameters, parent);
 					break;
 				}
 			}
@@ -576,7 +588,7 @@ public class ScenarioParser {
 
 		SubgraphConnector connector = new SubgraphConnector();
 		connector.connectSubgraphs(pigraph);
-		
+
 		return pigraph;
 	}
 
