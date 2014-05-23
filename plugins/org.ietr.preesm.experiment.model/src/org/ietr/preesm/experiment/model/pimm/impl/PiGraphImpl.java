@@ -331,13 +331,14 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 
 	/**
 	 * Get the set of {@link Actor} in the graph.
+	 * 
 	 * @return the set of {@link Actor}
 	 */
 	@Override
 	public Set<Actor> getActors() {
 		HashSet<Actor> actors = new HashSet<Actor>();
-		for(AbstractActor abactor : this.getVertices()){
-			if(abactor instanceof Actor)
+		for (AbstractActor abactor : this.getVertices()) {
+			if (abactor instanceof Actor)
 				actors.add((Actor) abactor);
 		}
 		return actors;
@@ -361,26 +362,28 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 		if (this.getName().equals(currentName)) {
 			currentName = splitPath[index];
 			index++;
-		}	
+		}
 		for (int i = index; i < splitPath.length; i++) {
 			if (i > index) {
 				currentPath += "/";
 			}
 			currentPath += splitPath[i];
 		}
-		for (AbstractActor a : this.getVertices()) {		
-			if (a.getName().equals(currentName)) {				
+		for (AbstractActor a : this.getVertices()) {
+			if (a.getName().equals(currentName)) {
 				if (currentPath.equals("")) {
 					// We found the actor
 					return a;
 				} else if (a instanceof PiGraph) {
-					return ((PiGraph) a).getHierarchicalActorFromPath(currentPath);
+					return ((PiGraph) a)
+							.getHierarchicalActorFromPath(currentPath);
 				} else if (a instanceof Actor) {
 					Refinement refinement = ((Actor) a).getRefinement();
 					if (refinement != null) {
 						AbstractActor subGraph = refinement.getAbstractActor();
 						if (subGraph != null && subGraph instanceof PiGraph) {
-							return ((PiGraph) subGraph).getHierarchicalActorFromPath(currentPath);
+							return ((PiGraph) subGraph)
+									.getHierarchicalActorFromPath(currentPath);
 						}
 					}
 				}
@@ -389,4 +392,28 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 		return null;
 	}
 
+	@Override
+	public Parameter getParameterNamed(String name) {
+		for (Parameter p : parameters) {
+			if (p.getName().equals(name)) {
+				return p;
+			}
+		}
+		for (AbstractActor aa : vertices) {
+			if (aa instanceof Actor) {
+				Refinement refinement = ((Actor) aa).getRefinement();
+				if (refinement != null) {
+					AbstractActor subGraph = refinement.getAbstractActor();
+					if (subGraph != null && subGraph instanceof PiGraph) {
+						Parameter p = ((PiGraph) subGraph).getParameterNamed(name);
+						if (p != null) return p;
+					}
+				}
+			} else if (aa instanceof PiGraph) {
+				Parameter p = ((PiGraph) aa).getParameterNamed(name);
+				if (p != null) return p;
+			}
+		}
+		return null;
+	}
 } // GraphImpl

@@ -147,8 +147,8 @@ public interface PiGraph extends AbstractActor, PiMMVisitable {
 	public Set<String> getVerticesNames();
 
 	/**
-	 * Return the list of the names of all {@link PiGraph#getParameters()} of the
-	 * Graph.
+	 * Return the list of the names of all {@link PiGraph#getParameters()} of
+	 * the Graph.
 	 * 
 	 * @return the list of names
 	 */
@@ -174,14 +174,22 @@ public interface PiGraph extends AbstractActor, PiMMVisitable {
 	 *         the requested name.
 	 */
 	public Fifo getFifoIded(String id);
-	
+
 	/**
 	 * Get the set of {@link Actor} in the graph.
+	 * 
 	 * @return the set of {@link Actor}
 	 */
 	public Set<Actor> getActors();
 
 	public AbstractActor getHierarchicalActorFromPath(String path);
-	
-	
+
+	/**
+	 * @param name
+	 *            the name of the Parameter we are looking for
+	 * @return the first Parameter with the given name found in the graph
+	 *         hierarchy, null if none is found
+	 */
+	public Parameter getParameterNamed(String name);
+
 } // Graph
