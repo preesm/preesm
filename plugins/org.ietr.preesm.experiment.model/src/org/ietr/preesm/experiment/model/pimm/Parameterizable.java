@@ -35,6 +35,8 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
+import java.util.Set;
+
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
@@ -71,5 +73,7 @@ public interface Parameterizable extends EObject, PiMMVisitable {
 	 * @generated
 	 */
 	EList<ConfigInputPort> getConfigInputPorts();
+	
+	public Set<Parameter> getInputParameters();
 
 } // Parameterizable
