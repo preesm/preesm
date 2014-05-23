@@ -38,12 +38,16 @@ package org.ietr.preesm.core.scenario;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.emf.ecore.EObject;
 import org.ietr.preesm.core.scenario.ParameterValue.ParameterType;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 /**
  * Manager class for parameters, storing values given by the user to parameters
+ * 
  * @author cguy
- *
+ * 
  */
 public class ParameterValueManager {
 	// Set of ParameterValues
@@ -52,7 +56,7 @@ public class ParameterValueManager {
 	public ParameterValueManager() {
 		this.parameterValues = new HashSet<ParameterValue>();
 	}
-	
+
 	public Set<ParameterValue> getParameterValues() {
 		return parameterValues;
 	}
@@ -60,23 +64,54 @@ public class ParameterValueManager {
 	public void setParameterValues(Set<ParameterValue> parameterValues) {
 		this.parameterValues = parameterValues;
 	}
-	
+
 	public void addParameterValue(String paramName, int value, String parent) {
-		ParameterValue pValue = new ParameterValue(paramName, ParameterType.STATIC, parent);
+		ParameterValue pValue = new ParameterValue(paramName,
+				ParameterType.STATIC, parent);
 		pValue.setValue(value);
 		this.parameterValues.add(pValue);
 	}
-	
-	public void addParameterValue(String paramName, Set<Integer> values, String parent) {
-		ParameterValue pValue = new ParameterValue(paramName, ParameterType.DYNAMIC, parent);
+
+	public void addParameterValue(String paramName, Set<Integer> values,
+			String parent) {
+		ParameterValue pValue = new ParameterValue(paramName,
+				ParameterType.DYNAMIC, parent);
 		pValue.setValues(values);
 		this.parameterValues.add(pValue);
 	}
-	
-	public void addParameterValue(String paramName, String expression, Set<String> inputParameters, String parent) {
-		ParameterValue pValue = new ParameterValue(paramName, ParameterType.DEPENDENT, parent);
+
+	public void addParameterValue(String paramName, String expression,
+			Set<String> inputParameters, String parent) {
+		ParameterValue pValue = new ParameterValue(paramName,
+				ParameterType.DEPENDENT, parent);
 		pValue.setExpression(expression);
 		pValue.setInputParameters(inputParameters);
 		this.parameterValues.add(pValue);
+	}
+
+	public void addParameterValue(Parameter param) {
+		EObject container = param.eContainer();
+		String parent = "";
+		if (container instanceof PiGraph) {
+			parent = ((PiGraph) container).getName();
+		}
+		Set<Parameter> inputParameters = new HashSet<Parameter>();
+		inputParameters = param.getInputParameters();
+		if (param.isLocallyStatic()) {
+			// Add a static parameter value
+			addParameterValue(param.getName(), 0, parent);
+		} else {
+			if (inputParameters.isEmpty()) {
+				Set<Integer> values = new HashSet<Integer>();
+				// Add a dynamic parameter value
+				addParameterValue(param.getName(), values, parent);
+			} else {
+				Set<String> inputParametersNames = new HashSet<String>();
+				for (Parameter p : inputParameters) {
+					inputParametersNames.add(p.getName());
+				}
+				addParameterValue(param.getName(), "0", inputParametersNames, parent);
+			}
+		}
 	}
 }
