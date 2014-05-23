@@ -42,14 +42,11 @@ import java.util.Set;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
@@ -193,15 +190,10 @@ public abstract class ParameterizableImpl extends EObjectImpl implements Paramet
 	@Override
 	public Set<Parameter> getInputParameters() {
 		Set<Parameter> result = new HashSet<Parameter>();
-		for (ConfigInputPort in : configInputPorts) {
+		for (ConfigInputPort in : getConfigInputPorts()) {
 			ISetter setter = in.getIncomingDependency().getSetter();
 			if (setter instanceof Parameter) {
 				result.add((Parameter) setter);
-			} else if (setter instanceof ConfigOutputPort) {
-				EObject container = ((ConfigOutputPort) setter).eContainer();
-				if (container instanceof AbstractActor) {
-					result.addAll(((AbstractActor) container).getInputParameters());
-				}
 			}
 		}
 		return result;
