@@ -188,24 +188,40 @@ public class ScenarioParser {
 
 		Node node = paramValuesElt.getFirstChild();
 
+		PiGraph graph = null;
+		try {
+			graph = ScenarioParser.getPiGraph(scenario.getAlgorithmURL());
+		} catch (InvalidModelException | CoreException e1) {
+			e1.printStackTrace();
+		}
+
+		Set<Parameter> parameters = new HashSet<Parameter>(
+				graph.getAllParameters());
+
 		while (node != null) {
 			if (node instanceof Element) {
 				Element elt = (Element) node;
 				String type = elt.getTagName();
 				if (type.equals("parameter")) {
-					parseParameterValue(elt);
+					parameters.remove(parseParameterValue(elt, graph));
 				}
 			}
 
 			node = node.getNextSibling();
+		}
+
+		// Create a parameter value foreach parameter not yet in the scenario
+		for (Parameter p : parameters) {			
+			scenario.getParameterValueManager().addParameterValue(p);
 		}
 	}
 
 	/**
 	 * Retrieve a ParameterValue
 	 */
-	private void parseParameterValue(Element paramValueElt) {
+	private Parameter parseParameterValue(Element paramValueElt, PiGraph graph) {
 		Node node = paramValueElt.getFirstChild();
+		Parameter currentParameter = null;
 
 		while (node != null) {
 
@@ -215,6 +231,9 @@ public class ScenarioParser {
 				String parent = elt.getAttribute("parent");
 				String name = elt.getAttribute("name");
 				String stringValue = elt.getAttribute("value");
+
+				currentParameter = graph.getParameterNamed(name);
+
 				switch (type) {
 				case "STATIC":
 					scenario.getParameterValueManager().addParameterValue(name,
@@ -242,26 +261,26 @@ public class ScenarioParser {
 					break;
 				case "DEPENDENT":
 					Set<String> inputParameters = new HashSet<String>();
-					try {
-						Parameter p = ScenarioParser.getPiGraph(
-								scenario.getAlgorithmURL()).getParameterNamed(name);
+					if (graph != null) {
 
-						for (Parameter input : p.getInputParameters()) {
+						for (Parameter input : currentParameter
+								.getInputParameters()) {
 							inputParameters.add(input.getName());
 						}
-
-					} catch (InvalidModelException | CoreException e) {
-						e.printStackTrace();
 					}
 					scenario.getParameterValueManager().addParameterValue(name,
 							stringValue, inputParameters, parent);
 					break;
+				default:
+					throw new RuntimeException("Unknown Parameter type: "
+							+ type + " for Parameter: " + name);
 				}
 			}
 
 			node = node.getNextSibling();
 		}
 
+		return currentParameter;
 	}
 
 	/**
