@@ -172,7 +172,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	 * Adds or remove constraints for all vertices in the graph depending on the
 	 * isChecked status
 	 */
-	public void fireOnCheck(SDFGraph graph, boolean isChecked) {
+	private void fireOnCheck(SDFGraph graph, boolean isChecked) {
 		if (currentOpId != null) {
 			// Checks the children of the current graph
 			for (HierarchicalSDFVertex v : contentProvider
@@ -196,7 +196,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	/**
 	 * Adds or remove a constraint depending on the isChecked status
 	 */
-	public void fireOnCheck(HierarchicalSDFVertex vertex, boolean isChecked) {
+	private void fireOnCheck(HierarchicalSDFVertex vertex, boolean isChecked) {
 		if (currentOpId != null) {
 			if (isChecked) {
 				scenario.getConstraintGroupManager().addConstraint(currentOpId,
