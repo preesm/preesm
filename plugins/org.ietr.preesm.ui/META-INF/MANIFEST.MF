@@ -27,7 +27,10 @@ Export-Package: org.ietr.preesm.ui.console,
  org.ietr.preesm.ui.scenario.editor,
  org.ietr.preesm.ui.scenario.editor.codegen,
  org.ietr.preesm.ui.scenario.editor.constraints,
+ org.ietr.preesm.ui.scenario.editor.parametervalues,
+ org.ietr.preesm.ui.scenario.editor.relativeconstraints,
  org.ietr.preesm.ui.scenario.editor.simulation,
  org.ietr.preesm.ui.scenario.editor.timings,
+ org.ietr.preesm.ui.scenario.editor.variables,
  org.ietr.preesm.ui.wizards
 Import-Package: org.ietr.preesm.experiment.model.pimm
