@@ -7,13 +7,13 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.experiment.core.piscenario.PiScenario;
 import org.ietr.preesm.mapper.AbstractMapping;
 import org.ietr.preesm.mapper.abc.AbstractAbc;
 import org.ietr.preesm.mapper.abc.IAbc;
@@ -42,7 +42,7 @@ public class MultiSDFListSchedulingMapping extends AbstractMapping {
 		Design architecture = (Design) inputs.get(KEY_ARCHITECTURE);
 		Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs
 				.get(KEY_SDF_GRAPHS_SET);
-		PiScenario scenario = (PiScenario) inputs.get(KEY_SDF_SCENARIO);
+		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SDF_SCENARIO);
 
 		super.execute(inputs, parameters, monitor, nodeName, workflow);
 
