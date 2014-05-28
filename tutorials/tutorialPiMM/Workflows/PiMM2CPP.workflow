@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dftools:workflow xmlns:dftools="http://net.sf.dftools">
-    <dftools:scenario pluginId="org.ietr.preesm.experiment.model.transformation.PiMMAndS-LAM"/>
+    <dftools:scenario pluginId="org.ietr.preesm.scenario.task"/>
     <dftools:task
         pluginId="org.ietr.preesm.algorithm.exportXml.MultiSDFExporter" taskId="MultiSDFExporter2">
         <dftools:data key="variables">

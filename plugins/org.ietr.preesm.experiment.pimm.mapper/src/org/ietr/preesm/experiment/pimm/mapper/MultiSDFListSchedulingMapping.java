@@ -42,7 +42,7 @@ public class MultiSDFListSchedulingMapping extends AbstractMapping {
 		Design architecture = (Design) inputs.get(KEY_ARCHITECTURE);
 		Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs
 				.get(KEY_SDF_GRAPHS_SET);
-		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SDF_SCENARIO);
+		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
 
 		super.execute(inputs, parameters, monitor, nodeName, workflow);
 

@@ -50,7 +50,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.preesm.experiment.core.piscenario.PiScenario;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.pimm.cppgenerator.visitor.CPPCodeGenerationLauncher;
 
@@ -62,7 +62,7 @@ public class PiMMCppGenerationTask extends AbstractTaskImplementation {
 			String nodeName, Workflow workflow) throws WorkflowException {
 
 		// Retrieve inputs
-		PiScenario scenario = (PiScenario) inputs.get(KEY_PI_SCENARIO);
+		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
 		PiGraph pg = (PiGraph) inputs.get(KEY_PI_GRAPH);
 
 		CPPCodeGenerationLauncher launcher = new CPPCodeGenerationLauncher(scenario);

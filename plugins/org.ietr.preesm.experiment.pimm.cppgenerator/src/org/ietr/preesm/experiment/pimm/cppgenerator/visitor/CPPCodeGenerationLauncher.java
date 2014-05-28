@@ -40,9 +40,8 @@ package org.ietr.preesm.experiment.pimm.cppgenerator.visitor;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.ietr.preesm.experiment.core.piscenario.ActorNode;
-import org.ietr.preesm.experiment.core.piscenario.PiScenario;
-import org.ietr.preesm.experiment.core.piscenario.Timing;
+import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.pimm.cppgenerator.utils.CPPNameGenerator;
 
@@ -52,13 +51,13 @@ public class CPPCodeGenerationLauncher {
 
 	StringBuilder topMethod = new StringBuilder();
 	
-	private PiScenario scenario;
+	private PreesmScenario scenario;
 
 	private Map<String, Integer> coreTypesCodes;
 	
 	private Map<String, Map<Integer, String>> timings;
 	
-	public CPPCodeGenerationLauncher(PiScenario scenario) {
+	public CPPCodeGenerationLauncher(PreesmScenario scenario) {
 		this.scenario = scenario;
 	}
 
@@ -112,7 +111,7 @@ public class CPPCodeGenerationLauncher {
 		if (coreTypesCodes == null) {
 			coreTypesCodes = new HashMap<String, Integer>();
 			int i = 0;
-			for (String coreType : scenario.getOperatorTypes()) {
+			for (String coreType : scenario.getOperatorDefinitionIds()) {
 				coreTypesCodes.put(coreType, i);
 				i++;
 			}
@@ -122,14 +121,13 @@ public class CPPCodeGenerationLauncher {
 	private Map<String, Map<Integer, String>> extractTimings() {
 		Map<String, Map<Integer, String>> timings = new HashMap<String, Map<Integer, String>>();
 		
-		for (ActorNode node : scenario.getActorTree().getAllActorNodes()) {
-			Map<Integer, String> nodeTimings = new HashMap<Integer, String>();			
-			for (String operator : node.getTimings().keySet()) {
-				Timing timing = node.getTimings().get(operator);
-				nodeTimings.put(coreTypesCodes.get(operator), timing.getStringValue());
+		for (Timing t : scenario.getTimingManager().getTimings()) {
+			String nodeName = t.getVertexId();
+			if (!timings.containsKey(nodeName)) {
+				timings.put(nodeName, new HashMap<Integer, String>());
 			}
-			timings.put(node.getName(), nodeTimings);
-		}
+			timings.get(nodeName).put(coreTypesCodes.get(t.getOperatorDefinitionId()), t.getStringValue());
+		}		
 		
 		return timings;
 	}

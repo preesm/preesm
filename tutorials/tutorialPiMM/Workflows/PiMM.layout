@@ -2,13 +2,10 @@
 <layout>
    <vertices>
       <vertex id="scenario" x="22" y="214"/>
-      <vertex id="PiMM2IBSDF" x="268" y="138"/>
-      <vertex id="SubgraphConnector" x="274" y="247"/>
-      <vertex id="PiMM2SDF" x="519" y="302"/>
-      <vertex id="MultiSDFExporter" x="714" y="171"/>
-      <vertex id="MultiSDFHierarchyFlattening" x="691" y="305"/>
-      <vertex id="MultiHSDFTransformation" x="941" y="358"/>
-      <vertex id="MultiSDFExporter2" x="1184" y="376"/>
-      <vertex id="CPPGen" x="516" y="456"/>
+      <vertex id="PiMM2SDF" x="217" y="223"/>
+      <vertex id="MultiSDFExporter" x="412" y="92"/>
+      <vertex id="MultiSDFHierarchyFlattening" x="389" y="226"/>
+      <vertex id="MultiHSDFTransformation" x="695" y="223"/>
+      <vertex id="MultiSDFExporter2" x="938" y="241"/>
    </vertices>
 </layout>

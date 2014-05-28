@@ -43,36 +43,33 @@ import java.util.Map;
 import java.util.Set;
 
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.preesm.experiment.core.piscenario.ActorNode;
-import org.ietr.preesm.experiment.core.piscenario.ActorTree;
-import org.ietr.preesm.experiment.core.piscenario.ParameterValue;
-import org.ietr.preesm.experiment.core.piscenario.ParameterValue.ParameterType;
-import org.ietr.preesm.experiment.core.piscenario.PiScenario;
+import org.ietr.preesm.core.scenario.ParameterValue;
+import org.ietr.preesm.core.scenario.ParameterValue.ParameterType;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.pimm2sdf.visitor.PiMM2SDFVisitor;
 
 public class PiMM2SDFLauncher {
 
-	private PiScenario piscenario;
+	private PreesmScenario scenario;
 	private PiGraph graph;
 
-	public PiMM2SDFLauncher(PiScenario piscenario, PiGraph graph) {
-		this.piscenario = piscenario;
+	public PiMM2SDFLauncher(PreesmScenario scenario, PiGraph graph) {
+		this.scenario = scenario;
 		this.graph = graph;
 	}
 
 	public Set<SDFGraph> launch() {
 		Set<SDFGraph> result = new HashSet<SDFGraph>();
 		
-		ActorTree tree = piscenario.getActorTree();
 		// Get all the available values for all the parameters
-		Map<String, List<Integer>> parametersValues = getAllDynamicParametersValues(tree);
+		Map<String, List<Integer>> parametersValues = getDynamicParametersValues();
 		// Get the values for Parameters directly contained by graph (top-level
 		// parameters), if any
 		Map<String, List<Integer>> outerParametersValues = new HashMap<String, List<Integer>>();
 		// The number of time we need to execute, and thus visit graph
-		int nbExecutions = piscenario.getNumberOfTopLevelExecutions();
+		int nbExecutions = scenario.getSimulationManager().getNumberOfTopExecutions();
 
 		for (Parameter param : graph.getParameters()) {
 			List<Integer> pValues = parametersValues.get(param.getName());
@@ -115,28 +112,14 @@ public class PiMM2SDFLauncher {
 		return result;
 	}
 
-	private Map<String, List<Integer>> getAllDynamicParametersValues(
-			ActorTree tree) {
+	private Map<String, List<Integer>> getDynamicParametersValues() {
 		Map<String, List<Integer>> result = new HashMap<String, List<Integer>>();
 
-		ActorNode root = tree.getRoot();
-		result = getDynamicParametersValues(root);
-
-		return result;
-	}
-
-	private Map<String, List<Integer>> getDynamicParametersValues(ActorNode node) {
-		Map<String, List<Integer>> result = new HashMap<String, List<Integer>>();
-
-		for (ParameterValue paramValue : node.getParamValues()) {
+		for (ParameterValue paramValue : scenario.getParameterValueManager().getParameterValues()) {
 			if (paramValue.getType() == ParameterType.DYNAMIC) {
 				result.put(paramValue.getName(), new ArrayList<Integer>(
 						paramValue.getValues()));
 			}
-		}
-
-		for (ActorNode child : node.getChildren()) {
-			result.putAll(getDynamicParametersValues(child));
 		}
 
 		return result;

@@ -81,7 +81,7 @@ public class ListSchedulingMapping extends AbstractMapping {
 
 		Design architecture = (Design) inputs.get(KEY_ARCHITECTURE);
 		SDFGraph algorithm = (SDFGraph) inputs.get(KEY_SDF_GRAPH);
-		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SDF_SCENARIO);
+		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
 
 		super.execute(inputs, parameters, monitor, nodeName, workflow);
 
