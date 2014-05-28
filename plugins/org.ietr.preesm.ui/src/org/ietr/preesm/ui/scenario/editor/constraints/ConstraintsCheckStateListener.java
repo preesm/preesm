@@ -187,6 +187,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 			// Checks the children of the current graph
 			for (AbstractActor v : contentProvider.filterPISDFChildren(graph
 					.getVertices())) {
+				if (v instanceof PiGraph) fireOnCheck(((PiGraph) v), isChecked);
 				fireOnCheck(v, isChecked);
 			}
 			fireOnCheck((AbstractActor) graph, isChecked);
