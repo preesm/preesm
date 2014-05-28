@@ -48,6 +48,7 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.implement.AbstractScenarioImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 /**
  * Implementing the new DFTools scenario node behavior for Preesm. This version
@@ -58,12 +59,12 @@ import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
  * @author kdesnos
  * 
  */
-public class SDFAndArchitectureScenarioNode extends
+public class AlgorithmAndArchitectureScenarioNode extends
 		AbstractScenarioImplementation {
 
 	/**
-	 * The scenario node in Preesm outputs three elements: SDF, architecture and
-	 * scenario
+	 * The scenario node in Preesm outputs three elements: Algorithm (SDF or
+	 * PiMM), architecture and scenario
 	 */
 	@Override
 	public Map<String, Object> extractData(String path)
@@ -80,33 +81,40 @@ public class SDFAndArchitectureScenarioNode extends
 
 		PreesmScenario scenario;
 		// Retrieving the algorithm
-		SDFGraph algorithm;
+		SDFGraph sdfAlgorithm = null;
+		PiGraph piAlgorithm = null;
 		try {
 			scenario = scenarioParser.parseXmlFile(file);
-
-			algorithm = ScenarioParser.getSDFGraph(scenario.getAlgorithmURL());
+			String url = scenario.getAlgorithmURL();
+			if (scenario.isIBSDFScenario())
+				sdfAlgorithm = ScenarioParser.getSDFGraph(url);
+			else if (scenario.isPISDFScenario())
+				piAlgorithm = ScenarioParser.getPiGraph(url);
 		} catch (Exception e) {
 			throw new WorkflowException(e.getMessage());
 		}
 
 		// Apply to the algorithm the values of variables
 		// defined in the scenario
-		VariableSet variablesGraph = algorithm.getVariables();
-		VariableSet variablesScenario = scenario.getVariablesManager()
-				.getVariables();
+		if (scenario.isIBSDFScenario()) {
+			VariableSet variablesGraph = sdfAlgorithm.getVariables();
+			VariableSet variablesScenario = scenario.getVariablesManager()
+					.getVariables();
 
-		for (String variableName : variablesScenario.keySet()) {
-			String newValue = variablesScenario.get(variableName).getValue();
-			variablesGraph.getVariable(variableName).setValue(newValue);
+			for (String variableName : variablesScenario.keySet()) {
+				String newValue = variablesScenario.get(variableName)
+						.getValue();
+				variablesGraph.getVariable(variableName).setValue(newValue);
+			}
 		}
-
 		// Retrieving the architecture
 		Design slamDesign = ScenarioParser.parseSlamDesign(scenario
 				.getArchitectureURL());
 
-		outputs.put("scenario", scenario);
-		outputs.put("SDF", algorithm);
-		outputs.put("architecture", slamDesign);
+		outputs.put(KEY_SCENARIO, scenario);
+		outputs.put(KEY_SDF_GRAPH, sdfAlgorithm);
+		outputs.put(KEY_PI_GRAPH, piAlgorithm);
+		outputs.put(KEY_ARCHITECTURE, slamDesign);
 		return outputs;
 	}
 
