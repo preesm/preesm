@@ -224,6 +224,9 @@ public class PreesmScenario {
 	}
 
 	public Set<String> getOperatorIds() {
+		if (operatorIds == null) {
+			operatorIds = new HashSet<String>();
+		}
 		return operatorIds;
 	}
 
