@@ -29,6 +29,14 @@
             <dftools:variable name="path" value="HSDF/"/>
         </dftools:data>
     </dftools:task>
+    <dftools:task
+        pluginId="org.ietr.preesm.experiment.pimm.mapper.MultiSDFListSchedulingMapping" taskId="MultiListScheduling">
+        <dftools:data key="variables">
+            <dftools:variable name="balanceLoads" value="false"/>
+            <dftools:variable name="edgeSchedType" value="Simple"/>
+            <dftools:variable name="simulatorType" value="LooselyTimed"/>
+        </dftools:data>
+    </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="PiMM2SDF"/>
     <dftools:dataTransfer from="PiMM2SDF" sourceport="SDFs"
@@ -41,4 +49,10 @@
         sourceport="SDFs" targetport="SDFs" to="MultiSDFExporter2"/>
     <dftools:dataTransfer from="scenario" sourceport="PiMM"
         targetport="PiMM" to="PiMM2SDF"/>
+    <dftools:dataTransfer from="scenario" sourceport="scenario"
+        targetport="scenario" to="MultiListScheduling"/>
+    <dftools:dataTransfer from="scenario" sourceport="architecture"
+        targetport="architecture" to="MultiListScheduling"/>
+    <dftools:dataTransfer from="MultiHSDFTransformation"
+        sourceport="SDFs" targetport="SDFs" to="MultiListScheduling"/>
 </dftools:workflow>
