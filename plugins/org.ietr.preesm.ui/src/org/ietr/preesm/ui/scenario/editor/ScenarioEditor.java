@@ -140,6 +140,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements
 		variablesPage.addPropertyListener(this);
 		
 		PiParametersPage paramPage = new PiParametersPage(scenario, this, "Parameters", "Parameters");
+		paramPage.addPropertyListener(this);
 
 		try {
 			addPage(overviewPage);
@@ -182,7 +183,6 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements
 
 	@Override
 	public boolean isSaveAsAllowed() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
