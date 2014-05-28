@@ -121,7 +121,7 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 		section.setText(Messages.getString("Parameters.title"));
 		section.setDescription(Messages.getString("Parameters.description"));
 		section.setLayout(new ColumnLayout());
-		
+
 		if (scenario.isPISDFScenario()) {
 			// Creates the section part containing the tree with SDF vertices
 
@@ -184,7 +184,8 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 					if (element instanceof TableItem) {
 						ParameterValue param = (ParameterValue) ((TableItem) element)
 								.getData();
-						if (param.getType() == ParameterType.STATIC) {
+						switch (param.getType()) {
+						case STATIC:
 							try {
 								int newValue = Integer
 										.parseInt(((String) value).trim());
@@ -194,7 +195,8 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 								}
 							} catch (NumberFormatException e) {
 							}
-						} else if (param.getType() == ParameterType.DYNAMIC) {
+							break;
+						case DYNAMIC:
 							String s = (String) value;
 
 							if (s.charAt(0) == '['
@@ -225,12 +227,14 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 									propertyChanged(this, PROP_DIRTY);
 								}
 							}
-						} else if (param.getType() == ParameterType.DEPENDENT) {
+							break;
+						case DEPENDENT:
 							if (!param.getExpression().contentEquals(
 									(String) value)) {
 								param.setExpression((String) value);
 								propertyChanged(this, PROP_DIRTY);
 							}
+							break;
 						}
 						tableViewer.refresh();
 					}
