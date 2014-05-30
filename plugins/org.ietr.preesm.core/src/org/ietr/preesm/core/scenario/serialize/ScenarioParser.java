@@ -211,7 +211,7 @@ public class ScenarioParser {
 		}
 
 		// Create a parameter value foreach parameter not yet in the scenario
-		for (Parameter p : parameters) {			
+		for (Parameter p : parameters) {
 			scenario.getParameterValueManager().addParameterValue(p);
 		}
 	}
@@ -220,64 +220,54 @@ public class ScenarioParser {
 	 * Retrieve a ParameterValue
 	 */
 	private Parameter parseParameterValue(Element paramValueElt, PiGraph graph) {
-		Node node = paramValueElt.getFirstChild();
 		Parameter currentParameter = null;
 
-		while (node != null) {
+		String type = paramValueElt.getAttribute("type");
+		String parent = paramValueElt.getAttribute("parent");
+		String name = paramValueElt.getAttribute("name");
+		String stringValue = paramValueElt.getAttribute("value");
 
-			if (node instanceof Element) {
-				Element elt = (Element) node;
-				String type = elt.getAttribute("type");
-				String parent = elt.getAttribute("parent");
-				String name = elt.getAttribute("name");
-				String stringValue = elt.getAttribute("value");
+		currentParameter = graph.getParameterNamed(name);
 
-				currentParameter = graph.getParameterNamed(name);
+		switch (type) {
+		case "STATIC":
+			scenario.getParameterValueManager().addParameterValue(name,
+					Integer.parseInt(stringValue), parent);
+			break;
+		case "DYNAMIC":
+			if (stringValue.charAt(0) == '['
+					&& stringValue.charAt(stringValue.length() - 1) == ']') {
+				stringValue = stringValue
+						.substring(1, stringValue.length() - 1);
+				String[] values = stringValue.split(",");
 
-				switch (type) {
-				case "STATIC":
-					scenario.getParameterValueManager().addParameterValue(name,
-							Integer.parseInt(stringValue), parent);
-					break;
-				case "DYNAMIC":
-					if (stringValue.charAt(0) == '['
-							&& stringValue.charAt(stringValue.length() - 1) == ']') {
-						stringValue = stringValue.substring(1,
-								stringValue.length() - 1);
-						String[] values = stringValue.split(",");
+				Set<Integer> newValues = new HashSet<Integer>();
 
-						Set<Integer> newValues = new HashSet<Integer>();
-
-						try {
-							for (String val : values) {
-								newValues.add(Integer.parseInt(val.trim()));
-							}
-						} catch (NumberFormatException e) {
-							// TODO: Do smthg
-						}
-						scenario.getParameterValueManager().addParameterValue(
-								name, newValues, parent);
+				try {
+					for (String val : values) {
+						newValues.add(Integer.parseInt(val.trim()));
 					}
-					break;
-				case "DEPENDENT":
-					Set<String> inputParameters = new HashSet<String>();
-					if (graph != null) {
+				} catch (NumberFormatException e) {
+					// TODO: Do smthg
+				}
+				scenario.getParameterValueManager().addParameterValue(name,
+						newValues, parent);
+			}
+			break;
+		case "DEPENDENT":
+			Set<String> inputParameters = new HashSet<String>();
+			if (graph != null) {
 
-						for (Parameter input : currentParameter
-								.getInputParameters()) {
-							inputParameters.add(input.getName());
-						}
-					}
-					scenario.getParameterValueManager().addParameterValue(name,
-							stringValue, inputParameters, parent);
-					break;
-				default:
-					throw new RuntimeException("Unknown Parameter type: "
-							+ type + " for Parameter: " + name);
+				for (Parameter input : currentParameter.getInputParameters()) {
+					inputParameters.add(input.getName());
 				}
 			}
-
-			node = node.getNextSibling();
+			scenario.getParameterValueManager().addParameterValue(name,
+					stringValue, inputParameters, parent);
+			break;
+		default:
+			throw new RuntimeException("Unknown Parameter type: " + type
+					+ " for Parameter: " + name);
 		}
 
 		return currentParameter;
