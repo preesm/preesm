@@ -527,8 +527,6 @@ public class ScenarioParser {
 			// Extract the root object from the resource.
 			Design design = parseSlamDesign(url);
 
-			System.out.println(design.getVlnv().getName());
-
 			scenario.setOperatorIds(DesignTools.getOperatorInstanceIds(design));
 			scenario.setComNodeIds(DesignTools.getComNodeInstanceIds(design));
 			scenario.setOperatorDefinitionIds(DesignTools
