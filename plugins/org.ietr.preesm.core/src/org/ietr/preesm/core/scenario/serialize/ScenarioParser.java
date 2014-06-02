@@ -194,25 +194,27 @@ public class ScenarioParser {
 		} catch (InvalidModelException | CoreException e1) {
 			e1.printStackTrace();
 		}
+		if (scenario.isPISDFScenario() && graph != null) {
+			Set<Parameter> parameters = new HashSet<Parameter>(
+					graph.getAllParameters());
 
-		Set<Parameter> parameters = new HashSet<Parameter>(
-				graph.getAllParameters());
-
-		while (node != null) {
-			if (node instanceof Element) {
-				Element elt = (Element) node;
-				String type = elt.getTagName();
-				if (type.equals("parameter")) {
-					parameters.remove(parseParameterValue(elt, graph));
+			while (node != null) {
+				if (node instanceof Element) {
+					Element elt = (Element) node;
+					String type = elt.getTagName();
+					if (type.equals("parameter")) {
+						parameters.remove(parseParameterValue(elt, graph));
+					}
 				}
+
+				node = node.getNextSibling();
 			}
 
-			node = node.getNextSibling();
-		}
-
-		// Create a parameter value foreach parameter not yet in the scenario
-		for (Parameter p : parameters) {
-			scenario.getParameterValueManager().addParameterValue(p);
+			// Create a parameter value foreach parameter not yet in the
+			// scenario
+			for (Parameter p : parameters) {
+				scenario.getParameterValueManager().addParameterValue(p);
+			}
 		}
 	}
 
