@@ -32,6 +32,21 @@
             </output>
          </outputs>
       </task>
+      <task
+            id="org.ietr.preesm.experiment.pimm.mapper.MultiStatEditorTransform"
+            name="Multi Gantt plot transform"
+            type="org.ietr.preesm.experiment.pimm.mapper.MultiStatEditorTransform">
+         <inputs>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+            <input
+                  id="ABCs"
+                  object="java.util.Set&lt;org.ietr.preesm.mapper.abc.IAbc&gt;">
+            </input>
+         </inputs>
+      </task>
    </extension>
 
 </plugin>
