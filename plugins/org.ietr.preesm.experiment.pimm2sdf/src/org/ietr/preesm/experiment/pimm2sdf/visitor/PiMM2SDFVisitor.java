@@ -284,6 +284,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 //		if (!a.isConfigurationActor()) {
 			SDFVertex v = new SDFVertex();
 			v.setName(a.getName());
+			v.setInfo(a.getPath());
 
 			visitAbstractActor(a);
 
