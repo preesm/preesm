@@ -113,7 +113,7 @@ public class Timing {
 		this(operatorId, sdfVertexId);
 		this.time = time;
 		this.stringValue = String.valueOf(time);
-		this.isEvaluated = false;
+		this.isEvaluated = true;
 	}
 
 	public Timing(String operatorId, String vertexId, String expression) {
