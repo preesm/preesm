@@ -91,7 +91,7 @@ public class MultiStatEditorTransform extends AbstractTaskImplementation {
 
 	@Override
 	public String monitorMessage() {
-		return "Plots the Gantt chart";
+		return "Plots the Gantt charts";
 	}
 
 }
