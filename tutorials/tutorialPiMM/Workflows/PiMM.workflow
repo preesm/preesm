@@ -47,6 +47,13 @@
             <dftools:variable name="path" value="DAG/dag"/>
         </dftools:data>
     </dftools:task>
+    <dftools:task
+        pluginId="org.ietr.preesm.experiment.memory.MultiMemoryExclusionGraphBuilder" taskId="MultiMemExBuilder">
+        <dftools:data key="variables">
+            <dftools:variable name="Suppr Fork/Join" value="? C {True, False}"/>
+            <dftools:variable name="Verbose" value="? C {True, False}"/>
+        </dftools:data>
+    </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="PiMM2SDF"/>
     <dftools:dataTransfer from="PiMM2SDF" sourceport="SDFs"
@@ -71,4 +78,8 @@
         targetport="scenario" to="MultiGantt"/>
     <dftools:dataTransfer from="MultiListScheduling" sourceport="DAGs"
         targetport="DAGs" to="MultiDAGExport"/>
+    <dftools:dataTransfer from="MultiListScheduling" sourceport="DAGs"
+        targetport="DAGs" to="MultiMemExBuilder"/>
+    <dftools:dataTransfer from="scenario" sourceport="scenario"
+        targetport="scenario" to="MultiMemExBuilder"/>
 </dftools:workflow>
