@@ -47,6 +47,17 @@
             </input>
          </inputs>
       </task>
+      <task
+            id="org.ietr.preesm.experiment.pimm.mapper.MultiDAGExportTransform"
+            name="Multi DAG Exporter"
+            type="org.ietr.preesm.experiment.pimm.mapper.MultiDAGExportTransform">
+         <inputs>
+            <input
+                  id="DAGs"
+                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph&gt;">
+            </input>
+         </inputs>
+      </task>
    </extension>
 
 </plugin>

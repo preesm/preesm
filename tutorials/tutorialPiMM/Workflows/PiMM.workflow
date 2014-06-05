@@ -41,6 +41,12 @@
         pluginId="org.ietr.preesm.experiment.pimm.mapper.MultiStatEditorTransform" taskId="MultiGantt">
         <dftools:data key="variables"/>
     </dftools:task>
+    <dftools:task
+        pluginId="org.ietr.preesm.experiment.pimm.mapper.MultiDAGExportTransform" taskId="MultiDAGExport">
+        <dftools:data key="variables">
+            <dftools:variable name="path" value="DAG/dag"/>
+        </dftools:data>
+    </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="PiMM2SDF"/>
     <dftools:dataTransfer from="PiMM2SDF" sourceport="SDFs"
@@ -63,4 +69,6 @@
         targetport="ABCs" to="MultiGantt"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="MultiGantt"/>
+    <dftools:dataTransfer from="MultiListScheduling" sourceport="DAGs"
+        targetport="DAGs" to="MultiDAGExport"/>
 </dftools:workflow>

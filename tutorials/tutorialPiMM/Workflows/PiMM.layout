@@ -9,5 +9,6 @@
       <vertex id="MultiSDFExporter2" x="859" y="80"/>
       <vertex id="MultiListScheduling" x="782" y="313"/>
       <vertex id="MultiGantt" x="988" y="221"/>
+      <vertex id="MultiDAGExport" x="999" y="476"/>
    </vertices>
 </layout>
