@@ -37,6 +37,10 @@
             <dftools:variable name="simulatorType" value="LooselyTimed"/>
         </dftools:data>
     </dftools:task>
+    <dftools:task
+        pluginId="org.ietr.preesm.experiment.pimm.mapper.MultiStatEditorTransform" taskId="MultiGantt">
+        <dftools:data key="variables"/>
+    </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="PiMM2SDF"/>
     <dftools:dataTransfer from="PiMM2SDF" sourceport="SDFs"
@@ -55,4 +59,8 @@
         targetport="architecture" to="MultiListScheduling"/>
     <dftools:dataTransfer from="MultiHSDFTransformation"
         sourceport="SDFs" targetport="SDFs" to="MultiListScheduling"/>
+    <dftools:dataTransfer from="MultiListScheduling" sourceport="ABCs"
+        targetport="ABCs" to="MultiGantt"/>
+    <dftools:dataTransfer from="scenario" sourceport="scenario"
+        targetport="scenario" to="MultiGantt"/>
 </dftools:workflow>

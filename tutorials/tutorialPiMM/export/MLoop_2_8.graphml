@@ -49,6 +49,11 @@
             <data key="kind">vertex</data>
             <data key="nbRepeat">1</data>
         </node>
+        <node id="F_2">
+            <data key="name">F_2</data>
+            <data key="kind">vertex</data>
+            <data key="nbRepeat">1</data>
+        </node>
         <node id="EndMLoop">
             <data key="name">EndMLoop</data>
             <data key="kind">vertex</data>
@@ -89,9 +94,9 @@
         </edge>
         <edge source="InitMLoop" sourceport="Line_out"
             target="explode_InitMLoop_Line_out" targetport="In">
-            <data key="edge_cons">2</data>
+            <data key="edge_cons">3</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">2</data>
+            <data key="edge_prod">3</data>
             <data key="data_type">char</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier">pure_in</data>
@@ -117,11 +122,21 @@
             <data key="target_port_modifier"/>
             <data key="Weight"/>
         </edge>
+        <edge source="explode_InitMLoop_Line_out"
+            sourceport="Line_out_2" target="F_2" targetport="In">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier"/>
+            <data key="Weight"/>
+        </edge>
         <edge source="implode_EndMLoop_Line_in" sourceport="Out"
             target="EndMLoop" targetport="Line_in">
-            <data key="edge_cons">2</data>
+            <data key="edge_cons">3</data>
             <data key="edge_delay">0</data>
-            <data key="edge_prod">2</data>
+            <data key="edge_prod">3</data>
             <data key="data_type">char</data>
             <data key="source_port_modifier">pure_out</data>
             <data key="target_port_modifier"/>
@@ -139,6 +154,16 @@
         </edge>
         <edge source="F_1" sourceport="Out"
             target="implode_EndMLoop_Line_in" targetport="Line_in_1">
+            <data key="edge_cons">1</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_prod">1</data>
+            <data key="data_type">char</data>
+            <data key="source_port_modifier"/>
+            <data key="target_port_modifier">pure_in</data>
+            <data key="Weight"/>
+        </edge>
+        <edge source="F_2" sourceport="Out"
+            target="implode_EndMLoop_Line_in" targetport="Line_in_2">
             <data key="edge_cons">1</data>
             <data key="edge_delay">0</data>
             <data key="edge_prod">1</data>
