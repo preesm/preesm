@@ -43,8 +43,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import org.eclipse.emf.ecore.EObject;
 import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
+import org.ietr.dftools.algorithm.model.CodeRefinement;
+import org.ietr.dftools.algorithm.model.IRefinement;
 import org.ietr.dftools.algorithm.model.parameters.ExpressionValue;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -281,17 +282,17 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitActor(Actor a) {
-//		if (!a.isConfigurationActor()) {
-			SDFVertex v = new SDFVertex();
-			v.setName(a.getName());
-			v.setInfo(a.getPath());
+		SDFVertex v = new SDFVertex();
+		v.setName(a.getName());
+		v.setInfo(a.getPath());
+		Refinement piRef = a.getRefinement();
+		IRefinement desc = new CodeRefinement(piRef.getFileName());
+		v.setRefinement(desc);
 
-			visitAbstractActor(a);
+		visitAbstractActor(a);
 
-			result.addVertex(v);
-			piVx2SDFVx.put(a, v);
-//		}
-
+		result.addVertex(v);
+		piVx2SDFVx.put(a, v);
 	}
 
 	@Override
@@ -301,14 +302,20 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 
 		if (source instanceof AbstractVertex
 				&& target instanceof AbstractVertex) {
-			
+
 			DataInputPort piTgtPort = f.getTargetPort();
 			DataOutputPort piSrcPort = f.getSourcePort();
 
+			SDFAbstractVertex sdfSource = piVx2SDFVx.get(source);
+			SDFAbstractVertex sdfTarget = piVx2SDFVx.get(target);
+			
 			SDFSinkInterfaceVertex sdfSrcPort = new SDFSinkInterfaceVertex();
 			sdfSrcPort.setName(piSrcPort.getName());
+			sdfSource.addSink(sdfSrcPort);
+			
 			SDFSourceInterfaceVertex sdfTgtPort = new SDFSourceInterfaceVertex();
 			sdfTgtPort.setName(piTgtPort.getName());
+			sdfTarget.addSource(sdfTgtPort);
 
 			AbstractEdgePropertyType<ExpressionValue> delay;
 			if (f.getDelay() != null) {
@@ -325,14 +332,14 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 			String piCons = piTgtPort.getExpression().evaluate();
 			AbstractEdgePropertyType<ExpressionValue> cons = new SDFExpressionEdgePropertyType(
 					new ExpressionValue(piCons));
-			
+
 			// Evaluate the expression wrt. the current values of the parameters
 			String piProd = piSrcPort.getExpression().evaluate();
 			AbstractEdgePropertyType<ExpressionValue> prod = new SDFExpressionEdgePropertyType(
-					new ExpressionValue(piProd));			
+					new ExpressionValue(piProd));
 
-			result.addEdge(piVx2SDFVx.get(source), sdfSrcPort,
-					piVx2SDFVx.get(target), sdfTgtPort, prod, cons, delay);
+			result.addEdge(sdfSource, sdfSrcPort,
+					sdfTarget, sdfTgtPort, prod, cons, delay);
 		}
 
 	}
@@ -361,42 +368,13 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitDataInputInterface(DataInputInterface dii) {
-		// Do not create a vertex for dii if it is only connected to
-		// ConfigurationActors
-//		if (!isConfiguratorInput(dii)) {
-			SDFSourceInterfaceVertex v = new SDFSourceInterfaceVertex();
-			v.setName(dii.getName());
+		SDFSourceInterfaceVertex v = new SDFSourceInterfaceVertex();
+		v.setName(dii.getName());
 
-			visitAbstractActor(dii);
+		visitAbstractActor(dii);
 
-			result.addVertex(v);
-			piVx2SDFVx.put(dii, v);
-//		}
-	}
-
-	/**
-	 * Checks all the targets of outgoing fifos of a DataInputInterface
-	 * 
-	 * @param dii
-	 *            the DataInputInterface we need to check
-	 * @return true if all the targets are ConfigurationActors, false otherwise
-	 */
-	private boolean isConfiguratorInput(DataInputInterface dii) {
-		boolean isConnectedOnlyToConfiguractor = true;
-		for (DataOutputPort dop : dii.getDataOutputPorts()) {
-			EObject container = dop.getOutgoingFifo().getTargetPort()
-					.eContainer();
-			if (container instanceof Actor) {
-				isConnectedOnlyToConfiguractor = ((Actor) container)
-						.isConfigurationActor();
-			} else {
-				isConnectedOnlyToConfiguractor = false;
-			}
-			if (!isConnectedOnlyToConfiguractor) {
-				break;
-			}
-		}
-		return isConnectedOnlyToConfiguractor;
+		result.addVertex(v);
+		piVx2SDFVx.put(dii, v);
 	}
 
 	@Override
