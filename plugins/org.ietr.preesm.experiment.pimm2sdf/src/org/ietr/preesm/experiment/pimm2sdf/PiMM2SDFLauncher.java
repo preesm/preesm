@@ -104,7 +104,7 @@ public class PiMM2SDFLauncher {
 			graph.accept(visitor);
 
 			SDFGraph sdf = visitor.getResult();
-			sdf.setName(sdf.getName() + "_" + i);
+			//sdf.setName(sdf.getName() + "_" + i);
 
 			result.add(sdf);
 		}
@@ -119,6 +119,11 @@ public class PiMM2SDFLauncher {
 			if (paramValue.getType() == ParameterType.DYNAMIC) {
 				result.put(paramValue.getName(), new ArrayList<Integer>(
 						paramValue.getValues()));
+			}
+			else if (paramValue.getType() == ParameterType.STATIC) {
+				List<Integer> values = new ArrayList<Integer>();
+				values.add(paramValue.getValue());
+				result.put(paramValue.getName(), values);
 			}
 		}
 
