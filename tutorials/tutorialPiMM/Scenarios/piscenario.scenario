@@ -15,8 +15,8 @@
             <task name="doubleLoop"/>
             <task name="doubleLoop/MLoop/ConfigM"/>
             <task name="doubleLoop/MLoop/EndMLoop"/>
-            <task name="doubleLoop/MLoop/M_in"/>
             <task name="doubleLoop/MLoop/InitMLoop"/>
+            <task name="doubleLoop/MLoop/M_in"/>
             <task name="doubleLoop/WriteFile"/>
             <task name="doubleLoop/BroadCast"/>
             <task name="doubleLoop/EndNLoop"/>
@@ -34,7 +34,11 @@
         <mainCore>Core0</mainCore>
         <mainComNode>shared_mem</mainComNode>
         <averageDataSize>1000</averageDataSize>
-        <dataTypes/>
+        <dataTypes>
+            <dataType name="short" size="2"/>
+            <dataType name="char" size="1"/>
+            <dataType name="uchar" size="1"/>
+        </dataTypes>
         <specialVertexOperators>
             <specialVertexOperator path="Core0"/>
         </specialVertexOperators>
@@ -42,10 +46,10 @@
     </simuParams>
     <variables excelUrl=""/>
     <parameterValues>
-        <parameter name="nbSamples" parent="mpSched" type="STATIC" value="0"/>
+        <parameter name="M" parent="UserFIRs" type="DYNAMIC" value="[1, 2, 3]"/>
         <parameter name="NMAX" parent="mpSched" type="STATIC" value="0"/>
         <parameter name="nbSamples2" parent="UserFIRs" type="STATIC" value="0"/>
+        <parameter name="nbSamples" parent="mpSched" type="STATIC" value="0"/>
         <parameter name="N" parent="mpSched" type="DYNAMIC" value="[4, 5]"/>
-        <parameter name="M" parent="UserFIRs" type="DYNAMIC" value="[1, 2, 3]"/>
     </parameterValues>
 </scenario>

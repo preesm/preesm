@@ -15,6 +15,7 @@
     <key attr.name="data_type" attr.type="string" for="edge"/>
     <key attr.name="source_port_modifier" attr.type="string" for="edge"/>
     <key attr.name="target_port_modifier" attr.type="string" for="edge"/>
+    <key attr.name="Weight" attr.type="string" for="edge"/>
     <graph edgedefault="directed" kind="sdf">
         <data key="name">doubleLoop_1</data>
         <data key="kind">sdf</data>
@@ -105,6 +106,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="BroadCast" sourceport="out2" target="InitNLoop" targetport="M_in">
             <data key="edge_cons">1</data>
@@ -113,6 +115,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="InitNLoop" sourceport="M_out"
             target="explode_InitNLoop_M_out" targetport="M_in">
@@ -122,6 +125,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier">pure_in</data>
+            <data key="Weight"/>
         </edge>
         <edge source="explode_InitNLoop_M_out" sourceport="M_out_0"
             target="MLoop_0" targetport="M_in">
@@ -131,6 +135,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier">pure_out</data>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="explode_InitNLoop_M_out" sourceport="M_out_1"
             target="MLoop_1" targetport="M_in">
@@ -140,6 +145,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier">pure_out</data>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="explode_InitNLoop_M_out" sourceport="M_out_2"
             target="MLoop_2" targetport="M_in">
@@ -149,6 +155,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier">pure_out</data>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="explode_InitNLoop_M_out" sourceport="M_out_3"
             target="MLoop_3" targetport="M_in">
@@ -158,6 +165,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier">pure_out</data>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="explode_InitNLoop_M_out" sourceport="M_out_4"
             target="MLoop_4" targetport="M_in">
@@ -167,6 +175,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier">pure_out</data>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="InitNLoop" sourceport="Array_out"
             target="explode_InitNLoop_Array_out" targetport="Line_in">
@@ -176,6 +185,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier">pure_in</data>
+            <data key="Weight"/>
         </edge>
         <edge source="explode_InitNLoop_Array_out"
             sourceport="Array_out_0" target="MLoop_0" targetport="Line_in">
@@ -185,6 +195,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier">pure_out</data>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="explode_InitNLoop_Array_out"
             sourceport="Array_out_1" target="MLoop_1" targetport="Line_in">
@@ -194,6 +205,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier">pure_out</data>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="explode_InitNLoop_Array_out"
             sourceport="Array_out_2" target="MLoop_2" targetport="Line_in">
@@ -203,6 +215,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier">pure_out</data>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="explode_InitNLoop_Array_out"
             sourceport="Array_out_3" target="MLoop_3" targetport="Line_in">
@@ -212,6 +225,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier">pure_out</data>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="explode_InitNLoop_Array_out"
             sourceport="Array_out_4" target="MLoop_4" targetport="Line_in">
@@ -221,6 +235,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier">pure_out</data>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="implode_EndNLoop_Array_in" sourceport="Line_out"
             target="EndNLoop" targetport="Array_in">
@@ -230,6 +245,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier">pure_out</data>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="MLoop_0" sourceport="Line_out"
             target="implode_EndNLoop_Array_in" targetport="Array_in_0">
@@ -239,6 +255,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier">pure_in</data>
+            <data key="Weight"/>
         </edge>
         <edge source="MLoop_1" sourceport="Line_out"
             target="implode_EndNLoop_Array_in" targetport="Array_in_1">
@@ -248,6 +265,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier">pure_in</data>
+            <data key="Weight"/>
         </edge>
         <edge source="MLoop_2" sourceport="Line_out"
             target="implode_EndNLoop_Array_in" targetport="Array_in_2">
@@ -257,6 +275,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier">pure_in</data>
+            <data key="Weight"/>
         </edge>
         <edge source="MLoop_3" sourceport="Line_out"
             target="implode_EndNLoop_Array_in" targetport="Array_in_3">
@@ -266,6 +285,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier">pure_in</data>
+            <data key="Weight"/>
         </edge>
         <edge source="MLoop_4" sourceport="Line_out"
             target="implode_EndNLoop_Array_in" targetport="Array_in_4">
@@ -275,6 +295,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier">pure_in</data>
+            <data key="Weight"/>
         </edge>
         <edge source="EndNLoop" sourceport="Array_out"
             target="WriteFile" targetport="Array">
@@ -284,6 +305,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="BroadCast" sourceport="out1" target="WriteFile" targetport="M">
             <data key="edge_cons">1</data>
@@ -292,6 +314,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="ReadFile" sourceport="Array" target="RB1" targetport="in">
             <data key="edge_cons">1</data>
@@ -300,6 +323,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="RB0" sourceport="out" target="BroadCast" targetport="in">
             <data key="edge_cons">1</data>
@@ -308,6 +332,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="RB1" sourceport="out" target="InitNLoop" targetport="Array_in">
             <data key="edge_cons">1</data>
@@ -316,6 +341,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
     </graph>
 </graphml>

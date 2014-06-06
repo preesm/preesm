@@ -54,6 +54,17 @@
             <dftools:variable name="Verbose" value="? C {True, False}"/>
         </dftools:data>
     </dftools:task>
+    <dftools:task
+        pluginId="org.ietr.preesm.experiment.memory.MultiMemoryAllocator" taskId="MultiMemAlloc">
+        <dftools:data key="variables">
+            <dftools:variable name="Allocator(s)" value="Basic"/>
+            <dftools:variable name="Best/First Fit order" value="LargestFirst"/>
+            <dftools:variable name="Data alignment" value="Data"/>
+            <dftools:variable name="Merge broadcasts" value="? C {True, False}"/>
+            <dftools:variable name="Nb of Shuffling Tested" value="10"/>
+            <dftools:variable name="Verbose" value="True"/>
+        </dftools:data>
+    </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="PiMM2SDF"/>
     <dftools:dataTransfer from="PiMM2SDF" sourceport="SDFs"
@@ -82,4 +93,6 @@
         targetport="DAGs" to="MultiMemExBuilder"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="MultiMemExBuilder"/>
+    <dftools:dataTransfer from="MultiMemExBuilder" sourceport="MemExs"
+        targetport="MemExs" to="MultiMemAlloc"/>
 </dftools:workflow>

@@ -15,6 +15,7 @@
     <key attr.name="data_type" attr.type="string" for="edge"/>
     <key attr.name="source_port_modifier" attr.type="string" for="edge"/>
     <key attr.name="target_port_modifier" attr.type="string" for="edge"/>
+    <key attr.name="Weight" attr.type="string" for="edge"/>
     <graph edgedefault="directed" kind="sdf">
         <data key="name">MLoop_1_6.graphml</data>
         <data key="kind">sdf</data>
@@ -60,6 +61,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="Line_in" sourceport="" target="InitMLoop" targetport="Line">
             <data key="edge_cons">1.0</data>
@@ -68,6 +70,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="InitMLoop" sourceport="Line_out" target="F" targetport="In">
             <data key="edge_cons">1.0</data>
@@ -76,6 +79,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="F" sourceport="Out" target="EndMLoop" targetport="Line_in">
             <data key="edge_cons">1.0</data>
@@ -84,6 +88,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
         <edge source="EndMLoop" sourceport="Line_out" target="Line_out" targetport="">
             <data key="edge_cons">1.0</data>
@@ -92,6 +97,7 @@
             <data key="data_type">char</data>
             <data key="source_port_modifier"/>
             <data key="target_port_modifier"/>
+            <data key="Weight"/>
         </edge>
     </graph>
 </graphml>
