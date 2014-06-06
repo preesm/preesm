@@ -65,6 +65,12 @@
             <dftools:variable name="Verbose" value="True"/>
         </dftools:data>
     </dftools:task>
+    <dftools:task
+        pluginId="org.ietr.preesm.experiment.codegen.xtend.MultiCodegenTask" taskId="MultiCodegen">
+        <dftools:data key="variables">
+            <dftools:variable name="Printer" value="C"/>
+        </dftools:data>
+    </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="PiMM2SDF"/>
     <dftools:dataTransfer from="PiMM2SDF" sourceport="SDFs"
@@ -95,4 +101,10 @@
         targetport="scenario" to="MultiMemExBuilder"/>
     <dftools:dataTransfer from="MultiMemExBuilder"
         sourceport="DAGsAndMemExs" targetport="DAGsAndMemExs" to="MultiMemAlloc"/>
+    <dftools:dataTransfer from="MultiMemAlloc"
+        sourceport="DAGsAndMemExs" targetport="DAGsAndMemExs" to="MultiCodegen"/>
+    <dftools:dataTransfer from="scenario" sourceport="scenario"
+        targetport="scenario" to="MultiCodegen"/>
+    <dftools:dataTransfer from="scenario" sourceport="architecture"
+        targetport="architecture" to="MultiCodegen"/>
 </dftools:workflow>
