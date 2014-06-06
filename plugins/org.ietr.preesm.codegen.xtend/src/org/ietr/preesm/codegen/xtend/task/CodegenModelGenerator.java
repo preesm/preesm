@@ -48,7 +48,9 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.ECollections;
@@ -57,8 +59,8 @@ import org.ietr.dftools.algorithm.iterators.DAGIterator;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
 import org.ietr.dftools.algorithm.model.CodeRefinement;
-import org.ietr.dftools.algorithm.model.IInterface;
 import org.ietr.dftools.algorithm.model.CodeRefinement.Language;
+import org.ietr.dftools.algorithm.model.IInterface;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
@@ -79,6 +81,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
+import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.IDLPrototypeFactory;
 import org.ietr.preesm.codegen.idl.Prototype;
@@ -111,7 +114,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
@@ -175,18 +177,13 @@ public class CodegenModelGenerator {
 	 */
 	private PreesmScenario scenario;
 
+	private Workflow workflow;
+	
 	/**
 	 * This {@link Map} associates each {@link ComponentInstance} to its
 	 * corresponding {@link CoreBlock}.
 	 */
 	protected Map<ComponentInstance, CoreBlock> coreBlocks;
-
-	/**
-	 * This {@link SDFGraph} is the original hierarchical {@link SDFGraph}
-	 * parsed by the scenario. It will be used to retrieve the original location
-	 * of the different IDL and Graphml files.
-	 */
-	protected SDFGraph originalSDF;
 
 	/**
 	 * This {@link Map} associates each {@link BufferProperties} aggregated in
@@ -257,11 +254,12 @@ public class CodegenModelGenerator {
 	 */
 	public CodegenModelGenerator(final Design archi,
 			final DirectedAcyclicGraph dag, final MemoryExclusionGraph memEx,
-			final PreesmScenario scenario) throws CodegenException {
+			final PreesmScenario scenario, Workflow workflow) throws CodegenException {
 		this.archi = archi;
 		this.dag = dag;
 		this.memEx = memEx;
 		this.scenario = scenario;
+		this.workflow = workflow;
 
 		checkInputs(this.archi, this.dag, this.memEx);
 		this.bufferNames = new HashMap<String, Integer>();
@@ -272,14 +270,6 @@ public class CodegenModelGenerator {
 		this.dagVertexCalls = HashBiMap.create(dag.vertexSet().size());
 		this.communications = new HashMap<String, List<Communication>>();
 		this.popFifoCalls = new HashMap<SDFInitVertex, FifoCall>();
-		try {
-			originalSDF = ScenarioParser.getSDFGraph(scenario
-					.getAlgorithmURL());
-		} catch (Exception e) {
-			// This exception should never happen here. as the algorithm is
-			// parsed at the beginning of the workflow execution.
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -1122,7 +1112,8 @@ public class CodegenModelGenerator {
 
 			// // Retrieve the variable from its context (i.e. from its original
 			// // (sub)graph)
-			// org.ietr.dftools.algorithm.model.parameters.Variable originalVar =
+			// org.ietr.dftools.algorithm.model.parameters.Variable originalVar
+			// =
 			// originalSDF
 			// .getHierarchicalVertexFromPath(sdfVertex.getInfo())
 			// .getBase().getVariables().getVariable(actorParam.getName());
@@ -1896,14 +1887,13 @@ public class CodegenModelGenerator {
 
 		// Retrieve the IDL File
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		String path = originalSDF
-				.getHierarchicalVertexFromPath(sdfVertex.getInfo()).getBase()
-				.getPropertyStringValue(AbstractGraph.PATH);
-
-		IFile algoFile = workspace.getRoot().getFileForLocation(new Path(path));
-
-		IFile idlFile = algoFile.getParent().getFile(
-				new Path(((CodeRefinement) refinement).getName()));
+		IWorkspaceRoot root = workspace.getRoot(); 
+		
+		String projectName = workflow.getProjectName();
+		IProject project = root.getProject(projectName);
+		
+		String path = project.getLocation() + "/Code/IDL/" + ((CodeRefinement) refinement).getName();
+		IFile idlFile = workspace.getRoot().getFileForLocation(new Path(path));
 
 		// Retrieve the ActorPrototype
 		ActorPrototypes prototypes = IDLPrototypeFactory.INSTANCE

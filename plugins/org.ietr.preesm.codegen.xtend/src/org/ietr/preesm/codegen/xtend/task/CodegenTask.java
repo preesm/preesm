@@ -48,7 +48,7 @@ public class CodegenTask extends AbstractTaskImplementation {
 
 		// Generate intermediate model
 		CodegenModelGenerator generator = new CodegenModelGenerator(archi, dag,
-				memEx, scenario);
+				memEx, scenario, workflow);
 
 		List<Block> codeBlocks = new ArrayList<>(generator.generate());
 
