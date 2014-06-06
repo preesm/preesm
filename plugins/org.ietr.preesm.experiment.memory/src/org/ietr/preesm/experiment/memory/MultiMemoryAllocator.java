@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
@@ -22,9 +23,12 @@ public class MultiMemoryAllocator extends AbstractMemoryAllocatorTask {
 		this.init(parameters);
 
 		// Retrieve the input of the task
-		Set<MemoryExclusionGraph> memExs = (Set<MemoryExclusionGraph>) inputs.get("MemExs");
-
-		for (MemoryExclusionGraph memEx : memExs) {
+		Map<DirectedAcyclicGraph, MemoryExclusionGraph> dagsAndMemExs = (Map<DirectedAcyclicGraph, MemoryExclusionGraph>) inputs
+				.get(KEY_DAG_AND_MEM_EX_MAP);
+		
+		for (DirectedAcyclicGraph dag : dagsAndMemExs.keySet()) {
+			MemoryExclusionGraph memEx = dagsAndMemExs.get(dag);
+			
 			// Prepare the MEG with the alignment
 			MemoryAllocator.alignSubBuffers(memEx, alignment);
 	
@@ -52,7 +56,7 @@ public class MultiMemoryAllocator extends AbstractMemoryAllocatorTask {
 		}
 		
 		Map<String, Object> output = new HashMap<String, Object>();
-		output.put(KEY_MEM_EX_SET, memExs);
+		output.put(KEY_DAG_AND_MEM_EX_MAP, dagsAndMemExs);
 		return output;
 	}
 

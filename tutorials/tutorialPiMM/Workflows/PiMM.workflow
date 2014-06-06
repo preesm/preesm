@@ -93,6 +93,6 @@
         targetport="DAGs" to="MultiMemExBuilder"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="MultiMemExBuilder"/>
-    <dftools:dataTransfer from="MultiMemExBuilder" sourceport="MemExs"
-        targetport="MemExs" to="MultiMemAlloc"/>
+    <dftools:dataTransfer from="MultiMemExBuilder"
+        sourceport="DAGsAndMemExs" targetport="DAGsAndMemExs" to="MultiMemAlloc"/>
 </dftools:workflow>

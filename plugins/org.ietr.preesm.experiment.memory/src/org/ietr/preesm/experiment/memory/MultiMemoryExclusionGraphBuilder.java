@@ -1,7 +1,6 @@
 package org.ietr.preesm.experiment.memory;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -61,9 +60,8 @@ public class MultiMemoryExclusionGraphBuilder extends
 		Set<DirectedAcyclicGraph> dags = (Set<DirectedAcyclicGraph>) inputs
 				.get("DAGs");
 
-		Set<DirectedAcyclicGraph> localDags = new HashSet<DirectedAcyclicGraph>();
-		Set<MemoryExclusionGraph> memExs = new HashSet<MemoryExclusionGraph>();
-		
+		Map<DirectedAcyclicGraph, MemoryExclusionGraph> dagsAndMemExs = new HashMap<DirectedAcyclicGraph, MemoryExclusionGraph>();
+
 		for (DirectedAcyclicGraph dag : dags) {
 			// Clone is deep copy i.e. vertices are thus copied too.
 			DirectedAcyclicGraph localDAG = (DirectedAcyclicGraph) dag.clone();
@@ -93,15 +91,13 @@ public class MultiMemoryExclusionGraphBuilder extends
 				logger.log(Level.INFO, "Memory exclusion graph built with "
 						+ memEx.vertexSet().size() + " vertices and density = "
 						+ density);
-			
-			localDags.add(localDAG);
-			memExs.add(memEx);
+
+			dagsAndMemExs.put(localDAG, memEx);
 		}
 
 		// Generate output
 		Map<String, Object> output = new HashMap<String, Object>();
-		output.put(KEY_MEM_EX_SET, memExs);
-		output.put(KEY_SDF_DAG_SET, localDags);
+		output.put(KEY_DAG_AND_MEM_EX_MAP, dagsAndMemExs);
 		return output;
 	}
 
