@@ -40,6 +40,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -123,6 +124,9 @@ public class PreesmScenario {
 	 */
 	private String scenarioURL = "";
 
+	// Map from DAGs names to SDFGraphs from which they are generated
+	private Map<String, SDFGraph> dags2sdfs;
+	
 	public PreesmScenario() {
 		constraintgroupmanager = new ConstraintGroupManager();
 		relativeconstraintmanager = new RelativeConstraintManager();
@@ -131,6 +135,7 @@ public class PreesmScenario {
 		codegenManager = new CodegenManager();
 		variablesManager = new VariablesManager();
 		parameterValueManager = new ParameterValueManager();
+		dags2sdfs = new HashMap<String, SDFGraph>();
 	}
 
 	public boolean isPISDFScenario() {
@@ -303,5 +308,9 @@ public class PreesmScenario {
 			operatorIds.clear();
 			operatorDefinitionIds.clear();
 		}
+	}
+	
+	public Map<String, SDFGraph> getDAGs2SDFs() {
+		return dags2sdfs;
 	}
 }

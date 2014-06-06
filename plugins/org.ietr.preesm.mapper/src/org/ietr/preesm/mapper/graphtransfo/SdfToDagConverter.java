@@ -144,6 +144,8 @@ public class SdfToDagConverter {
 							+ " edges.");
 		}
 
+		scenario.getDAGs2SDFs().put(dag.getName(), sdfIn);
+		
 		return dag;
 	}
 
