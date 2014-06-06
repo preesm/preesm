@@ -35,11 +35,15 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.ui.pimm.util;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.platform.IDiagramBehavior;
+import org.eclipse.graphiti.platform.IDiagramEditor;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -107,9 +111,15 @@ public class PiMMUtil {
 		String ret = null;
 		Shell shell = getShell();
 		
+		// For now, authorized refinements are other PiGraphs (.pi files) and .idl prototypes
+		Set<String> fileExtensions = new HashSet<String>();
+		fileExtensions.add("pi");
+		fileExtensions.add("idl");
+		FileContentProvider contentProvider = new FileContentProvider(fileExtensions);
+		
 		ElementTreeSelectionDialog inputDialog = new ElementTreeSelectionDialog(shell,
 				WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(),
-				new FileContentProvider("pi"));
+				contentProvider);
 		inputDialog.setAllowMultiple(false);
 		inputDialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
 		inputDialog.setMessage(dialogMessage);
