@@ -127,7 +127,7 @@ public class PiMMUtil {
 		
 		int retDialog = inputDialog.open();
 		if (retDialog == Window.OK) {
-			ret = ((IFile)(inputDialog.getResult()[0])).getLocation().lastSegment();
+			ret = ((IFile)(inputDialog.getResult()[0])).getLocation().toOSString();
 			
 		}
 		return ret;
