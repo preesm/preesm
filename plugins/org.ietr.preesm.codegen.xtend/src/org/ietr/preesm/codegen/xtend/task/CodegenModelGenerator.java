@@ -1887,17 +1887,20 @@ public class CodegenModelGenerator {
 
 		// Retrieve the IDL File
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IWorkspaceRoot root = workspace.getRoot(); 
+		IWorkspaceRoot root = workspace.getRoot();		
 		
-		String projectName = workflow.getProjectName();
-		IProject project = root.getProject(projectName);
-		
-		String path = project.getLocation() + "/Code/IDL/" + ((CodeRefinement) refinement).getName();
-		IFile idlFile = workspace.getRoot().getFileForLocation(new Path(path));
+		Path path = new Path(((CodeRefinement) refinement).getName());
+		if (!path.isAbsolute()) {
+			String projectName = workflow.getProjectName();
+			IProject project = root.getProject(projectName);
+			path = new Path(project.getLocation() + path.toString().substring(2));
+		}
+		IFile idlFile = workspace.getRoot().getFileForLocation(path);
 
 		// Retrieve the ActorPrototype
+		String rawLocation = idlFile.getRawLocation().toOSString();
 		ActorPrototypes prototypes = IDLPrototypeFactory.INSTANCE
-				.create(idlFile.getRawLocation().toOSString());
+				.create(rawLocation);
 		return prototypes;
 	}
 
