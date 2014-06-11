@@ -203,7 +203,7 @@ public class SimulationPage extends FormPage implements IPropertyListener {
 			@Override
 			public void modifyText(ModifyEvent e) {
 				Text text = (Text) e.getSource();
-				int number = 0;
+				int number = 1;
 				try {
 					number = Integer.valueOf(text.getText());
 					scenario.getSimulationManager().setNumberOfTopExecutions(
