@@ -92,7 +92,7 @@ public class MultiMemoryExclusionGraphBuilder extends
 						+ memEx.vertexSet().size() + " vertices and density = "
 						+ density);
 
-			dagsAndMemExs.put(localDAG, memEx);
+			dagsAndMemExs.put(dag, memEx);
 		}
 
 		// Generate output

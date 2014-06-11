@@ -124,7 +124,6 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
 		// Generate output
 		Map<String, Object> output = new HashMap<String, Object>();
 		output.put(KEY_MEM_EX, memEx);
-		output.put(KEY_SDF_DAG, localDAG);
 		return output;
 	}
 
