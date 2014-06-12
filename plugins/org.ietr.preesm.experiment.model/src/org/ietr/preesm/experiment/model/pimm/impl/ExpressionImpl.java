@@ -53,24 +53,25 @@ import com.singularsys.jep.JepException;
 import com.singularsys.jep.ParseException;
 
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Expression</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '
+ * <em><b>Expression</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl#getString <em>String</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl#getString
+ * <em>String</em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @generated
  */
 public class ExpressionImpl extends EObjectImpl implements Expression {
-	
+
 	/**
-	 * The default value of the '{@link #getString() <em>String</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The default value of the '{@link #getString() <em>String</em>}'
+	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getString()
 	 * @generated
 	 * @ordered
@@ -78,16 +79,17 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 	protected static final String STRING_EDEFAULT = "0";
 	/**
 	 * The cached value of the '{@link #getString() <em>String</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getString()
 	 * @generated
 	 * @ordered
 	 */
 	protected String string = STRING_EDEFAULT;
+
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected ExpressionImpl() {
@@ -95,8 +97,8 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -105,8 +107,8 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public String getString() {
@@ -114,139 +116,150 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public void setString(String newString) {
 		String oldString = string;
 		string = newString;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.EXPRESSION__STRING, oldString, string));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					PiMMPackage.EXPRESSION__STRING, oldString, string));
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * Evaluate expression of the class for which it is called.
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> Evaluate expression of the class for which it is
+	 * called. <!-- end-user-doc -->
+	 * 
 	 * @return the result of the expression evaluated as an int.
 	 */
-	public String evaluate(){
+	public String evaluate() {
 		String allExpression = getString();
 		Jep jep = new Jep();
-		
+
 		Parameterizable parameterizableObj;
-		if(this.eContainer() instanceof Parameterizable){
+		if (this.eContainer() instanceof Parameterizable) {
 			parameterizableObj = (Parameterizable) this.eContainer();
-		}else if(this.eContainer().eContainer() instanceof Parameterizable){
-			parameterizableObj = (Parameterizable) this.eContainer().eContainer();
-		}else{
+		} else if (this.eContainer().eContainer() instanceof Parameterizable) {
+			parameterizableObj = (Parameterizable) this.eContainer()
+					.eContainer();
+		} else {
 			return "Neither a child of Parameterizable nor a child of a child of Parameterizable";
 		}
-		
+
 		try {
-			for (ConfigInputPort port : parameterizableObj.getConfigInputPorts()) {
-				if(port.getIncomingDependency() != null
-						&& port.getIncomingDependency().getSetter() instanceof Parameter){
-					Parameter p = (Parameter) port.getIncomingDependency().getSetter();
-					
+			for (ConfigInputPort port : parameterizableObj
+					.getConfigInputPorts()) {
+				if (port.getIncomingDependency() != null
+						&& port.getIncomingDependency().getSetter() instanceof Parameter) {
+					Parameter p = (Parameter) port.getIncomingDependency()
+							.getSetter();
+
 					String parameterName;
-					if(parameterizableObj instanceof Parameter || parameterizableObj instanceof Delay)
+					if (parameterizableObj instanceof Parameter
+							|| parameterizableObj instanceof Delay)
 						parameterName = p.getName();
 					else
 						parameterName = port.getName();
-					
+
 					String evaluatedParam;
-					if(p.isConfigurationInterface())
+					if (p.isConfigurationInterface())
 						// TODO Handle config input interface
-						evaluatedParam =  "0";
+						evaluatedParam = "0";
 					else
-						evaluatedParam =  p.getExpression().evaluate();
-					
-					jep.addVariable(parameterName, evaluatedParam);
+						evaluatedParam = p.getExpression().evaluate();
+
+					jep.addVariable(parameterName, Double.parseDouble(evaluatedParam));
 				}
 			}
+
+			jep.parse(allExpression);
 			
-			jep.parse(allExpression);			
-			return jep.evaluate().toString();
+			String evaluation = jep.evaluate().toString();
 			
+			return evaluation;
+
 		} catch (ParseException e) {
-			return "Parsing Error, check expression syntax"+" : "+allExpression;
+			return "Parsing Error, check expression syntax" + " : "
+					+ allExpression;
 		} catch (EvaluationException e) {
-			return "Evaluation Error, check parameter dependecies"+" : "+allExpression; 
-		}catch (JepException e) {
-			return "Error in parameter subtitution"+" : "+allExpression;
+			return "Evaluation Error, check parameter dependencies" + " : "
+					+ allExpression;
+		} catch (JepException e) {
+			return "Error in parameter subtitution" + " : " + allExpression;
 		}
-				
+
 	}
-	
-	
+
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case PiMMPackage.EXPRESSION__STRING:
-				return getString();
+		case PiMMPackage.EXPRESSION__STRING:
+			return getString();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case PiMMPackage.EXPRESSION__STRING:
-				setString((String)newValue);
-				return;
+		case PiMMPackage.EXPRESSION__STRING:
+			setString((String) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case PiMMPackage.EXPRESSION__STRING:
-				setString(STRING_EDEFAULT);
-				return;
+		case PiMMPackage.EXPRESSION__STRING:
+			setString(STRING_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case PiMMPackage.EXPRESSION__STRING:
-				return STRING_EDEFAULT == null ? string != null : !STRING_EDEFAULT.equals(string);
+		case PiMMPackage.EXPRESSION__STRING:
+			return STRING_EDEFAULT == null ? string != null : !STRING_EDEFAULT
+					.equals(string);
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy()) return super.toString();
+		if (eIsProxy())
+			return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (string: ");
@@ -260,6 +273,4 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 		v.visitExpression(this);
 	}
 
-	
-	
-} //ExpressionImpl
+} // ExpressionImpl

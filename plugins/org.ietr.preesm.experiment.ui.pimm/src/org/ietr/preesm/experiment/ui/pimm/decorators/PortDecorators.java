@@ -49,8 +49,7 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
- * Class providing methods to retrieve the {@link IDecorator} of a
- * {@link Port}
+ * Class providing methods to retrieve the {@link IDecorator} of a {@link Port}
  * 
  * @author jheulot
  * 
@@ -70,7 +69,7 @@ public class PortDecorators {
 	public static IDecorator[] getDecorators(Port port, PictogramElement pe) {
 
 		List<IDecorator> decorators = new ArrayList<IDecorator>();
-		
+
 		// Check if the actor is a configuration actor
 		IDecorator portDecorator = getPortExpressionDecorator(port, pe);
 		if (portDecorator != null) {
@@ -84,8 +83,8 @@ public class PortDecorators {
 	}
 
 	/**
-	 * Get the {@link IDecorator} indicating if the
-	 * {@link Port} have a valid expression.
+	 * Get the {@link IDecorator} indicating if the {@link Port} have a valid
+	 * expression.
 	 * 
 	 * @param port
 	 *            the {@link Port} to test
@@ -93,25 +92,36 @@ public class PortDecorators {
 	 *            the {@link PictogramElement} of the {@link Port}
 	 * @return the {@link IDecorator} or <code>null</code>.
 	 */
-	protected static IDecorator getPortExpressionDecorator(Port port, PictogramElement pe) {
+	protected static IDecorator getPortExpressionDecorator(Port port,
+			PictogramElement pe) {
 		ImageDecorator imageRenderingDecorator = new ImageDecorator(
 				IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
 		imageRenderingDecorator.setMessage("Problems in parameter resolution");
-		
-		BoxRelativeAnchor a = (BoxRelativeAnchor)pe;
-		
-		if(port instanceof DataInputPort){
-			if(((DataInputPort)port).getExpression().evaluate().contains("Error")){
+
+		BoxRelativeAnchor a = (BoxRelativeAnchor) pe;
+
+		if (port instanceof DataInputPort) {
+			String evaluation = ((DataInputPort) port).getExpression()
+					.evaluate();
+
+			if (evaluation.contains("Error")) {
 				imageRenderingDecorator.setX(-5);
-				imageRenderingDecorator.setY((int)(a.getRelativeHeight()*a.getReferencedGraphicsAlgorithm().getHeight())-1);
+				imageRenderingDecorator.setY((int) (a.getRelativeHeight() * a
+						.getReferencedGraphicsAlgorithm().getHeight()) - 1);
 
 				return imageRenderingDecorator;
 			}
 		}
-		if(port instanceof DataOutputPort && !(port instanceof ConfigOutputPort)){			
-			if(((DataOutputPort)port).getExpression().evaluate().contains("Error")){				
-				imageRenderingDecorator.setX(a.getReferencedGraphicsAlgorithm().getWidth()-13);
-				imageRenderingDecorator.setY((int)(a.getRelativeHeight()*a.getReferencedGraphicsAlgorithm().getHeight())-1);
+		if (port instanceof DataOutputPort
+				&& !(port instanceof ConfigOutputPort)) {
+			String evaluation = ((DataOutputPort) port).getExpression()
+					.evaluate();
+
+			if (evaluation.contains("Error")) {
+				imageRenderingDecorator.setX(a.getReferencedGraphicsAlgorithm()
+						.getWidth() - 13);
+				imageRenderingDecorator.setY((int) (a.getRelativeHeight() * a
+						.getReferencedGraphicsAlgorithm().getHeight()) - 1);
 
 				return imageRenderingDecorator;
 			}
