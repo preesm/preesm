@@ -41,6 +41,23 @@
             </output>
          </outputs>
       </task>
+      <task
+            id="org.ietr.preesm.experiment.memory.MultiMemExUpdater"
+            name="Multi Memory Exclusion Graph Updater"
+            type="org.ietr.preesm.experiment.memory.MultiMemExUpdater">
+         <inputs>
+            <input
+                  id="DAGsAndMemExs"
+                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="DAGsAndMemExs"
+                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+            </output>
+         </outputs>
+      </task>
    </extension>
 
 </plugin>

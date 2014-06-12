@@ -38,16 +38,11 @@ package org.ietr.preesm.memory.exclusiongraph;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
-import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.algorithm.transforms.ForkJoinRemover;
 
 /**
  * Workflow element that takes a Scheduled DAG and a MemEx as inputs and update
@@ -56,119 +51,34 @@ import org.ietr.preesm.algorithm.transforms.ForkJoinRemover;
  * @author kdesnos
  * 
  */
-public class MemExUpdater extends AbstractTaskImplementation {
-
-	static final public String PARAM_VERBOSE = "Verbose";
-
-	static final public String PARAM_LIFETIME = "Update with MemObject lifetime";
-	
-	static final public String PARAM_SUPPR_FORK_JOIN = "Suppr Fork/Join";
-	static final public String VALUE_TRUE_FALSE_DEFAULT = "? C {True, False}";
-	static final public String VALUE_TRUE = "True";
-	static final public String VALUE_FALSE = "False";
-
-	static final public String OUTPUT_KEY_MEM_EX = "MemEx";
+public class MemExUpdater extends AbstractMemExUpdater {
 
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName, Workflow workflow) throws WorkflowException {
 
-		// Rem: Logger is used to display messages in the console
-		Logger logger = WorkflowLogger.getLogger();
-
 		// Check Workflow element parameters
 		String valueVerbose = parameters.get(PARAM_VERBOSE);
-		boolean verbose;
-		verbose = valueVerbose.equals(VALUE_TRUE);
+		boolean verbose = valueVerbose.equals(VALUE_TRUE);
 
 		String valueLifetime = parameters.get(PARAM_LIFETIME);
-		boolean lifetime;
-		lifetime = valueLifetime.equals(VALUE_TRUE);
-		
+		boolean lifetime = valueLifetime.equals(VALUE_TRUE);
+
 		String valueSupprForkJoin = parameters.get(PARAM_SUPPR_FORK_JOIN);
-		boolean forkJoin;
-		forkJoin = valueSupprForkJoin.equals(VALUE_TRUE);
+		boolean forkJoin = valueSupprForkJoin.equals(VALUE_TRUE);
 
 		// Retrieve inputs
 		DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 		MemoryExclusionGraph memEx = (MemoryExclusionGraph) inputs.get("MemEx");
 
-		int before = memEx.edgeSet().size();
-		
-		// Make a copy of the Input DAG for treatment
-				// Clone is deep copy i.e. vertices are thus copied too.
-				DirectedAcyclicGraph localDAG = (DirectedAcyclicGraph) dag.clone();
-				if (localDAG == null) {
-					localDAG = dag;
-				}
-		
-		if(forkJoin){
-			ForkJoinRemover.supprImplodeExplode(localDAG);
-		}
-
-		if (verbose) {
-			logger.log(Level.INFO,
-					"Memory exclusion graph : start updating with schedule");
-
-			System.out.print( memEx.vertexSet().size()
-					+ ";"
-					+ memEx.edgeSet().size()
-					/ (memEx.vertexSet().size()
-							* (memEx.vertexSet().size() - 1) / 2.0) + ";");
-		}
-
-		memEx.updateWithSchedule(localDAG);
-
-		double density = memEx.edgeSet().size()
-				/ (memEx.vertexSet().size() * (memEx.vertexSet().size() - 1) / 2.0);
-		if (verbose) {
-			logger.log(Level.INFO, "Memory exclusion graph updated with "
-					+ memEx.vertexSet().size() + " vertices and density = "
-					+ density);
-			logger.log(
-					Level.INFO,
-					"Exclusions removed: "
-							+ (before - memEx.edgeSet().size())
-							+ " ("
-							+ Math.round(100.00
-									* (before - memEx.edgeSet().size())
-									/ (double) before) + "%)");
-			System.out.print(density + ";");
-		}
-
-		if (lifetime) {
-			before = memEx.edgeSet().size();
-			if (verbose) {
-				logger.log(Level.INFO,
-						"Memory exclusion graph : start updating with memObject lifetimes");
-			}
-
-			memEx.updateWithMemObjectLifetimes(localDAG);
-
-			density = memEx.edgeSet().size()
-					/ (memEx.vertexSet().size()
-							* (memEx.vertexSet().size() - 1) / 2.0);
-
-			if (verbose) {
-				logger.log(Level.INFO, "Memory exclusion graph updated with "
-						+ memEx.vertexSet().size() + " vertices and density = "
-						+ density);
-				logger.log(
-						Level.INFO,
-						"Exclusions removed: "
-								+ (before - memEx.edgeSet().size())
-								+ " ("
-								+ Math.round(100.00
-										* (before - memEx.edgeSet().size())
-										/ (double) before) + "%)");
-				System.out.println(density + ";");
-			}
-		}
+		MemExUpdaterEngine engine = new MemExUpdaterEngine(dag, memEx, verbose);
+		engine.createLocalDag(forkJoin);	
+		engine.update(lifetime);
 
 		// Generate output
 		Map<String, Object> output = new HashMap<String, Object>();
-		output.put(OUTPUT_KEY_MEM_EX, memEx);
+		output.put(KEY_MEM_EX, memEx);
 		return output;
 	}
 
