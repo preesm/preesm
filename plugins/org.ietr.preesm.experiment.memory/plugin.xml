@@ -58,6 +58,30 @@
             </output>
          </outputs>
       </task>
+      <task
+            id="org.ietr.preesm.experiment.memory.MultiMemoryBoundsEstimator"
+            name="Multi memory Bounds Estimator"
+            type="org.ietr.preesm.experiment.memory.MultiMemoryBoundsEstimator">
+         <inputs>
+            <input
+                  id="DAGsAndMemExs"
+                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="DAGsAndMemExs"
+                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+            </output>
+            <output
+                  id="maxBounds"
+                  object="java.util.Set&lt;java.lang.Integer&gt;"></output>
+            <output
+                  id="minBounds"
+                  object="java.util.Set&lt;java.lang.Integer&gt;">
+            </output>
+         </outputs>
+      </task>
    </extension>
 
 </plugin>
