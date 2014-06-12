@@ -46,7 +46,9 @@ import java.util.Vector;
 import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
 import org.ietr.dftools.algorithm.model.CodeRefinement;
 import org.ietr.dftools.algorithm.model.IRefinement;
+import org.ietr.dftools.algorithm.model.parameters.Argument;
 import org.ietr.dftools.algorithm.model.parameters.ExpressionValue;
+import org.ietr.dftools.algorithm.model.parameters.Variable;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
@@ -204,6 +206,9 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 			Expression pExp = piFactory.createExpression();
 			pExp.setString(value.toString());
 			p.setExpression(pExp);
+			
+			Variable v = new Variable(p.getName(), value.toString());
+			result.getVariables().addVariable(v);
 		}
 	}
 
@@ -289,6 +294,16 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 		IRefinement desc = new CodeRefinement(piRef.getFileName());
 		v.setRefinement(desc);
 
+		for (ConfigInputPort p : a.getConfigInputPorts()) {
+			ISetter setter = p.getIncomingDependency().getSetter();
+			if (setter instanceof Parameter) {
+				Parameter param = (Parameter) setter;
+				Argument arg = new Argument(param.getName());
+				arg.setValue(param.getName());
+				v.getArguments().addArgument(arg);
+			}
+		}
+		
 		visitAbstractActor(a);
 
 		result.addVertex(v);
