@@ -161,9 +161,9 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 						// TODO Handle config input interface
 						evaluatedParam =  "0";
 					else
-						evaluatedParam =  p.getExpression().evaluate();
-					
-					jep.addVariable(parameterName, evaluatedParam);
+						evaluatedParam = p.getExpression().evaluate();
+
+					jep.addVariable(parameterName, Double.parseDouble(evaluatedParam));
 				}
 			}
 			
