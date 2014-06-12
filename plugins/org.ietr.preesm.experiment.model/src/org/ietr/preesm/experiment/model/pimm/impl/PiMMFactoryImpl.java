@@ -232,12 +232,18 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	}
 
 	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Parameter createParameter() {
 		ParameterImpl parameter = new ParameterImpl();
+		// Set the expression to 1 to prevent from errors with division with
+		// default expression value (0)
+		parameter.getExpression().setString("1");
 		return parameter;
 	}
 
