@@ -82,6 +82,7 @@ import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.ui.pimm.features.AddActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddConfigInputInterfaceFeature;
@@ -124,6 +125,8 @@ import org.ietr.preesm.experiment.ui.pimm.features.ReconnectionFifoFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.RenameAbstractVertexFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.RenameActorPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.SetActorRefinementFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.SetVisibleAllDependenciesFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.SetVisibleDependenciesFromParameterFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.UpdateAbstractVertexFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.UpdateActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.UpdatePortFeature;
@@ -209,6 +212,11 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		}
 		Object obj = getBusinessObjectForPictogramElement(pes[0]);
 
+		if (obj instanceof PiGraph) {
+			features.add(new SetVisibleAllDependenciesFeature(this, true));
+			features.add(new SetVisibleAllDependenciesFeature(this, false));
+		}
+		
 		if (obj instanceof AbstractVertex) {
 			features.add(new RenameAbstractVertexFeature(this));
 		}
@@ -228,6 +236,11 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 			}
 		}
 
+		if (obj instanceof Parameter) {
+			features.add(new SetVisibleDependenciesFromParameterFeature(this, true));
+			features.add(new SetVisibleDependenciesFromParameterFeature(this, false));
+		}
+		
 		if (obj instanceof Port) {
 			features.add(new RenameActorPortFeature(this));
 			features.add(new MoveUpActorPortFeature(this));
