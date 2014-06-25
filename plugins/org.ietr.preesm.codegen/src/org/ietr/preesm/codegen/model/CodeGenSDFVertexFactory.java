@@ -158,7 +158,7 @@ public class CodeGenSDFVertexFactory {
 			if (codeRef.getLanguage() == Language.IDL) {
 				IDLPrototypeFactory factory = idlPrototypeFactory;
 				((SDFAbstractVertex) newVertex).setRefinement(factory
-						.create(iFile.getFullPath()));
+						.create("../" + iFile.getProjectRelativePath().toOSString()));
 			}
 		}
 		((SDFAbstractVertex) newVertex).copyProperties(dagVertex);
@@ -239,7 +239,7 @@ public class CodeGenSDFVertexFactory {
 
 			if (codeRef.getLanguage() == Language.IDL) {
 				IDLPrototypeFactory factory = idlPrototypeFactory;
-				newVertex.setRefinement(factory.create(iFile.getFullPath()));
+				newVertex.setRefinement(factory.create("../" + iFile.getProjectRelativePath().toOSString()));
 			}
 		}
 		return newVertex;

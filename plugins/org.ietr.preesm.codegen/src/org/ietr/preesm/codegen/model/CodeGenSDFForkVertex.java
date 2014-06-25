@@ -38,7 +38,6 @@ package org.ietr.preesm.codegen.model;
 
 import java.util.Map;
 
-import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.model.AbstractEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex;
@@ -59,7 +58,7 @@ public class CodeGenSDFForkVertex extends SDFForkVertex implements
 
 	public CodeGenSDFForkVertex() {
 		this.getPropertyBean().setValue(TYPE, VertexType.TASK);
-		ActorPrototypes forkCall = new ActorPrototypes(new Path("fork"));
+		ActorPrototypes forkCall = new ActorPrototypes("fork");
 		this.setRefinement(forkCall);
 	}
 

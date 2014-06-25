@@ -40,7 +40,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.eclipse.core.runtime.IPath;
 import org.ietr.dftools.algorithm.model.IRefinement;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.model.containers.CodeSectionType;
@@ -64,9 +63,9 @@ public class ActorPrototypes implements IRefinement {
 	 */
 	private Prototype loopPrototype = null;
 	
-	private IPath path = null;
+	private String path = null;
 
-	public ActorPrototypes(IPath path) {
+	public ActorPrototypes(String path) {
 		initPrototypes = new HashMap<Integer, Prototype>();
 		this.path = path;
 	}
