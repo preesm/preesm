@@ -47,12 +47,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.ietr.dftools.algorithm.iterators.DAGIterator;
@@ -1886,21 +1881,21 @@ public class CodegenModelGenerator {
 		}
 
 		// Retrieve the IDL File
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IWorkspaceRoot root = workspace.getRoot();		
+//		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+//		IWorkspaceRoot root = workspace.getRoot();		
 		
-		Path path = new Path(((CodeRefinement) refinement).getName());
-		if (!path.isAbsolute()) {
-			String projectName = workflow.getProjectName();
-			IProject project = root.getProject(projectName);
-			path = new Path(project.getLocation() + path.toString().substring(2));
-		}
-		IFile idlFile = workspace.getRoot().getFileForLocation(path);
-
-		// Retrieve the ActorPrototype
-		String rawLocation = idlFile.getRawLocation().toOSString();
+		IPath path = ((CodeRefinement) refinement).getPath();
+//		if (scenario.isIBSDFScenario()) {
+//			String projectName = workflow.getProjectName();
+//			IProject project = root.getProject(projectName);
+//			path = new Path(project.getLocation() + path.toString().substring(2));
+//		}
+//		IFile idlFile = workspace.getRoot().getFile(path);
+//
+//		// Retrieve the ActorPrototype
+//		String rawLocation = idlFile.getRawLocation().toOSString();
 		ActorPrototypes prototypes = IDLPrototypeFactory.INSTANCE
-				.create(rawLocation);
+				.create(path);
 		return prototypes;
 	}
 

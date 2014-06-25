@@ -38,6 +38,7 @@ package org.ietr.preesm.codegen.model;
 
 import java.util.Map;
 
+import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.model.AbstractEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
@@ -58,7 +59,7 @@ public class CodeGenSDFJoinVertex extends SDFJoinVertex implements
 
 	public CodeGenSDFJoinVertex() {
 		this.getPropertyBean().setValue(TYPE, VertexType.TASK);
-		ActorPrototypes joinCall = new ActorPrototypes("join");
+		ActorPrototypes joinCall = new ActorPrototypes(new Path("join"));
 		this.setRefinement(joinCall);
 	}
 

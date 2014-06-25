@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.eclipse.core.runtime.IPath;
 import org.ietr.dftools.algorithm.model.IRefinement;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.model.containers.CodeSectionType;
@@ -63,11 +64,11 @@ public class ActorPrototypes implements IRefinement {
 	 */
 	private Prototype loopPrototype = null;
 	
-	private String name = null;
+	private IPath path = null;
 
-	public ActorPrototypes(String name) {
+	public ActorPrototypes(IPath path) {
 		initPrototypes = new HashMap<Integer, Prototype>();
-		this.name = name;
+		this.path = path;
 	}
 
 	/**
@@ -105,7 +106,7 @@ public class ActorPrototypes implements IRefinement {
 			WorkflowLogger.getLogger().log(
 					Level.WARNING,
 					"IDL: Init phase number (-)" + i
-							+ " was defined several time for file " + name);
+							+ " was defined several time for file " + path);
 		}
 		initPrototypes.put(i, init);
 	}

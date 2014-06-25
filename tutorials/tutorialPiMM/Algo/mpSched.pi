@@ -11,7 +11,7 @@
         <node expr="0" id="NMAX" kind="param"/>
         <node expr="0" id="nbSamples" kind="param"/>
         <node id="UserFIRs" kind="actor">
-            <data key="graph_desc">userFIRs.pi</data>
+            <data key="graph_desc">/home/cguy/git/preesm/tutorials/tutorialPiMM/Algo/userFIRs.pi</data>
             <port kind="cfg_input" name="nbSamples2"/>
             <port expr="1" kind="input" name="M_in"/>
             <port expr="0" kind="input" name="in"/>

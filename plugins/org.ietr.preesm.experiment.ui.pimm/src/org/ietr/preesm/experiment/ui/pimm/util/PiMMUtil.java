@@ -40,6 +40,7 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.platform.IDiagramBehavior;
@@ -127,7 +128,9 @@ public class PiMMUtil {
 		
 		int retDialog = inputDialog.open();
 		if (retDialog == Window.OK) {
-			ret = ((IFile)(inputDialog.getResult()[0])).getLocation().toOSString();
+			IFile file = (IFile)(inputDialog.getResult()[0]);
+			URI uri = URI.createPlatformResourceURI(file.getLocation().toString(), true);
+			ret = uri.toString();
 			
 		}
 		return ret;

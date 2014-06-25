@@ -38,6 +38,7 @@ package org.ietr.preesm.codegen.idl;
 
 import java.util.logging.Level;
 
+import org.eclipse.core.runtime.IPath;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.jacorb.idl.ConstDecl;
 import org.jacorb.idl.GlobalInputStream;
@@ -55,12 +56,12 @@ import org.jacorb.idl.parser;
 
 public class IDLParser extends parser {
 
-	public static void parse(String filePath, IDLTreeVisitor visitor) {
+	public static void parse(IPath filePath, IDLTreeVisitor visitor) {
 		try {
 			init();
 			setGenerator(visitor);
 			GlobalInputStream.init();
-			GlobalInputStream.setInput(filePath);
+			GlobalInputStream.setInput(filePath.toOSString());
 
 			/* reset tables everywhere */
 			lexer.reset();

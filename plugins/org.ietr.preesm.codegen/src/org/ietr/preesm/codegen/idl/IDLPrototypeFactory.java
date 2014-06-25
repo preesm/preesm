@@ -40,6 +40,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.logging.Level;
 
+import org.eclipse.core.runtime.IPath;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
@@ -83,7 +84,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
 	/**
 	 * Keeping memory of all created IDL prototypes
 	 */
-	private HashMap<String, ActorPrototypes> createdIdls;
+	private HashMap<IPath, ActorPrototypes> createdIdls;
 
 	/**
 	 * Keeping memory of the highest index of init declared. Used to determine
@@ -106,7 +107,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
 	}
 
 	public void resetPrototypes() {
-		createdIdls = new HashMap<String, ActorPrototypes>();
+		createdIdls = new HashMap<IPath, ActorPrototypes>();
 		maxInitIndex = -1;
 	}
 
@@ -114,7 +115,7 @@ public class IDLPrototypeFactory implements IFunctionFactory, IDLTreeVisitor {
 	 * Retrieving prototypes from an IDL file
 	 */
 	@Override
-	public ActorPrototypes create(String idlPath) {
+	public ActorPrototypes create(IPath idlPath) {
 		if (createdIdls.get(idlPath) == null) {
 			parser.setGenerator(this);
 

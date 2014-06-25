@@ -291,7 +291,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 		v.setName(a.getName());
 		v.setInfo(a.getPath());
 		Refinement piRef = a.getRefinement();
-		IRefinement desc = new CodeRefinement(piRef.getFileName());
+		IRefinement desc = new CodeRefinement(piRef.getFilePath());
 		v.setRefinement(desc);
 
 		for (ConfigInputPort p : a.getConfigInputPorts()) {

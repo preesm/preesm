@@ -37,6 +37,8 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
@@ -174,7 +176,7 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 	 */
 	public AbstractActor getAbstractActor() {
 
-		URI refinementURI = getFileURI();
+		URI refinementURI = URI.createURI(this.getFileName());
 
 		// Check if the file exists
 		if (refinementURI != null && refinementURI.isPlatformResource()) {
@@ -212,20 +214,20 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 	}
 
 	@Override
-	public URI getFileURI() {
+	public IPath getFilePath() {
 		// If the fileName is null, return nothing
-		if (this.fileName == null) {
+		if (this.fileName == null || this.fileName.isEmpty()) {
 			return null;
 		}
 
-		URI refinementFile = URI.createFileURI(this.fileName);
-
-		IResource fileResource = ResourcesPlugin.getWorkspace().getRoot()
-				.findMember(refinementFile.toString());
+		IPath refinementPath = new Path(this.getFileName());
+		
+		IResource fileResource = ResourcesPlugin.getWorkspace().getRoot().getFile(refinementPath);
+				//.findMember(refinementFile.toString());
 
 		// Check if the file exists
 		if (fileResource != null && fileResource.getType() == IResource.FILE) {
-			return refinementFile;
+			return refinementPath;
 		}
 
 		return null;

@@ -38,7 +38,7 @@ package org.ietr.preesm.experiment.ui.pimm.features;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.emf.common.util.URI;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
@@ -80,8 +80,8 @@ public class OpenRefinementFeature extends AbstractCustomFeature {
 			Object bo = getBusinessObjectForPictogramElement(pes[0]);
 			if (bo instanceof Actor) {
 				// Check if the actor has a valid refinement
-				URI refinementFile = ((Actor) bo).getRefinement().getFileURI();
-				if (refinementFile != null) {
+				IPath refinementPath = ((Actor) bo).getRefinement().getFilePath();
+				if (refinementPath != null) {
 					return true;
 				}
 			}
@@ -97,24 +97,24 @@ public class OpenRefinementFeature extends AbstractCustomFeature {
 			Object bo = getBusinessObjectForPictogramElement(pes[0]);
 			if (bo instanceof Actor) {
 				// Check if the actor has a valid refinement
-				URI refinementFile = ((Actor) bo).getRefinement().getFileURI();
-				if (refinementFile != null) {
+				IPath refinementPath = ((Actor) bo).getRefinement().getFilePath();
+				if (refinementPath != null) {
 					IWorkbenchWindow dw = PlatformUI.getWorkbench()
 							.getActiveWorkbenchWindow();
 
 					IResource refResource = ResourcesPlugin.getWorkspace()
-							.getRoot()
-							.findMember(refinementFile.toPlatformString(true));
+							.getRoot().getFile(refinementPath);
+							//.findMember(refinementFile.toPlatformString(true));
 
 					// If the refinement is a Pi file, open a diagram
 					// instead (if it exists)
 					String extension = refResource.getFileExtension();
 					if (extension != null && extension.equals("pi")) {
-						URI diagramFile = refinementFile.trimFileExtension()
-								.appendFileExtension("diagram");
+						IPath diagramFile = refinementPath.removeFileExtension()
+								.addFileExtension("diagram");
 						IResource diagResource = ResourcesPlugin.getWorkspace()
-								.getRoot()
-								.findMember(diagramFile.toPlatformString(true));
+								.getRoot().getFile(diagramFile);
+								//.findMember(diagramFile.toPlatformString(true));
 
 						// Check if the diaram file exists
 						if (diagResource == null) {
@@ -122,7 +122,7 @@ public class OpenRefinementFeature extends AbstractCustomFeature {
 									dw.getShell(),
 									"Problem opening editor",
 									"No diagram file for "
-											+ refinementFile.lastSegment());
+											+ refinementPath.lastSegment());
 						} else {
 							refResource = diagResource;
 						}

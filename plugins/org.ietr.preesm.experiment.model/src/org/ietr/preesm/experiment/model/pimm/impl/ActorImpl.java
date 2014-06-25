@@ -284,7 +284,7 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 	 */
 	@Override
 	public PiGraph getGraph() {
-		URI uri = this.getRefinement().getFileURI();
+		URI uri = URI.createURI(this.getRefinement().getFileName());
 		ResourceSet resourceSet = new ResourceSetImpl();	
 		
 		if(uri.fileExtension() == null || !uri.fileExtension().contentEquals("pi")) 

@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.codegen.model;
 
+import org.eclipse.core.runtime.IPath;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 
 
@@ -43,5 +44,5 @@ import org.ietr.preesm.codegen.idl.ActorPrototypes;
  * @author jpiat
  */
 public interface IFunctionFactory {
-	public ActorPrototypes create(String calPath);
+	public ActorPrototypes create(IPath calPath);
 }
