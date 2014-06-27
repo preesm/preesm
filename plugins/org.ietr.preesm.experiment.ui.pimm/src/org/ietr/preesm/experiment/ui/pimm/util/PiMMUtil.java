@@ -40,6 +40,7 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.platform.IDiagramBehavior;
@@ -92,45 +93,46 @@ public class PiMMUtil {
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * Open an input dialog to select a pi file
+	 * 
 	 * @param dialogTitle
 	 *            the dialog title, or <code>null</code> if none
 	 * @param dialogMessage
 	 *            the dialog message, or <code>null</code> if none
-	 * @param initialValue
-	 *            the initial input value, or <code>null</code> if none
-	 *            (equivalent to the empty string)
 	 * @param validator
 	 *            an input validator, or <code>null</code> if none
 	 * @return the string, or <code>null</code> if user cancels
 	 */
-	public static String askRefinement(String dialogTitle, String dialogMessage,
-			String initialValue, IInputValidator validator) {
-		String ret = null;
+	public static IPath askRefinement(String dialogTitle, String dialogMessage,
+			IInputValidator validator) {
 		Shell shell = getShell();
-		
-		// For now, authorized refinements are other PiGraphs (.pi files) and .idl prototypes
+
+		// For now, authorized refinements are other PiGraphs (.pi files) and
+		// .idl prototypes
 		Set<String> fileExtensions = new HashSet<String>();
 		fileExtensions.add("pi");
 		fileExtensions.add("idl");
-		FileContentProvider contentProvider = new FileContentProvider(fileExtensions);
-		
-		ElementTreeSelectionDialog inputDialog = new ElementTreeSelectionDialog(shell,
+		FileContentProvider contentProvider = new FileContentProvider(
+				fileExtensions);
+
+		ElementTreeSelectionDialog inputDialog = new ElementTreeSelectionDialog(
+				shell,
 				WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(),
 				contentProvider);
 		inputDialog.setAllowMultiple(false);
 		inputDialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
 		inputDialog.setMessage(dialogMessage);
 		inputDialog.setTitle(dialogTitle);
-		
+
 		int retDialog = inputDialog.open();
 		if (retDialog == Window.OK) {
-			ret = ((IFile)(inputDialog.getResult()[0])).getLocation().toOSString();
-			
+			IFile file = (IFile) (inputDialog.getResult()[0]);
+			return file.getFullPath();
+
 		}
-		return ret;
+		return null;
 	}
 
 	/**
@@ -150,8 +152,7 @@ public class PiMMUtil {
 			IDiagramBehavior iDiagramEditor, String message) {
 		IToolBehaviorProvider behaviorProvider = fp.getDiagramTypeProvider()
 				.getCurrentToolBehaviorProvider();
-		((PiMMToolBehaviorProvider) behaviorProvider)
-				.setToolTip(ga, message);
+		((PiMMToolBehaviorProvider) behaviorProvider).setToolTip(ga, message);
 
 		iDiagramEditor.refresh();
 		((PiMMToolBehaviorProvider) behaviorProvider).setToolTip(ga, null);

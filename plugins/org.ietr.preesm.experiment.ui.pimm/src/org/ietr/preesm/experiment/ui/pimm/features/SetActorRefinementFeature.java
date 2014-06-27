@@ -35,6 +35,7 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.ui.pimm.features;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
@@ -101,15 +102,12 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 
 				// Ask user for Actor name until a valid name is entered.
 				String question = "Enter new file name";
-				String newFileName = refinement.getFileName();
-
-				newFileName = PiMMUtil.askRefinement("Change file", question,
-						newFileName, null);
+				IPath newFileName = PiMMUtil.askRefinement("Change file", question, null);
 
 				if (newFileName != null
-						&& !newFileName.equals(refinement.getFileName())) {
+						&& !newFileName.equals(refinement.getFilePath())) {
 					this.hasDoneChanges = true;
-					refinement.setFileName(newFileName);
+					refinement.setFilePath(newFileName);
 				}
 
 				// Call the layout feature

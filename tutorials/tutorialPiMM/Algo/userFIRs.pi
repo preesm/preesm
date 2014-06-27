@@ -11,10 +11,10 @@
         <node expr="0" id="M" kind="param"/>
         <node id="nbSamples2" kind="cfg_in_iface"/>
         <node id="in" kind="src">
-            <port expr="nbSamples" kind="output" name=""/>
+            <port expr="nbSamples" kind="output" name="in"/>
         </node>
         <node id="out" kind="snk">
-            <port expr="nbSamples" kind="input" name=""/>
+            <port expr="nbSamples" kind="input" name="out"/>
         </node>
         <node id="setM" kind="actor">
             <data key="graph_desc"/>
@@ -48,21 +48,21 @@
             <port expr="nbSamples" kind="output" name="out1"/>
         </node>
         <node id="M_in" kind="src">
-            <port expr="1" kind="output" name=""/>
+            <port expr="1" kind="output" name="M_in"/>
         </node>
-        <edge kind="fifo" source="in" sourceport="" target="Switch" targetport="in0"/>
+        <edge kind="fifo" source="in" sourceport="in" target="Switch" targetport="in0"/>
         <edge kind="fifo" source="Switch" sourceport="out" target="FIR" targetport="in"/>
         <edge kind="fifo" source="FIR" sourceport="out"
             target="BroadCast" targetport="in"/>
         <edge kind="fifo" source="BroadCast" sourceport="out0"
-            target="out" targetport=""/>
+            target="out" targetport="out"/>
         <edge expr="nbSamples2" kind="fifo" source="BroadCast"
             sourceport="out1" target="Switch" targetport="in1">
             <data key="delay"/>
         </edge>
         <edge kind="fifo" source="InitSwitch" sourceport="select"
             target="Switch" targetport="select"/>
-        <edge kind="fifo" source="M_in" sourceport="" target="setM" targetport="M_in"/>
+        <edge kind="fifo" source="M_in" sourceport="M_in" target="setM" targetport="M_in"/>
         <edge kind="dependency" source="setM" sourceport="M" target="M"/>
         <edge kind="dependency" source="M" target="InitSwitch" targetport="M"/>
         <edge kind="dependency" source="nbSamples2" target="out"/>

@@ -215,4 +215,8 @@ public class ConstraintGroupManager {
 			parser.parse(excelFileURL, currentScenario.getOperatorIds());
 		}
 	}
+
+	public void update() {
+		removeAll();
+	}
 }

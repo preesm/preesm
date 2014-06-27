@@ -2,6 +2,7 @@ package org.ietr.preesm.core.scenario;
 
 import org.ietr.dftools.algorithm.model.parameters.Variable;
 import org.ietr.dftools.algorithm.model.parameters.VariableSet;
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.serialize.ExcelVariablesParser;
 
 /**
@@ -57,6 +58,13 @@ public class VariablesManager {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+	}
+
+	public void updateWith(SDFGraph sdfGraph) {
+		getVariables().clear();
+		for (String v : sdfGraph.getVariables().keySet()) {
+			setVariable(v, sdfGraph.getVariable(v).getValue());
 		}
 	}
 

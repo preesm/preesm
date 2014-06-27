@@ -206,7 +206,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 			Expression pExp = piFactory.createExpression();
 			pExp.setString(value.toString());
 			p.setExpression(pExp);
-			
+
 			Variable v = new Variable(p.getName(), value.toString());
 			result.getVariables().addVariable(v);
 		}
@@ -291,7 +291,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 		v.setName(a.getName());
 		v.setInfo(a.getPath());
 		Refinement piRef = a.getRefinement();
-		IRefinement desc = new CodeRefinement(piRef.getFileName());
+		IRefinement desc = new CodeRefinement(piRef.getFilePath());
 		v.setRefinement(desc);
 
 		for (ConfigInputPort p : a.getConfigInputPorts()) {
@@ -303,7 +303,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 				v.getArguments().addArgument(arg);
 			}
 		}
-		
+
 		visitAbstractActor(a);
 
 		result.addVertex(v);
@@ -317,21 +317,34 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 
 		if (source instanceof AbstractVertex
 				&& target instanceof AbstractVertex) {
-
-			DataInputPort piTgtPort = f.getTargetPort();
-			DataOutputPort piSrcPort = f.getSourcePort();
-
+			// Get SDFAbstractVertices corresponding to source and target
 			SDFAbstractVertex sdfSource = piVx2SDFVx.get(source);
 			SDFAbstractVertex sdfTarget = piVx2SDFVx.get(target);
-			
-			SDFSinkInterfaceVertex sdfSrcPort = new SDFSinkInterfaceVertex();
-			sdfSrcPort.setName(piSrcPort.getName());
-			sdfSource.addSink(sdfSrcPort);
-			
-			SDFSourceInterfaceVertex sdfTgtPort = new SDFSourceInterfaceVertex();
-			sdfTgtPort.setName(piTgtPort.getName());
-			sdfTarget.addSource(sdfTgtPort);
 
+			// Handle the source port (DataOuputPort in PISDF,
+			// SDFSinkInterfaceVertex in IBSDF)
+			SDFSinkInterfaceVertex sdfOutputPort;
+			DataOutputPort piOutputPort = f.getSourcePort();
+			if (sdfSource instanceof SDFSinkInterfaceVertex) {
+				sdfOutputPort = (SDFSinkInterfaceVertex) sdfSource;
+			} else {				
+				sdfOutputPort = new SDFSinkInterfaceVertex();
+				sdfOutputPort.setName(piOutputPort.getName());
+				sdfSource.addSink(sdfOutputPort);
+			}
+			// Handle the target port (DataInputPort in PISDF,
+			// SDFSourceInterfaceVertex in IBSDF)
+			SDFSourceInterfaceVertex sdfInputPort;
+			DataInputPort piInputPort = f.getTargetPort();
+			if (sdfTarget instanceof SDFSourceInterfaceVertex) {
+				sdfInputPort = (SDFSourceInterfaceVertex) sdfTarget;
+			} else {				
+				sdfInputPort = new SDFSourceInterfaceVertex();
+				sdfInputPort.setName(piInputPort.getName());
+				sdfTarget.addSource(sdfInputPort);
+			}
+
+			// Handle Delay, Consumption and Production rates
 			AbstractEdgePropertyType<ExpressionValue> delay;
 			if (f.getDelay() != null) {
 				// Evaluate the expression wrt. the current values of the
@@ -344,17 +357,17 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 						"0"));
 			}
 			// Evaluate the expression wrt. the current values of the parameters
-			String piCons = piTgtPort.getExpression().evaluate();
+			String piCons = piInputPort.getExpression().evaluate();
 			AbstractEdgePropertyType<ExpressionValue> cons = new SDFExpressionEdgePropertyType(
 					new ExpressionValue(piCons));
 
 			// Evaluate the expression wrt. the current values of the parameters
-			String piProd = piSrcPort.getExpression().evaluate();
+			String piProd = piOutputPort.getExpression().evaluate();
 			AbstractEdgePropertyType<ExpressionValue> prod = new SDFExpressionEdgePropertyType(
 					new ExpressionValue(piProd));
 
-			result.addEdge(sdfSource, sdfSrcPort,
-					sdfTarget, sdfTgtPort, prod, cons, delay);
+			result.addEdge(sdfSource, sdfOutputPort, sdfTarget, sdfInputPort,
+					prod, cons, delay);
 		}
 
 	}

@@ -110,8 +110,15 @@ public class ParameterValueManager {
 				for (Parameter p : inputParameters) {
 					inputParametersNames.add(p.getName());
 				}
-				addParameterValue(param.getName(), "0", inputParametersNames, parent);
+				addParameterValue(param.getName(), "1", inputParametersNames, parent);
 			}
+		}
+	}
+
+	public void updateWith(PiGraph graph) {
+		getParameterValues().clear();
+		for (Parameter p : graph.getAllParameters()) {
+			addParameterValue(p);
 		}
 	}
 }

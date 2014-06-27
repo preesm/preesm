@@ -35,6 +35,7 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.model.transformation.properties;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -61,8 +62,8 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.ui.pimm.features.ClearActorRefinementFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.SetActorRefinementFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.OpenRefinementFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.SetActorRefinementFeature;
 
 /**
  * Properties Section used for Actors
@@ -296,13 +297,16 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 				}
 				txtNameObj.setEnabled(true);
 				
-				if(actor.getRefinement().getFileURI() == null){
+				if(actor.getRefinement().getFilePath() == null){
 					lblRefinementObj.setText("(none)");
 					butRefinementClear.setEnabled(false);
 					butRefinementEdit.setEnabled(true);
 					butRefinementOpen.setEnabled(false);
 				}else{
-					lblRefinementObj.setText(actor.getRefinement().getFileURI().toPlatformString(true));
+					IPath path = actor.getRefinement().getFilePath();
+					String text = path.lastSegment();
+					
+					lblRefinementObj.setText(text);
 					butRefinementClear.setEnabled(true);
 					butRefinementEdit.setEnabled(true);
 					butRefinementOpen.setEnabled(true);

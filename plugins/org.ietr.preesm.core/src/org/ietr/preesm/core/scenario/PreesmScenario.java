@@ -101,7 +101,7 @@ public class PreesmScenario {
 	 * Manager of parameters values for PiGraphs
 	 */
 	private ParameterValueManager parameterValueManager = null;
-	
+
 	/**
 	 * Path to the algorithm file
 	 */
@@ -126,7 +126,7 @@ public class PreesmScenario {
 
 	// Map from DAGs names to SDFGraphs from which they are generated
 	private Map<String, SDFGraph> dags2sdfs;
-	
+
 	public PreesmScenario() {
 		constraintgroupmanager = new ConstraintGroupManager();
 		relativeconstraintmanager = new RelativeConstraintManager();
@@ -139,28 +139,35 @@ public class PreesmScenario {
 	}
 
 	public boolean isPISDFScenario() {
-		if (algorithmURL.endsWith(".pi")) return true;
-		else return false;
+		if (algorithmURL.endsWith(".pi"))
+			return true;
+		else
+			return false;
 	}
-	
+
 	public boolean isIBSDFScenario() {
-		if (algorithmURL.endsWith(".graphml")) return true;
-		else return false;
+		if (algorithmURL.endsWith(".graphml"))
+			return true;
+		else
+			return false;
 	}
-	
+
 	public Set<String> getActorNames() {
-		if (isPISDFScenario()) return getPiActorNames();
-		else if (isIBSDFScenario()) return getSDFActorNames();
-		else return null;
+		if (isPISDFScenario())
+			return getPiActorNames();
+		else if (isIBSDFScenario())
+			return getSDFActorNames();
+		else
+			return null;
 	}
-	
+
 	private Set<String> getSDFActorNames() {
 		Set<String> result = new HashSet<String>();
-		try {			
-			SDFGraph graph = ScenarioParser.getSDFGraph(algorithmURL);			
+		try {
+			SDFGraph graph = ScenarioParser.getSDFGraph(algorithmURL);
 			for (SDFAbstractVertex vertex : graph.vertexSet()) {
 				result.add(vertex.getName());
-			}			
+			}
 		} catch (FileNotFoundException | InvalidModelException e) {
 			e.printStackTrace();
 		}
@@ -169,11 +176,11 @@ public class PreesmScenario {
 
 	private Set<String> getPiActorNames() {
 		Set<String> result = new HashSet<String>();
-		try {			
-			PiGraph graph = ScenarioParser.getPiGraph(algorithmURL);			
+		try {
+			PiGraph graph = ScenarioParser.getPiGraph(algorithmURL);
 			for (AbstractActor vertex : graph.getVertices()) {
 				result.add(vertex.getName());
-			}			
+			}
 		} catch (CoreException | InvalidModelException e) {
 			e.printStackTrace();
 		}
@@ -272,16 +279,22 @@ public class PreesmScenario {
 		return parameterValueManager;
 	}
 
-	public void setParameterValueManager(ParameterValueManager parameterValueManager) {
+	public void setParameterValueManager(
+			ParameterValueManager parameterValueManager) {
 		this.parameterValueManager = parameterValueManager;
 	}
-	
+
 	/**
 	 * From PiScenario
+	 * 
+	 * @throws CoreException
+	 * @throws InvalidModelException
+	 * @throws FileNotFoundException
 	 */
-	
-	public void update() {
-		if (architectureURL.endsWith(".slam")) {
+
+	public void update(boolean algorithmChange, boolean architectureChange)
+			throws InvalidModelException, CoreException, FileNotFoundException {
+		if (architectureChange && architectureURL.endsWith(".slam")) {
 			Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE
 					.getExtensionToFactoryMap();
 			Object instance = extToFactoryMap.get("slam");
@@ -300,16 +313,29 @@ public class PreesmScenario {
 
 			operatorIds.clear();
 			operatorIds.addAll(DesignTools.getOperatorInstanceIds(design));
-			
-			operatorDefinitionIds.clear();
-			operatorDefinitionIds.addAll(DesignTools.getOperatorComponentIds(design));
 
-		} else {
-			operatorIds.clear();
 			operatorDefinitionIds.clear();
+			operatorDefinitionIds.addAll(DesignTools
+					.getOperatorComponentIds(design));
+
 		}
+
+		if (algorithmChange) {
+			if (isPISDFScenario()) {
+				parameterValueManager.updateWith(ScenarioParser
+						.getPiGraph(algorithmURL));
+			} else if (isIBSDFScenario()) {
+				variablesManager.updateWith(ScenarioParser
+						.getSDFGraph(algorithmURL));
+			}
+		}
+		
+		if (algorithmChange || architectureChange) timingmanager.clear();
+
+		constraintgroupmanager.update();
+		
 	}
-	
+
 	public Map<String, SDFGraph> getDAGs2SDFs() {
 		return dags2sdfs;
 	}

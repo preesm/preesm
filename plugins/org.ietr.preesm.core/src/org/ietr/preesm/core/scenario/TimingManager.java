@@ -293,4 +293,8 @@ public class TimingManager {
 		putMemcpySpeed(new MemCopySpeed(operatorDef, DEFAULTMEMCPYSETUPTIME,
 				DEFAULTMEMCPYTIMEPERUNIT));
 	}
+
+	public void clear() {
+		getTimings().clear();
+	}
 }

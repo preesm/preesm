@@ -319,7 +319,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 		containerGa.setHeight(newHeight);
 		
 		Actor actor = (Actor)(containerShape.getLink().getBusinessObjects().get(0));
-		if (actor.getRefinement().getFileURI() != null){
+		if (actor.getRefinement().getFilePath() != null){
 			for (Shape shape : childrenShapes) {
 				GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
 				IGaService gaService = Graphiti.getGaService();
