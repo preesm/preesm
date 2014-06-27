@@ -7,40 +7,36 @@
     <key attr.name="graph_desc" attr.type="string" for="node"/>
     <graph edgedefault="directed">
         <data key="name">mpSched</data>
-        <node expr="0" id="N" kind="param"/>
-        <node expr="0" id="NMAX" kind="param"/>
-        <node expr="0" id="nbSamples" kind="param"/>
+        <node expr="1" id="N" kind="param"/>
+        <node expr="1" id="NMAX" kind="param"/>
+        <node expr="1" id="nbSamples" kind="param"/>
         <node id="UserFIRs" kind="actor">
-            <data key="graph_desc">/home/cguy/git/preesm/tutorials/tutorialPiMM/Algo/userFIRs.pi</data>
+            <data key="graph_desc">/tutorialPiMM/Algo/userFIRs.pi</data>
             <port kind="cfg_input" name="nbSamples2"/>
             <port expr="1" kind="input" name="M_in"/>
-            <port expr="0" kind="input" name="in"/>
-            <port expr="0" kind="output" name="out"/>
+            <port expr="1" kind="input" name="in"/>
+            <port expr="1" kind="output" name="out"/>
         </node>
         <node id="config" kind="actor">
-            <data key="graph_desc"/>
             <port kind="cfg_input" name="NMAX"/>
             <port kind="cfg_output" name="N"/>
             <port expr="NMAX" kind="output" name="M"/>
         </node>
         <node id="MFilter" kind="actor">
-            <data key="graph_desc"/>
             <port kind="cfg_input" name="NMAX"/>
             <port kind="cfg_input" name="N"/>
             <port expr="NMAX" kind="input" name="M_in"/>
             <port expr="N" kind="output" name="M_out"/>
         </node>
         <node id="Src" kind="actor">
-            <data key="graph_desc"/>
             <port kind="cfg_input" name="N"/>
             <port kind="cfg_input" name="nbSamples"/>
-            <port expr="0" kind="output" name="src"/>
+            <port expr="1" kind="output" name="src"/>
         </node>
         <node id="Snk" kind="actor">
-            <data key="graph_desc"/>
             <port kind="cfg_input" name="nbSamples"/>
             <port kind="cfg_input" name="N"/>
-            <port expr="0" kind="input" name="snk"/>
+            <port expr="1" kind="input" name="snk"/>
         </node>
         <edge kind="fifo" source="config" sourceport="M"
             target="MFilter" targetport="M_in"/>

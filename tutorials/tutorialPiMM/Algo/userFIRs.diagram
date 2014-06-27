@@ -51,7 +51,7 @@
     </children>
   </children>
   <children xsi:type="pi:ContainerShape" visible="true" active="true">
-    <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.6" foreground="//@colors.2" lineWidth="2" transparency="0.0" width="60" height="44" x="158" y="122" cornerHeight="5" cornerWidth="5"/>
+    <graphicsAlgorithm xsi:type="al:RoundedRectangle" background="//@colors.6" foreground="//@colors.2" lineWidth="2" transparency="0.0" width="60" height="44" x="152" y="110" cornerHeight="5" cornerWidth="5"/>
     <link>
       <businessObjects href="userFIRs.pi#//@vertices.2"/>
     </link>
