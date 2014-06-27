@@ -42,22 +42,23 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
 import org.ietr.dftools.algorithm.exporter.Key;
 import org.ietr.dftools.architecture.utils.DomUtil;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.w3c.dom.Document;
@@ -230,8 +231,8 @@ public class PiWriter {
 	}
 
 	/**
-	 * Write the PiMM {@link PiGraph} to the given {@link OutputStream} using the
-	 * Pi format.
+	 * Write the PiMM {@link PiGraph} to the given {@link OutputStream} using
+	 * the Pi format.
 	 * 
 	 * @param graph
 	 *            The Graph to write
@@ -382,8 +383,7 @@ public class PiWriter {
 		}
 		dependencyElt.setAttribute("source", source.getName());
 		if (setter instanceof ConfigOutputPort) {
-			dependencyElt.setAttribute("sourceport",
-					((Port) setter).getName());
+			dependencyElt.setAttribute("sourceport", ((Port) setter).getName());
 		}
 
 		Parameterizable target = (Parameterizable) dependency.getGetter()
@@ -398,9 +398,10 @@ public class PiWriter {
 						.getName());
 			}
 		}
-		
-		if (target instanceof Delay){
-			dependencyElt.setAttribute("target",((Fifo) target.eContainer()).getId());
+
+		if (target instanceof Delay) {
+			dependencyElt.setAttribute("target",
+					((Fifo) target.eContainer()).getId());
 		}
 	}
 
@@ -552,15 +553,25 @@ public class PiWriter {
 		for (Object portObj : ports) {
 			Port port = (Port) portObj;
 			Element portElt = appendChild(vertexElt, "port");
+
+			String name = port.getName();
+			if (name == null || name.isEmpty()) {
+				EObject container = port.eContainer();
+				if (container instanceof AbstractVertex)
+					name = ((AbstractVertex) container).getName();
+			}
+
 			portElt.setAttribute("name", port.getName());
 			portElt.setAttribute("kind", port.getKind());
-			
-			switch(port.getKind()){
+
+			switch (port.getKind()) {
 			case "input":
-				portElt.setAttribute("expr", ((DataInputPort)port).getExpression().getString());
+				portElt.setAttribute("expr", ((DataInputPort) port)
+						.getExpression().getString());
 				break;
 			case "output":
-				portElt.setAttribute("expr", ((DataOutputPort)port).getExpression().getString());
+				portElt.setAttribute("expr", ((DataOutputPort) port)
+						.getExpression().getString());
 				break;
 			case "cfg_input":
 				break;
@@ -579,8 +590,9 @@ public class PiWriter {
 	 *            The {@link Refinement} to serialize
 	 */
 	protected void writeRefinement(Element vertexElt, Refinement refinement) {
-		if (refinement.getFileName() != null) {
-			writeDataElt(vertexElt, "graph_desc", refinement.getFileName());
+		if (refinement != null && refinement.getFilePath() != null) {
+			writeDataElt(vertexElt, "graph_desc", refinement.getFilePath()
+					.toOSString());
 		}
 	}
 }

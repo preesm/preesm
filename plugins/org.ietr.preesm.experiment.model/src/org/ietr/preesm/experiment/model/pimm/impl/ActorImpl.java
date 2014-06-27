@@ -39,12 +39,10 @@ import java.util.List;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
@@ -275,7 +273,7 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 	 */
 	@Override
 	public boolean isHierarchical() {
-		return !(this.getRefinement().getFileName() == null || this.getRefinement().getFileName() == "") ;
+		return !(this.getRefinement().getFilePath() == null || this.getRefinement().getFilePath().isEmpty()) ;
 	}
 	
 	/**
@@ -284,13 +282,11 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 	 */
 	@Override
 	public PiGraph getGraph() {
-		URI uri = URI.createURI(this.getRefinement().getFileName());
-		ResourceSet resourceSet = new ResourceSetImpl();	
-		
-		if(uri.fileExtension() == null || !uri.fileExtension().contentEquals("pi")) 
-			return null;
+		AbstractActor subgraph = this.getRefinement().getAbstractActor();		
+		if(subgraph instanceof PiGraph) 
+			return (PiGraph) subgraph;
 		else			
-			return (PiGraph) (resourceSet.getResource(uri, true).getContents().get(0));
+			return null;
 	}
 
 	@Override

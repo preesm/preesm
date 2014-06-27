@@ -80,6 +80,8 @@ public interface Refinement extends EObject, PiMMVisitable {
 	 */
 	IPath getFilePath();
 
+	void setFilePath(IPath path);
+	
 	/**
 	 * Sets the value of the '
 	 * {@link org.ietr.preesm.experiment.model.pimm.Refinement#getFileName

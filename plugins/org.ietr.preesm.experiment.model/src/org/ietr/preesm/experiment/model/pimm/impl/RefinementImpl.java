@@ -35,10 +35,7 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm.impl;
 
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
@@ -176,28 +173,31 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 	 */
 	public AbstractActor getAbstractActor() {
 
-		URI refinementURI = URI.createURI(this.getFileName());
+		if (this.getFilePath() != null && this.filePath.getFileExtension().equals("pi")) {			
+			URI refinementURI = URI.createPlatformResourceURI(this.getFilePath().makeRelative().toString(), true);
 
-		// Check if the file exists
-		if (refinementURI != null && refinementURI.isPlatformResource()) {
-			final ResourceSet rSet = new ResourceSetImpl();
-			Resource resourceRefinement;
-			try {
-				resourceRefinement = rSet.getResource(refinementURI, true);
-				if (resourceRefinement != null) {
-					// does resource contain a graph as root object?
-					final EList<EObject> contents = resourceRefinement
-							.getContents();
-					for (final EObject object : contents) {
-						if (object instanceof PiGraph) {
-							AbstractActor actor = (AbstractActor) object;
-							actor.setName(((Actor) this.eContainer).getName());
-							return actor;
+			// Check if the file exists
+			if (refinementURI != null) {
+				final ResourceSet rSet = new ResourceSetImpl();
+				Resource resourceRefinement;
+				try {
+					resourceRefinement = rSet.getResource(refinementURI, true);					
+					if (resourceRefinement != null) {
+						// does resource contain a graph as root object?
+						final EList<EObject> contents = resourceRefinement
+								.getContents();
+						for (final EObject object : contents) {
+							if (object instanceof PiGraph) {
+								AbstractActor actor = (AbstractActor) object;
+								actor.setName(((Actor) this.eContainer)
+										.getName());
+								return actor;
+							}
 						}
 					}
+				} catch (final WrappedException e) {
+					e.printStackTrace();
 				}
-			} catch (final WrappedException e) {
-				e.printStackTrace();
 			}
 		}
 
@@ -213,24 +213,17 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 		return fileName;
 	}
 
+	IPath filePath;
+
 	@Override
 	public IPath getFilePath() {
-		// If the fileName is null, return nothing
-		if (this.fileName == null || this.fileName.isEmpty()) {
-			return null;
-		}
+		return filePath;
+	}
 
-		IPath refinementPath = new Path(this.getFileName());
-		
-		IResource fileResource = ResourcesPlugin.getWorkspace().getRoot().getFile(refinementPath);
-				//.findMember(refinementFile.toString());
-
-		// Check if the file exists
-		if (fileResource != null && fileResource.getType() == IResource.FILE) {
-			return refinementPath;
-		}
-
-		return null;
+	@Override
+	public void setFilePath(IPath path) {
+		filePath = path;
+		setFileName(path.lastSegment());
 	}
 
 	/**

@@ -98,7 +98,7 @@ public class ClearActorRefinementFeature extends AbstractCustomFeature {
 				Actor actor = (Actor) bo;
 				Refinement refinement = actor.getRefinement();
 
-				refinement.setFileName("");
+				refinement.setFilePath(null);
 
 				// Call the layout feature
 				layoutPictogramElement(pes[0]);

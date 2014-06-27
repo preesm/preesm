@@ -48,9 +48,12 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.ietr.dftools.algorithm.iterators.DAGIterator;
@@ -176,7 +179,7 @@ public class CodegenModelGenerator {
 	private PreesmScenario scenario;
 
 	private Workflow workflow;
-	
+
 	/**
 	 * This {@link Map} associates each {@link ComponentInstance} to its
 	 * corresponding {@link CoreBlock}.
@@ -252,7 +255,8 @@ public class CodegenModelGenerator {
 	 */
 	public CodegenModelGenerator(final Design archi,
 			final DirectedAcyclicGraph dag, final MemoryExclusionGraph memEx,
-			final PreesmScenario scenario, Workflow workflow) throws CodegenException {
+			final PreesmScenario scenario, Workflow workflow)
+			throws CodegenException {
 		this.archi = archi;
 		this.dag = dag;
 		this.memEx = memEx;
@@ -1885,19 +1889,27 @@ public class CodegenModelGenerator {
 
 		// Retrieve the IDL File
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		
+		IWorkspaceRoot root = workspace.getRoot();
+
 		IPath path = ((CodeRefinement) refinement).getPath();
-//		if (scenario.isIBSDFScenario()) {
-//			String projectName = workflow.getProjectName();
-//			IProject project = root.getProject(projectName);
-//			path = new Path(project.getLocation() + path.toString().substring(2));
-//		}
-		IFile idlFile = workspace.getRoot().getFile(path);
-//
-//		// Retrieve the ActorPrototype
-//		String rawLocation = idlFile.getRawLocation().toOSString();
+		IFile idlFile;
+		// XXX: workaround for existing IBSDF projects where refinements are
+		// under the form "../folder/file"
+		if (path.toOSString().startsWith("..")) {
+			String projectName = workflow.getProjectName();
+			IProject project = root.getProject(projectName);
+			path = new Path(project.getLocation()
+					+ path.toString().substring(2));
+			idlFile = root.getFileForLocation(path);
+		} else {
+			idlFile = root.getFile(path);
+		}
+
+		// Retrieve the ActorPrototype
+		IPath rawPath = idlFile.getRawLocation();
+		String rawLocation = rawPath.toOSString();
 		ActorPrototypes prototypes = IDLPrototypeFactory.INSTANCE
-				.create("../" + idlFile.getProjectRelativePath().toOSString());
+				.create(rawLocation);
 		return prototypes;
 	}
 
