@@ -114,4 +114,11 @@ public class ParameterValueManager {
 			}
 		}
 	}
+
+	public void updateWith(PiGraph graph) {
+		getParameterValues().clear();
+		for (Parameter p : graph.getAllParameters()) {
+			addParameterValue(p);
+		}
+	}
 }

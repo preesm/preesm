@@ -35,9 +35,11 @@
  ******************************************************************************/
 package org.ietr.preesm.ui.scenario.editor.parametervalues;
 
+import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
@@ -61,6 +63,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.preesm.core.scenario.ParameterValue;
 import org.ietr.preesm.core.scenario.ParameterValue.ParameterType;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -166,7 +169,11 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 
 			section.addPaintListener(new PaintListener() {
 				public void paintControl(PaintEvent e) {
-					scenario.update();
+					try {
+						scenario.update(false, false);
+					} catch (InvalidModelException | CoreException | FileNotFoundException e1) {
+						e1.printStackTrace();
+					}
 					tableViewer.refresh();
 				}
 			});

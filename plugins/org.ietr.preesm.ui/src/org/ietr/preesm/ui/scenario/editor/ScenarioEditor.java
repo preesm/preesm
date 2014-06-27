@@ -193,5 +193,4 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements
 			this.firePropertyChange(propId);
 		}
 	}
-
 }
