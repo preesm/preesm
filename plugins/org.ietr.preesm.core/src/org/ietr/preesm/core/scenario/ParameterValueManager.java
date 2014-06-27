@@ -110,7 +110,7 @@ public class ParameterValueManager {
 				for (Parameter p : inputParameters) {
 					inputParametersNames.add(p.getName());
 				}
-				addParameterValue(param.getName(), "0", inputParametersNames, parent);
+				addParameterValue(param.getName(), "1", inputParametersNames, parent);
 			}
 		}
 	}
