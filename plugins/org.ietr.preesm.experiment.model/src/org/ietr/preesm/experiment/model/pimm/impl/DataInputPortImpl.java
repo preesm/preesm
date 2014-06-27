@@ -40,9 +40,10 @@ import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
@@ -311,6 +312,15 @@ public class DataInputPortImpl extends PortImpl implements DataInputPort {
 	@Override
 	public void accept(PiMMVisitor v) {
 		v.visitDataInputPort(this);
+	}
+	
+	@Override
+	public String getName() {
+		String name = super.getName();
+		if (name == null && this.eContainer instanceof DataOutputInterface) {
+			name = ((DataOutputInterface) this.eContainer).getName();
+		}
+		return name;
 	}
 
 } //InputPortImpl

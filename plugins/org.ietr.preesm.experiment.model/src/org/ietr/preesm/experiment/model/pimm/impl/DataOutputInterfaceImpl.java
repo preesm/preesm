@@ -82,5 +82,13 @@ public class DataOutputInterfaceImpl extends InterfaceActorImpl implements
 	public void accept(PiMMVisitor v) {
 		v.visitDataOutputInterface(this);
 	}
+	
+	@Override
+	public void setName(String value) {
+		super.setName(value);
+		for (DataInputPort p : getDataInputPorts()) {
+			p.setName(value);
+		}
+	}
 
 } // SinkInterfaceImpl
