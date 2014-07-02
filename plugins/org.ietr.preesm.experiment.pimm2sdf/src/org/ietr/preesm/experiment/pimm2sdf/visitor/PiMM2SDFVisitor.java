@@ -183,17 +183,21 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 	 */
 	private void computeDerivedParameterValues(PiGraph graph,
 			PiGraphExecution execution) {
-		// If there is no list of value for one Parameter, the value of the
-		// parameter is derived (i.e., computed from other parameters values),
-		// we can evaluate it (after the values of other parameters have been
-		// fixed)
+		// If there is no value or list of valuse for one Parameter, the value
+		// of the parameter is derived (i.e., computed from other parameters
+		// values), we can evaluate it (after the values of other parameters
+		// have been fixed)
 		for (Parameter p : graph.getParameters()) {
 			if (!execution.hasValue(p)) {
 				// Evaluate the expression wrt. the current values of the
 				// parameters and set the result as new expression
 				Expression pExp = piFactory.createExpression();
-				pExp.setString(p.getExpression().evaluate());
+				String value = p.getExpression().evaluate();
+				pExp.setString(value);
 				p.setExpression(pExp);
+				
+				Variable v = new Variable(p.getName(), value);
+				result.getVariables().addVariable(v);
 			}
 		}
 	}
@@ -298,7 +302,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 			ISetter setter = p.getIncomingDependency().getSetter();
 			if (setter instanceof Parameter) {
 				Parameter param = (Parameter) setter;
-				Argument arg = new Argument(param.getName());
+				Argument arg = new Argument(p.getName());
 				arg.setValue(param.getName());
 				v.getArguments().addArgument(arg);
 			}
@@ -327,7 +331,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 			DataOutputPort piOutputPort = f.getSourcePort();
 			if (sdfSource instanceof SDFSinkInterfaceVertex) {
 				sdfOutputPort = (SDFSinkInterfaceVertex) sdfSource;
-			} else {				
+			} else {
 				sdfOutputPort = new SDFSinkInterfaceVertex();
 				sdfOutputPort.setName(piOutputPort.getName());
 				sdfSource.addSink(sdfOutputPort);
@@ -338,7 +342,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 			DataInputPort piInputPort = f.getTargetPort();
 			if (sdfTarget instanceof SDFSourceInterfaceVertex) {
 				sdfInputPort = (SDFSourceInterfaceVertex) sdfTarget;
-			} else {				
+			} else {
 				sdfInputPort = new SDFSourceInterfaceVertex();
 				sdfInputPort.setName(piInputPort.getName());
 				sdfTarget.addSource(sdfInputPort);

@@ -73,7 +73,7 @@ public class ParameterValue {
 	 * Type specific attributes
 	 */
 	/* STATIC */
-	private int value;
+	private String value;
 	
 	/* DYNAMIC */
 	private Set<Integer> values;
@@ -106,7 +106,6 @@ public class ParameterValue {
 	public ParameterValue(String name, ParameterType type, String parent) {
 		this.name = name;
 		this.type = type;
-		this.value = 0;
 		this.values = new HashSet<Integer>();
 		this.inputParameters = new HashSet<String>();
 		this.parentVertex = parent;
@@ -136,7 +135,7 @@ public class ParameterValue {
 	/**
 	 * @return the value
 	 */
-	public int getValue() {
+	public String getValue() {
 		return value;
 	}
 
@@ -150,7 +149,7 @@ public class ParameterValue {
 	/**
 	 * @param value the value to set
 	 */
-	public void setValue(int value) {
+	public void setValue(String value) {
 		this.value = value;
 	}
 

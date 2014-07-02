@@ -122,7 +122,16 @@ public class PiMM2SDFLauncher {
 			}
 			else if (paramValue.getType() == ParameterType.STATIC) {
 				List<Integer> values = new ArrayList<Integer>();
-				values.add(paramValue.getValue());
+				
+				String value = paramValue.getValue();
+				int intValue;
+				try {
+					intValue = Integer.parseInt(value);
+					values.add(intValue);
+				} catch (NumberFormatException e) {
+					// DO NOTHING
+					// The value is a static expression which needs other parameters value to be evaluated
+				}				
 				result.put(paramValue.getName(), values);
 			}
 		}

@@ -111,7 +111,7 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
 				if(paramValue.getType() == ParameterType.DEPENDENT)
 					return paramValue.getExpression();
 				else if(paramValue.getType() == ParameterType.STATIC)
-					return Integer.toString(paramValue.getValue());
+					return paramValue.getValue();
 				else if(paramValue.getType() == ParameterType.DYNAMIC)
 					return paramValue.getValues().toString();
 				return null;

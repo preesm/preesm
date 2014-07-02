@@ -83,7 +83,7 @@ public class PiGraphExecution {
 	}
 
 	public boolean hasValue(Parameter p) {
-		return this.getValues(p) != null;
+		return (this.getValues(p) != null && !this.getValues(p).isEmpty());
 	}
 
 	public int getNumberOfInnerExecutions(PiGraph subgraph) {

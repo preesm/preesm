@@ -194,8 +194,7 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 						switch (param.getType()) {
 						case STATIC:
 							try {
-								int newValue = Integer
-										.parseInt(((String) value).trim());
+								String newValue = (String) value;
 								if (newValue != param.getValue()) {
 									param.setValue(newValue);
 									propertyChanged(this, PROP_DIRTY);
@@ -252,7 +251,7 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 					if (element instanceof ParameterValue) {
 						ParameterValue param = (ParameterValue) element;
 						if (param.getType() == ParameterType.STATIC) {
-							return Integer.toString(param.getValue());
+							return param.getValue();
 						} else if (param.getType() == ParameterType.DYNAMIC) {
 							return param.getValues().toString();
 						} else if (param.getType() == ParameterType.DEPENDENT) {

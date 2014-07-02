@@ -65,14 +65,14 @@ public class ParameterValueManager {
 		this.parameterValues = parameterValues;
 	}
 
-	public void addParameterValue(String paramName, int value, String parent) {
+	public void addStaticParameterValue(String paramName, String value, String parent) {
 		ParameterValue pValue = new ParameterValue(paramName,
 				ParameterType.STATIC, parent);
 		pValue.setValue(value);
 		this.parameterValues.add(pValue);
 	}
 
-	public void addParameterValue(String paramName, Set<Integer> values,
+	public void addDynamicParameterValue(String paramName, Set<Integer> values,
 			String parent) {
 		ParameterValue pValue = new ParameterValue(paramName,
 				ParameterType.DYNAMIC, parent);
@@ -80,7 +80,7 @@ public class ParameterValueManager {
 		this.parameterValues.add(pValue);
 	}
 
-	public void addParameterValue(String paramName, String expression,
+	public void addDependentParameterValue(String paramName, String expression,
 			Set<String> inputParameters, String parent) {
 		ParameterValue pValue = new ParameterValue(paramName,
 				ParameterType.DEPENDENT, parent);
@@ -99,18 +99,18 @@ public class ParameterValueManager {
 		inputParameters = param.getInputParameters();
 		if (param.isLocallyStatic()) {
 			// Add a static parameter value
-			addParameterValue(param.getName(), 0, parent);
+			addStaticParameterValue(param.getName(), null, parent);
 		} else {
 			if (inputParameters.isEmpty()) {
 				Set<Integer> values = new HashSet<Integer>();
 				// Add a dynamic parameter value
-				addParameterValue(param.getName(), values, parent);
+				addDynamicParameterValue(param.getName(), values, parent);
 			} else {
 				Set<String> inputParametersNames = new HashSet<String>();
 				for (Parameter p : inputParameters) {
 					inputParametersNames.add(p.getName());
 				}
-				addParameterValue(param.getName(), "1", inputParametersNames, parent);
+				addDependentParameterValue(param.getName(), null, inputParametersNames, parent);
 			}
 		}
 	}

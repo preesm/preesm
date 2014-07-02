@@ -233,8 +233,8 @@ public class ScenarioParser {
 
 		switch (type) {
 		case "STATIC":
-			scenario.getParameterValueManager().addParameterValue(name,
-					Integer.parseInt(stringValue), parent);
+			scenario.getParameterValueManager().addStaticParameterValue(name,
+					stringValue, parent);
 			break;
 		case "DYNAMIC":
 			if (stringValue.charAt(0) == '['
@@ -250,10 +250,10 @@ public class ScenarioParser {
 						newValues.add(Integer.parseInt(val.trim()));
 					}
 				} catch (NumberFormatException e) {
-					// TODO: Do smthg
+					// TODO: Do smthg?
 				}
-				scenario.getParameterValueManager().addParameterValue(name,
-						newValues, parent);
+				scenario.getParameterValueManager().addDynamicParameterValue(
+						name, newValues, parent);
 			}
 			break;
 		case "DEPENDENT":
@@ -264,8 +264,8 @@ public class ScenarioParser {
 					inputParameters.add(input.getName());
 				}
 			}
-			scenario.getParameterValueManager().addParameterValue(name,
-					stringValue, inputParameters, parent);
+			scenario.getParameterValueManager().addDependentParameterValue(
+					name, stringValue, inputParameters, parent);
 			break;
 		default:
 			throw new RuntimeException("Unknown Parameter type: " + type
