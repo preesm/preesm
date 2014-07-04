@@ -60,29 +60,25 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>
- * {@link org.ietr.preesm.experiment.model.pimm.impl.RefinementImpl#getFileName
- * <em>File Name</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.RefinementImpl#getFileName <em>File Name</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @generated
  */
 public class RefinementImpl extends EObjectImpl implements Refinement {
 	/**
-	 * The default value of the '{@link #getFileName() <em>File Name</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The default value of the '{@link #getFileName() <em>File Name</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getFileName()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String FILE_NAME_EDEFAULT = "";
+	protected static final String FILE_NAME_EDEFAULT = "\"\"";
 
 	/**
-	 * The cached value of the '{@link #getFileName() <em>File Name</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getFileName() <em>File Name</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getFileName()
 	 * @generated
 	 * @ordered
@@ -91,7 +87,6 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected RefinementImpl() {
@@ -100,51 +95,46 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case PiMMPackage.REFINEMENT__FILE_NAME:
-			return getFileName();
+			case PiMMPackage.REFINEMENT__FILE_NAME:
+				return getFileName();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case PiMMPackage.REFINEMENT__FILE_NAME:
-			return FILE_NAME_EDEFAULT == null ? fileName != null
-					: !FILE_NAME_EDEFAULT.equals(fileName);
+			case PiMMPackage.REFINEMENT__FILE_NAME:
+				return FILE_NAME_EDEFAULT == null ? fileName != null : !FILE_NAME_EDEFAULT.equals(fileName);
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case PiMMPackage.REFINEMENT__FILE_NAME:
-			setFileName((String) newValue);
-			return;
+			case PiMMPackage.REFINEMENT__FILE_NAME:
+				setFileName((String)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -154,15 +144,14 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case PiMMPackage.REFINEMENT__FILE_NAME:
-			setFileName(FILE_NAME_EDEFAULT);
-			return;
+			case PiMMPackage.REFINEMENT__FILE_NAME:
+				setFileName(FILE_NAME_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -206,7 +195,6 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public String getFileName() {
@@ -223,31 +211,27 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 	@Override
 	public void setFilePath(IPath path) {
 		filePath = path;
-		setFileName(path.lastSegment());
+		if (path != null) setFileName(path.lastSegment());
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public void setFileName(String newFileName) {
 		String oldFileName = fileName;
 		fileName = newFileName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					PiMMPackage.REFINEMENT__FILE_NAME, oldFileName, fileName));
+			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.REFINEMENT__FILE_NAME, oldFileName, fileName));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy())
-			return super.toString();
+		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (fileName: ");

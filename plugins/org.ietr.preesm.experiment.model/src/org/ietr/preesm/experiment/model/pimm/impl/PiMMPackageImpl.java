@@ -37,6 +37,7 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
@@ -49,8 +50,12 @@ import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.Direction;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
+import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
+import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
@@ -218,6 +223,34 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * @generated
 	 */
 	private EClass expressionEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass hRefinementEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass functionPrototypeEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass functionParameterEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EEnum directionEEnum = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -787,6 +820,114 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getHRefinement() {
+		return hRefinementEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getHRefinement_LoopPrototype() {
+		return (EReference)hRefinementEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getHRefinement_InitPrototype() {
+		return (EReference)hRefinementEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getFunctionPrototype() {
+		return functionPrototypeEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getFunctionPrototype_Name() {
+		return (EAttribute)functionPrototypeEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getFunctionPrototype_Parameters() {
+		return (EReference)functionPrototypeEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getFunctionParameter() {
+		return functionParameterEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getFunctionParameter_Name() {
+		return (EAttribute)functionParameterEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getFunctionParameter_Direction() {
+		return (EAttribute)functionParameterEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getFunctionParameter_Type() {
+		return (EAttribute)functionParameterEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getFunctionParameter_IsConfigurationParameter() {
+		return (EAttribute)functionParameterEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EEnum getDirection() {
+		return directionEEnum;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getConfigInputInterface() {
 		return configInputInterfaceEClass;
 	}
@@ -896,6 +1037,23 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
 		expressionEClass = createEClass(EXPRESSION);
 		createEAttribute(expressionEClass, EXPRESSION__STRING);
+
+		hRefinementEClass = createEClass(HREFINEMENT);
+		createEReference(hRefinementEClass, HREFINEMENT__LOOP_PROTOTYPE);
+		createEReference(hRefinementEClass, HREFINEMENT__INIT_PROTOTYPE);
+
+		functionPrototypeEClass = createEClass(FUNCTION_PROTOTYPE);
+		createEAttribute(functionPrototypeEClass, FUNCTION_PROTOTYPE__NAME);
+		createEReference(functionPrototypeEClass, FUNCTION_PROTOTYPE__PARAMETERS);
+
+		functionParameterEClass = createEClass(FUNCTION_PARAMETER);
+		createEAttribute(functionParameterEClass, FUNCTION_PARAMETER__NAME);
+		createEAttribute(functionParameterEClass, FUNCTION_PARAMETER__DIRECTION);
+		createEAttribute(functionParameterEClass, FUNCTION_PARAMETER__TYPE);
+		createEAttribute(functionParameterEClass, FUNCTION_PARAMETER__IS_CONFIGURATION_PARAMETER);
+
+		// Create enums
+		directionEEnum = createEEnum(DIRECTION);
 	}
 
 	/**
@@ -943,6 +1101,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		parameterEClass.getESuperTypes().add(this.getAbstractVertex());
 		parameterEClass.getESuperTypes().add(this.getISetter());
 		delayEClass.getESuperTypes().add(this.getParameterizable());
+		hRefinementEClass.getESuperTypes().add(this.getRefinement());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(parameterizableEClass, Parameterizable.class, "Parameterizable", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -1002,7 +1161,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEClass(configOutputInterfaceEClass, ConfigOutputInterface.class, "ConfigOutputInterface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(refinementEClass, Refinement.class, "Refinement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getRefinement_FileName(), ecorePackage.getEString(), "fileName", null, 0, 1, Refinement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRefinement_FileName(), ecorePackage.getEString(), "fileName", "\"\"", 0, 1, Refinement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		addEOperation(refinementEClass, this.getAbstractActor(), "getAbstractActor", 0, 1, IS_UNIQUE, IS_ORDERED);
 
@@ -1028,6 +1187,25 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEAttribute(getExpression_String(), ecorePackage.getEString(), "string", "0", 1, 1, Expression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		addEOperation(expressionEClass, ecorePackage.getEString(), "evaluate", 1, 1, IS_UNIQUE, IS_ORDERED);
+
+		initEClass(hRefinementEClass, HRefinement.class, "HRefinement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getHRefinement_LoopPrototype(), this.getFunctionPrototype(), null, "loopPrototype", null, 1, 1, HRefinement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getHRefinement_InitPrototype(), this.getFunctionPrototype(), null, "initPrototype", null, 0, 1, HRefinement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(functionPrototypeEClass, FunctionPrototype.class, "FunctionPrototype", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getFunctionPrototype_Name(), ecorePackage.getEString(), "name", null, 0, 1, FunctionPrototype.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getFunctionPrototype_Parameters(), this.getFunctionParameter(), null, "parameters", null, 0, -1, FunctionPrototype.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(functionParameterEClass, FunctionParameter.class, "FunctionParameter", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getFunctionParameter_Name(), ecorePackage.getEString(), "name", null, 0, 1, FunctionParameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getFunctionParameter_Direction(), this.getDirection(), "direction", null, 0, 1, FunctionParameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getFunctionParameter_Type(), ecorePackage.getEString(), "type", null, 0, 1, FunctionParameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getFunctionParameter_IsConfigurationParameter(), ecorePackage.getEBoolean(), "isConfigurationParameter", null, 0, 1, FunctionParameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		// Initialize enums and add enum literals
+		initEEnum(directionEEnum, Direction.class, "Direction");
+		addEEnumLiteral(directionEEnum, Direction.IN);
+		addEEnumLiteral(directionEEnum, Direction.OUT);
 
 		// Create resource
 		createResource(eNS_URI);

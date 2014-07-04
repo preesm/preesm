@@ -37,6 +37,7 @@ package org.ietr.preesm.experiment.model.pimm;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -1366,6 +1367,155 @@ public interface PiMMPackage extends EPackage {
 
 
 	/**
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl <em>HRefinement</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getHRefinement()
+	 * @generated
+	 */
+	int HREFINEMENT = 22;
+
+	/**
+	 * The feature id for the '<em><b>File Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int HREFINEMENT__FILE_NAME = REFINEMENT__FILE_NAME;
+
+	/**
+	 * The feature id for the '<em><b>Loop Prototype</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int HREFINEMENT__LOOP_PROTOTYPE = REFINEMENT_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Init Prototype</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int HREFINEMENT__INIT_PROTOTYPE = REFINEMENT_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of structural features of the '<em>HRefinement</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int HREFINEMENT_FEATURE_COUNT = REFINEMENT_FEATURE_COUNT + 2;
+
+	/**
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl <em>Function Prototype</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getFunctionPrototype()
+	 * @generated
+	 */
+	int FUNCTION_PROTOTYPE = 23;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FUNCTION_PROTOTYPE__NAME = 0;
+
+	/**
+	 * The feature id for the '<em><b>Parameters</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FUNCTION_PROTOTYPE__PARAMETERS = 1;
+
+	/**
+	 * The number of structural features of the '<em>Function Prototype</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FUNCTION_PROTOTYPE_FEATURE_COUNT = 2;
+
+	/**
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl <em>Function Parameter</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getFunctionParameter()
+	 * @generated
+	 */
+	int FUNCTION_PARAMETER = 24;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FUNCTION_PARAMETER__NAME = 0;
+
+	/**
+	 * The feature id for the '<em><b>Direction</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FUNCTION_PARAMETER__DIRECTION = 1;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FUNCTION_PARAMETER__TYPE = 2;
+
+	/**
+	 * The feature id for the '<em><b>Is Configuration Parameter</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FUNCTION_PARAMETER__IS_CONFIGURATION_PARAMETER = 3;
+
+	/**
+	 * The number of structural features of the '<em>Function Parameter</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FUNCTION_PARAMETER_FEATURE_COUNT = 4;
+
+	/**
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.Direction <em>Direction</em>}' enum.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.ietr.preesm.experiment.model.pimm.Direction
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDirection()
+	 * @generated
+	 */
+	int DIRECTION = 25;
+
+
+	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Parameterizable <em>Parameterizable</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1950,6 +2100,134 @@ public interface PiMMPackage extends EPackage {
 	EAttribute getExpression_String();
 
 	/**
+	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.HRefinement <em>HRefinement</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>HRefinement</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.HRefinement
+	 * @generated
+	 */
+	EClass getHRefinement();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.ietr.preesm.experiment.model.pimm.HRefinement#getLoopPrototype <em>Loop Prototype</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Loop Prototype</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.HRefinement#getLoopPrototype()
+	 * @see #getHRefinement()
+	 * @generated
+	 */
+	EReference getHRefinement_LoopPrototype();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.ietr.preesm.experiment.model.pimm.HRefinement#getInitPrototype <em>Init Prototype</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Init Prototype</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.HRefinement#getInitPrototype()
+	 * @see #getHRefinement()
+	 * @generated
+	 */
+	EReference getHRefinement_InitPrototype();
+
+	/**
+	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.FunctionPrototype <em>Function Prototype</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Function Prototype</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.FunctionPrototype
+	 * @generated
+	 */
+	EClass getFunctionPrototype();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.FunctionPrototype#getName <em>Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Name</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.FunctionPrototype#getName()
+	 * @see #getFunctionPrototype()
+	 * @generated
+	 */
+	EAttribute getFunctionPrototype_Name();
+
+	/**
+	 * Returns the meta object for the reference list '{@link org.ietr.preesm.experiment.model.pimm.FunctionPrototype#getParameters <em>Parameters</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Parameters</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.FunctionPrototype#getParameters()
+	 * @see #getFunctionPrototype()
+	 * @generated
+	 */
+	EReference getFunctionPrototype_Parameters();
+
+	/**
+	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.FunctionParameter <em>Function Parameter</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Function Parameter</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.FunctionParameter
+	 * @generated
+	 */
+	EClass getFunctionParameter();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.FunctionParameter#getName <em>Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Name</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.FunctionParameter#getName()
+	 * @see #getFunctionParameter()
+	 * @generated
+	 */
+	EAttribute getFunctionParameter_Name();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.FunctionParameter#getDirection <em>Direction</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Direction</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.FunctionParameter#getDirection()
+	 * @see #getFunctionParameter()
+	 * @generated
+	 */
+	EAttribute getFunctionParameter_Direction();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.FunctionParameter#getType <em>Type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Type</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.FunctionParameter#getType()
+	 * @see #getFunctionParameter()
+	 * @generated
+	 */
+	EAttribute getFunctionParameter_Type();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.FunctionParameter#isIsConfigurationParameter <em>Is Configuration Parameter</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Is Configuration Parameter</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.FunctionParameter#isIsConfigurationParameter()
+	 * @see #getFunctionParameter()
+	 * @generated
+	 */
+	EAttribute getFunctionParameter_IsConfigurationParameter();
+
+	/**
+	 * Returns the meta object for enum '{@link org.ietr.preesm.experiment.model.pimm.Direction <em>Direction</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for enum '<em>Direction</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.Direction
+	 * @generated
+	 */
+	EEnum getDirection();
+
+	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.ConfigInputInterface <em>Config Input Interface</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2462,6 +2740,110 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute EXPRESSION__STRING = eINSTANCE.getExpression_String();
+
+		/**
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl <em>HRefinement</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getHRefinement()
+		 * @generated
+		 */
+		EClass HREFINEMENT = eINSTANCE.getHRefinement();
+
+		/**
+		 * The meta object literal for the '<em><b>Loop Prototype</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference HREFINEMENT__LOOP_PROTOTYPE = eINSTANCE.getHRefinement_LoopPrototype();
+
+		/**
+		 * The meta object literal for the '<em><b>Init Prototype</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference HREFINEMENT__INIT_PROTOTYPE = eINSTANCE.getHRefinement_InitPrototype();
+
+		/**
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl <em>Function Prototype</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getFunctionPrototype()
+		 * @generated
+		 */
+		EClass FUNCTION_PROTOTYPE = eINSTANCE.getFunctionPrototype();
+
+		/**
+		 * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute FUNCTION_PROTOTYPE__NAME = eINSTANCE.getFunctionPrototype_Name();
+
+		/**
+		 * The meta object literal for the '<em><b>Parameters</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference FUNCTION_PROTOTYPE__PARAMETERS = eINSTANCE.getFunctionPrototype_Parameters();
+
+		/**
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl <em>Function Parameter</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getFunctionParameter()
+		 * @generated
+		 */
+		EClass FUNCTION_PARAMETER = eINSTANCE.getFunctionParameter();
+
+		/**
+		 * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute FUNCTION_PARAMETER__NAME = eINSTANCE.getFunctionParameter_Name();
+
+		/**
+		 * The meta object literal for the '<em><b>Direction</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute FUNCTION_PARAMETER__DIRECTION = eINSTANCE.getFunctionParameter_Direction();
+
+		/**
+		 * The meta object literal for the '<em><b>Type</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute FUNCTION_PARAMETER__TYPE = eINSTANCE.getFunctionParameter_Type();
+
+		/**
+		 * The meta object literal for the '<em><b>Is Configuration Parameter</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute FUNCTION_PARAMETER__IS_CONFIGURATION_PARAMETER = eINSTANCE.getFunctionParameter_IsConfigurationParameter();
+
+		/**
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.Direction <em>Direction</em>}' enum.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.ietr.preesm.experiment.model.pimm.Direction
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDirection()
+		 * @generated
+		 */
+		EEnum DIRECTION = eINSTANCE.getDirection();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigInputInterfaceImpl <em>Config Input Interface</em>}' class.

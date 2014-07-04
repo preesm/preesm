@@ -35,7 +35,31 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm.util;
 
-import org.ietr.preesm.experiment.model.pimm.*;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
+import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.Expression;
+import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.ISetter;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.Parameterizable;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl;
+import org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl;
+import org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl;
 
 public abstract class PiMMVisitor {
 	public void visit(PiMMVisitable v) {
@@ -51,7 +75,7 @@ public abstract class PiMMVisitor {
 	public abstract void visitConfigInputInterface(ConfigInputInterface cii);
 
 	public abstract void visitConfigInputPort(ConfigInputPort cip);
-	
+
 	public abstract void visitConfigOutputInterface(ConfigOutputInterface coi);
 
 	public abstract void visitConfigOutputPort(ConfigOutputPort cop);
@@ -61,28 +85,34 @@ public abstract class PiMMVisitor {
 	public abstract void visitDataInputPort(DataInputPort dip);
 
 	public abstract void visitDataOutputInterface(DataOutputInterface doi);
-	
+
 	public abstract void visitDataOutputPort(DataOutputPort dop);
-	
+
 	public abstract void visitDelay(Delay d);
-	
+
 	public abstract void visitDependency(Dependency d);
-	
+
 	public abstract void visitExpression(Expression e);
-	
+
 	public abstract void visitFifo(Fifo f);
-	
+
 	public abstract void visitInterfaceActor(InterfaceActor ia);
-	
+
 	public abstract void visitISetter(ISetter is);
-	
+
 	public abstract void visitParameter(Parameter p);
-	
+
 	public abstract void visitParameterizable(Parameterizable p);
-	
+
 	public abstract void visitPiGraph(PiGraph pg);
-	
+
 	public abstract void visitPort(Port p);
-	
+
 	public abstract void visitRefinement(Refinement r);
+
+	public abstract void visitFunctionParameter(FunctionParameterImpl f);
+
+	public abstract void visitFunctionPrototype(FunctionPrototypeImpl f);
+
+	public abstract void visitHRefinement(HRefinementImpl h);
 }

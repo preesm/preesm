@@ -62,6 +62,9 @@ import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl;
+import org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl;
+import org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 import org.ietr.preesm.experiment.pimm.cppgenerator.utils.CPPNameGenerator;
 
@@ -281,6 +284,23 @@ public class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitRefinement(Refinement r) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void visitFunctionParameter(
+			FunctionParameterImpl functionParameterImpl) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void visitFunctionPrototype(
+			FunctionPrototypeImpl functionPrototypeImpl) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void visitHRefinement(HRefinementImpl hRefinementImpl) {
 		throw new UnsupportedOperationException();
 	}
 

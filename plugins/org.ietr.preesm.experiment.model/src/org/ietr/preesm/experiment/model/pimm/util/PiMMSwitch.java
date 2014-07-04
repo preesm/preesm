@@ -236,6 +236,25 @@ public class PiMMSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case PiMMPackage.HREFINEMENT: {
+				HRefinement hRefinement = (HRefinement)theEObject;
+				T result = caseHRefinement(hRefinement);
+				if (result == null) result = caseRefinement(hRefinement);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case PiMMPackage.FUNCTION_PROTOTYPE: {
+				FunctionPrototype functionPrototype = (FunctionPrototype)theEObject;
+				T result = caseFunctionPrototype(functionPrototype);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case PiMMPackage.FUNCTION_PARAMETER: {
+				FunctionParameter functionParameter = (FunctionParameter)theEObject;
+				T result = caseFunctionParameter(functionParameter);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -552,6 +571,51 @@ public class PiMMSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseExpression(Expression object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>HRefinement</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>HRefinement</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseHRefinement(HRefinement object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Function Prototype</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Function Prototype</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseFunctionPrototype(FunctionPrototype object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Function Parameter</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Function Parameter</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseFunctionParameter(FunctionParameter object) {
 		return null;
 	}
 

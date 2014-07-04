@@ -111,4 +111,25 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="string" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral="0"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="HRefinement" eSuperTypes="#//Refinement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="loopPrototype" lowerBound="1"
+        eType="#//FunctionPrototype"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="initPrototype" eType="#//FunctionPrototype"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FunctionPrototype">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
+        eType="#//FunctionParameter"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FunctionParameter">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="direction" eType="#//Direction"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isConfigurationParameter"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="Direction">
+    <eLiterals name="IN"/>
+    <eLiterals name="OUT" value="1"/>
+  </eClassifiers>
 </ecore:EPackage>

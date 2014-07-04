@@ -156,6 +156,18 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 				return createExpressionAdapter();
 			}
 			@Override
+			public Adapter caseHRefinement(HRefinement object) {
+				return createHRefinementAdapter();
+			}
+			@Override
+			public Adapter caseFunctionPrototype(FunctionPrototype object) {
+				return createFunctionPrototypeAdapter();
+			}
+			@Override
+			public Adapter caseFunctionParameter(FunctionParameter object) {
+				return createFunctionParameterAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -466,6 +478,48 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createExpressionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.HRefinement <em>HRefinement</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.ietr.preesm.experiment.model.pimm.HRefinement
+	 * @generated
+	 */
+	public Adapter createHRefinementAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.FunctionPrototype <em>Function Prototype</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.ietr.preesm.experiment.model.pimm.FunctionPrototype
+	 * @generated
+	 */
+	public Adapter createFunctionPrototypeAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.FunctionParameter <em>Function Parameter</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.ietr.preesm.experiment.model.pimm.FunctionParameter
+	 * @generated
+	 */
+	public Adapter createFunctionParameterAdapter() {
 		return null;
 	}
 

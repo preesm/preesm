@@ -63,27 +63,19 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>
- * {@link org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl#getVertices
- * <em>Vertices</em>}</li>
- * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl#getFifos
- * <em>Fifos</em>}</li>
- * <li>
- * {@link org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl#getParameters
- * <em>Parameters</em>}</li>
- * <li>
- * {@link org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl#getDependencies
- * <em>Dependencies</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl#getVertices <em>Vertices</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl#getFifos <em>Fifos</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl#getParameters <em>Parameters</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.PiGraphImpl#getDependencies <em>Dependencies</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @generated
  */
 public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 	/**
-	 * The cached value of the '{@link #getVertices() <em>Vertices</em>}'
-	 * containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getVertices() <em>Vertices</em>}' containment reference list.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getVertices()
 	 * @generated
 	 * @ordered
@@ -91,9 +83,8 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 	protected EList<AbstractActor> vertices;
 
 	/**
-	 * The cached value of the '{@link #getFifos() <em>Fifos</em>}' containment
-	 * reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getFifos() <em>Fifos</em>}' containment reference list.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getFifos()
 	 * @generated
 	 * @ordered
@@ -101,9 +92,8 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 	protected EList<Fifo> fifos;
 
 	/**
-	 * The cached value of the '{@link #getParameters() <em>Parameters</em>}'
-	 * containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getParameters() <em>Parameters</em>}' containment reference list.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getParameters()
 	 * @generated
 	 * @ordered
@@ -134,102 +124,92 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case PiMMPackage.PI_GRAPH__VERTICES:
-			return getVertices();
-		case PiMMPackage.PI_GRAPH__FIFOS:
-			return getFifos();
-		case PiMMPackage.PI_GRAPH__PARAMETERS:
-			return getParameters();
-		case PiMMPackage.PI_GRAPH__DEPENDENCIES:
-			return getDependencies();
+			case PiMMPackage.PI_GRAPH__VERTICES:
+				return getVertices();
+			case PiMMPackage.PI_GRAPH__FIFOS:
+				return getFifos();
+			case PiMMPackage.PI_GRAPH__PARAMETERS:
+				return getParameters();
+			case PiMMPackage.PI_GRAPH__DEPENDENCIES:
+				return getDependencies();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd,
 			int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case PiMMPackage.PI_GRAPH__VERTICES:
-			return ((InternalEList<?>) getVertices()).basicRemove(otherEnd,
-					msgs);
-		case PiMMPackage.PI_GRAPH__FIFOS:
-			return ((InternalEList<?>) getFifos()).basicRemove(otherEnd, msgs);
-		case PiMMPackage.PI_GRAPH__PARAMETERS:
-			return ((InternalEList<?>) getParameters()).basicRemove(otherEnd,
-					msgs);
-		case PiMMPackage.PI_GRAPH__DEPENDENCIES:
-			return ((InternalEList<?>) getDependencies()).basicRemove(otherEnd,
-					msgs);
+			case PiMMPackage.PI_GRAPH__VERTICES:
+				return ((InternalEList<?>)getVertices()).basicRemove(otherEnd, msgs);
+			case PiMMPackage.PI_GRAPH__FIFOS:
+				return ((InternalEList<?>)getFifos()).basicRemove(otherEnd, msgs);
+			case PiMMPackage.PI_GRAPH__PARAMETERS:
+				return ((InternalEList<?>)getParameters()).basicRemove(otherEnd, msgs);
+			case PiMMPackage.PI_GRAPH__DEPENDENCIES:
+				return ((InternalEList<?>)getDependencies()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case PiMMPackage.PI_GRAPH__VERTICES:
-			return vertices != null && !vertices.isEmpty();
-		case PiMMPackage.PI_GRAPH__FIFOS:
-			return fifos != null && !fifos.isEmpty();
-		case PiMMPackage.PI_GRAPH__PARAMETERS:
-			return parameters != null && !parameters.isEmpty();
-		case PiMMPackage.PI_GRAPH__DEPENDENCIES:
-			return dependencies != null && !dependencies.isEmpty();
+			case PiMMPackage.PI_GRAPH__VERTICES:
+				return vertices != null && !vertices.isEmpty();
+			case PiMMPackage.PI_GRAPH__FIFOS:
+				return fifos != null && !fifos.isEmpty();
+			case PiMMPackage.PI_GRAPH__PARAMETERS:
+				return parameters != null && !parameters.isEmpty();
+			case PiMMPackage.PI_GRAPH__DEPENDENCIES:
+				return dependencies != null && !dependencies.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case PiMMPackage.PI_GRAPH__VERTICES:
-			getVertices().clear();
-			getVertices()
-					.addAll((Collection<? extends AbstractActor>) newValue);
-			return;
-		case PiMMPackage.PI_GRAPH__FIFOS:
-			getFifos().clear();
-			getFifos().addAll((Collection<? extends Fifo>) newValue);
-			return;
-		case PiMMPackage.PI_GRAPH__PARAMETERS:
-			getParameters().clear();
-			getParameters().addAll((Collection<? extends Parameter>) newValue);
-			return;
-		case PiMMPackage.PI_GRAPH__DEPENDENCIES:
-			getDependencies().clear();
-			getDependencies().addAll(
-					(Collection<? extends Dependency>) newValue);
-			return;
+			case PiMMPackage.PI_GRAPH__VERTICES:
+				getVertices().clear();
+				getVertices().addAll((Collection<? extends AbstractActor>)newValue);
+				return;
+			case PiMMPackage.PI_GRAPH__FIFOS:
+				getFifos().clear();
+				getFifos().addAll((Collection<? extends Fifo>)newValue);
+				return;
+			case PiMMPackage.PI_GRAPH__PARAMETERS:
+				getParameters().clear();
+				getParameters().addAll((Collection<? extends Parameter>)newValue);
+				return;
+			case PiMMPackage.PI_GRAPH__DEPENDENCIES:
+				getDependencies().clear();
+				getDependencies().addAll((Collection<? extends Dependency>)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -239,63 +219,56 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case PiMMPackage.PI_GRAPH__VERTICES:
-			getVertices().clear();
-			return;
-		case PiMMPackage.PI_GRAPH__FIFOS:
-			getFifos().clear();
-			return;
-		case PiMMPackage.PI_GRAPH__PARAMETERS:
-			getParameters().clear();
-			return;
-		case PiMMPackage.PI_GRAPH__DEPENDENCIES:
-			getDependencies().clear();
-			return;
+			case PiMMPackage.PI_GRAPH__VERTICES:
+				getVertices().clear();
+				return;
+			case PiMMPackage.PI_GRAPH__FIFOS:
+				getFifos().clear();
+				return;
+			case PiMMPackage.PI_GRAPH__PARAMETERS:
+				getParameters().clear();
+				return;
+			case PiMMPackage.PI_GRAPH__DEPENDENCIES:
+				getDependencies().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public EList<Fifo> getFifos() {
 		if (fifos == null) {
-			fifos = new EObjectContainmentEList<Fifo>(Fifo.class, this,
-					PiMMPackage.PI_GRAPH__FIFOS);
+			fifos = new EObjectContainmentEList<Fifo>(Fifo.class, this, PiMMPackage.PI_GRAPH__FIFOS);
 		}
 		return fifos;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public EList<Parameter> getParameters() {
 		if (parameters == null) {
-			parameters = new EObjectContainmentEList<Parameter>(
-					Parameter.class, this, PiMMPackage.PI_GRAPH__PARAMETERS);
+			parameters = new EObjectContainmentEList<Parameter>(Parameter.class, this, PiMMPackage.PI_GRAPH__PARAMETERS);
 		}
 		return parameters;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public EList<Dependency> getDependencies() {
 		if (dependencies == null) {
-			dependencies = new EObjectContainmentEList<Dependency>(
-					Dependency.class, this, PiMMPackage.PI_GRAPH__DEPENDENCIES);
+			dependencies = new EObjectContainmentEList<Dependency>(Dependency.class, this, PiMMPackage.PI_GRAPH__DEPENDENCIES);
 		}
 		return dependencies;
 	}
@@ -319,13 +292,11 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public EList<AbstractActor> getVertices() {
 		if (vertices == null) {
-			vertices = new EObjectContainmentEList<AbstractActor>(
-					AbstractActor.class, this, PiMMPackage.PI_GRAPH__VERTICES);
+			vertices = new EObjectContainmentEList<AbstractActor>(AbstractActor.class, this, PiMMPackage.PI_GRAPH__VERTICES);
 		}
 		return vertices;
 	}

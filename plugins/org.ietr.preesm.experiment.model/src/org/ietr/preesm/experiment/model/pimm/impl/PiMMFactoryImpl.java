@@ -36,6 +36,7 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 
@@ -48,33 +49,32 @@ import org.ietr.preesm.experiment.model.pimm.*;
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!--
  * end-user-doc -->
- * 
  * @generated
  */
 public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	/**
-	 * Creates the default factory implementation. <!-- begin-user-doc --> <!--
+	 * Creates the default factory implementation.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public static PiMMFactory init() {
 		try {
-			PiMMFactory thePiMMFactory = (PiMMFactory) EPackage.Registry.INSTANCE
-					.getEFactory(PiMMPackage.eNS_URI);
+			PiMMFactory thePiMMFactory = (PiMMFactory)EPackage.Registry.INSTANCE.getEFactory(PiMMPackage.eNS_URI);
 			if (thePiMMFactory != null) {
 				return thePiMMFactory;
 			}
-		} catch (Exception exception) {
+		}
+		catch (Exception exception) {
 			EcorePlugin.INSTANCE.log(exception);
 		}
 		return new PiMMFactoryImpl();
 	}
 
 	/**
-	 * Creates an instance of the factory. <!-- begin-user-doc --> <!--
+	 * Creates an instance of the factory.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public PiMMFactoryImpl() {
@@ -83,55 +83,68 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
-		case PiMMPackage.PI_GRAPH:
-			return createPiGraph();
-		case PiMMPackage.ACTOR:
-			return createActor();
-		case PiMMPackage.DATA_INPUT_PORT:
-			return createDataInputPort();
-		case PiMMPackage.DATA_OUTPUT_PORT:
-			return createDataOutputPort();
-		case PiMMPackage.CONFIG_INPUT_PORT:
-			return createConfigInputPort();
-		case PiMMPackage.CONFIG_OUTPUT_PORT:
-			return createConfigOutputPort();
-		case PiMMPackage.FIFO:
-			return createFifo();
-		case PiMMPackage.INTERFACE_ACTOR:
-			return createInterfaceActor();
-		case PiMMPackage.DATA_INPUT_INTERFACE:
-			return createDataInputInterface();
-		case PiMMPackage.DATA_OUTPUT_INTERFACE:
-			return createDataOutputInterface();
-		case PiMMPackage.CONFIG_INPUT_INTERFACE:
-			return createConfigInputInterface();
-		case PiMMPackage.CONFIG_OUTPUT_INTERFACE:
-			return createConfigOutputInterface();
-		case PiMMPackage.REFINEMENT:
-			return createRefinement();
-		case PiMMPackage.PARAMETER:
-			return createParameter();
-		case PiMMPackage.DEPENDENCY:
-			return createDependency();
-		case PiMMPackage.DELAY:
-			return createDelay();
-		case PiMMPackage.EXPRESSION:
-			return createExpression();
-		default:
-			throw new IllegalArgumentException("The class '" + eClass.getName()
-					+ "' is not a valid classifier");
+			case PiMMPackage.PI_GRAPH: return createPiGraph();
+			case PiMMPackage.ACTOR: return createActor();
+			case PiMMPackage.DATA_INPUT_PORT: return createDataInputPort();
+			case PiMMPackage.DATA_OUTPUT_PORT: return createDataOutputPort();
+			case PiMMPackage.CONFIG_INPUT_PORT: return createConfigInputPort();
+			case PiMMPackage.CONFIG_OUTPUT_PORT: return createConfigOutputPort();
+			case PiMMPackage.FIFO: return createFifo();
+			case PiMMPackage.INTERFACE_ACTOR: return createInterfaceActor();
+			case PiMMPackage.DATA_INPUT_INTERFACE: return createDataInputInterface();
+			case PiMMPackage.DATA_OUTPUT_INTERFACE: return createDataOutputInterface();
+			case PiMMPackage.CONFIG_INPUT_INTERFACE: return createConfigInputInterface();
+			case PiMMPackage.CONFIG_OUTPUT_INTERFACE: return createConfigOutputInterface();
+			case PiMMPackage.REFINEMENT: return createRefinement();
+			case PiMMPackage.PARAMETER: return createParameter();
+			case PiMMPackage.DEPENDENCY: return createDependency();
+			case PiMMPackage.DELAY: return createDelay();
+			case PiMMPackage.EXPRESSION: return createExpression();
+			case PiMMPackage.HREFINEMENT: return createHRefinement();
+			case PiMMPackage.FUNCTION_PROTOTYPE: return createFunctionPrototype();
+			case PiMMPackage.FUNCTION_PARAMETER: return createFunctionParameter();
+			default:
+				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
+		}
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Object createFromString(EDataType eDataType, String initialValue) {
+		switch (eDataType.getClassifierID()) {
+			case PiMMPackage.DIRECTION:
+				return createDirectionFromString(eDataType, initialValue);
+			default:
+				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
+		}
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String convertToString(EDataType eDataType, Object instanceValue) {
+		switch (eDataType.getClassifierID()) {
+			case PiMMPackage.DIRECTION:
+				return convertDirectionToString(eDataType, instanceValue);
+			default:
+				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
 		}
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public PiGraph createPiGraph() {
@@ -141,7 +154,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Actor createActor() {
@@ -151,7 +163,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public DataInputPort createDataInputPort() {
@@ -161,7 +172,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public DataOutputPort createDataOutputPort() {
@@ -171,7 +181,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public ConfigInputPort createConfigInputPort() {
@@ -181,7 +190,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public ConfigOutputPort createConfigOutputPort() {
@@ -191,7 +199,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Fifo createFifo() {
@@ -201,7 +208,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public InterfaceActor createInterfaceActor() {
@@ -211,7 +217,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public DataInputInterface createDataInputInterface() {
@@ -221,7 +226,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public DataOutputInterface createDataOutputInterface() {
@@ -231,7 +235,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public ConfigOutputInterface createConfigOutputInterface() {
@@ -241,7 +244,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Refinement createRefinement() {
@@ -264,7 +266,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Dependency createDependency() {
@@ -274,7 +275,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Delay createDelay() {
@@ -284,7 +284,6 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Expression createExpression() {
@@ -293,8 +292,75 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	}
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public HRefinement createHRefinement() {
+		HRefinementImpl hRefinement = new HRefinementImpl();
+		return hRefinement;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public FunctionPrototype createFunctionPrototype() {
+		FunctionPrototypeImpl functionPrototype = new FunctionPrototypeImpl();
+		return functionPrototype;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public FunctionParameter createFunctionParameter() {
+		FunctionParameterImpl functionParameter = new FunctionParameterImpl();
+		return functionParameter;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Direction createDirection(String literal) {
+		Direction result = Direction.get(literal);
+		if (result == null) throw new IllegalArgumentException("The value '" + literal + "' is not a valid enumerator of '" + PiMMPackage.Literals.DIRECTION.getName() + "'");
+		return result;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Direction createDirectionFromString(EDataType eDataType, String initialValue) {
+		return createDirection(initialValue);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String convertDirection(Direction instanceValue) {
+		return instanceValue == null ? null : instanceValue.toString();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String convertDirectionToString(EDataType eDataType, Object instanceValue) {
+		return convertDirection((Direction)instanceValue);
+	}
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public ConfigInputInterface createConfigInputInterface() {
@@ -304,16 +370,14 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public PiMMPackage getPiMMPackage() {
-		return (PiMMPackage) getEPackage();
+		return (PiMMPackage)getEPackage();
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @deprecated
 	 * @generated
 	 */
