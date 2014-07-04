@@ -44,15 +44,17 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.platform.IDiagramBehavior;
-import org.eclipse.graphiti.platform.IDiagramEditor;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.ui.pimm.diagram.PiMMToolBehaviorProvider;
 import org.ietr.preesm.ui.scenario.editor.EditorTools.FileContentProvider;
 
@@ -114,6 +116,7 @@ public class PiMMUtil {
 		Set<String> fileExtensions = new HashSet<String>();
 		fileExtensions.add("pi");
 		fileExtensions.add("idl");
+		fileExtensions.add("h");
 		FileContentProvider contentProvider = new FileContentProvider(
 				fileExtensions);
 
@@ -131,6 +134,33 @@ public class PiMMUtil {
 			IFile file = (IFile) (inputDialog.getResult()[0]);
 			return file.getFullPath();
 
+		}
+		return null;
+	}
+
+	public static FunctionPrototype selectFunction(
+			FunctionPrototype[] prototypes, String title, String message,
+			boolean mandatorySelection) {
+		ElementListSelectionDialog dialog = new ElementListSelectionDialog(
+				getShell(), new LabelProvider() {
+					@Override
+					public String getText(Object element) {
+						if (element != null
+								&& element instanceof FunctionPrototype)
+							return ((FunctionPrototype) element).format();
+						else
+							return "";
+					}
+				});
+
+		dialog.setTitle(title);
+		dialog.setMessage(message);
+		dialog.setElements(prototypes);
+
+		int retDialog = dialog.open();
+		if (retDialog == Window.OK) {
+			FunctionPrototype proto = (FunctionPrototype) (dialog.getResult()[0]);
+			return proto;
 		}
 		return null;
 	}
