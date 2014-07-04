@@ -57,6 +57,10 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFExpressionEdgePropertyType;
 import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
+import org.ietr.preesm.codegen.idl.ActorPrototypes;
+import org.ietr.preesm.codegen.idl.Prototype;
+import org.ietr.preesm.codegen.model.CodeGenArgument;
+import org.ietr.preesm.codegen.model.CodeGenParameter;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
@@ -72,6 +76,7 @@ import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
@@ -80,6 +85,9 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl;
+import org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl;
+import org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 import org.ietr.preesm.experiment.pimm2sdf.PiGraphExecution;
 
@@ -102,6 +110,9 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 	private Map<Port, Parameterizable> piPort2Vx = new HashMap<Port, Parameterizable>();
 	// Set of subgraphs to visit afterwards
 	private Set<PiGraph> subgraphs = new HashSet<PiGraph>();
+
+	// Current SDF Refinement
+	private IRefinement currentSDFRefinement;
 
 	// Factory for creation of new Pi Expressions
 	private PiMMFactory piFactory = PiMMFactory.eINSTANCE;
@@ -195,7 +206,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 				String value = p.getExpression().evaluate();
 				pExp.setString(value);
 				p.setExpression(pExp);
-				
+
 				Variable v = new Variable(p.getName(), value);
 				result.getVariables().addVariable(v);
 			}
@@ -295,8 +306,8 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 		v.setName(a.getName());
 		v.setInfo(a.getPath());
 		Refinement piRef = a.getRefinement();
-		IRefinement desc = new CodeRefinement(piRef.getFilePath());
-		v.setRefinement(desc);
+		piRef.accept(this);
+		v.setRefinement(currentSDFRefinement);
 
 		for (ConfigInputPort p : a.getConfigInputPorts()) {
 			ISetter setter = p.getIncomingDependency().getSetter();
@@ -420,6 +431,73 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 		piVx2SDFVx.put(doi, v);
 	}
 
+	@Override
+	public void visitRefinement(Refinement r) {
+		currentSDFRefinement = new CodeRefinement(r.getFilePath());
+	}
+
+	// Current Prototype
+	private Prototype currentPrototype;
+	// Current Argument and Parameter
+	private CodeGenArgument currentArgument;
+	private CodeGenParameter currentParameter;
+
+	@Override
+	public void visitHRefinement(HRefinementImpl h) {
+		ActorPrototypes actorPrototype = new ActorPrototypes(h.getFilePath()
+				.toOSString());
+
+		h.getLoopPrototype().accept(this);
+		actorPrototype.setLoopPrototype(currentPrototype);
+
+		if (h.getInitPrototype() != null) {
+			h.getLoopPrototype().accept(this);
+			actorPrototype.setInitPrototype(currentPrototype);
+		}
+
+		currentSDFRefinement = actorPrototype;
+	}
+
+	@Override
+	public void visitFunctionPrototype(FunctionPrototypeImpl f) {
+		currentPrototype = new Prototype(f.getName());
+		for (FunctionParameter p : f.getParameters()) {
+			p.accept(this);
+			if (p.isIsConfigurationParameter())
+				currentPrototype.addParameter(currentParameter);
+			else
+				currentPrototype.addArgument(currentArgument);
+		}
+	}
+
+	@Override
+	public void visitFunctionParameter(FunctionParameterImpl f) {
+		if (f.isIsConfigurationParameter()) {
+			int direction = 0;
+			switch (f.getDirection()) {
+			case IN:
+				direction = 0;
+				break;
+			case OUT:
+				direction = 1;
+				break;
+			}
+			currentParameter = new CodeGenParameter(f.getName(), direction);
+		} else {
+			String direction = "";
+			switch (f.getDirection()) {
+			case IN:
+				direction = CodeGenArgument.INPUT;
+				break;
+			case OUT:
+				direction = CodeGenArgument.OUTPUT;
+				break;
+			}
+			currentArgument = new CodeGenArgument(f.getName(), direction);
+			currentArgument.setType(f.getType());
+		}
+	}
+
 	public SDFGraph getResult() {
 		return result;
 	}
@@ -470,11 +548,6 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitPort(Port p) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void visitRefinement(Refinement r) {
 		throw new UnsupportedOperationException();
 	}
 }
