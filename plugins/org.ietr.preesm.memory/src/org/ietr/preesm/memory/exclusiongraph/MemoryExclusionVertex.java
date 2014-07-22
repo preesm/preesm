@@ -77,6 +77,20 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 * {@link MemoryExclusionVertex} (i.e. the key of the first {@link Pair}).
 	 */
 	public static final String REAL_TOKEN_RANGE_PROPERTY = "real_token_range";
+	
+	/**
+	 * Property of the {@link MemoryExclusionVertex}. The object associated to
+	 * this property is:<br>
+	 * <code>
+	 * List&lt;MemoryExclusionVertex&gt;</code><br>
+	 * This list contains the fake {@link MemoryExclusionVertex} that are added
+	 * to the {@link MemoryExclusionGraph} during memory allocation when the
+	 * current {@link MemoryExclusionVertex} is divided because of scripts.
+	 * These fake {@link MemoryExclusionVertex} should be removed from the
+	 * {@link MemoryExclusionGraph} if it is
+	 * {@link MemoryExclusionGraph#deallocate() deallocated}.
+	 */
+	public static final String FAKE_MOBJECT = "fake_mobject";
 
 	/**
 	 * Property of the {@link MemoryExclusionVertex}. The object associated to

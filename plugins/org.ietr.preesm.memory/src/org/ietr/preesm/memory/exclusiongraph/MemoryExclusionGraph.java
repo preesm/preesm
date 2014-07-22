@@ -620,6 +620,17 @@ public class MemoryExclusionGraph extends
 					if (mergedVertex.getWeight() != 0) {
 						// Remove it from the MEG
 						this.removeVertex(mergedVertex);
+					} else {
+						// The vertex was divided
+						// Remove all fake mobjects
+						@SuppressWarnings("unchecked")
+						List<MemoryExclusionVertex> fakeMobjects = (List<MemoryExclusionVertex>) mergedVertex
+								.getPropertyBean().getValue(
+										MemoryExclusionVertex.FAKE_MOBJECT);
+						for(MemoryExclusionVertex fakeMobj : fakeMobjects){
+							this.removeVertex(fakeMobj);
+						}
+						fakeMobjects.clear();
 					}
 				}
 			}
