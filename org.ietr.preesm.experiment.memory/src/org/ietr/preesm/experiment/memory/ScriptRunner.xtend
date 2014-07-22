@@ -385,7 +385,10 @@ class ScriptRunner {
 		if (_alignment > 0) {
 			scriptResults.forEach [ vertex, result |
 				// All outputs except the mergeable one linked only to pure_in 
-				// inputs within their actor must be enlarged 
+				// inputs within their actor must be enlarged.
+				// In other terms, only buffers that will never be written by their
+				// producer actor or consumer actor are not enlarged since these 
+				// buffer will only be used to divide data written by other actors. 
 				result.value.filter[
 					!(it.originallyMergeable && it.matchTable.values.flatten.forall [
 						it.remoteBuffer.originallyMergeable
@@ -446,7 +449,19 @@ class ScriptRunner {
 
 	def enlargeForAlignment(Buffer buffer) {
 		if (printTodo) {
-			println('''Alignment minus one is probably sufficient''')
+			println('''Alignment minus one is probably sufficient + Only enlarge [0-Alignment,Max+alignment];''')
+			// Todo description :
+			// This method is called only for output buffers.
+			// Since only "real" tokens of the output buffers are written back
+			// from cache (in non-coherent architectures), alignment is here
+			// only to ensure that these "real" tokens are not cached in the
+			// same cache line as other real tokens. 
+			// Consequently, enlarging buffers as follows is sufficient to 
+			// prevent cache-line alignment issues:
+			// minIdx = min(0 - (_alignment -1), minIdx)
+			// maxIdx = max(maxIdx + (_alignment -1), maxIdx)
+			//
+			 
 		}
 		val oldMinIndex = buffer.minIndex
 		if (oldMinIndex == 0 || (oldMinIndex) % alignment != 0) {
@@ -1523,14 +1538,11 @@ class ScriptRunner {
 		// Create a new property in the MEG to store the merged memory objects
 		val mergedMObjects = newHashMap
 		meg.propertyBean.setValue(MemoryExclusionGraph::HOST_MEMORY_OBJECT_PROPERTY, mergedMObjects)
-
-		// Process each group of buffers separately
-		for (buffers : bufferGroups) {
-
-			// For each buffer, get the corresponding MObject
-			val bufferAndMObjectMap = newHashMap
+		
+		// For each buffer, get the corresponding MObject
+		val bufferAndMObjectMap = newHashMap
+		for (buffers : bufferGroups) {			
 			for (buffer : buffers) {
-
 				// Get the Mobj
 				val mObjCopy = new MemoryExclusionVertex(buffer.sdfEdge.source.name, buffer.sdfEdge.target.name, 0)
 				val mObj = meg.getVertex(mObjCopy)
@@ -1559,13 +1571,20 @@ class ScriptRunner {
 				}
 				bufferAndMObjectMap.put(buffer, mObj)
 			}
-			
-			// Backup neighbors of each buffer
+		}
+		
+		// Backup neighbors of each buffer before changing anything in the meg
+		for (buffers : bufferGroups) {
 			for (buffer : buffers) {
 				val mObj = bufferAndMObjectMap.get(buffer)
 				val neighbors = new ArrayList<MemoryExclusionVertex>(meg.getAdjacentVertexOf(mObj))
 				mObj.setPropertyValue(MemoryExclusionVertex::ADJACENT_VERTICES_BACKUP, neighbors)
 			}
+		}
+
+		// Process each group of buffers separately
+		for (buffers : bufferGroups) {
+
 
 			// For each unmatched buffer that received matched buffers
 			for (buffer : buffers.filter[it.matched == null && it.host]) {
@@ -1656,7 +1675,9 @@ class ScriptRunner {
 					}
 					mObjRoots.add(rootMObj -> (localRange -> remoteRange))
 				]
-
+				
+				// Sort mObjRoots in order of contiguous ranges
+				mObjRoots.sortInplaceBy[it.value.key.start]
 			}
 		}
 
