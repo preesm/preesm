@@ -432,141 +432,189 @@ public abstract class MemoryAllocator {
 	 */
 	protected void allocateHostMemoryObject(MemoryExclusionVertex hostVertex,
 			Set<MemoryExclusionVertex> vertices, int offset) {
-		// TODO Replace the big host MemObject with its "content"
 		// - Remove the host memObject from the Memex
 		// - Put back old exclusions between MObjects (before they were removed
 		// from the graph)
 		// - Special processing for vertices that were splitted => needs to
 		// create several MObj for them
 
-		@SuppressWarnings("unchecked")
-		int hostZeroIndexOffset = ((List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) hostVertex
-				.getPropertyBean().getValue(
-						MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY))
-				.get(0).getValue().getValue().getStart();
-
-		// For each vertex of the group
-		for (MemoryExclusionVertex vertex : vertices) {
-
-			// Get its offset within the host vertex
+		// Put back all hosted mobj in the meg (with their exclusions)
+		{
 			@SuppressWarnings("unchecked")
-			List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realTokenRange = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) vertex
+			int hostZeroIndexOffset = ((List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) hostVertex
 					.getPropertyBean().getValue(
-							MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
-			
-			@SuppressWarnings("unchecked")
-			List<MemoryExclusionVertex> neighbors = (List<MemoryExclusionVertex>) vertex
-					.getPropertyBean().getValue(
-							MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
-			
-			int emptySpace = (int) vertex.getPropertyBean().getValue(
-					MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
+							MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY))
+					.get(0).getValue().getValue().getStart();
 
-			// If the Mobject is not splitted
-			if (realTokenRange.size() == 1) {
-				int startOffset = realTokenRange.get(0).getValue().getValue()
-						.getStart();
-				
+			// For each vertex of the group
+			for (MemoryExclusionVertex vertex : vertices) {
 
-				// Allocate it at the right place
-				memExNodeAllocation.put(vertex, offset + startOffset
-						+ hostZeroIndexOffset - emptySpace);
-				edgeAllocation.put(vertex.getEdge(), offset + startOffset
-						+ hostZeroIndexOffset - emptySpace);
-				vertex.setPropertyValue(
-						MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, offset
-								+ startOffset + hostZeroIndexOffset
-								- emptySpace);
-
-				// Put the MObject Back in the MEG
-				inputExclusionGraph.addVertex(vertex);
-
-				// Put back the exclusions with all neighbors
-				for (MemoryExclusionVertex neighbor : neighbors) {
-					// If the neighbor is not part of the same merge operation
-					if (!vertices.contains(neighbor) && neighbor != hostVertex) {
-						// Restore its old exclusions
-						if (inputExclusionGraph.containsVertex(neighbor)) {
-							inputExclusionGraph.addEdge(vertex, neighbor);
-						} else {
-							excludeWithHostedNeighbor(vertex, neighbor);
-						}
-					}
-				}
-
-			} else {
-				// If the Mobject is splitted
-				// Null buffer since the memory of this MObj is no longer
-				// contiguous
-				vertex.setWeight(0);
-				// Allocate it at index -1
-				memExNodeAllocation.put(vertex, -1);
-				edgeAllocation.put(vertex.getEdge(), -1);
-				vertex.setPropertyValue(
-						MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, -1);
-
-				// Put the fake MObject in the MEG for each subrange
+				// Get its offset within the host vertex
 				@SuppressWarnings("unchecked")
-				List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realRanges = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) vertex
+				List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realTokenRange = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) vertex
 						.getPropertyBean()
 						.getValue(
 								MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
 
-				int indexPart = 0;
-				// For each contiguous range
-				for (Pair<MemoryExclusionVertex, Pair<Range, Range>> realRange : realRanges) {
-					// If the host of this subrange is the current host vertex
-					// (else do nothing here for this subrange)
-					if (hostVertex == realRange.getKey()) {
-												
-						// Get host range
-						Range hostRange = realRange.getValue().getValue();
+				@SuppressWarnings("unchecked")
+				List<MemoryExclusionVertex> neighbors = (List<MemoryExclusionVertex>) vertex
+						.getPropertyBean().getValue(
+								MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
 
-						// Create new fake Mobj
-						MemoryExclusionVertex fakeMObj = new MemoryExclusionVertex(
-								"part" + indexPart + "_" + vertex.getSource(),
-								vertex.getSink(), hostRange.getLength());
-						
-						// Allocate the fake Mobject 
-						// (in order to be considered when checking for exclusions)
-						int startOffset = hostRange.getStart();
-						memExNodeAllocation.put(fakeMObj, offset + startOffset
-								+ hostZeroIndexOffset - emptySpace);
-						fakeMObj.setPropertyValue(
-								MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, offset
-										+ startOffset + hostZeroIndexOffset
-										- emptySpace);
-						
-						
-						// Put the Fake MObject in the MEG
-						inputExclusionGraph.addVertex(fakeMObj);
-						
-						// Backup the fakeMobj in the original vertex (for deallocation purpose)
-						@SuppressWarnings("unchecked")
-						List<MemoryExclusionVertex> fakeMobjects = (List<MemoryExclusionVertex>) vertex.getPropertyBean().getValue(MemoryExclusionVertex.FAKE_MOBJECT);
-						if(fakeMobjects == null){
-							fakeMobjects = new ArrayList<MemoryExclusionVertex>();
-							vertex.setPropertyValue(MemoryExclusionVertex.FAKE_MOBJECT, fakeMobjects);
-						}
-						fakeMobjects.add(fakeMObj);
-						
-						// Put back the exclusions with all neighbors
-						for (MemoryExclusionVertex neighbor : neighbors) {
-							// If the neighbor is not part of the same merge operation
-							if (!vertices.contains(neighbor) && neighbor != hostVertex) {
-								// Restore its old exclusions
-								if (inputExclusionGraph.containsVertex(neighbor)) {
-									inputExclusionGraph.addEdge(fakeMObj, neighbor);
-								} else {
-									// The neighbor is not in the graph, it must be
-									// hosted by another mObject or divided.
-									excludeWithHostedNeighbor(fakeMObj, neighbor);
-								}
+				
+				
+
+				// If the Mobject is not splitted
+				if (realTokenRange.size() == 1) {
+					int startOffset = realTokenRange.get(0).getValue()
+							.getValue().getStart();
+					
+					// Compute the space that must be left empty before the 
+					// allocated space to ensure that the MObject has its own
+					// cache line.
+					int emptySpace = 0;
+					if (alignment > 0
+							&& (offset + startOffset + hostZeroIndexOffset)
+									% alignment != 0) {
+						emptySpace = (offset + startOffset + hostZeroIndexOffset)
+								% alignment;
+					}
+					vertex.setPropertyValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE, emptySpace);
+					// Enlarge the weight of the vertex to include the empty space
+					vertex.setWeight(vertex.getWeight()+emptySpace);
+					
+					// Allocate it at the right place
+					memExNodeAllocation.put(vertex, offset + startOffset
+							+ hostZeroIndexOffset - emptySpace);
+					edgeAllocation.put(vertex.getEdge(), offset + startOffset
+							+ hostZeroIndexOffset - emptySpace);
+					vertex.setPropertyValue(
+							MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
+							offset + startOffset + hostZeroIndexOffset
+									- emptySpace);
+
+					// Put the MObject Back in the MEG
+					inputExclusionGraph.addVertex(vertex);
+
+					// Put back the exclusions with all neighbors
+					for (MemoryExclusionVertex neighbor : neighbors) {
+						// If the neighbor is not part of the same merge
+						// operation
+						if (!vertices.contains(neighbor)
+								&& neighbor != hostVertex) {
+							// Restore its old exclusions
+							if (inputExclusionGraph.containsVertex(neighbor)) {
+								inputExclusionGraph.addEdge(vertex, neighbor);
+							} else {
+								excludeWithHostedNeighbor(vertex, neighbor);
 							}
 						}
 					}
-					
-					indexPart++;
+
+				} else {
+					// If the Mobject is splitted
+					// Null buffer since the memory of this MObj is no longer
+					// contiguous
+					vertex.setWeight(0);
+					// Allocate it at index -1
+					memExNodeAllocation.put(vertex, -1);
+					edgeAllocation.put(vertex.getEdge(), -1);
+					vertex.setPropertyValue(
+							MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, -1);
+					inputExclusionGraph.addVertex(vertex);
+					vertex.setPropertyValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE, -1);
+
+					// Put a fake MObject in the MEG for each subrange
+					@SuppressWarnings("unchecked")
+					List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realRanges = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) vertex
+							.getPropertyBean()
+							.getValue(
+									MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+
+					int indexPart = 0;
+					// For each contiguous range
+					for (Pair<MemoryExclusionVertex, Pair<Range, Range>> realRange : realRanges) {
+						// If the host of this subrange is the current host
+						// vertex
+						// (else do nothing here for this subrange)
+						if (hostVertex == realRange.getKey()) {
+
+							// Get host range
+							Range hostRange = realRange.getValue().getValue();
+							int startOffset = hostRange.getStart();
+							
+							// Create new fake Mobj
+							MemoryExclusionVertex fakeMObj = new MemoryExclusionVertex(
+									"part" + indexPart + "_"
+											+ vertex.getSource(),
+									vertex.getSink(), hostRange.getLength());
+							
+							// Compute the space that must be left empty before the 
+							// allocated space to ensure that the MObject has its own
+							// cache line.
+							int emptySpace = 0;
+							if(alignment > 0 && (offset + startOffset
+									+ hostZeroIndexOffset) % alignment != 0) {
+								emptySpace = (offset + startOffset
+										+ hostZeroIndexOffset) % alignment;
+							}
+							fakeMObj.setPropertyValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE, emptySpace);
+							// Enlarge the weight of the vertex to include the empty space
+							fakeMObj.setWeight(fakeMObj.getWeight()+emptySpace);
+
+							// Allocate the fake Mobject
+							// (in order to be considered when checking for
+							// exclusions)
+							
+							memExNodeAllocation.put(fakeMObj, offset
+									+ startOffset + hostZeroIndexOffset
+									- emptySpace);
+							fakeMObj.setPropertyValue(
+									MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
+									offset + startOffset + hostZeroIndexOffset
+											- emptySpace);
+
+							// Put the Fake MObject in the MEG
+							inputExclusionGraph.addVertex(fakeMObj);
+
+							// Backup the fakeMobj in the original vertex (for
+							// deallocation purpose)
+							@SuppressWarnings("unchecked")
+							List<MemoryExclusionVertex> fakeMobjects = (List<MemoryExclusionVertex>) vertex
+									.getPropertyBean().getValue(
+											MemoryExclusionVertex.FAKE_MOBJECT);
+							if (fakeMobjects == null) {
+								fakeMobjects = new ArrayList<MemoryExclusionVertex>();
+								vertex.setPropertyValue(
+										MemoryExclusionVertex.FAKE_MOBJECT,
+										fakeMobjects);
+							}
+							fakeMobjects.add(fakeMObj);
+
+							// Put back the exclusions with all neighbors
+							for (MemoryExclusionVertex neighbor : neighbors) {
+								// If the neighbor is not part of the same merge
+								// operation
+								if (!vertices.contains(neighbor)
+										&& neighbor != hostVertex) {
+									// Restore its old exclusions
+									if (inputExclusionGraph
+											.containsVertex(neighbor)) {
+										inputExclusionGraph.addEdge(fakeMObj,
+												neighbor);
+									} else {
+										// The neighbor is not in the graph, it
+										// must be
+										// hosted by another mObject or divided.
+										excludeWithHostedNeighbor(fakeMObj,
+												neighbor);
+									}
+								}
+							}
+						}
+
+						indexPart++;
+					}
 				}
 			}
 		}

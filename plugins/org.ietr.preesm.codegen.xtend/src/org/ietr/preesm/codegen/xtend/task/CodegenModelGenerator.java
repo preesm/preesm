@@ -332,6 +332,10 @@ public class CodegenModelGenerator {
 			// Check that the MemEx is derived from the Input DAG
 			String sourceName = memObj.getSource();
 			String sinkName = memObj.getSink();
+			
+			// If the MObject is a part of a divide buffer
+			sourceName = sourceName.replaceFirst("^part[0-9]+_", "");
+			
 			boolean isFifo = sourceName.startsWith("FIFO");
 			if (isFifo) {
 				sourceName = sourceName.substring(10, sourceName.length());
@@ -661,17 +665,18 @@ public class CodegenModelGenerator {
 				MemoryExclusionVertex hostVertex = entry.getKey();
 				Set<MemoryExclusionVertex> vertices = entry.getValue();
 
-				// Add the hosted vertices back to the MEG
-				// Their allocation was taken care of in the MemoryAllocator
+				// Restore the real size of hosted vertices
 				for (MemoryExclusionVertex vertex : vertices) {
-					memEx.addVertex(vertex);
+					// For non-divided vertices
 					if(vertex.getWeight() != 0){
+						int emptySpace =  (int) vertex.getPropertyBean().getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
+						
 						// Put the vertex back to its real size
-						List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> tokenRanges = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) vertex.getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
-						vertex.setWeight(tokenRanges.get(0).getValue().getKey().getLength());
+						vertex.setWeight(vertex.getWeight() - emptySpace);
+						
 						// And set the allocated offset 
 						int allocatedOffset = (int) vertex.getPropertyBean().getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
-						int emptySpace =  (int) vertex.getPropertyBean().getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
+						
 						vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, allocatedOffset + emptySpace);
 						@SuppressWarnings("unchecked")
 						Map<DAGEdge, Integer> dagEdgeAllocation = (Map<DAGEdge, Integer>) memEx
@@ -679,7 +684,7 @@ public class CodegenModelGenerator {
 										MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
 						dagEdgeAllocation.put(vertex.getEdge(), allocatedOffset + emptySpace);
 					}
-				}
+				} 
 
 				// Put the hostVertex back to its real size
 				@SuppressWarnings("unchecked")
