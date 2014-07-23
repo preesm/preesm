@@ -1627,6 +1627,7 @@ class ScriptRunner {
 
 				val mObj = bufferAndMObjectMap.get(buffer)
 				
+				/*---------------------------------------------------------------- 
 				// Enlarge the memory object (if needed)
 				if(ScriptRunner::printTodo){
 					println("We do not need to enlarge the buffer so much. We just need to enlarge it so that the minIndex is aligned (if alignement is needed)")
@@ -1639,6 +1640,8 @@ class ScriptRunner {
 				}
 				mObj.setWeight(mObj.getWeight - buffer.minIndex)
 				mObj.setPropertyValue(MemoryExclusionVertex::EMPTY_SPACE_BEFORE, -buffer.minIndex)
+				 */
+				
 
 				// For buffer receiving a part of the current buffer
 				for (rootBuffer : rootBuffers.values.map[it.key]) {
