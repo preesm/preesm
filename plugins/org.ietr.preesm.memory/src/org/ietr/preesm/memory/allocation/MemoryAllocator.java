@@ -618,6 +618,33 @@ public abstract class MemoryAllocator {
 				}
 			}
 		}
+		
+		// 2 - Put the host Mobj back to its original size and exclusions
+		{
+			// Get real neighbors
+			@SuppressWarnings("unchecked")
+			List<MemoryExclusionVertex> neighbors = (List<MemoryExclusionVertex>) hostVertex
+					.getPropertyBean().getValue(
+							MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
+			
+			// Remove all neighbors
+			inputExclusionGraph.removeVertex(hostVertex);
+			inputExclusionGraph.addVertex(hostVertex);
+			
+			// Put back the exclusions with all neighbors
+			for (MemoryExclusionVertex neighbor : neighbors) {
+				// If the neighbor is not part of the same merge
+				// operation
+				if (!vertices.contains(neighbor)) {
+					// Restore its old exclusions
+					if (inputExclusionGraph.containsVertex(neighbor)) {
+						inputExclusionGraph.addEdge(hostVertex, neighbor);
+					} else {
+						excludeWithHostedNeighbor(hostVertex, neighbor);
+					}
+				}
+			}
+		}
 	}
 
 	/**
