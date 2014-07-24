@@ -36,9 +36,8 @@
 package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
 import java.util.Collection;
-import java.util.Map;
-import org.eclipse.emf.common.notify.Notification;
 
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
@@ -133,7 +132,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * @generated
 	 * @ordered
 	 */
-	protected Map<Range, Buffer> mergedRange;
+	protected EList<Range> mergedRange;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -217,7 +216,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * 
 	 * @generated
 	 */
-	public Map<Range, Buffer> getMergedRange() {
+	public EList<Range> getMergedRange() {
 		return mergedRange;
 	}
 
@@ -226,8 +225,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * 
 	 * @generated
 	 */
-	public void setMergedRange(Map<Range, Buffer> newMergedRange) {
-		Map<Range, Buffer> oldMergedRange = mergedRange;
+	public void setMergedRange(EList<Range> newMergedRange) {
+		EList<Range> oldMergedRange = mergedRange;
 		mergedRange = newMergedRange;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET,
@@ -308,7 +307,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
 			setTypeSize((Integer) newValue);
 			return;
 		case CodegenPackage.BUFFER__MERGED_RANGE:
-			setMergedRange((Map<Range, Buffer>) newValue);
+			setMergedRange((EList<Range>) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -332,7 +331,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
 			setTypeSize(TYPE_SIZE_EDEFAULT);
 			return;
 		case CodegenPackage.BUFFER__MERGED_RANGE:
-			setMergedRange((Map<Range, Buffer>) null);
+			setMergedRange((EList<Range>) null);
 			return;
 		}
 		super.eUnset(featureID);

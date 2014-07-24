@@ -1322,10 +1322,8 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 				"typeSize", null, 1, 1, Buffer.class, !IS_TRANSIENT,
 				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
-		EGenericType g1 = createEGenericType(ecorePackage.getEMap());
+		EGenericType g1 = createEGenericType(ecorePackage.getEEList());
 		EGenericType g2 = createEGenericType(this.getrange());
-		g1.getETypeArguments().add(g2);
-		g2 = createEGenericType(this.getBuffer());
 		g1.getETypeArguments().add(g2);
 		initEAttribute(getBuffer_MergedRange(), g1, "mergedRange", null, 0, 1,
 				Buffer.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,

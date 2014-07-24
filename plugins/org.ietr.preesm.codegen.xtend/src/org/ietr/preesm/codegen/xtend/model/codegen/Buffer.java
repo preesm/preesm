@@ -36,6 +36,7 @@
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
 import java.util.Map;
+
 import org.eclipse.emf.common.util.EList;
 import org.ietr.preesm.experiment.memory.Range;
 
@@ -157,7 +158,7 @@ public interface Buffer extends Variable {
 	 * @model transient="true"
 	 * @generated
 	 */
-	Map<Range, Buffer> getMergedRange();
+	EList<Range> getMergedRange();
 
 	/**
 	 * Sets the value of the '
@@ -170,6 +171,6 @@ public interface Buffer extends Variable {
 	 * @see #getMergedRange()
 	 * @generated
 	 */
-	void setMergedRange(Map<Range, Buffer> value);
+	void setMergedRange(EList<Range> value);
 
 } // Buffer
