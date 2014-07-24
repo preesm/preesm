@@ -604,6 +604,7 @@ public class MemoryExclusionGraph extends
 	 * Tasks performed are:<br>
 	 * - Put back the host memory objects that were replaced by their content
 	 * during memory allocation.
+	 * - Restore the MEG to its original state before allocation
 	 */
 	public void deallocate() {
 
@@ -613,42 +614,53 @@ public class MemoryExclusionGraph extends
 		// Scan host vertices
 		if (hostVertices != null) {
 			for (MemoryExclusionVertex hostVertex : hostVertices.keySet()) {
+				// Put the host back to its original size (if it was changed,
+				// i.e. if it was allocated)
+				Integer hostSize = (Integer) hostVertex.getPropertyBean()
+						.getValue(MemoryExclusionVertex.HOST_SIZE);
+				if (hostSize != null) {
+					hostVertex.setWeight(hostSize);
+					hostVertex.getPropertyBean().removeProperty(
+							MemoryExclusionVertex.HOST_SIZE);
 
-				// Scan merged vertices
-				for (MemoryExclusionVertex mergedVertex : hostVertices
-						.get(hostVertex)) {
-					// If the merged vertex was in the graph (i.e. it was
-					// already allocated)
-					if (this.containsVertex(mergedVertex)) {
-						// Add exclusions between host and adjacent vertex of
-						// the merged vertex
-						for (MemoryExclusionVertex adjacentVertex : this
-								.getAdjacentVertexOf(mergedVertex)) {
-							this.addEdge(hostVertex, adjacentVertex);
-						}
-						// Remove it from the MEG
-						this.removeVertex(mergedVertex);
-
-						// If the merged vertex is not split
-						if (mergedVertex.getWeight() != 0) {
-							// Put it back to its real weight
-							int emptySpace = (int) mergedVertex
-									.getPropertyBean()
-									.getValue(
-											MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
-							mergedVertex.setWeight(mergedVertex.getWeight()
-									- emptySpace);
-						} else {
-							// The vertex was divided
-							// Remove all fake mobjects
-							@SuppressWarnings("unchecked")
-							List<MemoryExclusionVertex> fakeMobjects = (List<MemoryExclusionVertex>) mergedVertex
-									.getPropertyBean().getValue(
-											MemoryExclusionVertex.FAKE_MOBJECT);
-							for (MemoryExclusionVertex fakeMobj : fakeMobjects) {
-								this.removeVertex(fakeMobj);
+					// Scan merged vertices
+					for (MemoryExclusionVertex mergedVertex : hostVertices
+							.get(hostVertex)) {
+						// If the merged vertex was in the graph (i.e. it was
+						// already allocated)
+						if (this.containsVertex(mergedVertex)) {
+							// Add exclusions between host and adjacent vertex
+							// of
+							// the merged vertex
+							for (MemoryExclusionVertex adjacentVertex : this
+									.getAdjacentVertexOf(mergedVertex)) {
+								this.addEdge(hostVertex, adjacentVertex);
 							}
-							fakeMobjects.clear();
+							// Remove it from the MEG
+							this.removeVertex(mergedVertex);
+
+							// If the merged vertex is not split
+							if (mergedVertex.getWeight() != 0) {
+								// Put it back to its real weight
+								int emptySpace = (int) mergedVertex
+										.getPropertyBean()
+										.getValue(
+												MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
+								mergedVertex.setWeight(mergedVertex.getWeight()
+										- emptySpace);
+							} else {
+								// The vertex was divided
+								// Remove all fake mobjects
+								@SuppressWarnings("unchecked")
+								List<MemoryExclusionVertex> fakeMobjects = (List<MemoryExclusionVertex>) mergedVertex
+										.getPropertyBean()
+										.getValue(
+												MemoryExclusionVertex.FAKE_MOBJECT);
+								for (MemoryExclusionVertex fakeMobj : fakeMobjects) {
+									this.removeVertex(fakeMobj);
+								}
+								fakeMobjects.clear();
+							}
 						}
 					}
 				}

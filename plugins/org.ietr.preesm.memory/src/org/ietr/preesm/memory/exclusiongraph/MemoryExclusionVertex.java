@@ -113,7 +113,18 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 * property is set after the memory script execution.
 	 */
 	public static final String EMPTY_SPACE_BEFORE = "empty_space_before";
-
+	
+	/**
+	 * Property of the {@link MemoryExclusionVertex}. The object associated to
+	 * this property is an {@link Integer} that corresponds to the size in bytes
+	 * of the {@link MemoryExclusionVertex} when it hosts merged
+	 * {@link MemoryExclusionVertex} as a result of scripts execution. This
+	 * value is stored in case the host {@link MemoryExclusionVertex} needs to
+	 * be deallocated, and restored to the size it has when all hosted
+	 * {@link MemoryExclusionVertex} are merged.
+	 */
+	public static final String HOST_SIZE = "host_size";
+	
 	/**
 	 * This Map is used as a reference of dataTypes size when creating an vertex
 	 * from a DAGEdge

@@ -118,7 +118,6 @@ import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
-import org.ietr.preesm.experiment.memory.Range;
 import org.ietr.preesm.memory.allocation.MemoryAllocator;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
@@ -662,58 +661,41 @@ public class CodegenModelGenerator {
 		if (hostBuffers != null) {
 			for (Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry : hostBuffers
 					.entrySet()) {
-				MemoryExclusionVertex hostVertex = entry.getKey();
-				Set<MemoryExclusionVertex> vertices = entry.getValue();
+				// Since host vertices are naturally aligned, no need to restore
+				// them
 
 				// Restore the real size of hosted vertices
+				Set<MemoryExclusionVertex> vertices = entry.getValue();
+
 				for (MemoryExclusionVertex vertex : vertices) {
 					// For non-divided vertices
-					if(vertex.getWeight() != 0){
-						int emptySpace =  (int) vertex.getPropertyBean().getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
-						
+					if (vertex.getWeight() != 0) {
+						int emptySpace = (int) vertex
+								.getPropertyBean()
+								.getValue(
+										MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
+
 						// Put the vertex back to its real size
 						vertex.setWeight(vertex.getWeight() - emptySpace);
-						
-						// And set the allocated offset 
-						int allocatedOffset = (int) vertex.getPropertyBean().getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
-						
-						vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, allocatedOffset + emptySpace);
+
+						// And set the allocated offset
+						int allocatedOffset = (int) vertex
+								.getPropertyBean()
+								.getValue(
+										MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
+
+						vertex.setPropertyValue(
+								MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
+								allocatedOffset + emptySpace);
 						@SuppressWarnings("unchecked")
 						Map<DAGEdge, Integer> dagEdgeAllocation = (Map<DAGEdge, Integer>) memEx
-								.getPropertyBean().getValue(
+								.getPropertyBean()
+								.getValue(
 										MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
-						dagEdgeAllocation.put(vertex.getEdge(), allocatedOffset + emptySpace);
+						dagEdgeAllocation.put(vertex.getEdge(), allocatedOffset
+								+ emptySpace);
 					}
-				} 
-
-				// Put the hostVertex back to its real size
-				@SuppressWarnings("unchecked")
-				List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realHostRange = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) hostVertex
-						.getPropertyBean()
-						.getValue(
-								MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
-				// Since host buffer are not divided, there is a unique range in
-				// the
-				// list
-				hostVertex.setWeight(realHostRange.get(0).getValue().getKey()
-						.getLength());
-				// Put it at the correct offset
-				Integer groupOffset = (Integer) hostVertex.getPropertyBean()
-						.getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
-				int realOffset = groupOffset
-						+ realHostRange.get(0).getValue().getValue().getStart()
-						- realHostRange.get(0).getValue().getKey().getStart();
-				// In the vertex property
-				hostVertex.setPropertyValue(
-						MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
-						realOffset);
-
-				// In the MEG Properties
-				@SuppressWarnings("unchecked")
-				Map<DAGEdge, Integer> dagEdgeAllocation = (Map<DAGEdge, Integer>) memEx
-						.getPropertyBean().getValue(
-								MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
-				dagEdgeAllocation.put(hostVertex.getEdge(), realOffset);
+				}
 			}
 		}
 	}

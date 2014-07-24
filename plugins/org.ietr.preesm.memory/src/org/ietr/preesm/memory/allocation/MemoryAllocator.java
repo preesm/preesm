@@ -54,13 +54,10 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
-import org.ietr.preesm.experiment.memory.Buffer;
 import org.ietr.preesm.experiment.memory.Range;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.jgrapht.graph.DefaultEdge;
-
-import com.google.common.base.Objects;
 
 /**
  * This class is both an interface and toolbox class for memory allocator.
@@ -416,7 +413,12 @@ public abstract class MemoryAllocator {
 
 	/**
 	 * Special processing for {@link MemoryExclusionVertex memory objects}
-	 * resulting from memory script merges.
+	 * resulting from memory script merges.<br>
+	 * Put back all hosted {@link MemoryExclusionVertex} in the
+	 * {@link MemoryExclusionVertex} with their original exclusions (i.e. their
+	 * exclusion before script application). Put the host
+	 * {@link MemoryExclusionVertex} back to its original size give it its
+	 * original exclusions.
 	 * 
 	 * @param hostVertex
 	 *            the "host" {@link MemoryExclusionVertex}, i.e. the
@@ -432,20 +434,18 @@ public abstract class MemoryAllocator {
 	 */
 	protected void allocateHostMemoryObject(MemoryExclusionVertex hostVertex,
 			Set<MemoryExclusionVertex> vertices, int offset) {
-		// - Remove the host memObject from the Memex
-		// - Put back old exclusions between MObjects (before they were removed
-		// from the graph)
-		// - Special processing for vertices that were splitted => needs to
-		// create several MObj for them
-
-		// Put back all hosted mobj in the meg (with their exclusions)
+		// 1 - Put back all hosted mobj in the meg (with their exclusions)
+		// 2 - Put the host Mobj back to its original size and exclusions
+		@SuppressWarnings("unchecked")
+		Pair<MemoryExclusionVertex, Pair<Range, Range>> hostRealTokenRange = ((List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) hostVertex
+				.getPropertyBean().getValue(
+						MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY))
+				.get(0);
+		
+		int hostZeroIndexOffset = hostRealTokenRange.getValue().getValue().getStart();
+		
+		// 1- Put back all hosted mobj in the meg (with their exclusions)
 		{
-			@SuppressWarnings("unchecked")
-			int hostZeroIndexOffset = ((List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) hostVertex
-					.getPropertyBean().getValue(
-							MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY))
-					.get(0).getValue().getValue().getStart();
-
 			// For each vertex of the group
 			for (MemoryExclusionVertex vertex : vertices) {
 
@@ -621,6 +621,23 @@ public abstract class MemoryAllocator {
 		
 		// 2 - Put the host Mobj back to its original size and exclusions
 		{
+			// Backup the host size
+			hostVertex.setPropertyValue(MemoryExclusionVertex.HOST_SIZE,
+					hostVertex.getWeight());
+			
+			// Put it back to its real size
+			hostVertex.setWeight(hostRealTokenRange.getValue().getValue().getLength());
+
+			// Allocate it at the right place (replace old value)
+			// (no empty space for host since their alignment with range start 
+			// is taken care of in meg update with script)
+			memExNodeAllocation.put(hostVertex, offset + hostZeroIndexOffset);
+			edgeAllocation.put(hostVertex.getEdge(), offset
+					+ hostZeroIndexOffset);
+			hostVertex.setPropertyValue(
+					MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, offset
+							+ hostZeroIndexOffset);
+			
 			// Get real neighbors
 			@SuppressWarnings("unchecked")
 			List<MemoryExclusionVertex> neighbors = (List<MemoryExclusionVertex>) hostVertex
