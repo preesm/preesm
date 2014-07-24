@@ -37,7 +37,9 @@ package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EGenericType;
 import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -73,6 +75,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
+import org.ietr.preesm.experiment.memory.Range;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Package</b>. <!--
@@ -269,6 +272,13 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * @generated
 	 */
 	private EEnum portDirectionEEnum = null;
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	private EDataType rangeEDataType = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -516,6 +526,15 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 */
 	public EAttribute getBuffer_TypeSize() {
 		return (EAttribute) bufferEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EAttribute getBuffer_MergedRange() {
+		return (EAttribute) bufferEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
@@ -1023,6 +1042,15 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	public EDataType getrange() {
+		return rangeEDataType;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	public CodegenFactory getCodegenFactory() {
 		return (CodegenFactory) getEFactoryInstance();
 	}
@@ -1071,6 +1099,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		createEAttribute(bufferEClass, BUFFER__SIZE);
 		createEReference(bufferEClass, BUFFER__CHILDRENS);
 		createEAttribute(bufferEClass, BUFFER__TYPE_SIZE);
+		createEAttribute(bufferEClass, BUFFER__MERGED_RANGE);
 
 		subBufferEClass = createEClass(SUB_BUFFER);
 		createEReference(subBufferEClass, SUB_BUFFER__CONTAINER);
@@ -1146,6 +1175,9 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		specialTypeEEnum = createEEnum(SPECIAL_TYPE);
 		fifoOperationEEnum = createEEnum(FIFO_OPERATION);
 		portDirectionEEnum = createEEnum(PORT_DIRECTION);
+
+		// Create data types
+		rangeEDataType = createEDataType(RANGE);
 	}
 
 	/**
@@ -1290,6 +1322,14 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 				"typeSize", null, 1, 1, Buffer.class, !IS_TRANSIENT,
 				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
+		EGenericType g1 = createEGenericType(ecorePackage.getEMap());
+		EGenericType g2 = createEGenericType(this.getrange());
+		g1.getETypeArguments().add(g2);
+		g2 = createEGenericType(this.getBuffer());
+		g1.getETypeArguments().add(g2);
+		initEAttribute(getBuffer_MergedRange(), g1, "mergedRange", null, 0, 1,
+				Buffer.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(subBufferEClass, SubBuffer.class, "SubBuffer", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -1545,6 +1585,10 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		addEEnumLiteral(portDirectionEEnum, PortDirection.INPUT);
 		addEEnumLiteral(portDirectionEEnum, PortDirection.OUTPUT);
 		addEEnumLiteral(portDirectionEEnum, PortDirection.NONE);
+
+		// Initialize data types
+		initEDataType(rangeEDataType, Range.class, "range", IS_SERIALIZABLE,
+				!IS_GENERATED_INSTANCE_CLASS);
 
 		// Create resource
 		createResource(eNS_URI);

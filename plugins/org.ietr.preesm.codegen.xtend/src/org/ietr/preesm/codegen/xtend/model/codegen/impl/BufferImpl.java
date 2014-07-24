@@ -36,20 +36,20 @@
 package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
 import java.util.Collection;
+import java.util.Map;
 import org.eclipse.emf.common.notify.Notification;
 
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
-
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-
 import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
+import org.ietr.preesm.experiment.memory.Range;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -66,6 +66,9 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
  * <li>
  * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferImpl#getTypeSize
  * <em>Type Size</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferImpl#getMergedRange
+ * <em>Merged Range</em>}</li>
  * </ul>
  * </p>
  * 
@@ -121,6 +124,16 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * @ordered
 	 */
 	protected int typeSize = TYPE_SIZE_EDEFAULT;
+
+	/**
+	 * The cached value of the '{@link #getMergedRange() <em>Merged Range</em>}'
+	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #getMergedRange()
+	 * @generated
+	 * @ordered
+	 */
+	protected Map<Range, Buffer> mergedRange;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -204,6 +217,29 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * 
 	 * @generated
 	 */
+	public Map<Range, Buffer> getMergedRange() {
+		return mergedRange;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public void setMergedRange(Map<Range, Buffer> newMergedRange) {
+		Map<Range, Buffer> oldMergedRange = mergedRange;
+		mergedRange = newMergedRange;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					CodegenPackage.BUFFER__MERGED_RANGE, oldMergedRange,
+					mergedRange));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd,
@@ -246,6 +282,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
 			return getChildrens();
 		case CodegenPackage.BUFFER__TYPE_SIZE:
 			return getTypeSize();
+		case CodegenPackage.BUFFER__MERGED_RANGE:
+			return getMergedRange();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -269,6 +307,9 @@ public class BufferImpl extends VariableImpl implements Buffer {
 		case CodegenPackage.BUFFER__TYPE_SIZE:
 			setTypeSize((Integer) newValue);
 			return;
+		case CodegenPackage.BUFFER__MERGED_RANGE:
+			setMergedRange((Map<Range, Buffer>) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -290,6 +331,9 @@ public class BufferImpl extends VariableImpl implements Buffer {
 		case CodegenPackage.BUFFER__TYPE_SIZE:
 			setTypeSize(TYPE_SIZE_EDEFAULT);
 			return;
+		case CodegenPackage.BUFFER__MERGED_RANGE:
+			setMergedRange((Map<Range, Buffer>) null);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -308,6 +352,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
 			return childrens != null && !childrens.isEmpty();
 		case CodegenPackage.BUFFER__TYPE_SIZE:
 			return typeSize != TYPE_SIZE_EDEFAULT;
+		case CodegenPackage.BUFFER__MERGED_RANGE:
+			return mergedRange != null;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -327,6 +373,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
 		result.append(size);
 		result.append(", typeSize: ");
 		result.append(typeSize);
+		result.append(", mergedRange: ");
+		result.append(mergedRange);
 		result.append(')');
 		return result.toString();
 	}

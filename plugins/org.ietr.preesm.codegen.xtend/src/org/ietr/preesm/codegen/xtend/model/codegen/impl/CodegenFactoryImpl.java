@@ -45,6 +45,7 @@ import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
 
 import org.ietr.preesm.codegen.xtend.model.codegen.*;
+import org.ietr.preesm.experiment.memory.Range;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!--
@@ -150,6 +151,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 			return createFifoOperationFromString(eDataType, initialValue);
 		case CodegenPackage.PORT_DIRECTION:
 			return createPortDirectionFromString(eDataType, initialValue);
+		case CodegenPackage.RANGE:
+			return createrangeFromString(eDataType, initialValue);
 		default:
 			throw new IllegalArgumentException("The datatype '"
 					+ eDataType.getName() + "' is not a valid classifier");
@@ -174,6 +177,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 			return convertFifoOperationToString(eDataType, instanceValue);
 		case CodegenPackage.PORT_DIRECTION:
 			return convertPortDirectionToString(eDataType, instanceValue);
+		case CodegenPackage.RANGE:
+			return convertrangeToString(eDataType, instanceValue);
 		default:
 			throw new IllegalArgumentException("The datatype '"
 					+ eDataType.getName() + "' is not a valid classifier");
@@ -483,6 +488,24 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	public String convertPortDirectionToString(EDataType eDataType,
 			Object instanceValue) {
 		return instanceValue == null ? null : instanceValue.toString();
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public Range createrangeFromString(EDataType eDataType, String initialValue) {
+		return (Range) super.createFromString(eDataType, initialValue);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public String convertrangeToString(EDataType eDataType, Object instanceValue) {
+		return super.convertToString(eDataType, instanceValue);
 	}
 
 	/**

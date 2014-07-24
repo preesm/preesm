@@ -36,7 +36,6 @@
 package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
 import org.eclipse.emf.ecore.EClass;
-
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
 

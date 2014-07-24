@@ -35,7 +35,9 @@
  */
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
+import java.util.Map;
 import org.eclipse.emf.common.util.EList;
+import org.ietr.preesm.experiment.memory.Range;
 
 /**
  * <!-- begin-user-doc --> A {@link Buffer} is a {@link Variable} that
@@ -53,6 +55,8 @@ import org.eclipse.emf.common.util.EList;
  * <em>Childrens</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getTypeSize
  * <em>Type Size</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getMergedRange
+ * <em>Merged Range</em>}</li>
  * </ul>
  * </p>
  * 
@@ -137,5 +141,35 @@ public interface Buffer extends Variable {
 	 * @generated
 	 */
 	void setTypeSize(int value);
+
+	/**
+	 * Returns the value of the '<em><b>Merged Range</b></em>' attribute. <!--
+	 * begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Merged Range</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Merged Range</em>' attribute.
+	 * @see #setMergedRange(Map)
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBuffer_MergedRange()
+	 * @model transient="true"
+	 * @generated
+	 */
+	Map<Range, Buffer> getMergedRange();
+
+	/**
+	 * Sets the value of the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getMergedRange
+	 * <em>Merged Range</em>}' attribute. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Merged Range</em>' attribute.
+	 * @see #getMergedRange()
+	 * @generated
+	 */
+	void setMergedRange(Map<Range, Buffer> value);
 
 } // Buffer

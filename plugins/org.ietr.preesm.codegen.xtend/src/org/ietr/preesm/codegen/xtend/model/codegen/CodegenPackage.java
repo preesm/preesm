@@ -37,6 +37,7 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -398,13 +399,22 @@ public interface CodegenPackage extends EPackage {
 	int BUFFER__TYPE_SIZE = VARIABLE_FEATURE_COUNT + 2;
 
 	/**
+	 * The feature id for the '<em><b>Merged Range</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int BUFFER__MERGED_RANGE = VARIABLE_FEATURE_COUNT + 3;
+
+	/**
 	 * The number of structural features of the '<em>Buffer</em>' class. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int BUFFER_FEATURE_COUNT = VARIABLE_FEATURE_COUNT + 3;
+	int BUFFER_FEATURE_COUNT = VARIABLE_FEATURE_COUNT + 4;
 
 	/**
 	 * The meta object id for the '
@@ -489,6 +499,15 @@ public interface CodegenPackage extends EPackage {
 	 * @ordered
 	 */
 	int SUB_BUFFER__TYPE_SIZE = BUFFER__TYPE_SIZE;
+
+	/**
+	 * The feature id for the '<em><b>Merged Range</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SUB_BUFFER__MERGED_RANGE = BUFFER__MERGED_RANGE;
 
 	/**
 	 * The feature id for the '<em><b>Container</b></em>' reference. <!--
@@ -1758,6 +1777,15 @@ public interface CodegenPackage extends EPackage {
 	int NULL_BUFFER__TYPE_SIZE = BUFFER__TYPE_SIZE;
 
 	/**
+	 * The feature id for the '<em><b>Merged Range</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__MERGED_RANGE = BUFFER__MERGED_RANGE;
+
+	/**
 	 * The number of structural features of the '<em>Null Buffer</em>' class.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -1823,6 +1851,16 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 */
 	int PORT_DIRECTION = 26;
+
+	/**
+	 * The meta object id for the '<em>range</em>' data type. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.ietr.preesm.experiment.memory.Range
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getrange()
+	 * @generated
+	 */
+	int RANGE = 27;
 
 	/**
 	 * Returns the meta object for class '
@@ -2062,6 +2100,18 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getBuffer_TypeSize();
+
+	/**
+	 * Returns the meta object for the attribute '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getMergedRange
+	 * <em>Merged Range</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Merged Range</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getMergedRange()
+	 * @see #getBuffer()
+	 * @generated
+	 */
+	EAttribute getBuffer_MergedRange();
 
 	/**
 	 * Returns the meta object for class '
@@ -2705,6 +2755,18 @@ public interface CodegenPackage extends EPackage {
 	EEnum getPortDirection();
 
 	/**
+	 * Returns the meta object for data type '
+	 * {@link org.ietr.preesm.experiment.memory.Range <em>range</em>}'. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for data type '<em>range</em>'.
+	 * @see org.ietr.preesm.experiment.memory.Range
+	 * @model instanceClass="org.ietr.preesm.experiment.memory.Range"
+	 * @generated
+	 */
+	EDataType getrange();
+
+	/**
 	 * Returns the factory that creates the instances of the model. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -2908,6 +2970,14 @@ public interface CodegenPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute BUFFER__TYPE_SIZE = eINSTANCE.getBuffer_TypeSize();
+
+		/**
+		 * The meta object literal for the '<em><b>Merged Range</b></em>'
+		 * attribute feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute BUFFER__MERGED_RANGE = eINSTANCE.getBuffer_MergedRange();
 
 		/**
 		 * The meta object literal for the '
@@ -3453,6 +3523,16 @@ public interface CodegenPackage extends EPackage {
 		 * @generated
 		 */
 		EEnum PORT_DIRECTION = eINSTANCE.getPortDirection();
+
+		/**
+		 * The meta object literal for the '<em>range</em>' data type. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @see org.ietr.preesm.experiment.memory.Range
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getrange()
+		 * @generated
+		 */
+		EDataType RANGE = eINSTANCE.getrange();
 
 	}
 
