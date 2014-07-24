@@ -1711,7 +1711,7 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int NULL_BUFFER__COMMENT = BUFFER__COMMENT;
+	int NULL_BUFFER__COMMENT = SUB_BUFFER__COMMENT;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute. <!--
@@ -1720,7 +1720,7 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int NULL_BUFFER__NAME = BUFFER__NAME;
+	int NULL_BUFFER__NAME = SUB_BUFFER__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' attribute. <!--
@@ -1729,7 +1729,7 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int NULL_BUFFER__TYPE = BUFFER__TYPE;
+	int NULL_BUFFER__TYPE = SUB_BUFFER__TYPE;
 
 	/**
 	 * The feature id for the '<em><b>Creator</b></em>' container reference.
@@ -1738,7 +1738,7 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int NULL_BUFFER__CREATOR = BUFFER__CREATOR;
+	int NULL_BUFFER__CREATOR = SUB_BUFFER__CREATOR;
 
 	/**
 	 * The feature id for the '<em><b>Users</b></em>' reference list. <!--
@@ -1747,7 +1747,7 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int NULL_BUFFER__USERS = BUFFER__USERS;
+	int NULL_BUFFER__USERS = SUB_BUFFER__USERS;
 
 	/**
 	 * The feature id for the '<em><b>Size</b></em>' attribute. <!--
@@ -1756,7 +1756,7 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int NULL_BUFFER__SIZE = BUFFER__SIZE;
+	int NULL_BUFFER__SIZE = SUB_BUFFER__SIZE;
 
 	/**
 	 * The feature id for the '<em><b>Childrens</b></em>' reference list. <!--
@@ -1765,7 +1765,7 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int NULL_BUFFER__CHILDRENS = BUFFER__CHILDRENS;
+	int NULL_BUFFER__CHILDRENS = SUB_BUFFER__CHILDRENS;
 
 	/**
 	 * The feature id for the '<em><b>Type Size</b></em>' attribute. <!--
@@ -1774,7 +1774,7 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int NULL_BUFFER__TYPE_SIZE = BUFFER__TYPE_SIZE;
+	int NULL_BUFFER__TYPE_SIZE = SUB_BUFFER__TYPE_SIZE;
 
 	/**
 	 * The feature id for the '<em><b>Merged Range</b></em>' attribute. <!--
@@ -1783,7 +1783,25 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int NULL_BUFFER__MERGED_RANGE = BUFFER__MERGED_RANGE;
+	int NULL_BUFFER__MERGED_RANGE = SUB_BUFFER__MERGED_RANGE;
+
+	/**
+	 * The feature id for the '<em><b>Container</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__CONTAINER = SUB_BUFFER__CONTAINER;
+
+	/**
+	 * The feature id for the '<em><b>Offset</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__OFFSET = SUB_BUFFER__OFFSET;
 
 	/**
 	 * The number of structural features of the '<em>Null Buffer</em>' class.
@@ -1792,7 +1810,7 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int NULL_BUFFER_FEATURE_COUNT = BUFFER_FEATURE_COUNT + 0;
+	int NULL_BUFFER_FEATURE_COUNT = SUB_BUFFER_FEATURE_COUNT + 0;
 
 	/**
 	 * The meta object id for the '

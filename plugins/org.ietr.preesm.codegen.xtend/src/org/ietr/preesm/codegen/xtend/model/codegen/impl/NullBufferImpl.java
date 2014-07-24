@@ -47,7 +47,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
  * 
  * @generated
  */
-public class NullBufferImpl extends BufferImpl implements NullBuffer {
+public class NullBufferImpl extends SubBufferImpl implements NullBuffer {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 

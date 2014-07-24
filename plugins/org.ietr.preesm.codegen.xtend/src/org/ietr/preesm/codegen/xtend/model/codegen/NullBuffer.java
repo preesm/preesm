@@ -35,7 +35,6 @@
  */
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
-
 /**
  * <!-- begin-user-doc --> A representation of the model object '
  * <em><b>Null Buffer</b></em>'. <!-- end-user-doc -->
@@ -45,5 +44,5 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  * @model
  * @generated
  */
-public interface NullBuffer extends Buffer {
+public interface NullBuffer extends SubBuffer {
 } // NullBuffer

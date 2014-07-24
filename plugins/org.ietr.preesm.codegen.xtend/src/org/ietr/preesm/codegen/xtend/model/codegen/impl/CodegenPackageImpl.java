@@ -1228,7 +1228,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		sharedMemoryCommunicationEClass.getESuperTypes().add(
 				this.getCommunication());
 		constantStringEClass.getESuperTypes().add(this.getVariable());
-		nullBufferEClass.getESuperTypes().add(this.getBuffer());
+		nullBufferEClass.getESuperTypes().add(this.getSubBuffer());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(blockEClass, Block.class, "Block", !IS_ABSTRACT,

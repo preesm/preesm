@@ -173,6 +173,6 @@
   <eClassifiers xsi:type="ecore:EClass" name="ConstantString" eSuperTypes="#//Variable">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="NullBuffer" eSuperTypes="#//Buffer"/>
+  <eClassifiers xsi:type="ecore:EClass" name="NullBuffer" eSuperTypes="#//SubBuffer"/>
   <eClassifiers xsi:type="ecore:EDataType" name="range" instanceClassName="org.ietr.preesm.experiment.memory.Range"/>
 </ecore:EPackage>

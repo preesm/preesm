@@ -319,6 +319,8 @@ public class CodegenSwitch<T> extends Switch<T> {
 			NullBuffer nullBuffer = (NullBuffer) theEObject;
 			T result = caseNullBuffer(nullBuffer);
 			if (result == null)
+				result = caseSubBuffer(nullBuffer);
+			if (result == null)
 				result = caseBuffer(nullBuffer);
 			if (result == null)
 				result = caseVariable(nullBuffer);
