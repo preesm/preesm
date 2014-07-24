@@ -37,25 +37,25 @@
 package org.ietr.preesm.codegen.xtend.printer.c
 
 import java.util.Date
+import java.util.HashSet
 import java.util.List
 import org.ietr.preesm.codegen.xtend.model.codegen.Block
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
+import org.ietr.preesm.codegen.xtend.model.codegen.Call
 import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter
 import org.ietr.preesm.codegen.xtend.model.codegen.Direction
-import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
-import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
-import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
-import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
-import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
-import org.ietr.preesm.codegen.xtend.model.codegen.Call
-import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
-import java.util.HashSet
+import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
+import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
+import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
+import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
+import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
+import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
+import org.ietr.preesm.codegen.xtend.model.codegen.Variable
 
 class C6678CPrinter extends CPrinter {
 	
@@ -166,6 +166,11 @@ class C6678CPrinter extends CPrinter {
 		«IF call.parameters.size > 0»
 			«FOR i :  0 .. call.parameters.size - 1»
 				«IF call.parameterDirections.get(i) == PortDirection.INPUT && !(call.parameters.get(i) instanceof NullBuffer)»
+					«IF (call.parameters.get(i) as Buffer).mergedRange != null»
+						«FOR range : (call.parameters.get(i) as Buffer).mergedRange»
+							cache_wb(((char*)«call.parameters.get(i).doSwitch») + «range.start», «range.length»);
+						«ENDFOR»
+					«ENDIF»					
 					cache_inv(«call.parameters.get(i).doSwitch», «(call.parameters.get(i) as Buffer).size»*sizeof(«call.parameters.get(i).type»));
 				«ENDIF»
 			«ENDFOR»

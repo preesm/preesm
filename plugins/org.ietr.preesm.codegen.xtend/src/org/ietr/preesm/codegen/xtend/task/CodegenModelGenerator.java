@@ -51,6 +51,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.ietr.dftools.algorithm.iterators.DAGIterator;
@@ -118,6 +119,7 @@ import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
+import org.ietr.preesm.experiment.memory.Range;
 import org.ietr.preesm.memory.allocation.MemoryAllocator;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
@@ -197,10 +199,10 @@ public class CodegenModelGenerator {
 	private Map<BufferProperties, Buffer> srSDFEdgeBuffers;
 
 	/**
-	 * This {@link Map} associates each {@link DAGEdge} to its corresponding
+	 * This {@link BiMap} associates each {@link DAGEdge} to its corresponding
 	 * {@link Buffer}.
 	 */
-	private Map<DAGEdge, Buffer> dagEdgeBuffers;
+	private BiMap<DAGEdge, Buffer> dagEdgeBuffers;
 
 	/**
 	 * This {@link Map} associates each {@link Pair} of init and end
@@ -268,7 +270,7 @@ public class CodegenModelGenerator {
 		this.bufferNames = new HashMap<String, Integer>();
 		this.coreBlocks = new HashMap<ComponentInstance, CoreBlock>();
 		this.srSDFEdgeBuffers = new HashMap<BufferProperties, Buffer>();
-		this.dagEdgeBuffers = new HashMap<DAGEdge, Buffer>();
+		this.dagEdgeBuffers = HashBiMap.create(dag.edgeSet().size());
 		this.dagFifoBuffers = new HashMap<Pair<DAGVertex, DAGVertex>, Pair<Buffer, Buffer>>();
 		this.dagVertexCalls = HashBiMap.create(dag.vertexSet().size());
 		this.communications = new HashMap<String, List<Communication>>();
@@ -331,10 +333,10 @@ public class CodegenModelGenerator {
 			// Check that the MemEx is derived from the Input DAG
 			String sourceName = memObj.getSource();
 			String sinkName = memObj.getSink();
-			
+
 			// If the MObject is a part of a divide buffer
 			sourceName = sourceName.replaceFirst("^part[0-9]+_", "");
-			
+
 			boolean isFifo = sourceName.startsWith("FIFO");
 			if (isFifo) {
 				sourceName = sourceName.substring(10, sourceName.length());
@@ -651,7 +653,9 @@ public class CodegenModelGenerator {
 	}
 
 	/**
-	 * 
+	 * The purpose of this function is to restore to their original size the
+	 * {@link MemoryExclusionVertex} that were merged when applying memory
+	 * scripts.
 	 */
 	protected void restoreHostedVertices() {
 		@SuppressWarnings("unchecked")
@@ -942,6 +946,7 @@ public class CodegenModelGenerator {
 				String comment = dagAlloc.getKey().getSource().getName()
 						+ " > " + dagAlloc.getKey().getTarget().getName();
 				dagEdgeBuffer.setComment("NULL_" + comment);
+				dagEdgeBuffer.setContainer(sharedBuffer);			
 
 				// Generate subsubbuffers. Each subsubbuffer corresponds to an
 				// edge
@@ -951,7 +956,6 @@ public class CodegenModelGenerator {
 
 				// We set the size to keep the information
 				dagEdgeBuffer.setSize(dagEdgeSize);
-				
 
 				// Save the DAGEdgeBuffer
 				DAGVertex originalSource = dag.getVertex(dagAlloc.getKey()
@@ -1556,7 +1560,119 @@ public class CodegenModelGenerator {
 					.get(idx));
 		}
 
+		identifyMergedInputRange(callVars);
+
 		return func;
+	}
+
+	protected void identifyMergedInputRange(
+			Entry<List<Variable>, List<PortDirection>> callVars) {
+
+		// Separate input and output buffers
+		List<Buffer> inputs = new ArrayList<Buffer>();
+		List<Buffer> outputs = new ArrayList<Buffer>();
+		for (int i = 0; i < callVars.getKey().size(); i++) {
+			if (callVars.getValue().get(i) == PortDirection.INPUT) {
+				inputs.add((Buffer) callVars.getKey().get(i));
+			} else if (callVars.getValue().get(i) == PortDirection.OUTPUT) {
+				outputs.add((Buffer) callVars.getKey().get(i));
+			}
+		}
+		
+		// For each output find the allocated range
+		// (or Ranges in case of a divided buffer)
+		List<Pair<Buffer,Range>> outputRanges = new ArrayList<>();
+		for (Buffer output : outputs) {
+			// If the input is not a NullBufer
+			if (!(output instanceof NullBuffer)) {
+				// Find the parent Buffer container b
+				// and the offset within b.
+				int start = 0;
+				Buffer b = output;
+				while (b instanceof SubBuffer) {
+					start += ((SubBuffer) b).getOffset();
+					b = ((SubBuffer) b).getContainer();
+				}
+				int end = start + (output.getSize() * output.getTypeSize());
+
+				// Save allocated range
+				outputRanges.add(new Pair<Buffer, Range>(b, new Range(start, end)));
+			} else {
+				// The output is a NullBuffer (i.e. it is divided)
+				// Find the allocation of its ranges
+				DAGEdge dagEdge = dagEdgeBuffers.inverse().get(
+						((NullBuffer) output).getContainer());
+				MemoryExclusionVertex mObject = memEx
+						.getVertex(new MemoryExclusionVertex(dagEdge));
+				// Get the real ranges from the memObject
+				@SuppressWarnings("unchecked")
+				List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realRanges = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) mObject
+						.getPropertyBean()
+						.getValue(
+								MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+				// Find the actual allocation range of each real range.
+				for(Pair<MemoryExclusionVertex, Pair<Range, Range>> realRange : realRanges){
+					DAGEdge hostDagEdge = realRange.getKey().getEdge();
+					DAGVertex originalSource = dag.getVertex(hostDagEdge
+							.getSource().getName());
+					DAGVertex originalTarget = dag.getVertex(hostDagEdge
+							.getTarget().getName());
+					DAGEdge originalDagEdge = dag.getEdge(originalSource,
+							originalTarget);
+					Buffer hostBuffer = dagEdgeBuffers.get(originalDagEdge);
+					// Get the allocated range
+					int start = realRange.getValue().getValue().getStart();
+					Buffer b = hostBuffer;
+					while (b instanceof SubBuffer) {
+						start += ((SubBuffer) b).getOffset();
+						b = ((SubBuffer) b).getContainer();
+					}
+					int end = start + realRange.getValue().getValue().getLength();
+					// Save allocated range
+					outputRanges.add(new Pair<Buffer, Range>(b, new Range(start, end)));
+				}
+			}
+		}
+		
+		// Find if an inputBuffer has an overlap with an outputRange
+		// For each input find the allocated range		
+		// Map<Buffer,Pair<Buffer,Range>> inputRanges = new HashMap<>();
+		for (Buffer input : inputs) {
+			// If the input is not a NullBufer
+			if (!(input instanceof NullBuffer)) {
+				// Find the parent Buffer container b
+				// and the offset within b.
+				int start = 0;
+				Buffer b = input;
+				while (b instanceof SubBuffer) {
+					start += ((SubBuffer) b).getOffset();
+					b = ((SubBuffer) b).getContainer();
+				}
+				int end = start + (input.getSize() * input.getTypeSize());
+				
+				// Find the input range that are also covered by the output
+				// ranges
+				List<Range> inRanges = new ArrayList<Range>();
+				inRanges.add(new Range(start, end));
+				
+				// Check output ranges one by one
+				for(Pair<Buffer, Range> outputRange : outputRanges){
+					if(outputRange.getKey() == b){
+						inRanges = Range.difference(inRanges, outputRange.getValue());
+					}
+				}
+				List<Range> mergedRanges = new ArrayList<Range>();
+				mergedRanges.add(new Range(start, end));
+				mergedRanges = Range.difference(mergedRanges, inRanges);
+				
+				// Save only if a part of the input buffer is merged
+				if(mergedRanges.size() != 0){
+					Range.translate(mergedRanges, -start);
+					input.setMergedRange(new BasicEList<>(mergedRanges));
+				}
+			}
+		}
+		
 	}
 
 	/**
@@ -1839,7 +1955,9 @@ public class CodegenModelGenerator {
 
 		operatorBlock.getLoopBlock().getCodeElts().add(f);
 		dagVertexCalls.put(dagVertex, f);
-
+		
+		identifyMergedInputRange(new AbstractMap.SimpleEntry<List<Variable>, List<PortDirection>>(
+				f.getParameters(), f.getParameterDirections()));
 		registerCallVariableToCoreBlock(operatorBlock, f);
 	}
 
@@ -1909,7 +2027,7 @@ public class CodegenModelGenerator {
 				subBuff.setOffset(aggregateOffset);
 				subBuff.setType(subBufferProperties.getDataType());
 				subBuff.setSize(subBufferProperties.getSize());
-				
+
 				// Save the created SubBuffer
 				srSDFEdgeBuffers.put(subBufferProperties, subBuff);
 			} else {
@@ -1925,17 +2043,18 @@ public class CodegenModelGenerator {
 				comment += " > " + dagEdge.getTarget().getName();
 				comment += '_' + subBufferProperties.getDestInputPortID();
 				nullBuff.setComment("NULL_" + comment);
+				nullBuff.setContainer(parentBuffer);
 
 				// Save the created SubBuffer
 				srSDFEdgeBuffers.put(subBufferProperties, nullBuff);
 			}
-			
+
 			// If an interSubbufferSpace was defined, add it
 			if (interSubbufferSpace != null) {
 				aggregateOffset += interSubbufferSpace.get(idx);
 			}
 			idx++;
-			
+
 			// Increment the aggregate offset with the size of the current
 			// subBuffer multiplied by the size of the datatype
 			if (subBufferProperties.getDataType().equals("typeNotFound")) {
@@ -1951,8 +2070,7 @@ public class CodegenModelGenerator {
 						+ " is undefined in the scenario.");
 			}
 			buff.setTypeSize(subBuffDataType.getSize());
-			aggregateOffset += (buff.getSize() * subBuffDataType
-					.getSize());
+			aggregateOffset += (buff.getSize() * subBuffDataType.getSize());
 		}
 
 		return aggregateOffset;
