@@ -1,9 +1,9 @@
-package org.ietr.preesm.experiment.memory
+package org.ietr.preesm.memory.script
 
 import java.util.List
 import java.util.Map
 
-import static extension org.ietr.preesm.experiment.memory.Range.*
+import static extension org.ietr.preesm.memory.script.Range.*
 
 class Match {
 	/**
@@ -50,7 +50,7 @@ class Match {
 	 */
 	def setType(MatchType newType) {
 		_type = newType
-		_mergeableLocalRanges = if (type == MatchType::BACKWARD) {
+		_mergeableLocalRanges = if (getType == MatchType::BACKWARD) {
 			newArrayList
 		} else {
 			null
@@ -105,7 +105,7 @@ class Match {
 	 * 
 	 */
 	def getLocalRange() {
-		new Range(localIndex, localIndex + length)
+		new Range(getLocalIndex, getLocalIndex + getLength)
 	}
 
 	/**
@@ -121,10 +121,10 @@ class Match {
 	 */
 	def Range getLocalIndivisibleRange() {
 
-		val localIndivisiblerange = this.localRange
+		val localIndivisiblerange = this.getLocalRange
 
 		// Copy the overlapping indivisible range(s)
-		val overlappingIndivisibleRanges = this.localBuffer.indivisibleRanges.filter [
+		val overlappingIndivisibleRanges = this.getLocalBuffer.indivisibleRanges.filter [
 			it.hasOverlap(localIndivisiblerange)
 		].map[it.clone as Range].toList // toList to make sure the map function is applied only once
 
@@ -147,10 +147,10 @@ class Match {
 	def Range getLocalImpactedRange() {
 
 		// Get the aligned smallest indivisible range (local or remote)
-		val localRange = this.localRange
-		val remoteIndivisibleRange = this.reciprocate.localIndivisibleRange
-		remoteIndivisibleRange.translate(this.localIndex - this.remoteIndex)
-		val smallestRange = if (localRange.length > remoteIndivisibleRange.length) {
+		val localRange = this.getLocalRange
+		val remoteIndivisibleRange = this.getReciprocate.getLocalIndivisibleRange
+		remoteIndivisibleRange.translate(this.getLocalIndex - this.getRemoteIndex)
+		val smallestRange = if (localRange.getLength > remoteIndivisibleRange.getLength) {
 				localRange
 			} else {
 				remoteIndivisibleRange
@@ -182,13 +182,13 @@ class Match {
 		if (this.class != obj.class)
 			return false
 		var other = obj as Match
-		this.localBuffer == other.localBuffer && this.localIndex == other.localIndex &&
-			this.remoteBuffer == other.remoteBuffer && this.remoteIndex == other.remoteIndex &&
-			this.length == other.length
+		this.getLocalBuffer == other.getLocalBuffer && this.getLocalIndex == other.getLocalIndex &&
+			this.getRemoteBuffer == other.getRemoteBuffer && this.getRemoteIndex == other.getRemoteIndex &&
+			this.getLength == other.getLength
 	}
 
-	override toString() '''«localBuffer.dagVertex.name».«localBuffer.name»[«localIndex»..«localIndex + length»[=>«remoteBuffer.
-		dagVertex.name».«remoteBuffer.name»[«remoteIndex»..«remoteIndex + length»['''
+	override toString() '''«getLocalBuffer.dagVertex.name».«getLocalBuffer.name»[«getLocalIndex»..«getLocalIndex + getLength»[=>«getRemoteBuffer.
+		dagVertex.name».«getRemoteBuffer.name»[«getRemoteIndex»..«getRemoteIndex + getLength»['''
 
 	/**
 	 * Check whether the current match fulfills its forbiddenLocalRanges and
@@ -197,15 +197,15 @@ class Match {
 	def isApplicable() {
 
 		// Does not match forbidden tokens
-		val impactedTokens = this.localImpactedRange.intersection(
-			new Range(this.localBuffer.minIndex, this.localBuffer.maxIndex))
-		this.forbiddenLocalRanges.intersection(impactedTokens).size == 0 &&
+		val impactedTokens = this.getLocalImpactedRange.intersection(
+			new Range(this.getLocalBuffer.minIndex, this.getLocalBuffer.maxIndex))
+		this.getForbiddenLocalRanges.intersection(impactedTokens).size == 0 &&
 		// And match only localMergeableRange are in fact mergeable 
-		if (this.type == MatchType::FORWARD) {
+		if (this.getType == MatchType::FORWARD) {
 			true
 		} else {
-			val mustBeMergeableRanges = this.mergeableLocalRanges.intersection(impactedTokens)
-			val mergeableRanges = this.localBuffer.mergeableRanges.intersection(impactedTokens)
+			val mustBeMergeableRanges = this.getMergeableLocalRanges.intersection(impactedTokens)
+			val mergeableRanges = this.getLocalBuffer.mergeableRanges.intersection(impactedTokens)
 			mustBeMergeableRanges.difference(mergeableRanges).size == 0
 		}
 	}
@@ -222,24 +222,24 @@ class Match {
 	 */
 	def Map<Range, Pair<Buffer, Range>> getRoot() {
 		val result = newHashMap
-		val remoteRange = this.localIndivisibleRange.translate(this.remoteIndex - this.localIndex)
+		val remoteRange = this.getLocalIndivisibleRange.translate(this.getRemoteIndex - this.getLocalIndex)
 
 		// Termination case if the remote Buffer is not matched	
-		if (this.remoteBuffer.matched == null) {
+		if (this.getRemoteBuffer.matched == null) {
 			result.put(
-				this.localIndivisibleRange,
-				this.remoteBuffer -> remoteRange
+				this.getLocalIndivisibleRange,
+				this.getRemoteBuffer -> remoteRange
 			)
 		}
 		// Else, recursive call 
 		else {
-			for (match : this.remoteBuffer.matched.filter[it.localIndivisibleRange.hasOverlap(remoteRange)]) {
-				val recursiveResult = match.root
+			for (match : this.getRemoteBuffer.matched.filter[it.getLocalIndivisibleRange.hasOverlap(remoteRange)]) {
+				val recursiveResult = match.getRoot
 				for (entry : recursiveResult.entrySet) {
 					val range = entry.key
 
 					// translate back to local range
-					range.translate(this.localIndex - this.remoteIndex)
+					range.translate(this.getLocalIndex - this.getRemoteIndex)
 					result.put(range, entry.value)
 				}
 			}

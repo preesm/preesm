@@ -45,7 +45,6 @@ import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
 
 import org.ietr.preesm.codegen.xtend.model.codegen.*;
-import org.ietr.preesm.experiment.memory.Range;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!--
@@ -495,8 +494,10 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
-	public Range createrangeFromString(EDataType eDataType, String initialValue) {
-		return (Range) super.createFromString(eDataType, initialValue);
+	public org.ietr.preesm.memory.script.Range createrangeFromString(
+			EDataType eDataType, String initialValue) {
+		return (org.ietr.preesm.memory.script.Range) super.createFromString(
+				eDataType, initialValue);
 	}
 
 	/**

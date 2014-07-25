@@ -1,4 +1,4 @@
-package org.ietr.preesm.experiment.memory
+package org.ietr.preesm.memory.script
 
 import bsh.EvalError
 import bsh.Interpreter
@@ -34,8 +34,8 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger
 import org.ietr.preesm.core.types.DataType
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex
 
-import static extension org.ietr.preesm.experiment.memory.Buffer.*
-import static extension org.ietr.preesm.experiment.memory.Range.*
+import static extension org.ietr.preesm.memory.script.Buffer.*
+import static extension org.ietr.preesm.memory.script.Range.*
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
 
 enum CheckPolicy {

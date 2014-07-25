@@ -173,5 +173,5 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="NullBuffer" eSuperTypes="#//SubBuffer"/>
-  <eClassifiers xsi:type="ecore:EDataType" name="range" instanceClassName="org.ietr.preesm.experiment.memory.Range"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="range" instanceClassName="org.ietr.preesm.memory.script.Range"/>
 </ecore:EPackage>

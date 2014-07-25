@@ -48,7 +48,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
-import org.ietr.preesm.experiment.memory.Range;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -132,7 +131,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<Range> mergedRange;
+	protected EList<org.ietr.preesm.memory.script.Range> mergedRange;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -216,7 +215,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * 
 	 * @generated
 	 */
-	public EList<Range> getMergedRange() {
+	public EList<org.ietr.preesm.memory.script.Range> getMergedRange() {
 		return mergedRange;
 	}
 
@@ -225,8 +224,9 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * 
 	 * @generated
 	 */
-	public void setMergedRange(EList<Range> newMergedRange) {
-		EList<Range> oldMergedRange = mergedRange;
+	public void setMergedRange(
+			EList<org.ietr.preesm.memory.script.Range> newMergedRange) {
+		EList<org.ietr.preesm.memory.script.Range> oldMergedRange = mergedRange;
 		mergedRange = newMergedRange;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET,
@@ -307,7 +307,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
 			setTypeSize((Integer) newValue);
 			return;
 		case CodegenPackage.BUFFER__MERGED_RANGE:
-			setMergedRange((EList<Range>) newValue);
+			setMergedRange((EList<org.ietr.preesm.memory.script.Range>) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -331,7 +331,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
 			setTypeSize(TYPE_SIZE_EDEFAULT);
 			return;
 		case CodegenPackage.BUFFER__MERGED_RANGE:
-			setMergedRange((EList<Range>) null);
+			setMergedRange((EList<org.ietr.preesm.memory.script.Range>) null);
 			return;
 		}
 		super.eUnset(featureID);

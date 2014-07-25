@@ -20,9 +20,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.ietr.dftools.architecture,
  org.ietr.preesm.memory,
  org.ietr.preesm.core,
- org.ietr.preesm.experiment;resolution:=optional,
- org.ietr.preesm.codegen;bundle-version="1.0.0",
- org.ietr.preesm.experiment.memory
+ org.ietr.preesm.codegen;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.ietr.preesm.codegen.xtend.task,

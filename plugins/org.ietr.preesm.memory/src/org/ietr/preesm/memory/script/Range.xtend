@@ -1,4 +1,4 @@
-package org.ietr.preesm.experiment.memory
+package org.ietr.preesm.memory.script
 
 import java.util.ArrayList
 import java.util.Collection
@@ -23,12 +23,12 @@ class Range {
 		val result = newArrayList
 		if (this.hasOverlap(range)) {
 			val inter = this.intersection(range)
-			if (inter.start > this.start) {
-				result.add(new Range(this.start, inter.start))
+			if (inter.getStart > this.getStart) {
+				result.add(new Range(this.getStart, inter.getStart))
 			}
 
-			if (inter.end < this.end) {
-				result.add(new Range(inter.end, this.end))
+			if (inter.getEnd < this.getEnd) {
+				result.add(new Range(inter.getEnd, this.getEnd))
 			}
 		} else {
 			result.add(this.clone as Range)
@@ -108,8 +108,8 @@ class Range {
 	 *  
 	 */
 	def translate(int delta) {
-		start = start + delta
-		end = end + delta
+		start = getStart + delta
+		end = getEnd + delta
 		
 		this
 	}
@@ -182,8 +182,8 @@ class Range {
 		var start = 0
 		var end = 0
 		if (this.hasOverlap(range)) {
-			start = Math::max(this.start, range.start)
-			end = Math::min(this.end, range.end)
+			start = Math::max(this.getStart, range.getStart)
+			end = Math::min(this.getEnd, range.getEnd)
 			return new Range(start, end)
 		}
 		null
@@ -234,8 +234,8 @@ class Range {
 
 					// Remove old range and include it with the new
 					iter.remove
-					newRange.start = Math.min(newRange.start, range.start)
-					newRange.end = Math.max(newRange.end, range.end)
+					newRange.start = Math.min(newRange.getStart, range.getStart)
+					newRange.end = Math.max(newRange.getEnd, range.getEnd)
 				}
 			}
 			ranges.add(newRange)
@@ -281,8 +281,8 @@ class Range {
 
 				// Remove old range and include it with the new
 				iter.remove
-				newRange.start = Math.min(newRange.start, range.start)
-				newRange.end = Math.max(newRange.end, range.end)
+				newRange.start = Math.min(newRange.getStart, range.getStart)
+				newRange.end = Math.max(newRange.getEnd, range.getEnd)
 			}
 		}
 		ranges.add(newRange)
@@ -295,7 +295,7 @@ class Range {
 	def static minStart(Iterable<Range> ranges) {
 		ranges.fold(0,
 			[ res, range |
-				Math::min(res, range.start)
+				Math::min(res, range.getStart)
 			])
 	}
 
@@ -305,12 +305,12 @@ class Range {
 	def static maxEnd(Iterable<Range> ranges) {
 		ranges.fold(0,
 			[ res, range |
-				Math::max(res, range.end)
+				Math::max(res, range.getEnd)
 			])
 	}
 
 	def static isContiguous(Range newRange, Range range) {
-		newRange.start == range.end || range.start == newRange.end
+		newRange.getStart == range.getEnd || range.getStart == newRange.getEnd
 	}
 
 	def static hasOverlap(List<Range> ranges, Range range) {
@@ -318,7 +318,7 @@ class Range {
 	}
 
 	def static hasOverlap(Range newRange, Range range) {
-		newRange.start < range.end && range.start < newRange.end
+		newRange.getStart < range.getEnd && range.getStart < newRange.getEnd
 	}
 
 	/**
@@ -334,8 +334,8 @@ class Range {
 	var int start
 
 	new(Range original) {
-		_start = original.start
-		_end = original.end
+		_start = original.getStart
+		_end = original.getEnd
 	}
 
 	new(int start, int end) {
@@ -344,16 +344,16 @@ class Range {
 	}
 
 	def getLength() {
-		end - start
+		getEnd - getStart
 	}
 
-	override toString() '''[«start»..«end»['''
+	override toString() '''[«getStart»..«getEnd»['''
 
 	override equals(Object o) {
 		if (o.class != Range) {
 			false
 		} else {
-			this.start == (o as Range).start && this.end == (o as Range).end
+			this.getStart == (o as Range).getStart && this.getEnd == (o as Range).getEnd
 		}
 	}
 
