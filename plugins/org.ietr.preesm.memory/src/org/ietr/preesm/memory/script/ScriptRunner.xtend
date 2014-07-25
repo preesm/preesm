@@ -61,7 +61,6 @@ import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex
 import org.ietr.dftools.algorithm.model.dag.edag.DAGJoinVertex
 import org.ietr.dftools.algorithm.model.parameters.Argument
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex
@@ -73,6 +72,7 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex
 import static extension org.ietr.preesm.memory.script.Buffer.*
 import static extension org.ietr.preesm.memory.script.Range.*
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 
 enum CheckPolicy {
 	NONE,
@@ -420,7 +420,7 @@ class ScriptRunner {
 		// Update output buffers for alignment
 		if (_alignment > 0) {
 			scriptResults.forEach [ vertex, result |
-				// All outputs except the mergeable one linked only to pure_in 
+				// All outputs except the mergeable one linked only to read_only 
 				// inputs within their actor must be enlarged.
 				// In other terms, only buffers that will never be written by their
 				// producer actor or consumer actor are not enlarged since these 
@@ -1503,8 +1503,8 @@ class ScriptRunner {
 
 			// Create the input/output lists
 			val inputs = sdfVertex.incomingEdges.map[
-				// An input buffer is backward mergeable if it is Pure_in OR if it is unused
-				val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_IN) || ((it.
+				// An input buffer is backward mergeable if it is read_only OR if it is unused
+				val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_READ_ONLY) || ((it.
 					targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED))
 				try {
 					new Buffer(it, dagVertex, it.targetLabel, it.cons.intValue, dataTypes.get(it.dataType.toString).size,
@@ -1516,8 +1516,8 @@ class ScriptRunner {
 				}].toList
 
 			val outputs = sdfVertex.outgoingEdges.map[
-				// An output buffer is mergeable if it is unused or if its target port is not Pure_in 
-				val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_PURE_IN) || ((it.
+				// An output buffer is mergeable if it is unused or if its target port is not read_only 
+				val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_READ_ONLY) || ((it.
 					targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED))
 				try {
 					new Buffer(it, dagVertex, it.sourceLabel, it.prod.intValue, dataTypes.get(it.dataType.toString).size,
@@ -1728,11 +1728,11 @@ class ScriptRunner {
 			meg.vertexSet.filter [ mObj |
 				if (mObj.edge != null) {
 
-					// Find unused pure_out edges
+					// Find unused write_only edges
 					val aggregate = mObj.edge.aggregate
 					aggregate.forall [ sdfEdge |
 						((sdfEdge as SDFEdge).getPropertyStringValue(SDFEdge::SOURCE_PORT_MODIFIER) ?: "").
-							contains(SDFEdge::MODIFIER_PURE_OUT) && ((sdfEdge as SDFEdge).
+							contains(SDFEdge::MODIFIER_WRITE_ONLY) && ((sdfEdge as SDFEdge).
 							getPropertyStringValue(SDFEdge::TARGET_PORT_MODIFIER) ?: "").contains(SDFEdge::MODIFIER_UNUSED)
 					]
 				} else

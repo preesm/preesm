@@ -221,8 +221,8 @@
             <data key="edge_delay">N*xsize*(ysize/N+2)*stage2</data>
             <data key="edge_cons">xsize*(ysize/N+2)</data>
             <data key="data_type">uchar</data>
-            <data key="target_port_modifier">pure_in</data>
-            <data key="source_port_modifier">pure_out</data>
+            <data key="target_port_modifier">read_only</data>
+            <data key="source_port_modifier">write_only</data>
         </edge>
         <edge source="Split1" sourceport="output" target="sink" targetport="u">
             <data key="edge_prod">N*xsize/2*(ysize/2/N+2)</data>
@@ -259,14 +259,14 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">xsize/2*ysize/2/N</data>
             <data key="data_type">char</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="transmitter" sourceport="ooo" target="sink4" targetport="ii">
             <data key="edge_prod">xsize/2*ysize/2/N</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">xsize/2*ysize/2</data>
             <data key="data_type">char</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="Read_YUV" sourceport="v" target="nothing" targetport="i">
             <data key="edge_prod">xsize/2*ysize/2</data>
@@ -303,7 +303,7 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">xsize/2*ysize/2</data>
             <data key="data_type">char</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
     </graph>
 </graphml>

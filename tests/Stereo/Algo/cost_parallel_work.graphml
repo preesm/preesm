@@ -170,21 +170,21 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">float</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="grayR" sourceport="" target="CostConstruction" targetport="grayR">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">float</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="cenL" sourceport="" target="CostConstruction" targetport="cenL">
             <data key="edge_prod">height*width</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">uchar</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="CostConstruction" sourceport="disparityError"
             target="AggregateCost" targetport="disparityError">
@@ -198,7 +198,7 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">uchar</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="disparityGen" sourceport="disparities"
             target="CostConstruction" targetport="disparity">
@@ -220,7 +220,7 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">nbIterations</data>
             <data key="data_type">int</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="offsetGen" sourceport="offsets"
             target="computeHorWeights" targetport="offset">
@@ -234,7 +234,7 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width*3</data>
             <data key="data_type">uchar</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="computeHorWeights" sourceport="weights"
             target="broadcastHWeights" targetport="i">
@@ -249,7 +249,7 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width*3*nbIterations</data>
             <data key="data_type">float</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="offsetGen" sourceport="offsets"
             target="computeVertWeights" targetport="offset">
@@ -263,7 +263,7 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width*3</data>
             <data key="data_type">uchar</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="computeVertWeights" sourceport="weights"
             target="broadcastVWeights" targetport="i">
@@ -278,7 +278,7 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width*3*nbIterations</data>
             <data key="data_type">float</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="AggregateCost" sourceport="aggregatedDisparity"
             target="disparitySelect" targetport="aggregatedDisparity">
@@ -314,7 +314,7 @@
             <data key="edge_delay">height*width</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">uchar</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="broadcastResult" sourceport="o0"
             target="raw_disparity" targetport="">
@@ -322,7 +322,7 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">height*width</data>
             <data key="data_type">uchar</data>
-            <data key="source_port_modifier">pure_out</data>
+            <data key="source_port_modifier">write_only</data>
         </edge>
     </graph>
 </graphml>

@@ -235,49 +235,49 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">2</data>
             <data key="data_type">char</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="source1" sourceport="o" target="join0" targetport="i0">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
             <data key="data_type">char</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="fork" sourceport="o0" target="join0" targetport="i1">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
             <data key="data_type">char</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="fork" sourceport="o1" target="join1" targetport="i0">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
             <data key="data_type">char</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="source2" sourceport="o" target="join1" targetport="i1">
             <data key="edge_prod">1</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
             <data key="data_type">char</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="join0" sourceport="o" target="sink0" targetport="i">
             <data key="edge_prod">2</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">2</data>
             <data key="data_type">char</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="join1" sourceport="o" target="sink1" targetport="i">
             <data key="edge_prod">2</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">2</data>
             <data key="data_type">char</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="source3" sourceport="o" target="2to1_0" targetport="i">
             <data key="edge_prod">2</data>
@@ -344,14 +344,14 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
             <data key="data_type">char</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="1to2_0" sourceport="o" target="sink" targetport="i0">
             <data key="edge_prod">2</data>
             <data key="edge_delay">0</data>
             <data key="edge_cons">2</data>
             <data key="data_type">char</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="broad" sourceport="o1" target="1to2_1" targetport="i">
             <data key="edge_prod">1</data>
@@ -364,7 +364,7 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">1</data>
             <data key="data_type">char</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="1to2_1" sourceport="o" target="sink" targetport="i3">
             <data key="edge_prod">2</data>
@@ -383,7 +383,7 @@
             <data key="edge_delay">0</data>
             <data key="edge_cons">2</data>
             <data key="data_type">char</data>
-            <data key="target_port_modifier">pure_in</data>
+            <data key="target_port_modifier">read_only</data>
         </edge>
         <edge source="source7" sourceport="o" target="join3" targetport="i1">
             <data key="edge_prod">1</data>
