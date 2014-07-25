@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.ietr.dftools.workflow.tasks">
+      <task
+            id="org.ietr.preesm.experiment.memory.MemoryScriptTask"
+            name="Memory Script Runner"
+            type="org.ietr.preesm.experiment.memory.MemoryScriptTask">
+         <inputs>
+            <input
+                  id="MemEx"
+                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+            </input>
+            <input
+                  id="DAG"
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="MemEx"
+                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+            </output>
+         </outputs>
+      </task>
+   </extension>
+
+</plugin>
