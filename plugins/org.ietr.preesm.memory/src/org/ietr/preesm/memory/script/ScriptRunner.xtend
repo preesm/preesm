@@ -123,12 +123,20 @@ class ScriptRunner {
 	 * memory script to this memory script {@link File}.
 	 */
 	val scriptedVertices = new HashMap<DAGVertex, File>();
-
+	
+	/**
+	 * Each {@link List} of {@link Buffer} stored in this {@link List} 
+	 * corresponds to an independent connected {@link Match} tree resulting
+	 * from the execution of the memory scripts.
+	 */
 	val List<List<Buffer>> bufferGroups = newArrayList
+	
+	@Property
+	var CharSequence log = ''''''
 
 	static public final boolean printTodo = false
 
-	static public final boolean verbose = true
+	public boolean generateLog = true
 
 	static int nbBuffersBefore = 0
 	static int nbBuffersAfter = 0
@@ -431,7 +439,7 @@ class ScriptRunner {
 					])].forEach [ buffer |
 					// Enlarge the buffer 
 					// New range mergeability is automatically handled by 
-					// setMinIndex(int)
+					// the setMinIndex(int) function
 					enlargeForAlignment(buffer)
 				]
 			]
@@ -477,10 +485,14 @@ class ScriptRunner {
 			it.processGroup
 		]
 
-		if (verbose)
-			println(
-				'''Identified «groups.size» groups. From «nbBuffersBefore» to «nbBuffersAfter» buffers.''' + "\n" + ''' Saving «sizeBefore»-«sizeAfter»=«sizeBefore -
-					sizeAfter» («(sizeBefore - sizeAfter as float) / sizeBefore»%).''')
+		if (generateLog) {
+			log = '''# Memory scripts summary''' +'\n'
+			 + '''- Independent match trees : *«groups.size»*''' +'\n'
+			 + '''- Total number of buffers in these trees: From «nbBuffersBefore» to «nbBuffersAfter» buffers.''' + "\n" 
+			 + '''- Total size of these buffers: From «sizeBefore» to «sizeAfter» («100.0* (sizeBefore - sizeAfter as float) / sizeBefore»%).''' + "\n\n"
+			 + '''# Match tree optimization log''' + '\n'
+			 + log
+		}
 	}
 
 	def enlargeForAlignment(Buffer buffer) {
@@ -496,8 +508,7 @@ class ScriptRunner {
 			// prevent cache-line alignment issues:
 			// minIdx = min(0 - (_alignment -1), minIdx)
 			// maxIdx = max(maxIdx + (_alignment -1), maxIdx)
-			//
-			 
+			//			 
 		}
 		val oldMinIndex = buffer.minIndex
 		if (oldMinIndex == 0 || (oldMinIndex) % alignment != 0) {
@@ -663,11 +674,18 @@ class ScriptRunner {
 		]
 
 		// copy the buffer list for later use in MEG update
-		bufferGroups.add(new ArrayList(buffers))
+		val bufferList = new ArrayList(buffers)
+		bufferGroups.add(bufferList)
 		nbBuffersBefore = nbBuffersBefore + buffers.size
 
 		var before = buffers.fold(0, [res, buf|res + buf.maxIndex - buf.minIndex])
 		sizeBefore = sizeBefore + before
+		if(generateLog){
+			log = log + '''## Tree of «buffers.size» buffers''' + '\n'
+			  + '''### Original buffer list:''' + '\n' 
+			  + '''> «buffers»''' + "\n\n"
+			  + '''### Match application log: ''' + '\n' 
+		}
 
 		// Iterate the merging algorithm until no buffers are merged
 		var step = 0
@@ -720,9 +738,25 @@ class ScriptRunner {
 		} while (step < 8 && !stop)
 
 		var after = buffers.fold(0, [res, buf|res + buf.maxIndex - buf.minIndex])
-		if (verbose) {
-			println('''«before» => «after» : «((before - after) as float) / before»''')
-			println("---")
+		if (generateLog) {
+			log = log + "\n" + '''### Tree summary:''' + '\n'
+			log = log + '''- From «bufferList.size» buffers to «buffers.size» buffers.''' + "\n"
+			log = log + '''- From «before» bytes to «after» bytes («100.0* ((before - after) as float) / before»%)''' + "\n\n"
+		}
+		
+		// Log unapplied matches (if any)
+		if (generateLog) {
+			log = log + '''### Unapplied matches:''' + "\n>"
+			val logged = newArrayList
+			for (buffer : bufferList) {
+				for (match : buffer.matchTable.values.flatten.filter[!it.applied]) {
+					if (!logged.contains(match.reciprocate)) {
+						log = log  + match.originalMatch.toString + ", "
+						logged.add(match)
+					}
+				}
+			}
+			log = log + "\n"
 		}
 
 		nbBuffersAfter = nbBuffersAfter + buffers.size
@@ -776,12 +810,14 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(verbose) print('''0- («candidates.size») ''')
+		if(generateLog && !candidates.empty) 
+			log = log + '''- __Step 0 - «candidates.size» matches__'''  + "\n>"
+		
 		for (candidate : candidates) {
-			if(verbose) print('''«candidate.matchTable.entrySet.head.value.head»  ''')
+			if(generateLog) log = log + '''«candidate.matchTable.entrySet.head.value.head»  '''
 			candidate.applyMatches(candidate.matchTable.entrySet.head.value)
 		}
-		if(verbose) println("")
+		if(generateLog && !candidates.empty) log = log + '\n'
 
 		buffers.removeAll(candidates)
 
@@ -837,12 +873,12 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(verbose) print('''1- («candidates.size») ''')
+		if(generateLog && !candidates.empty) log = log + '''- __Step 1 - «candidates.size» matches__ ''' + "\n>"
 		for (candidate : candidates) {
-			if(verbose) print('''«candidate»  ''')
+			if(generateLog) log = log + '''«candidate»  '''
 			applyDivisionMatch(candidate, candidate.matchTable.values.flatten.toList)
 		}
-		if(verbose) println("")
+		if(generateLog && !candidates.empty) log = log + '\n'
 
 		buffers.removeAll(candidates)
 
@@ -906,13 +942,13 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(verbose) print('''2- («candidates.size») ''')
+		if(generateLog && !candidates.empty) log = log + '''- __Step 2 - «candidates.size» matches__''' + "\n>"
 		for (candidate : candidates.entrySet) {
-			if(verbose) print('''«candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head»  ''')
+			if(generateLog) log = log +'''«candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head»  '''
 			candidate.key.applyMatches(
 				#[candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head])
 		}
-		if(verbose) println("")
+		if(generateLog && !candidates.empty) log = log + '\n'
 
 		buffers.removeAll(candidates.keySet)
 
@@ -976,13 +1012,13 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(verbose) print('''3- («candidates.size») ''')
+		if(generateLog && !candidates.empty) log = log + '''- __Step 3 - «candidates.size» matches__'''  + "\n>"
 		for (candidate : candidates.entrySet) {
-			if(verbose) print('''«candidate.key»  ''')
+			if(generateLog) log = log + '''«candidate.key»  '''
 			applyDivisionMatch(candidate.key,
 				candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList)
 		}
-		if(verbose) println("")
+		if(generateLog && !candidates.empty) log = log + '\n'
 
 		buffers.removeAll(candidates.keySet)
 
@@ -1051,12 +1087,12 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(verbose) print('''4- («candidates.size») ''')
+		if(generateLog && !candidates.empty) log = log +'''- __Step 4 - «candidates.size» matches__'''  + "\n>"
 		for (candidate : candidates) {
-			if(verbose) print('''«candidate.matchTable.entrySet.head.value.head»  ''')
+			if(generateLog) log = log + '''«candidate.matchTable.entrySet.head.value.head»  '''
 			candidate.applyMatches(candidate.matchTable.entrySet.head.value)
 		}
-		if(verbose) println("")
+		if(generateLog && !candidates.empty) log = log +'\n'
 
 		buffers.removeAll(candidates)
 
@@ -1122,13 +1158,13 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(verbose) print('''5- («candidates.size») ''')
+		if(generateLog && !candidates.empty) log = log +'''- __Step 5 - «candidates.size» matches__'''  + "\n>"
 		for (candidate : candidates) {
-			if(verbose) print('''«candidate»  ''')
+			if(generateLog) log = log + '''«candidate»  '''
 			applyDivisionMatch(candidate,
 				candidate.matchTable.values.flatten.filter[it.type == MatchType::BACKWARD].toList)
 		}
-		if(verbose) println("")
+		if(generateLog && !candidates.empty) log = log + '\n'
 
 		buffers.removeAll(candidates)
 
@@ -1214,13 +1250,13 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(verbose) print('''6- («candidates.size») ''')
+		if(generateLog && !candidates.empty) log = log +'''- __Step 6 - «candidates.size» matches__'''  + "\n>"
 		for (candidate : candidates.entrySet) {
-			if(verbose) print('''«candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head»  ''')
+			if(generateLog) log = log + '''«candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head»  '''
 			candidate.key.applyMatches(
 				#[candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head])
 		}
-		if(verbose) println("")
+		if(generateLog && !candidates.empty) log = log + '\n'
 
 		buffers.removeAll(candidates.keySet)
 
@@ -1290,13 +1326,13 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(verbose) print('''7- («candidates.size») ''')
+		if(generateLog && !candidates.empty) log = log + '''- __Step 7 - «candidates.size» matches__ '''  + "\n>"
 		for (candidate : candidates.entrySet) {
-			if(verbose) print('''«candidate.key»  ''')
+			if(generateLog) log = log + '''«candidate.key»  '''
 			applyDivisionMatch(candidate.key,
 				candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList)
 		}
-		if(verbose) println("")
+		if(generateLog && !candidates.empty) log = log + '\n'
 
 		buffers.removeAll(candidates.keySet)
 
@@ -1663,22 +1699,6 @@ class ScriptRunner {
 
 				val mObj = bufferAndMObjectMap.get(buffer)
 				
-				/*---------------------------------------------------------------- 
-				// Enlarge the memory object (if needed)
-				if(ScriptRunner::printTodo){
-					println("We do not need to enlarge the buffer so much. We just need to enlarge it so that the minIndex is aligned (if alignement is needed)")
-					// Change the emptyspace before to make sure that the buffer is aligned in the host buffer
-					// for non-divided buffers only :
-					// realTokenRange.start - EmptySpaceBefore must be modulo of alignement.
-					// This condition will be sufficient to guarantee that other Mobject of the MEG
-					// Will never share the same cache line as the merged Mobject. (For other buffer involved in the
-					// Merge operation, this rule is guaranteed during the script execution.)
-				}
-				mObj.setWeight(mObj.getWeight - buffer.minIndex)
-				mObj.setPropertyValue(MemoryExclusionVertex::EMPTY_SPACE_BEFORE, -buffer.minIndex)
-				 */
-				
-
 				// For buffer receiving a part of the current buffer
 				for (rootBuffer : rootBuffers.values.map[it.key]) {
 					val rootMObj = bufferAndMObjectMap.get(rootBuffer)

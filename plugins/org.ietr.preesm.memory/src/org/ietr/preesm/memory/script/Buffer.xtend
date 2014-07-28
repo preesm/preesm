@@ -441,37 +441,6 @@ class Buffer {
 		}
 
 		this.byteMatchWith(localIdx * getTokenSize, buffer, remoteIdx * getTokenSize, size * getTokenSize)
-
-	/*
-		// If needed, update the buffers min/max indexes
-		if (!(localIdx >= 0) && (localIdx + size - 1 < this.nbTokens)) {
-			this._minIndex = Math::min(_minIndex, localIdx * tokenSize)
-			this._maxIndex = Math::max(_maxIndex, (localIdx + size) * tokenSize)
-		}
-		if (!(remoteIdx >= 0) && (remoteIdx + size - 1 < buffer.nbTokens)) {
-			buffer._minIndex = Math::min(buffer._minIndex, remoteIdx * tokenSize)
-			buffer._maxIndex = Math::max(buffer._maxIndex, (remoteIdx + size) * tokenSize)
-		}
-
-		// Do the match
-		var matchSet = matchTable.get(localIdx * tokenSize)
-		if (matchSet == null) {
-			matchSet = newArrayList
-			matchTable.put(localIdx * tokenSize, matchSet)
-		}
-		val localMatch = new Match(this, localIdx * tokenSize, buffer, remoteIdx * tokenSize, size * this.tokenSize)
-		matchSet.add(localMatch)
-
-		var remoteMatchSet = buffer.matchTable.get(remoteIdx * tokenSize)
-		if (remoteMatchSet == null) {
-			remoteMatchSet = newArrayList
-			buffer.matchTable.put(remoteIdx * tokenSize, remoteMatchSet)
-		}
-		val remoteMatch = new Match(buffer, remoteIdx * tokenSize, this, localIdx * tokenSize, size * this.tokenSize)
-		remoteMatchSet.add(remoteMatch)
-
-		localMatch.reciprocate = remoteMatch
-		return localMatch*/
 	}
 
 	def byteMatchWith(int localByteIdx, Buffer buffer, int remoteByteIdx, int byteSize) {
@@ -975,7 +944,6 @@ class Buffer {
 		// do the removal :
 		if (redundantMatches.size > 0) {
 
-			//println('''Redundant «redundantMatches.map[matches.get(it)]»''')
 			val removedMatches = new ArrayList(redundantMatches.map[matches.get(it)].toList)
 			removedMatches.forEach [
 				unmatch(it)
@@ -1060,9 +1028,7 @@ class Buffer {
 					// Add the candidate to the conflicting matches
 					match.getConflictingMatches.add(candidate)
 
-					//match.reciprocate.conflictingMatches.add(candidate.reciprocate)
 					// Remove it from the reciprocate candidates (if it was present)
-					//match.reciprocate.conflictCandidates.remove(candidate.reciprocate)
 					updatedMatches.add(candidate)
 				}
 			}
@@ -1074,11 +1040,9 @@ class Buffer {
 					iter.remove
 
 					// Add the candidate to the conflicting matches
-					//match.conflictingMatches.add(candidate.reciprocate)
 					match.getReciprocate.getConflictingMatches.add(candidate)
 
 					// Remove it from the candidates (if it was present)
-					//match.conflictCandidates.remove(candidate.reciprocate)
 					if (!updatedMatches.contains(candidate.getReciprocate)) {
 						updatedMatches.add(candidate.getReciprocate)
 					}

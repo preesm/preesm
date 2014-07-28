@@ -45,13 +45,14 @@
         <dftools:data key="variables">
             <dftools:variable name="Check" value="Fast"/>
             <dftools:variable name="Data alignment" value="None"/>
+            <dftools:variable name="Log Path" value="log_memoryScripts.txt"/>
             <dftools:variable name="Verbose" value="True"/>
         </dftools:data>
     </dftools:task>
     <dftools:task
         pluginId="org.ietr.preesm.memory.allocation.MemoryAllocatorTask" taskId="Mem Alloc 2">
         <dftools:data key="variables">
-            <dftools:variable name="Allocator(s)" value="FirstFit"/>
+            <dftools:variable name="Allocator(s)" value="BestFit"/>
             <dftools:variable name="Best/First Fit order" value="LargestFirst"/>
             <dftools:variable name="Data alignment" value="None"/>
             <dftools:variable name="Merge broadcasts" value="False"/>

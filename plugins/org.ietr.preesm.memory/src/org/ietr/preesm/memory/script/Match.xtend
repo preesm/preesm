@@ -55,6 +55,26 @@ class Match {
 		this.conflictCandidates = newArrayList
 		this.applied = false
 		this.forbiddenLocalRanges = newArrayList
+		this.originalMatch = new Match(this)
+	}
+	
+  /**
+   * Copy the {@link Match} following attributes:<ul>
+   * <li>{@link #getLocalBuffer() localBuffer}</li>
+   * <li>{@link #getRemoteBuffer() remoteBuffer}</li>
+   * <li>{@link #getLocalIndex() localIndex}</li>
+   * <li>{@link #getRemoteIndex() remoteIndex}</li>
+   * <li>{@link #getLength() length}</li>
+   * <li>{@link #getType() type}</li>
+   * </ul>
+   */
+	private new(Match m) {
+		this.localBuffer = m.localBuffer
+		this.localIndex = m.localIndex
+		this.remoteBuffer = m.remoteBuffer
+		this.remoteIndex = m.remoteIndex
+		this.length = m.length
+		this.type = m.type 
 	}
 
 	@Property
@@ -71,6 +91,11 @@ class Match {
 	List<Match> conflictingMatches
 	@Property
 	List<Match> conflictCandidates
+	/**
+	 * For logging purpose
+	 */
+	@Property
+	Match originalMatch
 
 	/**
 	 * The {@link MatchType} of the current {@link Match}.

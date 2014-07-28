@@ -45,6 +45,7 @@
         <dftools:data key="variables">
             <dftools:variable name="Check" value="Fast"/>
             <dftools:variable name="Data alignment" value="None"/>
+            <dftools:variable name="Log Path" value="log_memoryScripts.txt"/>
             <dftools:variable name="Verbose" value="True"/>
         </dftools:data>
     </dftools:task>
