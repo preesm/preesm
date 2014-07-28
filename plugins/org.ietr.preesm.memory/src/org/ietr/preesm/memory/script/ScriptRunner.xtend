@@ -1136,13 +1136,15 @@ class ScriptRunner {
 			// All matches are applicable
 			test = test && matches.forall[it.applicable && it.reciprocate.applicable]
 
-			// buffer is fully mergeable
+			// buffer is fully mergeable (Since buffer is fully mergeable
+			// even if division matches are conflicting with each other
+			// this will not be a problem since they are mergeable)
 			test = test && {
 				candidate.mergeableRanges.size == 1 && candidate.mergeableRanges.head.start == candidate.minIndex &&
 					candidate.mergeableRanges.head.end == candidate.maxIndex
 			}
 
-			// Matches have no multiple match Range. 
+			// Matches have no multiple match Range (on the local buffer side). 
 			test = test && matches.overlappingRanges.size == 0
 
 			// Check divisibilityRequiredMatches
@@ -1290,7 +1292,7 @@ class ScriptRunner {
 			while (iterType.hasNext && !test) {
 				val currentType = iterType.next
 
-				val matches = candidate.matchTable.values.flatten.filter[it.type == currentType]
+				val matches = candidate.matchTable.values.flatten.filter[it.type == currentType].toList
 
 				// Returns true if:
 				// Has a several matches 
@@ -1302,8 +1304,19 @@ class ScriptRunner {
 				// and is involved in conflicting match
 				test = test && matches.forall[
 					it.conflictingMatches.size != 0 && it.applicable && it.reciprocate.applicable]
+				
+				// Unless the matches are backward AND the buffer is mergeable	
+				// the matches must not be conflicting with each other
+				test = test &&  
+				({ // the matches are backward AND the buffer is mergeable	
+					currentType == MatchType::BACKWARD && candidate.mergeableRanges.size == 1 && candidate.mergeableRanges.head.start == candidate.minIndex &&
+					candidate.mergeableRanges.head.end == candidate.maxIndex
+				} || // the matches must not be conflicting with each other
+				matches.forall[
+					it.conflictingMatches.forall[!matches.contains(it)]
+				])
 
-				// Matches have no multiple match Range. 
+				// Matches have no multiple match Range (on the local buffer side). 
 				test = test && matches.overlappingRanges.size == 0
 
 				// Check divisibilityRequiredMatches
