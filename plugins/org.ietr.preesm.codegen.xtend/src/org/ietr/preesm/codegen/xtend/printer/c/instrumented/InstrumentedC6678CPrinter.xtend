@@ -56,13 +56,15 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
 import org.ietr.preesm.codegen.xtend.model.codegen.Call
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
+import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
 
 class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 	
 	/**
 	 * This methods prints a call to the cache invalidate method for each
 	 * {@link PortDirection#INPUT input} {@link Buffer} of the given
-	 * {@link Call}.
+	 * {@link Call}. If the input port is a {@link NullBuffer}, nothing is 
+	 * printed.
 	 * 
 	 * @param call
 	 *            the {@link Call} whose {@link PortDirection#INPUT input}
@@ -72,7 +74,12 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 	def printCacheCoherency(Call call)'''
 		«IF call.parameters.size > 0»
 			«FOR i :  0 .. call.parameters.size - 1»
-				«IF call.parameterDirections.get(i) == PortDirection.INPUT»
+				«IF call.parameterDirections.get(i) == PortDirection.INPUT && !(call.parameters.get(i) instanceof NullBuffer)»
+					«IF (call.parameters.get(i) as Buffer).mergedRange != null»
+						«FOR range : (call.parameters.get(i) as Buffer).mergedRange»
+							cache_wb(((char*)«call.parameters.get(i).doSwitch») + «range.start», «range.length»);
+						«ENDFOR»
+					«ENDIF»					
 					cache_inv(«call.parameters.get(i).doSwitch», «(call.parameters.get(i) as Buffer).size»*sizeof(«call.parameters.get(i).type»));
 				«ENDIF»
 			«ENDFOR»
