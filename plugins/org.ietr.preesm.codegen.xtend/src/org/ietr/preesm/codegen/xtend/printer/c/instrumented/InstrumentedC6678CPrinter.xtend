@@ -57,8 +57,15 @@ import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
 import org.ietr.preesm.codegen.xtend.model.codegen.Call
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
+import java.util.HashSet
 
 class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
+		
+	/**
+	 * Set of CharSequence used to avoid calling the same cache operation 
+	 * multiple times in a broadcast or roundbuffer call. 
+	 */
+	var currentOperationMemcpy = new HashSet<CharSequence>();
 	
 	/**
 	 * This methods prints a call to the cache invalidate method for each
@@ -104,7 +111,10 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 		
 	'''
 	override printBroadcast(SpecialCall call) '''
-		«super.printBroadcast(call)»
+		«{
+			currentOperationMemcpy.clear
+			super.printBroadcast(call)
+		}»
 		«printCacheCoherency(call)»
 	'''
 	
@@ -200,14 +210,17 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 		// Change dumpTimedBuffer type to int
 		dumpTimedBuffer.type = "int"
 
-		/** Remove semaphore init */
 		for (block : printerBlocks) {
+			/** Remove semaphore init */
 			(block as CoreBlock).initBlock.codeElts.removeAll(
 				((block as CoreBlock).initBlock.codeElts.filter[
 					(it instanceof FunctionCall && (it as FunctionCall).name.startsWith("sem_init"))]))
-
-		}
-	}
+			/** Remove semaphores */
+			(block as CoreBlock).definitions.removeAll((block as CoreBlock).definitions.filter[it instanceof Semaphore])
+			(block as CoreBlock).declarations.removeAll(
+				(block as CoreBlock).declarations.filter[it instanceof Semaphore])
+		}		
+	}	
 	
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
 			busy_barrier();
@@ -246,14 +259,30 @@ class InstrumentedC6678CPrinter extends InstrumentedCPrinter {
 		// finish its execution and invalidate the buffer, if another consumer of the same 
 		// merged buffer is executed on the same core, its data will still be valid
 		if(result.empty) {
-			result = '''cache_wb(«input.doSwitch», «input.size»*sizeof(«input.type»));'''
+						if (!(input instanceof NullBuffer)) {
+				result = '''cache_wb(«input.doSwitch», «input.size»*sizeof(«input.type»));'''
+			} else {
+
+				// The input buffer is null write back the output instead
+				// since if the input is null, it means it has been exploded
+				// into the output by the memory scripts.
+				result = '''cache_wb(«output.doSwitch», «output.size»*sizeof(«output.type»));'''
+			}
+			if (!currentOperationMemcpy.contains(result)) {
+				currentOperationMemcpy.add(result)
+			} else {
+				result = ''''''
+			}
 		}
 			
 		result;
 	}
 	
 	override printRoundBuffer(SpecialCall call) '''
-		«super.printRoundBuffer(call)»
+		«{
+			currentOperationMemcpy.clear
+			super.printRoundBuffer(call)
+		}»
 		«printCacheCoherency(call)»
 	'''
 }
