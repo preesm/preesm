@@ -873,9 +873,9 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(generateLog && !candidates.empty) log = log + '''- __Step 1 - «candidates.size» matches__ ''' + "\n>"
+		if(generateLog && !candidates.empty) log = log + '''- __Step 1 - «candidates.fold(0)[v, c | c.matchTable.values.flatten.size + v]» matches__ ''' + "\n>"
 		for (candidate : candidates) {
-			if(generateLog) log = log + '''«candidate»  '''
+			if(generateLog) log = log + '''«FOR match : candidate.matchTable.values.flatten.toList SEPARATOR ', '»«match»«ENDFOR», '''
 			applyDivisionMatch(candidate, candidate.matchTable.values.flatten.toList)
 		}
 		if(generateLog && !candidates.empty) log = log + '\n'
@@ -1012,9 +1012,9 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(generateLog && !candidates.empty) log = log + '''- __Step 3 - «candidates.size» matches__'''  + "\n>"
+		if(generateLog && !candidates.empty) log = log + '''- __Step 3 - «candidates.entrySet.fold(0)[v, c | c.key.matchTable.values.flatten.filter[it.type == c.value].size + v]» matches__'''  + "\n>"
 		for (candidate : candidates.entrySet) {
-			if(generateLog) log = log + '''«candidate.key»  '''
+			if(generateLog) log = log + '''«FOR match : candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList SEPARATOR ', '»«match»«ENDFOR», '''
 			applyDivisionMatch(candidate.key,
 				candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList)
 		}
@@ -1160,9 +1160,9 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(generateLog && !candidates.empty) log = log +'''- __Step 5 - «candidates.size» matches__'''  + "\n>"
+		if(generateLog && !candidates.empty) log = log +'''- __Step 5 - «candidates.fold(0)[v, c | c.matchTable.values.flatten.size + v]» matches__'''  + "\n>"
 		for (candidate : candidates) {
-			if(generateLog) log = log + '''«candidate»  '''
+			if(generateLog) log = log + '''«FOR match : candidate.matchTable.values.flatten.toList SEPARATOR ', '»«match»«ENDFOR», '''
 			applyDivisionMatch(candidate,
 				candidate.matchTable.values.flatten.filter[it.type == MatchType::BACKWARD].toList)
 		}
@@ -1339,9 +1339,9 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(generateLog && !candidates.empty) log = log + '''- __Step 7 - «candidates.size» matches__ '''  + "\n>"
+		if(generateLog && !candidates.empty) log = log + '''- __Step 7 - «candidates.entrySet.fold(0)[v, c | c.key.matchTable.values.flatten.filter[it.type == c.value].size + v]» matches__ '''  + "\n>"
 		for (candidate : candidates.entrySet) {
-			if(generateLog) log = log + '''«candidate.key»  '''
+			if(generateLog) log = log + '''«FOR match : candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList SEPARATOR ', '»«match»«ENDFOR», '''
 			applyDivisionMatch(candidate.key,
 				candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList)
 		}
