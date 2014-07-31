@@ -129,7 +129,7 @@ class ScriptRunner {
 	 * corresponds to an independent connected {@link Match} tree resulting
 	 * from the execution of the memory scripts.
 	 */
-	val List<List<Buffer>> bufferGroups = newArrayList
+	package val List<List<Buffer>> bufferGroups = newArrayList
 	
 	@Property
 	var CharSequence log = ''''''

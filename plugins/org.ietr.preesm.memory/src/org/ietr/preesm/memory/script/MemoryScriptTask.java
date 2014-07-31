@@ -38,6 +38,7 @@ package org.ietr.preesm.memory.script;
 
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -188,6 +189,14 @@ public class MemoryScriptTask extends AbstractTaskImplementation {
 		// Update memex
 		if (verbose) {
 			logger.log(Level.INFO, "Updating memory exclusion graph.");
+			// Display a message for each divided buffers
+			for(List<Buffer> group : sr.bufferGroups){
+				for(Buffer buffer : group){
+					if(buffer.getMatched() != null && buffer.getMatched().size() > 1){
+						logger.log(Level.WARNING, "Buffer " + buffer +" was divided and will be replaced by a NULL pointer in the generated code.");
+					}
+				}
+			}
 		}
 		MemoryExclusionGraph meg = (MemoryExclusionGraph) inputs.get("MemEx");
 		sr.updateMEG(meg);

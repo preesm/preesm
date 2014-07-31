@@ -250,7 +250,7 @@ class Buffer {
 	
 	/**
 	 * This property is used to mark the {@link Buffer buffers} that were 
-	 * {@link #applyMatches(List)}.
+	 * {@link #applyMatches(List) matched}.
 	 * Originally set to <code>null</code>, it is replaced by a {@link List}
 	 * of applied {@link Match} in the {@link #applyMatches(List) applyMatches}
 	 * method. 
