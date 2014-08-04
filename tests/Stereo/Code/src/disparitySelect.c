@@ -4,7 +4,7 @@
 	Author      : kdesnos
 	Version     : 1.0
 	Copyright   : CeCILL-C, IETR, INSA Rennes
-	Description : Iterative selection of the disparity with the lowest cost for 
+	Description : Iterative selection of the disparity with the lowest cost for
 	              each pixel in order to construct the depth map.
 	============================================================================
 */
@@ -15,8 +15,9 @@
 #define min(x,y) (((x)<(y))?(x):(y))
 #define max(x,y) (((x)<(y))?(y):(x))
 
-void disparitySelect (int height, int width, int nbDisparities, int scale, 
-                      unsigned char *disparity, 
+void disparitySelect (int height, int width, int nbDisparities, int scale,
+                      int minDisparity,
+                      unsigned char *disparity,
 					  float *aggregatedDisparity,
                       float *bestCostFeed, unsigned char *currentResult,
                       unsigned char *result,
@@ -44,10 +45,10 @@ void disparitySelect (int height, int width, int nbDisparities, int scale,
 				// disparity as the best, else, keep te current.
                 result[j*width+i] =
 					(aggregatedDisparity[j*width+i]<bestCostFeed[j*width+i])?
-						scale*(*disparity) : currentResult[j*width+i];
-				
+						scale*((*disparity)-minDisparity) : currentResult[j*width+i];
+
                 backBestCost[j*width+i] = min(aggregatedDisparity[j*width+i],bestCostFeed[j*width+i]);
-			
+
             }
         }
     }

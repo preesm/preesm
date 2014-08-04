@@ -154,6 +154,7 @@
             <data key="memory_script">../Code/Scripts/disparitySelect.bsh</data>
             <data key="arguments">
                 <argument name="height" value="height"/>
+                <argument name="minDisparity" value="minDisparity"/>
                 <argument name="nbDisparities" value="maxDisparity-minDisparity"/>
                 <argument name="scale" value="scale"/>
                 <argument name="width" value="width"/>
