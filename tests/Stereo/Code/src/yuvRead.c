@@ -22,7 +22,9 @@
 
    ======================================================================*/
 #define NB_PATH 2
-char* path[] = {"D:/Boulot/video/left.yuv","D:/Boulot/video/right.yuv"};
+// char* path[] = {"D:/Boulot/video/left.yuv","D:/Boulot/video/right.yuv"};
+char* path[] = {"D:/Data/left.yuv","D:/Data/right.yuv"};
+
 static FILE * ptfile[NB_PATH] ;
 /*========================================================================
 
@@ -69,16 +71,16 @@ void initReadYUV(int id, int xSize, int ySize) {
 void readYUV(int id, int xSize, int ySize, unsigned char *y, unsigned char *u, unsigned char *v) {
 
     if( ftell(ptfile[id])/(xSize*ySize + xSize*ySize/2) >=NB_FRAME){
-    	unsigned int time = 0;
         rewind(ptfile[id]);
-
-        if(id == 1){
-            time = stopTiming(0);
-            printf("\nMain: %d frames in %d us - %f fps\n", NB_FRAME-1 ,time, (NB_FRAME-1.0)/(float)time*1000000);
-            startTiming(0);
-        }
-
     }
+	
+	if(id == 1 && ftell(ptfile[id])%(FPS*(xSize*ySize + xSize*ySize/2)) == 0){
+			unsigned int time = 0;
+            time = stopTiming(0);
+            printf("\nMain: %d frames in %d us - %f fps\n", FPS ,time, ((float)FPS)/(float)time*1000000);
+            startTiming(0);
+    }
+
     fread(y, sizeof(char), xSize * ySize, ptfile[id]);
     fread(u, sizeof(char), xSize * ySize / 4, ptfile[id]);
     fread(v, sizeof(char), xSize * ySize / 4, ptfile[id]);
