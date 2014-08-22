@@ -153,7 +153,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 								protoArray, title, message, true);
 
 						title = "Init Function Selection";
-						message = "Select an init function\n(* = any string, ? = any char):";
+						message = "Select an optionnal init function, or click Cancel\n(* = any string, ? = any char):";
 						FunctionPrototype initProto = PiMMUtil.selectFunction(
 								protoArray, title, message, false);
 
