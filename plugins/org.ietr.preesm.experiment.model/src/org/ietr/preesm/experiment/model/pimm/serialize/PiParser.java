@@ -37,6 +37,7 @@ package org.ietr.preesm.experiment.model.pimm.serialize;
 
 import java.io.InputStream;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.ietr.dftools.architecture.utils.DomUtil;
@@ -53,6 +54,9 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
+import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
+import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
@@ -160,9 +164,72 @@ public class PiParser {
 		graph.getVertices().add(actor);
 
 		String refinement = getProperty(nodeElt, "graph_desc");
-		if (refinement != null && !refinement.isEmpty()) actor.getRefinement().setFilePath(new Path(refinement));
+
+		if (refinement != null && !refinement.isEmpty()) {
+			IPath path = new Path(refinement);
+
+			// If the refinement is a .h file, then we need to create a
+			// HRefinement
+			if (path.getFileExtension().equals("h")) {
+				HRefinement hrefinement = PiMMFactory.eINSTANCE
+						.createHRefinement();
+				// The nodeElt should have a loop element, and may have an init
+				// element
+				NodeList childList = nodeElt.getChildNodes();
+				for (int i = 0; i < childList.getLength(); i++) {
+					Node elt = childList.item(i);
+					String eltName = elt.getNodeName();
+					switch (eltName) {
+					case "loop":
+						hrefinement.setLoopPrototype(parseFunctionPrototype(
+								(Element) elt, eltName));
+						break;
+					case "init":
+
+						break;
+					default:
+						// ignore #text and other children
+					}
+				}
+				actor.setRefinement(hrefinement);
+			}
+
+			actor.getRefinement().setFilePath(path);
+		}
 
 		return actor;
+	}
+
+	private FunctionPrototype parseFunctionPrototype(Element protoElt,
+			String protoName) {
+		FunctionPrototype proto = PiMMFactory.eINSTANCE
+				.createFunctionPrototype();
+		
+		proto.setName(protoName);
+		NodeList childList = protoElt.getChildNodes();
+		for (int i = 0; i < childList.getLength(); i++) {
+			Node elt = childList.item(i);
+			String eltName = elt.getNodeName();
+			switch (eltName) {
+			case "param":
+				proto.getParameters().add(parseFunctionParameter((Element) elt));
+				break;
+			default:
+				// ignore #text and other children
+			}
+		}
+		return proto;
+	}
+
+	private FunctionParameter parseFunctionParameter(Element elt) {
+		FunctionParameter param = PiMMFactory.eINSTANCE
+				.createFunctionParameter();
+		
+		param.setName(elt.getAttribute("name"));
+		param.setType(elt.getAttribute("type"));
+		param.setDirection(PiMMFactory.eINSTANCE.createDirection(elt.getAttribute("direction")));	
+		
+		return param;
 	}
 
 	/**
@@ -590,7 +657,7 @@ public class PiParser {
 				oPort = ((AbstractActor) vertex).getDataOutputPorts().get(0);
 			}
 			oPort.getExpression().setString(elt.getAttribute("expr"));
-			
+
 			break;
 		case "cfg_input":
 			ConfigInputPort iCfgPort = PiMMFactory.eINSTANCE

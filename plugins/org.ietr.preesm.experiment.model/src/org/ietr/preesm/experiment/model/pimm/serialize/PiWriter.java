@@ -54,6 +54,9 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
+import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
+import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
@@ -590,9 +593,35 @@ public class PiWriter {
 	 *            The {@link Refinement} to serialize
 	 */
 	protected void writeRefinement(Element vertexElt, Refinement refinement) {
+		String ref_name = "graph_desc";
 		if (refinement != null && refinement.getFilePath() != null) {
-			writeDataElt(vertexElt, "graph_desc", refinement.getFilePath()
+			writeDataElt(vertexElt, ref_name, refinement.getFilePath()
 					.toOSString());
+			if (refinement instanceof HRefinement) {
+				HRefinement hrefinement = (HRefinement) refinement;
+				writeFunctionPrototype(vertexElt,
+						hrefinement.getLoopPrototype(), "loop");
+				if (hrefinement.getInitPrototype() != null)
+					writeFunctionPrototype(vertexElt,
+							hrefinement.getInitPrototype(), "init");
+			}
 		}
+	}
+
+	private void writeFunctionPrototype(Element vertexElt,
+			FunctionPrototype prototype, String functionName) {
+		Element protoElt = appendChild(vertexElt, functionName);
+		protoElt.setAttribute("name", prototype.getName());
+		for (FunctionParameter p : prototype.getParameters()) {
+			writeFunctionParameter(protoElt, p);
+		}
+	}
+
+	private void writeFunctionParameter(Element prototypeElt,
+			FunctionParameter p) {
+		Element protoElt = appendChild(prototypeElt, "param");
+		protoElt.setAttribute("name", p.getName());
+		protoElt.setAttribute("type", p.getType());
+		protoElt.setAttribute("direction", p.getDirection().toString());
 	}
 }
