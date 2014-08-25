@@ -23,12 +23,15 @@
 *        The height of the filtered image
 * @param width
 *        The width of the filtered image
+* @param topDownBorderSize
+*        Number of unfiltered lines at the top and bottom of the image
 * @param rawDisparity
 *        The height*width input image
 * @param filteredDisparity
-*        The height*width output image
+*        The (height-topDownBorderSize)*width output image
 */
-void medianFilter (int height , int width, unsigned char *rawDisparity,
+void medianFilter (int height , int width, int topDownBorderSize, 
+                   unsigned char *rawDisparity,
 				   unsigned char *filteredDisparity);
 
 /**

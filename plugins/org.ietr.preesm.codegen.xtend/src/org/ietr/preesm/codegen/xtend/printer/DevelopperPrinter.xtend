@@ -52,6 +52,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.Block
 import java.util.HashMap
 import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
+import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
 
 /**
  * This {@link DevelopperPrinter} is a dummy implementation of the 
@@ -135,6 +136,12 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printLoopBlockFooter(LoopBlock block) '''<Loop_Block_Foot>'''
 
 	override printLoopBlockHeader(LoopBlock block) '''<Loop_Block_Head>'''
+	
+	override printNullBuffer(NullBuffer nullBuffer) '''<NullBuffer>'''
+
+	override printNullBufferDeclaration(NullBuffer buffer) '''<NullBuffer_Declaration>'''
+
+	override printNullBufferDefinition(NullBuffer buffer) '''<NullBuffer_Definition>'''
 	
 	override printRoundBuffer(SpecialCall call) '''<RoundBuffer>'''
 	

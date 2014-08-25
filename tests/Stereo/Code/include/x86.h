@@ -31,6 +31,8 @@
 #include "disparitySelect.h"
 #include "medianFilter.h"
 #include "splitMerge.h"
+#include "yuv2RGB.h"
+#include "yuvRead.h"
 
 #include "sink.h"
 

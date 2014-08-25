@@ -36,15 +36,13 @@
 package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
 import java.util.Collection;
-import org.eclipse.emf.common.notify.Notification;
 
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
-
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-
 import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer;
@@ -63,6 +61,12 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
  * <li>
  * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferImpl#getChildrens
  * <em>Childrens</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferImpl#getTypeSize
+ * <em>Type Size</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferImpl#getMergedRange
+ * <em>Merged Range</em>}</li>
  * </ul>
  * </p>
  * 
@@ -98,6 +102,36 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * @ordered
 	 */
 	protected EList<SubBuffer> childrens;
+
+	/**
+	 * The default value of the '{@link #getTypeSize() <em>Type Size</em>}'
+	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #getTypeSize()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final int TYPE_SIZE_EDEFAULT = 0;
+
+	/**
+	 * The cached value of the '{@link #getTypeSize() <em>Type Size</em>}'
+	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #getTypeSize()
+	 * @generated
+	 * @ordered
+	 */
+	protected int typeSize = TYPE_SIZE_EDEFAULT;
+
+	/**
+	 * The cached value of the '{@link #getMergedRange() <em>Merged Range</em>}'
+	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #getMergedRange()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<org.ietr.preesm.memory.script.Range> mergedRange;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -159,6 +193,52 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * 
 	 * @generated
 	 */
+	public int getTypeSize() {
+		return typeSize;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public void setTypeSize(int newTypeSize) {
+		int oldTypeSize = typeSize;
+		typeSize = newTypeSize;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					CodegenPackage.BUFFER__TYPE_SIZE, oldTypeSize, typeSize));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EList<org.ietr.preesm.memory.script.Range> getMergedRange() {
+		return mergedRange;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public void setMergedRange(
+			EList<org.ietr.preesm.memory.script.Range> newMergedRange) {
+		EList<org.ietr.preesm.memory.script.Range> oldMergedRange = mergedRange;
+		mergedRange = newMergedRange;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					CodegenPackage.BUFFER__MERGED_RANGE, oldMergedRange,
+					mergedRange));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd,
@@ -199,6 +279,10 @@ public class BufferImpl extends VariableImpl implements Buffer {
 			return getSize();
 		case CodegenPackage.BUFFER__CHILDRENS:
 			return getChildrens();
+		case CodegenPackage.BUFFER__TYPE_SIZE:
+			return getTypeSize();
+		case CodegenPackage.BUFFER__MERGED_RANGE:
+			return getMergedRange();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -219,6 +303,12 @@ public class BufferImpl extends VariableImpl implements Buffer {
 			getChildrens().clear();
 			getChildrens().addAll((Collection<? extends SubBuffer>) newValue);
 			return;
+		case CodegenPackage.BUFFER__TYPE_SIZE:
+			setTypeSize((Integer) newValue);
+			return;
+		case CodegenPackage.BUFFER__MERGED_RANGE:
+			setMergedRange((EList<org.ietr.preesm.memory.script.Range>) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -237,6 +327,12 @@ public class BufferImpl extends VariableImpl implements Buffer {
 		case CodegenPackage.BUFFER__CHILDRENS:
 			getChildrens().clear();
 			return;
+		case CodegenPackage.BUFFER__TYPE_SIZE:
+			setTypeSize(TYPE_SIZE_EDEFAULT);
+			return;
+		case CodegenPackage.BUFFER__MERGED_RANGE:
+			setMergedRange((EList<org.ietr.preesm.memory.script.Range>) null);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -253,6 +349,10 @@ public class BufferImpl extends VariableImpl implements Buffer {
 			return size != SIZE_EDEFAULT;
 		case CodegenPackage.BUFFER__CHILDRENS:
 			return childrens != null && !childrens.isEmpty();
+		case CodegenPackage.BUFFER__TYPE_SIZE:
+			return typeSize != TYPE_SIZE_EDEFAULT;
+		case CodegenPackage.BUFFER__MERGED_RANGE:
+			return mergedRange != null;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -270,6 +370,10 @@ public class BufferImpl extends VariableImpl implements Buffer {
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (size: ");
 		result.append(size);
+		result.append(", typeSize: ");
+		result.append(typeSize);
+		result.append(", mergedRange: ");
+		result.append(mergedRange);
 		result.append(')');
 		return result.toString();
 	}

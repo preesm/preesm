@@ -208,6 +208,15 @@ public interface CodegenFactory extends EFactory {
 	ConstantString createConstantString();
 
 	/**
+	 * Returns a new object of class '<em>Null Buffer</em>'. <!-- begin-user-doc
+	 * --> <!-- end-user-doc -->
+	 * 
+	 * @return a new object of class '<em>Null Buffer</em>'.
+	 * @generated
+	 */
+	NullBuffer createNullBuffer();
+
+	/**
 	 * Returns the package supported by this factory. <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * 

@@ -1,0 +1,10 @@
+// Split script
+sliceHeight = (height/nbSlice+2*overlap);
+sliceSize = sliceHeight*width;
+
+for(i=0;i<nbSlice;i++){
+	o_output.matchWith(i*sliceSize,
+	                   i_input,
+                       (i*height/nbSlice-overlap)*width,
+                       sliceSize);
+} 

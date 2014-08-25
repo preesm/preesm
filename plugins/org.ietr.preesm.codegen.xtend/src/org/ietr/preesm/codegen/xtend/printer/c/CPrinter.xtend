@@ -55,6 +55,7 @@ import org.ietr.preesm.codegen.xtend.printer.DefaultPrinter
 import org.ietr.preesm.codegen.xtend.task.CodegenException
 import java.util.ArrayList
 import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
+import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
 
 /**
  * This printer is currently used to print C code only for X86 processor with
@@ -257,26 +258,32 @@ class CPrinter extends DefaultPrinter {
 
 		// Retrieve the container buffer of the input and output as well
 		// as their offset in this buffer
-		var totalOffsetOut = outOffset
+		var totalOffsetOut = outOffset*output.typeSize
 		var bOutput = output
 		while (bOutput instanceof SubBuffer) {
 			totalOffsetOut = totalOffsetOut + (bOutput as SubBuffer).offset
 			bOutput = (bOutput as SubBuffer).container
 		}
 		
-		var totalOffsetIn = inOffset
+		var totalOffsetIn = inOffset*input.typeSize
 		var bInput = input
 		while (bInput instanceof SubBuffer) {
 			totalOffsetIn = totalOffsetIn + (bInput as SubBuffer).offset
 			bInput = (bInput as SubBuffer).container
 		}
 		
-		// If the Buffer and offsets are identical, there is nothing to print
-		if(IGNORE_USELESS_MEMCPY && bInput == bOutput && totalOffsetIn == totalOffsetOut){
+		// If the Buffer and offsets are identical, or one buffer is null
+		// there is nothing to print
+		if((IGNORE_USELESS_MEMCPY && bInput == bOutput && totalOffsetIn == totalOffsetOut) ||
+			output instanceof NullBuffer || input instanceof NullBuffer){
 			''''''
 		} else {
 			'''memcpy(«output.doSwitch»+«outOffset», «input.doSwitch»+«inOffset», «size»*sizeof(«type»));'''
 		}	
+	}
+	
+	override printNullBuffer(NullBuffer Buffer) {
+		printBuffer(Buffer)
 	}
 	
 	override caseCommunication(Communication communication) {

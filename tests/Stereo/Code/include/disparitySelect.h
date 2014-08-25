@@ -4,7 +4,7 @@
 	Author      : kdesnos
 	Version     : 1.0
 	Copyright   : CeCILL-C, IETR, INSA Rennes
-	Description : Iterative selection of the disparity with the lowest cost for 
+	Description : Iterative selection of the disparity with the lowest cost for
 	              each pixel in order to construct the depth map.
 	============================================================================
 */
@@ -15,7 +15,7 @@
 /**
 * This function compares two costs images corresponding to different
 * disparities. For each pixel, the disparity corresponding to the lowest cost
-* is kept as the resulting disparity for this pixel. The best cost for each 
+* is kept as the resulting disparity for this pixel. The best cost for each
 * pixel is also outputed by the function in order to be used by iterative calls
 * to the disparitySelect() function.
 *
@@ -27,8 +27,10 @@
 *        The total number of iterative calls to this function. (Used to compute
 *        the nextIter output parameter)?
 * @param[in] scale
-*        Disparities are multiplied by this scale before they are written in 
+*        Disparities are multiplied by this scale before they are written in
 *        the result array.
+* @param[in] minDisparity
+*        Minimum disparity that can be found.
 * @param[in] disparity
 *        The disparity corresponding to the costs contained in the
 *        aggregatedDisparity array.
@@ -46,7 +48,8 @@
 *        Array of the the lowest costs (+index). (size=height*width+1)
 */
 void disparitySelect (int height, int width, int nbDisparities, int scale,
-                      unsigned char *disparity, 
+                      int minDisparity,
+                      unsigned char *disparity,
 					  float *aggregatedDisparity,
                       float *bestCostFeed, unsigned char *currentResult,
                       unsigned char *result,

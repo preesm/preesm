@@ -35,6 +35,8 @@
  */
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
+import java.util.Map;
+
 import org.eclipse.emf.common.util.EList;
 
 /**
@@ -51,6 +53,10 @@ import org.eclipse.emf.common.util.EList;
  * Size</em>}</li>
  * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getChildrens
  * <em>Childrens</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getTypeSize
+ * <em>Type Size</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getMergedRange
+ * <em>Merged Range</em>}</li>
  * </ul>
  * </p>
  * 
@@ -61,12 +67,9 @@ import org.eclipse.emf.common.util.EList;
 public interface Buffer extends Variable {
 	/**
 	 * Returns the value of the '<em><b>Size</b></em>' attribute. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Size</em>' attribute isn't clear, there really
-	 * should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
+	 * begin-user-doc --> Number of elements within the {@link Buffer}. Each
+	 * element is of type {@link #getType()} and requires {@link #getTypeSize()}
+	 * bytes for its allocation. <!-- end-user-doc -->
 	 * 
 	 * @return the value of the '<em>Size</em>' attribute.
 	 * @see #setSize(int)
@@ -108,5 +111,65 @@ public interface Buffer extends Variable {
 	 * @generated
 	 */
 	EList<SubBuffer> getChildrens();
+
+	/**
+	 * Returns the value of the '<em><b>Type Size</b></em>' attribute. <!--
+	 * begin-user-doc -->
+	 * <p>
+	 * This value corresponds to the size of the {@link Buffer}
+	 * {@link #getType()} in bytes.
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Type Size</em>' attribute.
+	 * @see #setTypeSize(int)
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBuffer_TypeSize()
+	 * @model required="true"
+	 * @generated
+	 */
+	int getTypeSize();
+
+	/**
+	 * Sets the value of the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getTypeSize
+	 * <em>Type Size</em>}' attribute. <!-- begin-user-doc --><!-- end-user-doc
+	 * -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Type Size</em>' attribute.
+	 * @see #getTypeSize()
+	 * @generated
+	 */
+	void setTypeSize(int value);
+
+	/**
+	 * Returns the value of the '<em><b>Merged Range</b></em>' attribute. <!--
+	 * begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Merged Range</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Merged Range</em>' attribute.
+	 * @see #setMergedRange(Map)
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBuffer_MergedRange()
+	 * @model transient="true"
+	 * @generated
+	 */
+	EList<org.ietr.preesm.memory.script.Range> getMergedRange();
+
+	/**
+	 * Sets the value of the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getMergedRange
+	 * <em>Merged Range</em>}' attribute. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Merged Range</em>' attribute.
+	 * @see #getMergedRange()
+	 * @generated
+	 */
+	void setMergedRange(EList<org.ietr.preesm.memory.script.Range> value);
 
 } // Buffer

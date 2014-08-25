@@ -37,6 +37,7 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -389,13 +390,31 @@ public interface CodegenPackage extends EPackage {
 	int BUFFER__CHILDRENS = VARIABLE_FEATURE_COUNT + 1;
 
 	/**
+	 * The feature id for the '<em><b>Type Size</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int BUFFER__TYPE_SIZE = VARIABLE_FEATURE_COUNT + 2;
+
+	/**
+	 * The feature id for the '<em><b>Merged Range</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int BUFFER__MERGED_RANGE = VARIABLE_FEATURE_COUNT + 3;
+
+	/**
 	 * The number of structural features of the '<em>Buffer</em>' class. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int BUFFER_FEATURE_COUNT = VARIABLE_FEATURE_COUNT + 2;
+	int BUFFER_FEATURE_COUNT = VARIABLE_FEATURE_COUNT + 4;
 
 	/**
 	 * The meta object id for the '
@@ -471,6 +490,24 @@ public interface CodegenPackage extends EPackage {
 	 * @ordered
 	 */
 	int SUB_BUFFER__CHILDRENS = BUFFER__CHILDRENS;
+
+	/**
+	 * The feature id for the '<em><b>Type Size</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SUB_BUFFER__TYPE_SIZE = BUFFER__TYPE_SIZE;
+
+	/**
+	 * The feature id for the '<em><b>Merged Range</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SUB_BUFFER__MERGED_RANGE = BUFFER__MERGED_RANGE;
 
 	/**
 	 * The feature id for the '<em><b>Container</b></em>' reference. <!--
@@ -1657,6 +1694,126 @@ public interface CodegenPackage extends EPackage {
 
 	/**
 	 * The meta object id for the '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.NullBufferImpl
+	 * <em>Null Buffer</em>}' class. <!-- begin-user-doc --> <!-- end-user-doc
+	 * -->
+	 * 
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.NullBufferImpl
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getNullBuffer()
+	 * @generated
+	 */
+	int NULL_BUFFER = 21;
+
+	/**
+	 * The feature id for the '<em><b>Comment</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__COMMENT = SUB_BUFFER__COMMENT;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__NAME = SUB_BUFFER__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__TYPE = SUB_BUFFER__TYPE;
+
+	/**
+	 * The feature id for the '<em><b>Creator</b></em>' container reference.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__CREATOR = SUB_BUFFER__CREATOR;
+
+	/**
+	 * The feature id for the '<em><b>Users</b></em>' reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__USERS = SUB_BUFFER__USERS;
+
+	/**
+	 * The feature id for the '<em><b>Size</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__SIZE = SUB_BUFFER__SIZE;
+
+	/**
+	 * The feature id for the '<em><b>Childrens</b></em>' reference list. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__CHILDRENS = SUB_BUFFER__CHILDRENS;
+
+	/**
+	 * The feature id for the '<em><b>Type Size</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__TYPE_SIZE = SUB_BUFFER__TYPE_SIZE;
+
+	/**
+	 * The feature id for the '<em><b>Merged Range</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__MERGED_RANGE = SUB_BUFFER__MERGED_RANGE;
+
+	/**
+	 * The feature id for the '<em><b>Container</b></em>' reference. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__CONTAINER = SUB_BUFFER__CONTAINER;
+
+	/**
+	 * The feature id for the '<em><b>Offset</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__OFFSET = SUB_BUFFER__OFFSET;
+
+	/**
+	 * The number of structural features of the '<em>Null Buffer</em>' class.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER_FEATURE_COUNT = SUB_BUFFER_FEATURE_COUNT + 0;
+
+	/**
+	 * The meta object id for the '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Direction
 	 * <em>Direction</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -1664,7 +1821,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDirection()
 	 * @generated
 	 */
-	int DIRECTION = 21;
+	int DIRECTION = 22;
 
 	/**
 	 * The meta object id for the '
@@ -1675,7 +1832,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getDelimiter()
 	 * @generated
 	 */
-	int DELIMITER = 22;
+	int DELIMITER = 23;
 
 	/**
 	 * The meta object id for the '
@@ -1687,7 +1844,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getSpecialType()
 	 * @generated
 	 */
-	int SPECIAL_TYPE = 23;
+	int SPECIAL_TYPE = 24;
 
 	/**
 	 * The meta object id for the '
@@ -1699,7 +1856,7 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getFifoOperation()
 	 * @generated
 	 */
-	int FIFO_OPERATION = 24;
+	int FIFO_OPERATION = 25;
 
 	/**
 	 * The meta object id for the '
@@ -1711,7 +1868,17 @@ public interface CodegenPackage extends EPackage {
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getPortDirection()
 	 * @generated
 	 */
-	int PORT_DIRECTION = 25;
+	int PORT_DIRECTION = 26;
+
+	/**
+	 * The meta object id for the '<em>range</em>' data type. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see org.ietr.preesm.experiment.memory.Range
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getrange()
+	 * @generated
+	 */
+	int RANGE = 27;
 
 	/**
 	 * Returns the meta object for class '
@@ -1939,6 +2106,30 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getBuffer_Childrens();
+
+	/**
+	 * Returns the meta object for the attribute '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getTypeSize
+	 * <em>Type Size</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Type Size</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getTypeSize()
+	 * @see #getBuffer()
+	 * @generated
+	 */
+	EAttribute getBuffer_TypeSize();
+
+	/**
+	 * Returns the meta object for the attribute '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getMergedRange
+	 * <em>Merged Range</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Merged Range</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getMergedRange()
+	 * @see #getBuffer()
+	 * @generated
+	 */
+	EAttribute getBuffer_MergedRange();
 
 	/**
 	 * Returns the meta object for class '
@@ -2516,6 +2707,17 @@ public interface CodegenPackage extends EPackage {
 	EAttribute getConstantString_Value();
 
 	/**
+	 * Returns the meta object for class '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
+	 * <em>Null Buffer</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for class '<em>Null Buffer</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
+	 * @generated
+	 */
+	EClass getNullBuffer();
+
+	/**
 	 * Returns the meta object for enum '
 	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Direction
 	 * <em>Direction</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -2569,6 +2771,18 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 */
 	EEnum getPortDirection();
+
+	/**
+	 * Returns the meta object for data type '
+	 * {@link org.ietr.preesm.experiment.memory.Range <em>range</em>}'. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for data type '<em>range</em>'.
+	 * @see org.ietr.preesm.experiment.memory.Range
+	 * @model instanceClass="org.ietr.preesm.experiment.memory.Range"
+	 * @generated
+	 */
+	EDataType getrange();
 
 	/**
 	 * Returns the factory that creates the instances of the model. <!--
@@ -2766,6 +2980,22 @@ public interface CodegenPackage extends EPackage {
 		 * @generated
 		 */
 		EReference BUFFER__CHILDRENS = eINSTANCE.getBuffer_Childrens();
+
+		/**
+		 * The meta object literal for the '<em><b>Type Size</b></em>' attribute
+		 * feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute BUFFER__TYPE_SIZE = eINSTANCE.getBuffer_TypeSize();
+
+		/**
+		 * The meta object literal for the '<em><b>Merged Range</b></em>'
+		 * attribute feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute BUFFER__MERGED_RANGE = eINSTANCE.getBuffer_MergedRange();
 
 		/**
 		 * The meta object literal for the '
@@ -3242,6 +3472,18 @@ public interface CodegenPackage extends EPackage {
 
 		/**
 		 * The meta object literal for the '
+		 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.NullBufferImpl
+		 * <em>Null Buffer</em>}' class. <!-- begin-user-doc --> <!--
+		 * end-user-doc -->
+		 * 
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.NullBufferImpl
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getNullBuffer()
+		 * @generated
+		 */
+		EClass NULL_BUFFER = eINSTANCE.getNullBuffer();
+
+		/**
+		 * The meta object literal for the '
 		 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Direction
 		 * <em>Direction</em>}' enum. <!-- begin-user-doc --> <!-- end-user-doc
 		 * -->
@@ -3299,6 +3541,16 @@ public interface CodegenPackage extends EPackage {
 		 * @generated
 		 */
 		EEnum PORT_DIRECTION = eINSTANCE.getPortDirection();
+
+		/**
+		 * The meta object literal for the '<em>range</em>' data type. <!--
+		 * begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @see org.ietr.preesm.experiment.memory.Range
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getrange()
+		 * @generated
+		 */
+		EDataType RANGE = eINSTANCE.getrange();
 
 	}
 

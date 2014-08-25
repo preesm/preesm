@@ -253,6 +253,8 @@ public abstract class OrderedAllocator extends MemoryAllocator {
 		listsSize = new ArrayList<Integer>(nbShuffle);
 
 		for (int iter = 0; iter < nbShuffle; iter++) {
+			this.clear();
+			
 			// Create a list containing the nodes of the exclusion Graph
 			ArrayList<MemoryExclusionVertex> list = new ArrayList<MemoryExclusionVertex>(
 					inputExclusionGraph.vertexSet());
