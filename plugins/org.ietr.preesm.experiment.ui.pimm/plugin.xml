@@ -35,6 +35,9 @@
             id="org.ietr.preesm.experiment.ui.pimm.wizards.NewPiMMWizard"
             name="Algorithm Description (PiMM)"
             project="true">
+         <description>
+            Create a new PiMM algorithm.
+         </description>
       </wizard>
    </extension>
    <extension
