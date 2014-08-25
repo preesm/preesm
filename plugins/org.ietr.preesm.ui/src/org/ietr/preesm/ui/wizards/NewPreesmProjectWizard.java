@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-FranÃ§ois Nezan, MickaÃ«l Raulet, ClÃ©ment Guy
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -36,22 +36,37 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.ui.wizards;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.runtime.CoreException;
+import java.net.URI;
+
+import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
 /**
  * This class provides a wizard to create a new Preesm Project.
  * 
  * @author Matthieu Wipliez
+ * @author ClÃ©ment Guy
  */
 public class NewPreesmProjectWizard extends BasicNewProjectResourceWizard {
+	// Strings displayed in the wizard (titles, names, descriptions...)
+	private static final String WINDOW_TITLE = "New PREESM Project";
+	private static final String PAGE_NAME = "PREESM Project Wizard";
+	private static final String PAGE_TITLE = "PREESM Project";
+	private static final String PAGE_DESCRIPTION = "Create a new PREESM project.";
+	// Pages of the wizard
+	private WizardNewProjectCreationPage firstPage;
 
+	public NewPreesmProjectWizard() {
+		setWindowTitle(WINDOW_TITLE);
+	}
+	
 	@Override
-	public void addPages() {
-		super.addPages();
-		super.setWindowTitle("New Preesm Project");
+	public void addPages() {		 
+	    firstPage = new WizardNewProjectCreationPage(PAGE_NAME);
+	    firstPage.setTitle(PAGE_TITLE);
+	    firstPage.setDescription(PAGE_DESCRIPTION);
+	 
+	    addPage(firstPage);
 	}
 
 	@Override
@@ -61,21 +76,14 @@ public class NewPreesmProjectWizard extends BasicNewProjectResourceWizard {
 
 	@Override
 	public boolean performFinish() {
-		boolean finish = super.performFinish();
-		try {
-			IProject project = this.getNewProject();
-			IProjectDescription description = project.getDescription();
-			String[] natures = description.getNatureIds();
-			String[] newNatures = new String[natures.length + 1];
+		String name = firstPage.getProjectName();
+		URI location = null;
+		if (!firstPage.useDefaults()) {
+			location = firstPage.getLocationURI();
+		} // else location == null
 
-			System.arraycopy(natures, 0, newNatures, 1, natures.length);
-			newNatures[0] = PreesmProjectNature.ID;
-			description.setNatureIds(newNatures);
-			project.setDescription(description, null);
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
+		NewPreesmProjectCreator.createProject(name, location);
 
-		return finish;
+		return true;
 	}
 }
