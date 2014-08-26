@@ -727,7 +727,9 @@ public class ScenarioParser {
 					time = -1;
 				}
 
-				String actorName = getActorNameFromPath(vertexpath);
+				String actorName;
+				if (vertexpath.contains("/")) actorName = getActorNameFromPath(vertexpath);
+				else actorName = vertexpath;
 
 				if (actorName != null
 						&& scenario.getOperatorDefinitionIds().contains(
