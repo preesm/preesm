@@ -38,7 +38,6 @@ package org.ietr.preesm.ui.wizards;
 
 import java.net.URI;
 
-import org.eclipse.cdt.core.CProjectNature;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -53,12 +52,13 @@ public class NewPreesmProjectCreator {
 	 * the custom project natures - create the folder structure
 	 * 
 	 * @param projectName
+	 *            the name of the project we want to create
 	 * @param location
-	 * @param natureId
-	 * @return
+	 *            location of the project
+	 * @return the created project
 	 */
 	public static IProject createProject(String projectName, URI location) {
-		
+
 		Assert.isNotNull(projectName);
 		Assert.isTrue(projectName.trim().length() != 0);
 
@@ -99,18 +99,22 @@ public class NewPreesmProjectCreator {
 			}
 
 			desc.setLocationURI(projectLocation);
+
 			try {
 				newProject.create(desc, null);
 				if (!newProject.isOpen()) {
-					newProject.open(null);
+				newProject.open(null);
 				}
 			} catch (CoreException e) {
 				e.printStackTrace();
 			}
 		}
 
+//		return cdtProj;
 		return newProject;
 	}
+
+
 
 	/**
 	 * Create a folder structure
@@ -150,9 +154,7 @@ public class NewPreesmProjectCreator {
 		IProjectDescription description = project.getDescription();
 		if (!project.hasNature(PreesmProjectNature.ID))
 			addNature(description, PreesmProjectNature.ID);
-		if (!project.hasNature(CProjectNature.C_NATURE_ID))
-			addNature(description, CProjectNature.C_NATURE_ID);
-				
+
 		project.setDescription(description, null);
 	}
 
