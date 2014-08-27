@@ -257,15 +257,19 @@ public class TimingsTableLabelProvider implements ITableLabelProvider,
 			}
 		};
 
-		if (selection.getFirstElement() instanceof SDFVertex
-				&& currentOpDefId != null) {
-			SDFVertex vertex = (SDFVertex) selection.getFirstElement();
-
+		String vertexName = null;
+		if (selection.getFirstElement() instanceof SDFVertex) {
+			vertexName = ((SDFVertex) selection.getFirstElement()).getName();
+		} else if (selection.getFirstElement() instanceof AbstractActor) {
+			vertexName = ((AbstractActor) selection.getFirstElement()).getName();
+		}
+		
+		if (vertexName != null && currentOpDefId != null) {
 			String title = Messages.getString("Timings.dialog.title");
 			String message = Messages.getString("Timings.dialog.message")
-					+ vertex.getName();
+					+ vertexName;
 			String init = scenario.getTimingManager()
-					.getTimingOrDefault(vertex.getName(), currentOpDefId)
+					.getTimingOrDefault(vertexName, currentOpDefId)
 					.getStringValue();
 
 			InputDialog dialog = new InputDialog(PlatformUI.getWorkbench()
@@ -274,14 +278,13 @@ public class TimingsTableLabelProvider implements ITableLabelProvider,
 			if (dialog.open() == Window.OK) {
 				String value = dialog.getValue();
 
-				scenario.getTimingManager().setTiming(vertex.getName(),
+				scenario.getTimingManager().setTiming(vertexName,
 						currentOpDefId, value);
 
 				tableViewer.refresh();
 				propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
 			}
 		}
-
 	}
 
 }
