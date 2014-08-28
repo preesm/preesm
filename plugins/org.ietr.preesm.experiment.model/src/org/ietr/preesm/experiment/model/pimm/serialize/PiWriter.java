@@ -623,5 +623,6 @@ public class PiWriter {
 		protoElt.setAttribute("name", p.getName());
 		protoElt.setAttribute("type", p.getType());
 		protoElt.setAttribute("direction", p.getDirection().toString());
+		protoElt.setAttribute("isConfig", String.valueOf(p.isIsConfigurationParameter()));
 	}
 }

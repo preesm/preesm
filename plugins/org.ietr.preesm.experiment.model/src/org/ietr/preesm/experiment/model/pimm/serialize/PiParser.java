@@ -228,6 +228,7 @@ public class PiParser {
 		param.setName(elt.getAttribute("name"));
 		param.setType(elt.getAttribute("type"));
 		param.setDirection(PiMMFactory.eINSTANCE.createDirection(elt.getAttribute("direction")));	
+		param.setIsConfigurationParameter(Boolean.valueOf(elt.getAttribute("isConfig")));
 		
 		return param;
 	}
