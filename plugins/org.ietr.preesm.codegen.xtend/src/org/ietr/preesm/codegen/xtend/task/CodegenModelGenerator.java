@@ -731,53 +731,65 @@ public class CodegenModelGenerator {
 							+ sdfVertex
 							+ ") are not yet supported by the Xtend Code Generation.\n"
 							+ "Flatten the graph completely before using this code-generation.");
-		} else // If the actor has an IDL refinement
-		if (refinement instanceof CodeRefinement
-				&& ((CodeRefinement) refinement).getLanguage() == Language.IDL) {
-			// Retrieve the prototypes associated to the actor
-			ActorPrototypes prototypes = getActorPrototypes(sdfVertex);
-
-			// Generate the loop functionCall
-			{
-				Prototype loopPrototype = prototypes.getLoopPrototype();
-				if (loopPrototype == null) {
-					throw new CodegenException("Actor " + sdfVertex
-							+ " has no loop interface in its IDL refinement.");
-				}
-				FunctionCall functionCall = generateFunctionCall(dagVertex,
-						loopPrototype, false);
-
-				registerCallVariableToCoreBlock(operatorBlock, functionCall);
-				// Add the function call to the operatorBlock
-				operatorBlock.getLoopBlock().getCodeElts().add(functionCall);
-
-				// Save the functionCall in the dagvertexFunctionCall Map
-				dagVertexCalls.put(dagVertex, functionCall);
+		} else {
+			ActorPrototypes prototypes = null;
+			// If the actor has an IDL refinement
+			if (refinement instanceof CodeRefinement
+					&& ((CodeRefinement) refinement).getLanguage() == Language.IDL) {
+				// Retrieve the prototypes associated to the actor
+				prototypes = getActorPrototypes(sdfVertex);
+			}
+			// Or if we already extracted prototypes from a .h refinement
+			else if (refinement instanceof ActorPrototypes) {
+				prototypes = (ActorPrototypes) refinement;
 			}
 
-			// Generate the init FunctionCall (if any)
-			{
-				Prototype initPrototype = prototypes.getInitPrototype();
-				if (initPrototype != null) {
+			if (prototypes != null) {
+				// Generate the loop functionCall
+				{
+					Prototype loopPrototype = prototypes.getLoopPrototype();
+					if (loopPrototype == null) {
+						throw new CodegenException(
+								"Actor "
+										+ sdfVertex
+										+ " has no loop interface in its IDL refinement.");
+					}
 					FunctionCall functionCall = generateFunctionCall(dagVertex,
-							initPrototype, true);
+							loopPrototype, false);
 
 					registerCallVariableToCoreBlock(operatorBlock, functionCall);
 					// Add the function call to the operatorBlock
-					operatorBlock.getInitBlock().getCodeElts()
+					operatorBlock.getLoopBlock().getCodeElts()
 							.add(functionCall);
+
+					// Save the functionCall in the dagvertexFunctionCall Map
+					dagVertexCalls.put(dagVertex, functionCall);
 				}
 
-			}
+				// Generate the init FunctionCall (if any)
+				{
+					Prototype initPrototype = prototypes.getInitPrototype();
+					if (initPrototype != null) {
+						FunctionCall functionCall = generateFunctionCall(
+								dagVertex, initPrototype, true);
 
-		} else
-		// If the actor has no refinement
-		{
-			throw new CodegenException(
-					"Actor ("
-							+ sdfVertex
-							+ ") has no valid refinement (IDL or graphml)."
-							+ " Associate a refinement to this actor before generating code.");
+						registerCallVariableToCoreBlock(operatorBlock,
+								functionCall);
+						// Add the function call to the operatorBlock
+						operatorBlock.getInitBlock().getCodeElts()
+								.add(functionCall);
+					}
+
+				}
+			}
+			// If the actor has no refinement
+			else {
+				throw new CodegenException(
+						"Actor ("
+								+ sdfVertex
+								+ ") has no valid refinement (.idl, .h or .graphml)."
+								+ " Associate a refinement to this actor before generating code.");
+			}
 		}
 
 	}
@@ -938,7 +950,7 @@ public class CodegenModelGenerator {
 				String comment = dagAlloc.getKey().getSource().getName()
 						+ " > " + dagAlloc.getKey().getTarget().getName();
 				dagEdgeBuffer.setComment("NULL_" + comment);
-				dagEdgeBuffer.setContainer(sharedBuffer);			
+				dagEdgeBuffer.setContainer(sharedBuffer);
 
 				// Generate subsubbuffers. Each subsubbuffer corresponds to an
 				// edge
@@ -1570,10 +1582,10 @@ public class CodegenModelGenerator {
 				outputs.add((Buffer) callVars.getKey().get(i));
 			}
 		}
-		
+
 		// For each output find the allocated range
 		// (or Ranges in case of a divided buffer)
-		List<Pair<Buffer,Range>> outputRanges = new ArrayList<>();
+		List<Pair<Buffer, Range>> outputRanges = new ArrayList<>();
 		for (Buffer output : outputs) {
 			// If the input is not a NullBufer
 			if (!(output instanceof NullBuffer)) {
@@ -1588,7 +1600,8 @@ public class CodegenModelGenerator {
 				int end = start + (output.getSize() * output.getTypeSize());
 
 				// Save allocated range
-				outputRanges.add(new Pair<Buffer, Range>(b, new Range(start, end)));
+				outputRanges.add(new Pair<Buffer, Range>(b, new Range(start,
+						end)));
 			} else {
 				// The output is a NullBuffer (i.e. it is divided)
 				// Find the allocation of its ranges
@@ -1603,7 +1616,7 @@ public class CodegenModelGenerator {
 						.getValue(
 								MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
 				// Find the actual allocation range of each real range.
-				for(Pair<MemoryExclusionVertex, Pair<Range, Range>> realRange : realRanges){
+				for (Pair<MemoryExclusionVertex, Pair<Range, Range>> realRange : realRanges) {
 					DAGEdge hostDagEdge = realRange.getKey().getEdge();
 					DAGVertex originalSource = dag.getVertex(hostDagEdge
 							.getSource().getName());
@@ -1619,15 +1632,17 @@ public class CodegenModelGenerator {
 						start += ((SubBuffer) b).getOffset();
 						b = ((SubBuffer) b).getContainer();
 					}
-					int end = start + realRange.getValue().getValue().getLength();
+					int end = start
+							+ realRange.getValue().getValue().getLength();
 					// Save allocated range
-					outputRanges.add(new Pair<Buffer, Range>(b, new Range(start, end)));
+					outputRanges.add(new Pair<Buffer, Range>(b, new Range(
+							start, end)));
 				}
 			}
 		}
-		
+
 		// Find if an inputBuffer has an overlap with an outputRange
-		// For each input find the allocated range		
+		// For each input find the allocated range
 		// Map<Buffer,Pair<Buffer,Range>> inputRanges = new HashMap<>();
 		for (Buffer input : inputs) {
 			// If the input is not a NullBufer
@@ -1641,30 +1656,31 @@ public class CodegenModelGenerator {
 					b = ((SubBuffer) b).getContainer();
 				}
 				int end = start + (input.getSize() * input.getTypeSize());
-				
+
 				// Find the input range that are also covered by the output
 				// ranges
 				List<Range> inRanges = new ArrayList<Range>();
 				inRanges.add(new Range(start, end));
-				
+
 				// Check output ranges one by one
-				for(Pair<Buffer, Range> outputRange : outputRanges){
-					if(outputRange.getKey() == b){
-						inRanges = Range.difference(inRanges, outputRange.getValue());
+				for (Pair<Buffer, Range> outputRange : outputRanges) {
+					if (outputRange.getKey() == b) {
+						inRanges = Range.difference(inRanges,
+								outputRange.getValue());
 					}
 				}
 				List<Range> mergedRanges = new ArrayList<Range>();
 				mergedRanges.add(new Range(start, end));
 				mergedRanges = Range.difference(mergedRanges, inRanges);
-				
+
 				// Save only if a part of the input buffer is merged
-				if(mergedRanges.size() != 0){
+				if (mergedRanges.size() != 0) {
 					Range.translate(mergedRanges, -start);
 					input.setMergedRange(new BasicEList<>(mergedRanges));
 				}
 			}
 		}
-		
+
 	}
 
 	/**
@@ -1947,7 +1963,7 @@ public class CodegenModelGenerator {
 
 		operatorBlock.getLoopBlock().getCodeElts().add(f);
 		dagVertexCalls.put(dagVertex, f);
-		
+
 		identifyMergedInputRange(new AbstractMap.SimpleEntry<List<Variable>, List<PortDirection>>(
 				f.getParameters(), f.getParameterDirections()));
 		registerCallVariableToCoreBlock(operatorBlock, f);
