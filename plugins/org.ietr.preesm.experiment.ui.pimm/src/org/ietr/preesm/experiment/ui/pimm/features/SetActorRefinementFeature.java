@@ -129,45 +129,41 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 
 		Refinement refinement = actor.getRefinement();
 		if (newFilePath != null) {
-			if (!newFilePath.equals(refinement.getFilePath())) {
-				this.hasDoneChanges = true;
-				// If the file is a .h header
-				if (newFilePath.getFileExtension().equals("h")) {
-					// We get it
-					IFile file = ResourcesPlugin.getWorkspace().getRoot()
-							.getFile(newFilePath);
-					Set<FunctionPrototype> prototypes = getPrototypes(file,
-							actor);
-					if (prototypes.isEmpty()) {
-						String message = "The .h file you selected does not contain any prototype corresponding to actor "
-								+ actor.getName()
-								+ ".\nPlease select another valid file.";
-						this.askRefinement(actor, message, dialogTitle);
-					} else {
-						String title = "Loop Function Selection";
-						String message = "Select a loop function\n(* = any string, ? = any char):";
-						FunctionPrototype[] protoArray = prototypes
-								.toArray(new FunctionPrototype[prototypes
-										.size()]);
-						FunctionPrototype loopProto = PiMMUtil.selectFunction(
-								protoArray, title, message, true);
-
-						title = "Init Function Selection";
-						message = "Select an optionnal init function, or click Cancel\n(* = any string, ? = any char):";
-						FunctionPrototype initProto = PiMMUtil.selectFunction(
-								protoArray, title, message, false);
-
-						HRefinement newRefinement = PiMMFactory.eINSTANCE
-								.createHRefinement();
-						newRefinement.setLoopPrototype(loopProto);
-						newRefinement.setInitPrototype(initProto);
-						newRefinement.setFilePath(newFilePath);
-						actor.setRefinement(newRefinement);
-					}
-
+			this.hasDoneChanges = true;
+			// If the file is a .h header
+			if (newFilePath.getFileExtension().equals("h")) {
+				// We get it
+				IFile file = ResourcesPlugin.getWorkspace().getRoot()
+						.getFile(newFilePath);
+				Set<FunctionPrototype> prototypes = getPrototypes(file, actor);
+				if (prototypes.isEmpty()) {
+					String message = "The .h file you selected does not contain any prototype corresponding to actor "
+							+ actor.getName()
+							+ ".\nPlease select another valid file.";
+					this.askRefinement(actor, message, dialogTitle);
 				} else {
-					refinement.setFilePath(newFilePath);
+					String title = "Loop Function Selection";
+					String message = "Select a loop function for actor " + actor.getName() + "\n(* = any string, ? = any char):";
+					FunctionPrototype[] protoArray = prototypes
+							.toArray(new FunctionPrototype[prototypes.size()]);
+					FunctionPrototype loopProto = PiMMUtil.selectFunction(
+							protoArray, title, message, true);
+
+					title = "Init Function Selection";
+					message = "Select an optionnal init function for actor " + actor.getName() + ", or click Cancel\n(* = any string, ? = any char):";
+					FunctionPrototype initProto = PiMMUtil.selectFunction(
+							protoArray, title, message, false);
+
+					HRefinement newRefinement = PiMMFactory.eINSTANCE
+							.createHRefinement();
+					newRefinement.setLoopPrototype(loopProto);
+					newRefinement.setInitPrototype(initProto);
+					newRefinement.setFilePath(newFilePath);
+					actor.setRefinement(newRefinement);
 				}
+
+			} else {
+				refinement.setFilePath(newFilePath);
 			}
 		}
 	}
