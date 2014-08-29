@@ -97,6 +97,7 @@ import org.ietr.preesm.experiment.ui.pimm.features.AddDelayFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddDependencyFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddFifoFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddParameterFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.ClearActorMemoryScriptFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.ClearActorRefinementFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateConfigInputInterfaceFeature;
@@ -120,10 +121,12 @@ import org.ietr.preesm.experiment.ui.pimm.features.LayoutPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.MoveAbstractActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.MoveDownActorPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.MoveUpActorPortFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.OpenMemoryScriptFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.OpenRefinementFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.ReconnectionFifoFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.RenameAbstractVertexFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.RenameActorPortFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.SetActorMemoryScriptFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.SetActorRefinementFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.SetVisibleAllDependenciesFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.SetVisibleDependenciesFromParameterFeature;
@@ -229,7 +232,10 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 					new AddConfigOutputPortFeature(this),
 					new SetActorRefinementFeature(this),
 					new ClearActorRefinementFeature(this),
-					new OpenRefinementFeature(this)
+					new OpenRefinementFeature(this),
+					new SetActorMemoryScriptFeature(this),
+					new ClearActorMemoryScriptFeature(this),
+					new OpenMemoryScriptFeature(this)
 					};
 			for (ICustomFeature feature : actorFeatures) {
 				features.add(feature);
