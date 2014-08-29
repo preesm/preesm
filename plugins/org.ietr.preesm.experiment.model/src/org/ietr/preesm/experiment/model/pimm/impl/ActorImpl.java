@@ -37,6 +37,7 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
@@ -96,7 +97,7 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String MEMORY_SCRIPT_PATH_EDEFAULT = null;
+	protected static final IPath MEMORY_SCRIPT_PATH_EDEFAULT = null;
 
 	/**
 	 * The cached value of the '{@link #getMemoryScriptPath() <em>Memory Script Path</em>}' attribute.
@@ -106,7 +107,7 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 	 * @generated
 	 * @ordered
 	 */
-	protected String memoryScriptPath = MEMORY_SCRIPT_PATH_EDEFAULT;
+	protected IPath memoryScriptPath = MEMORY_SCRIPT_PATH_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -222,7 +223,7 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String getMemoryScriptPath() {
+	public IPath getMemoryScriptPath() {
 		return memoryScriptPath;
 	}
 
@@ -231,8 +232,8 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setMemoryScriptPath(String newMemoryScriptPath) {
-		String oldMemoryScriptPath = memoryScriptPath;
+	public void setMemoryScriptPath(IPath newMemoryScriptPath) {
+		IPath oldMemoryScriptPath = memoryScriptPath;
 		memoryScriptPath = newMemoryScriptPath;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH, oldMemoryScriptPath, memoryScriptPath));
@@ -280,7 +281,7 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 				setRefinement((Refinement)newValue);
 				return;
 			case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
-				setMemoryScriptPath((String)newValue);
+				setMemoryScriptPath((IPath)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);

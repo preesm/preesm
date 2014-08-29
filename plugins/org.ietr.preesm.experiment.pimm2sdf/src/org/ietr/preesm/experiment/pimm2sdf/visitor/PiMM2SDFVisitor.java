@@ -314,7 +314,9 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 		piRef.accept(this);
 		v.setRefinement(currentSDFRefinement);
 		// Handle path to memory script of the vertex
-		v.setPropertyValue(SDFVertex.MEMORY_SCRIPT, a.getMemoryScriptPath());
+		if (a.getMemoryScriptPath() != null) {
+			v.setPropertyValue(SDFVertex.MEMORY_SCRIPT, a.getMemoryScriptPath().toOSString());
+		}
 		// Handle input parameters as instance arguments
 		for (ConfigInputPort p : a.getConfigInputPorts()) {
 			ISetter setter = p.getIncomingDependency().getSetter();

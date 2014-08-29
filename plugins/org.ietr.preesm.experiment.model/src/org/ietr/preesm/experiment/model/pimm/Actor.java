@@ -35,6 +35,7 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
+import org.eclipse.core.runtime.IPath;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
 
 
@@ -119,12 +120,12 @@ public interface Actor extends AbstractActor, PiMMVisitable {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Memory Script Path</em>' attribute.
-	 * @see #setMemoryScriptPath(String)
+	 * @see #setMemoryScriptPath(IPath)
 	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getActor_MemoryScriptPath()
-	 * @model
+	 * @model dataType="org.ietr.preesm.experiment.model.pimm.IPath"
 	 * @generated
 	 */
-	String getMemoryScriptPath();
+	IPath getMemoryScriptPath();
 
 	/**
 	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Actor#getMemoryScriptPath <em>Memory Script Path</em>}' attribute.
@@ -134,7 +135,7 @@ public interface Actor extends AbstractActor, PiMMVisitable {
 	 * @see #getMemoryScriptPath()
 	 * @generated
 	 */
-	void setMemoryScriptPath(String value);
+	void setMemoryScriptPath(IPath value);
 
 	/**
 	 * Test if the actor is a hierarchical one.

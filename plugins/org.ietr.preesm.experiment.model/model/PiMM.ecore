@@ -32,7 +32,7 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="configurationActor" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" changeable="false"
         volatile="true" unsettable="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="memoryScriptPath" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="memoryScriptPath" eType="#//IPath"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Port" abstract="true">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
@@ -76,6 +76,7 @@
     <eOperations name="getAbstractActor" eType="#//AbstractActor"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="fileName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         defaultValueLiteral="&quot;&quot;"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="filePath" eType="#//IPath"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Parameter" eSuperTypes="#//AbstractVertex #//ISetter">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="locallyStatic" lowerBound="1"
@@ -139,4 +140,5 @@
     <eLiterals name="WRITE_ONLY" value="1" literal="WRITE_ONLY"/>
     <eLiterals name="UNUSED" value="3" literal="UNUSED"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EDataType" name="IPath" instanceClassName="org.eclipse.core.runtime.IPath"/>
 </ecore:EPackage>

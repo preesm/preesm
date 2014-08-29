@@ -37,6 +37,7 @@ package org.ietr.preesm.experiment.model.pimm;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -1358,13 +1359,22 @@ public interface PiMMPackage extends EPackage {
 	int REFINEMENT__FILE_NAME = 0;
 
 	/**
+	 * The feature id for the '<em><b>File Path</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REFINEMENT__FILE_PATH = 1;
+
+	/**
 	 * The number of structural features of the '<em>Refinement</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int REFINEMENT_FEATURE_COUNT = 1;
+	int REFINEMENT_FEATURE_COUNT = 2;
 
 	/**
 	 * The feature id for the '<em><b>Setter</b></em>' reference.
@@ -1475,6 +1485,15 @@ public interface PiMMPackage extends EPackage {
 	 * @ordered
 	 */
 	int HREFINEMENT__FILE_NAME = REFINEMENT__FILE_NAME;
+
+	/**
+	 * The feature id for the '<em><b>File Path</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int HREFINEMENT__FILE_PATH = REFINEMENT__FILE_PATH;
 
 	/**
 	 * The feature id for the '<em><b>Loop Prototype</b></em>' reference.
@@ -1615,6 +1634,17 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 */
 	int PORT_MEMORY_ANNOTATION = 27;
+
+
+	/**
+	 * The meta object id for the '<em>IPath</em>' data type.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.core.runtime.IPath
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getIPath()
+	 * @generated
+	 */
+	int IPATH = 28;
 
 
 	/**
@@ -2042,6 +2072,17 @@ public interface PiMMPackage extends EPackage {
 	EAttribute getRefinement_FileName();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Refinement#getFilePath <em>File Path</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>File Path</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.Refinement#getFilePath()
+	 * @see #getRefinement()
+	 * @generated
+	 */
+	EAttribute getRefinement_FilePath();
+
+	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Parameter <em>Parameter</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2359,6 +2400,17 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 */
 	EEnum getPortMemoryAnnotation();
+
+	/**
+	 * Returns the meta object for data type '{@link org.eclipse.core.runtime.IPath <em>IPath</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for data type '<em>IPath</em>'.
+	 * @see org.eclipse.core.runtime.IPath
+	 * @model instanceClass="org.eclipse.core.runtime.IPath"
+	 * @generated
+	 */
+	EDataType getIPath();
 
 	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.ConfigInputInterface <em>Config Input Interface</em>}'.
@@ -2745,6 +2797,14 @@ public interface PiMMPackage extends EPackage {
 		EAttribute REFINEMENT__FILE_NAME = eINSTANCE.getRefinement_FileName();
 
 		/**
+		 * The meta object literal for the '<em><b>File Path</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute REFINEMENT__FILE_PATH = eINSTANCE.getRefinement_FilePath();
+
+		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl <em>Parameter</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -3005,6 +3065,16 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EEnum PORT_MEMORY_ANNOTATION = eINSTANCE.getPortMemoryAnnotation();
+
+		/**
+		 * The meta object literal for the '<em>IPath</em>' data type.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.core.runtime.IPath
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getIPath()
+		 * @generated
+		 */
+		EDataType IPATH = eINSTANCE.getIPath();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigInputInterfaceImpl <em>Config Input Interface</em>}' class.

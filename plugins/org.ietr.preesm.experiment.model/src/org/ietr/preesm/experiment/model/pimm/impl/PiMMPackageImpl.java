@@ -35,8 +35,10 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm.impl;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -267,6 +269,13 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * @generated
 	 */
 	private EEnum portMemoryAnnotationEEnum = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EDataType iPathEDataType = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -701,6 +710,15 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getRefinement_FilePath() {
+		return (EAttribute)refinementEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getParameter() {
 		return parameterEClass;
 	}
@@ -971,6 +989,15 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EDataType getIPath() {
+		return iPathEDataType;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getConfigInputInterface() {
 		return configInputInterfaceEClass;
 	}
@@ -1060,6 +1087,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
 		refinementEClass = createEClass(REFINEMENT);
 		createEAttribute(refinementEClass, REFINEMENT__FILE_NAME);
+		createEAttribute(refinementEClass, REFINEMENT__FILE_PATH);
 
 		parameterEClass = createEClass(PARAMETER);
 		createEAttribute(parameterEClass, PARAMETER__LOCALLY_STATIC);
@@ -1101,6 +1129,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		// Create enums
 		directionEEnum = createEEnum(DIRECTION);
 		portMemoryAnnotationEEnum = createEEnum(PORT_MEMORY_ANNOTATION);
+
+		// Create data types
+		iPathEDataType = createEDataType(IPATH);
 	}
 
 	/**
@@ -1172,7 +1203,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEClass(actorEClass, Actor.class, "Actor", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getActor_Refinement(), this.getRefinement(), null, "refinement", null, 1, 1, Actor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getActor_ConfigurationActor(), ecorePackage.getEBoolean(), "configurationActor", null, 1, 1, Actor.class, !IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getActor_MemoryScriptPath(), ecorePackage.getEString(), "memoryScriptPath", null, 0, 1, Actor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getActor_MemoryScriptPath(), this.getIPath(), "memoryScriptPath", null, 0, 1, Actor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(portEClass, Port.class, "Port", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getPort_Name(), ecorePackage.getEString(), "name", null, 1, 1, Port.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1209,6 +1240,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
 		initEClass(refinementEClass, Refinement.class, "Refinement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getRefinement_FileName(), ecorePackage.getEString(), "fileName", "\"\"", 0, 1, Refinement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRefinement_FilePath(), this.getIPath(), "filePath", null, 0, 1, Refinement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		addEOperation(refinementEClass, this.getAbstractActor(), "getAbstractActor", 0, 1, IS_UNIQUE, IS_ORDERED);
 
@@ -1262,6 +1294,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		addEEnumLiteral(portMemoryAnnotationEEnum, PortMemoryAnnotation.READ_ONLY);
 		addEEnumLiteral(portMemoryAnnotationEEnum, PortMemoryAnnotation.WRITE_ONLY);
 		addEEnumLiteral(portMemoryAnnotationEEnum, PortMemoryAnnotation.UNUSED);
+
+		// Initialize data types
+		initEDataType(iPathEDataType, IPath.class, "IPath", IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS);
 
 		// Create resource
 		createResource(eNS_URI);

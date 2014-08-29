@@ -35,6 +35,7 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.ecore.EFactory;
 
 /**
@@ -264,6 +265,26 @@ public interface PiMMFactory extends EFactory {
 	 * @generated
 	 */
 	String convertPortMemoryAnnotation(PortMemoryAnnotation instanceValue);
+
+	/**
+	 * Returns an instance of data type '<em>IPath</em>' corresponding the given literal.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param literal a literal of the data type.
+	 * @return a new instance value of the data type.
+	 * @generated
+	 */
+	IPath createIPath(String literal);
+
+	/**
+	 * Returns a literal representation of an instance of data type '<em>IPath</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param instanceValue an instance value of the data type.
+	 * @return a literal representation of the instance value.
+	 * @generated
+	 */
+	String convertIPath(IPath instanceValue);
 
 	/**
 	 * Returns a new object of class '<em>Config Input Interface</em>'.

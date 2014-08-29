@@ -35,6 +35,7 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm.impl;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
@@ -125,6 +126,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 				return createDirectionFromString(eDataType, initialValue);
 			case PiMMPackage.PORT_MEMORY_ANNOTATION:
 				return createPortMemoryAnnotationFromString(eDataType, initialValue);
+			case PiMMPackage.IPATH:
+				return createIPathFromString(eDataType, initialValue);
 			default:
 				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
 		}
@@ -142,6 +145,8 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 				return convertDirectionToString(eDataType, instanceValue);
 			case PiMMPackage.PORT_MEMORY_ANNOTATION:
 				return convertPortMemoryAnnotationToString(eDataType, instanceValue);
+			case PiMMPackage.IPATH:
+				return convertIPathToString(eDataType, instanceValue);
 			default:
 				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
 		}
@@ -399,6 +404,42 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 */
 	public String convertPortMemoryAnnotationToString(EDataType eDataType, Object instanceValue) {
 		return convertPortMemoryAnnotation((PortMemoryAnnotation)instanceValue);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IPath createIPath(String literal) {
+		return (IPath)super.createFromString(PiMMPackage.Literals.IPATH, literal);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IPath createIPathFromString(EDataType eDataType, String initialValue) {
+		return createIPath(initialValue);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String convertIPath(IPath instanceValue) {
+		return super.convertToString(PiMMPackage.Literals.IPATH, instanceValue);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String convertIPathToString(EDataType eDataType, Object instanceValue) {
+		return convertIPath((IPath)instanceValue);
 	}
 
 	/**
