@@ -51,22 +51,23 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
-import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
+import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
  * @author Romina Racca
  * @author jheulot
  * 
  */
-public class Section extends GFPropertySection implements
+public class PortPropertiesSection extends GFPropertySection implements
 		ITabbedPropertyConstants {
 
 	private CLabel lblName;
@@ -74,8 +75,8 @@ public class Section extends GFPropertySection implements
 	private CLabel lblExpression;
 	private CLabel lblValue;
 	private CLabel lblValueObj;
-
-	private final int FIRST_COLUMN_WIDTH = 125;
+	
+	private final int FIRST_COLUMN_WIDTH = 150;
 
 	/**
 	 * A text expression can be as an expression: value numbers, trigonometric
