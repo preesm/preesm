@@ -67,7 +67,7 @@ public class NewPreesmProjectCreator {
 			addNatures(project);
 
 			String[] paths = {
-					"Algo/generated/flatten", "Algo/generated/singlerate", "Archi", "Code/generated", "Code/include", "Code/lib/cmake_modules", "Code/src", "DAG", "Scenarios", "Workflows" }; //$NON-NLS-1$ //$NON-NLS-2$
+					"Algo/generated/flatten", "Algo/generated/singlerate", "Algo/generated/DAG", "Archi", "Code/generated", "Code/include", "Code/lib/cmake_modules", "Code/src", "Scenarios", "Workflows" }; //$NON-NLS-1$ //$NON-NLS-2$
 			addToProjectStructure(project, paths);
 		} catch (CoreException e) {
 			e.printStackTrace();
