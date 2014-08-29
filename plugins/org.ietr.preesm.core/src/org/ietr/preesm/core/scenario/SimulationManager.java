@@ -78,7 +78,7 @@ public class SimulationManager {
 	/**
 	 * Number of executions of the top graph when simulating PiGraphs
 	 */
-	private int numberOfTopExecutions;
+	private int numberOfTopExecutions = 1;
 	
 	public SimulationManager() {
 		super();
@@ -166,6 +166,7 @@ public class SimulationManager {
 	}
 
 	public int getNumberOfTopExecutions() {
+		if (numberOfTopExecutions < 1) setNumberOfTopExecutions(1);
 		return numberOfTopExecutions;
 	}
 

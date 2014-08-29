@@ -256,6 +256,7 @@ public class PreesmScenario {
 	}
 
 	public Set<String> getOperatorDefinitionIds() {
+		if (operatorDefinitionIds == null) operatorDefinitionIds = new HashSet<String>();
 		return operatorDefinitionIds;
 	}
 
@@ -268,6 +269,7 @@ public class PreesmScenario {
 	}
 
 	public Set<String> getComNodeIds() {
+		if (comNodeIds == null) comNodeIds = new HashSet<String>();
 		return comNodeIds;
 	}
 
@@ -311,11 +313,11 @@ public class PreesmScenario {
 			// Extract the root object from the resource.
 			Design design = ScenarioParser.parseSlamDesign(architectureURL);
 
-			operatorIds.clear();
-			operatorIds.addAll(DesignTools.getOperatorInstanceIds(design));
+			getOperatorIds().clear();
+			getOperatorIds().addAll(DesignTools.getOperatorInstanceIds(design));
 
-			operatorDefinitionIds.clear();
-			operatorDefinitionIds.addAll(DesignTools
+			getOperatorDefinitionIds().clear();
+			getOperatorDefinitionIds().addAll(DesignTools
 					.getOperatorComponentIds(design));
 
 		}
