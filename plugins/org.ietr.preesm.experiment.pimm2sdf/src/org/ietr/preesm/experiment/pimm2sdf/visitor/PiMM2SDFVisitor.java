@@ -50,6 +50,7 @@ import org.ietr.dftools.algorithm.model.parameters.Argument;
 import org.ietr.dftools.algorithm.model.parameters.ExpressionValue;
 import org.ietr.dftools.algorithm.model.parameters.Variable;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
@@ -72,6 +73,7 @@ import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Expression;
@@ -303,12 +305,17 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 	@Override
 	public void visitActor(Actor a) {
 		SDFVertex v = new SDFVertex();
+		// Handle vertex's name
 		v.setName(a.getName());
+		// Handle vertex's path inside the graph hierarchy
 		v.setInfo(a.getPath());
+		// Handle vertex's refinement (description of the vertex's behavior: function prototypes or subgraphs)
 		Refinement piRef = a.getRefinement();
 		piRef.accept(this);
 		v.setRefinement(currentSDFRefinement);
-
+		// Handle path to memory script of the vertex
+		v.setPropertyValue(SDFVertex.MEMORY_SCRIPT, a.getMemoryScriptPath());
+		// Handle input parameters as instance arguments
 		for (ConfigInputPort p : a.getConfigInputPorts()) {
 			ISetter setter = p.getIncomingDependency().getSetter();
 			if (setter instanceof Parameter) {
@@ -347,6 +354,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 				sdfOutputPort.setName(piOutputPort.getName());
 				sdfSource.addSink(sdfOutputPort);
 			}
+			
 			// Handle the target port (DataInputPort in PISDF,
 			// SDFSourceInterfaceVertex in IBSDF)
 			SDFSourceInterfaceVertex sdfInputPort;
@@ -381,10 +389,29 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 			AbstractEdgePropertyType<ExpressionValue> prod = new SDFExpressionEdgePropertyType(
 					new ExpressionValue(piProd));
 
-			result.addEdge(sdfSource, sdfOutputPort, sdfTarget, sdfInputPort,
+			SDFEdge edge = result.addEdge(sdfSource, sdfOutputPort, sdfTarget, sdfInputPort,
 					prod, cons, delay);
+			
+			// Handle memory annotations
+			convertAnnotationsFromTo(piOutputPort, edge, SDFEdge.SOURCE_PORT_MODIFIER);
+			convertAnnotationsFromTo(piInputPort, edge, SDFEdge.TARGET_PORT_MODIFIER);			
 		}
+	}
 
+	private void convertAnnotationsFromTo(DataPort piPort,
+			SDFEdge edge, String property) {
+		switch (piPort.getAnnotation()) {
+		case READ_ONLY:
+			edge.setPropertyValue(property, SDFEdge.MODIFIER_READ_ONLY);
+			break;
+		case WRITE_ONLY:
+			edge.setPropertyValue(property, SDFEdge.MODIFIER_WRITE_ONLY);
+			break;
+		case UNUSED:
+			edge.setPropertyValue(property, SDFEdge.MODIFIER_UNUSED);
+			break;
+			default:
+		}
 	}
 
 	@Override
@@ -548,6 +575,11 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitPort(Port p) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void visitDataPort(DataPort p) {
 		throw new UnsupportedOperationException();
 	}
 }

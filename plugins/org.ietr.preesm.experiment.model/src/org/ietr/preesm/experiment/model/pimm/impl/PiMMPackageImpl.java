@@ -61,11 +61,13 @@ import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
@@ -250,7 +252,21 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	private EClass dataPortEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	private EEnum directionEEnum = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EEnum portMemoryAnnotationEEnum = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -469,6 +485,15 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getActor_MemoryScriptPath() {
+		return (EAttribute)actorEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getPort() {
 		return portEClass;
 	}
@@ -514,15 +539,6 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDataInputPort_Expression() {
-		return (EReference)dataInputPortEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EClass getDataOutputPort() {
 		return dataOutputPortEClass;
 	}
@@ -534,15 +550,6 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 */
 	public EReference getDataOutputPort_OutgoingFifo() {
 		return (EReference)dataOutputPortEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EReference getDataOutputPort_Expression() {
-		return (EReference)dataOutputPortEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -919,8 +926,44 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getDataPort() {
+		return dataPortEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getDataPort_Expression() {
+		return (EReference)dataPortEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getDataPort_Annotation() {
+		return (EAttribute)dataPortEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EEnum getDirection() {
 		return directionEEnum;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EEnum getPortMemoryAnnotation() {
+		return portMemoryAnnotationEEnum;
 	}
 
 	/**
@@ -980,6 +1023,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		actorEClass = createEClass(ACTOR);
 		createEReference(actorEClass, ACTOR__REFINEMENT);
 		createEAttribute(actorEClass, ACTOR__CONFIGURATION_ACTOR);
+		createEAttribute(actorEClass, ACTOR__MEMORY_SCRIPT_PATH);
 
 		portEClass = createEClass(PORT);
 		createEAttribute(portEClass, PORT__NAME);
@@ -987,11 +1031,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
 		dataInputPortEClass = createEClass(DATA_INPUT_PORT);
 		createEReference(dataInputPortEClass, DATA_INPUT_PORT__INCOMING_FIFO);
-		createEReference(dataInputPortEClass, DATA_INPUT_PORT__EXPRESSION);
 
 		dataOutputPortEClass = createEClass(DATA_OUTPUT_PORT);
 		createEReference(dataOutputPortEClass, DATA_OUTPUT_PORT__OUTGOING_FIFO);
-		createEReference(dataOutputPortEClass, DATA_OUTPUT_PORT__EXPRESSION);
 
 		configInputPortEClass = createEClass(CONFIG_INPUT_PORT);
 		createEReference(configInputPortEClass, CONFIG_INPUT_PORT__INCOMING_DEPENDENCY);
@@ -1052,8 +1094,13 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		createEAttribute(functionParameterEClass, FUNCTION_PARAMETER__TYPE);
 		createEAttribute(functionParameterEClass, FUNCTION_PARAMETER__IS_CONFIGURATION_PARAMETER);
 
+		dataPortEClass = createEClass(DATA_PORT);
+		createEReference(dataPortEClass, DATA_PORT__EXPRESSION);
+		createEAttribute(dataPortEClass, DATA_PORT__ANNOTATION);
+
 		// Create enums
 		directionEEnum = createEEnum(DIRECTION);
+		portMemoryAnnotationEEnum = createEEnum(PORT_MEMORY_ANNOTATION);
 	}
 
 	/**
@@ -1088,8 +1135,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		abstractActorEClass.getESuperTypes().add(this.getAbstractVertex());
 		piGraphEClass.getESuperTypes().add(this.getAbstractActor());
 		actorEClass.getESuperTypes().add(this.getAbstractActor());
-		dataInputPortEClass.getESuperTypes().add(this.getPort());
-		dataOutputPortEClass.getESuperTypes().add(this.getPort());
+		dataInputPortEClass.getESuperTypes().add(this.getDataPort());
+		dataOutputPortEClass.getESuperTypes().add(this.getDataPort());
 		configInputPortEClass.getESuperTypes().add(this.getPort());
 		configOutputPortEClass.getESuperTypes().add(this.getDataOutputPort());
 		configOutputPortEClass.getESuperTypes().add(this.getISetter());
@@ -1102,6 +1149,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		parameterEClass.getESuperTypes().add(this.getISetter());
 		delayEClass.getESuperTypes().add(this.getParameterizable());
 		hRefinementEClass.getESuperTypes().add(this.getRefinement());
+		dataPortEClass.getESuperTypes().add(this.getPort());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(parameterizableEClass, Parameterizable.class, "Parameterizable", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -1124,6 +1172,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEClass(actorEClass, Actor.class, "Actor", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getActor_Refinement(), this.getRefinement(), null, "refinement", null, 1, 1, Actor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getActor_ConfigurationActor(), ecorePackage.getEBoolean(), "configurationActor", null, 1, 1, Actor.class, !IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getActor_MemoryScriptPath(), ecorePackage.getEString(), "memoryScriptPath", null, 0, 1, Actor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(portEClass, Port.class, "Port", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getPort_Name(), ecorePackage.getEString(), "name", null, 1, 1, Port.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1131,11 +1180,9 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
 		initEClass(dataInputPortEClass, DataInputPort.class, "DataInputPort", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getDataInputPort_IncomingFifo(), this.getFifo(), this.getFifo_TargetPort(), "incomingFifo", null, 0, 1, DataInputPort.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getDataInputPort_Expression(), this.getExpression(), null, "expression", null, 1, 1, DataInputPort.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(dataOutputPortEClass, DataOutputPort.class, "DataOutputPort", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getDataOutputPort_OutgoingFifo(), this.getFifo(), this.getFifo_SourcePort(), "outgoingFifo", null, 0, 1, DataOutputPort.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getDataOutputPort_Expression(), this.getExpression(), null, "expression", null, 1, 1, DataOutputPort.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(configInputPortEClass, ConfigInputPort.class, "ConfigInputPort", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getConfigInputPort_IncomingDependency(), this.getDependency(), this.getDependency_Getter(), "incomingDependency", null, 0, 1, ConfigInputPort.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1202,10 +1249,19 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEAttribute(getFunctionParameter_Type(), ecorePackage.getEString(), "type", null, 0, 1, FunctionParameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getFunctionParameter_IsConfigurationParameter(), ecorePackage.getEBoolean(), "isConfigurationParameter", null, 0, 1, FunctionParameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
+		initEClass(dataPortEClass, DataPort.class, "DataPort", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getDataPort_Expression(), this.getExpression(), null, "expression", null, 1, 1, DataPort.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getDataPort_Annotation(), this.getPortMemoryAnnotation(), "annotation", null, 0, 1, DataPort.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
 		// Initialize enums and add enum literals
 		initEEnum(directionEEnum, Direction.class, "Direction");
 		addEEnumLiteral(directionEEnum, Direction.IN);
 		addEEnumLiteral(directionEEnum, Direction.OUT);
+
+		initEEnum(portMemoryAnnotationEEnum, PortMemoryAnnotation.class, "PortMemoryAnnotation");
+		addEEnumLiteral(portMemoryAnnotationEEnum, PortMemoryAnnotation.READ_ONLY);
+		addEEnumLiteral(portMemoryAnnotationEEnum, PortMemoryAnnotation.WRITE_ONLY);
+		addEEnumLiteral(portMemoryAnnotationEEnum, PortMemoryAnnotation.UNUSED);
 
 		// Create resource
 		createResource(eNS_URI);

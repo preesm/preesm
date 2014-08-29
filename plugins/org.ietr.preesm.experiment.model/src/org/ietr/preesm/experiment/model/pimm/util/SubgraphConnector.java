@@ -16,6 +16,7 @@ import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Expression;
@@ -30,7 +31,6 @@ import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl;
 import org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl;
 import org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl;
-import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 public class SubgraphConnector extends PiMMVisitor {
 
@@ -267,6 +267,11 @@ public class SubgraphConnector extends PiMMVisitor {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public void visitDataPort(DataPort p) {
+		throw new UnsupportedOperationException();
+	}
+	
 	@Override
 	public void visitDataInputPort(DataInputPort dip) {
 		throw new UnsupportedOperationException();

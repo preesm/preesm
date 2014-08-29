@@ -62,6 +62,7 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#getRefinement <em>Refinement</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#isConfigurationActor <em>Configuration Actor</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#getMemoryScriptPath <em>Memory Script Path</em>}</li>
  * </ul>
  * </p>
  *
@@ -86,6 +87,26 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 	 * @ordered
 	 */
 	protected static final boolean CONFIGURATION_ACTOR_EDEFAULT = false;
+
+	/**
+	 * The default value of the '{@link #getMemoryScriptPath() <em>Memory Script Path</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getMemoryScriptPath()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String MEMORY_SCRIPT_PATH_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getMemoryScriptPath() <em>Memory Script Path</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getMemoryScriptPath()
+	 * @generated
+	 * @ordered
+	 */
+	protected String memoryScriptPath = MEMORY_SCRIPT_PATH_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -197,6 +218,27 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 	}
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String getMemoryScriptPath() {
+		return memoryScriptPath;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setMemoryScriptPath(String newMemoryScriptPath) {
+		String oldMemoryScriptPath = memoryScriptPath;
+		memoryScriptPath = newMemoryScriptPath;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH, oldMemoryScriptPath, memoryScriptPath));
+	}
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
@@ -221,6 +263,8 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 				return getRefinement();
 			case PiMMPackage.ACTOR__CONFIGURATION_ACTOR:
 				return isConfigurationActor();
+			case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
+				return getMemoryScriptPath();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -235,6 +279,9 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 			case PiMMPackage.ACTOR__REFINEMENT:
 				setRefinement((Refinement)newValue);
 				return;
+			case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
+				setMemoryScriptPath((String)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -248,6 +295,9 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 		switch (featureID) {
 			case PiMMPackage.ACTOR__REFINEMENT:
 				setRefinement((Refinement)null);
+				return;
+			case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
+				setMemoryScriptPath(MEMORY_SCRIPT_PATH_EDEFAULT);
 				return;
 		}
 		super.eUnset(featureID);
@@ -264,9 +314,27 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 				return refinement != null;
 			case PiMMPackage.ACTOR__CONFIGURATION_ACTOR:
 				return isSetConfigurationActor();
+			case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
+				return MEMORY_SCRIPT_PATH_EDEFAULT == null ? memoryScriptPath != null : !MEMORY_SCRIPT_PATH_EDEFAULT.equals(memoryScriptPath);
 		}
 		return super.eIsSet(featureID);
 	}
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String toString() {
+		if (eIsProxy()) return super.toString();
+
+		StringBuffer result = new StringBuffer(super.toString());
+		result.append(" (memoryScriptPath: ");
+		result.append(memoryScriptPath);
+		result.append(')');
+		return result.toString();
+	}
+
 	/**
 	 * Test if the actor is a hierarchical one.
 	 * @return true, if it is.

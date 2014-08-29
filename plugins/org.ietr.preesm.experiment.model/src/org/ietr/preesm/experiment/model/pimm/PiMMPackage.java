@@ -392,13 +392,22 @@ public interface PiMMPackage extends EPackage {
 	int ACTOR__CONFIGURATION_ACTOR = ABSTRACT_ACTOR_FEATURE_COUNT + 1;
 
 	/**
+	 * The feature id for the '<em><b>Memory Script Path</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ACTOR__MEMORY_SCRIPT_PATH = ABSTRACT_ACTOR_FEATURE_COUNT + 2;
+
+	/**
 	 * The number of structural features of the '<em>Actor</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int ACTOR_FEATURE_COUNT = ABSTRACT_ACTOR_FEATURE_COUNT + 2;
+	int ACTOR_FEATURE_COUNT = ABSTRACT_ACTOR_FEATURE_COUNT + 3;
 
 
 	/**
@@ -439,6 +448,61 @@ public interface PiMMPackage extends EPackage {
 	int PORT_FEATURE_COUNT = 2;
 
 	/**
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataPortImpl <em>Data Port</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.DataPortImpl
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDataPort()
+	 * @generated
+	 */
+	int DATA_PORT = 25;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DATA_PORT__NAME = PORT__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Kind</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DATA_PORT__KIND = PORT__KIND;
+
+	/**
+	 * The feature id for the '<em><b>Expression</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DATA_PORT__EXPRESSION = PORT_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Annotation</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DATA_PORT__ANNOTATION = PORT_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of structural features of the '<em>Data Port</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DATA_PORT_FEATURE_COUNT = PORT_FEATURE_COUNT + 2;
+
+	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataInputPortImpl <em>Data Input Port</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -455,7 +519,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DATA_INPUT_PORT__NAME = PORT__NAME;
+	int DATA_INPUT_PORT__NAME = DATA_PORT__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Kind</b></em>' attribute.
@@ -464,16 +528,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DATA_INPUT_PORT__KIND = PORT__KIND;
-
-	/**
-	 * The feature id for the '<em><b>Incoming Fifo</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DATA_INPUT_PORT__INCOMING_FIFO = PORT_FEATURE_COUNT + 0;
+	int DATA_INPUT_PORT__KIND = DATA_PORT__KIND;
 
 	/**
 	 * The feature id for the '<em><b>Expression</b></em>' containment reference.
@@ -482,7 +537,25 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DATA_INPUT_PORT__EXPRESSION = PORT_FEATURE_COUNT + 1;
+	int DATA_INPUT_PORT__EXPRESSION = DATA_PORT__EXPRESSION;
+
+	/**
+	 * The feature id for the '<em><b>Annotation</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DATA_INPUT_PORT__ANNOTATION = DATA_PORT__ANNOTATION;
+
+	/**
+	 * The feature id for the '<em><b>Incoming Fifo</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DATA_INPUT_PORT__INCOMING_FIFO = DATA_PORT_FEATURE_COUNT + 0;
 
 	/**
 	 * The number of structural features of the '<em>Data Input Port</em>' class.
@@ -491,7 +564,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DATA_INPUT_PORT_FEATURE_COUNT = PORT_FEATURE_COUNT + 2;
+	int DATA_INPUT_PORT_FEATURE_COUNT = DATA_PORT_FEATURE_COUNT + 1;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataOutputPortImpl <em>Data Output Port</em>}' class.
@@ -510,7 +583,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DATA_OUTPUT_PORT__NAME = PORT__NAME;
+	int DATA_OUTPUT_PORT__NAME = DATA_PORT__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Kind</b></em>' attribute.
@@ -519,16 +592,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DATA_OUTPUT_PORT__KIND = PORT__KIND;
-
-	/**
-	 * The feature id for the '<em><b>Outgoing Fifo</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DATA_OUTPUT_PORT__OUTGOING_FIFO = PORT_FEATURE_COUNT + 0;
+	int DATA_OUTPUT_PORT__KIND = DATA_PORT__KIND;
 
 	/**
 	 * The feature id for the '<em><b>Expression</b></em>' containment reference.
@@ -537,7 +601,25 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DATA_OUTPUT_PORT__EXPRESSION = PORT_FEATURE_COUNT + 1;
+	int DATA_OUTPUT_PORT__EXPRESSION = DATA_PORT__EXPRESSION;
+
+	/**
+	 * The feature id for the '<em><b>Annotation</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DATA_OUTPUT_PORT__ANNOTATION = DATA_PORT__ANNOTATION;
+
+	/**
+	 * The feature id for the '<em><b>Outgoing Fifo</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DATA_OUTPUT_PORT__OUTGOING_FIFO = DATA_PORT_FEATURE_COUNT + 0;
 
 	/**
 	 * The number of structural features of the '<em>Data Output Port</em>' class.
@@ -546,7 +628,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DATA_OUTPUT_PORT_FEATURE_COUNT = PORT_FEATURE_COUNT + 2;
+	int DATA_OUTPUT_PORT_FEATURE_COUNT = DATA_PORT_FEATURE_COUNT + 1;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigInputPortImpl <em>Config Input Port</em>}' class.
@@ -623,15 +705,6 @@ public interface PiMMPackage extends EPackage {
 	int CONFIG_OUTPUT_PORT__KIND = DATA_OUTPUT_PORT__KIND;
 
 	/**
-	 * The feature id for the '<em><b>Outgoing Fifo</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int CONFIG_OUTPUT_PORT__OUTGOING_FIFO = DATA_OUTPUT_PORT__OUTGOING_FIFO;
-
-	/**
 	 * The feature id for the '<em><b>Expression</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -639,6 +712,24 @@ public interface PiMMPackage extends EPackage {
 	 * @ordered
 	 */
 	int CONFIG_OUTPUT_PORT__EXPRESSION = DATA_OUTPUT_PORT__EXPRESSION;
+
+	/**
+	 * The feature id for the '<em><b>Annotation</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIG_OUTPUT_PORT__ANNOTATION = DATA_OUTPUT_PORT__ANNOTATION;
+
+	/**
+	 * The feature id for the '<em><b>Outgoing Fifo</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIG_OUTPUT_PORT__OUTGOING_FIFO = DATA_OUTPUT_PORT__OUTGOING_FIFO;
 
 	/**
 	 * The feature id for the '<em><b>Outgoing Dependencies</b></em>' reference list.
@@ -1512,7 +1603,18 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDirection()
 	 * @generated
 	 */
-	int DIRECTION = 25;
+	int DIRECTION = 26;
+
+
+	/**
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation <em>Port Memory Annotation</em>}' enum.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getPortMemoryAnnotation()
+	 * @generated
+	 */
+	int PORT_MEMORY_ANNOTATION = 27;
 
 
 	/**
@@ -1687,6 +1789,17 @@ public interface PiMMPackage extends EPackage {
 	EAttribute getActor_ConfigurationActor();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Actor#getMemoryScriptPath <em>Memory Script Path</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Memory Script Path</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.Actor#getMemoryScriptPath()
+	 * @see #getActor()
+	 * @generated
+	 */
+	EAttribute getActor_MemoryScriptPath();
+
+	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Port <em>Port</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1740,17 +1853,6 @@ public interface PiMMPackage extends EPackage {
 	EReference getDataInputPort_IncomingFifo();
 
 	/**
-	 * Returns the meta object for the containment reference '{@link org.ietr.preesm.experiment.model.pimm.DataInputPort#getExpression <em>Expression</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference '<em>Expression</em>'.
-	 * @see org.ietr.preesm.experiment.model.pimm.DataInputPort#getExpression()
-	 * @see #getDataInputPort()
-	 * @generated
-	 */
-	EReference getDataInputPort_Expression();
-
-	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.DataOutputPort <em>Data Output Port</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1770,17 +1872,6 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getDataOutputPort_OutgoingFifo();
-
-	/**
-	 * Returns the meta object for the containment reference '{@link org.ietr.preesm.experiment.model.pimm.DataOutputPort#getExpression <em>Expression</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference '<em>Expression</em>'.
-	 * @see org.ietr.preesm.experiment.model.pimm.DataOutputPort#getExpression()
-	 * @see #getDataOutputPort()
-	 * @generated
-	 */
-	EReference getDataOutputPort_Expression();
 
 	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.ConfigInputPort <em>Config Input Port</em>}'.
@@ -2218,6 +2309,38 @@ public interface PiMMPackage extends EPackage {
 	EAttribute getFunctionParameter_IsConfigurationParameter();
 
 	/**
+	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.DataPort <em>Data Port</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Data Port</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.DataPort
+	 * @generated
+	 */
+	EClass getDataPort();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.ietr.preesm.experiment.model.pimm.DataPort#getExpression <em>Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Expression</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.DataPort#getExpression()
+	 * @see #getDataPort()
+	 * @generated
+	 */
+	EReference getDataPort_Expression();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.DataPort#getAnnotation <em>Annotation</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Annotation</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.DataPort#getAnnotation()
+	 * @see #getDataPort()
+	 * @generated
+	 */
+	EAttribute getDataPort_Annotation();
+
+	/**
 	 * Returns the meta object for enum '{@link org.ietr.preesm.experiment.model.pimm.Direction <em>Direction</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2226,6 +2349,16 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 */
 	EEnum getDirection();
+
+	/**
+	 * Returns the meta object for enum '{@link org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation <em>Port Memory Annotation</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for enum '<em>Port Memory Annotation</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation
+	 * @generated
+	 */
+	EEnum getPortMemoryAnnotation();
 
 	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.ConfigInputInterface <em>Config Input Interface</em>}'.
@@ -2398,6 +2531,14 @@ public interface PiMMPackage extends EPackage {
 		EAttribute ACTOR__CONFIGURATION_ACTOR = eINSTANCE.getActor_ConfigurationActor();
 
 		/**
+		 * The meta object literal for the '<em><b>Memory Script Path</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute ACTOR__MEMORY_SCRIPT_PATH = eINSTANCE.getActor_MemoryScriptPath();
+
+		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.PortImpl <em>Port</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -2442,14 +2583,6 @@ public interface PiMMPackage extends EPackage {
 		EReference DATA_INPUT_PORT__INCOMING_FIFO = eINSTANCE.getDataInputPort_IncomingFifo();
 
 		/**
-		 * The meta object literal for the '<em><b>Expression</b></em>' containment reference feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference DATA_INPUT_PORT__EXPRESSION = eINSTANCE.getDataInputPort_Expression();
-
-		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataOutputPortImpl <em>Data Output Port</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -2466,14 +2599,6 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EReference DATA_OUTPUT_PORT__OUTGOING_FIFO = eINSTANCE.getDataOutputPort_OutgoingFifo();
-
-		/**
-		 * The meta object literal for the '<em><b>Expression</b></em>' containment reference feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference DATA_OUTPUT_PORT__EXPRESSION = eINSTANCE.getDataOutputPort_Expression();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigInputPortImpl <em>Config Input Port</em>}' class.
@@ -2836,6 +2961,32 @@ public interface PiMMPackage extends EPackage {
 		EAttribute FUNCTION_PARAMETER__IS_CONFIGURATION_PARAMETER = eINSTANCE.getFunctionParameter_IsConfigurationParameter();
 
 		/**
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.DataPortImpl <em>Data Port</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.DataPortImpl
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDataPort()
+		 * @generated
+		 */
+		EClass DATA_PORT = eINSTANCE.getDataPort();
+
+		/**
+		 * The meta object literal for the '<em><b>Expression</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference DATA_PORT__EXPRESSION = eINSTANCE.getDataPort_Expression();
+
+		/**
+		 * The meta object literal for the '<em><b>Annotation</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute DATA_PORT__ANNOTATION = eINSTANCE.getDataPort_Annotation();
+
+		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.Direction <em>Direction</em>}' enum.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -2844,6 +2995,16 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EEnum DIRECTION = eINSTANCE.getDirection();
+
+		/**
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation <em>Port Memory Annotation</em>}' enum.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getPortMemoryAnnotation()
+		 * @generated
+		 */
+		EEnum PORT_MEMORY_ANNOTATION = eINSTANCE.getPortMemoryAnnotation();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ConfigInputInterfaceImpl <em>Config Input Interface</em>}' class.

@@ -47,7 +47,6 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  * The following features are supported:
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.DataOutputPort#getOutgoingFifo <em>Outgoing Fifo</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.DataOutputPort#getExpression <em>Expression</em>}</li>
  * </ul>
  * </p>
  *
@@ -55,7 +54,7 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  * @model
  * @generated
  */
-public interface DataOutputPort extends Port, PiMMVisitable {
+public interface DataOutputPort extends DataPort, PiMMVisitable {
 
 	/**
 	 * Returns the value of the '<em><b>Outgoing Fifo</b></em>' reference.
@@ -84,30 +83,4 @@ public interface DataOutputPort extends Port, PiMMVisitable {
 	 * @generated
 	 */
 	void setOutgoingFifo(Fifo value);
-
-	/**
-	 * Returns the value of the '<em><b>Expression</b></em>' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Expression</em>' containment reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Expression</em>' containment reference.
-	 * @see #setExpression(Expression)
-	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDataOutputPort_Expression()
-	 * @model containment="true" required="true"
-	 * @generated
-	 */
-	Expression getExpression();
-
-	/**
-	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.DataOutputPort#getExpression <em>Expression</em>}' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Expression</em>' containment reference.
-	 * @see #getExpression()
-	 * @generated
-	 */
-	void setExpression(Expression value);
 } // OutputPort

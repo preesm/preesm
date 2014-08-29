@@ -48,6 +48,7 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Actor#getRefinement <em>Refinement</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Actor#isConfigurationActor <em>Configuration Actor</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.Actor#getMemoryScriptPath <em>Memory Script Path</em>}</li>
  * </ul>
  * </p>
  *
@@ -109,6 +110,32 @@ public interface Actor extends AbstractActor, PiMMVisitable {
 	 */
 	boolean isSetConfigurationActor();
 	
+	/**
+	 * Returns the value of the '<em><b>Memory Script Path</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Memory Script Path</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Memory Script Path</em>' attribute.
+	 * @see #setMemoryScriptPath(String)
+	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getActor_MemoryScriptPath()
+	 * @model
+	 * @generated
+	 */
+	String getMemoryScriptPath();
+
+	/**
+	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Actor#getMemoryScriptPath <em>Memory Script Path</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Memory Script Path</em>' attribute.
+	 * @see #getMemoryScriptPath()
+	 * @generated
+	 */
+	void setMemoryScriptPath(String value);
+
 	/**
 	 * Test if the actor is a hierarchical one.
 	 * @return true, if it is.
