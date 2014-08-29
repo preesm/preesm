@@ -107,6 +107,7 @@ public class PiMMUtil {
 	 *            an input validator, or <code>null</code> if none
 	 * @return the string, or <code>null</code> if user cancels
 	 */
+	@Deprecated
 	public static IPath askRefinement(String dialogTitle, String dialogMessage,
 			IInputValidator validator) {
 		Shell shell = getShell();
@@ -134,6 +135,30 @@ public class PiMMUtil {
 			IFile file = (IFile) (inputDialog.getResult()[0]);
 			return file.getFullPath();
 
+		}
+		return null;
+	}
+	
+	public static IPath askFile(String dialogTitle, String dialogMessage,
+			IInputValidator validator, Set<String> fileExtensions) {
+		Shell shell = getShell();
+		
+		FileContentProvider contentProvider = new FileContentProvider(
+				fileExtensions);
+
+		ElementTreeSelectionDialog inputDialog = new ElementTreeSelectionDialog(
+				shell,
+				WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(),
+				contentProvider);
+		inputDialog.setAllowMultiple(false);
+		inputDialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
+		inputDialog.setMessage(dialogMessage);
+		inputDialog.setTitle(dialogTitle);
+
+		int retDialog = inputDialog.open();
+		if (retDialog == Window.OK) {
+			IFile file = (IFile) (inputDialog.getResult()[0]);
+			return file.getFullPath();
 		}
 		return null;
 	}

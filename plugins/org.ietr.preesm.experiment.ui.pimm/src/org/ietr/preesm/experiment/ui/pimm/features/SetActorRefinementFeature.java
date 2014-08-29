@@ -125,7 +125,13 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 
 	private void askRefinement(Actor actor, String question, String dialogTitle) {
 		// Ask user for Actor name until a valid name is entered.
-		IPath newFilePath = PiMMUtil.askRefinement(dialogTitle, question, null);
+		// For now, authorized refinements are other PiGraphs (.pi files) and
+		// .idl prototypes
+		Set<String> fileExtensions = new HashSet<String>();
+		fileExtensions.add("pi");
+		fileExtensions.add("idl");
+		fileExtensions.add("h");
+		IPath newFilePath = PiMMUtil.askFile(dialogTitle, question, null, fileExtensions);
 
 		Refinement refinement = actor.getRefinement();
 		if (newFilePath != null) {
@@ -143,14 +149,18 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 					this.askRefinement(actor, message, dialogTitle);
 				} else {
 					String title = "Loop Function Selection";
-					String message = "Select a loop function for actor " + actor.getName() + "\n(* = any string, ? = any char):";
+					String message = "Select a loop function for actor "
+							+ actor.getName()
+							+ "\n(* = any string, ? = any char):";
 					FunctionPrototype[] protoArray = prototypes
 							.toArray(new FunctionPrototype[prototypes.size()]);
 					FunctionPrototype loopProto = PiMMUtil.selectFunction(
 							protoArray, title, message, true);
 
 					title = "Init Function Selection";
-					message = "Select an optionnal init function for actor " + actor.getName() + ", or click Cancel\n(* = any string, ? = any char):";
+					message = "Select an optionnal init function for actor "
+							+ actor.getName()
+							+ ", or click Cancel\n(* = any string, ? = any char):";
 					FunctionPrototype initProto = PiMMUtil.selectFunction(
 							protoArray, title, message, false);
 
