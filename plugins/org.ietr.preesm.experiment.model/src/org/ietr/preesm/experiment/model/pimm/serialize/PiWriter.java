@@ -596,7 +596,7 @@ public class PiWriter {
 		String ref_name = "graph_desc";
 		if (refinement != null && refinement.getFilePath() != null) {
 			writeDataElt(vertexElt, ref_name, refinement.getFilePath()
-					.toOSString());
+					.toPortableString());
 			if (refinement instanceof HRefinement) {
 				HRefinement hrefinement = (HRefinement) refinement;
 				writeFunctionPrototype(vertexElt,
