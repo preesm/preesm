@@ -43,6 +43,8 @@ import org.ietr.preesm.core.scenario.ParameterValue.ParameterType;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
+import com.singularsys.jep.Jep;
+
 /**
  * Manager class for parameters, storing values given by the user to parameters
  * 
@@ -65,25 +67,26 @@ public class ParameterValueManager {
 		this.parameterValues = parameterValues;
 	}
 
-	public void addStaticParameterValue(String paramName, String value, String parent) {
+	public void addIndependentParameterValue(String paramName, int value,
+			String parent) {
 		ParameterValue pValue = new ParameterValue(paramName,
-				ParameterType.STATIC, parent);
+				ParameterType.INDEPENDENT, parent);
 		pValue.setValue(value);
 		this.parameterValues.add(pValue);
 	}
 
-	public void addDynamicParameterValue(String paramName, Set<Integer> values,
-			String parent) {
+	public void addActorDependentParameterValue(String paramName,
+			Set<Integer> values, String parent) {
 		ParameterValue pValue = new ParameterValue(paramName,
-				ParameterType.DYNAMIC, parent);
+				ParameterType.ACTOR_DEPENDENT, parent);
 		pValue.setValues(values);
 		this.parameterValues.add(pValue);
 	}
 
-	public void addDependentParameterValue(String paramName, String expression,
-			Set<String> inputParameters, String parent) {
+	public void addParameterDependentParameterValue(String paramName,
+			String expression, Set<String> inputParameters, String parent) {
 		ParameterValue pValue = new ParameterValue(paramName,
-				ParameterType.DEPENDENT, parent);
+				ParameterType.PARAMETER_DEPENDENT, parent);
 		pValue.setExpression(expression);
 		pValue.setInputParameters(inputParameters);
 		this.parameterValues.add(pValue);
@@ -97,28 +100,61 @@ public class ParameterValueManager {
 		}
 		Set<Parameter> inputParameters = new HashSet<Parameter>();
 		inputParameters = param.getInputParameters();
+
 		if (param.isLocallyStatic()) {
-			// Add a static parameter value
-			addStaticParameterValue(param.getName(), null, parent);
-		} else {
-			if (inputParameters.isEmpty()) {
-				Set<Integer> values = new HashSet<Integer>();
-				// Add a dynamic parameter value
-				addDynamicParameterValue(param.getName(), values, parent);
+			if (param.isDependent()) {
+				// Add a parameter dependent value (a locally static parameter
+				// cannot be actor dependent)
+				addParameterDependentParameterValue(param, parent);
 			} else {
-				Set<String> inputParametersNames = new HashSet<String>();
-				for (Parameter p : inputParameters) {
-					inputParametersNames.add(p.getName());
+				int value = 0;
+
+				Jep jep = new Jep();
+				try {
+					jep.parse(param.getExpression().getString());
+					Object result = jep.evaluate();
+					if (result instanceof Double) {
+						int intResult = ((Double) result).intValue();
+						value = intResult;
+					}
+				} catch (Exception e) {
+					// DO NOTHING, let value to 0
 				}
-				addDependentParameterValue(param.getName(), null, inputParametersNames, parent);
+
+				// Add an independent parameter value
+				addIndependentParameterValue(param.getName(), value, parent);
+			}
+		} else {
+			boolean isActorDependent = inputParameters.size() < param
+					.getConfigInputPorts().size();
+
+			if (isActorDependent) {
+				Set<Integer> values = new HashSet<Integer>();
+				values.add(1);
+				// Add an actor dependent value
+				addActorDependentParameterValue(param.getName(), values, parent);
+			} else {
+				// Add a parameter dependent value
+				addParameterDependentParameterValue(param, parent);
 			}
 		}
+	}
+
+	private void addParameterDependentParameterValue(Parameter param,
+			String parent) {
+		Set<String> inputParametersNames = new HashSet<String>();
+		for (Parameter p : param.getInputParameters())
+			inputParametersNames.add(p.getName());
+
+		addParameterDependentParameterValue(param.getName(), param
+				.getExpression().getString(), inputParametersNames, parent);
 	}
 
 	public void updateWith(PiGraph graph) {
 		getParameterValues().clear();
 		for (Parameter p : graph.getAllParameters()) {
-			addParameterValue(p);
+			if (!p.isConfigurationInterface())
+				addParameterValue(p);
 		}
 	}
 }

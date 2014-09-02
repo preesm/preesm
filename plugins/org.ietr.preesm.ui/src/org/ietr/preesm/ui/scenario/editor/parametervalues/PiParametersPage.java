@@ -90,8 +90,8 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 	 * Table of Column name of the multi-column tree viewer
 	 */
 	private final String[] COLUMN_NAMES = { "Parameters", "Path", "Type",
-			"Variables", "Expression" };
-	private final int[] COLUMN_SIZE = { 110, 200, 100, 100, 50 };
+			"Input Parameters", "Expression" };
+	private final int[] COLUMN_SIZE = { 110, 200, 200, 200, 50 };
 
 	/**
 	 * Default Constructor of an Variables Page
@@ -192,9 +192,9 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 						ParameterValue param = (ParameterValue) ((TableItem) element)
 								.getData();
 						switch (param.getType()) {
-						case STATIC:
+						case INDEPENDENT:
 							try {
-								String newValue = (String) value;
+								int newValue = Integer.parseInt((String) value);
 								if (newValue != param.getValue()) {
 									param.setValue(newValue);
 									propertyChanged(this, PROP_DIRTY);
@@ -202,7 +202,7 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 							} catch (NumberFormatException e) {
 							}
 							break;
-						case DYNAMIC:
+						case ACTOR_DEPENDENT:
 							String s = (String) value;
 
 							if (s.charAt(0) == '['
@@ -234,7 +234,7 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 								}
 							}
 							break;
-						case DEPENDENT:
+						case PARAMETER_DEPENDENT:
 							if (!param.getExpression().contentEquals(
 									(String) value)) {
 								param.setExpression((String) value);
@@ -250,11 +250,11 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 				public Object getValue(Object element, String property) {
 					if (element instanceof ParameterValue) {
 						ParameterValue param = (ParameterValue) element;
-						if (param.getType() == ParameterType.STATIC) {
+						if (param.getType() == ParameterType.INDEPENDENT) {
 							return param.getValue();
-						} else if (param.getType() == ParameterType.DYNAMIC) {
+						} else if (param.getType() == ParameterType.ACTOR_DEPENDENT) {
 							return param.getValues().toString();
-						} else if (param.getType() == ParameterType.DEPENDENT) {
+						} else if (param.getType() == ParameterType.PARAMETER_DEPENDENT) {
 							return param.getExpression();
 						}
 					}

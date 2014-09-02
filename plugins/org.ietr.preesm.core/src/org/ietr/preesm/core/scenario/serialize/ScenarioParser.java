@@ -195,15 +195,19 @@ public class ScenarioParser {
 			e1.printStackTrace();
 		}
 		if (scenario.isPISDFScenario() && graph != null) {
-			Set<Parameter> parameters = new HashSet<Parameter>(
-					graph.getAllParameters());
+			Set<Parameter> parameters = new HashSet<Parameter>();
+			for (Parameter p : graph.getAllParameters()) {
+				if (!p.isConfigurationInterface())
+					parameters.add(p);
+			}
 
 			while (node != null) {
 				if (node instanceof Element) {
 					Element elt = (Element) node;
 					String type = elt.getTagName();
 					if (type.equals("parameter")) {
-						parameters.remove(parseParameterValue(elt, graph));
+						Parameter justParsed = parseParameterValue(elt, graph);
+						parameters.remove(justParsed);
 					}
 				}
 
@@ -232,11 +236,17 @@ public class ScenarioParser {
 		currentParameter = graph.getParameterNamedWithParent(name, parent);
 
 		switch (type) {
-		case "STATIC":
-			scenario.getParameterValueManager().addStaticParameterValue(name,
-					stringValue, parent);
+		case "INDEPENDENT":
+		case "STATIC": // Retro-compatibility
+			int value = 1;
+			if (stringValue != null) {
+				value = Integer.parseInt(stringValue);
+			}			
+			scenario.getParameterValueManager().addIndependentParameterValue(
+					name, value, parent);
 			break;
-		case "DYNAMIC":
+		case "ACTOR_DEPENDENT":
+		case "DYNAMIC": // Retro-compatibility
 			if (stringValue.charAt(0) == '['
 					&& stringValue.charAt(stringValue.length() - 1) == ']') {
 				stringValue = stringValue
@@ -252,11 +262,13 @@ public class ScenarioParser {
 				} catch (NumberFormatException e) {
 					// TODO: Do smthg?
 				}
-				scenario.getParameterValueManager().addDynamicParameterValue(
-						name, newValues, parent);
+				scenario.getParameterValueManager()
+						.addActorDependentParameterValue(name, newValues,
+								parent);
 			}
 			break;
-		case "DEPENDENT":
+		case "PARAMETER_DEPENDENT":
+		case "DEPENDENT": // Retro-compatibility
 			Set<String> inputParameters = new HashSet<String>();
 			if (graph != null) {
 
@@ -264,8 +276,9 @@ public class ScenarioParser {
 					inputParameters.add(input.getName());
 				}
 			}
-			scenario.getParameterValueManager().addDependentParameterValue(
-					name, stringValue, inputParameters, parent);
+			scenario.getParameterValueManager()
+					.addParameterDependentParameterValue(name, stringValue,
+							inputParameters, parent);
 			break;
 		default:
 			throw new RuntimeException("Unknown Parameter type: " + type
@@ -728,8 +741,10 @@ public class ScenarioParser {
 				}
 
 				String actorName;
-				if (vertexpath.contains("/")) actorName = getActorNameFromPath(vertexpath);
-				else actorName = vertexpath;
+				if (vertexpath.contains("/"))
+					actorName = getActorNameFromPath(vertexpath);
+				else
+					actorName = vertexpath;
 
 				if (actorName != null
 						&& scenario.getOperatorDefinitionIds().contains(

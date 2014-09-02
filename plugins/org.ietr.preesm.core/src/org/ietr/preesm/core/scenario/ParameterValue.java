@@ -42,46 +42,52 @@ import com.singularsys.jep.Jep;
 import com.singularsys.jep.JepException;
 
 /**
- * Value(s) of a parameter in a graph.
- * It can be: Static, Dependent or Dynamic.
+ * Value(s) of a parameter in a graph. It can be: Static, Dependent or Dynamic.
+ * 
  * @author jheulot
  */
 public class ParameterValue {
 	/**
-	 *  Different type of Parameter.
+	 * Different type of Parameter.
 	 */
-	public enum ParameterType{
-		STATIC, DEPENDENT, DYNAMIC
+	public enum ParameterType {
+		// No configuration input port
+		INDEPENDENT,
+		// Direct dependency from a configuration actor to this parameter
+		ACTOR_DEPENDENT,
+		// Configuration input ports, but none directly dependent from a
+		// configuration actor
+		PARAMETER_DEPENDENT
 	}
-	
+
 	/**
 	 * The name of the parameter
 	 */
 	private String name;
-	
+
 	/**
 	 * The parameter type
 	 */
 	private ParameterType type;
-	
+
 	/**
 	 * The corresponding parent vertex
 	 */
 	private String parentVertex;
-	
+
 	/**
 	 * Type specific attributes
 	 */
-	/* STATIC */
-	private String value;
-	
-	/* DYNAMIC */
+	/* INDEPENDENT */
+	private int value;
+
+	/* ACTOR_DEPENDENT */
 	private Set<Integer> values;
 
-	/* DEPENDANT */
+	/* PARAMETER_DEPENDENT */
 	private Set<String> inputParameters;
 	private String expression;
-	
+
 	/**
 	 * @return the expression
 	 */
@@ -90,14 +96,16 @@ public class ParameterValue {
 	}
 
 	/**
-	 * @param inputParameters the inputParameters to set
+	 * @param inputParameters
+	 *            the inputParameters to set
 	 */
 	public void setInputParameters(Set<String> inputParameters) {
 		this.inputParameters = inputParameters;
 	}
 
 	/**
-	 * @param expression the expression to set
+	 * @param expression
+	 *            the expression to set
 	 */
 	public void setExpression(String expression) {
 		this.expression = expression;
@@ -131,11 +139,11 @@ public class ParameterValue {
 	public String getParentVertex() {
 		return parentVertex;
 	}
-	
+
 	/**
 	 * @return the value
 	 */
-	public String getValue() {
+	public int getValue() {
 		return value;
 	}
 
@@ -147,14 +155,16 @@ public class ParameterValue {
 	}
 
 	/**
-	 * @param value the value to set
+	 * @param value
+	 *            the value to set
 	 */
-	public void setValue(String value) {
+	public void setValue(int value) {
 		this.value = value;
 	}
 
 	/**
-	 * @param values the values to set
+	 * @param values
+	 *            the values to set
 	 */
 	public void setValues(Set<Integer> values) {
 		this.values = values;
@@ -166,18 +176,19 @@ public class ParameterValue {
 	public Set<String> getInputParameters() {
 		return inputParameters;
 	}
-	
+
 	/**
 	 * Test if the parameter value is defined correctly
+	 * 
 	 * @return if the parameter value is defined correctly
 	 */
-	public boolean isValid(){
-		switch(type){
-		case STATIC:
+	public boolean isValid() {
+		switch (type) {
+		case INDEPENDENT:
 			return true;
-		case DYNAMIC:
+		case ACTOR_DEPENDENT:
 			return !values.isEmpty();
-		case DEPENDENT:
+		case PARAMETER_DEPENDENT:
 			Jep jep = new Jep();
 			try {
 				for (String parameter : inputParameters)

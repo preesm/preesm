@@ -44,7 +44,6 @@ import java.util.Set;
 
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.ParameterValue;
-import org.ietr.preesm.core.scenario.ParameterValue.ParameterType;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -62,14 +61,15 @@ public class PiMM2SDFLauncher {
 
 	public Set<SDFGraph> launch() {
 		Set<SDFGraph> result = new HashSet<SDFGraph>();
-		
+
 		// Get all the available values for all the parameters
 		Map<String, List<Integer>> parametersValues = getDynamicParametersValues();
 		// Get the values for Parameters directly contained by graph (top-level
 		// parameters), if any
 		Map<String, List<Integer>> outerParametersValues = new HashMap<String, List<Integer>>();
 		// The number of time we need to execute, and thus visit graph
-		int nbExecutions = scenario.getSimulationManager().getNumberOfTopExecutions();
+		int nbExecutions = scenario.getSimulationManager()
+				.getNumberOfTopExecutions();
 
 		for (Parameter param : graph.getParameters()) {
 			List<Integer> pValues = parametersValues.get(param.getName());
@@ -104,7 +104,7 @@ public class PiMM2SDFLauncher {
 			graph.accept(visitor);
 
 			SDFGraph sdf = visitor.getResult();
-			//sdf.setName(sdf.getName() + "_" + i);
+			// sdf.setName(sdf.getName() + "_" + i);
 
 			result.add(sdf);
 		}
@@ -115,24 +115,21 @@ public class PiMM2SDFLauncher {
 	private Map<String, List<Integer>> getDynamicParametersValues() {
 		Map<String, List<Integer>> result = new HashMap<String, List<Integer>>();
 
-		for (ParameterValue paramValue : scenario.getParameterValueManager().getParameterValues()) {
-			if (paramValue.getType() == ParameterType.DYNAMIC) {
+		for (ParameterValue paramValue : scenario.getParameterValueManager()
+				.getParameterValues()) {
+			switch (paramValue.getType()) {
+			case ACTOR_DEPENDENT:
 				result.put(paramValue.getName(), new ArrayList<Integer>(
 						paramValue.getValues()));
-			}
-			else if (paramValue.getType() == ParameterType.STATIC) {
+				break;
+			case INDEPENDENT:
 				List<Integer> values = new ArrayList<Integer>();
-				
-				String value = paramValue.getValue();
-				int intValue;
-				try {
-					intValue = Integer.parseInt(value);
-					values.add(intValue);
-				} catch (NumberFormatException e) {
-					// DO NOTHING
-					// The value is a static expression which needs other parameters value to be evaluated
-				}				
+				int value = paramValue.getValue();
+				values.add(value);				
 				result.put(paramValue.getName(), values);
+				break;
+			default:
+				break;
 			}
 		}
 

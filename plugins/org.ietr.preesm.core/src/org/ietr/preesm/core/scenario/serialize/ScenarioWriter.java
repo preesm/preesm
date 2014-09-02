@@ -126,13 +126,13 @@ public class ScenarioWriter {
 		valueElt.setAttribute("type", value.getType().toString());
 		String valueToPrint = "";
 		switch (value.getType()) {
-		case STATIC:			
+		case INDEPENDENT:			
 			valueToPrint = "" + value.getValue();
 			break;
-		case DYNAMIC:
+		case ACTOR_DEPENDENT:
 			valueToPrint = value.getValues().toString();
 			break;
-		case DEPENDENT:
+		case PARAMETER_DEPENDENT:
 			valueToPrint = value.getExpression();
 			break;
 		}

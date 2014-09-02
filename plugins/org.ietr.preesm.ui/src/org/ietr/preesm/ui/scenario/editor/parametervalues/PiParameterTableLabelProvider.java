@@ -103,16 +103,16 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
 			case 2: // Type Column
 				return paramValue.getType().toString();
 			case 3: // Variables Column
-				if(paramValue.getType() == ParameterType.DEPENDENT)
+				if(paramValue.getType() == ParameterType.PARAMETER_DEPENDENT)
 					return paramValue.getInputParameters().toString();
 				else 
 					return null;
 			case 4: // Expression Column
-				if(paramValue.getType() == ParameterType.DEPENDENT)
+				if(paramValue.getType() == ParameterType.PARAMETER_DEPENDENT)
 					return paramValue.getExpression();
-				else if(paramValue.getType() == ParameterType.STATIC)
-					return paramValue.getValue();
-				else if(paramValue.getType() == ParameterType.DYNAMIC)
+				else if(paramValue.getType() == ParameterType.INDEPENDENT)
+					return String.valueOf(paramValue.getValue());
+				else if(paramValue.getType() == ParameterType.ACTOR_DEPENDENT)
 					return paramValue.getValues().toString();
 				return null;
 				
@@ -136,7 +136,7 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
 			case 4: // Expression Column
 				return table.getBackground();
 			case 3: // Variables Column
-				if(paramValue.getType() == ParameterType.DEPENDENT)
+				if(paramValue.getType() == ParameterType.ACTOR_DEPENDENT)
 					return table.getBackground();
 				else 
 					return new Color(table.getDisplay(), 200,200,200);
