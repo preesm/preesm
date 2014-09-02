@@ -229,7 +229,7 @@ public class ScenarioParser {
 		String name = paramValueElt.getAttribute("name");
 		String stringValue = paramValueElt.getAttribute("value");
 
-		currentParameter = graph.getParameterNamed(name);
+		currentParameter = graph.getParameterNamedWithParent(name, parent);
 
 		switch (type) {
 		case "STATIC":

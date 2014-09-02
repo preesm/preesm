@@ -190,7 +190,7 @@ public interface PiGraph extends AbstractActor, PiMMVisitable {
 	 * @return the first Parameter with the given name found in the graph
 	 *         hierarchy, null if none is found
 	 */
-	public Parameter getParameterNamed(String name);
+	public Parameter getParameterNamedWithParent(String name, String parent);
 
 	public Set<Parameter> getAllParameters();
 
