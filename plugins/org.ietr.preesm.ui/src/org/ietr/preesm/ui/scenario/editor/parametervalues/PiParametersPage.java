@@ -171,7 +171,8 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 				public void paintControl(PaintEvent e) {
 					try {
 						scenario.update(false, false);
-					} catch (InvalidModelException | CoreException | FileNotFoundException e1) {
+					} catch (InvalidModelException | CoreException
+							| FileNotFoundException e1) {
 						e1.printStackTrace();
 					}
 					tableViewer.refresh();
@@ -193,13 +194,10 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 								.getData();
 						switch (param.getType()) {
 						case INDEPENDENT:
-							try {
-								int newValue = Integer.parseInt((String) value);
-								if (newValue != param.getValue()) {
-									param.setValue(newValue);
-									propertyChanged(this, PROP_DIRTY);
-								}
-							} catch (NumberFormatException e) {
+							String newValue = (String) value;
+							if (newValue != param.getValue()) {
+								param.setValue(newValue);
+								propertyChanged(this, PROP_DIRTY);
 							}
 							break;
 						case ACTOR_DEPENDENT:

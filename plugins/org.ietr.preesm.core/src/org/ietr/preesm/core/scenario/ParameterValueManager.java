@@ -67,7 +67,7 @@ public class ParameterValueManager {
 		this.parameterValues = parameterValues;
 	}
 
-	public void addIndependentParameterValue(String paramName, int value,
+	public void addIndependentParameterValue(String paramName, String value,
 			String parent) {
 		ParameterValue pValue = new ParameterValue(paramName,
 				ParameterType.INDEPENDENT, parent);
@@ -107,7 +107,7 @@ public class ParameterValueManager {
 				// cannot be actor dependent)
 				addParameterDependentParameterValue(param, parent);
 			} else {
-				int value = 0;
+				Integer value = null;
 
 				Jep jep = new Jep();
 				try {
@@ -118,11 +118,11 @@ public class ParameterValueManager {
 						value = intResult;
 					}
 				} catch (Exception e) {
-					// DO NOTHING, let value to 0
+					// DO NOTHING, let value to null
 				}
 
 				// Add an independent parameter value
-				addIndependentParameterValue(param.getName(), value, parent);
+				addIndependentParameterValue(param.getName(), param.getExpression().getString(), parent);
 			}
 		} else {
 			boolean isActorDependent = inputParameters.size() < param

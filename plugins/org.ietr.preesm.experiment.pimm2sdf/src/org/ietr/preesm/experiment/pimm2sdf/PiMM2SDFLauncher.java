@@ -63,7 +63,7 @@ public class PiMM2SDFLauncher {
 		Set<SDFGraph> result = new HashSet<SDFGraph>();
 
 		// Get all the available values for all the parameters
-		Map<String, List<Integer>> parametersValues = getDynamicParametersValues();
+		Map<String, List<Integer>> parametersValues = getParametersValues();
 		// Get the values for Parameters directly contained by graph (top-level
 		// parameters), if any
 		Map<String, List<Integer>> outerParametersValues = new HashMap<String, List<Integer>>();
@@ -112,7 +112,7 @@ public class PiMM2SDFLauncher {
 		return result;
 	}
 
-	private Map<String, List<Integer>> getDynamicParametersValues() {
+	private Map<String, List<Integer>> getParametersValues() {
 		Map<String, List<Integer>> result = new HashMap<String, List<Integer>>();
 
 		for (ParameterValue paramValue : scenario.getParameterValueManager()
@@ -124,7 +124,7 @@ public class PiMM2SDFLauncher {
 				break;
 			case INDEPENDENT:
 				List<Integer> values = new ArrayList<Integer>();
-				int value = paramValue.getValue();
+				int value = Integer.parseInt(paramValue.getValue());
 				values.add(value);				
 				result.put(paramValue.getName(), values);
 				break;

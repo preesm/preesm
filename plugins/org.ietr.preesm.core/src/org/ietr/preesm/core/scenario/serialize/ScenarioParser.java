@@ -237,13 +237,9 @@ public class ScenarioParser {
 
 		switch (type) {
 		case "INDEPENDENT":
-		case "STATIC": // Retro-compatibility
-			int value = 1;
-			if (stringValue != null) {
-				value = Integer.parseInt(stringValue);
-			}			
+		case "STATIC": // Retro-compatibility		
 			scenario.getParameterValueManager().addIndependentParameterValue(
-					name, value, parent);
+					name, stringValue, parent);
 			break;
 		case "ACTOR_DEPENDENT":
 		case "DYNAMIC": // Retro-compatibility

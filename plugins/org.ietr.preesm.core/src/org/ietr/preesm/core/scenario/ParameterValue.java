@@ -79,7 +79,7 @@ public class ParameterValue {
 	 * Type specific attributes
 	 */
 	/* INDEPENDENT */
-	private int value;
+	private String value;
 
 	/* ACTOR_DEPENDENT */
 	private Set<Integer> values;
@@ -143,7 +143,7 @@ public class ParameterValue {
 	/**
 	 * @return the value
 	 */
-	public int getValue() {
+	public String getValue() {
 		return value;
 	}
 
@@ -158,7 +158,7 @@ public class ParameterValue {
 	 * @param value
 	 *            the value to set
 	 */
-	public void setValue(int value) {
+	public void setValue(String value) {
 		this.value = value;
 	}
 
