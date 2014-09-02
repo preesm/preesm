@@ -46,7 +46,6 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.Parameter#isLocallyStatic <em>Locally Static</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Parameter#isConfigurationInterface <em>Configuration Interface</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Parameter#getGraphPort <em>Graph Port</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Parameter#getExpression <em>Expression</em>}</li>
@@ -59,30 +58,24 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  */
 public interface Parameter extends AbstractVertex, ISetter, PiMMVisitable {
 	/**
-	 * Returns the value of the '<em><b>Locally Static</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Locally Static</em>' attribute isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Locally Static</em>' attribute.
-	 * @see #isSetLocallyStatic()
-	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameter_LocallyStatic()
-	 * @model unsettable="true" required="true" changeable="false" volatile="true"
+	 * @model kind="operation"
 	 * @generated
 	 */
 	boolean isLocallyStatic();
 
 	/**
-	 * Returns whether the value of the '{@link org.ietr.preesm.experiment.model.pimm.Parameter#isLocallyStatic <em>Locally Static</em>}' attribute is set.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return whether the value of the '<em>Locally Static</em>' attribute is set.
-	 * @see #isLocallyStatic()
+	 * @model kind="operation"
 	 * @generated
 	 */
-	boolean isSetLocallyStatic();
+	boolean isDependent();
 
 	/**
 	 * Returns the value of the '<em><b>Configuration Interface</b></em>' attribute.

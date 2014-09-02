@@ -1018,22 +1018,13 @@ public interface PiMMPackage extends EPackage {
 	int PARAMETER__OUTGOING_DEPENDENCIES = ABSTRACT_VERTEX_FEATURE_COUNT + 0;
 
 	/**
-	 * The feature id for the '<em><b>Locally Static</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int PARAMETER__LOCALLY_STATIC = ABSTRACT_VERTEX_FEATURE_COUNT + 1;
-
-	/**
 	 * The feature id for the '<em><b>Configuration Interface</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PARAMETER__CONFIGURATION_INTERFACE = ABSTRACT_VERTEX_FEATURE_COUNT + 2;
+	int PARAMETER__CONFIGURATION_INTERFACE = ABSTRACT_VERTEX_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Graph Port</b></em>' reference.
@@ -1042,7 +1033,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int PARAMETER__GRAPH_PORT = ABSTRACT_VERTEX_FEATURE_COUNT + 3;
+	int PARAMETER__GRAPH_PORT = ABSTRACT_VERTEX_FEATURE_COUNT + 2;
 
 	/**
 	 * The feature id for the '<em><b>Expression</b></em>' containment reference.
@@ -1051,7 +1042,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int PARAMETER__EXPRESSION = ABSTRACT_VERTEX_FEATURE_COUNT + 4;
+	int PARAMETER__EXPRESSION = ABSTRACT_VERTEX_FEATURE_COUNT + 3;
 
 	/**
 	 * The number of structural features of the '<em>Parameter</em>' class.
@@ -1060,7 +1051,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int PARAMETER_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 5;
+	int PARAMETER_FEATURE_COUNT = ABSTRACT_VERTEX_FEATURE_COUNT + 4;
 
 
 	/**
@@ -1139,15 +1130,6 @@ public interface PiMMPackage extends EPackage {
 	 * @ordered
 	 */
 	int CONFIG_INPUT_INTERFACE__OUTGOING_DEPENDENCIES = PARAMETER__OUTGOING_DEPENDENCIES;
-
-	/**
-	 * The feature id for the '<em><b>Locally Static</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int CONFIG_INPUT_INTERFACE__LOCALLY_STATIC = PARAMETER__LOCALLY_STATIC;
 
 	/**
 	 * The feature id for the '<em><b>Configuration Interface</b></em>' attribute.
@@ -1961,17 +1943,6 @@ public interface PiMMPackage extends EPackage {
 	EClass getParameter();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Parameter#isLocallyStatic <em>Locally Static</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Locally Static</em>'.
-	 * @see org.ietr.preesm.experiment.model.pimm.Parameter#isLocallyStatic()
-	 * @see #getParameter()
-	 * @generated
-	 */
-	EAttribute getParameter_LocallyStatic();
-
-	/**
 	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Parameter#isConfigurationInterface <em>Configuration Interface</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2628,14 +2599,6 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EClass PARAMETER = eINSTANCE.getParameter();
-
-		/**
-		 * The meta object literal for the '<em><b>Locally Static</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute PARAMETER__LOCALLY_STATIC = eINSTANCE.getParameter_LocallyStatic();
 
 		/**
 		 * The meta object literal for the '<em><b>Configuration Interface</b></em>' attribute feature.
