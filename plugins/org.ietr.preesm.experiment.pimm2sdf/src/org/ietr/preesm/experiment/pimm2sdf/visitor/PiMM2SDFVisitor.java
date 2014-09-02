@@ -401,7 +401,11 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitConfigInputInterface(ConfigInputInterface cii) {
-		// DO NOTHING
+		ISetter setter = cii.getGraphPort().getIncomingDependency().getSetter();
+		// Setter of an incoming dependency into a ConfigInputInterface must be
+		// a parameter
+		if (setter instanceof Parameter)
+			cii.setExpression(((Parameter) setter).getExpression());
 	}
 
 	@Override
