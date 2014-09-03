@@ -309,7 +309,6 @@ public class PiWriter {
 		// Set the kind of the Actor
 		vertexElt.setAttribute("kind", "actor");
 		writeRefinement(vertexElt, actor.getRefinement());
-		writeMemoryScript(vertexElt, actor.getMemoryScriptPath());
 		// writeDataElt(vertexElt, "kind", "actor");
 		// Write ports of the actor
 		writePorts(vertexElt, actor.getConfigInputPorts());
@@ -319,11 +318,6 @@ public class PiWriter {
 
 	}
 
-	private void writeMemoryScript(Element vertexElt, IPath memoryScriptPath) {
-		if (memoryScriptPath != null)
-			writeDataElt(vertexElt, PiXMLIdentifiers.ACTOR_MEMORY_SCRIPT,
-					memoryScriptPath.makeRelative().toPortableString());
-	}
 	/**
 	 * Add a data child {@link Element} to the parent {@link Element} whit the
 	 * given key name and the given content. If the {@link Key} does not exist
@@ -609,8 +603,10 @@ public class PiWriter {
 	 */
 	protected void writeRefinement(Element vertexElt, Refinement refinement) {
 		if (refinement != null && refinement.getFilePath() != null) {
-			writeDataElt(vertexElt, PiXMLIdentifiers.REFINEMENT, refinement
-					.getFilePath().toOSString());
+			// The makeRelative() call ensures that the path is relative to the
+			// project.
+			writeDataElt(vertexElt, PiXMLIdentifiers.REFINEMENT, refinement.getFilePath()
+					.makeRelative().toPortableString());
 			if (refinement instanceof HRefinement) {
 				HRefinement hrefinement = (HRefinement) refinement;
 				writeFunctionPrototype(vertexElt,
