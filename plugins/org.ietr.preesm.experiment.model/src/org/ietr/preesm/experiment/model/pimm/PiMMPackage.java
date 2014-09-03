@@ -797,13 +797,22 @@ public interface PiMMPackage extends EPackage {
 	int FIFO__ID = 3;
 
 	/**
+	 * The feature id for the '<em><b>Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FIFO__TYPE = 4;
+
+	/**
 	 * The number of structural features of the '<em>Fifo</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int FIFO_FEATURE_COUNT = 4;
+	int FIFO_FEATURE_COUNT = 5;
 
 
 	/**
@@ -2163,6 +2172,17 @@ public interface PiMMPackage extends EPackage {
 	EAttribute getFifo_Id();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.ietr.preesm.experiment.model.pimm.Fifo#getType <em>Type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Type</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.Fifo#getType()
+	 * @see #getFifo()
+	 * @generated
+	 */
+	EAttribute getFifo_Type();
+
+	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.InterfaceActor <em>Interface Actor</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2914,6 +2934,14 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute FIFO__ID = eINSTANCE.getFifo_Id();
+
+		/**
+		 * The meta object literal for the '<em><b>Type</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute FIFO__TYPE = eINSTANCE.getFifo_Type();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl <em>Interface Actor</em>}' class.

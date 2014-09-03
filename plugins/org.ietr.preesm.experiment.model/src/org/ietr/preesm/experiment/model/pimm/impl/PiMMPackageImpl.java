@@ -662,6 +662,15 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getFifo_Type() {
+		return (EAttribute)fifoEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getInterfaceActor() {
 		return interfaceActorEClass;
 	}
@@ -1114,6 +1123,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		createEReference(fifoEClass, FIFO__TARGET_PORT);
 		createEReference(fifoEClass, FIFO__DELAY);
 		createEAttribute(fifoEClass, FIFO__ID);
+		createEAttribute(fifoEClass, FIFO__TYPE);
 
 		interfaceActorEClass = createEClass(INTERFACE_ACTOR);
 		createEReference(interfaceActorEClass, INTERFACE_ACTOR__GRAPH_PORT);
@@ -1275,6 +1285,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEReference(getFifo_TargetPort(), this.getDataInputPort(), this.getDataInputPort_IncomingFifo(), "targetPort", null, 1, 1, Fifo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getFifo_Delay(), this.getDelay(), null, "delay", null, 0, 1, Fifo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getFifo_Id(), ecorePackage.getEString(), "id", null, 1, 1, Fifo.class, !IS_TRANSIENT, IS_VOLATILE, !IS_CHANGEABLE, IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
+		initEAttribute(getFifo_Type(), ecorePackage.getEString(), "type", null, 0, 1, Fifo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(interfaceActorEClass, InterfaceActor.class, "InterfaceActor", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getInterfaceActor_GraphPort(), this.getPort(), null, "graphPort", null, 1, 1, InterfaceActor.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
