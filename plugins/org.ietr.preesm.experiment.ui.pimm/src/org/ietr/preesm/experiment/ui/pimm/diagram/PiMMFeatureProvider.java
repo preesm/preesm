@@ -129,6 +129,7 @@ import org.ietr.preesm.experiment.ui.pimm.features.RenameAbstractVertexFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.RenameActorPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.SetActorMemoryScriptFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.SetActorRefinementFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.SetFifoTypeFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.SetPortMemoryAnnotationFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.SetVisibleAllDependenciesFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.SetVisibleDependenciesFromParameterFeature;
@@ -261,6 +262,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
 		if (obj instanceof Fifo) {
 			features.add(new AddDelayFeature(this));
+			features.add(new SetFifoTypeFeature(this));
 		}
 
 		return features.toArray(new ICustomFeature[features.size()]);
