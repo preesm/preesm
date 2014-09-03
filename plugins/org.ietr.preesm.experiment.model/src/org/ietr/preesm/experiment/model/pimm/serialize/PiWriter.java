@@ -595,8 +595,10 @@ public class PiWriter {
 	protected void writeRefinement(Element vertexElt, Refinement refinement) {
 		String ref_name = "graph_desc";
 		if (refinement != null && refinement.getFilePath() != null) {
+			// The makeRelative() call ensures that the path is relative to the
+			// project.
 			writeDataElt(vertexElt, ref_name, refinement.getFilePath()
-					.toPortableString());
+					.makeRelative().toPortableString());
 			if (refinement instanceof HRefinement) {
 				HRefinement hrefinement = (HRefinement) refinement;
 				writeFunctionPrototype(vertexElt,
@@ -623,6 +625,7 @@ public class PiWriter {
 		protoElt.setAttribute("name", p.getName());
 		protoElt.setAttribute("type", p.getType());
 		protoElt.setAttribute("direction", p.getDirection().toString());
-		protoElt.setAttribute("isConfig", String.valueOf(p.isIsConfigurationParameter()));
+		protoElt.setAttribute("isConfig",
+				String.valueOf(p.isIsConfigurationParameter()));
 	}
 }
