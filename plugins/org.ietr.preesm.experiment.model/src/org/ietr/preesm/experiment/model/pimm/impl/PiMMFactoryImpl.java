@@ -109,6 +109,9 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 			case PiMMPackage.HREFINEMENT: return createHRefinement();
 			case PiMMPackage.FUNCTION_PROTOTYPE: return createFunctionPrototype();
 			case PiMMPackage.FUNCTION_PARAMETER: return createFunctionParameter();
+			case PiMMPackage.BROADCAST_ACTOR: return createBroadcastActor();
+			case PiMMPackage.JOIN_ACTOR: return createJoinActor();
+			case PiMMPackage.FORK_ACTOR: return createForkActor();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -328,6 +331,36 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	public FunctionParameter createFunctionParameter() {
 		FunctionParameterImpl functionParameter = new FunctionParameterImpl();
 		return functionParameter;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public BroadcastActor createBroadcastActor() {
+		BroadcastActorImpl broadcastActor = new BroadcastActorImpl();
+		return broadcastActor;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public JoinActor createJoinActor() {
+		JoinActorImpl joinActor = new JoinActorImpl();
+		return joinActor;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public ForkActor createForkActor() {
+		ForkActorImpl forkActor = new ForkActorImpl();
+		return forkActor;
 	}
 
 	/**

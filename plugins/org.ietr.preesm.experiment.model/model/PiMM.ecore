@@ -141,4 +141,7 @@
     <eLiterals name="UNUSED" value="3" literal="UNUSED"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EDataType" name="IPath" instanceClassName="org.eclipse.core.runtime.IPath"/>
+  <eClassifiers xsi:type="ecore:EClass" name="BroadcastActor" eSuperTypes="#//AbstractActor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="JoinActor" eSuperTypes="#//AbstractActor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ForkActor" eSuperTypes="#//AbstractActor"/>
 </ecore:EPackage>

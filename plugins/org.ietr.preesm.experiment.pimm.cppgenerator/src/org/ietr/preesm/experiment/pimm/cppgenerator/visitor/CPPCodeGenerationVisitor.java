@@ -48,6 +48,7 @@ import java.util.Map;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
@@ -61,8 +62,10 @@ import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -614,6 +617,21 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitHRefinement(HRefinementImpl hRefinementImpl) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public void visitBroadcastActor(BroadcastActor ba) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void visitJoinActor(JoinActor ja) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void visitForkActor(ForkActor fa) {
 		throw new UnsupportedOperationException();
 	}
 

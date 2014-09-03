@@ -53,6 +53,9 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFExpressionEdgePropertyType;
@@ -65,6 +68,7 @@ import org.ietr.preesm.codegen.model.CodeGenParameter;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
@@ -78,9 +82,11 @@ import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -309,13 +315,15 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 		v.setName(a.getName());
 		// Handle vertex's path inside the graph hierarchy
 		v.setInfo(a.getPath());
-		// Handle vertex's refinement (description of the vertex's behavior: function prototypes or subgraphs)
+		// Handle vertex's refinement (description of the vertex's behavior:
+		// function prototypes or subgraphs)
 		Refinement piRef = a.getRefinement();
 		piRef.accept(this);
 		v.setRefinement(currentSDFRefinement);
 		// Handle path to memory script of the vertex
 		if (a.getMemoryScriptPath() != null) {
-			v.setPropertyValue(SDFVertex.MEMORY_SCRIPT, a.getMemoryScriptPath().toOSString());
+			v.setPropertyValue(SDFVertex.MEMORY_SCRIPT, a.getMemoryScriptPath()
+					.toOSString());
 		}
 		// Handle input parameters as instance arguments
 		for (ConfigInputPort p : a.getConfigInputPorts()) {
@@ -356,7 +364,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 				sdfOutputPort.setName(piOutputPort.getName());
 				sdfSource.addSink(sdfOutputPort);
 			}
-			
+
 			// Handle the target port (DataInputPort in PISDF,
 			// SDFSourceInterfaceVertex in IBSDF)
 			SDFSourceInterfaceVertex sdfInputPort;
@@ -391,17 +399,19 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 			AbstractEdgePropertyType<ExpressionValue> prod = new SDFExpressionEdgePropertyType(
 					new ExpressionValue(piProd));
 
-			SDFEdge edge = result.addEdge(sdfSource, sdfOutputPort, sdfTarget, sdfInputPort,
-					prod, cons, delay);
-			
+			SDFEdge edge = result.addEdge(sdfSource, sdfOutputPort, sdfTarget,
+					sdfInputPort, prod, cons, delay);
+
 			// Handle memory annotations
-			convertAnnotationsFromTo(piOutputPort, edge, SDFEdge.SOURCE_PORT_MODIFIER);
-			convertAnnotationsFromTo(piInputPort, edge, SDFEdge.TARGET_PORT_MODIFIER);			
+			convertAnnotationsFromTo(piOutputPort, edge,
+					SDFEdge.SOURCE_PORT_MODIFIER);
+			convertAnnotationsFromTo(piInputPort, edge,
+					SDFEdge.TARGET_PORT_MODIFIER);
 		}
 	}
 
-	private void convertAnnotationsFromTo(DataPort piPort,
-			SDFEdge edge, String property) {
+	private void convertAnnotationsFromTo(DataPort piPort, SDFEdge edge,
+			String property) {
 		switch (piPort.getAnnotation()) {
 		case READ_ONLY:
 			edge.setPropertyValue(property, SDFEdge.MODIFIER_READ_ONLY);
@@ -412,7 +422,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 		case UNUSED:
 			edge.setPropertyValue(property, SDFEdge.MODIFIER_UNUSED);
 			break;
-			default:
+		default:
 		}
 	}
 
@@ -529,6 +539,81 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 			currentArgument = new CodeGenArgument(f.getName(), direction);
 			currentArgument.setType(f.getType());
 		}
+	}
+
+	@Override
+	public void visitBroadcastActor(BroadcastActor ba) {
+		SDFBroadcastVertex bv = new SDFBroadcastVertex();
+		// Handle vertex's name
+		bv.setName(ba.getName());
+		// Handle vertex's path inside the graph hierarchy
+		bv.setInfo(ba.getPath());
+		
+		// Handle input parameters as instance arguments
+		for (ConfigInputPort p : ba.getConfigInputPorts()) {
+			ISetter setter = p.getIncomingDependency().getSetter();
+			if (setter instanceof Parameter) {
+				Parameter param = (Parameter) setter;
+				Argument arg = new Argument(p.getName());
+				arg.setValue(param.getName());
+				bv.getArguments().addArgument(arg);
+			}
+		}
+
+		visitAbstractActor(ba);
+
+		result.addVertex(bv);
+		piVx2SDFVx.put(ba, bv);
+	}
+
+	@Override
+	public void visitJoinActor(JoinActor ja) {
+		SDFJoinVertex jv = new SDFJoinVertex();
+		// Handle vertex's name
+		jv.setName(ja.getName());
+		// Handle vertex's path inside the graph hierarchy
+		jv.setInfo(ja.getPath());
+		
+		// Handle input parameters as instance arguments
+		for (ConfigInputPort p : ja.getConfigInputPorts()) {
+			ISetter setter = p.getIncomingDependency().getSetter();
+			if (setter instanceof Parameter) {
+				Parameter param = (Parameter) setter;
+				Argument arg = new Argument(p.getName());
+				arg.setValue(param.getName());
+				jv.getArguments().addArgument(arg);
+			}
+		}
+
+		visitAbstractActor(ja);
+
+		result.addVertex(jv);
+		piVx2SDFVx.put(ja, jv);
+	}
+
+	@Override
+	public void visitForkActor(ForkActor fa) {
+		SDFForkVertex fv = new SDFForkVertex();
+		// Handle vertex's name
+		fv.setName(fa.getName());
+		// Handle vertex's path inside the graph hierarchy
+		fv.setInfo(fa.getPath());
+		
+		// Handle input parameters as instance arguments
+		for (ConfigInputPort p : fa.getConfigInputPorts()) {
+			ISetter setter = p.getIncomingDependency().getSetter();
+			if (setter instanceof Parameter) {
+				Parameter param = (Parameter) setter;
+				Argument arg = new Argument(p.getName());
+				arg.setValue(param.getName());
+				fv.getArguments().addArgument(arg);
+			}
+		}
+
+		visitAbstractActor(fa);
+
+		result.addVertex(fv);
+		piVx2SDFVx.put(fa, fv);
 	}
 
 	public SDFGraph getResult() {

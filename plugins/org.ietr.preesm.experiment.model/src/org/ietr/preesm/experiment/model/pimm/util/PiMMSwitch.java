@@ -265,6 +265,33 @@ public class PiMMSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case PiMMPackage.BROADCAST_ACTOR: {
+				BroadcastActor broadcastActor = (BroadcastActor)theEObject;
+				T result = caseBroadcastActor(broadcastActor);
+				if (result == null) result = caseAbstractActor(broadcastActor);
+				if (result == null) result = caseAbstractVertex(broadcastActor);
+				if (result == null) result = caseParameterizable(broadcastActor);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case PiMMPackage.JOIN_ACTOR: {
+				JoinActor joinActor = (JoinActor)theEObject;
+				T result = caseJoinActor(joinActor);
+				if (result == null) result = caseAbstractActor(joinActor);
+				if (result == null) result = caseAbstractVertex(joinActor);
+				if (result == null) result = caseParameterizable(joinActor);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case PiMMPackage.FORK_ACTOR: {
+				ForkActor forkActor = (ForkActor)theEObject;
+				T result = caseForkActor(forkActor);
+				if (result == null) result = caseAbstractActor(forkActor);
+				if (result == null) result = caseAbstractVertex(forkActor);
+				if (result == null) result = caseParameterizable(forkActor);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -641,6 +668,51 @@ public class PiMMSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseDataPort(DataPort object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Broadcast Actor</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Broadcast Actor</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseBroadcastActor(BroadcastActor object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Join Actor</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Join Actor</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseJoinActor(JoinActor object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Fork Actor</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Fork Actor</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseForkActor(ForkActor object) {
 		return null;
 	}
 

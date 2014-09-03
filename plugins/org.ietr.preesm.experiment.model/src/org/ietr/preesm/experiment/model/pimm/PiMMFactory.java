@@ -227,6 +227,33 @@ public interface PiMMFactory extends EFactory {
 	FunctionParameter createFunctionParameter();
 
 	/**
+	 * Returns a new object of class '<em>Broadcast Actor</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Broadcast Actor</em>'.
+	 * @generated
+	 */
+	BroadcastActor createBroadcastActor();
+
+	/**
+	 * Returns a new object of class '<em>Join Actor</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Join Actor</em>'.
+	 * @generated
+	 */
+	JoinActor createJoinActor();
+
+	/**
+	 * Returns a new object of class '<em>Fork Actor</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Fork Actor</em>'.
+	 * @generated
+	 */
+	ForkActor createForkActor();
+
+	/**
 	 * Returns an instance of data type '<em>Direction</em>' corresponding the given literal.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

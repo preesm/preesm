@@ -172,6 +172,18 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 				return createDataPortAdapter();
 			}
 			@Override
+			public Adapter caseBroadcastActor(BroadcastActor object) {
+				return createBroadcastActorAdapter();
+			}
+			@Override
+			public Adapter caseJoinActor(JoinActor object) {
+				return createJoinActorAdapter();
+			}
+			@Override
+			public Adapter caseForkActor(ForkActor object) {
+				return createForkActorAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -538,6 +550,48 @@ public class PiMMAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createDataPortAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.BroadcastActor <em>Broadcast Actor</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.ietr.preesm.experiment.model.pimm.BroadcastActor
+	 * @generated
+	 */
+	public Adapter createBroadcastActorAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.JoinActor <em>Join Actor</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.ietr.preesm.experiment.model.pimm.JoinActor
+	 * @generated
+	 */
+	public Adapter createJoinActorAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.ietr.preesm.experiment.model.pimm.ForkActor <em>Fork Actor</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.ietr.preesm.experiment.model.pimm.ForkActor
+	 * @generated
+	 */
+	public Adapter createForkActorAdapter() {
 		return null;
 	}
 
