@@ -38,12 +38,19 @@ package org.ietr.preesm.experiment.model.transformation.properties;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.graphiti.features.ILayoutFeature;
+import org.eclipse.graphiti.features.context.impl.CustomContext;
+import org.eclipse.graphiti.features.context.impl.LayoutContext;
+import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.platform.GFPropertySection;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
@@ -55,12 +62,15 @@ import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
+import org.ietr.preesm.experiment.ui.pimm.features.SetPortMemoryAnnotationFeature;
 
 /**
  * @author Romina Racca
@@ -75,8 +85,10 @@ public class PortPropertiesSection extends GFPropertySection implements
 	private CLabel lblExpression;
 	private CLabel lblValue;
 	private CLabel lblValueObj;
-	
-	private final int FIRST_COLUMN_WIDTH = 150;
+	private CLabel lblAnnotation;
+	private CCombo comboAnnotation;
+
+	private final int FIRST_COLUMN_WIDTH = 200;
 
 	/**
 	 * A text expression can be as an expression: value numbers, trigonometric
@@ -138,12 +150,83 @@ public class PortPropertiesSection extends GFPropertySection implements
 		data.top = new FormAttachment(lblExpression);
 		lblValue.setLayoutData(data);
 
+		/**** MEMORY ANNOTATION ****/
+		comboAnnotation = factory.createCCombo(composite);
+		for (PortMemoryAnnotation pma : PortMemoryAnnotation.values()) {
+			comboAnnotation.add(pma.toString(), pma.getValue());
+		}
+		
+		data = new FormData();
+		data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
+		data.right = new FormAttachment(25, 0);
+		data.top = new FormAttachment(lblValueObj);
+		comboAnnotation.setLayoutData(data);
+
+		lblAnnotation = factory.createCLabel(composite, "Memory Annotation:");
+		data = new FormData();
+		data.left = new FormAttachment(0, 0);
+		data.right = new FormAttachment(comboAnnotation, -HSPACE);
+		data.top = new FormAttachment(lblValue);
+		lblAnnotation.setLayoutData(data);
+
 		txtExpression.addModifyListener(new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent e) {
 				updateProperties();
 			}
 		});
+
+		comboAnnotation.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				PictogramElement pes[] = new PictogramElement[1];
+				pes[0] = getSelectedPictogramElement();
+
+				CustomContext context = new CustomContext(pes);
+				ICustomFeature[] setPotMemoryAnnotationFeature = getDiagramTypeProvider()
+						.getFeatureProvider().getCustomFeatures(context);
+
+				for (ICustomFeature feature : setPotMemoryAnnotationFeature) {
+					if (feature instanceof SetPortMemoryAnnotationFeature) {
+						PortMemoryAnnotation pma = null;
+						switch (((CCombo) e.getSource()).getSelectionIndex()) {
+						case PortMemoryAnnotation.READ_ONLY_VALUE:
+							pma = PortMemoryAnnotation.READ_ONLY;
+							break;
+						case PortMemoryAnnotation.WRITE_ONLY_VALUE:
+							pma = PortMemoryAnnotation.WRITE_ONLY;
+							break;
+						case PortMemoryAnnotation.UNUSED_VALUE:
+							pma = PortMemoryAnnotation.UNUSED;
+							break;
+						default:
+							break;
+
+						}
+						((SetPortMemoryAnnotationFeature) feature)
+								.setCurrentPMA(pma);
+
+						getDiagramTypeProvider().getDiagramBehavior()
+								.executeFeature(feature, context);
+						LayoutContext contextLayout = new LayoutContext(
+								getSelectedPictogramElement());
+						ILayoutFeature layoutFeature = getDiagramTypeProvider()
+								.getFeatureProvider().getLayoutFeature(
+										contextLayout);
+						getDiagramTypeProvider().getDiagramBehavior()
+								.executeFeature(layoutFeature, contextLayout);
+					}
+				}
+
+				refresh();
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+
 	}
 
 	/**
@@ -229,6 +312,10 @@ public class PortPropertiesSection extends GFPropertySection implements
 				}
 			}// end InputPort
 
+			if (bo instanceof DataPort) {
+				comboAnnotation.select(((DataPort) bo).getAnnotation().getValue());
+			}
+			
 			if (bo instanceof Delay) {
 				Delay delay = (Delay) bo;
 				if (delay.getExpression().getString()
@@ -238,7 +325,7 @@ public class PortPropertiesSection extends GFPropertySection implements
 					getDiagramTypeProvider().getDiagramBehavior()
 							.refreshRenderingDecorators(pe);
 				}
-			}// end Delay			
+			}// end Delay
 		}
 		refresh();
 	}

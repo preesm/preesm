@@ -77,6 +77,7 @@ import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
@@ -128,6 +129,7 @@ import org.ietr.preesm.experiment.ui.pimm.features.RenameAbstractVertexFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.RenameActorPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.SetActorMemoryScriptFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.SetActorRefinementFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.SetPortMemoryAnnotationFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.SetVisibleAllDependenciesFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.SetVisibleDependenciesFromParameterFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.UpdateAbstractVertexFeature;
@@ -251,6 +253,10 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 			features.add(new RenameActorPortFeature(this));
 			features.add(new MoveUpActorPortFeature(this));
 			features.add(new MoveDownActorPortFeature(this));
+		}
+		
+		if (obj instanceof DataPort) {
+			features.add(new SetPortMemoryAnnotationFeature(this));
 		}
 
 		if (obj instanceof Fifo) {
