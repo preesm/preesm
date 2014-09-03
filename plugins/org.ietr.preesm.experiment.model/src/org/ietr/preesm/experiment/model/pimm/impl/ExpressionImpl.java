@@ -42,6 +42,7 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
@@ -58,17 +59,20 @@ import com.singularsys.jep.ParseException;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl#getString <em>String</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl#getString
+ * <em>String</em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @generated
  */
 public class ExpressionImpl extends EObjectImpl implements Expression {
 
 	/**
-	 * The default value of the '{@link #getString() <em>String</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * The default value of the '{@link #getString() <em>String</em>}'
+	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getString()
 	 * @generated
 	 * @ordered
@@ -77,6 +81,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 	/**
 	 * The cached value of the '{@link #getString() <em>String</em>}' attribute.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getString()
 	 * @generated
 	 * @ordered
@@ -85,6 +90,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected ExpressionImpl() {
@@ -93,6 +99,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -102,6 +109,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public String getString() {
@@ -110,13 +118,15 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public void setString(String newString) {
 		String oldString = string;
 		string = newString;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.EXPRESSION__STRING, oldString, string));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					PiMMPackage.EXPRESSION__STRING, oldString, string));
 	}
 
 	/**
@@ -149,7 +159,8 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 
 					String parameterName;
 					if (parameterizableObj instanceof Parameter
-							|| parameterizableObj instanceof Delay)
+							|| parameterizableObj instanceof Delay
+							|| parameterizableObj instanceof InterfaceActor)
 						parameterName = p.getName();
 					else
 						parameterName = port.getName();
@@ -161,14 +172,15 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 					else
 						evaluatedParam = p.getExpression().evaluate();
 
-					jep.addVariable(parameterName, Double.parseDouble(evaluatedParam));
+					jep.addVariable(parameterName,
+							Double.parseDouble(evaluatedParam));
 				}
 			}
 
 			jep.parse(allExpression);
-			
+
 			String evaluation = jep.evaluate().toString();
-			
+
 			return evaluation;
 
 		} catch (ParseException e) {
@@ -185,65 +197,72 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case PiMMPackage.EXPRESSION__STRING:
-				return getString();
+		case PiMMPackage.EXPRESSION__STRING:
+			return getString();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case PiMMPackage.EXPRESSION__STRING:
-				setString((String)newValue);
-				return;
+		case PiMMPackage.EXPRESSION__STRING:
+			setString((String) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case PiMMPackage.EXPRESSION__STRING:
-				setString(STRING_EDEFAULT);
-				return;
+		case PiMMPackage.EXPRESSION__STRING:
+			setString(STRING_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case PiMMPackage.EXPRESSION__STRING:
-				return STRING_EDEFAULT == null ? string != null : !STRING_EDEFAULT.equals(string);
+		case PiMMPackage.EXPRESSION__STRING:
+			return STRING_EDEFAULT == null ? string != null : !STRING_EDEFAULT
+					.equals(string);
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy()) return super.toString();
+		if (eIsProxy())
+			return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (string: ");
