@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.ietr.dftools.algorithm.exporter.Key;
@@ -51,6 +52,7 @@ import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
@@ -307,6 +309,7 @@ public class PiWriter {
 		// Set the kind of the Actor
 		vertexElt.setAttribute("kind", "actor");
 		writeRefinement(vertexElt, actor.getRefinement());
+		writeMemoryScript(vertexElt, actor.getMemoryScriptPath());
 		// writeDataElt(vertexElt, "kind", "actor");
 		// Write ports of the actor
 		writePorts(vertexElt, actor.getConfigInputPorts());
@@ -314,6 +317,12 @@ public class PiWriter {
 		writePorts(vertexElt, actor.getDataInputPorts());
 		writePorts(vertexElt, actor.getDataOutputPorts());
 
+	}
+
+	private void writeMemoryScript(Element vertexElt, IPath memoryScriptPath) {
+		if (memoryScriptPath != null)
+			writeDataElt(vertexElt, PiXMLIdentifiers.ACTOR_MEMORY_SCRIPT,
+					memoryScriptPath.makeRelative().toPortableString());
 	}
 
 	/**
@@ -555,7 +564,7 @@ public class PiWriter {
 	protected void writePorts(Element vertexElt, EList<?> ports) {
 		for (Object portObj : ports) {
 			Port port = (Port) portObj;
-			Element portElt = appendChild(vertexElt, "port");
+			Element portElt = appendChild(vertexElt, PiXMLIdentifiers.PORT);
 
 			String name = port.getName();
 			if (name == null || name.isEmpty()) {
@@ -564,22 +573,29 @@ public class PiWriter {
 					name = ((AbstractVertex) container).getName();
 			}
 
-			portElt.setAttribute("name", port.getName());
-			portElt.setAttribute("kind", port.getKind());
+			portElt.setAttribute(PiXMLIdentifiers.PORT_NAME, port.getName());
+			portElt.setAttribute(PiXMLIdentifiers.PORT_KIND, port.getKind());
 
 			switch (port.getKind()) {
 			case "input":
-				portElt.setAttribute("expr", ((DataInputPort) port)
-						.getExpression().getString());
+				portElt.setAttribute(PiXMLIdentifiers.PORT_EXPRESSION,
+						((DataInputPort) port).getExpression().getString());
 				break;
 			case "output":
-				portElt.setAttribute("expr", ((DataOutputPort) port)
-						.getExpression().getString());
+				portElt.setAttribute(PiXMLIdentifiers.PORT_EXPRESSION,
+						((DataOutputPort) port).getExpression().getString());
 				break;
 			case "cfg_input":
 				break;
 			case "cfg_output":
 				break;
+			}
+			if (port instanceof DataPort) {
+				DataPort dataPort = (DataPort) port;
+				if (dataPort.getAnnotation() != null)
+					portElt.setAttribute(
+							PiXMLIdentifiers.PORT_MEMORY_ANNOTATION, dataPort
+									.getAnnotation().toString());
 			}
 		}
 	}
@@ -593,17 +609,18 @@ public class PiWriter {
 	 *            The {@link Refinement} to serialize
 	 */
 	protected void writeRefinement(Element vertexElt, Refinement refinement) {
-		String ref_name = "graph_desc";
 		if (refinement != null && refinement.getFilePath() != null) {
-			writeDataElt(vertexElt, ref_name, refinement.getFilePath()
-					.toOSString());
+			writeDataElt(vertexElt, PiXMLIdentifiers.REFINEMENT, refinement
+					.getFilePath().toOSString());
 			if (refinement instanceof HRefinement) {
 				HRefinement hrefinement = (HRefinement) refinement;
 				writeFunctionPrototype(vertexElt,
-						hrefinement.getLoopPrototype(), "loop");
+						hrefinement.getLoopPrototype(),
+						PiXMLIdentifiers.REFINEMENT_LOOP);
 				if (hrefinement.getInitPrototype() != null)
 					writeFunctionPrototype(vertexElt,
-							hrefinement.getInitPrototype(), "init");
+							hrefinement.getInitPrototype(),
+							PiXMLIdentifiers.REFINEMENT_INIT);
 			}
 		}
 	}
@@ -623,6 +640,7 @@ public class PiWriter {
 		protoElt.setAttribute("name", p.getName());
 		protoElt.setAttribute("type", p.getType());
 		protoElt.setAttribute("direction", p.getDirection().toString());
-		protoElt.setAttribute("isConfig", String.valueOf(p.isIsConfigurationParameter()));
+		protoElt.setAttribute("isConfig",
+				String.valueOf(p.isIsConfigurationParameter()));
 	}
 }
