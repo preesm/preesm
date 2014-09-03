@@ -33,7 +33,7 @@
       <propertySections
             contributorId="PiMM.PropertyContributor">
          <propertySection
-              class="org.ietr.preesm.experiment.model.transformation.properties.PortPropertiesSection"
+              class="org.ietr.preesm.experiment.model.transformation.properties.PortParameterAndDelayPropertiesSection"
               filter="org.ietr.preesm.experiment.model.transformation.properties.PiMMFilter"
               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basic"
               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basic">
