@@ -136,8 +136,9 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="annotation" eType="#//PortMemoryAnnotation"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="PortMemoryAnnotation">
-    <eLiterals name="READ_ONLY" literal="READ_ONLY"/>
-    <eLiterals name="WRITE_ONLY" value="1" literal="WRITE_ONLY"/>
+    <eLiterals name="NONE" literal="NONE"/>
+    <eLiterals name="READ_ONLY" value="1" literal="READ_ONLY"/>
+    <eLiterals name="WRITE_ONLY" value="2" literal="WRITE_ONLY"/>
     <eLiterals name="UNUSED" value="3" literal="UNUSED"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EDataType" name="IPath" instanceClassName="org.eclipse.core.runtime.IPath"/>

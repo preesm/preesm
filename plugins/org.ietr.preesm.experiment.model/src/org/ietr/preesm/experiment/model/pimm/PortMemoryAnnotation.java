@@ -19,6 +19,14 @@ import org.eclipse.emf.common.util.Enumerator;
  */
 public enum PortMemoryAnnotation implements Enumerator {
 	/**
+	 * The '<em><b>NONE</b></em>' literal object.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #NONE_VALUE
+	 * @generated
+	 * @ordered
+	 */
+	NONE(0, "NONE", "NONE"), /**
 	 * The '<em><b>READ ONLY</b></em>' literal object.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -26,7 +34,7 @@ public enum PortMemoryAnnotation implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	READ_ONLY(0, "READ_ONLY", "READ_ONLY"),
+	READ_ONLY(1, "READ_ONLY", "READ_ONLY"),
 
 	/**
 	 * The '<em><b>WRITE ONLY</b></em>' literal object.
@@ -36,7 +44,7 @@ public enum PortMemoryAnnotation implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	WRITE_ONLY(1, "WRITE_ONLY", "WRITE_ONLY"),
+	WRITE_ONLY(2, "WRITE_ONLY", "WRITE_ONLY"),
 
 	/**
 	 * The '<em><b>UNUSED</b></em>' literal object.
@@ -47,6 +55,21 @@ public enum PortMemoryAnnotation implements Enumerator {
 	 * @ordered
 	 */
 	UNUSED(3, "UNUSED", "UNUSED");
+
+	/**
+	 * The '<em><b>NONE</b></em>' literal value.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of '<em><b>NONE</b></em>' literal object isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @see #NONE
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int NONE_VALUE = 0;
 
 	/**
 	 * The '<em><b>READ ONLY</b></em>' literal value.
@@ -61,7 +84,7 @@ public enum PortMemoryAnnotation implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	public static final int READ_ONLY_VALUE = 0;
+	public static final int READ_ONLY_VALUE = 1;
 
 	/**
 	 * The '<em><b>WRITE ONLY</b></em>' literal value.
@@ -76,7 +99,7 @@ public enum PortMemoryAnnotation implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	public static final int WRITE_ONLY_VALUE = 1;
+	public static final int WRITE_ONLY_VALUE = 2;
 
 	/**
 	 * The '<em><b>UNUSED</b></em>' literal value.
@@ -101,6 +124,7 @@ public enum PortMemoryAnnotation implements Enumerator {
 	 */
 	private static final PortMemoryAnnotation[] VALUES_ARRAY =
 		new PortMemoryAnnotation[] {
+			NONE,
 			READ_ONLY,
 			WRITE_ONLY,
 			UNUSED,
@@ -154,6 +178,7 @@ public enum PortMemoryAnnotation implements Enumerator {
 	 */
 	public static PortMemoryAnnotation get(int value) {
 		switch (value) {
+			case NONE_VALUE: return NONE;
 			case READ_ONLY_VALUE: return READ_ONLY;
 			case WRITE_ONLY_VALUE: return WRITE_ONLY;
 			case UNUSED_VALUE: return UNUSED;

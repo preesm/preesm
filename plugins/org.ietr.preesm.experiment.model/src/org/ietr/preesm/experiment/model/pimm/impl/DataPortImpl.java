@@ -48,7 +48,7 @@ public abstract class DataPortImpl extends PortImpl implements DataPort {
 	 * @generated
 	 * @ordered
 	 */
-	protected static final PortMemoryAnnotation ANNOTATION_EDEFAULT = PortMemoryAnnotation.READ_ONLY;
+	protected static final PortMemoryAnnotation ANNOTATION_EDEFAULT = PortMemoryAnnotation.NONE;
 
 	/**
 	 * The cached value of the '{@link #getAnnotation() <em>Annotation</em>}' attribute.

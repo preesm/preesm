@@ -1291,6 +1291,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		addEEnumLiteral(directionEEnum, Direction.OUT);
 
 		initEEnum(portMemoryAnnotationEEnum, PortMemoryAnnotation.class, "PortMemoryAnnotation");
+		addEEnumLiteral(portMemoryAnnotationEEnum, PortMemoryAnnotation.NONE);
 		addEEnumLiteral(portMemoryAnnotationEEnum, PortMemoryAnnotation.READ_ONLY);
 		addEEnumLiteral(portMemoryAnnotationEEnum, PortMemoryAnnotation.WRITE_ONLY);
 		addEEnumLiteral(portMemoryAnnotationEEnum, PortMemoryAnnotation.UNUSED);
