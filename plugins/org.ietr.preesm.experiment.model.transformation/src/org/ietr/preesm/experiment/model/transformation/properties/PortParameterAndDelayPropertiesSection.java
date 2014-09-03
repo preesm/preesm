@@ -59,7 +59,6 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
@@ -77,7 +76,7 @@ import org.ietr.preesm.experiment.ui.pimm.features.SetPortMemoryAnnotationFeatur
  * @author jheulot
  * 
  */
-public class PortPropertiesSection extends GFPropertySection implements
+public class PortParameterAndDelayPropertiesSection extends GFPropertySection implements
 		ITabbedPropertyConstants {
 
 	private CLabel lblName;
@@ -252,38 +251,38 @@ public class PortPropertiesSection extends GFPropertySection implements
 				}
 			}// end Parameter
 
-			if (bo instanceof DataOutputPort) {
-				DataOutputPort oPort = (DataOutputPort) bo;
-				if (oPort.getExpression().getString()
-						.compareTo(txtExpression.getText()) != 0) {
-					setNewExpression(oPort.getExpression(),
-							txtExpression.getText());
-					getDiagramTypeProvider().getDiagramBehavior()
-							.refreshRenderingDecorators(
-									(PictogramElement) (pe.eContainer()));
-					// If oPort is contained by an DataInputInterface, we should
-					// also update the graph port of the DataInputInterface
-					if (oPort.eContainer() instanceof DataInputInterface) {
-						DataInputInterface dii = (DataInputInterface) oPort
-								.eContainer();
-						DataInputPort iPort = (DataInputPort) dii
-								.getGraphPort();
+//			if (bo instanceof DataOutputPort) {
+//				DataOutputPort oPort = (DataOutputPort) bo;
+//				if (oPort.getExpression().getString()
+//						.compareTo(txtExpression.getText()) != 0) {
+//					setNewExpression(oPort.getExpression(),
+//							txtExpression.getText());
+//					getDiagramTypeProvider().getDiagramBehavior()
+//							.refreshRenderingDecorators(
+//									(PictogramElement) (pe.eContainer()));
+//					// If oPort is contained by an DataInputInterface, we should
+//					// also update the graph port of the DataInputInterface
+//					if (oPort.eContainer() instanceof DataInputInterface) {
+//						DataInputInterface dii = (DataInputInterface) oPort
+//								.eContainer();
+//						DataInputPort iPort = (DataInputPort) dii
+//								.getGraphPort();
+//
+//						if (iPort.getExpression().getString()
+//								.compareTo(txtExpression.getText()) != 0) {
+//							setNewExpression(iPort.getExpression(),
+//									txtExpression.getText());
+//							getDiagramTypeProvider()
+//									.getDiagramBehavior()
+//									.refreshRenderingDecorators(
+//											(PictogramElement) (pe.eContainer()));
+//						}
+//					}
+//				}
+//			}// end OutputPort
 
-						if (iPort.getExpression().getString()
-								.compareTo(txtExpression.getText()) != 0) {
-							setNewExpression(iPort.getExpression(),
-									txtExpression.getText());
-							getDiagramTypeProvider()
-									.getDiagramBehavior()
-									.refreshRenderingDecorators(
-											(PictogramElement) (pe.eContainer()));
-						}
-					}
-				}
-			}// end OutputPort
-
-			if (bo instanceof DataInputPort) {
-				DataInputPort iPort = (DataInputPort) bo;
+			if (bo instanceof DataPort) {
+				DataPort iPort = (DataPort) bo;
 				if (iPort.getExpression().getString()
 						.compareTo(txtExpression.getText()) != 0) {
 					setNewExpression(iPort.getExpression(),
@@ -291,7 +290,7 @@ public class PortPropertiesSection extends GFPropertySection implements
 					getDiagramTypeProvider().getDiagramBehavior()
 							.refreshRenderingDecorators(
 									(PictogramElement) (pe.eContainer()));
-					// If oPort is contained by an DataInputInterface, we should
+					// If iPort is contained by an DataInputInterface, we should
 					// also update the graph port of the DataInputInterface
 					if (iPort.eContainer() instanceof DataOutputInterface) {
 						DataOutputInterface doi = (DataOutputInterface) iPort
@@ -310,7 +309,7 @@ public class PortPropertiesSection extends GFPropertySection implements
 						}
 					}
 				}
-			}// end InputPort
+			}// end DataPort
 
 			if (bo instanceof DataPort) {
 				comboAnnotation.select(((DataPort) bo).getAnnotation().getValue());
@@ -370,20 +369,20 @@ public class PortPropertiesSection extends GFPropertySection implements
 				e = ((Parameter) bo).getExpression();
 			}// end Parameter
 
-			if (bo instanceof DataOutputPort) {
-				DataOutputPort oPort = ((DataOutputPort) bo);
+//			if (bo instanceof DataOutputPort) {
+//				DataOutputPort oPort = ((DataOutputPort) bo);
+//
+//				if (oPort.eContainer() instanceof DataInputInterface) {
+//					name = ((DataInputInterface) oPort.eContainer()).getName();
+//				} else {
+//					name = oPort.getName();
+//				}
+//
+//				e = oPort.getExpression();
+//			}// end OutputPort
 
-				if (oPort.eContainer() instanceof DataInputInterface) {
-					name = ((DataInputInterface) oPort.eContainer()).getName();
-				} else {
-					name = oPort.getName();
-				}
-
-				e = oPort.getExpression();
-			}// end OutputPort
-
-			if (bo instanceof DataInputPort) {
-				DataInputPort iPort = ((DataInputPort) bo);
+			if (bo instanceof DataPort) {
+				DataPort iPort = ((DataPort) bo);
 
 				if (iPort.eContainer() instanceof DataOutputInterface) {
 					name = ((DataOutputInterface) iPort.eContainer()).getName();
