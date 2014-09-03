@@ -74,6 +74,7 @@ import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
@@ -81,11 +82,14 @@ import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.ui.pimm.features.AddActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddBroadcastActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddConfigInputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddConfigInputPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddConfigOutputInterfaceFeature;
@@ -97,16 +101,21 @@ import org.ietr.preesm.experiment.ui.pimm.features.AddDataOutputPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddDelayFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddDependencyFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddFifoFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddForkActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddJoinActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddParameterFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.ClearActorMemoryScriptFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.ClearActorRefinementFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.CreateBroadcastActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateConfigInputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateConfigOutputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateDataInputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateDataOutputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateDependencyFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateFifoFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.CreateForkActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.CreateJoinActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateParameterFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteAbstractActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteActorPortFeature;
@@ -157,6 +166,18 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 			return new AddActorFeature(this);
 		}
 
+		if (context.getNewObject() instanceof BroadcastActor) {
+			return new AddBroadcastActorFeature(this);
+		}
+		
+		if (context.getNewObject() instanceof JoinActor) {
+			return new AddJoinActorFeature(this);
+		}
+		
+		if (context.getNewObject() instanceof ForkActor) {
+			return new AddForkActorFeature(this);
+		}
+		
 		if (context.getNewObject() instanceof Parameter) {
 			if (((Parameter) context.getNewObject()).isConfigurationInterface()) {
 				return new AddConfigInputInterfaceFeature(this);
@@ -203,7 +224,10 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 				new CreateConfigInputInterfaceFeature(this),
 				new CreateConfigOutputInterfaceFeature(this),
 				new CreateDataInputInterfaceFeature(this),
-				new CreateDataOutputInterfaceFeature(this) 
+				new CreateDataOutputInterfaceFeature(this),
+				new CreateBroadcastActorFeature(this),
+				new CreateJoinActorFeature(this),
+				new CreateForkActorFeature(this)
 				};
 	}
 
