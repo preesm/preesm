@@ -60,6 +60,7 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getTargetPort <em>Target Port</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getDelay <em>Delay</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getId <em>Id</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getType <em>Type</em>}</li>
  * </ul>
  * </p>
  *
@@ -103,6 +104,26 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	 * @ordered
 	 */
 	protected static final String ID_EDEFAULT = null;
+
+	/**
+	 * The default value of the '{@link #getType() <em>Type</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getType()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String TYPE_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getType() <em>Type</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getType()
+	 * @generated
+	 * @ordered
+	 */
+	protected String type = TYPE_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -326,6 +347,27 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	}
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String getType() {
+		return type;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setType(String newType) {
+		String oldType = type;
+		type = newType;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.FIFO__TYPE, oldType, type));
+	}
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
@@ -380,6 +422,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 				return getDelay();
 			case PiMMPackage.FIFO__ID:
 				return getId();
+			case PiMMPackage.FIFO__TYPE:
+				return getType();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -399,6 +443,9 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 				return;
 			case PiMMPackage.FIFO__DELAY:
 				setDelay((Delay)newValue);
+				return;
+			case PiMMPackage.FIFO__TYPE:
+				setType((String)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -420,6 +467,9 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 			case PiMMPackage.FIFO__DELAY:
 				setDelay((Delay)null);
 				return;
+			case PiMMPackage.FIFO__TYPE:
+				setType(TYPE_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -439,8 +489,26 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 				return delay != null;
 			case PiMMPackage.FIFO__ID:
 				return isSetId();
+			case PiMMPackage.FIFO__TYPE:
+				return TYPE_EDEFAULT == null ? type != null : !TYPE_EDEFAULT.equals(type);
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String toString() {
+		if (eIsProxy()) return super.toString();
+
+		StringBuffer result = new StringBuffer(super.toString());
+		result.append(" (type: ");
+		result.append(type);
+		result.append(')');
+		return result.toString();
 	}
 
 	@Override

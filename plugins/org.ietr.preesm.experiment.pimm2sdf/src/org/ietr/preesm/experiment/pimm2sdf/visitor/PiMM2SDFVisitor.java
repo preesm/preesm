@@ -59,6 +59,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFExpressionEdgePropertyType;
+import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
 import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
@@ -402,6 +403,9 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 			SDFEdge edge = result.addEdge(sdfSource, sdfOutputPort, sdfTarget,
 					sdfInputPort, prod, cons, delay);
 
+			// Set the data type of the edge
+			edge.setDataType(new SDFStringEdgePropertyType(f.getType()));
+
 			// Handle memory annotations
 			convertAnnotationsFromTo(piOutputPort, edge,
 					SDFEdge.SOURCE_PORT_MODIFIER);
@@ -548,7 +552,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 		bv.setName(ba.getName());
 		// Handle vertex's path inside the graph hierarchy
 		bv.setInfo(ba.getPath());
-		
+
 		// Handle input parameters as instance arguments
 		for (ConfigInputPort p : ba.getConfigInputPorts()) {
 			ISetter setter = p.getIncomingDependency().getSetter();
@@ -573,7 +577,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 		jv.setName(ja.getName());
 		// Handle vertex's path inside the graph hierarchy
 		jv.setInfo(ja.getPath());
-		
+
 		// Handle input parameters as instance arguments
 		for (ConfigInputPort p : ja.getConfigInputPorts()) {
 			ISetter setter = p.getIncomingDependency().getSetter();
@@ -598,7 +602,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 		fv.setName(fa.getName());
 		// Handle vertex's path inside the graph hierarchy
 		fv.setInfo(fa.getPath());
-		
+
 		// Handle input parameters as instance arguments
 		for (ConfigInputPort p : fa.getConfigInputPorts()) {
 			ISetter setter = p.getIncomingDependency().getSetter();
