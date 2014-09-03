@@ -56,6 +56,7 @@ import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Expression;
@@ -589,6 +590,11 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public void visitDataPort(DataPort p) {
+		throw new UnsupportedOperationException();
+	}
+	
 	@Override
 	public void visitRefinement(Refinement r) {
 		throw new UnsupportedOperationException();

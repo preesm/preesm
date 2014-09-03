@@ -46,6 +46,7 @@ import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Expression;
@@ -115,4 +116,6 @@ public abstract class PiMMVisitor {
 	public abstract void visitFunctionPrototype(FunctionPrototypeImpl f);
 
 	public abstract void visitHRefinement(HRefinementImpl h);
+	
+	public abstract void visitDataPort(DataPort p);
 }

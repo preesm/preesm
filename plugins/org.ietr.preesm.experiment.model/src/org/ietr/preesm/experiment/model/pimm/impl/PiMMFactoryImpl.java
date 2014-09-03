@@ -35,6 +35,7 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm.impl;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
@@ -123,6 +124,10 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 		switch (eDataType.getClassifierID()) {
 			case PiMMPackage.DIRECTION:
 				return createDirectionFromString(eDataType, initialValue);
+			case PiMMPackage.PORT_MEMORY_ANNOTATION:
+				return createPortMemoryAnnotationFromString(eDataType, initialValue);
+			case PiMMPackage.IPATH:
+				return createIPathFromString(eDataType, initialValue);
 			default:
 				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
 		}
@@ -138,6 +143,10 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 		switch (eDataType.getClassifierID()) {
 			case PiMMPackage.DIRECTION:
 				return convertDirectionToString(eDataType, instanceValue);
+			case PiMMPackage.PORT_MEMORY_ANNOTATION:
+				return convertPortMemoryAnnotationToString(eDataType, instanceValue);
+			case PiMMPackage.IPATH:
+				return convertIPathToString(eDataType, instanceValue);
 			default:
 				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
 		}
@@ -357,6 +366,80 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 */
 	public String convertDirectionToString(EDataType eDataType, Object instanceValue) {
 		return convertDirection((Direction)instanceValue);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public PortMemoryAnnotation createPortMemoryAnnotation(String literal) {
+		PortMemoryAnnotation result = PortMemoryAnnotation.get(literal);
+		if (result == null) throw new IllegalArgumentException("The value '" + literal + "' is not a valid enumerator of '" + PiMMPackage.Literals.PORT_MEMORY_ANNOTATION.getName() + "'");
+		return result;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public PortMemoryAnnotation createPortMemoryAnnotationFromString(EDataType eDataType, String initialValue) {
+		return createPortMemoryAnnotation(initialValue);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String convertPortMemoryAnnotation(PortMemoryAnnotation instanceValue) {
+		return instanceValue == null ? null : instanceValue.toString();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String convertPortMemoryAnnotationToString(EDataType eDataType, Object instanceValue) {
+		return convertPortMemoryAnnotation((PortMemoryAnnotation)instanceValue);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IPath createIPath(String literal) {
+		return (IPath)super.createFromString(PiMMPackage.Literals.IPATH, literal);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IPath createIPathFromString(EDataType eDataType, String initialValue) {
+		return createIPath(initialValue);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String convertIPath(IPath instanceValue) {
+		return super.convertToString(PiMMPackage.Literals.IPATH, instanceValue);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String convertIPathToString(EDataType eDataType, Object instanceValue) {
+		return convertIPath((IPath)instanceValue);
 	}
 
 	/**

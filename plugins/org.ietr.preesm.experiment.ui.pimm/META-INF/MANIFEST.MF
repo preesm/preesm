@@ -19,7 +19,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources;bundle-version="3.8.1",
  org.eclipse.graphiti,
  org.eclipse.cdt.core,
- org.ietr.preesm.experiment.header.parser.cdt
+ org.ietr.preesm.experiment.header.parser.cdt,
+ org.ietr.preesm.experiment.model;bundle-version="1.1.0"
 Export-Package: org.ietr.preesm.experiment.ui.pimm.features
 Import-Package: org.eclipse.draw2d,
  org.ietr.preesm.experiment.model.pimm,

@@ -64,6 +64,7 @@ import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -163,7 +164,7 @@ public class PiParser {
 		// Add the actor to the parsed graph
 		graph.getVertices().add(actor);
 
-		String refinement = getProperty(nodeElt, "graph_desc");
+		String refinement = getProperty(nodeElt, PiXMLIdentifiers.REFINEMENT);
 
 		if (refinement != null && !refinement.isEmpty()) {
 			IPath path = new Path(refinement);
@@ -195,6 +196,12 @@ public class PiParser {
 			}
 
 			actor.getRefinement().setFilePath(path);
+		}
+		
+		String memoryScript = getProperty(nodeElt, PiXMLIdentifiers.ACTOR_MEMORY_SCRIPT);
+		if (memoryScript != null && !memoryScript.isEmpty()) {
+			IPath path = new Path(memoryScript);
+			actor.setMemoryScriptPath(path);
 		}
 
 		return actor;
@@ -612,8 +619,8 @@ public class PiParser {
 	 *            the {@link AbstractVertex} owning this {@link Port}
 	 */
 	protected void parsePort(Element elt, AbstractVertex vertex) {
-		String portName = elt.getAttribute("name");
-		String portKind = elt.getAttribute("kind");
+		String portName = elt.getAttribute(PiXMLIdentifiers.PORT_NAME);
+		String portKind = elt.getAttribute(PiXMLIdentifiers.PORT_KIND);
 
 		switch (portKind) {
 		case "input":
@@ -635,8 +642,8 @@ public class PiParser {
 			} else {
 				iPort = ((AbstractActor) vertex).getDataInputPorts().get(0);
 			}
-			iPort.getExpression().setString(elt.getAttribute("expr"));
-
+			iPort.getExpression().setString(elt.getAttribute(PiXMLIdentifiers.PORT_EXPRESSION));
+			iPort.setAnnotation(PortMemoryAnnotation.get(elt.getAttribute(PiXMLIdentifiers.PORT_MEMORY_ANNOTATION)));
 			break;
 		case "output":
 			// Throw an error if the parsed vertex is not an actor
@@ -657,8 +664,8 @@ public class PiParser {
 			} else {
 				oPort = ((AbstractActor) vertex).getDataOutputPorts().get(0);
 			}
-			oPort.getExpression().setString(elt.getAttribute("expr"));
-
+			oPort.getExpression().setString(elt.getAttribute(PiXMLIdentifiers.PORT_EXPRESSION));
+			oPort.setAnnotation(PortMemoryAnnotation.get(elt.getAttribute(PiXMLIdentifiers.PORT_MEMORY_ANNOTATION)));
 			break;
 		case "cfg_input":
 			ConfigInputPort iCfgPort = PiMMFactory.eINSTANCE

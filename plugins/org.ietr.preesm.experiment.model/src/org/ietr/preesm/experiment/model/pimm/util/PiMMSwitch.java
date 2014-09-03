@@ -114,6 +114,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 			case PiMMPackage.DATA_INPUT_PORT: {
 				DataInputPort dataInputPort = (DataInputPort)theEObject;
 				T result = caseDataInputPort(dataInputPort);
+				if (result == null) result = caseDataPort(dataInputPort);
 				if (result == null) result = casePort(dataInputPort);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
@@ -121,6 +122,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 			case PiMMPackage.DATA_OUTPUT_PORT: {
 				DataOutputPort dataOutputPort = (DataOutputPort)theEObject;
 				T result = caseDataOutputPort(dataOutputPort);
+				if (result == null) result = caseDataPort(dataOutputPort);
 				if (result == null) result = casePort(dataOutputPort);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
@@ -137,6 +139,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 				T result = caseConfigOutputPort(configOutputPort);
 				if (result == null) result = caseDataOutputPort(configOutputPort);
 				if (result == null) result = caseISetter(configOutputPort);
+				if (result == null) result = caseDataPort(configOutputPort);
 				if (result == null) result = casePort(configOutputPort);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
@@ -252,6 +255,13 @@ public class PiMMSwitch<T> extends Switch<T> {
 			case PiMMPackage.FUNCTION_PARAMETER: {
 				FunctionParameter functionParameter = (FunctionParameter)theEObject;
 				T result = caseFunctionParameter(functionParameter);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case PiMMPackage.DATA_PORT: {
+				DataPort dataPort = (DataPort)theEObject;
+				T result = caseDataPort(dataPort);
+				if (result == null) result = casePort(dataPort);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -616,6 +626,21 @@ public class PiMMSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseFunctionParameter(FunctionParameter object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Data Port</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Data Port</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseDataPort(DataPort object) {
 		return null;
 	}
 

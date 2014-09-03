@@ -61,8 +61,11 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.ui.pimm.features.ClearActorMemoryScriptFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.ClearActorRefinementFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.OpenMemoryScriptFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.OpenRefinementFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.SetActorMemoryScriptFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.SetActorRefinementFeature;
 
 /**
@@ -83,8 +86,15 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 	private Button butRefinementClear;
 	private Button butRefinementEdit;
 	private Button butRefinementOpen;
+	
+	private CLabel lblMemoryScript;
+	private CLabel lblMemoryScriptObj;
 
-	private final int FIRST_COLUMN_WIDTH = 125;
+	private Button butMemoryScriptClear;
+	private Button butMemoryScriptEdit;
+	private Button butMemoryScriptOpen;
+
+	private final int FIRST_COLUMN_WIDTH = 150;
 		
 	@Override
 	public void createControls(Composite parent, TabbedPropertySheetPage tabbedPropertySheetPage) {
@@ -109,6 +119,10 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 		data.right = new FormAttachment(txtNameObj, -HSPACE);
 		lblName.setLayoutData(data);
 
+		/**
+		 * Refinement
+		 */
+		
 		/*** Clear Button ***/
 		butRefinementClear = factory.createButton(composite, "Clear", SWT.PUSH);
 		data = new FormData();
@@ -228,8 +242,8 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 				}
 				
 				refresh();				
-			}
-
+			}			
+			
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {				
 			}
@@ -258,8 +272,147 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 				}			
 			}
 		});
+		
+
+
+		
+		/**
+		 * Memory script
+		 */
+		createMemoryScriptControl(data, factory, composite);
 	}
 	
+	private void createMemoryScriptControl(FormData data,
+			TabbedPropertySheetWidgetFactory factory, Composite composite) {
+		/*** Clear Button ***/
+		butMemoryScriptClear = factory.createButton(composite, "Clear", SWT.PUSH);
+		data = new FormData();
+		data.left = new FormAttachment(100, -100);
+		data.right = new FormAttachment(100, 0);
+		data.top = new FormAttachment(butRefinementClear);
+		butMemoryScriptClear.setLayoutData(data);
+		butMemoryScriptClear.setEnabled(true);
+		
+		/*** Edit Button ***/
+		butMemoryScriptEdit = factory.createButton(composite, "Edit", SWT.PUSH);
+		data = new FormData();
+		data.left = new FormAttachment(100, -205);
+		data.right = new FormAttachment(100, -105);
+		data.top = new FormAttachment(butRefinementEdit);
+		butMemoryScriptEdit.setLayoutData(data);
+		butMemoryScriptEdit.setEnabled(true);
+		
+		/*** Open Button ***/
+		butMemoryScriptOpen = factory.createButton(composite, "Open", SWT.PUSH);
+		data = new FormData();
+		data.left = new FormAttachment(100, -310);
+		data.right = new FormAttachment(100, -210);
+		data.top = new FormAttachment(butRefinementOpen);
+		butMemoryScriptOpen.setLayoutData(data);
+		butMemoryScriptOpen.setEnabled(true);
+
+		/**** Memory Script ****/	
+		lblMemoryScriptObj = factory.createCLabel(composite, "");
+		data = new FormData();
+		data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
+		data.right = new FormAttachment(butMemoryScriptEdit, 0);
+		data.top = new FormAttachment(lblRefinementObj);
+		lblMemoryScriptObj.setLayoutData(data);
+		lblMemoryScriptObj.setEnabled(true);
+		
+		lblMemoryScript = factory.createCLabel(composite, "Memory script:");
+		data = new FormData();
+		data.left = new FormAttachment(0, 0);
+		data.right = new FormAttachment(lblMemoryScriptObj, -HSPACE);
+		data.top = new FormAttachment(lblRefinement);
+		lblMemoryScript.setLayoutData(data);
+
+		/*** Clear Button Listener ***/		
+		butMemoryScriptClear.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				PictogramElement pes[] = new PictogramElement[1];
+				pes[0] = getSelectedPictogramElement();
+				
+				CustomContext context = new CustomContext(pes);
+				ICustomFeature[] clearMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider().getCustomFeatures(context);
+				
+				for(ICustomFeature feature : clearMemoryScriptFeature){
+					if(feature instanceof ClearActorMemoryScriptFeature){
+						getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
+						LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
+						ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout); 
+						getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+					}
+				}
+				
+				refresh();				
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {				
+			}
+			
+		});
+		
+		/*** Edit Button Listener ***/		
+		butMemoryScriptEdit.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				PictogramElement pes[] = new PictogramElement[1];
+				pes[0] = getSelectedPictogramElement();
+				
+				CustomContext context = new CustomContext(pes);
+				ICustomFeature[] setMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider().getCustomFeatures(context);
+				
+				for(ICustomFeature feature : setMemoryScriptFeature){
+					if(feature instanceof SetActorMemoryScriptFeature){
+						getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
+						LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
+						ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout); 
+						getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+					}
+				}
+				
+				refresh();				
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {				
+			}
+			
+		});
+		
+		/*** Open Button Listener ***/		
+		butMemoryScriptOpen.addSelectionListener(new SelectionListener(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				PictogramElement pes[] = new PictogramElement[1];
+				pes[0] = getSelectedPictogramElement();
+				
+				CustomContext context = new CustomContext(pes);
+				ICustomFeature[] openMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider().getCustomFeatures(context);
+				
+				for(ICustomFeature feature : openMemoryScriptFeature){
+					if(feature instanceof OpenMemoryScriptFeature){
+						getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
+						LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
+						ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout); 
+						getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+					}
+				}
+				
+				refresh();				
+			}			
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {				
+			}
+			
+		});
+		
+	}
+
 	/**
 	 * Safely set a new name to the {@link Actor}.
 	 * @param actor 	{@link Actor} to set
@@ -310,6 +463,21 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 					butRefinementClear.setEnabled(true);
 					butRefinementEdit.setEnabled(true);
 					butRefinementOpen.setEnabled(true);
+				}
+				
+				if(actor.getMemoryScriptPath() == null){
+					lblMemoryScriptObj.setText("(none)");
+					butMemoryScriptClear.setEnabled(false);
+					butMemoryScriptEdit.setEnabled(true);
+					butMemoryScriptOpen.setEnabled(false);
+				}else{
+					IPath path = actor.getMemoryScriptPath();
+					String text = path.lastSegment();
+					
+					lblMemoryScriptObj.setText(text);
+					butMemoryScriptClear.setEnabled(true);
+					butMemoryScriptEdit.setEnabled(true);
+					butMemoryScriptOpen.setEnabled(true);
 				}
 				
 			}//end Actor

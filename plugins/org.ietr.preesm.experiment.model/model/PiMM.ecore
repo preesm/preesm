@@ -32,23 +32,20 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="configurationActor" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" changeable="false"
         volatile="true" unsettable="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="memoryScriptPath" eType="#//IPath"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Port" abstract="true">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="kind" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         changeable="false"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="DataInputPort" eSuperTypes="#//Port">
+  <eClassifiers xsi:type="ecore:EClass" name="DataInputPort" eSuperTypes="#//DataPort">
     <eStructuralFeatures xsi:type="ecore:EReference" name="incomingFifo" eType="#//Fifo"
         eOpposite="#//Fifo/targetPort"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
-        eType="#//Expression" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="DataOutputPort" eSuperTypes="#//Port">
+  <eClassifiers xsi:type="ecore:EClass" name="DataOutputPort" eSuperTypes="#//DataPort">
     <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingFifo" eType="#//Fifo"
         eOpposite="#//Fifo/sourcePort"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
-        eType="#//Expression" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ConfigInputPort" eSuperTypes="#//Port">
     <eStructuralFeatures xsi:type="ecore:EReference" name="incomingDependency" eType="#//Dependency"
@@ -79,6 +76,7 @@
     <eOperations name="getAbstractActor" eType="#//AbstractActor"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="fileName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
         defaultValueLiteral="&quot;&quot;"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="filePath" eType="#//IPath"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Parameter" eSuperTypes="#//AbstractVertex #//ISetter">
     <eOperations name="isLocallyStatic" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
@@ -131,4 +129,16 @@
     <eLiterals name="IN"/>
     <eLiterals name="OUT" value="1"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DataPort" abstract="true" eSuperTypes="#//Port">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
+        eType="#//Expression" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="annotation" eType="#//PortMemoryAnnotation"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="PortMemoryAnnotation">
+    <eLiterals name="NONE" literal="NONE"/>
+    <eLiterals name="READ_ONLY" value="1" literal="READ_ONLY"/>
+    <eLiterals name="WRITE_ONLY" value="2" literal="WRITE_ONLY"/>
+    <eLiterals name="UNUSED" value="3" literal="UNUSED"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EDataType" name="IPath" instanceClassName="org.eclipse.core.runtime.IPath"/>
 </ecore:EPackage>
