@@ -171,6 +171,7 @@ public interface Fifo extends EObject, PiMMVisitable {
 
 	/**
 	 * Returns the value of the '<em><b>Type</b></em>' attribute.
+	 * The default value is <code>"char"</code>.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Type</em>' attribute isn't clear,
@@ -180,7 +181,7 @@ public interface Fifo extends EObject, PiMMVisitable {
 	 * @return the value of the '<em>Type</em>' attribute.
 	 * @see #setType(String)
 	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getFifo_Type()
-	 * @model
+	 * @model default="char" required="true"
 	 * @generated
 	 */
 	String getType();
