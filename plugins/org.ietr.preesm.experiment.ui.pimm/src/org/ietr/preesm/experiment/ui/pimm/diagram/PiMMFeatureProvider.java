@@ -133,6 +133,7 @@ import org.ietr.preesm.experiment.ui.pimm.features.MoveDownActorPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.MoveUpActorPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.OpenMemoryScriptFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.OpenRefinementFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.ReconnectionDependencyFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.ReconnectionFifoFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.RenameAbstractVertexFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.RenameActorPortFeature;
@@ -391,6 +392,10 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
 		if (obj instanceof Fifo) {
 			return new ReconnectionFifoFeature(this);
+		}
+		
+		if(obj instanceof Dependency){
+			return new ReconnectionDependencyFeature(this);
 		}
 
 		return null;
