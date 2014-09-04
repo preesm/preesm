@@ -180,13 +180,19 @@ public class PiParser {
 				for (int i = 0; i < childList.getLength(); i++) {
 					Node elt = childList.item(i);
 					String eltName = elt.getNodeName();
+					Element elmt = (Element) elt;
 					switch (eltName) {
 					case "loop":
-						hrefinement.setLoopPrototype(parseFunctionPrototype(
-								(Element) elt, eltName));
+						hrefinement
+								.setLoopPrototype(parseFunctionPrototype(
+										elmt,
+										elmt.getAttribute(PiXMLIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
 						break;
 					case "init":
-
+						hrefinement
+								.setInitPrototype(parseFunctionPrototype(
+										elmt,
+										elmt.getAttribute(PiXMLIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
 						break;
 					default:
 						// ignore #text and other children
@@ -197,8 +203,9 @@ public class PiParser {
 
 			actor.getRefinement().setFilePath(path);
 		}
-		
-		String memoryScript = getProperty(nodeElt, PiXMLIdentifiers.ACTOR_MEMORY_SCRIPT);
+
+		String memoryScript = getProperty(nodeElt,
+				PiXMLIdentifiers.ACTOR_MEMORY_SCRIPT);
 		if (memoryScript != null && !memoryScript.isEmpty()) {
 			IPath path = new Path(memoryScript);
 			actor.setMemoryScriptPath(path);
@@ -211,7 +218,7 @@ public class PiParser {
 			String protoName) {
 		FunctionPrototype proto = PiMMFactory.eINSTANCE
 				.createFunctionPrototype();
-		
+
 		proto.setName(protoName);
 		NodeList childList = protoElt.getChildNodes();
 		for (int i = 0; i < childList.getLength(); i++) {
@@ -219,7 +226,8 @@ public class PiParser {
 			String eltName = elt.getNodeName();
 			switch (eltName) {
 			case "param":
-				proto.getParameters().add(parseFunctionParameter((Element) elt));
+				proto.getParameters()
+						.add(parseFunctionParameter((Element) elt));
 				break;
 			default:
 				// ignore #text and other children
@@ -231,12 +239,14 @@ public class PiParser {
 	private FunctionParameter parseFunctionParameter(Element elt) {
 		FunctionParameter param = PiMMFactory.eINSTANCE
 				.createFunctionParameter();
-		
+
 		param.setName(elt.getAttribute("name"));
 		param.setType(elt.getAttribute("type"));
-		param.setDirection(PiMMFactory.eINSTANCE.createDirection(elt.getAttribute("direction")));	
-		param.setIsConfigurationParameter(Boolean.valueOf(elt.getAttribute("isConfig")));
-		
+		param.setDirection(PiMMFactory.eINSTANCE.createDirection(elt
+				.getAttribute("direction")));
+		param.setIsConfigurationParameter(Boolean.valueOf(elt
+				.getAttribute("isConfig")));
+
 		return param;
 	}
 
@@ -406,11 +416,17 @@ public class PiParser {
 					+ " does not exist.");
 		}
 		// Get the type
-		fifo.setType(edgeElt.getAttribute(PiXMLIdentifiers.FIFO_TYPE));
+		String type = edgeElt.getAttribute(PiXMLIdentifiers.FIFO_TYPE);
+		// If none is find, add the default type
+		if (type == null || type.equals(""))
+			type = "char";
+		fifo.setType(type);
 		// Get the sourcePort and targetPort
-		String sourcePortName = edgeElt.getAttribute(PiXMLIdentifiers.FIFO_SOURCE_PORT);
+		String sourcePortName = edgeElt
+				.getAttribute(PiXMLIdentifiers.FIFO_SOURCE_PORT);
 		sourcePortName = (sourcePortName == "") ? null : sourcePortName;
-		String targetPortName = edgeElt.getAttribute(PiXMLIdentifiers.FIFO_TARGET_PORT);
+		String targetPortName = edgeElt
+				.getAttribute(PiXMLIdentifiers.FIFO_TARGET_PORT);
 		targetPortName = (targetPortName == "") ? null : targetPortName;
 		DataOutputPort oPort = (DataOutputPort) source
 				.getPortNamed(sourcePortName);
@@ -643,8 +659,10 @@ public class PiParser {
 			} else {
 				iPort = ((AbstractActor) vertex).getDataInputPorts().get(0);
 			}
-			iPort.getExpression().setString(elt.getAttribute(PiXMLIdentifiers.PORT_EXPRESSION));
-			iPort.setAnnotation(PortMemoryAnnotation.get(elt.getAttribute(PiXMLIdentifiers.PORT_MEMORY_ANNOTATION)));
+			iPort.getExpression().setString(
+					elt.getAttribute(PiXMLIdentifiers.PORT_EXPRESSION));
+			iPort.setAnnotation(PortMemoryAnnotation.get(elt
+					.getAttribute(PiXMLIdentifiers.PORT_MEMORY_ANNOTATION)));
 			break;
 		case "output":
 			// Throw an error if the parsed vertex is not an actor
@@ -665,8 +683,10 @@ public class PiParser {
 			} else {
 				oPort = ((AbstractActor) vertex).getDataOutputPorts().get(0);
 			}
-			oPort.getExpression().setString(elt.getAttribute(PiXMLIdentifiers.PORT_EXPRESSION));
-			oPort.setAnnotation(PortMemoryAnnotation.get(elt.getAttribute(PiXMLIdentifiers.PORT_MEMORY_ANNOTATION)));
+			oPort.getExpression().setString(
+					elt.getAttribute(PiXMLIdentifiers.PORT_EXPRESSION));
+			oPort.setAnnotation(PortMemoryAnnotation.get(elt
+					.getAttribute(PiXMLIdentifiers.PORT_MEMORY_ANNOTATION)));
 			break;
 		case "cfg_input":
 			ConfigInputPort iCfgPort = PiMMFactory.eINSTANCE
