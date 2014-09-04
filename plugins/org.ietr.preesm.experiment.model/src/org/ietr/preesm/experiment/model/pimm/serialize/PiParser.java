@@ -180,15 +180,17 @@ public class PiParser {
 				for (int i = 0; i < childList.getLength(); i++) {
 					Node elt = childList.item(i);
 					String eltName = elt.getNodeName();
-					Element elmt = (Element) elt;
+					Element elmt;
 					switch (eltName) {
 					case "loop":
+						elmt = (Element) elt;
 						hrefinement
 								.setLoopPrototype(parseFunctionPrototype(
 										elmt,
 										elmt.getAttribute(PiXMLIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
 						break;
 					case "init":
+						elmt = (Element) elt;
 						hrefinement
 								.setInitPrototype(parseFunctionPrototype(
 										elmt,
