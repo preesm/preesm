@@ -71,43 +71,7 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
 		super(fp);
 	}
 
-	/**
-	 * Method to check whether it is possible to create a {@link Port} for the
-	 * given source/target {@link PictogramElement}
-	 * 
-	 * @param pe
-	 *            the {@link PictogramElement} tested
-	 * @param direction
-	 *            the direction of the port we want to create ("input" or
-	 *            "output")
-	 * @return an {@link AbstractAddActorPortFeature} if the given
-	 *         {@link PictogramElement} can create a {@link Port} with the given
-	 *         direction. Return <code>null</code> else.
-	 */
-	protected AbstractAddActorPortFeature canCreatePort(PictogramElement pe,
-			String direction) {
-		boolean canCreatePort = false;
-		PictogramElement peSource = pe;
-
-		// Create the FeatureProvider
-		CustomContext sourceContext = new CustomContext(
-				new PictogramElement[] { peSource });
-		AbstractAddActorPortFeature addPortFeature = null;
-		if (direction.equals("input")) {
-			addPortFeature = new AddDataInputPortFeature(getFeatureProvider());
-		}
-		if (direction.equals("output")) {
-			addPortFeature = new AddDataOutputPortFeature(getFeatureProvider());
-		}
-		if (addPortFeature != null) {
-			canCreatePort = addPortFeature.canExecute(sourceContext);
-		}
-		if (canCreatePort) {
-			return addPortFeature;
-		} else {
-			return null;
-		}
-	}
+	
 
 	@Override
 	public boolean canReconnect(IReconnectionContext context) {
@@ -139,7 +103,7 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
 
 		// Also true if the TargetPictogramElement is a vertex that can create
 		// ports
-		if (canCreatePort(context.getTargetPictogramElement(),
+		if (CreateFifoFeature.canCreatePort(context.getTargetPictogramElement(), getFeatureProvider(), 
 				oldPort.getKind()) != null) {
 			return true;
 		}
@@ -221,7 +185,7 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
 		// Create it
 		if (newPort == null) {
 			PictogramElement pe = context.getTargetPictogramElement();
-			AbstractAddActorPortFeature addPortFeature = canCreatePort(pe,
+			AbstractAddActorPortFeature addPortFeature = CreateFifoFeature.canCreatePort(pe, getFeatureProvider(), 
 					oldPort.getKind());
 			if (addPortFeature != null) {
 				CustomContext sourceContext = new CustomContext(

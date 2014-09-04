@@ -122,7 +122,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 
 		// Check if the target can create a port
 		boolean targetCanCreatePort = (canCreatePort(
-				context.getTargetPictogramElement(), "input") != null);
+				context.getTargetPictogramElement(), getFeatureProvider(), "input") != null);
 
 		// The method also returns true if the the target can
 		// create a new port.
@@ -139,6 +139,8 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 	 * 
 	 * @param pe
 	 *            the {@link PictogramElement} tested
+	 * @param fp
+	 * 				the {@link IFeatureProvider} used for this diagram.
 	 * @param direction
 	 *            the direction of the port we want to create ("input" or
 	 *            "output")
@@ -146,8 +148,8 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 	 *         {@link PictogramElement} can create a {@link Port} with the given
 	 *         direction. Return <code>null</code> else.
 	 */
-	protected AbstractAddActorPortFeature canCreatePort(PictogramElement pe,
-			String direction) {
+	static protected AbstractAddActorPortFeature canCreatePort(PictogramElement pe,
+			IFeatureProvider fp, String direction) {
 		boolean canCreatePort = false;
 		PictogramElement peSource = pe;
 
@@ -156,10 +158,10 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 				new PictogramElement[] { peSource });
 		AbstractAddActorPortFeature addPortFeature = null;
 		if (direction.equals("input")) {
-			addPortFeature = new AddDataInputPortFeature(getFeatureProvider());
+			addPortFeature = new AddDataInputPortFeature(fp);
 		}
 		if (direction.equals("output")) {
-			addPortFeature = new AddDataOutputPortFeature(getFeatureProvider());
+			addPortFeature = new AddDataOutputPortFeature(fp);
 		}
 		if (addPortFeature != null) {
 			canCreatePort = addPortFeature.canExecute(sourceContext);
@@ -203,7 +205,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 		if (source == null) {
 			PictogramElement sourcePe = context.getSourcePictogramElement();
 			AbstractAddActorPortFeature addPortFeature = canCreatePort(
-					sourcePe, "output");
+					sourcePe, getFeatureProvider(), "output");
 			if (addPortFeature != null) {
 				CustomContext sourceContext = new CustomContext(
 						new PictogramElement[] { sourcePe });
@@ -217,7 +219,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 		if (target == null) {
 			PictogramElement targetPe = context.getTargetPictogramElement();
 			AbstractAddActorPortFeature addPortFeature = canCreatePort(
-					targetPe, "input");
+					targetPe, getFeatureProvider(), "input");
 			if (addPortFeature != null) {
 				CustomContext targetContext = new CustomContext(
 						new PictogramElement[] { targetPe });
@@ -291,7 +293,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 		}
 
 		// Also true if the source is a vertex that can create ports
-		if (canCreatePort(context.getSourcePictogramElement(), "output") != null) {
+		if (canCreatePort(context.getSourcePictogramElement(), getFeatureProvider(), "output") != null) {
 			return true;
 		}
 		return false;
