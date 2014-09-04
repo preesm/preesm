@@ -42,6 +42,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
@@ -51,6 +52,7 @@ import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
@@ -127,7 +129,16 @@ public abstract class MemoryAllocator {
 						String dataType = properties.getDataType();
 						DataType type = MemoryExclusionVertex._dataTypes
 								.get(dataType);
-						int typeSize = type.getSize();
+						int typeSize;
+						// A proper type was not set for the considered edge
+						if(type == null){
+							WorkflowLogger.getLogger().log(
+									Level.SEVERE, "No data type was found on an edge between actors " + edge.getSource().getName() + " and " + edge.getTarget().getName());
+							typeSize = 1;
+						}
+						else{
+							typeSize = type.getSize();
+						}
 						largestTypeSize = Math.max(typeSize, largestTypeSize);
 						int interSpace = 0;
 
