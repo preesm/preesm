@@ -498,7 +498,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 		actorPrototype.setLoopPrototype(currentPrototype);
 
 		if (h.getInitPrototype() != null) {
-			h.getLoopPrototype().accept(this);
+			h.getInitPrototype().accept(this);
 			actorPrototype.setInitPrototype(currentPrototype);
 		}
 
