@@ -36,15 +36,12 @@
 package org.ietr.preesm.experiment.model.transformation.properties;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.transaction.RecordingCommand;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.context.impl.CustomContext;
 import org.eclipse.graphiti.features.context.impl.LayoutContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.ui.platform.GFPropertySection;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.ModifyEvent;
@@ -60,7 +57,6 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
@@ -76,8 +72,8 @@ import org.ietr.preesm.experiment.ui.pimm.features.SetPortMemoryAnnotationFeatur
  * @author jheulot
  * 
  */
-public class PortParameterAndDelayPropertiesSection extends GFPropertySection implements
-		ITabbedPropertyConstants {
+public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUpdater
+		implements ITabbedPropertyConstants {
 
 	private CLabel lblName;
 	private CLabel lblNameObj;
@@ -154,7 +150,7 @@ public class PortParameterAndDelayPropertiesSection extends GFPropertySection im
 		for (PortMemoryAnnotation pma : PortMemoryAnnotation.values()) {
 			comboAnnotation.add(pma.toString(), pma.getValue());
 		}
-		
+
 		data = new FormData();
 		data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
 		data.right = new FormAttachment(25, 0);
@@ -251,70 +247,33 @@ public class PortParameterAndDelayPropertiesSection extends GFPropertySection im
 				}
 			}// end Parameter
 
-//			if (bo instanceof DataOutputPort) {
-//				DataOutputPort oPort = (DataOutputPort) bo;
-//				if (oPort.getExpression().getString()
-//						.compareTo(txtExpression.getText()) != 0) {
-//					setNewExpression(oPort.getExpression(),
-//							txtExpression.getText());
-//					getDiagramTypeProvider().getDiagramBehavior()
-//							.refreshRenderingDecorators(
-//									(PictogramElement) (pe.eContainer()));
-//					// If oPort is contained by an DataInputInterface, we should
-//					// also update the graph port of the DataInputInterface
-//					if (oPort.eContainer() instanceof DataInputInterface) {
-//						DataInputInterface dii = (DataInputInterface) oPort
-//								.eContainer();
-//						DataInputPort iPort = (DataInputPort) dii
-//								.getGraphPort();
-//
-//						if (iPort.getExpression().getString()
-//								.compareTo(txtExpression.getText()) != 0) {
-//							setNewExpression(iPort.getExpression(),
-//									txtExpression.getText());
-//							getDiagramTypeProvider()
-//									.getDiagramBehavior()
-//									.refreshRenderingDecorators(
-//											(PictogramElement) (pe.eContainer()));
-//						}
-//					}
-//				}
-//			}// end OutputPort
-
 			if (bo instanceof DataPort) {
-				DataPort iPort = (DataPort) bo;
-				if (iPort.getExpression().getString()
-						.compareTo(txtExpression.getText()) != 0) {
-					setNewExpression(iPort.getExpression(),
-							txtExpression.getText());
-					getDiagramTypeProvider().getDiagramBehavior()
-							.refreshRenderingDecorators(
-									(PictogramElement) (pe.eContainer()));
-					// If iPort is contained by an DataInputInterface, we should
-					// also update the graph port of the DataInputInterface
-					if (iPort.eContainer() instanceof DataOutputInterface) {
-						DataOutputInterface doi = (DataOutputInterface) iPort
-								.eContainer();
-						DataOutputPort oPort = (DataOutputPort) doi
-								.getGraphPort();
-
-						if (oPort.getExpression().getString()
-								.compareTo(txtExpression.getText()) != 0) {
-							setNewExpression(oPort.getExpression(),
-									txtExpression.getText());
-							getDiagramTypeProvider()
-									.getDiagramBehavior()
-									.refreshRenderingDecorators(
-											(PictogramElement) (pe.eContainer()));
-						}
-					}
-				}
+				DataPort port = (DataPort) bo;
+				updateDataPortProperties(port, txtExpression);
+				
+				getDiagramTypeProvider().getDiagramBehavior()
+				.refreshRenderingDecorators(
+						(PictogramElement) (pe.eContainer()));
 			}// end DataPort
 
 			if (bo instanceof DataPort) {
-				comboAnnotation.select(((DataPort) bo).getAnnotation().getValue());
+				comboAnnotation.setEnabled(false);
+				comboAnnotation.select(((DataPort) bo).getAnnotation()
+						.getValue());
+				comboAnnotation.setVisible(true);
+				comboAnnotation.setEnabled(true);
+				lblAnnotation.setEnabled(false);
+				lblAnnotation.setVisible(true);
+				lblAnnotation.setEnabled(true);
+			} else {
+				comboAnnotation.setEnabled(false);
+				comboAnnotation.setVisible(false);
+				comboAnnotation.setEnabled(true);
+				lblAnnotation.setEnabled(false);
+				lblAnnotation.setVisible(false);
+				lblAnnotation.setEnabled(true);
 			}
-			
+
 			if (bo instanceof Delay) {
 				Delay delay = (Delay) bo;
 				if (delay.getExpression().getString()
@@ -327,27 +286,6 @@ public class PortParameterAndDelayPropertiesSection extends GFPropertySection im
 			}// end Delay
 		}
 		refresh();
-	}
-
-	/**
-	 * Safely set an {@link Expression} with the given value.
-	 * 
-	 * @param e
-	 *            {@link Expression} to set
-	 * @param value
-	 *            String value
-	 */
-	private void setNewExpression(final Expression e, final String value) {
-		TransactionalEditingDomain editingDomain = getDiagramTypeProvider()
-				.getDiagramBehavior().getEditingDomain();
-		editingDomain.getCommandStack().execute(
-				new RecordingCommand(editingDomain) {
-
-					@Override
-					protected void doExecute() {
-						e.setString(value);
-					}
-				});
 	}
 
 	@Override
@@ -369,17 +307,17 @@ public class PortParameterAndDelayPropertiesSection extends GFPropertySection im
 				e = ((Parameter) bo).getExpression();
 			}// end Parameter
 
-//			if (bo instanceof DataOutputPort) {
-//				DataOutputPort oPort = ((DataOutputPort) bo);
-//
-//				if (oPort.eContainer() instanceof DataInputInterface) {
-//					name = ((DataInputInterface) oPort.eContainer()).getName();
-//				} else {
-//					name = oPort.getName();
-//				}
-//
-//				e = oPort.getExpression();
-//			}// end OutputPort
+			// if (bo instanceof DataOutputPort) {
+			// DataOutputPort oPort = ((DataOutputPort) bo);
+			//
+			// if (oPort.eContainer() instanceof DataInputInterface) {
+			// name = ((DataInputInterface) oPort.eContainer()).getName();
+			// } else {
+			// name = oPort.getName();
+			// }
+			//
+			// e = oPort.getExpression();
+			// }// end OutputPort
 
 			if (bo instanceof DataPort) {
 				DataPort iPort = ((DataPort) bo);
