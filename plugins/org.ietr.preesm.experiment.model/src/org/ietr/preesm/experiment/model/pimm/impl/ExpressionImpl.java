@@ -165,12 +165,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 					else
 						parameterName = port.getName();
 
-					String evaluatedParam;
-					if (p.isConfigurationInterface())
-						// TODO Handle config input interface
-						evaluatedParam = "0";
-					else
-						evaluatedParam = p.getExpression().evaluate();
+					String evaluatedParam= p.getExpression().evaluate();
 
 					jep.addVariable(parameterName,
 							Double.parseDouble(evaluatedParam));
