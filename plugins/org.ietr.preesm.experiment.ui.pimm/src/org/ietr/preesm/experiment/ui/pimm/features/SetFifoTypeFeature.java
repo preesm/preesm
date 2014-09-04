@@ -52,15 +52,15 @@ public class SetFifoTypeFeature extends AbstractCustomFeature {
 
 				// Ask user for data type.
 				String question = "Enter data type for the FIFO";
-				String type = "void";
 				String oldType = fifo.getType();
+				String type = oldType;
 
 				type = PiMMUtil.askString(getName(), question, type, null);
 				if ((type == null && oldType == null)
 						|| (type != null && type.equals(oldType))) {
-					this.hasDoneChanges = false; // If this is not done, the
-													// graph is considered
-													// modified.
+					this.hasDoneChanges = false;
+				} else {
+					this.hasDoneChanges = true;
 				}
 				fifo.setType(type);
 
