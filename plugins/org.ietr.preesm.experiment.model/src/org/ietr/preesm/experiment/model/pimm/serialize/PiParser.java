@@ -393,8 +393,8 @@ public class PiParser {
 		Fifo fifo = PiMMFactory.eINSTANCE.createFifo();
 
 		// Find the source and target of the fifo
-		String sourceName = edgeElt.getAttribute("source");
-		String targetName = edgeElt.getAttribute("target");
+		String sourceName = edgeElt.getAttribute(PiXMLIdentifiers.FIFO_SOURCE);
+		String targetName = edgeElt.getAttribute(PiXMLIdentifiers.FIFO_TARGET);
 		AbstractActor source = (AbstractActor) graph.getVertexNamed(sourceName);
 		AbstractActor target = (AbstractActor) graph.getVertexNamed(targetName);
 		if (source == null) {
@@ -405,11 +405,12 @@ public class PiParser {
 			throw new RuntimeException("Edge target vertex " + sourceName
 					+ " does not exist.");
 		}
-
+		// Get the type
+		fifo.setType(edgeElt.getAttribute(PiXMLIdentifiers.FIFO_TYPE));
 		// Get the sourcePort and targetPort
-		String sourcePortName = edgeElt.getAttribute("sourceport");
+		String sourcePortName = edgeElt.getAttribute(PiXMLIdentifiers.FIFO_SOURCE_PORT);
 		sourcePortName = (sourcePortName == "") ? null : sourcePortName;
-		String targetPortName = edgeElt.getAttribute("targetport");
+		String targetPortName = edgeElt.getAttribute(PiXMLIdentifiers.FIFO_TARGET_PORT);
 		targetPortName = (targetPortName == "") ? null : targetPortName;
 		DataOutputPort oPort = (DataOutputPort) source
 				.getPortNamed(sourcePortName);

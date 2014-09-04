@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.ietr.dftools.algorithm.exporter.Key;
@@ -422,18 +421,19 @@ public class PiWriter {
 	 */
 	protected void writeFifos(Element graphElt, Fifo fifo) {
 		// Add the node to the document
-		Element fifoElt = appendChild(graphElt, "edge");
+		Element fifoElt = appendChild(graphElt, PiXMLIdentifiers.EDGE);
 
 		// Set the source and target attributes
 		AbstractActor source = (AbstractActor) fifo.getSourcePort()
 				.eContainer();
 		AbstractActor target = (AbstractActor) fifo.getTargetPort()
 				.eContainer();
-		fifoElt.setAttribute("kind", "fifo");
-		fifoElt.setAttribute("source", source.getName());
-		fifoElt.setAttribute("target", target.getName());
-		fifoElt.setAttribute("sourceport", fifo.getSourcePort().getName());
-		fifoElt.setAttribute("targetport", fifo.getTargetPort().getName());
+		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_KIND, PiXMLIdentifiers.FIFO);
+		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_TYPE, fifo.getType());
+		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_SOURCE, source.getName());
+		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_TARGET, target.getName());
+		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_SOURCE_PORT, fifo.getSourcePort().getName());
+		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_TARGET_PORT, fifo.getTargetPort().getName());
 
 		if (fifo.getDelay() != null) {
 			writeDelay(fifoElt, fifo.getDelay());

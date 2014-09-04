@@ -5,7 +5,7 @@ public class PiXMLIdentifiers {
 	
 	// ACTORS
 	public static String ACTOR_MEMORY_SCRIPT = "memoryScript";
-	// REFINEMENT
+	// REFINEMENTS
 	public static String REFINEMENT = "graph_desc";
 	public static String REFINEMENT_LOOP = "loop";
 	public static String REFINEMENT_INIT = "init";
@@ -18,4 +18,14 @@ public class PiXMLIdentifiers {
 	public static String PORT_KIND = "kind";
 	public static String PORT_EXPRESSION = "expr";
 	public static String PORT_MEMORY_ANNOTATION = "annotation";
+	// EDGES
+	public static String EDGE = "edge";
+	// FIFOS
+	public static String FIFO = "fifo";
+	public static String FIFO_TYPE = "type";
+	public static String FIFO_KIND = "kind";
+	public static String FIFO_SOURCE = "source";
+	public static String FIFO_TARGET = "target";
+	public static String FIFO_SOURCE_PORT = "sourceport";
+	public static String FIFO_TARGET_PORT = "targetport";
 }
