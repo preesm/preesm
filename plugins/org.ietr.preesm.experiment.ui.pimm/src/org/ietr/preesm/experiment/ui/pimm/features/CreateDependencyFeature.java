@@ -243,7 +243,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 					PictogramElement targetPe = context
 							.getTargetPictogramElement();
 					AbstractAddActorPortFeature addPortFeature = canCreateConfigPort(
-							targetPe, "config_input");
+							targetPe, getFeatureProvider(), "config_input");
 					if (addPortFeature != null) {
 						CustomContext targetContext = new CustomContext(
 								new PictogramElement[] { targetPe });
@@ -364,6 +364,8 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 	 * 
 	 * @param pe
 	 *            the {@link PictogramElement} tested
+	 * @param fp
+	 *            A {@link IFeatureProvider} for the diagram.
 	 * @param direction
 	 *            the direction of the port we want to create ("config_input" or
 	 *            "config_output")
@@ -371,8 +373,8 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 	 *         {@link PictogramElement} can create a {@link Port} with the given
 	 *         direction. Return <code>null</code> else.
 	 */
-	protected AbstractAddActorPortFeature canCreateConfigPort(
-			PictogramElement pe, String direction) {
+	static protected AbstractAddActorPortFeature canCreateConfigPort(
+			PictogramElement pe, IFeatureProvider fp, String direction) {
 		boolean canCreatePort = false;
 		PictogramElement peSource = pe;
 
@@ -381,7 +383,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 				new PictogramElement[] { peSource });
 		AbstractAddActorPortFeature addPortFeature = null;
 		if (direction.equals("config_input")) {
-			addPortFeature = new AddConfigInputPortFeature(getFeatureProvider());
+			addPortFeature = new AddConfigInputPortFeature(fp);
 		}
 		// if (direction.equals("config_output")) {
 		// addPortFeature = new AddOutputPortFeature(getFeatureProvider());
