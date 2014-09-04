@@ -191,6 +191,9 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 					+ allExpression;
 		} catch (JepException e) {
 			return "Error in parameter subtitution" + " : " + allExpression;
+		} catch (NumberFormatException e){
+			return "Evaluation Error, check parameter dependencies" + " : "
+					+ allExpression;
 		}
 
 	}
