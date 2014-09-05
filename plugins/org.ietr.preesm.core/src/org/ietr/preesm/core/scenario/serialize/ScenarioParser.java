@@ -239,7 +239,7 @@ public class ScenarioParser {
 		case "INDEPENDENT":
 		case "STATIC": // Retro-compatibility		
 			scenario.getParameterValueManager().addIndependentParameterValue(
-					name, stringValue, parent);
+					currentParameter, stringValue, parent);
 			break;
 		case "ACTOR_DEPENDENT":
 		case "DYNAMIC": // Retro-compatibility
@@ -259,7 +259,7 @@ public class ScenarioParser {
 					// TODO: Do smthg?
 				}
 				scenario.getParameterValueManager()
-						.addActorDependentParameterValue(name, newValues,
+						.addActorDependentParameterValue(currentParameter, newValues,
 								parent);
 			}
 			break;
@@ -273,7 +273,7 @@ public class ScenarioParser {
 				}
 			}
 			scenario.getParameterValueManager()
-					.addParameterDependentParameterValue(name, stringValue,
+					.addParameterDependentParameterValue(currentParameter, stringValue,
 							inputParameters, parent);
 			break;
 		default:
