@@ -52,14 +52,17 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.tools.NameComparator;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.Refinement;
 
 /**
  * Provides the elements contained in the timing editor
  * 
  * @author mpelcat
  */
-public class PreesmAlgorithmListContentProvider implements IStructuredContentProvider {
+public class PreesmAlgorithmListContentProvider implements
+		IStructuredContentProvider {
 
 	@Override
 	public Object[] getElements(Object inputElement) {
@@ -70,8 +73,12 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
 			PreesmScenario inputScenario = (PreesmScenario) inputElement;
 
 			try {
-				if (inputScenario.isIBSDFScenario()) elementTable = getSortedIBSDFVertices(inputScenario).toArray();
-				else if (inputScenario.isPISDFScenario()) elementTable = getSortedPISDFVertices(inputScenario).toArray();
+				if (inputScenario.isIBSDFScenario())
+					elementTable = getSortedIBSDFVertices(inputScenario)
+							.toArray();
+				else if (inputScenario.isPISDFScenario())
+					elementTable = getSortedPISDFVertices(inputScenario)
+							.toArray();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -80,26 +87,39 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
 	}
 
 	private Set<AbstractActor> getSortedPISDFVertices(
-			PreesmScenario inputScenario) throws InvalidModelException, CoreException {
-		PiGraph currentGraph = ScenarioParser.getPiGraph(inputScenario.getAlgorithmURL());
-		return filterVertices(currentGraph.getVertices());
+			PreesmScenario inputScenario) throws InvalidModelException,
+			CoreException {
+		PiGraph currentGraph = ScenarioParser.getPiGraph(inputScenario
+				.getAlgorithmURL());
+		return filterVertices(currentGraph.getAllVertices());
 	}
 
+	/**
+	 * Filter out special actors and hierarchical actors
+	 * 
+	 * @param vertices
+	 *            the set of AbstractActor to filter
+	 * @return a set of Actors, with none of them being a hierarchical actor
+	 */
 	private Set<AbstractActor> filterVertices(EList<AbstractActor> vertices) {
 		Set<AbstractActor> result = new HashSet<AbstractActor>();
-		
 		for (AbstractActor vertex : vertices) {
-			// TODO: Filter out broadcast actors (join and fork actors too?)
-//			if (vertex instanceof Broadcast) {
-				result.add(vertex);
-//			}
+			if (vertex instanceof Actor) {
+				Refinement refinement = ((Actor) vertex).getRefinement();
+				if (refinement == null) result.add(vertex);
+				else {
+					AbstractActor subGraph = refinement.getAbstractActor();
+					if (subGraph == null) result.add(vertex);
+					else if (!(subGraph instanceof PiGraph)) result.add(vertex);
+				}
+			}
 		}
-		
 		return result;
 	}
 
 	public Set<SDFAbstractVertex> getSortedIBSDFVertices(
-			PreesmScenario inputScenario) throws InvalidModelException,FileNotFoundException {
+			PreesmScenario inputScenario) throws InvalidModelException,
+			FileNotFoundException {
 		Set<SDFAbstractVertex> sortedVertices = null;
 		// Opening algorithm from file
 		SDFGraph currentGraph = ScenarioParser.getSDFGraph(inputScenario
