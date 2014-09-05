@@ -59,7 +59,6 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
-import org.eclipse.graphiti.util.ColorConstant;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
@@ -317,36 +316,47 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 		// height did not change)
 		setNewHeight(newHeight, childrenShapes, anchorShapes);
 		containerGa.setHeight(newHeight);
-		
-		Actor actor = (Actor)(containerShape.getLink().getBusinessObjects().get(0));
-		if (actor.getRefinement().getFilePath() != null){
+
+		// Special layout for actors with a refinement
+		Actor actor = (Actor) (containerShape.getLink().getBusinessObjects()
+				.get(0));
+		if (actor.getRefinement().getFilePath() != null
+				&& actor.getRefinement().getFilePath().getFileExtension()
+						.equals("pi")) {
 			for (Shape shape : childrenShapes) {
 				GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
 				IGaService gaService = Graphiti.getGaService();
 				if (child instanceof Text) {
-					((Text) child).setFont(gaService.manageDefaultFont(getDiagram(), true, true));
+					((Text) child).setFont(gaService.manageDefaultFont(
+							getDiagram(), true, true));
 				}
 			}
-			RoundedRectangle roundedRectangle = (RoundedRectangle)containerGa;
-            roundedRectangle.setBackground(manageColor(new ColorConstant(255, 255, 255))); // White
-            roundedRectangle.setForeground(manageColor(new ColorConstant(128, 100, 162))); // Red
-            roundedRectangle.setLineWidth(2);
-		}else{
+			RoundedRectangle roundedRectangle = (RoundedRectangle) containerGa;
+			roundedRectangle
+					.setBackground(manageColor(AddActorFeature.HIERARCHICAL_ACTOR_BACKGROUND));
+			roundedRectangle
+					.setForeground(manageColor(AddActorFeature.HIERARCHICAL_ACTOR_FOREGROUND));
+			roundedRectangle.setLineWidth(2);
+		} else {
+			// Layout for actors without refinement
 			for (Shape shape : childrenShapes) {
 				GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
 				IGaService gaService = Graphiti.getGaService();
 				if (child instanceof Text) {
-					((Text) child).setFont(gaService.manageDefaultFont(getDiagram(), false, true));
+					((Text) child).setFont(gaService.manageDefaultFont(
+							getDiagram(), false, true));
 				}
 			}
-			RoundedRectangle roundedRectangle = (RoundedRectangle)containerGa;
-            roundedRectangle.setBackground(manageColor(AddActorFeature.ACTOR_BACKGROUND));
-            roundedRectangle.setForeground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
-            roundedRectangle.setLineWidth(2);
+			RoundedRectangle roundedRectangle = (RoundedRectangle) containerGa;
+			roundedRectangle
+					.setBackground(manageColor(AddActorFeature.ACTOR_BACKGROUND));
+			roundedRectangle
+					.setForeground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
+			roundedRectangle.setLineWidth(2);
 		}
 
 		// If Anything changed, call the move feature to layout connections
-		{
+		if (anythingChanged) {
 			MoveAbstractActorFeature moveFeature = new MoveAbstractActorFeature(
 					getFeatureProvider());
 			MoveShapeContext moveCtxt = new MoveShapeContext(containerShape);
