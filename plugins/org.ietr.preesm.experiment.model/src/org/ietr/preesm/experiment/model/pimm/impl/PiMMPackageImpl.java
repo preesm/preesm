@@ -74,6 +74,7 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 
@@ -279,6 +280,13 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * @generated
 	 */
 	private EClass forkActorEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass roundBufferActorEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -1022,6 +1030,15 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getRoundBufferActor() {
+		return roundBufferActorEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EEnum getDirection() {
 		return directionEEnum;
 	}
@@ -1183,6 +1200,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
 		forkActorEClass = createEClass(FORK_ACTOR);
 
+		roundBufferActorEClass = createEClass(ROUND_BUFFER_ACTOR);
+
 		// Create enums
 		directionEEnum = createEEnum(DIRECTION);
 		portMemoryAnnotationEEnum = createEEnum(PORT_MEMORY_ANNOTATION);
@@ -1241,6 +1260,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		broadcastActorEClass.getESuperTypes().add(this.getAbstractActor());
 		joinActorEClass.getESuperTypes().add(this.getAbstractActor());
 		forkActorEClass.getESuperTypes().add(this.getAbstractActor());
+		roundBufferActorEClass.getESuperTypes().add(this.getAbstractActor());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(parameterizableEClass, Parameterizable.class, "Parameterizable", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -1354,6 +1374,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEClass(joinActorEClass, JoinActor.class, "JoinActor", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(forkActorEClass, ForkActor.class, "ForkActor", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(roundBufferActorEClass, RoundBufferActor.class, "RoundBufferActor", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		// Initialize enums and add enum literals
 		initEEnum(directionEEnum, Direction.class, "Direction");

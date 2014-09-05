@@ -71,6 +71,7 @@ import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl;
 import org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl;
 import org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl;
@@ -632,6 +633,11 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitForkActor(ForkActor fa) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void visitRoundBufferActor(RoundBufferActor rba) {
 		throw new UnsupportedOperationException();
 	}
 

@@ -146,4 +146,5 @@
   <eClassifiers xsi:type="ecore:EClass" name="BroadcastActor" eSuperTypes="#//AbstractActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="JoinActor" eSuperTypes="#//AbstractActor"/>
   <eClassifiers xsi:type="ecore:EClass" name="ForkActor" eSuperTypes="#//AbstractActor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="RoundBufferActor" eSuperTypes="#//AbstractActor"/>
 </ecore:EPackage>

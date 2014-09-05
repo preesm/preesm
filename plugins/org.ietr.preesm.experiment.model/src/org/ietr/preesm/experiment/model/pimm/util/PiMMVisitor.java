@@ -61,6 +61,7 @@ import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl;
 import org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl;
 import org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl;
@@ -127,4 +128,6 @@ public abstract class PiMMVisitor {
 	public abstract void visitJoinActor(JoinActor ja);
 	
 	public abstract void visitForkActor(ForkActor fa);
+
+	public abstract void visitRoundBufferActor(RoundBufferActor rba) ;
 }

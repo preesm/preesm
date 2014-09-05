@@ -112,6 +112,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 			case PiMMPackage.BROADCAST_ACTOR: return createBroadcastActor();
 			case PiMMPackage.JOIN_ACTOR: return createJoinActor();
 			case PiMMPackage.FORK_ACTOR: return createForkActor();
+			case PiMMPackage.ROUND_BUFFER_ACTOR: return createRoundBufferActor();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -361,6 +362,16 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	public ForkActor createForkActor() {
 		ForkActorImpl forkActor = new ForkActorImpl();
 		return forkActor;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public RoundBufferActor createRoundBufferActor() {
+		RoundBufferActorImpl roundBufferActor = new RoundBufferActorImpl();
+		return roundBufferActor;
 	}
 
 	/**

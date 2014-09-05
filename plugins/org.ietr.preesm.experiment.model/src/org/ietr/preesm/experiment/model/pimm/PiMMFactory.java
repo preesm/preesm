@@ -254,6 +254,15 @@ public interface PiMMFactory extends EFactory {
 	ForkActor createForkActor();
 
 	/**
+	 * Returns a new object of class '<em>Round Buffer Actor</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Round Buffer Actor</em>'.
+	 * @generated
+	 */
+	RoundBufferActor createRoundBufferActor();
+
+	/**
 	 * Returns an instance of data type '<em>Direction</em>' corresponding the given literal.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

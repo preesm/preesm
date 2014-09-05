@@ -56,6 +56,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFExpressionEdgePropertyType;
@@ -94,6 +95,7 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl;
 import org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl;
 import org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl;
@@ -618,6 +620,31 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 
 		result.addVertex(fv);
 		piVx2SDFVx.put(fa, fv);
+	}
+
+	@Override
+	public void visitRoundBufferActor(RoundBufferActor rba) {
+		SDFRoundBufferVertex rbv = new SDFRoundBufferVertex();
+		// Handle vertex's name
+		rbv.setName(rba.getName());
+		// Handle vertex's path inside the graph hierarchy
+		rbv.setInfo(rba.getPath());
+
+		// Handle input parameters as instance arguments
+		for (ConfigInputPort p : rba.getConfigInputPorts()) {
+			ISetter setter = p.getIncomingDependency().getSetter();
+			if (setter instanceof Parameter) {
+				Parameter param = (Parameter) setter;
+				Argument arg = new Argument(p.getName());
+				arg.setValue(param.getName());
+				rbv.getArguments().addArgument(arg);
+			}
+		}
+
+		visitAbstractActor(rba);
+
+		result.addVertex(rbv);
+		piVx2SDFVx.put(rba, rbv);
 	}
 
 	public SDFGraph getResult() {
