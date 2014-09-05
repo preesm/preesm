@@ -113,7 +113,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String TYPE_EDEFAULT = "char";
+	protected static final String TYPE_EDEFAULT = "void";
 
 	/**
 	 * The cached value of the '{@link #getType() <em>Type</em>}' attribute.

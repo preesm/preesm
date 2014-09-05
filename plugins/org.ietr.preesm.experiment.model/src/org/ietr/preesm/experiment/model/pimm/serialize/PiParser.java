@@ -421,7 +421,7 @@ public class PiParser {
 		String type = edgeElt.getAttribute(PiXMLIdentifiers.FIFO_TYPE);
 		// If none is find, add the default type
 		if (type == null || type.equals(""))
-			type = "char";
+			type = "void";
 		fifo.setType(type);
 		// Get the sourcePort and targetPort
 		String sourcePortName = edgeElt
