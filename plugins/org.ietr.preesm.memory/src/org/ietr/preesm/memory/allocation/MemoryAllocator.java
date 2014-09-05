@@ -133,7 +133,7 @@ public abstract class MemoryAllocator {
 						// A proper type was not set for the considered edge
 						if(type == null){
 							WorkflowLogger.getLogger().log(
-									Level.SEVERE, "No data type was found on an edge between actors " + edge.getSource().getName() + " and " + edge.getTarget().getName());
+									Level.SEVERE, "No valid data type was found on an edge between actors " + edge.getSource().getName() + " and " + edge.getTarget().getName() + ".\nCheck the edge in the graph editor and the declared types in the scenario.");
 							typeSize = 1;
 						}
 						else{
