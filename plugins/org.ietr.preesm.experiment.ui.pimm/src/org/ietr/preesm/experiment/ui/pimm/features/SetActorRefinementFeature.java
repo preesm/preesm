@@ -133,6 +133,18 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 		fileExtensions.add("h");
 		IPath newFilePath = PiMMUtil.askFile(dialogTitle, question, null, fileExtensions);
 
+		setActorRefinement(actor, newFilePath);
+	}
+
+	/**
+	 * Set the refinement file of the actor and ask for the prototype in case
+	 * the file is a C Header.
+	 * 
+	 * @param newFilePath
+	 */
+	protected void setActorRefinement(Actor actor,
+			IPath newFilePath) {
+		String dialogTitle = "Select a refinement file";
 		Refinement refinement = actor.getRefinement();
 		if (newFilePath != null) {
 			this.hasDoneChanges = true;
