@@ -88,6 +88,7 @@ import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.ui.pimm.features.AddActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddBroadcastActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddConfigInputInterfaceFeature;
@@ -104,6 +105,7 @@ import org.ietr.preesm.experiment.ui.pimm.features.AddFifoFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddForkActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddJoinActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddParameterFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddRoundBufferActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.ClearActorMemoryScriptFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.ClearActorRefinementFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateActorFeature;
@@ -117,6 +119,7 @@ import org.ietr.preesm.experiment.ui.pimm.features.CreateFifoFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateForkActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateJoinActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateParameterFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.CreateRoundBufferActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteAbstractActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteActorPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteDelayFeature;
@@ -180,6 +183,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 			return new AddForkActorFeature(this);
 		}
 		
+		if (context.getNewObject() instanceof RoundBufferActor) {
+			return new AddRoundBufferActorFeature(this);
+		}
 		if (context.getNewObject() instanceof Parameter) {
 			if (((Parameter) context.getNewObject()).isConfigurationInterface()) {
 				return new AddConfigInputInterfaceFeature(this);
@@ -212,16 +218,13 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
 	@Override
 	public ICreateConnectionFeature[] getCreateConnectionFeatures() {
-		return new ICreateConnectionFeature[] { 
-				new CreateFifoFeature(this),
-				new CreateDependencyFeature(this)
-				};
+		return new ICreateConnectionFeature[] { new CreateFifoFeature(this),
+				new CreateDependencyFeature(this) };
 	}
 
 	@Override
 	public ICreateFeature[] getCreateFeatures() {
-		return new ICreateFeature[] { 
-				new CreateActorFeature(this),
+		return new ICreateFeature[] { new CreateActorFeature(this),
 				new CreateParameterFeature(this),
 				new CreateConfigInputInterfaceFeature(this),
 				new CreateConfigOutputInterfaceFeature(this),
@@ -229,8 +232,8 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 				new CreateDataOutputInterfaceFeature(this),
 				new CreateBroadcastActorFeature(this),
 				new CreateJoinActorFeature(this),
-				new CreateForkActorFeature(this)
-				};
+				new CreateForkActorFeature(this),
+				new CreateRoundBufferActorFeature(this)};
 	}
 
 	@Override
