@@ -35,8 +35,10 @@
  ******************************************************************************/
 package org.ietr.preesm.core.scenario;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.eclipse.emf.ecore.EObject;
 import org.ietr.preesm.core.scenario.ParameterValue.ParameterType;
@@ -59,6 +61,17 @@ public class ParameterValueManager {
 
 	public Set<ParameterValue> getParameterValues() {
 		return parameterValues;
+	}
+	
+	public Set<ParameterValue> getSortedParameterValues() {
+		Set<ParameterValue> result = new ConcurrentSkipListSet<ParameterValue>(new Comparator<ParameterValue>() {
+			@Override
+			public int compare(ParameterValue o1, ParameterValue o2) {
+				return o1.getName().compareTo(o2.getName());
+			}			
+		});
+		result.addAll(parameterValues);
+		return result;
 	}
 
 	public void setParameterValues(Set<ParameterValue> parameterValues) {

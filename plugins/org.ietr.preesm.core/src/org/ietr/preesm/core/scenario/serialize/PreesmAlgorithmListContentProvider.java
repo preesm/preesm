@@ -37,10 +37,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.core.scenario.serialize;
 
 import java.io.FileNotFoundException;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.Comparator;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.EList;
@@ -102,7 +102,12 @@ public class PreesmAlgorithmListContentProvider implements
 	 * @return a set of Actors, with none of them being a hierarchical actor
 	 */
 	private Set<AbstractActor> filterVertices(EList<AbstractActor> vertices) {
-		Set<AbstractActor> result = new HashSet<AbstractActor>();
+		Set<AbstractActor> result = new ConcurrentSkipListSet<AbstractActor>(new Comparator<AbstractActor>() {
+			@Override
+			public int compare(AbstractActor o1, AbstractActor o2) {
+				return o1.getName().compareTo(o2.getName());
+			}			
+		});
 		for (AbstractActor vertex : vertices) {
 			if (vertex instanceof Actor) {
 				Refinement refinement = ((Actor) vertex).getRefinement();
