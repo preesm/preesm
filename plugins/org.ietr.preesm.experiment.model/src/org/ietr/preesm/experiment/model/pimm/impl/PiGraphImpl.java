@@ -40,6 +40,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.emf.common.notify.NotificationChain;
+import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
@@ -482,6 +483,26 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 			}
 		}
 		result.addAll(parameters);
+		return result;
+	}
+
+	@Override
+	public EList<AbstractActor> getAllVertices() {
+		EList<AbstractActor> result = new BasicEList<AbstractActor>();
+		for (AbstractActor aa : getVertices()) {
+			result.add(aa);
+			if (aa instanceof PiGraph) {
+				result.addAll(((PiGraph) aa).getAllVertices());
+			} else if (aa instanceof Actor) {
+				Refinement refinement = ((Actor) aa).getRefinement();
+				if (refinement != null) {
+					AbstractActor subGraph = refinement.getAbstractActor();
+					if (subGraph != null && subGraph instanceof PiGraph) {
+						result.addAll(((PiGraph) subGraph).getAllVertices());
+					}
+				}
+			}
+		}
 		return result;
 	}
 } // GraphImpl

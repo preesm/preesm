@@ -43,17 +43,21 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
 /**
  * <!-- begin-user-doc --> A representation of the model object '
  * <em><b>Graph</b></em>'. <!-- end-user-doc -->
- *
+ * 
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getVertices <em>Vertices</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getFifos <em>Fifos</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getParameters <em>Parameters</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getDependencies <em>Dependencies</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getVertices <em>
+ * Vertices</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getFifos <em>Fifos
+ * </em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getParameters <em>
+ * Parameters</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getDependencies <em>
+ * Dependencies</em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiGraph()
  * @model
  * @generated
@@ -84,15 +88,16 @@ public interface PiGraph extends AbstractActor, PiMMVisitable {
 	EList<AbstractActor> getVertices();
 
 	/**
-	 * Returns the value of the '<em><b>Fifos</b></em>' containment reference list.
-	 * The list contents are of type {@link org.ietr.preesm.experiment.model.pimm.Fifo}.
-	 * <!-- begin-user-doc
+	 * Returns the value of the '<em><b>Fifos</b></em>' containment reference
+	 * list. The list contents are of type
+	 * {@link org.ietr.preesm.experiment.model.pimm.Fifo}. <!-- begin-user-doc
 	 * -->
 	 * <p>
 	 * If the meaning of the '<em>Fifos</em>' containment reference list isn't
 	 * clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * 
 	 * @return the value of the '<em>Fifos</em>' containment reference list.
 	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiGraph_Fifos()
 	 * @model containment="true"
@@ -192,6 +197,18 @@ public interface PiGraph extends AbstractActor, PiMMVisitable {
 	 */
 	public Parameter getParameterNamedWithParent(String name, String parent);
 
+	/**
+	 * 
+	 * @return the set of all the parameters contained by the graph and its
+	 *         subgraphs
+	 */
 	public Set<Parameter> getAllParameters();
+
+	/**
+	 * 
+	 * @return the set of all the actors contained by the graph and its
+	 *         subgraphs
+	 */
+	public EList<AbstractActor> getAllVertices();
 
 } // Graph
