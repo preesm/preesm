@@ -37,6 +37,7 @@ package org.ietr.preesm.experiment.ui.pimm.diagram;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.internal.resources.File;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
@@ -106,6 +107,7 @@ import org.ietr.preesm.experiment.ui.pimm.features.AddFifoFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddForkActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddJoinActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddParameterFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddRefinementFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddRoundBufferActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.ClearActorMemoryScriptFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.ClearActorRefinementFeature;
@@ -159,6 +161,7 @@ import org.ietr.preesm.experiment.ui.pimm.features.UpdatePortFeature;
  * @author jheulot
  * 
  */
+@SuppressWarnings("restriction")
 public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
 	public PiMMFeatureProvider(IDiagramTypeProvider dtp) {
@@ -215,6 +218,13 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		if (context.getNewObject() instanceof Dependency) {
 			return new AddDependencyFeature(this);
 		}
+		
+		if(context.getNewObject() instanceof File){
+			if(getBusinessObjectForPictogramElement(context.getTargetContainer()) instanceof Actor){
+				return new AddRefinementFeature(this);
+			}
+		}
+		
 		return super.getAddFeature(context);
 	}
 
