@@ -50,6 +50,7 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
@@ -130,4 +131,6 @@ public abstract class PiMMVisitor {
 	public abstract void visitForkActor(ForkActor fa);
 
 	public abstract void visitRoundBufferActor(RoundBufferActor rba) ;
+
+	public abstract void visitExecutableActor(ExecutableActor ea);
 }

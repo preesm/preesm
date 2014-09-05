@@ -26,7 +26,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="dependencies" upperBound="-1"
         eType="#//Dependency" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Actor" eSuperTypes="#//AbstractActor">
+  <eClassifiers xsi:type="ecore:EClass" name="Actor" eSuperTypes="#//ExecutableActor">
     <eStructuralFeatures xsi:type="ecore:EReference" name="refinement" lowerBound="1"
         eType="#//Refinement" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="configurationActor" lowerBound="1"
@@ -143,8 +143,9 @@
     <eLiterals name="UNUSED" value="3" literal="UNUSED"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EDataType" name="IPath" instanceClassName="org.eclipse.core.runtime.IPath"/>
-  <eClassifiers xsi:type="ecore:EClass" name="BroadcastActor" eSuperTypes="#//AbstractActor"/>
-  <eClassifiers xsi:type="ecore:EClass" name="JoinActor" eSuperTypes="#//AbstractActor"/>
-  <eClassifiers xsi:type="ecore:EClass" name="ForkActor" eSuperTypes="#//AbstractActor"/>
-  <eClassifiers xsi:type="ecore:EClass" name="RoundBufferActor" eSuperTypes="#//AbstractActor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="BroadcastActor" eSuperTypes="#//ExecutableActor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="JoinActor" eSuperTypes="#//ExecutableActor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ForkActor" eSuperTypes="#//ExecutableActor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="RoundBufferActor" eSuperTypes="#//ExecutableActor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ExecutableActor" abstract="true" eSuperTypes="#//AbstractActor"/>
 </ecore:EPackage>

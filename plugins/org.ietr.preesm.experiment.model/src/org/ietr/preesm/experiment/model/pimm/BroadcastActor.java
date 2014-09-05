@@ -15,5 +15,5 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  * @model
  * @generated
  */
-public interface BroadcastActor extends AbstractActor, PiMMVisitable {
+public interface BroadcastActor extends ExecutableActor, PiMMVisitable {
 } // BroadcastActor

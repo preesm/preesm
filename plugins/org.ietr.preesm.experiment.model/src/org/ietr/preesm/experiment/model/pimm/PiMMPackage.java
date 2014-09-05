@@ -320,6 +320,70 @@ public interface PiMMPackage extends EPackage {
 	int PI_GRAPH_FEATURE_COUNT = ABSTRACT_ACTOR_FEATURE_COUNT + 4;
 
 	/**
+	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ExecutableActorImpl <em>Executable Actor</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.ExecutableActorImpl
+	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getExecutableActor()
+	 * @generated
+	 */
+	int EXECUTABLE_ACTOR = 30;
+
+	/**
+	 * The feature id for the '<em><b>Config Input Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS = ABSTRACT_ACTOR__CONFIG_INPUT_PORTS;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EXECUTABLE_ACTOR__NAME = ABSTRACT_ACTOR__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EXECUTABLE_ACTOR__DATA_INPUT_PORTS = ABSTRACT_ACTOR__DATA_INPUT_PORTS;
+
+	/**
+	 * The feature id for the '<em><b>Data Output Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EXECUTABLE_ACTOR__DATA_OUTPUT_PORTS = ABSTRACT_ACTOR__DATA_OUTPUT_PORTS;
+
+	/**
+	 * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EXECUTABLE_ACTOR__CONFIG_OUTPUT_PORTS = ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS;
+
+	/**
+	 * The number of structural features of the '<em>Executable Actor</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EXECUTABLE_ACTOR_FEATURE_COUNT = ABSTRACT_ACTOR_FEATURE_COUNT + 0;
+
+	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl <em>Actor</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -336,7 +400,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ACTOR__CONFIG_INPUT_PORTS = ABSTRACT_ACTOR__CONFIG_INPUT_PORTS;
+	int ACTOR__CONFIG_INPUT_PORTS = EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -345,7 +409,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ACTOR__NAME = ABSTRACT_ACTOR__NAME;
+	int ACTOR__NAME = EXECUTABLE_ACTOR__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list.
@@ -354,7 +418,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ACTOR__DATA_INPUT_PORTS = ABSTRACT_ACTOR__DATA_INPUT_PORTS;
+	int ACTOR__DATA_INPUT_PORTS = EXECUTABLE_ACTOR__DATA_INPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Data Output Ports</b></em>' containment reference list.
@@ -363,7 +427,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ACTOR__DATA_OUTPUT_PORTS = ABSTRACT_ACTOR__DATA_OUTPUT_PORTS;
+	int ACTOR__DATA_OUTPUT_PORTS = EXECUTABLE_ACTOR__DATA_OUTPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list.
@@ -372,7 +436,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ACTOR__CONFIG_OUTPUT_PORTS = ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS;
+	int ACTOR__CONFIG_OUTPUT_PORTS = EXECUTABLE_ACTOR__CONFIG_OUTPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Refinement</b></em>' containment reference.
@@ -381,7 +445,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ACTOR__REFINEMENT = ABSTRACT_ACTOR_FEATURE_COUNT + 0;
+	int ACTOR__REFINEMENT = EXECUTABLE_ACTOR_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Configuration Actor</b></em>' attribute.
@@ -390,7 +454,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ACTOR__CONFIGURATION_ACTOR = ABSTRACT_ACTOR_FEATURE_COUNT + 1;
+	int ACTOR__CONFIGURATION_ACTOR = EXECUTABLE_ACTOR_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Memory Script Path</b></em>' attribute.
@@ -399,7 +463,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ACTOR__MEMORY_SCRIPT_PATH = ABSTRACT_ACTOR_FEATURE_COUNT + 2;
+	int ACTOR__MEMORY_SCRIPT_PATH = EXECUTABLE_ACTOR_FEATURE_COUNT + 2;
 
 	/**
 	 * The number of structural features of the '<em>Actor</em>' class.
@@ -408,7 +472,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ACTOR_FEATURE_COUNT = ABSTRACT_ACTOR_FEATURE_COUNT + 3;
+	int ACTOR_FEATURE_COUNT = EXECUTABLE_ACTOR_FEATURE_COUNT + 3;
 
 
 	/**
@@ -1622,7 +1686,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int BROADCAST_ACTOR__CONFIG_INPUT_PORTS = ABSTRACT_ACTOR__CONFIG_INPUT_PORTS;
+	int BROADCAST_ACTOR__CONFIG_INPUT_PORTS = EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1631,7 +1695,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int BROADCAST_ACTOR__NAME = ABSTRACT_ACTOR__NAME;
+	int BROADCAST_ACTOR__NAME = EXECUTABLE_ACTOR__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list.
@@ -1640,7 +1704,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int BROADCAST_ACTOR__DATA_INPUT_PORTS = ABSTRACT_ACTOR__DATA_INPUT_PORTS;
+	int BROADCAST_ACTOR__DATA_INPUT_PORTS = EXECUTABLE_ACTOR__DATA_INPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Data Output Ports</b></em>' containment reference list.
@@ -1649,7 +1713,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int BROADCAST_ACTOR__DATA_OUTPUT_PORTS = ABSTRACT_ACTOR__DATA_OUTPUT_PORTS;
+	int BROADCAST_ACTOR__DATA_OUTPUT_PORTS = EXECUTABLE_ACTOR__DATA_OUTPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list.
@@ -1658,7 +1722,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int BROADCAST_ACTOR__CONFIG_OUTPUT_PORTS = ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS;
+	int BROADCAST_ACTOR__CONFIG_OUTPUT_PORTS = EXECUTABLE_ACTOR__CONFIG_OUTPUT_PORTS;
 
 	/**
 	 * The number of structural features of the '<em>Broadcast Actor</em>' class.
@@ -1667,7 +1731,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int BROADCAST_ACTOR_FEATURE_COUNT = ABSTRACT_ACTOR_FEATURE_COUNT + 0;
+	int BROADCAST_ACTOR_FEATURE_COUNT = EXECUTABLE_ACTOR_FEATURE_COUNT + 0;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.JoinActorImpl <em>Join Actor</em>}' class.
@@ -1686,7 +1750,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int JOIN_ACTOR__CONFIG_INPUT_PORTS = ABSTRACT_ACTOR__CONFIG_INPUT_PORTS;
+	int JOIN_ACTOR__CONFIG_INPUT_PORTS = EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1695,7 +1759,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int JOIN_ACTOR__NAME = ABSTRACT_ACTOR__NAME;
+	int JOIN_ACTOR__NAME = EXECUTABLE_ACTOR__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list.
@@ -1704,7 +1768,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int JOIN_ACTOR__DATA_INPUT_PORTS = ABSTRACT_ACTOR__DATA_INPUT_PORTS;
+	int JOIN_ACTOR__DATA_INPUT_PORTS = EXECUTABLE_ACTOR__DATA_INPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Data Output Ports</b></em>' containment reference list.
@@ -1713,7 +1777,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int JOIN_ACTOR__DATA_OUTPUT_PORTS = ABSTRACT_ACTOR__DATA_OUTPUT_PORTS;
+	int JOIN_ACTOR__DATA_OUTPUT_PORTS = EXECUTABLE_ACTOR__DATA_OUTPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list.
@@ -1722,7 +1786,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int JOIN_ACTOR__CONFIG_OUTPUT_PORTS = ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS;
+	int JOIN_ACTOR__CONFIG_OUTPUT_PORTS = EXECUTABLE_ACTOR__CONFIG_OUTPUT_PORTS;
 
 	/**
 	 * The number of structural features of the '<em>Join Actor</em>' class.
@@ -1731,7 +1795,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int JOIN_ACTOR_FEATURE_COUNT = ABSTRACT_ACTOR_FEATURE_COUNT + 0;
+	int JOIN_ACTOR_FEATURE_COUNT = EXECUTABLE_ACTOR_FEATURE_COUNT + 0;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ForkActorImpl <em>Fork Actor</em>}' class.
@@ -1750,7 +1814,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int FORK_ACTOR__CONFIG_INPUT_PORTS = ABSTRACT_ACTOR__CONFIG_INPUT_PORTS;
+	int FORK_ACTOR__CONFIG_INPUT_PORTS = EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1759,7 +1823,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int FORK_ACTOR__NAME = ABSTRACT_ACTOR__NAME;
+	int FORK_ACTOR__NAME = EXECUTABLE_ACTOR__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list.
@@ -1768,7 +1832,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int FORK_ACTOR__DATA_INPUT_PORTS = ABSTRACT_ACTOR__DATA_INPUT_PORTS;
+	int FORK_ACTOR__DATA_INPUT_PORTS = EXECUTABLE_ACTOR__DATA_INPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Data Output Ports</b></em>' containment reference list.
@@ -1777,7 +1841,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int FORK_ACTOR__DATA_OUTPUT_PORTS = ABSTRACT_ACTOR__DATA_OUTPUT_PORTS;
+	int FORK_ACTOR__DATA_OUTPUT_PORTS = EXECUTABLE_ACTOR__DATA_OUTPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list.
@@ -1786,7 +1850,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int FORK_ACTOR__CONFIG_OUTPUT_PORTS = ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS;
+	int FORK_ACTOR__CONFIG_OUTPUT_PORTS = EXECUTABLE_ACTOR__CONFIG_OUTPUT_PORTS;
 
 	/**
 	 * The number of structural features of the '<em>Fork Actor</em>' class.
@@ -1795,7 +1859,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int FORK_ACTOR_FEATURE_COUNT = ABSTRACT_ACTOR_FEATURE_COUNT + 0;
+	int FORK_ACTOR_FEATURE_COUNT = EXECUTABLE_ACTOR_FEATURE_COUNT + 0;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.impl.RoundBufferActorImpl <em>Round Buffer Actor</em>}' class.
@@ -1814,7 +1878,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ROUND_BUFFER_ACTOR__CONFIG_INPUT_PORTS = ABSTRACT_ACTOR__CONFIG_INPUT_PORTS;
+	int ROUND_BUFFER_ACTOR__CONFIG_INPUT_PORTS = EXECUTABLE_ACTOR__CONFIG_INPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1823,7 +1887,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ROUND_BUFFER_ACTOR__NAME = ABSTRACT_ACTOR__NAME;
+	int ROUND_BUFFER_ACTOR__NAME = EXECUTABLE_ACTOR__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Data Input Ports</b></em>' containment reference list.
@@ -1832,7 +1896,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ROUND_BUFFER_ACTOR__DATA_INPUT_PORTS = ABSTRACT_ACTOR__DATA_INPUT_PORTS;
+	int ROUND_BUFFER_ACTOR__DATA_INPUT_PORTS = EXECUTABLE_ACTOR__DATA_INPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Data Output Ports</b></em>' containment reference list.
@@ -1841,7 +1905,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ROUND_BUFFER_ACTOR__DATA_OUTPUT_PORTS = ABSTRACT_ACTOR__DATA_OUTPUT_PORTS;
+	int ROUND_BUFFER_ACTOR__DATA_OUTPUT_PORTS = EXECUTABLE_ACTOR__DATA_OUTPUT_PORTS;
 
 	/**
 	 * The feature id for the '<em><b>Config Output Ports</b></em>' containment reference list.
@@ -1850,7 +1914,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ROUND_BUFFER_ACTOR__CONFIG_OUTPUT_PORTS = ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS;
+	int ROUND_BUFFER_ACTOR__CONFIG_OUTPUT_PORTS = EXECUTABLE_ACTOR__CONFIG_OUTPUT_PORTS;
 
 	/**
 	 * The number of structural features of the '<em>Round Buffer Actor</em>' class.
@@ -1859,7 +1923,7 @@ public interface PiMMPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ROUND_BUFFER_ACTOR_FEATURE_COUNT = ABSTRACT_ACTOR_FEATURE_COUNT + 0;
+	int ROUND_BUFFER_ACTOR_FEATURE_COUNT = EXECUTABLE_ACTOR_FEATURE_COUNT + 0;
 
 	/**
 	 * The meta object id for the '{@link org.ietr.preesm.experiment.model.pimm.Direction <em>Direction</em>}' enum.
@@ -1869,7 +1933,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getDirection()
 	 * @generated
 	 */
-	int DIRECTION = 30;
+	int DIRECTION = 31;
 
 
 	/**
@@ -1880,7 +1944,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getPortMemoryAnnotation()
 	 * @generated
 	 */
-	int PORT_MEMORY_ANNOTATION = 31;
+	int PORT_MEMORY_ANNOTATION = 32;
 
 
 	/**
@@ -1891,7 +1955,7 @@ public interface PiMMPackage extends EPackage {
 	 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getIPath()
 	 * @generated
 	 */
-	int IPATH = 32;
+	int IPATH = 33;
 
 
 	/**
@@ -2669,6 +2733,16 @@ public interface PiMMPackage extends EPackage {
 	EClass getRoundBufferActor();
 
 	/**
+	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.ExecutableActor <em>Executable Actor</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Executable Actor</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.ExecutableActor
+	 * @generated
+	 */
+	EClass getExecutableActor();
+
+	/**
 	 * Returns the meta object for enum '{@link org.ietr.preesm.experiment.model.pimm.Direction <em>Direction</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -3372,6 +3446,16 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EClass ROUND_BUFFER_ACTOR = eINSTANCE.getRoundBufferActor();
+
+		/**
+		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ExecutableActorImpl <em>Executable Actor</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.ExecutableActorImpl
+		 * @see org.ietr.preesm.experiment.model.pimm.impl.PiMMPackageImpl#getExecutableActor()
+		 * @generated
+		 */
+		EClass EXECUTABLE_ACTOR = eINSTANCE.getExecutableActor();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.Direction <em>Direction</em>}' enum.

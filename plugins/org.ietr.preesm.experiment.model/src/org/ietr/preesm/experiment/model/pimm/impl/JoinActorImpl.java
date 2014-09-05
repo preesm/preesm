@@ -16,7 +16,7 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
  *
  * @generated
  */
-public class JoinActorImpl extends AbstractActorImpl implements JoinActor {
+public class JoinActorImpl extends ExecutableActorImpl implements JoinActor {
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

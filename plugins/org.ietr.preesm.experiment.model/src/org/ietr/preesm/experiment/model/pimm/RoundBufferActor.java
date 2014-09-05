@@ -15,5 +15,5 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  * @model
  * @generated
  */
-public interface RoundBufferActor extends AbstractActor, PiMMVisitable {
+public interface RoundBufferActor extends ExecutableActor, PiMMVisitable {
 } // RoundBufferActor

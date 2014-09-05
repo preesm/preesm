@@ -16,7 +16,7 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
  *
  * @generated
  */
-public class RoundBufferActorImpl extends AbstractActorImpl implements RoundBufferActor {
+public class RoundBufferActorImpl extends ExecutableActorImpl implements RoundBufferActor {
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

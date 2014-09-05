@@ -15,5 +15,5 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  * @model
  * @generated
  */
-public interface JoinActor extends AbstractActor, PiMMVisitable {
+public interface JoinActor extends ExecutableActor, PiMMVisitable {
 } // JoinActor

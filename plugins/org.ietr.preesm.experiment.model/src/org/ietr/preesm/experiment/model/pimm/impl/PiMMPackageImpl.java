@@ -54,6 +54,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Direction;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
@@ -287,6 +288,13 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * @generated
 	 */
 	private EClass roundBufferActorEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass executableActorEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -1039,6 +1047,15 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getExecutableActor() {
+		return executableActorEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EEnum getDirection() {
 		return directionEEnum;
 	}
@@ -1202,6 +1219,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 
 		roundBufferActorEClass = createEClass(ROUND_BUFFER_ACTOR);
 
+		executableActorEClass = createEClass(EXECUTABLE_ACTOR);
+
 		// Create enums
 		directionEEnum = createEEnum(DIRECTION);
 		portMemoryAnnotationEEnum = createEEnum(PORT_MEMORY_ANNOTATION);
@@ -1241,7 +1260,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		abstractVertexEClass.getESuperTypes().add(this.getParameterizable());
 		abstractActorEClass.getESuperTypes().add(this.getAbstractVertex());
 		piGraphEClass.getESuperTypes().add(this.getAbstractActor());
-		actorEClass.getESuperTypes().add(this.getAbstractActor());
+		actorEClass.getESuperTypes().add(this.getExecutableActor());
 		dataInputPortEClass.getESuperTypes().add(this.getDataPort());
 		dataOutputPortEClass.getESuperTypes().add(this.getDataPort());
 		configInputPortEClass.getESuperTypes().add(this.getPort());
@@ -1257,10 +1276,11 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		delayEClass.getESuperTypes().add(this.getParameterizable());
 		hRefinementEClass.getESuperTypes().add(this.getRefinement());
 		dataPortEClass.getESuperTypes().add(this.getPort());
-		broadcastActorEClass.getESuperTypes().add(this.getAbstractActor());
-		joinActorEClass.getESuperTypes().add(this.getAbstractActor());
-		forkActorEClass.getESuperTypes().add(this.getAbstractActor());
-		roundBufferActorEClass.getESuperTypes().add(this.getAbstractActor());
+		broadcastActorEClass.getESuperTypes().add(this.getExecutableActor());
+		joinActorEClass.getESuperTypes().add(this.getExecutableActor());
+		forkActorEClass.getESuperTypes().add(this.getExecutableActor());
+		roundBufferActorEClass.getESuperTypes().add(this.getExecutableActor());
+		executableActorEClass.getESuperTypes().add(this.getAbstractActor());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(parameterizableEClass, Parameterizable.class, "Parameterizable", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -1376,6 +1396,8 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 		initEClass(forkActorEClass, ForkActor.class, "ForkActor", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(roundBufferActorEClass, RoundBufferActor.class, "RoundBufferActor", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(executableActorEClass, ExecutableActor.class, "ExecutableActor", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		// Initialize enums and add enum literals
 		initEEnum(directionEEnum, Direction.class, "Direction");

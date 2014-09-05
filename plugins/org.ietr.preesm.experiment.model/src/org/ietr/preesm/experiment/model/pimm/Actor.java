@@ -57,7 +57,7 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  * @model
  * @generated
  */
-public interface Actor extends AbstractActor, PiMMVisitable {
+public interface Actor extends ExecutableActor, PiMMVisitable {
 
 	/**
 	 * Returns the value of the '<em><b>Refinement</b></em>' containment reference.

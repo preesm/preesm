@@ -69,7 +69,7 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
  *
  * @generated
  */
-public class ActorImpl extends AbstractActorImpl implements Actor {
+public class ActorImpl extends ExecutableActorImpl implements Actor {
 	/**
 	 * The cached value of the '{@link #getRefinement() <em>Refinement</em>}' containment reference.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->

@@ -82,6 +82,7 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
@@ -702,6 +703,11 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitDataPort(DataPort p) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public void visitExecutableActor(ExecutableActor ea) {
 		throw new UnsupportedOperationException();
 	}
 }

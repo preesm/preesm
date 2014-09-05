@@ -99,6 +99,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 			case PiMMPackage.ACTOR: {
 				Actor actor = (Actor)theEObject;
 				T result = caseActor(actor);
+				if (result == null) result = caseExecutableActor(actor);
 				if (result == null) result = caseAbstractActor(actor);
 				if (result == null) result = caseAbstractVertex(actor);
 				if (result == null) result = caseParameterizable(actor);
@@ -268,6 +269,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 			case PiMMPackage.BROADCAST_ACTOR: {
 				BroadcastActor broadcastActor = (BroadcastActor)theEObject;
 				T result = caseBroadcastActor(broadcastActor);
+				if (result == null) result = caseExecutableActor(broadcastActor);
 				if (result == null) result = caseAbstractActor(broadcastActor);
 				if (result == null) result = caseAbstractVertex(broadcastActor);
 				if (result == null) result = caseParameterizable(broadcastActor);
@@ -277,6 +279,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 			case PiMMPackage.JOIN_ACTOR: {
 				JoinActor joinActor = (JoinActor)theEObject;
 				T result = caseJoinActor(joinActor);
+				if (result == null) result = caseExecutableActor(joinActor);
 				if (result == null) result = caseAbstractActor(joinActor);
 				if (result == null) result = caseAbstractVertex(joinActor);
 				if (result == null) result = caseParameterizable(joinActor);
@@ -286,6 +289,7 @@ public class PiMMSwitch<T> extends Switch<T> {
 			case PiMMPackage.FORK_ACTOR: {
 				ForkActor forkActor = (ForkActor)theEObject;
 				T result = caseForkActor(forkActor);
+				if (result == null) result = caseExecutableActor(forkActor);
 				if (result == null) result = caseAbstractActor(forkActor);
 				if (result == null) result = caseAbstractVertex(forkActor);
 				if (result == null) result = caseParameterizable(forkActor);
@@ -295,9 +299,19 @@ public class PiMMSwitch<T> extends Switch<T> {
 			case PiMMPackage.ROUND_BUFFER_ACTOR: {
 				RoundBufferActor roundBufferActor = (RoundBufferActor)theEObject;
 				T result = caseRoundBufferActor(roundBufferActor);
+				if (result == null) result = caseExecutableActor(roundBufferActor);
 				if (result == null) result = caseAbstractActor(roundBufferActor);
 				if (result == null) result = caseAbstractVertex(roundBufferActor);
 				if (result == null) result = caseParameterizable(roundBufferActor);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case PiMMPackage.EXECUTABLE_ACTOR: {
+				ExecutableActor executableActor = (ExecutableActor)theEObject;
+				T result = caseExecutableActor(executableActor);
+				if (result == null) result = caseAbstractActor(executableActor);
+				if (result == null) result = caseAbstractVertex(executableActor);
+				if (result == null) result = caseParameterizable(executableActor);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -737,6 +751,21 @@ public class PiMMSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseRoundBufferActor(RoundBufferActor object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Executable Actor</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Executable Actor</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseExecutableActor(ExecutableActor object) {
 		return null;
 	}
 

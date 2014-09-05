@@ -15,5 +15,5 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  * @model
  * @generated
  */
-public interface ForkActor extends AbstractActor, PiMMVisitable {
+public interface ForkActor extends ExecutableActor, PiMMVisitable {
 } // ForkActor

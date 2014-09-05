@@ -16,7 +16,7 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
  *
  * @generated
  */
-public class BroadcastActorImpl extends AbstractActorImpl implements BroadcastActor {
+public class BroadcastActorImpl extends ExecutableActorImpl implements BroadcastActor {
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

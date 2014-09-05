@@ -3,26 +3,26 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.ecore.EClass;
-import org.ietr.preesm.experiment.model.pimm.ForkActor;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Fork Actor</b></em>'.
+ * An implementation of the model object '<em><b>Executable Actor</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * </p>
  *
  * @generated
  */
-public class ForkActorImpl extends ExecutableActorImpl implements ForkActor {
+public abstract class ExecutableActorImpl extends AbstractActorImpl implements ExecutableActor {
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected ForkActorImpl() {
+	protected ExecutableActorImpl() {
 		super();
 	}
 
@@ -33,11 +33,12 @@ public class ForkActorImpl extends ExecutableActorImpl implements ForkActor {
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return PiMMPackage.Literals.FORK_ACTOR;
+		return PiMMPackage.Literals.EXECUTABLE_ACTOR;
 	}
-
+	
 	@Override
 	public void accept(PiMMVisitor v) {
-		v.visitForkActor(this);
+		v.visitExecutableActor(this);
 	}
-} //ForkActorImpl
+
+} //ExecutableActorImpl
