@@ -118,25 +118,41 @@ public class ScenarioWriter {
 	}
 
 	private void addParameterValue(Element parent, ParameterValue value) {
-		Element valueElt = dom.createElement("parameter");
-		parent.appendChild(valueElt);
-		
-		valueElt.setAttribute("name", value.getName());
-		valueElt.setAttribute("parent", value.getParentVertex());
-		valueElt.setAttribute("type", value.getType().toString());
+		// Serialize only if the kept value(s) is different from the "default value" found in the PiGraph:
+		// - if the parameter is actor dependent, there is no default value
+		// - otherwise, compare the kept value to the parameter expression
+		boolean needToBeSerialized = false;
 		String valueToPrint = "";
 		switch (value.getType()) {
-		case INDEPENDENT:			
+		case INDEPENDENT:
 			valueToPrint = "" + value.getValue();
+			if (!value.getParameter().getExpression().getString()
+					.equals(valueToPrint)) {
+				needToBeSerialized = true;
+			}
 			break;
 		case ACTOR_DEPENDENT:
 			valueToPrint = value.getValues().toString();
+			needToBeSerialized = true;
 			break;
 		case PARAMETER_DEPENDENT:
 			valueToPrint = value.getExpression();
+			if (!value.getParameter().getExpression().getString()
+					.equals(valueToPrint)) {
+				needToBeSerialized = true;
+			}
 			break;
 		}
-		valueElt.setAttribute("value", valueToPrint);
+		if (needToBeSerialized) {
+			Element valueElt = dom.createElement("parameter");
+			parent.appendChild(valueElt);
+
+			valueElt.setAttribute("name", value.getName());
+			valueElt.setAttribute("parent", value.getParentVertex());
+			valueElt.setAttribute("type", value.getType().toString());
+
+			valueElt.setAttribute("value", valueToPrint);
+		}
 	}
 
 	private void addVariables(Element parent) {
@@ -198,10 +214,11 @@ public class ScenarioWriter {
 				.getSpecialVertexOperatorIds()) {
 			addSpecialVertexOperator(sVOperators, opId);
 		}
-		
+
 		Element nbExec = dom.createElement("numberOfTopExecutions");
 		params.appendChild(nbExec);
-		nbExec.setTextContent(String.valueOf(scenario.getSimulationManager().getNumberOfTopExecutions()));
+		nbExec.setTextContent(String.valueOf(scenario.getSimulationManager()
+				.getNumberOfTopExecutions()));
 	}
 
 	private void addDataType(Element parent, DataType dataType) {
@@ -294,19 +311,19 @@ public class ScenarioWriter {
 			vtxelt.setAttribute("name", vtxId);
 		}
 	}
-	
 
 	private void addRelativeConstraints(Element parent) {
 
-		RelativeConstraintManager manager = scenario.getRelativeconstraintManager();
+		RelativeConstraintManager manager = scenario
+				.getRelativeconstraintManager();
 		Element timings = dom.createElement("relativeconstraints");
 		parent.appendChild(timings);
 
-		timings.setAttribute("excelUrl", manager
-				.getExcelFileURL());
+		timings.setAttribute("excelUrl", manager.getExcelFileURL());
 
 		for (String id : manager.getExplicitConstraintIds()) {
-			addRelativeConstraint(timings, id, manager.getConstraintOrDefault(id));
+			addRelativeConstraint(timings, id,
+					manager.getConstraintOrDefault(id));
 		}
 	}
 
@@ -330,8 +347,11 @@ public class ScenarioWriter {
 			addTiming(timings, timing);
 		}
 
-		for (String opDef : scenario.getTimingManager().getMemcpySpeeds().keySet()) {
-			addMemcpySpeed(timings, opDef, scenario.getTimingManager().getMemcpySetupTime(opDef), scenario.getTimingManager().getMemcpyTimePerUnit(opDef));
+		for (String opDef : scenario.getTimingManager().getMemcpySpeeds()
+				.keySet()) {
+			addMemcpySpeed(timings, opDef, scenario.getTimingManager()
+					.getMemcpySetupTime(opDef), scenario.getTimingManager()
+					.getMemcpyTimePerUnit(opDef));
 		}
 	}
 
@@ -342,17 +362,21 @@ public class ScenarioWriter {
 		timingelt.setAttribute("vertexname", timing.getVertexId());
 		timingelt.setAttribute("opname", timing.getOperatorDefinitionId());
 		String timeString;
-		if (timing.isEvaluated()) timeString = Long.toString(timing.getTime());
-		else timeString = timing.getStringValue();
+		if (timing.isEvaluated())
+			timeString = Long.toString(timing.getTime());
+		else
+			timeString = timing.getStringValue();
 		timingelt.setAttribute("time", timeString);
 	}
 
-	private void addMemcpySpeed(Element parent, String opDef, long memcpySetupTime, float memcpyTimePerUnit) {
+	private void addMemcpySpeed(Element parent, String opDef,
+			long memcpySetupTime, float memcpyTimePerUnit) {
 
 		Element timingelt = dom.createElement("memcpyspeed");
 		parent.appendChild(timingelt);
 		timingelt.setAttribute("opname", opDef);
 		timingelt.setAttribute("setuptime", Long.toString(memcpySetupTime));
-		timingelt.setAttribute("timeperunit", Float.toString(memcpyTimePerUnit));
+		timingelt
+				.setAttribute("timeperunit", Float.toString(memcpyTimePerUnit));
 	}
 }
