@@ -43,8 +43,6 @@ import org.ietr.preesm.core.scenario.ParameterValue.ParameterType;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
-import com.singularsys.jep.Jep;
-
 /**
  * Manager class for parameters, storing values given by the user to parameters
  * 
@@ -67,25 +65,25 @@ public class ParameterValueManager {
 		this.parameterValues = parameterValues;
 	}
 
-	public void addIndependentParameterValue(String paramName, String value,
+	public void addIndependentParameterValue(Parameter parameter, String value,
 			String parent) {
-		ParameterValue pValue = new ParameterValue(paramName,
+		ParameterValue pValue = new ParameterValue(parameter,
 				ParameterType.INDEPENDENT, parent);
 		pValue.setValue(value);
 		this.parameterValues.add(pValue);
 	}
 
-	public void addActorDependentParameterValue(String paramName,
+	public void addActorDependentParameterValue(Parameter parameter,
 			Set<Integer> values, String parent) {
-		ParameterValue pValue = new ParameterValue(paramName,
+		ParameterValue pValue = new ParameterValue(parameter,
 				ParameterType.ACTOR_DEPENDENT, parent);
 		pValue.setValues(values);
 		this.parameterValues.add(pValue);
 	}
 
-	public void addParameterDependentParameterValue(String paramName,
+	public void addParameterDependentParameterValue(Parameter parameter,
 			String expression, Set<String> inputParameters, String parent) {
-		ParameterValue pValue = new ParameterValue(paramName,
+		ParameterValue pValue = new ParameterValue(parameter,
 				ParameterType.PARAMETER_DEPENDENT, parent);
 		pValue.setExpression(expression);
 		pValue.setInputParameters(inputParameters);
@@ -107,22 +105,8 @@ public class ParameterValueManager {
 				// cannot be actor dependent)
 				addParameterDependentParameterValue(param, parent);
 			} else {
-				Integer value = null;
-
-				Jep jep = new Jep();
-				try {
-					jep.parse(param.getExpression().getString());
-					Object result = jep.evaluate();
-					if (result instanceof Double) {
-						int intResult = ((Double) result).intValue();
-						value = intResult;
-					}
-				} catch (Exception e) {
-					// DO NOTHING, let value to null
-				}
-
 				// Add an independent parameter value
-				addIndependentParameterValue(param.getName(), param.getExpression().getString(), parent);
+				addIndependentParameterValue(param, param.getExpression().getString(), parent);
 			}
 		} else {
 			boolean isActorDependent = inputParameters.size() < param
@@ -132,7 +116,7 @@ public class ParameterValueManager {
 				Set<Integer> values = new HashSet<Integer>();
 				values.add(1);
 				// Add an actor dependent value
-				addActorDependentParameterValue(param.getName(), values, parent);
+				addActorDependentParameterValue(param, values, parent);
 			} else {
 				// Add a parameter dependent value
 				addParameterDependentParameterValue(param, parent);
@@ -146,7 +130,7 @@ public class ParameterValueManager {
 		for (Parameter p : param.getInputParameters())
 			inputParametersNames.add(p.getName());
 
-		addParameterDependentParameterValue(param.getName(), param
+		addParameterDependentParameterValue(param, param
 				.getExpression().getString(), inputParametersNames, parent);
 	}
 

@@ -38,6 +38,8 @@ package org.ietr.preesm.core.scenario;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.ietr.preesm.experiment.model.pimm.Parameter;
+
 import com.singularsys.jep.Jep;
 import com.singularsys.jep.JepException;
 
@@ -46,7 +48,7 @@ import com.singularsys.jep.JepException;
  * 
  * @author jheulot
  */
-public class ParameterValue {
+public class ParameterValue {	
 	/**
 	 * Different type of Parameter.
 	 */
@@ -60,6 +62,11 @@ public class ParameterValue {
 		PARAMETER_DEPENDENT
 	}
 
+	/**
+	 * Parameter for which we keep value(s)
+	 */
+	private  Parameter parameter;
+	
 	/**
 	 * The name of the parameter
 	 */
@@ -111,8 +118,9 @@ public class ParameterValue {
 		this.expression = expression;
 	}
 
-	public ParameterValue(String name, ParameterType type, String parent) {
-		this.name = name;
+	public ParameterValue(Parameter parameter, ParameterType type, String parent) {
+		this.setParameter(parameter);
+		this.name = parameter.getName();
 		this.type = type;
 		this.values = new HashSet<Integer>();
 		this.inputParameters = new HashSet<String>();
@@ -202,5 +210,13 @@ public class ParameterValue {
 		default:
 			return false;
 		}
+	}
+
+	public Parameter getParameter() {
+		return parameter;
+	}
+
+	public void setParameter(Parameter parameter) {
+		this.parameter = parameter;
 	}
 }
