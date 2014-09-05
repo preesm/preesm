@@ -345,22 +345,22 @@ public class SubgraphConnector extends PiMMVisitor {
 
 	@Override
 	public void visitBroadcastActor(BroadcastActor ba) {
-		throw new UnsupportedOperationException();
+		// Do nothing
 	}
 
 	@Override
 	public void visitJoinActor(JoinActor ja) {
-		throw new UnsupportedOperationException();
+		// Do nothing
 	}
 
 	@Override
 	public void visitForkActor(ForkActor fa) {
-		throw new UnsupportedOperationException();
+		// Do nothing
 	}
 
 	@Override
 	public void visitRoundBufferActor(RoundBufferActor rba) {
-		throw new UnsupportedOperationException();
+		// Do nothing
 	}
 
 	@Override

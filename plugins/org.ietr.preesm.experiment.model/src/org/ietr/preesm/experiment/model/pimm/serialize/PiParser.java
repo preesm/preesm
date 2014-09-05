@@ -536,6 +536,9 @@ public class PiParser {
 		case "actor":
 			vertex = parseActor(nodeElt, graph);
 			break;
+		case "broadcast": case "fork": case "join": case "roundbuffer":
+			vertex = parseSpecialActor(nodeElt, graph);
+			break;
 		case "src":
 			vertex = parseSourceInterface(nodeElt, graph);
 			break;
@@ -785,4 +788,43 @@ public class PiParser {
 		return srcInterface;
 	}
 
+	/**
+	 * Parse a node {@link Element} with kind "broadcast", "fork", "join",
+	 * "roundbuffer".
+	 * 
+	 * @param nodeElt
+	 *            the {@link Element} to parse
+	 * @param graph
+	 *            the deserialized {@link PiGraph}
+	 * @return the created actor
+	 */
+	protected AbstractActor parseSpecialActor(Element nodeElt, PiGraph graph) {
+		// Identify if the node is an actor or a parameter
+		String nodeKind = nodeElt.getAttribute("kind");
+		AbstractActor actor = null;
+
+		// Instantiate the actor.
+		switch (nodeKind) {
+		case "broadcast":
+			actor = PiMMFactory.eINSTANCE.createBroadcastActor();
+			break;
+		case "fork":
+			actor = PiMMFactory.eINSTANCE.createForkActor();
+			break;
+		case "join":
+			actor = PiMMFactory.eINSTANCE.createJoinActor();
+			break;
+		case "roundbuffer":
+			actor = PiMMFactory.eINSTANCE.createRoundBufferActor();
+			break;
+		}
+
+		// Get the actor properties
+		actor.setName(nodeElt.getAttribute("id"));
+
+		// Add the actor to the parsed graph
+		graph.getVertices().add(actor);
+
+		return actor;
+	}
 }

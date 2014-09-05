@@ -48,6 +48,7 @@ import org.ietr.dftools.architecture.utils.DomUtil;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
@@ -55,16 +56,19 @@ import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -288,7 +292,9 @@ public class PiWriter {
 
 		if (abstractActor instanceof Actor) {
 			writeActor(vertexElt, (Actor) abstractActor);
-		} else if (abstractActor instanceof InterfaceActor) {
+		} else if (abstractActor instanceof BroadcastActor) {
+			writeSpecialActor(vertexElt, abstractActor);
+		}else if (abstractActor instanceof InterfaceActor) {
 			writeInterfaceVertex(vertexElt, (InterfaceActor) abstractActor);
 		}
 
@@ -637,5 +643,34 @@ public class PiWriter {
 		protoElt.setAttribute("direction", p.getDirection().toString());
 		protoElt.setAttribute("isConfig",
 				String.valueOf(p.isIsConfigurationParameter()));
+	}
+	
+	/**
+	 * Write information of the {@link Actor} in the given {@link Element}. The
+	 * {@link AbstractActor} serialized by this method is either:
+	 * {@link BroadcastActor}, {@link JoinActor}, {@link ForkActor}, and
+	 * {@link RoundBufferActor}.
+	 * 
+	 * @param vertexElt
+	 *            The {@link Element} to write
+	 * @param actor
+	 *            The {@link Actor} to serialize
+	 */
+	protected void writeSpecialActor(Element vertexElt, AbstractActor actor) {
+		String kind = null;
+		if (actor instanceof BroadcastActor) {
+			kind = "broadcast";
+		} else if (actor instanceof JoinActor) {
+			kind = "join";
+		} else if (actor instanceof ForkActor) {
+			kind = "fork";
+		}  else if(actor instanceof RoundBufferActor){
+		   kind = "roundbuffer";
+		}
+		vertexElt.setAttribute("kind", kind);
+		
+		writePorts(vertexElt, actor.getConfigInputPorts());
+		writePorts(vertexElt, actor.getDataInputPorts());
+		writePorts(vertexElt, actor.getDataOutputPorts());
 	}
 }
