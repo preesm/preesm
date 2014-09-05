@@ -53,6 +53,7 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
@@ -154,7 +155,7 @@ public class PiParser {
 	 *            the deserialized {@link PiGraph}
 	 * @return the created actor
 	 */
-	protected AbstractActor parseActor(Element nodeElt, PiGraph graph) {
+	protected Actor parseActor(Element nodeElt, PiGraph graph) {
 		// Instantiate the new actor
 		Actor actor = PiMMFactory.eINSTANCE.createActor();
 
@@ -318,11 +319,11 @@ public class PiParser {
 		}
 
 		// Get the sourcePort and targetPort
-		if (source instanceof Actor) {
+		if (source instanceof ExecutableActor) {
 
 			String sourcePortName = edgeElt.getAttribute("sourceport");
 			sourcePortName = (sourcePortName == "") ? null : sourcePortName;
-			ConfigOutputPort oPort = (ConfigOutputPort) ((Actor) source)
+			ConfigOutputPort oPort = (ConfigOutputPort) ((ExecutableActor) source)
 					.getPortNamed(sourcePortName);
 			if (oPort == null) {
 				throw new RuntimeException("Edge source port " + sourcePortName
@@ -334,7 +335,7 @@ public class PiParser {
 			dependency.setSetter((ISetter) source);
 		}
 
-		if (target instanceof Actor) {
+		if (target instanceof ExecutableActor) {
 			String targetPortName = edgeElt.getAttribute("targetport");
 			targetPortName = (targetPortName == "") ? null : targetPortName;
 			ConfigInputPort iPort = (ConfigInputPort) ((AbstractVertex) target)

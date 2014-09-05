@@ -61,6 +61,7 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.ui.pimm.features.ClearActorMemoryScriptFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.ClearActorRefinementFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.OpenMemoryScriptFeature;
@@ -70,11 +71,13 @@ import org.ietr.preesm.experiment.ui.pimm.features.SetActorRefinementFeature;
 
 /**
  * Properties Section used for Actors
+ * 
  * @author jheulot
- *
+ * 
  */
-public class ActorPropertiesSection extends GFPropertySection implements ITabbedPropertyConstants{
-	
+public class ActorPropertiesSection extends GFPropertySection implements
+		ITabbedPropertyConstants {
+
 	/**
 	 * Items of the {@link ActorPropertiesSection}
 	 */
@@ -86,7 +89,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 	private Button butRefinementClear;
 	private Button butRefinementEdit;
 	private Button butRefinementOpen;
-	
+
 	private CLabel lblMemoryScript;
 	private CLabel lblMemoryScriptObj;
 
@@ -95,24 +98,25 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 	private Button butMemoryScriptOpen;
 
 	private final int FIRST_COLUMN_WIDTH = 150;
-		
+
 	@Override
-	public void createControls(Composite parent, TabbedPropertySheetPage tabbedPropertySheetPage) {
+	public void createControls(Composite parent,
+			TabbedPropertySheetPage tabbedPropertySheetPage) {
 
 		super.createControls(parent, tabbedPropertySheetPage);
-	
+
 		TabbedPropertySheetWidgetFactory factory = getWidgetFactory();
 		Composite composite = factory.createFlatFormComposite(parent);
 		FormData data;
-		
-		/**** NAME ****/		
+
+		/**** NAME ****/
 		txtNameObj = factory.createText(composite, "");
 		data = new FormData();
 		data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
 		data.right = new FormAttachment(50, 0);
 		txtNameObj.setLayoutData(data);
 		txtNameObj.setEnabled(true);
-		
+
 		lblName = factory.createCLabel(composite, "Name:");
 		data = new FormData();
 		data.left = new FormAttachment(0, 0);
@@ -122,7 +126,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 		/**
 		 * Refinement
 		 */
-		
+
 		/*** Clear Button ***/
 		butRefinementClear = factory.createButton(composite, "Clear", SWT.PUSH);
 		data = new FormData();
@@ -131,7 +135,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 		data.top = new FormAttachment(txtNameObj);
 		butRefinementClear.setLayoutData(data);
 		butRefinementClear.setEnabled(true);
-		
+
 		/*** Edit Button ***/
 		butRefinementEdit = factory.createButton(composite, "Edit", SWT.PUSH);
 		data = new FormData();
@@ -140,7 +144,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 		data.top = new FormAttachment(txtNameObj);
 		butRefinementEdit.setLayoutData(data);
 		butRefinementEdit.setEnabled(true);
-		
+
 		/*** Open Button ***/
 		butRefinementOpen = factory.createButton(composite, "Open", SWT.PUSH);
 		data = new FormData();
@@ -150,7 +154,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 		butRefinementOpen.setLayoutData(data);
 		butRefinementOpen.setEnabled(true);
 
-		/**** Refinement ****/	
+		/**** Refinement ****/
 		lblRefinementObj = factory.createCLabel(composite, "");
 		data = new FormData();
 		data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
@@ -158,7 +162,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 		data.top = new FormAttachment(txtNameObj);
 		lblRefinementObj.setLayoutData(data);
 		lblRefinementObj.setEnabled(true);
-		
+
 		lblRefinement = factory.createCLabel(composite, "Refinement:");
 		data = new FormData();
 		data.left = new FormAttachment(0, 0);
@@ -166,133 +170,151 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 		data.top = new FormAttachment(lblName);
 		lblRefinement.setLayoutData(data);
 
-		/*** Clear Button Listener ***/		
-		butRefinementClear.addSelectionListener(new SelectionListener(){
+		/*** Clear Button Listener ***/
+		butRefinementClear.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				PictogramElement pes[] = new PictogramElement[1];
 				pes[0] = getSelectedPictogramElement();
-				
+
 				CustomContext context = new CustomContext(pes);
-				ICustomFeature[] clearRefinementFeature = getDiagramTypeProvider().getFeatureProvider().getCustomFeatures(context);
-				
-				for(ICustomFeature feature : clearRefinementFeature){
-					if(feature instanceof ClearActorRefinementFeature){
-						getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
-						LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
-						ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout); 
-						getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+				ICustomFeature[] clearRefinementFeature = getDiagramTypeProvider()
+						.getFeatureProvider().getCustomFeatures(context);
+
+				for (ICustomFeature feature : clearRefinementFeature) {
+					if (feature instanceof ClearActorRefinementFeature) {
+						getDiagramTypeProvider().getDiagramBehavior()
+								.executeFeature(feature, context);
+						LayoutContext contextLayout = new LayoutContext(
+								getSelectedPictogramElement());
+						ILayoutFeature layoutFeature = getDiagramTypeProvider()
+								.getFeatureProvider().getLayoutFeature(
+										contextLayout);
+						getDiagramTypeProvider().getDiagramBehavior()
+								.executeFeature(layoutFeature, contextLayout);
 					}
 				}
-				
-				refresh();				
+
+				refresh();
 			}
 
 			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {				
+			public void widgetDefaultSelected(SelectionEvent e) {
 			}
-			
+
 		});
-		
-		/*** Edit Button Listener ***/		
-		butRefinementEdit.addSelectionListener(new SelectionListener(){
+
+		/*** Edit Button Listener ***/
+		butRefinementEdit.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				PictogramElement pes[] = new PictogramElement[1];
 				pes[0] = getSelectedPictogramElement();
-				
+
 				CustomContext context = new CustomContext(pes);
-				ICustomFeature[] setRefinementFeature = getDiagramTypeProvider().getFeatureProvider().getCustomFeatures(context);
-				
-				for(ICustomFeature feature : setRefinementFeature){
-					if(feature instanceof SetActorRefinementFeature){
-						getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
-						LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
-						ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout); 
-						getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+				ICustomFeature[] setRefinementFeature = getDiagramTypeProvider()
+						.getFeatureProvider().getCustomFeatures(context);
+
+				for (ICustomFeature feature : setRefinementFeature) {
+					if (feature instanceof SetActorRefinementFeature) {
+						getDiagramTypeProvider().getDiagramBehavior()
+								.executeFeature(feature, context);
+						LayoutContext contextLayout = new LayoutContext(
+								getSelectedPictogramElement());
+						ILayoutFeature layoutFeature = getDiagramTypeProvider()
+								.getFeatureProvider().getLayoutFeature(
+										contextLayout);
+						getDiagramTypeProvider().getDiagramBehavior()
+								.executeFeature(layoutFeature, contextLayout);
 					}
 				}
-				
-				refresh();				
+
+				refresh();
 			}
 
 			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {				
+			public void widgetDefaultSelected(SelectionEvent e) {
 			}
-			
+
 		});
-		
-		/*** Open Button Listener ***/		
-		butRefinementOpen.addSelectionListener(new SelectionListener(){
+
+		/*** Open Button Listener ***/
+		butRefinementOpen.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				PictogramElement pes[] = new PictogramElement[1];
 				pes[0] = getSelectedPictogramElement();
-				
+
 				CustomContext context = new CustomContext(pes);
-				ICustomFeature[] openRefinementFeature = getDiagramTypeProvider().getFeatureProvider().getCustomFeatures(context);
-				
-				for(ICustomFeature feature : openRefinementFeature){
-					if(feature instanceof OpenRefinementFeature){
-						getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
-						LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
-						ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout); 
-						getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+				ICustomFeature[] openRefinementFeature = getDiagramTypeProvider()
+						.getFeatureProvider().getCustomFeatures(context);
+
+				for (ICustomFeature feature : openRefinementFeature) {
+					if (feature instanceof OpenRefinementFeature) {
+						getDiagramTypeProvider().getDiagramBehavior()
+								.executeFeature(feature, context);
+						LayoutContext contextLayout = new LayoutContext(
+								getSelectedPictogramElement());
+						ILayoutFeature layoutFeature = getDiagramTypeProvider()
+								.getFeatureProvider().getLayoutFeature(
+										contextLayout);
+						getDiagramTypeProvider().getDiagramBehavior()
+								.executeFeature(layoutFeature, contextLayout);
 					}
 				}
-				
-				refresh();				
-			}			
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {				
+
+				refresh();
 			}
-			
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+
 		});
-		
+
 		/*** Name box listener ***/
-		
-		txtNameObj.addModifyListener(new ModifyListener(){
+
+		txtNameObj.addModifyListener(new ModifyListener() {
 
 			@Override
 			public void modifyText(ModifyEvent e) {
 				PictogramElement pe = getSelectedPictogramElement();
 				if (pe != null) {
-					EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+					EObject bo = Graphiti.getLinkService()
+							.getBusinessObjectForLinkedPictogramElement(pe);
 					if (bo == null)
 						return;
-					
-					if(bo instanceof Actor){
-						Actor actor = (Actor) bo;
-						if(txtNameObj.getText().compareTo(actor.getName()) != 0){
+
+					if (bo instanceof ExecutableActor) {
+						ExecutableActor actor = (ExecutableActor) bo;
+						if (txtNameObj.getText().compareTo(actor.getName()) != 0) {
 							setNewName(actor, txtNameObj.getText());
-							getDiagramTypeProvider().getDiagramBehavior().refreshContent();
+							getDiagramTypeProvider().getDiagramBehavior()
+									.refreshContent();
 						}
-					}//end Actor
-				}			
+					}// end Actor
+				}
 			}
 		});
-		
 
-
-		
 		/**
 		 * Memory script
 		 */
 		createMemoryScriptControl(data, factory, composite);
 	}
-	
+
 	private void createMemoryScriptControl(FormData data,
 			TabbedPropertySheetWidgetFactory factory, Composite composite) {
 		/*** Clear Button ***/
-		butMemoryScriptClear = factory.createButton(composite, "Clear", SWT.PUSH);
+		butMemoryScriptClear = factory.createButton(composite, "Clear",
+				SWT.PUSH);
 		data = new FormData();
 		data.left = new FormAttachment(100, -100);
 		data.right = new FormAttachment(100, 0);
 		data.top = new FormAttachment(butRefinementClear);
 		butMemoryScriptClear.setLayoutData(data);
 		butMemoryScriptClear.setEnabled(true);
-		
+
 		/*** Edit Button ***/
 		butMemoryScriptEdit = factory.createButton(composite, "Edit", SWT.PUSH);
 		data = new FormData();
@@ -301,7 +323,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 		data.top = new FormAttachment(butRefinementEdit);
 		butMemoryScriptEdit.setLayoutData(data);
 		butMemoryScriptEdit.setEnabled(true);
-		
+
 		/*** Open Button ***/
 		butMemoryScriptOpen = factory.createButton(composite, "Open", SWT.PUSH);
 		data = new FormData();
@@ -311,7 +333,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 		butMemoryScriptOpen.setLayoutData(data);
 		butMemoryScriptOpen.setEnabled(true);
 
-		/**** Memory Script ****/	
+		/**** Memory Script ****/
 		lblMemoryScriptObj = factory.createCLabel(composite, "");
 		data = new FormData();
 		data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
@@ -319,7 +341,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 		data.top = new FormAttachment(lblRefinementObj);
 		lblMemoryScriptObj.setLayoutData(data);
 		lblMemoryScriptObj.setEnabled(true);
-		
+
 		lblMemoryScript = factory.createCLabel(composite, "Memory script:");
 		data = new FormData();
 		data.left = new FormAttachment(0, 0);
@@ -327,162 +349,199 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 		data.top = new FormAttachment(lblRefinement);
 		lblMemoryScript.setLayoutData(data);
 
-		/*** Clear Button Listener ***/		
-		butMemoryScriptClear.addSelectionListener(new SelectionListener(){
+		/*** Clear Button Listener ***/
+		butMemoryScriptClear.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				PictogramElement pes[] = new PictogramElement[1];
 				pes[0] = getSelectedPictogramElement();
-				
+
 				CustomContext context = new CustomContext(pes);
-				ICustomFeature[] clearMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider().getCustomFeatures(context);
-				
-				for(ICustomFeature feature : clearMemoryScriptFeature){
-					if(feature instanceof ClearActorMemoryScriptFeature){
-						getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
-						LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
-						ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout); 
-						getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+				ICustomFeature[] clearMemoryScriptFeature = getDiagramTypeProvider()
+						.getFeatureProvider().getCustomFeatures(context);
+
+				for (ICustomFeature feature : clearMemoryScriptFeature) {
+					if (feature instanceof ClearActorMemoryScriptFeature) {
+						getDiagramTypeProvider().getDiagramBehavior()
+								.executeFeature(feature, context);
+						LayoutContext contextLayout = new LayoutContext(
+								getSelectedPictogramElement());
+						ILayoutFeature layoutFeature = getDiagramTypeProvider()
+								.getFeatureProvider().getLayoutFeature(
+										contextLayout);
+						getDiagramTypeProvider().getDiagramBehavior()
+								.executeFeature(layoutFeature, contextLayout);
 					}
 				}
-				
-				refresh();				
+
+				refresh();
 			}
 
 			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {				
+			public void widgetDefaultSelected(SelectionEvent e) {
 			}
-			
+
 		});
-		
-		/*** Edit Button Listener ***/		
-		butMemoryScriptEdit.addSelectionListener(new SelectionListener(){
+
+		/*** Edit Button Listener ***/
+		butMemoryScriptEdit.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				PictogramElement pes[] = new PictogramElement[1];
 				pes[0] = getSelectedPictogramElement();
-				
+
 				CustomContext context = new CustomContext(pes);
-				ICustomFeature[] setMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider().getCustomFeatures(context);
-				
-				for(ICustomFeature feature : setMemoryScriptFeature){
-					if(feature instanceof SetActorMemoryScriptFeature){
-						getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
-						LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
-						ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout); 
-						getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+				ICustomFeature[] setMemoryScriptFeature = getDiagramTypeProvider()
+						.getFeatureProvider().getCustomFeatures(context);
+
+				for (ICustomFeature feature : setMemoryScriptFeature) {
+					if (feature instanceof SetActorMemoryScriptFeature) {
+						getDiagramTypeProvider().getDiagramBehavior()
+								.executeFeature(feature, context);
+						LayoutContext contextLayout = new LayoutContext(
+								getSelectedPictogramElement());
+						ILayoutFeature layoutFeature = getDiagramTypeProvider()
+								.getFeatureProvider().getLayoutFeature(
+										contextLayout);
+						getDiagramTypeProvider().getDiagramBehavior()
+								.executeFeature(layoutFeature, contextLayout);
 					}
 				}
-				
-				refresh();				
+
+				refresh();
 			}
 
 			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {				
+			public void widgetDefaultSelected(SelectionEvent e) {
 			}
-			
+
 		});
-		
-		/*** Open Button Listener ***/		
-		butMemoryScriptOpen.addSelectionListener(new SelectionListener(){
+
+		/*** Open Button Listener ***/
+		butMemoryScriptOpen.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				PictogramElement pes[] = new PictogramElement[1];
 				pes[0] = getSelectedPictogramElement();
-				
+
 				CustomContext context = new CustomContext(pes);
-				ICustomFeature[] openMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider().getCustomFeatures(context);
-				
-				for(ICustomFeature feature : openMemoryScriptFeature){
-					if(feature instanceof OpenMemoryScriptFeature){
-						getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
-						LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
-						ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout); 
-						getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+				ICustomFeature[] openMemoryScriptFeature = getDiagramTypeProvider()
+						.getFeatureProvider().getCustomFeatures(context);
+
+				for (ICustomFeature feature : openMemoryScriptFeature) {
+					if (feature instanceof OpenMemoryScriptFeature) {
+						getDiagramTypeProvider().getDiagramBehavior()
+								.executeFeature(feature, context);
+						LayoutContext contextLayout = new LayoutContext(
+								getSelectedPictogramElement());
+						ILayoutFeature layoutFeature = getDiagramTypeProvider()
+								.getFeatureProvider().getLayoutFeature(
+										contextLayout);
+						getDiagramTypeProvider().getDiagramBehavior()
+								.executeFeature(layoutFeature, contextLayout);
 					}
 				}
-				
-				refresh();				
-			}			
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {				
+
+				refresh();
 			}
-			
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+
 		});
-		
+
 	}
 
 	/**
 	 * Safely set a new name to the {@link Actor}.
-	 * @param actor 	{@link Actor} to set
-	 * @param value		String value
+	 * 
+	 * @param actor
+	 *            {@link Actor} to set
+	 * @param value
+	 *            String value
 	 */
-	private void setNewName(final Actor actor, final String value){
-		TransactionalEditingDomain editingDomain = getDiagramTypeProvider().getDiagramBehavior().getEditingDomain(); 
+	private void setNewName(final ExecutableActor actor, final String value) {
+		TransactionalEditingDomain editingDomain = getDiagramTypeProvider()
+				.getDiagramBehavior().getEditingDomain();
 		editingDomain.getCommandStack().execute(
-					new RecordingCommand(editingDomain) {
-						
-						@Override
-						protected void doExecute() {
-							actor.setName(value);
-						}
+				new RecordingCommand(editingDomain) {
+
+					@Override
+					protected void doExecute() {
+						actor.setName(value);
 					}
-				);
+				});
 	}
 
 	@Override
 	public void refresh() {
 		PictogramElement pe = getSelectedPictogramElement();
-		
+
 		if (pe != null) {
-			Object bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+			Object bo = Graphiti.getLinkService()
+					.getBusinessObjectForLinkedPictogramElement(pe);
 			if (bo == null)
 				return;
-		
-			if (bo instanceof Actor){	
-				Actor actor = (Actor)bo;	
-				txtNameObj.setEnabled(false);	
-				if(actor.getName() == null && txtNameObj.getText() != ""){
+
+			if (bo instanceof ExecutableActor) {
+				ExecutableActor exexcutableActor = (ExecutableActor) bo;
+				txtNameObj.setEnabled(false);
+				if (exexcutableActor.getName() == null
+						&& txtNameObj.getText() != "") {
 					txtNameObj.setText("");
-				}else if(txtNameObj.getText().compareTo(actor.getName()) != 0){
-					txtNameObj.setText(actor.getName());					
+				} else if (txtNameObj.getText().compareTo(
+						exexcutableActor.getName()) != 0) {
+					txtNameObj.setText(exexcutableActor.getName());
 				}
 				txtNameObj.setEnabled(true);
-				
-				if(actor.getRefinement().getFilePath() == null){
-					lblRefinementObj.setText("(none)");
-					butRefinementClear.setEnabled(false);
-					butRefinementEdit.setEnabled(true);
-					butRefinementOpen.setEnabled(false);
-				}else{
-					IPath path = actor.getRefinement().getFilePath();
-					String text = path.lastSegment();
-					
-					lblRefinementObj.setText(text);
-					butRefinementClear.setEnabled(true);
-					butRefinementEdit.setEnabled(true);
-					butRefinementOpen.setEnabled(true);
+
+				if (bo instanceof Actor) {
+					Actor actor = (Actor) bo;
+					if (actor.getRefinement().getFilePath() == null) {
+						lblRefinementObj.setText("(none)");
+						butRefinementClear.setEnabled(false);
+						butRefinementEdit.setEnabled(true);
+						butRefinementOpen.setEnabled(false);
+					} else {
+						IPath path = actor.getRefinement().getFilePath();
+						String text = path.lastSegment();
+
+						lblRefinementObj.setText(text);
+						butRefinementClear.setEnabled(true);
+						butRefinementEdit.setEnabled(true);
+						butRefinementOpen.setEnabled(true);
+					}
+
+					if (actor.getMemoryScriptPath() == null) {
+						lblMemoryScriptObj.setText("(none)");
+						butMemoryScriptClear.setEnabled(false);
+						butMemoryScriptEdit.setEnabled(true);
+						butMemoryScriptOpen.setEnabled(false);
+					} else {
+						IPath path = actor.getMemoryScriptPath();
+						String text = path.lastSegment();
+
+						lblMemoryScriptObj.setText(text);
+						butMemoryScriptClear.setEnabled(true);
+						butMemoryScriptEdit.setEnabled(true);
+						butMemoryScriptOpen.setEnabled(true);
+					}
+				} else {
+					lblRefinement.setVisible(false);
+					lblRefinementObj.setVisible(false);
+					butRefinementClear.setVisible(false);
+					butRefinementEdit.setVisible(false);
+					butRefinementOpen.setVisible(false);
+					lblMemoryScript.setVisible(false);
+					lblMemoryScriptObj.setVisible(false);
+					butMemoryScriptClear.setVisible(false);
+					butMemoryScriptEdit.setVisible(false);
+					butMemoryScriptOpen.setVisible(false);
 				}
-				
-				if(actor.getMemoryScriptPath() == null){
-					lblMemoryScriptObj.setText("(none)");
-					butMemoryScriptClear.setEnabled(false);
-					butMemoryScriptEdit.setEnabled(true);
-					butMemoryScriptOpen.setEnabled(false);
-				}else{
-					IPath path = actor.getMemoryScriptPath();
-					String text = path.lastSegment();
-					
-					lblMemoryScriptObj.setText(text);
-					butMemoryScriptClear.setEnabled(true);
-					butMemoryScriptEdit.setEnabled(true);
-					butMemoryScriptOpen.setEnabled(true);
-				}
-				
-			}//end Actor
-			
+
+			}// end ExecutableActor
 
 		}
 	}
-}	
+}

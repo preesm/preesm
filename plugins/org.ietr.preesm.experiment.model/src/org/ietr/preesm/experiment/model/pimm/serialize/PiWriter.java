@@ -55,6 +55,7 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
@@ -292,7 +293,7 @@ public class PiWriter {
 
 		if (abstractActor instanceof Actor) {
 			writeActor(vertexElt, (Actor) abstractActor);
-		} else if (abstractActor instanceof BroadcastActor) {
+		} else if (abstractActor instanceof ExecutableActor) {
 			writeSpecialActor(vertexElt, abstractActor);
 		}else if (abstractActor instanceof InterfaceActor) {
 			writeInterfaceVertex(vertexElt, (InterfaceActor) abstractActor);
@@ -403,7 +404,7 @@ public class PiWriter {
 			dependencyElt.setAttribute("target",
 					((AbstractVertex) target).getName());
 
-			if (target instanceof Actor) {
+			if (target instanceof ExecutableActor) {
 				dependencyElt.setAttribute("targetport", dependency.getGetter()
 						.getName());
 			}

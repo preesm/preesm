@@ -50,7 +50,7 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.PortNameValidator;
 import org.ietr.preesm.experiment.ui.pimm.util.PiMMUtil;
@@ -132,7 +132,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 		PictogramElement[] pes = context.getPictogramElements();
 		if (pes != null && pes.length == 1) {
 			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof Actor) {
+			if (bo instanceof ExecutableActor) {
 				ret = true;
 			}
 		}
@@ -153,7 +153,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 			// Get the GaService
 			IGaService gaService = Graphiti.getGaService();
 			// Get the actor
-			Actor actor = (Actor) getBusinessObjectForPictogramElement(containerShape);
+			ExecutableActor actor = (ExecutableActor) getBusinessObjectForPictogramElement(containerShape);
 
 			// Ask the name of the new port
 			String portName = "newPort";
@@ -234,7 +234,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 	 *            the actor to which we add a port
 	 * @return the new port, or <code>null</code> if something went wrong
 	 */
-	public abstract Port getNewPort(String portName, Actor actor);
+	public abstract Port getNewPort(String portName, ExecutableActor actor);
 
 	/**
 	 * Get the font of the port

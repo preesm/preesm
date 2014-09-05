@@ -40,14 +40,14 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.platform.AbstractPropertySectionFilter;
-import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
-import org.ietr.preesm.experiment.model.pimm.Delay;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 
 public class PiMMFilter extends AbstractPropertySectionFilter{
 
@@ -80,7 +80,7 @@ public class PiMMFilter extends AbstractPropertySectionFilter{
 		if(eObject instanceof DataOutputPort){
 			if(eObject.eContainer() instanceof DataInputInterface)
 				return true;
-			if(eObject.eContainer() instanceof Actor)
+			if(eObject.eContainer() instanceof ExecutableActor)
 				return true;
 		}
 		
@@ -88,7 +88,7 @@ public class PiMMFilter extends AbstractPropertySectionFilter{
 		if(eObject instanceof DataInputPort){
 			if(eObject.eContainer() instanceof DataOutputInterface)
 				return true;
-			if(eObject.eContainer() instanceof Actor)
+			if(eObject.eContainer() instanceof ExecutableActor)
 				return true;
 		}
 		

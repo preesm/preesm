@@ -44,8 +44,8 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
-import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
@@ -119,7 +119,7 @@ public class AddConfigOutputPortFeature extends AbstractAddActorPortFeature {
 	}
 
 	@Override
-	public Port getNewPort(String portName, Actor actor) {
+	public Port getNewPort(String portName, ExecutableActor actor) {
 		ConfigOutputPort newPort = PiMMFactory.eINSTANCE
 				.createConfigOutputPort();
 		newPort.setName(portName);

@@ -43,11 +43,11 @@ import org.eclipse.graphiti.features.context.impl.ReconnectionContext;
 import org.eclipse.graphiti.features.impl.DefaultReconnectionFeature;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
@@ -181,7 +181,7 @@ public class ReconnectionDependencyFeature extends DefaultReconnectionFeature {
 				// interface.
 
 				// If the getter is an actor
-				if (getterObject instanceof Actor) {
+				if (getterObject instanceof ExecutableActor) {
 					// Create a ConfigInputPort
 					PictogramElement targetPe = context
 							.getTargetPictogramElement();

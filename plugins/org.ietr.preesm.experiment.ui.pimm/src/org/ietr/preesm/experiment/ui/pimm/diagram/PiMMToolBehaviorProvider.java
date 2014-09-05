@@ -55,6 +55,7 @@ import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.ui.pimm.decorators.ActorDecorators;
@@ -94,26 +95,30 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
 		IFeatureProvider featureProvider = getFeatureProvider();
 		Object bo = featureProvider.getBusinessObjectForPictogramElement(pe);
 
-		if (bo instanceof Actor) {
+		if (bo instanceof ExecutableActor) {
 			// Add decorators for each ports of the actor
 			List<IDecorator> decorators = new ArrayList<IDecorator>();
-			for(Anchor a : ((ContainerShape)pe).getAnchors()){
-				for(Object pbo : a.getLink().getBusinessObjects()){
-					if(pbo instanceof Port){
-						for(IDecorator d : PortDecorators.getDecorators((Port) pbo, a)){
-							decorators.add(d);				
+			for (Anchor a : ((ContainerShape) pe).getAnchors()) {
+				for (Object pbo : a.getLink().getBusinessObjects()) {
+					if (pbo instanceof Port) {
+						for (IDecorator d : PortDecorators.getDecorators(
+								(Port) pbo, a)) {
+							decorators.add(d);
 						}
 					}
 				}
-			}			
-			
-			// Add decorators to the actor itself
-			for(IDecorator d : ActorDecorators.getDecorators((Actor) bo, pe)){
-				decorators.add(d);				
 			}
-			
+
+			if (bo instanceof Actor) {
+				// Add decorators to the actor itself
+				for (IDecorator d : ActorDecorators.getDecorators((Actor) bo,
+						pe)) {
+					decorators.add(d);
+				}
+			}
+
 			IDecorator[] result = new IDecorator[decorators.size()];
-			decorators.toArray(result);			
+			decorators.toArray(result);
 			return result;
 		}
 
@@ -122,10 +127,10 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
 			return ParameterDecorators.getDecorators((Parameter) bo, pe);
 		}
 
-		if (bo instanceof Delay){
+		if (bo instanceof Delay) {
 			return DelayDecorators.getDecorators((Delay) bo, pe);
 		}
-	
+
 		return super.getDecorators(pe);
 	}
 

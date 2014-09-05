@@ -38,7 +38,7 @@ package org.ietr.preesm.experiment.ui.pimm.features;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.context.IUpdateContext;
-import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 
 public class UpdateActorFeature extends UpdateAbstractVertexFeature {
 
@@ -55,7 +55,7 @@ public class UpdateActorFeature extends UpdateAbstractVertexFeature {
 	public boolean canUpdate(IUpdateContext context) {
 		Object bo = getBusinessObjectForPictogramElement(context
 				.getPictogramElement());
-		return (bo instanceof Actor);
+		return (bo instanceof ExecutableActor);
 	}
 
 	@Override
