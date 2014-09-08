@@ -33,7 +33,6 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-
 package org.ietr.preesm.memory.script
 
 import bsh.EvalError
@@ -52,7 +51,6 @@ import java.util.logging.Logger
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.runtime.FileLocator
 import org.eclipse.core.runtime.Path
-import org.eclipse.xtext.xbase.lib.Pair
 import org.ietr.dftools.algorithm.model.dag.DAGEdge
 import org.ietr.dftools.algorithm.model.dag.DAGVertex
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph
@@ -61,18 +59,19 @@ import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex
 import org.ietr.dftools.algorithm.model.dag.edag.DAGJoinVertex
 import org.ietr.dftools.algorithm.model.parameters.Argument
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex
 import org.ietr.dftools.workflow.WorkflowException
 import org.ietr.dftools.workflow.tools.WorkflowLogger
+import org.ietr.preesm.core.scenario.PreesmScenario
 import org.ietr.preesm.core.types.DataType
+import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex
 
 import static extension org.ietr.preesm.memory.script.Buffer.*
 import static extension org.ietr.preesm.memory.script.Range.*
-import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
-import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 
 enum CheckPolicy {
 	NONE,
@@ -123,14 +122,14 @@ class ScriptRunner {
 	 * memory script to this memory script {@link File}.
 	 */
 	val scriptedVertices = new HashMap<DAGVertex, File>();
-	
+
 	/**
 	 * Each {@link List} of {@link Buffer} stored in this {@link List} 
 	 * corresponds to an independent connected {@link Match} tree resulting
 	 * from the execution of the memory scripts.
 	 */
 	package val List<List<Buffer>> bufferGroups = newArrayList
-	
+
 	@Property
 	var CharSequence log = ''''''
 
@@ -310,12 +309,18 @@ class ScriptRunner {
 	 *            the {@link DirectedAcyclicGraph} whose vertices memory scripts
 	 *            are retrieved.
 	 */
-	def protected findScripts(DirectedAcyclicGraph dag) {
+	def protected findScripts(DirectedAcyclicGraph dag, PreesmScenario scenario) {
 
 		// Retrieve the original sdf folder
 		val workspace = ResourcesPlugin.getWorkspace
-		val sdfPath = dag.propertyBean.getValue(DirectedAcyclicGraph.PATH, String) as String
-		var sdfFile = workspace.root.getFileForLocation(new Path(sdfPath))
+		val graphPath = scenario.algorithmURL
+//		val graphPath = ""
+//		if (scenario.IBSDFScenario) {
+//			dag.propertyBean.getValue(DirectedAcyclicGraph.PATH, String) as String
+//		} else if (scenario.PISDFScenario) {
+//			graphPath = scenario.algorithmURL
+//		}
+		var sdfFile = workspace.root.getFileForLocation(new Path(graphPath))
 
 		// Logger is used to display messages in the console
 		val logger = WorkflowLogger.getLogger
@@ -486,29 +491,30 @@ class ScriptRunner {
 		]
 
 		if (generateLog) {
-			log = '''# Memory scripts summary''' +'\n'
-			 + '''- Independent match trees : *«groups.size»*''' +'\n'
-			 + '''- Total number of buffers in these trees: From «nbBuffersBefore» to «nbBuffersAfter» buffers.''' + "\n" 
-			 + '''- Total size of these buffers: From «sizeBefore» to «sizeAfter» («100.0* (sizeBefore - sizeAfter as float) / sizeBefore»%).''' + "\n\n"
-			 + '''# Match tree optimization log''' + '\n'
-			 + log
+			log = '''# Memory scripts summary''' + '\n' + '''- Independent match trees : *«groups.size»*''' + '\n' +
+				'''- Total number of buffers in these trees: From «nbBuffersBefore» to «nbBuffersAfter» buffers.''' +
+				"\n" +
+				'''- Total size of these buffers: From «sizeBefore» to «sizeAfter» («100.0 *
+					(sizeBefore - sizeAfter as float) / sizeBefore»%).''' + "\n\n" + '''# Match tree optimization log''' +
+				'\n' + log
 		}
 	}
 
 	def enlargeForAlignment(Buffer buffer) {
 		if (printTodo) {
 			println('''Alignment minus one is probably sufficient + Only enlarge [0-Alignment,Max+alignment];''')
-			// Todo description :
-			// This method is called only for output buffers.
-			// Since only "real" tokens of the output buffers are written back
-			// from cache (in non-coherent architectures), alignment is here
-			// only to ensure that these "real" tokens are not cached in the
-			// same cache line as other real tokens. 
-			// Consequently, enlarging buffers as follows is sufficient to 
-			// prevent cache-line alignment issues:
-			// minIdx = min(0 - (_alignment -1), minIdx)
-			// maxIdx = max(maxIdx + (_alignment -1), maxIdx)
-			//			 
+
+		// Todo description :
+		// This method is called only for output buffers.
+		// Since only "real" tokens of the output buffers are written back
+		// from cache (in non-coherent architectures), alignment is here
+		// only to ensure that these "real" tokens are not cached in the
+		// same cache line as other real tokens. 
+		// Consequently, enlarging buffers as follows is sufficient to 
+		// prevent cache-line alignment issues:
+		// minIdx = min(0 - (_alignment -1), minIdx)
+		// maxIdx = max(maxIdx + (_alignment -1), maxIdx)
+		//			 
 		}
 		val oldMinIndex = buffer.minIndex
 		if (oldMinIndex == 0 || (oldMinIndex) % alignment != 0) {
@@ -680,11 +686,9 @@ class ScriptRunner {
 
 		var before = buffers.fold(0, [res, buf|res + buf.maxIndex - buf.minIndex])
 		sizeBefore = sizeBefore + before
-		if(generateLog){
-			log = log + '''## Tree of «buffers.size» buffers''' + '\n'
-			  + '''### Original buffer list:''' + '\n' 
-			  + '''> «buffers»''' + "\n\n"
-			  + '''### Match application log: ''' + '\n' 
+		if (generateLog) {
+			log = log + '''## Tree of «buffers.size» buffers''' + '\n' + '''### Original buffer list:''' + '\n' +
+				'''> «buffers»''' + "\n\n" + '''### Match application log: ''' + '\n'
 		}
 
 		// Iterate the merging algorithm until no buffers are merged
@@ -741,9 +745,10 @@ class ScriptRunner {
 		if (generateLog) {
 			log = log + "\n" + '''### Tree summary:''' + '\n'
 			log = log + '''- From «bufferList.size» buffers to «buffers.size» buffers.''' + "\n"
-			log = log + '''- From «before» bytes to «after» bytes («100.0* ((before - after) as float) / before»%)''' + "\n\n"
+			log = log + '''- From «before» bytes to «after» bytes («100.0 * ((before - after) as float) / before»%)''' +
+				"\n\n"
 		}
-		
+
 		// Log unapplied matches (if any)
 		if (generateLog) {
 			log = log + '''### Unapplied matches:''' + "\n>"
@@ -751,7 +756,7 @@ class ScriptRunner {
 			for (buffer : bufferList) {
 				for (match : buffer.matchTable.values.flatten.filter[!it.applied]) {
 					if (!logged.contains(match.reciprocate)) {
-						log = log  + match.originalMatch.toString + ", "
+						log = log + match.originalMatch.toString + ", "
 						logged.add(match)
 					}
 				}
@@ -810,9 +815,9 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(generateLog && !candidates.empty) 
-			log = log + '''- __Step 0 - «candidates.size» matches__'''  + "\n>"
-		
+		if (generateLog && !candidates.empty)
+			log = log + '''- __Step 0 - «candidates.size» matches__''' + "\n>"
+
 		for (candidate : candidates) {
 			if(generateLog) log = log + '''«candidate.matchTable.entrySet.head.value.head»  '''
 			candidate.applyMatches(candidate.matchTable.entrySet.head.value)
@@ -873,9 +878,11 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(generateLog && !candidates.empty) log = log + '''- __Step 1 - «candidates.fold(0)[v, c | c.matchTable.values.flatten.size + v]» matches__ ''' + "\n>"
+		if(generateLog && !candidates.empty) log = log +
+			'''- __Step 1 - «candidates.fold(0)[v, c|c.matchTable.values.flatten.size + v]» matches__ ''' + "\n>"
 		for (candidate : candidates) {
-			if(generateLog) log = log + '''«FOR match : candidate.matchTable.values.flatten.toList SEPARATOR ', '»«match»«ENDFOR», '''
+			if(generateLog) log = log +
+				'''«FOR match : candidate.matchTable.values.flatten.toList SEPARATOR ', '»«match»«ENDFOR», '''
 			applyDivisionMatch(candidate, candidate.matchTable.values.flatten.toList)
 		}
 		if(generateLog && !candidates.empty) log = log + '\n'
@@ -904,8 +911,8 @@ class ScriptRunner {
 	 */
 	def processGroupStep2(List<Buffer> buffers) {
 		val candidates = newLinkedHashMap
-		val involved =  newArrayList
-		
+		val involved = newArrayList
+
 		for (candidate : buffers) {
 			val iterType = #[MatchType::FORWARD, MatchType::BACKWARD].iterator
 			var test = false
@@ -944,7 +951,8 @@ class ScriptRunner {
 		// If there are candidates, apply the matches
 		if(generateLog && !candidates.empty) log = log + '''- __Step 2 - «candidates.size» matches__''' + "\n>"
 		for (candidate : candidates.entrySet) {
-			if(generateLog) log = log +'''«candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head»  '''
+			if(generateLog) log = log +
+				'''«candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head»  '''
 			candidate.key.applyMatches(
 				#[candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head])
 		}
@@ -1012,9 +1020,12 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(generateLog && !candidates.empty) log = log + '''- __Step 3 - «candidates.entrySet.fold(0)[v, c | c.key.matchTable.values.flatten.filter[it.type == c.value].size + v]» matches__'''  + "\n>"
+		if(generateLog && !candidates.empty) log = log +
+			'''- __Step 3 - «candidates.entrySet.fold(0)[v, c|
+				c.key.matchTable.values.flatten.filter[it.type == c.value].size + v]» matches__''' + "\n>"
 		for (candidate : candidates.entrySet) {
-			if(generateLog) log = log + '''«FOR match : candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList SEPARATOR ', '»«match»«ENDFOR», '''
+			if(generateLog) log = log +
+				'''«FOR match : candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList SEPARATOR ', '»«match»«ENDFOR», '''
 			applyDivisionMatch(candidate.key,
 				candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList)
 		}
@@ -1044,7 +1055,7 @@ class ScriptRunner {
 	 */
 	def processGroupStep4(List<Buffer> buffers) {
 		val candidates = newArrayList
-		val involved =  newArrayList
+		val involved = newArrayList
 
 		for (candidate : buffers) {
 
@@ -1087,12 +1098,12 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(generateLog && !candidates.empty) log = log +'''- __Step 4 - «candidates.size» matches__'''  + "\n>"
+		if(generateLog && !candidates.empty) log = log + '''- __Step 4 - «candidates.size» matches__''' + "\n>"
 		for (candidate : candidates) {
 			if(generateLog) log = log + '''«candidate.matchTable.entrySet.head.value.head»  '''
 			candidate.applyMatches(candidate.matchTable.entrySet.head.value)
 		}
-		if(generateLog && !candidates.empty) log = log +'\n'
+		if(generateLog && !candidates.empty) log = log + '\n'
 
 		buffers.removeAll(candidates)
 
@@ -1160,9 +1171,11 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(generateLog && !candidates.empty) log = log +'''- __Step 5 - «candidates.fold(0)[v, c | c.matchTable.values.flatten.size + v]» matches__'''  + "\n>"
+		if(generateLog && !candidates.empty) log = log +
+			'''- __Step 5 - «candidates.fold(0)[v, c|c.matchTable.values.flatten.size + v]» matches__''' + "\n>"
 		for (candidate : candidates) {
-			if(generateLog) log = log + '''«FOR match : candidate.matchTable.values.flatten.toList SEPARATOR ', '»«match»«ENDFOR», '''
+			if(generateLog) log = log +
+				'''«FOR match : candidate.matchTable.values.flatten.toList SEPARATOR ', '»«match»«ENDFOR», '''
 			applyDivisionMatch(candidate,
 				candidate.matchTable.values.flatten.filter[it.type == MatchType::BACKWARD].toList)
 		}
@@ -1252,9 +1265,10 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(generateLog && !candidates.empty) log = log +'''- __Step 6 - «candidates.size» matches__'''  + "\n>"
+		if(generateLog && !candidates.empty) log = log + '''- __Step 6 - «candidates.size» matches__''' + "\n>"
 		for (candidate : candidates.entrySet) {
-			if(generateLog) log = log + '''«candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head»  '''
+			if(generateLog) log = log +
+				'''«candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head»  '''
 			candidate.key.applyMatches(
 				#[candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head])
 		}
@@ -1304,15 +1318,15 @@ class ScriptRunner {
 				// and is involved in conflicting match
 				test = test && matches.forall[
 					it.conflictingMatches.size != 0 && it.applicable && it.reciprocate.applicable]
-				
+
 				// Unless the matches are backward AND the buffer is mergeable	
 				// the matches must not be conflicting with each other
-				test = test &&  
-				({ // the matches are backward AND the buffer is mergeable	
-					currentType == MatchType::BACKWARD && candidate.mergeableRanges.size == 1 && candidate.mergeableRanges.head.start == candidate.minIndex &&
-					candidate.mergeableRanges.head.end == candidate.maxIndex
+				test = test && ({ // the matches are backward AND the buffer is mergeable	
+					currentType == MatchType::BACKWARD && candidate.mergeableRanges.size == 1 &&
+						candidate.mergeableRanges.head.start == candidate.minIndex &&
+						candidate.mergeableRanges.head.end == candidate.maxIndex
 				} || // the matches must not be conflicting with each other
-				matches.forall[
+				matches.forall [
 					it.conflictingMatches.forall[!matches.contains(it)]
 				])
 
@@ -1339,9 +1353,12 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(generateLog && !candidates.empty) log = log + '''- __Step 7 - «candidates.entrySet.fold(0)[v, c | c.key.matchTable.values.flatten.filter[it.type == c.value].size + v]» matches__ '''  + "\n>"
+		if(generateLog && !candidates.empty) log = log +
+			'''- __Step 7 - «candidates.entrySet.fold(0)[v, c|
+				c.key.matchTable.values.flatten.filter[it.type == c.value].size + v]» matches__ ''' + "\n>"
 		for (candidate : candidates.entrySet) {
-			if(generateLog) log = log + '''«FOR match : candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList SEPARATOR ', '»«match»«ENDFOR», '''
+			if(generateLog) log = log +
+				'''«FOR match : candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList SEPARATOR ', '»«match»«ENDFOR», '''
 			applyDivisionMatch(candidate.key,
 				candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList)
 		}
@@ -1623,11 +1640,12 @@ class ScriptRunner {
 		// Create a new property in the MEG to store the merged memory objects
 		val mergedMObjects = newHashMap
 		meg.propertyBean.setValue(MemoryExclusionGraph::HOST_MEMORY_OBJECT_PROPERTY, mergedMObjects)
-		
+
 		// For each buffer, get the corresponding MObject
 		val bufferAndMObjectMap = newHashMap
-		for (buffers : bufferGroups) {			
+		for (buffers : bufferGroups) {
 			for (buffer : buffers) {
+
 				// Get the Mobj
 				val mObjCopy = new MemoryExclusionVertex(buffer.sdfEdge.source.name, buffer.sdfEdge.target.name, 0)
 				val mObj = meg.getVertex(mObjCopy)
@@ -1657,7 +1675,7 @@ class ScriptRunner {
 				bufferAndMObjectMap.put(buffer, mObj)
 			}
 		}
-		
+
 		// Backup neighbors of each buffer before changing anything in the meg
 		for (buffers : bufferGroups) {
 			for (buffer : buffers) {
@@ -1669,7 +1687,6 @@ class ScriptRunner {
 
 		// Process each group of buffers separately
 		for (buffers : bufferGroups) {
-
 
 			// For each unmatched buffer that received matched buffers
 			for (buffer : buffers.filter[it.matched == null && it.host]) {
@@ -1711,7 +1728,7 @@ class ScriptRunner {
 				}
 
 				val mObj = bufferAndMObjectMap.get(buffer)
-				
+
 				// For buffer receiving a part of the current buffer
 				for (rootBuffer : rootBuffers.values.map[it.key]) {
 					val rootMObj = bufferAndMObjectMap.get(rootBuffer)
@@ -1733,6 +1750,7 @@ class ScriptRunner {
 				val List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> mObjRoots = newArrayList
 				mObj.setPropertyValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, mObjRoots)
 				val realTokenRange = new Range(0, buffer.tokenSize * buffer.nbTokens)
+
 				// For each subrange of real tokens, save the corresponding remote buffer
 				// and range.
 				rootBuffers.entrySet.forEach [ entry |
@@ -1741,13 +1759,14 @@ class ScriptRunner {
 					val translatedLocalRange = localRange.clone as Range
 					translatedLocalRange.translate(entry.value.value.start - entry.key.start)
 					val remoteRange = entry.value.value.intersection(translatedLocalRange)
-					if(remoteRange != translatedLocalRange){
+					if (remoteRange != translatedLocalRange) {
+
 						// Should always be the case
 						throw new RuntimeException("Unexpected error !")
 					}
 					mObjRoots.add(rootMObj -> (localRange -> remoteRange))
 				]
-				
+
 				// Sort mObjRoots in order of contiguous ranges
 				mObjRoots.sortInplaceBy[it.value.key.start]
 			}

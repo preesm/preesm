@@ -63,11 +63,13 @@ public class MemoryScriptEngine {
 	private ScriptRunner sr;
 	private boolean verbose;
 	private Logger logger;
+	private PreesmScenario scenario;
 
-	public MemoryScriptEngine(String valueAlignment, String log, boolean verbose) {
+	public MemoryScriptEngine(String valueAlignment, String log, boolean verbose, PreesmScenario scenario) {
 		this.verbose = verbose;
 		// Get the logger
 		this.logger = WorkflowLogger.getLogger();
+		this.scenario = scenario;
 		int alignment;
 		switch (valueAlignment.substring(0,
 				Math.min(valueAlignment.length(), 7))) {
@@ -95,7 +97,7 @@ public class MemoryScriptEngine {
 	public void runScripts(DirectedAcyclicGraph dag,
 			Map<String, DataType> dataTypes, String checkString) {
 		// Retrieve all the scripts
-		int nbScripts = sr.findScripts(dag);
+		int nbScripts = sr.findScripts(dag, scenario);
 
 		sr.setDataTypes(dataTypes);
 

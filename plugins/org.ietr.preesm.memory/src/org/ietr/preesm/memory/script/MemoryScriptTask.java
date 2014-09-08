@@ -79,7 +79,7 @@ public class MemoryScriptTask extends AbstractMemoryScriptTask {
 
 		// execute
 		MemoryScriptEngine engine = new MemoryScriptEngine(valueAlignment, log,
-				verbose);
+				verbose, scenario);
 		engine.runScripts(dag, dataTypes, checkString);
 		engine.updateMemEx(meg);
 

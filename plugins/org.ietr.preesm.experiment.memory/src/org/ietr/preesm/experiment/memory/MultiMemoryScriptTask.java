@@ -84,7 +84,7 @@ public class MultiMemoryScriptTask extends AbstractMemoryScriptTask {
 
 			// execute
 			MemoryScriptEngine engine = new MemoryScriptEngine(valueAlignment,
-					log, verbose);
+					log, verbose, scenario);
 			engine.runScripts(dag, dataTypes, checkString);
 			engine.updateMemEx(meg);
 
