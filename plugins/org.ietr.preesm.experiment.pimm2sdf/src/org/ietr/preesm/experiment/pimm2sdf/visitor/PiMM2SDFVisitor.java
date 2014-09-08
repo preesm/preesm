@@ -319,6 +319,8 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 		v.setName(a.getName());
 		// Handle vertex's path inside the graph hierarchy
 		v.setInfo(a.getPath());
+		// Handle ID
+		v.setId(a.getName());
 		// Handle vertex's refinement (description of the vertex's behavior:
 		// function prototypes or subgraphs)
 		Refinement piRef = a.getRefinement();
