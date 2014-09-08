@@ -427,13 +427,16 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 			String property) {
 		switch (piPort.getAnnotation()) {
 		case READ_ONLY:
-			edge.setPropertyValue(property, SDFEdge.MODIFIER_READ_ONLY);
+			edge.setPropertyValue(property, new SDFStringEdgePropertyType(
+					SDFEdge.MODIFIER_READ_ONLY));
 			break;
 		case WRITE_ONLY:
-			edge.setPropertyValue(property, SDFEdge.MODIFIER_WRITE_ONLY);
+			edge.setPropertyValue(property, new SDFStringEdgePropertyType(
+					SDFEdge.MODIFIER_WRITE_ONLY));
 			break;
 		case UNUSED:
-			edge.setPropertyValue(property, SDFEdge.MODIFIER_UNUSED);
+			edge.setPropertyValue(property, new SDFStringEdgePropertyType(
+					SDFEdge.MODIFIER_UNUSED));
 			break;
 		default:
 		}
