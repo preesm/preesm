@@ -44,6 +44,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
+import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.CodeRefinement;
 import org.ietr.dftools.algorithm.model.IRefinement;
 import org.ietr.dftools.algorithm.model.parameters.Argument;
@@ -142,6 +143,9 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 		if (result == null) {
 			result = new SDFGraph();
 			result.setName(pg.getName());
+			
+			// Save the original Path to the pigraph in the property bean (used by memory scripts)
+			result.setPropertyValue(AbstractGraph.PATH, pg.eResource().getURI().toPlatformString(false));
 
 			// Set these values into the parameters of pg when possible
 			for (Parameter p : pg.getParameters()) {
