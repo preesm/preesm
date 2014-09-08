@@ -320,7 +320,7 @@ class ScriptRunner {
 //		} else if (scenario.PISDFScenario) {
 //			graphPath = scenario.algorithmURL
 //		}
-		var sdfFile = workspace.root.getFileForLocation(new Path(graphPath))
+		var sdfFile = workspace.getRoot().getFile(new Path(graphPath))//workspace.root.getFileForLocation(new Path(graphPath).makeAbsolute)
 
 		// Logger is used to display messages in the console
 		val logger = WorkflowLogger.getLogger
