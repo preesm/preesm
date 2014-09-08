@@ -527,6 +527,16 @@ public class ActorPropertiesSection extends GFPropertySection implements
 						butMemoryScriptEdit.setEnabled(true);
 						butMemoryScriptOpen.setEnabled(true);
 					}
+					lblRefinement.setVisible(true);
+					lblRefinementObj.setVisible(true);
+					butRefinementClear.setVisible(true);
+					butRefinementEdit.setVisible(true);
+					butRefinementOpen.setVisible(true);
+					lblMemoryScript.setVisible(true);
+					lblMemoryScriptObj.setVisible(true);
+					butMemoryScriptClear.setVisible(true);
+					butMemoryScriptEdit.setVisible(true);
+					butMemoryScriptOpen.setVisible(true);
 				} else {
 					lblRefinement.setVisible(false);
 					lblRefinementObj.setVisible(false);
