@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.ietr.dftools.algorithm.exporter.Key;
@@ -315,6 +316,7 @@ public class PiWriter {
 		// Set the kind of the Actor
 		vertexElt.setAttribute("kind", "actor");
 		writeRefinement(vertexElt, actor.getRefinement());
+		writeMemoryScript(vertexElt,actor.getMemoryScriptPath());
 		// writeDataElt(vertexElt, "kind", "actor");
 		// Write ports of the actor
 		writePorts(vertexElt, actor.getConfigInputPorts());
@@ -506,6 +508,23 @@ public class PiWriter {
 		default:
 		}
 
+	}
+	
+	/**
+	 * Write information of the memory script in the given {@link Element}.
+	 * 
+	 * @param vertexElt
+	 *            The {@link Element} to write
+	 * @param memScriptPath
+	 *            The memory script path to serialize
+	 */
+	protected void writeMemoryScript(Element vertexElt, IPath memScriptPath) {
+		if (memScriptPath != null) {
+			// The makeRelative() call ensures that the path is relative to the
+			// project.
+			writeDataElt(vertexElt, PiXMLIdentifiers.ACTOR_MEMORY_SCRIPT, memScriptPath
+					.makeRelative().toPortableString());
+		}
 	}
 
 	/**
