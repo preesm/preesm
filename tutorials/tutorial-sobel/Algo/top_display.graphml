@@ -62,7 +62,7 @@
             <data key="name">Split</data>
             <data key="kind">vertex</data>
             <data key="graph_desc">../Code/IDL/split.idl</data>
-            <data key="memory_script">../Code/Scripts/split.bsh</data>
+            <data key="memory_script">/tutorial-sobel/Code/Scripts/split.bsh</data>
             <data key="arguments">
                 <argument name="nbSlice" value="N"/>
                 <argument name="overlap" value="1"/>
