@@ -88,8 +88,8 @@ public class MemoryScriptEngine {
 			logger.log(Level.INFO, "Scripts with alignment:=" + alignment + ".");
 		}
 
-		sr.generateLog = !(log.equals(""));
 		sr = new ScriptRunner(alignment);
+		sr.generateLog = !(log.equals(""));
 	}
 
 	public void runScripts(DirectedAcyclicGraph dag,
