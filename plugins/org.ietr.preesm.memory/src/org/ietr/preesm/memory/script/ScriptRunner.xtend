@@ -320,7 +320,7 @@ class ScriptRunner {
 //		} else if (scenario.PISDFScenario) {
 //			graphPath = scenario.algorithmURL
 //		}
-		var sdfFile = workspace.getRoot().getFile(new Path(graphPath))//workspace.root.getFileForLocation(new Path(graphPath).makeAbsolute)
+//		var sdfFile = workspace.getRoot().getFile(new Path(graphPath))//workspace.root.getFileForLocation(new Path(graphPath).makeAbsolute)
 
 		// Logger is used to display messages in the console
 		val logger = WorkflowLogger.getLogger
@@ -336,7 +336,7 @@ class ScriptRunner {
 
 							// Retrieve the script path as a relative path to the
 							// graphml
-							var scriptFile = sdfFile.parent.getFile(new Path(pathString)).rawLocation.makeAbsolute.
+							var scriptFile = workspace.getRoot().getFile(new Path(pathString)).rawLocation.makeAbsolute.
 								toFile
 							if (scriptFile.exists) {
 								scriptedVertices.put(dagVertex, scriptFile)
