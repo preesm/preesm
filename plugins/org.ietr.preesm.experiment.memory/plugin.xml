@@ -82,6 +82,27 @@
             </output>
          </outputs>
       </task>
+      <task
+            id="org.ietr.preesm.experiment.memory.MultiMemoryScriptTask"
+            name="Multi memory Script Runner"
+            type="org.ietr.preesm.experiment.memory.MultiMemoryScriptTask">
+         <inputs>
+            <input
+                  id="DAGsAndMemExs"
+                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="DAGsAndMemExs"
+                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+            </output>
+         </outputs>
+      </task>
    </extension>
 
 </plugin>
