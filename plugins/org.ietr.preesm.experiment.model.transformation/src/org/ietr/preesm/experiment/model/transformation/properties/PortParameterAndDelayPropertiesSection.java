@@ -321,6 +321,9 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 
 			if (bo instanceof DataPort) {
 				DataPort iPort = ((DataPort) bo);
+				
+				comboAnnotation.select(((DataPort) bo).getAnnotation()
+						.getValue());
 
 				if (iPort.eContainer() instanceof DataOutputInterface) {
 					name = ((DataOutputInterface) iPort.eContainer()).getName();
