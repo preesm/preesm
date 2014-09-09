@@ -83,7 +83,7 @@
             <data key="name">RGB2Gray_R</data>
             <data key="kind">vertex</data>
             <data key="graph_desc">../Code/IDL/RGB2Gray.idl</data>
-            <data key="memory_script">../Code/Scripts/rgb2gray.bsh</data>
+            <data key="memory_script">/stereo/Code/Scripts/rgb2gray.bsh</data>
             <data key="arguments">
                 <argument name="size" value="height*width"/>
             </data>
@@ -140,7 +140,7 @@
             <data key="name">Split</data>
             <data key="kind">vertex</data>
             <data key="graph_desc">../Code/IDL/split.idl</data>
-            <data key="memory_script">../Code/Scripts/split.bsh</data>
+            <data key="memory_script">stereo/Code/Scripts/split.bsh</data>
             <data key="arguments">
                 <argument name="height" value="height"/>
                 <argument name="nbSlice" value="nbSlice"/>
