@@ -43,6 +43,7 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -228,6 +229,11 @@ public class InterfaceActorImpl extends AbstractActorImpl implements
 		result.append(kind);
 		result.append(')');
 		return result.toString();
+	}
+
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitInterfaceActor(this);
 	}
 
 } // InterfaceVertexImpl

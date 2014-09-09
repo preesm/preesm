@@ -38,21 +38,15 @@ package org.ietr.preesm.mapper.exporter;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.tools.PathTools;
-import org.ietr.preesm.mapper.model.MapperDAG;
 
 /**
  * Block in workflow exporting a DAG that can be displayed in Graphiti
@@ -75,7 +69,8 @@ public class DAGExportTransform extends AbstractTaskImplementation {
 
 		// Exporting the DAG in a GraphML
 		if (graphmlPath != null) {
-			exportGraphML(dag, graphmlPath);
+			DAGExporter exporter = new DAGExporter();
+			exporter.exportDAG(dag, graphmlPath);
 		}
 
 		Activator.updateWorkspace();
@@ -95,22 +90,4 @@ public class DAGExportTransform extends AbstractTaskImplementation {
 	public String monitorMessage() {
 		return "Exporting DAG.";
 	}
-
-	private void exportGraphML(DirectedAcyclicGraph dag, Path path) {
-
-		MapperDAG mapperDag = (MapperDAG) dag;
-
-		DAGExporter exporter = new DAGExporter();
-		MapperDAG clone = mapperDag.clone();
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IFile iGraphMLFile = workspace.getRoot().getFile(path);
-
-		if (iGraphMLFile.getLocation() != null) {
-			exporter.export(clone, iGraphMLFile.getLocation().toOSString());
-		} else {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
-					"The output file " + path + " can not be written.");
-		}
-	}
-
 }

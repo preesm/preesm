@@ -35,19 +35,26 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.ui.pimm.util;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.platform.IDiagramBehavior;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.ui.pimm.diagram.PiMMToolBehaviorProvider;
 import org.ietr.preesm.ui.scenario.editor.EditorTools.FileContentProvider;
 
@@ -88,39 +95,99 @@ public class PiMMUtil {
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * Open an input dialog to select a pi file
+	 * 
 	 * @param dialogTitle
 	 *            the dialog title, or <code>null</code> if none
 	 * @param dialogMessage
 	 *            the dialog message, or <code>null</code> if none
-	 * @param initialValue
-	 *            the initial input value, or <code>null</code> if none
-	 *            (equivalent to the empty string)
 	 * @param validator
 	 *            an input validator, or <code>null</code> if none
 	 * @return the string, or <code>null</code> if user cancels
 	 */
-	public static String askRefinement(String dialogTitle, String dialogMessage,
-			String initialValue, IInputValidator validator) {
-		String ret = null;
+	@Deprecated
+	public static IPath askRefinement(String dialogTitle, String dialogMessage,
+			IInputValidator validator) {
 		Shell shell = getShell();
-		
-		ElementTreeSelectionDialog inputDialog = new ElementTreeSelectionDialog(shell,
+
+		// For now, authorized refinements are other PiGraphs (.pi files) and
+		// .idl prototypes
+		Set<String> fileExtensions = new HashSet<String>();
+		fileExtensions.add("pi");
+		fileExtensions.add("idl");
+		fileExtensions.add("h");
+		FileContentProvider contentProvider = new FileContentProvider(
+				fileExtensions);
+
+		ElementTreeSelectionDialog inputDialog = new ElementTreeSelectionDialog(
+				shell,
 				WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(),
-				new FileContentProvider("pi"));
+				contentProvider);
 		inputDialog.setAllowMultiple(false);
 		inputDialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
 		inputDialog.setMessage(dialogMessage);
 		inputDialog.setTitle(dialogTitle);
-		
+
 		int retDialog = inputDialog.open();
 		if (retDialog == Window.OK) {
-			ret = ((IFile)(inputDialog.getResult()[0])).getLocation().lastSegment();
-			
+			IFile file = (IFile) (inputDialog.getResult()[0]);
+			return file.getFullPath();
+
 		}
-		return ret;
+		return null;
+	}
+	
+	public static IPath askFile(String dialogTitle, String dialogMessage,
+			IInputValidator validator, Set<String> fileExtensions) {
+		Shell shell = getShell();
+		
+		FileContentProvider contentProvider = new FileContentProvider(
+				fileExtensions);
+
+		ElementTreeSelectionDialog inputDialog = new ElementTreeSelectionDialog(
+				shell,
+				WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(),
+				contentProvider);
+		inputDialog.setAllowMultiple(false);
+		inputDialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
+		inputDialog.setMessage(dialogMessage);
+		inputDialog.setTitle(dialogTitle);
+
+		int retDialog = inputDialog.open();
+		if (retDialog == Window.OK) {
+			IFile file = (IFile) (inputDialog.getResult()[0]);
+			return file.getFullPath();
+		}
+		return null;
+	}
+
+	public static FunctionPrototype selectFunction(
+			FunctionPrototype[] prototypes, String title, String message,
+			boolean mandatorySelection) {
+		ElementListSelectionDialog dialog = new ElementListSelectionDialog(
+				getShell(), new LabelProvider() {
+					@Override
+					public String getText(Object element) {
+						if (element != null
+								&& element instanceof FunctionPrototype)
+							return ((FunctionPrototype) element).format();
+						else
+							return "";
+					}
+				});
+
+		dialog.setTitle(title);
+		dialog.setMessage(message);
+		dialog.setElements(prototypes);
+
+		int retDialog = dialog.open();
+		if (retDialog == Window.OK) {
+			FunctionPrototype proto = (FunctionPrototype) (dialog.getResult()[0]);
+			return proto;
+		}
+		return null;
 	}
 
 	/**
@@ -140,8 +207,7 @@ public class PiMMUtil {
 			IDiagramBehavior iDiagramEditor, String message) {
 		IToolBehaviorProvider behaviorProvider = fp.getDiagramTypeProvider()
 				.getCurrentToolBehaviorProvider();
-		((PiMMToolBehaviorProvider) behaviorProvider)
-				.setToolTip(ga, message);
+		((PiMMToolBehaviorProvider) behaviorProvider).setToolTip(ga, message);
 
 		iDiagramEditor.refresh();
 		((PiMMToolBehaviorProvider) behaviorProvider).setToolTip(ga, null);

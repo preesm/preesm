@@ -35,6 +35,7 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.ecore.EFactory;
 
 /**
@@ -197,6 +198,129 @@ public interface PiMMFactory extends EFactory {
 	 * @generated
 	 */
 	Expression createExpression();
+
+	/**
+	 * Returns a new object of class '<em>HRefinement</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>HRefinement</em>'.
+	 * @generated
+	 */
+	HRefinement createHRefinement();
+
+	/**
+	 * Returns a new object of class '<em>Function Prototype</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Function Prototype</em>'.
+	 * @generated
+	 */
+	FunctionPrototype createFunctionPrototype();
+
+	/**
+	 * Returns a new object of class '<em>Function Parameter</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Function Parameter</em>'.
+	 * @generated
+	 */
+	FunctionParameter createFunctionParameter();
+
+	/**
+	 * Returns a new object of class '<em>Broadcast Actor</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Broadcast Actor</em>'.
+	 * @generated
+	 */
+	BroadcastActor createBroadcastActor();
+
+	/**
+	 * Returns a new object of class '<em>Join Actor</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Join Actor</em>'.
+	 * @generated
+	 */
+	JoinActor createJoinActor();
+
+	/**
+	 * Returns a new object of class '<em>Fork Actor</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Fork Actor</em>'.
+	 * @generated
+	 */
+	ForkActor createForkActor();
+
+	/**
+	 * Returns a new object of class '<em>Round Buffer Actor</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Round Buffer Actor</em>'.
+	 * @generated
+	 */
+	RoundBufferActor createRoundBufferActor();
+
+	/**
+	 * Returns an instance of data type '<em>Direction</em>' corresponding the given literal.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param literal a literal of the data type.
+	 * @return a new instance value of the data type.
+	 * @generated
+	 */
+	Direction createDirection(String literal);
+
+	/**
+	 * Returns a literal representation of an instance of data type '<em>Direction</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param instanceValue an instance value of the data type.
+	 * @return a literal representation of the instance value.
+	 * @generated
+	 */
+	String convertDirection(Direction instanceValue);
+
+	/**
+	 * Returns an instance of data type '<em>Port Memory Annotation</em>' corresponding the given literal.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param literal a literal of the data type.
+	 * @return a new instance value of the data type.
+	 * @generated
+	 */
+	PortMemoryAnnotation createPortMemoryAnnotation(String literal);
+
+	/**
+	 * Returns a literal representation of an instance of data type '<em>Port Memory Annotation</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param instanceValue an instance value of the data type.
+	 * @return a literal representation of the instance value.
+	 * @generated
+	 */
+	String convertPortMemoryAnnotation(PortMemoryAnnotation instanceValue);
+
+	/**
+	 * Returns an instance of data type '<em>IPath</em>' corresponding the given literal.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param literal a literal of the data type.
+	 * @return a new instance value of the data type.
+	 * @generated
+	 */
+	IPath createIPath(String literal);
+
+	/**
+	 * Returns a literal representation of an instance of data type '<em>IPath</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param instanceValue an instance value of the data type.
+	 * @return a literal representation of the instance value.
+	 * @generated
+	 */
+	String convertIPath(IPath instanceValue);
 
 	/**
 	 * Returns a new object of class '<em>Config Input Interface</em>'.

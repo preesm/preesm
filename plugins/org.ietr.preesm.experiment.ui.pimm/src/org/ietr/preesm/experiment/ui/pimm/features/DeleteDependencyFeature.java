@@ -42,6 +42,7 @@ import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 
 /**
@@ -70,7 +71,7 @@ public class DeleteDependencyFeature extends DefaultDeleteFeature {
 		ConfigInputPort iCfgPort = ((Dependency) obj).getGetter();
 		Parameterizable portOwner = (Parameterizable) iCfgPort.eContainer();
 		// If the getter is not an actor, delete the configInputPort
-		if (!(portOwner instanceof Actor)) {
+		if (!(portOwner instanceof ExecutableActor)) {
 			portOwner.getConfigInputPorts().remove(iCfgPort);
 		}
 	}

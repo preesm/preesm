@@ -99,10 +99,10 @@
             hasPages="true"
             icon="icons/graphiti.gif"
             id="org.ietr.preesm.ui.wizards.graphml"
-            name="Algorithm (GraphML)"
+            name="Algorithm (IBSDF)"
             project="false">
          <description>
-            Create a new FU network.
+            Create a new IBSDF algorithm.
          </description>
       </wizard>
       <wizard
@@ -115,7 +115,7 @@
             name="Architecture Design (IP-XACT)"
             project="false">
          <description>
-            Create a new FU network.
+            Create a new architecture design.
          </description>
       </wizard>
       <wizard
@@ -128,7 +128,7 @@
             name="Architecture Component (IP-XACT)"
             project="false">
          <description>
-            Create a new FU network.
+            Create a new architecture component.
          </description>
       </wizard>
       <category
@@ -141,7 +141,7 @@
             hasPages="true"
             icon="icons/preesmProject.png"
             id="org.ietr.preesm.core.wizards.NewPreesmProjectWizard"
-            name="Project"
+            name="Preesm Project"
             project="true">
          <description>
             Create a new Preesm project

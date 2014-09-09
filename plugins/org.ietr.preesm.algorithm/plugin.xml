@@ -136,6 +136,51 @@
             </input>
          </inputs>
       </task>
+      <task
+            id="org.ietr.preesm.algorithm.exportXml.MultiSDFExporter"
+            name="Multi SDF Exporter "
+            type="org.ietr.preesm.algorithm.exportXml.MultiSDFExporter">
+         <inputs>
+            <input
+                  id="SDFs"
+                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.sdf.SDFGraph&gt;">
+            </input>
+         </inputs>
+      </task>
+      <task
+            id="org.ietr.preesm.algorithm.transforms.MultiHSDFTransformation"
+            name="Multi SDF2HSDF"
+            type="org.ietr.preesm.algorithm.transforms.MultiHSDFTransformation">
+         <inputs>
+            <input
+                  id="SDFs"
+                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.sdf.SDFGraph&gt;">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="SDFs"
+                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.sdf.SDFGraph&gt;">
+            </output>
+         </outputs>
+      </task>
+      <task
+            id="org.ietr.preesm.algorithm.transforms.MultiHierarchyFlattening"
+            name="Multi hierarchy flattening"
+            type="org.ietr.preesm.algorithm.transforms.MultiHierarchyFlattening">
+         <inputs>
+            <input
+                  id="SDFs"
+                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.sdf.SDFGraph&gt;">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="SDFs"
+                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.sdf.SDFGraph&gt;">
+            </output>
+         </outputs>
+      </task>
    </extension>
 
 </plugin>

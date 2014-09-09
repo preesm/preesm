@@ -59,13 +59,18 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
-import org.eclipse.graphiti.util.ColorConstant;
+import org.eclipse.graphiti.util.IColorConstant;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
+import org.ietr.preesm.experiment.model.pimm.ForkActor;
+import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 
 /**
  * Layout Feature for Actors
@@ -95,7 +100,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 
 		EList<EObject> businessObjects = pe.getLink().getBusinessObjects();
 		return businessObjects.size() == 1
-				&& businessObjects.get(0) instanceof Actor;
+				&& businessObjects.get(0) instanceof ExecutableActor;
 	}
 
 	/**
@@ -317,36 +322,17 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 		// height did not change)
 		setNewHeight(newHeight, childrenShapes, anchorShapes);
 		containerGa.setHeight(newHeight);
-		
-		Actor actor = (Actor)(containerShape.getLink().getBusinessObjects().get(0));
-		if (actor.getRefinement().getFileURI() != null){
-			for (Shape shape : childrenShapes) {
-				GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
-				IGaService gaService = Graphiti.getGaService();
-				if (child instanceof Text) {
-					((Text) child).setFont(gaService.manageDefaultFont(getDiagram(), true, true));
-				}
-			}
-			RoundedRectangle roundedRectangle = (RoundedRectangle)containerGa;
-            roundedRectangle.setBackground(manageColor(new ColorConstant(255, 255, 255))); // White
-            roundedRectangle.setForeground(manageColor(new ColorConstant(128, 100, 162))); // Red
-            roundedRectangle.setLineWidth(2);
-		}else{
-			for (Shape shape : childrenShapes) {
-				GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
-				IGaService gaService = Graphiti.getGaService();
-				if (child instanceof Text) {
-					((Text) child).setFont(gaService.manageDefaultFont(getDiagram(), false, true));
-				}
-			}
-			RoundedRectangle roundedRectangle = (RoundedRectangle)containerGa;
-            roundedRectangle.setBackground(manageColor(AddActorFeature.ACTOR_BACKGROUND));
-            roundedRectangle.setForeground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
-            roundedRectangle.setLineWidth(2);
+
+		EObject bo = containerShape.getLink().getBusinessObjects().get(0);
+		if (bo instanceof Actor) {
+			Actor actor = (Actor) bo;
+			layoutActor(actor, childrenShapes, containerGa);
+		} else if (bo instanceof ExecutableActor) {
+			layoutSpecialActor((ExecutableActor) bo, childrenShapes, containerGa);
 		}
 
 		// If Anything changed, call the move feature to layout connections
-		{
+		if (anythingChanged) {
 			MoveAbstractActorFeature moveFeature = new MoveAbstractActorFeature(
 					getFeatureProvider());
 			MoveShapeContext moveCtxt = new MoveShapeContext(containerShape);
@@ -359,6 +345,78 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 		}
 
 		return anythingChanged;
+	}
+
+	private void layoutSpecialActor(ExecutableActor ea, EList<Shape> childrenShapes,
+			GraphicsAlgorithm containerGa) {
+		IColorConstant backgroundColor = IColorConstant.WHITE;
+		IColorConstant foregroundColor = IColorConstant.BLACK;
+		if (ea instanceof BroadcastActor) {
+			backgroundColor = AddBroadcastActorFeature.BROADCAST_ACTOR_BACKGROUND;
+			foregroundColor = AddBroadcastActorFeature.BROADCAST_ACTOR_FOREGROUND;
+		} else if (ea instanceof JoinActor) {
+			backgroundColor = AddJoinActorFeature.JOIN_ACTOR_BACKGROUND;
+			foregroundColor = AddJoinActorFeature.JOIN_ACTOR_FOREGROUND;
+		} else if (ea instanceof ForkActor) {
+			backgroundColor = AddForkActorFeature.FORK_ACTOR_BACKGROUND;
+			foregroundColor = AddForkActorFeature.FORK_ACTOR_FOREGROUND;
+		} else if (ea instanceof RoundBufferActor) {
+			backgroundColor = AddRoundBufferActorFeature.ROUND_BUFFER_ACTOR_BACKGROUND;
+			foregroundColor = AddRoundBufferActorFeature.ROUND_BUFFER_ACTOR_FOREGROUND;
+		}
+		for (Shape shape : childrenShapes) {
+			GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
+			IGaService gaService = Graphiti.getGaService();
+			if (child instanceof Text) {
+				((Text) child).setFont(gaService.manageDefaultFont(
+						getDiagram(), false, true));
+			}
+		}
+		RoundedRectangle roundedRectangle = (RoundedRectangle) containerGa;
+		roundedRectangle
+				.setBackground(manageColor(backgroundColor));
+		roundedRectangle
+				.setForeground(manageColor(foregroundColor));
+		roundedRectangle.setLineWidth(2);
+	}
+
+	private void layoutActor(Actor actor, EList<Shape> childrenShapes,
+			GraphicsAlgorithm containerGa) {
+		if (actor.getRefinement().getFilePath() != null
+				&& actor.getRefinement().getFilePath().getFileExtension()
+						.equals("pi")) {
+			// Special layout for actors with a refinement
+			for (Shape shape : childrenShapes) {
+				GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
+				IGaService gaService = Graphiti.getGaService();
+				if (child instanceof Text) {
+					((Text) child).setFont(gaService.manageDefaultFont(
+							getDiagram(), true, true));
+				}
+			}
+			RoundedRectangle roundedRectangle = (RoundedRectangle) containerGa;
+			roundedRectangle
+					.setBackground(manageColor(AddActorFeature.HIERARCHICAL_ACTOR_BACKGROUND));
+			roundedRectangle
+					.setForeground(manageColor(AddActorFeature.HIERARCHICAL_ACTOR_FOREGROUND));
+			roundedRectangle.setLineWidth(2);
+		} else {
+			// Layout for actors without refinement
+			for (Shape shape : childrenShapes) {
+				GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
+				IGaService gaService = Graphiti.getGaService();
+				if (child instanceof Text) {
+					((Text) child).setFont(gaService.manageDefaultFont(
+							getDiagram(), false, true));
+				}
+			}
+			RoundedRectangle roundedRectangle = (RoundedRectangle) containerGa;
+			roundedRectangle
+					.setBackground(manageColor(AddActorFeature.ACTOR_BACKGROUND));
+			roundedRectangle
+					.setForeground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
+			roundedRectangle.setLineWidth(2);
+		}
 	}
 
 	/**

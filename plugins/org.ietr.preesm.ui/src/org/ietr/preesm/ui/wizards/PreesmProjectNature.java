@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -46,7 +46,7 @@ import org.eclipse.core.runtime.CoreException;
  */
 public class PreesmProjectNature implements IProjectNature {
 
-	public static final String ID = "org.ietr.preesm.ProjectNature";
+	public static final String ID = "org.ietr.preesm.core.ui.wizards.nature";
 
 	private IProject project;
 

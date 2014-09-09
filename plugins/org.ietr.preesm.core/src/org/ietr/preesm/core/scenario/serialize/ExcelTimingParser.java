@@ -85,7 +85,7 @@ public class ExcelTimingParser {
 
 		Activator.updateWorkspace();
 
-		SDFGraph currentGraph = ScenarioParser.getAlgorithm(scenario
+		SDFGraph currentGraph = ScenarioParser.getSDFGraph(scenario
 				.getAlgorithmURL());
 
 		Path path = new Path(url);

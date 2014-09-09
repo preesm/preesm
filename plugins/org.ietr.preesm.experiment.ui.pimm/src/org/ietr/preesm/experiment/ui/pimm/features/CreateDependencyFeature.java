@@ -44,19 +44,19 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.ui.pimm.util.PiMMUtil;
@@ -238,12 +238,12 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 				// interface.
 
 				// If the getter is an actor
-				if (tgtObj instanceof Actor) {
+				if (tgtObj instanceof ExecutableActor) {
 					// Create a ConfigInputPort
 					PictogramElement targetPe = context
 							.getTargetPictogramElement();
 					AbstractAddActorPortFeature addPortFeature = canCreateConfigPort(
-							targetPe, "config_input");
+							targetPe, getFeatureProvider(), "config_input");
 					if (addPortFeature != null) {
 						CustomContext targetContext = new CustomContext(
 								new PictogramElement[] { targetPe });
@@ -364,6 +364,8 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 	 * 
 	 * @param pe
 	 *            the {@link PictogramElement} tested
+	 * @param fp
+	 *            A {@link IFeatureProvider} for the diagram.
 	 * @param direction
 	 *            the direction of the port we want to create ("config_input" or
 	 *            "config_output")
@@ -371,8 +373,8 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 	 *         {@link PictogramElement} can create a {@link Port} with the given
 	 *         direction. Return <code>null</code> else.
 	 */
-	protected AbstractAddActorPortFeature canCreateConfigPort(
-			PictogramElement pe, String direction) {
+	static protected AbstractAddActorPortFeature canCreateConfigPort(
+			PictogramElement pe, IFeatureProvider fp, String direction) {
 		boolean canCreatePort = false;
 		PictogramElement peSource = pe;
 
@@ -381,7 +383,7 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 				new PictogramElement[] { peSource });
 		AbstractAddActorPortFeature addPortFeature = null;
 		if (direction.equals("config_input")) {
-			addPortFeature = new AddConfigInputPortFeature(getFeatureProvider());
+			addPortFeature = new AddConfigInputPortFeature(fp);
 		}
 		// if (direction.equals("config_output")) {
 		// addPortFeature = new AddOutputPortFeature(getFeatureProvider());

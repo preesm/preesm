@@ -67,6 +67,65 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	public static final String MEMORY_OFFSET_PROPERTY = "memory_offset";
 
 	/**
+	 * Property of the {@link MemoryExclusionVertex}. The object associated to
+	 * this property is:<br>
+	 * <code>
+	 * List&lt;Pair&lt;MemoryExclusionVertex,Pair&lt;Range,Range&gt;&gt;</code><br>
+	 * This {@link List} stores {@link Pair} of {@link MemoryExclusionVertex}
+	 * and {@link Pair}. Each {@link Pair} corresponds to a {@link Range} of
+	 * real tokens of the memory object and their position in the actual
+	 * {@link MemoryExclusionVertex} (i.e. the key of the first {@link Pair}).
+	 */
+	public static final String REAL_TOKEN_RANGE_PROPERTY = "real_token_range";
+	
+	/**
+	 * Property of the {@link MemoryExclusionVertex}. The object associated to
+	 * this property is:<br>
+	 * <code>
+	 * List&lt;MemoryExclusionVertex&gt;</code><br>
+	 * This list contains the fake {@link MemoryExclusionVertex} that are added
+	 * to the {@link MemoryExclusionGraph} during memory allocation when the
+	 * current {@link MemoryExclusionVertex} is divided because of scripts.
+	 * These fake {@link MemoryExclusionVertex} should be removed from the
+	 * {@link MemoryExclusionGraph} if it is
+	 * {@link MemoryExclusionGraph#deallocate() deallocated}.
+	 */
+	public static final String FAKE_MOBJECT = "fake_mobject";
+
+	/**
+	 * Property of the {@link MemoryExclusionVertex}. The object associated to
+	 * this property is:<br>
+	 * <code>
+	 * List&lt;MemoryExclusionVertex&gt;</code><br>
+	 * This {@link List} stores {@link MemoryExclusionVertex} corresponding to
+	 * the
+	 * {@link MemoryExclusionGraph#getAdjacentVertexOf(MemoryExclusionVertex)
+	 * adjacent vertices} of the current {@link MemoryExclusionVertex} before it
+	 * was merged as a result of memory scripts execution.
+	 */
+	public static final String ADJACENT_VERTICES_BACKUP = "adjacent_vertices_backup";
+
+	/**
+	 * Property of the {@link MemoryExclusionVertex}. The object associated to
+	 * this property is an {@link Integer} that corresponds to the space in
+	 * bytes between the offset at which the {@link MemoryExclusionVertex} is
+	 * allocated and the actual beginning of the real token ranges. This
+	 * property is set after the memory script execution.
+	 */
+	public static final String EMPTY_SPACE_BEFORE = "empty_space_before";
+	
+	/**
+	 * Property of the {@link MemoryExclusionVertex}. The object associated to
+	 * this property is an {@link Integer} that corresponds to the size in bytes
+	 * of the {@link MemoryExclusionVertex} when it hosts merged
+	 * {@link MemoryExclusionVertex} as a result of scripts execution. This
+	 * value is stored in case the host {@link MemoryExclusionVertex} needs to
+	 * be deallocated, and restored to the size it has when all hosted
+	 * {@link MemoryExclusionVertex} are merged.
+	 */
+	public static final String HOST_SIZE = "host_size";
+	
+	/**
 	 * This Map is used as a reference of dataTypes size when creating an vertex
 	 * from a DAGEdge
 	 */
@@ -121,8 +180,8 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 
 	/**
 	 * {@link MemoryExclusionVertex} property associated to a {@link List} of
-	 * {@link Integer} that represent the space between successive "subbuffers"
-	 * of a {@link MemoryExclusionVertex}.
+	 * {@link Integer} that represent the space <b>in bytes</b> between
+	 * successive "subbuffers" of a {@link MemoryExclusionVertex}.
 	 */
 	public static final String INTER_BUFFER_SPACES = "inter_buffer_spaces";
 
@@ -231,8 +290,8 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 * Neither the weight nor the explodeImplode attributes of the vertices are
 	 * taken into account to test the equality.
 	 * 
-	 * Do not change the way the comparison is done since several other 
-	 * classes relate on it, like ScriptRunner#updateMEG method.
+	 * Do not change the way the comparison is done since several other classes
+	 * relate on it, like ScriptRunner#updateMEG method.
 	 * 
 	 * @param o
 	 *            the object to compare.
@@ -241,7 +300,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	public boolean equals(Object o) {
 		if (o instanceof MemoryExclusionVertex) {
 			return (this.source.equals(((MemoryExclusionVertex) o).source) && this.sink
-					.equals(((MemoryExclusionVertex) o).sink)); 
+					.equals(((MemoryExclusionVertex) o).sink));
 		} else {
 			return false;
 		}

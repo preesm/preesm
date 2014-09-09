@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.ietr.dftools.workflow.tasks">
+      <task
+            id="org.ietr.preesm.experiment.memory.MultiMemoryExclusionGraphBuilder"
+            name="Multi Memory Exclusion Graph Builder"
+            type="org.ietr.preesm.experiment.memory.MultiMemoryExclusionGraphBuilder">
+         <inputs>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+            <input
+                  id="DAGs"
+                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph&gt;">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="DAGsAndMemExs"
+                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+            </output>
+         </outputs>
+      </task>
+      <task
+            id="org.ietr.preesm.experiment.memory.MultiMemoryAllocator"
+            name="Multi Memory Allocator"
+            type="org.ietr.preesm.experiment.memory.MultiMemoryAllocator">
+         <inputs>
+            <input
+                  id="DAGsAndMemExs"
+                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="DAGsAndMemExs"
+                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+            </output>
+         </outputs>
+      </task>
+      <task
+            id="org.ietr.preesm.experiment.memory.MultiMemExUpdater"
+            name="Multi Memory Exclusion Graph Updater"
+            type="org.ietr.preesm.experiment.memory.MultiMemExUpdater">
+         <inputs>
+            <input
+                  id="DAGsAndMemExs"
+                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="DAGsAndMemExs"
+                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+            </output>
+         </outputs>
+      </task>
+      <task
+            id="org.ietr.preesm.experiment.memory.MultiMemoryBoundsEstimator"
+            name="Multi memory Bounds Estimator"
+            type="org.ietr.preesm.experiment.memory.MultiMemoryBoundsEstimator">
+         <inputs>
+            <input
+                  id="DAGsAndMemExs"
+                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="DAGsAndMemExs"
+                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+            </output>
+            <output
+                  id="maxBounds"
+                  object="java.util.Set&lt;java.lang.Integer&gt;"></output>
+            <output
+                  id="minBounds"
+                  object="java.util.Set&lt;java.lang.Integer&gt;">
+            </output>
+         </outputs>
+      </task>
+      <task
+            id="org.ietr.preesm.experiment.memory.MultiMemoryScriptTask"
+            name="Multi memory Script Runner"
+            type="org.ietr.preesm.experiment.memory.MultiMemoryScriptTask">
+         <inputs>
+            <input
+                  id="DAGsAndMemExs"
+                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="DAGsAndMemExs"
+                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+            </output>
+         </outputs>
+      </task>
+   </extension>
+
+</plugin>

@@ -44,6 +44,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -196,6 +197,11 @@ public abstract class AbstractVertexImpl extends ParameterizableImpl implements
 			}
 		}
 		return null;
+	}
+	
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitAbstractVertex(this);
 	}
 
 } // AbstractVertexImpl

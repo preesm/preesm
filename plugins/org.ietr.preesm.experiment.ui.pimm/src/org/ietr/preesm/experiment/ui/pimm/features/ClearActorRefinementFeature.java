@@ -80,7 +80,7 @@ public class ClearActorRefinementFeature extends AbstractCustomFeature {
 		PictogramElement[] pes = context.getPictogramElements();
 		if (pes != null && pes.length == 1) {
 			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof Actor && ((Actor) bo).getRefinement().getFileURI() != null) {
+			if (bo instanceof Actor && ((Actor) bo).getRefinement().getFilePath() != null) {
 				ret = true;
 			}
 		}
@@ -98,7 +98,7 @@ public class ClearActorRefinementFeature extends AbstractCustomFeature {
 				Actor actor = (Actor) bo;
 				Refinement refinement = actor.getRefinement();
 
-				refinement.setFileName("");
+				refinement.setFilePath(null);
 
 				// Call the layout feature
 				layoutPictogramElement(pes[0]);

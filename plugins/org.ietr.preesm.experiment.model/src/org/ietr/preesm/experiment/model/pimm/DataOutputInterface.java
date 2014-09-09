@@ -35,6 +35,8 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
+
 
 /**
  * <!-- begin-user-doc -->
@@ -46,6 +48,6 @@ package org.ietr.preesm.experiment.model.pimm;
  * @model
  * @generated
  */
-public interface DataOutputInterface extends InterfaceActor {
+public interface DataOutputInterface extends InterfaceActor, PiMMVisitable {
 	public static final String KIND = "snk";
 } // SinkInterface

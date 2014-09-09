@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+   <vertices>
+      <vertex id="Read_PPM0" x="57" y="226"/>
+      <vertex id="Display_rgb0" x="199" y="71"/>
+      <vertex id="Read_PPM1" x="57" y="536"/>
+      <vertex id="Display_rgb1" x="1318" y="343"/>
+      <vertex id="RGB2Gray_L" x="199" y="226"/>
+      <vertex id="RGB2Gray_R" x="199" y="536"/>
+      <vertex id="Census_L" x="346" y="278"/>
+      <vertex id="Census_R" x="346" y="469"/>
+      <vertex id="r_g_b_2_rgb" x="199" y="381"/>
+      <vertex id="Cost_Parallel_Work" x="476" y="361"/>
+      <vertex id="lum2rgb2" x="1187" y="391"/>
+      <vertex id="medianFilter" x="805" y="401"/>
+      <vertex id="Split" x="656" y="401"/>
+      <vertex id="Merge" x="1038" y="401"/>
+      <vertex id="WritePPM" x="1318" y="458"/>
+   </vertices>
+</layout>

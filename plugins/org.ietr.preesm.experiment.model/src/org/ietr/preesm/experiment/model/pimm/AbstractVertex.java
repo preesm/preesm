@@ -35,6 +35,8 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
+
 /**
  * <!-- begin-user-doc -->
  * A representation of the model object '<em><b>Abstract Vertex</b></em>'.
@@ -51,7 +53,7 @@ package org.ietr.preesm.experiment.model.pimm;
  * @model abstract="true"
  * @generated
  */
-public interface AbstractVertex extends Parameterizable {
+public interface AbstractVertex extends Parameterizable, PiMMVisitable {
 	/**
 	 * Returns the value of the '<em><b>Name</b></em>' attribute.
 	 * <!-- begin-user-doc -->

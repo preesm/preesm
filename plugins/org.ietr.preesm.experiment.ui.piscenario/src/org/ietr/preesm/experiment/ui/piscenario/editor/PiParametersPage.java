@@ -68,6 +68,7 @@ import org.ietr.preesm.ui.scenario.editor.Messages;
 
 /**
  * This page contains parameters informations of the {@link PiScenario}
+ * 
  * @author jheulot
  */
 public class PiParametersPage extends FormPage implements IPropertyListener {
@@ -75,28 +76,28 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 	 * The {@link PiScenario}
 	 */
 	private PiScenario piscenario = null;
-	
+
 	/**
 	 * Page attributes
 	 */
 	private Section section;
 	private TableViewer tableViewer;
-	
+
 	/**
 	 * Table of Column name of the multi-column tree viewer
 	 */
-	private final String[] COLUMN_NAMES = {"Parameters","Path","Type","Variables","Expression"};
-	private final int[]    COLUMN_SIZE 	= {		    110,   200,	  100,        100,          50};
-	
+	private final String[] COLUMN_NAMES = { "Parameters", "Path", "Type",
+			"Variables", "Expression" };
+	private final int[] COLUMN_SIZE = { 110, 200, 100, 100, 50 };
+
 	/**
 	 * Default Constructor of an Variables Page
-	 */	
-	public PiParametersPage(PiScenario scenario, FormEditor editor,
-			String id, String title) {
+	 */
+	public PiParametersPage(PiScenario scenario, FormEditor editor, String id,
+			String title) {
 		super(editor, id, title);
 		this.piscenario = scenario;
 	}
-	
 
 	/**
 	 * Initializes the display content
@@ -108,161 +109,169 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 		ScrolledForm f = managedForm.getForm();
 		f.setText(Messages.getString("Parameters.title"));
 		f.getBody().setLayout(new GridLayout());
-		
+
 		// Creates the section
 		managedForm.getForm().setLayout(new FillLayout());
-		
-		section = managedForm.getToolkit().createSection(managedForm.getForm().getBody(), 
-				Section.TWISTIE | Section.TITLE_BAR | Section.DESCRIPTION | Section.EXPANDED);
+
+		section = managedForm.getToolkit().createSection(
+				managedForm.getForm().getBody(),
+				Section.TWISTIE | Section.TITLE_BAR | Section.DESCRIPTION
+						| Section.EXPANDED);
 
 		section.setText(Messages.getString("Parameters.title"));
 		section.setDescription(Messages.getString("Parameters.description"));
 		section.setLayout(new ColumnLayout());
 
-
 		// Creates the section part containing the tree with SDF vertices
-		
+
 		Composite container = managedForm.getToolkit().createComposite(section);
 		container.setLayout(new GridLayout());
 
 		// Creating the tree view
-		Table table = managedForm.getToolkit().createTable(container, SWT.SIMPLE);
+		Table table = managedForm.getToolkit().createTable(container,
+				SWT.SIMPLE);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 
-		for(int i=0; i<COLUMN_NAMES.length; i++){
+		for (int i = 0; i < COLUMN_NAMES.length; i++) {
 			TableColumn col = new TableColumn(table, SWT.CENTER);
 			col.setText(COLUMN_NAMES[i]);
 			col.setWidth(COLUMN_SIZE[i]);
-		}		
+		}
 		table.setSortColumn(table.getColumn(0));
-		table.setSortDirection(SWT.UP);	
-		
+		table.setSortDirection(SWT.UP);
+
 		tableViewer = new TableViewer(table);
 
-		// The content provider fills the tree		
+		// The content provider fills the tree
 		tableViewer.setContentProvider(new PiParameterTableContentProvider());
 		tableViewer.setLabelProvider(new PiParameterTableLabelProvider(table));
-		tableViewer.setComparator(new ViewerComparator(){
-			public int compare(Viewer viewer, Object e1, Object e2){
-				return ((ParameterValue) e1).getName().compareTo(((ParameterValue) e2).getName());
+		tableViewer.setComparator(new ViewerComparator() {
+			public int compare(Viewer viewer, Object e1, Object e2) {
+				return ((ParameterValue) e1).getName().compareTo(
+						((ParameterValue) e2).getName());
 			}
-			
-		});		
+
+		});
 		tableViewer.setInput(piscenario.getActorTree());
-		
+
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		gd.heightHint = 400;
 		gd.widthHint = 250;
 		tableViewer.getTable().setLayoutData(gd);
-		
+
 		section.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
 				piscenario.update();
 				tableViewer.refresh();
 			}
 		});
-		
-		CellEditor[] editors = new CellEditor[table.getColumnCount()]; 
-		for(int i=0; i<table.getColumnCount(); i++){
+
+		CellEditor[] editors = new CellEditor[table.getColumnCount()];
+		for (int i = 0; i < table.getColumnCount(); i++) {
 			editors[i] = new TextCellEditor(table);
 		}
-		
+
 		tableViewer.setColumnProperties(COLUMN_NAMES);
-		tableViewer.setCellEditors(editors);		
+		tableViewer.setCellEditors(editors);
 		tableViewer.setCellModifier(new ICellModifier() {
 			@Override
 			public void modify(Object element, String property, Object value) {
-				if(element instanceof TableItem){
-					ParameterValue param = (ParameterValue)((TableItem)element).getData();
-					if(param.getType() == ParameterType.STATIC){
+				if (element instanceof TableItem) {
+					ParameterValue param = (ParameterValue) ((TableItem) element)
+							.getData();
+					if (param.getType() == ParameterType.STATIC) {
 						try {
-							int newValue = Integer.parseInt(((String) value).trim());
-							if(newValue != param.getValue()){
-								param.setValue(newValue);	
+							int newValue = Integer.parseInt(((String) value)
+									.trim());
+							if (newValue != param.getValue()) {
+								param.setValue(newValue);
 								propertyChanged(this, PROP_DIRTY);
 							}
 						} catch (NumberFormatException e) {
-						}							
-					}else if (param.getType() == ParameterType.DYNAMIC){
+						}
+					} else if (param.getType() == ParameterType.DYNAMIC) {
 						String s = (String) value;
-						
-						if(s.charAt(0) == '[' && s.charAt(s.length()-1) == ']'){
-							s = s.substring(1,s.length()-1);
+
+						if (s.charAt(0) == '['
+								&& s.charAt(s.length() - 1) == ']') {
+							s = s.substring(1, s.length() - 1);
 							String[] values = s.split(",");
-							
+
 							Set<Integer> newValues = new HashSet<Integer>();
 							boolean modified = true;
-							
-							for(String val : values){
+
+							for (String val : values) {
 								try {
 									newValues.add(Integer.parseInt(val.trim()));
 								} catch (NumberFormatException e) {
 									modified = false;
 									break;
-								}					
+								}
 							}
-							
-							boolean equalSet = newValues.containsAll(param.getValues())
+
+							boolean equalSet = newValues.containsAll(param
+									.getValues())
 									&& param.getValues().containsAll(newValues);
-							if(modified && !equalSet){
+							if (modified && !equalSet) {
 								param.getValues().clear();
 								param.getValues().addAll(newValues);
 								propertyChanged(this, PROP_DIRTY);
 							}
 						}
-					}else if (param.getType() == ParameterType.DEPENDENT){
-						if(!param.getExpression().contentEquals((String) value)){
-							param.setExpression((String) value);	
+					} else if (param.getType() == ParameterType.DEPENDENT) {
+						if (!param.getExpression()
+								.contentEquals((String) value)) {
+							param.setExpression((String) value);
 							propertyChanged(this, PROP_DIRTY);
 						}
 					}
 					tableViewer.refresh();
 				}
 			}
-			
+
 			@Override
 			public Object getValue(Object element, String property) {
-				if(element instanceof ParameterValue){
-					ParameterValue param = (ParameterValue)element;
-					if(param.getType() == ParameterType.STATIC){
+				if (element instanceof ParameterValue) {
+					ParameterValue param = (ParameterValue) element;
+					if (param.getType() == ParameterType.STATIC) {
 						return Integer.toString(param.getValue());
-					}else if (param.getType() == ParameterType.DYNAMIC){
+					} else if (param.getType() == ParameterType.DYNAMIC) {
 						return param.getValues().toString();
-					}else if (param.getType() == ParameterType.DEPENDENT){
-						return param.getExpression();						
+					} else if (param.getType() == ParameterType.DEPENDENT) {
+						return param.getExpression();
 					}
 				}
 				return "";
 			}
-			
+
 			@Override
 			public boolean canModify(Object element, String property) {
-				if(property.contentEquals("Expression")){
-					if(element instanceof ParameterValue){
+				if (property.contentEquals("Expression")) {
+					if (element instanceof ParameterValue) {
 						return true;
 					}
 				}
 				return false;
 			}
 		});
-		
+
 		managedForm.getToolkit().paintBordersFor(container);
 		managedForm.getToolkit().paintBordersFor(tableViewer.getTable());
-		section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
+		section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL
+				| GridData.FILL_VERTICAL));
 		section.setClient(container);
 
 		managedForm.refresh();
 		managedForm.reflow(true);
 	}
-	
+
 	/**
 	 * Function of the property listener used to transmit the dirty property
 	 */
 	@Override
 	public void propertyChanged(Object source, int propId) {
-		if (source instanceof ICellModifier
-				&& propId == PROP_DIRTY)
+		if (source instanceof ICellModifier && propId == PROP_DIRTY)
 			firePropertyChange(PROP_DIRTY);
 	}
 }

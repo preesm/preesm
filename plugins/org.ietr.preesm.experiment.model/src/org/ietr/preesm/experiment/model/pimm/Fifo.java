@@ -36,6 +36,7 @@
 package org.ietr.preesm.experiment.model.pimm;
 
 import org.eclipse.emf.ecore.EObject;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
 
 /**
  * <!-- begin-user-doc -->
@@ -49,6 +50,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Fifo#getTargetPort <em>Target Port</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Fifo#getDelay <em>Delay</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Fifo#getId <em>Id</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.Fifo#getType <em>Type</em>}</li>
  * </ul>
  * </p>
  *
@@ -56,7 +58,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model
  * @generated
  */
-public interface Fifo extends EObject {
+public interface Fifo extends EObject, PiMMVisitable {
 	/**
 	 * Returns the value of the '<em><b>Source Port</b></em>' reference.
 	 * It is bidirectional and its opposite is '{@link org.ietr.preesm.experiment.model.pimm.DataOutputPort#getOutgoingFifo <em>Outgoing Fifo</em>}'.
@@ -166,5 +168,32 @@ public interface Fifo extends EObject {
 	 * @generated
 	 */
 	boolean isSetId();
+
+	/**
+	 * Returns the value of the '<em><b>Type</b></em>' attribute.
+	 * The default value is <code>"void"</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Type</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Type</em>' attribute.
+	 * @see #setType(String)
+	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getFifo_Type()
+	 * @model default="void" required="true"
+	 * @generated
+	 */
+	String getType();
+
+	/**
+	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Fifo#getType <em>Type</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Type</em>' attribute.
+	 * @see #getType()
+	 * @generated
+	 */
+	void setType(String value);
 
 } // Fifo

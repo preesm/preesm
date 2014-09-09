@@ -221,7 +221,7 @@ public class MemExBroadcastMerger {
 				// modifier
 				if (modifier == null
 						|| !modifier.toString().contains(
-								SDFEdge.MODIFIER_PURE_IN)) {
+								SDFEdge.MODIFIER_READ_ONLY)) {
 					readOnly = false;
 					break;
 				}
@@ -304,7 +304,7 @@ public class MemExBroadcastMerger {
 
 		// In the current version we ONLY check if ALL incoming edges
 		// have the same rate as the output edge, and merge those with a
-		// pure_out producer (except the last one which will be merged
+		// write_only producer (except the last one which will be merged
 		// with the input, regardless from its modifiers)
 		Set<MemoryExclusionVertex> mergeableMemObjects = new HashSet<MemoryExclusionVertex>();
 		Set<MemoryExclusionVertex> allMergedObjects = (Set<MemoryExclusionVertex>) memEx
@@ -333,7 +333,7 @@ public class MemExBroadcastMerger {
 				// modifier
 				if (modifier == null
 						|| !modifier.toString().contains(
-								SDFEdge.MODIFIER_PURE_OUT)) {
+								SDFEdge.MODIFIER_WRITE_ONLY)) {
 					writeOnly = false;
 					break;
 				}

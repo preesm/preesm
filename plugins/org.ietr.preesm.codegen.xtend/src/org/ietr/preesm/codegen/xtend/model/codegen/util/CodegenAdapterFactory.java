@@ -206,6 +206,11 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseNullBuffer(NullBuffer object) {
+			return createNullBufferAdapter();
+		}
+
+		@Override
 		public Adapter defaultCase(EObject object) {
 			return createEObjectAdapter();
 		}
@@ -556,6 +561,22 @@ public class CodegenAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createConstantStringAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
+	 * <em>Null Buffer</em>}'. <!-- begin-user-doc --> This default
+	 * implementation returns null so that we can easily ignore cases; it's
+	 * useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the new adapter.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
+	 * @generated
+	 */
+	public Adapter createNullBufferAdapter() {
 		return null;
 	}
 

@@ -39,7 +39,6 @@ package org.ietr.preesm.codegen.model;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.model.CodeRefinement;
 import org.ietr.dftools.algorithm.model.CodeRefinement.Language;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
@@ -75,7 +74,8 @@ public class CodeGenSDFVertexFactory {
 		mainFile = parentAlgoFile;
 	}
 
-	public SDFAbstractVertex create(DAGVertex dagVertex, IDLPrototypeFactory idlPrototypeFactory)
+	public SDFAbstractVertex create(DAGVertex dagVertex,
+			IDLPrototypeFactory idlPrototypeFactory)
 			throws InvalidExpressionException, SDF4JException, PreesmException {
 		CodeGenSDFGraphFactory graphFactory = new CodeGenSDFGraphFactory(
 				mainFile);
@@ -143,11 +143,10 @@ public class CodeGenSDFVertexFactory {
 				&& dagVertex.getCorrespondingSDFVertex().getRefinement() instanceof CodeRefinement) {
 			CodeRefinement codeRef = (CodeRefinement) dagVertex
 					.getCorrespondingSDFVertex().getRefinement();
-			if(codeRef.getLanguage() == Language.TEXT){
+			if (codeRef.getLanguage() == Language.TEXT) {
 				((SDFAbstractVertex) newVertex).setRefinement(codeRef);
 			}
-			IFile iFile = mainFile.getParent().getFile(
-					new Path(codeRef.getName()));
+			IFile iFile = mainFile.getParent().getFile(codeRef.getPath());
 			try {
 				if (!iFile.exists()) {
 					iFile.create(null, false, new NullProgressMonitor());
@@ -159,7 +158,7 @@ public class CodeGenSDFVertexFactory {
 			if (codeRef.getLanguage() == Language.IDL) {
 				IDLPrototypeFactory factory = idlPrototypeFactory;
 				((SDFAbstractVertex) newVertex).setRefinement(factory
-						.create(iFile.getRawLocation().toOSString()));
+						.create("../" + iFile.getProjectRelativePath().toOSString()));
 			}
 		}
 		((SDFAbstractVertex) newVertex).copyProperties(dagVertex);
@@ -179,7 +178,8 @@ public class CodeGenSDFVertexFactory {
 		return ((SDFAbstractVertex) newVertex);
 	}
 
-	public SDFAbstractVertex create(SDFAbstractVertex sdfVertex, IDLPrototypeFactory idlPrototypeFactory)
+	public SDFAbstractVertex create(SDFAbstractVertex sdfVertex,
+			IDLPrototypeFactory idlPrototypeFactory)
 			throws InvalidExpressionException, SDF4JException, PreesmException {
 		SDFAbstractVertex newVertex;
 		if (sdfVertex instanceof SDFSinkInterfaceVertex) {
@@ -209,8 +209,8 @@ public class CodeGenSDFVertexFactory {
 		CodeGenSDFGraphFactory graphFactory = new CodeGenSDFGraphFactory(
 				mainFile);
 		if (sdfVertex.getGraphDescription() != null) {
-			newVertex.setGraphDescription(graphFactory.create(sdfVertex
-					.getGraphDescription(), idlPrototypeFactory));
+			newVertex.setGraphDescription(graphFactory.create(
+					sdfVertex.getGraphDescription(), idlPrototypeFactory));
 			for (SDFAbstractVertex child : ((CodeGenSDFGraph) newVertex
 					.getGraphDescription()).vertexSet()) {
 				if (child instanceof SDFSinkInterfaceVertex) {
@@ -225,11 +225,10 @@ public class CodeGenSDFVertexFactory {
 			}
 		} else if (sdfVertex.getRefinement() instanceof CodeRefinement) {
 			CodeRefinement codeRef = (CodeRefinement) sdfVertex.getRefinement();
-			if(codeRef.getLanguage() == Language.TEXT){
+			if (codeRef.getLanguage() == Language.TEXT) {
 				newVertex.setRefinement(codeRef);
 			}
-			IFile iFile = mainFile.getParent().getFile(
-					new Path(codeRef.getName()));
+			IFile iFile = mainFile.getParent().getFile(codeRef.getPath());
 			try {
 				if (!iFile.exists()) {
 					iFile.create(null, false, new NullProgressMonitor());
@@ -240,8 +239,7 @@ public class CodeGenSDFVertexFactory {
 
 			if (codeRef.getLanguage() == Language.IDL) {
 				IDLPrototypeFactory factory = idlPrototypeFactory;
-				newVertex.setRefinement(factory.create(iFile.getRawLocation()
-						.toOSString()));
+				newVertex.setRefinement(factory.create("../" + iFile.getProjectRelativePath().toOSString()));
 			}
 		}
 		return newVertex;

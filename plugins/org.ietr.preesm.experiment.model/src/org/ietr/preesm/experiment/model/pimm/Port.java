@@ -36,6 +36,7 @@
 package org.ietr.preesm.experiment.model.pimm;
 
 import org.eclipse.emf.ecore.EObject;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
 
 /**
  * <!-- begin-user-doc -->
@@ -54,7 +55,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model abstract="true"
  * @generated
  */
-public interface Port extends EObject {
+public interface Port extends EObject, PiMMVisitable {
 	/**
 	 * Returns the value of the '<em><b>Name</b></em>' attribute.
 	 * <!-- begin-user-doc -->

@@ -40,11 +40,13 @@ import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc -->
@@ -54,13 +56,12 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
  * The following features are implemented:
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DataOutputPortImpl#getOutgoingFifo <em>Outgoing Fifo</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DataOutputPortImpl#getExpression <em>Expression</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class DataOutputPortImpl extends PortImpl implements DataOutputPort {
+public class DataOutputPortImpl extends DataPortImpl implements DataOutputPort {
 	/**
 	 * The cached value of the '{@link #getOutgoingFifo() <em>Outgoing Fifo</em>}' reference.
 	 * <!-- begin-user-doc -->
@@ -70,16 +71,6 @@ public class DataOutputPortImpl extends PortImpl implements DataOutputPort {
 	 * @ordered
 	 */
 	protected Fifo outgoingFifo;
-
-	/**
-	 * The cached value of the '{@link #getExpression() <em>Expression</em>}' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getExpression()
-	 * @generated
-	 * @ordered
-	 */
-	protected Expression expression;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -170,52 +161,6 @@ public class DataOutputPortImpl extends PortImpl implements DataOutputPort {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Expression getExpression() {
-		return expression;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public NotificationChain basicSetExpression(Expression newExpression, NotificationChain msgs) {
-		Expression oldExpression = expression;
-		expression = newExpression;
-		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_OUTPUT_PORT__EXPRESSION, oldExpression, newExpression);
-			if (msgs == null) msgs = notification; else msgs.add(notification);
-		}
-		return msgs;
-	}
-
-
-
-	
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setExpression(Expression newExpression) {
-		if (newExpression != expression) {
-			NotificationChain msgs = null;
-			if (expression != null)
-				msgs = ((InternalEObject)expression).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.DATA_OUTPUT_PORT__EXPRESSION, null, msgs);
-			if (newExpression != null)
-				msgs = ((InternalEObject)newExpression).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.DATA_OUTPUT_PORT__EXPRESSION, null, msgs);
-			msgs = basicSetExpression(newExpression, msgs);
-			if (msgs != null) msgs.dispatch();
-		}
-		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_OUTPUT_PORT__EXPRESSION, newExpression, newExpression));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -237,8 +182,6 @@ public class DataOutputPortImpl extends PortImpl implements DataOutputPort {
 		switch (featureID) {
 			case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
 				return basicSetOutgoingFifo(null, msgs);
-			case PiMMPackage.DATA_OUTPUT_PORT__EXPRESSION:
-				return basicSetExpression(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -254,8 +197,6 @@ public class DataOutputPortImpl extends PortImpl implements DataOutputPort {
 			case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
 				if (resolve) return getOutgoingFifo();
 				return basicGetOutgoingFifo();
-			case PiMMPackage.DATA_OUTPUT_PORT__EXPRESSION:
-				return getExpression();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -270,9 +211,6 @@ public class DataOutputPortImpl extends PortImpl implements DataOutputPort {
 		switch (featureID) {
 			case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
 				setOutgoingFifo((Fifo)newValue);
-				return;
-			case PiMMPackage.DATA_OUTPUT_PORT__EXPRESSION:
-				setExpression((Expression)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -289,9 +227,6 @@ public class DataOutputPortImpl extends PortImpl implements DataOutputPort {
 			case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
 				setOutgoingFifo((Fifo)null);
 				return;
-			case PiMMPackage.DATA_OUTPUT_PORT__EXPRESSION:
-				setExpression((Expression)null);
-				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -306,10 +241,22 @@ public class DataOutputPortImpl extends PortImpl implements DataOutputPort {
 		switch (featureID) {
 			case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
 				return outgoingFifo != null;
-			case PiMMPackage.DATA_OUTPUT_PORT__EXPRESSION:
-				return expression != null;
 		}
 		return super.eIsSet(featureID);
+	}
+
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitDataOutputPort(this);
+	}
+	
+	@Override
+	public String getName() {
+		String name = super.getName();
+		if (name == null && this.eContainer instanceof DataInputInterface) {
+			name = ((DataInputInterface) this.eContainer).getName();
+		}
+		return name;
 	}
 
 } //OutputPortImpl

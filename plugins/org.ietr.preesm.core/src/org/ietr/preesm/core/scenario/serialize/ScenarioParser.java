@@ -39,7 +39,9 @@ package org.ietr.preesm.core.scenario.serialize;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -70,6 +72,10 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.core.scenario.TimingManager;
 import org.ietr.preesm.core.types.DataType;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.util.SubgraphConnector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -95,7 +101,8 @@ public class ScenarioParser {
 	/**
 	 * current algorithm
 	 */
-	private SDFGraph algo = null;
+	private SDFGraph algoSDF = null;
+	private PiGraph algoPi = null;
 
 	public ScenarioParser() {
 
@@ -109,18 +116,17 @@ public class ScenarioParser {
 	/**
 	 * Retrieves the DOM document
 	 */
-	public PreesmScenario parseXmlFile(IFile file) throws InvalidModelException,FileNotFoundException {
+	public PreesmScenario parseXmlFile(IFile file)
+			throws InvalidModelException, FileNotFoundException, CoreException {
 		// get the factory
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
 		try {
-
 			// Using factory get an instance of document builder
 			DocumentBuilder db = dbf.newDocumentBuilder();
 
 			// parse using builder to get DOM representation of the XML file
 			dom = db.parse(file.getContents());
-
 		} catch (ParserConfigurationException pce) {
 			pce.printStackTrace();
 		} catch (SAXException se) {
@@ -128,7 +134,6 @@ public class ScenarioParser {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -143,18 +148,28 @@ public class ScenarioParser {
 				if (node instanceof Element) {
 					Element elt = (Element) node;
 					String type = elt.getTagName();
-					if (type.equals("files")) {
+					switch (type) {
+					case "files":
 						parseFileNames(elt);
-					} else if (type.equals("constraints")) {
+						break;
+					case "constraints":
 						parseConstraintGroups(elt);
-					} else if (type.equals("relativeconstraints")) {
+						break;
+					case "relativeconstraints":
 						parseRelativeConstraints(elt);
-					} else if (type.equals("timings")) {
+						break;
+					case "timings":
 						parseTimings(elt);
-					} else if (type.equals("simuParams")) {
+						break;
+					case "simuParams":
 						parseSimuParams(elt);
-					} else if (type.equals("variables")) {
+						break;
+					case "variables":
 						parseVariables(elt);
+						break;
+					case "parameterValues":
+						parseParameterValues(elt);
+						break;
 					}
 				}
 
@@ -166,6 +181,108 @@ public class ScenarioParser {
 		return scenario;
 	}
 
+	/**
+	 * Retrieves all the parameter values
+	 */
+	private void parseParameterValues(Element paramValuesElt) {
+
+		Node node = paramValuesElt.getFirstChild();
+
+		PiGraph graph = null;
+		try {
+			graph = ScenarioParser.getPiGraph(scenario.getAlgorithmURL());
+		} catch (InvalidModelException | CoreException e1) {
+			e1.printStackTrace();
+		}
+		if (scenario.isPISDFScenario() && graph != null) {
+			Set<Parameter> parameters = new HashSet<Parameter>();
+			for (Parameter p : graph.getAllParameters()) {
+				if (!p.isConfigurationInterface())
+					parameters.add(p);
+			}
+
+			while (node != null) {
+				if (node instanceof Element) {
+					Element elt = (Element) node;
+					String type = elt.getTagName();
+					if (type.equals("parameter")) {
+						Parameter justParsed = parseParameterValue(elt, graph);
+						parameters.remove(justParsed);
+					}
+				}
+
+				node = node.getNextSibling();
+			}
+
+			// Create a parameter value foreach parameter not yet in the
+			// scenario
+			for (Parameter p : parameters) {
+				scenario.getParameterValueManager().addParameterValue(p);
+			}
+		}
+	}
+
+	/**
+	 * Retrieve a ParameterValue
+	 */
+	private Parameter parseParameterValue(Element paramValueElt, PiGraph graph) {
+		Parameter currentParameter = null;
+
+		String type = paramValueElt.getAttribute("type");
+		String parent = paramValueElt.getAttribute("parent");
+		String name = paramValueElt.getAttribute("name");
+		String stringValue = paramValueElt.getAttribute("value");
+
+		currentParameter = graph.getParameterNamedWithParent(name, parent);
+
+		switch (type) {
+		case "INDEPENDENT":
+		case "STATIC": // Retro-compatibility		
+			scenario.getParameterValueManager().addIndependentParameterValue(
+					currentParameter, stringValue, parent);
+			break;
+		case "ACTOR_DEPENDENT":
+		case "DYNAMIC": // Retro-compatibility
+			if (stringValue.charAt(0) == '['
+					&& stringValue.charAt(stringValue.length() - 1) == ']') {
+				stringValue = stringValue
+						.substring(1, stringValue.length() - 1);
+				String[] values = stringValue.split(",");
+
+				Set<Integer> newValues = new HashSet<Integer>();
+
+				try {
+					for (String val : values) {
+						newValues.add(Integer.parseInt(val.trim()));
+					}
+				} catch (NumberFormatException e) {
+					// TODO: Do smthg?
+				}
+				scenario.getParameterValueManager()
+						.addActorDependentParameterValue(currentParameter, newValues,
+								parent);
+			}
+			break;
+		case "PARAMETER_DEPENDENT":
+		case "DEPENDENT": // Retro-compatibility
+			Set<String> inputParameters = new HashSet<String>();
+			if (graph != null) {
+
+				for (Parameter input : currentParameter.getInputParameters()) {
+					inputParameters.add(input.getName());
+				}
+			}
+			scenario.getParameterValueManager()
+					.addParameterDependentParameterValue(currentParameter, stringValue,
+							inputParameters, parent);
+			break;
+		default:
+			throw new RuntimeException("Unknown Parameter type: " + type
+					+ " for Parameter: " + name);
+		}
+
+		return currentParameter;
+	}
 
 	/**
 	 * Retrieves the timings
@@ -198,8 +315,7 @@ public class ScenarioParser {
 
 		int group = -1;
 
-		if (algo != null) {
-
+		if (algoSDF != null) {
 			String type = timingElt.getTagName();
 			if (type.equals("relativeconstraint")) {
 				String vertexpath = timingElt.getAttribute("vertexname");
@@ -209,13 +325,14 @@ public class ScenarioParser {
 				} catch (NumberFormatException e) {
 					group = -1;
 				}
-			
-				scenario.getRelativeconstraintManager().addConstraint(vertexpath, group);
+
+				scenario.getRelativeconstraintManager().addConstraint(
+						vertexpath, group);
 			}
 
 		}
 	}
-	
+
 	/**
 	 * Retrieves the timings
 	 */
@@ -256,18 +373,28 @@ public class ScenarioParser {
 				Element elt = (Element) node;
 				String type = elt.getTagName();
 				String content = elt.getTextContent();
-				if (type.equals("mainCore")) {
+				switch (type) {
+				case "mainCore":
 					scenario.getSimulationManager()
 							.setMainOperatorName(content);
-				} else if (type.equals("mainComNode")) {
+					break;
+				case "mainComNode":
 					scenario.getSimulationManager().setMainComNodeName(content);
-				} else if (type.equals("averageDataSize")) {
+					break;
+				case "averageDataSize":
 					scenario.getSimulationManager().setAverageDataSize(
 							Long.valueOf(content));
-				} else if (type.equals("dataTypes")) {
+					break;
+				case "dataTypes":
 					parseDataTypes(elt);
-				} else if (type.equals("specialVertexOperators")) {
+					break;
+				case "specialVertexOperators":
 					parseSpecialVertexOperators(elt);
+					break;
+				case "numberOfTopExecutions":
+					scenario.getSimulationManager().setNumberOfTopExecutions(
+							Integer.parseInt(content));
+					break;
 				}
 			}
 
@@ -345,7 +472,8 @@ public class ScenarioParser {
 	/**
 	 * Parses the archi and algo files and retrieves the file contents
 	 */
-	private void parseFileNames(Element filesElt) throws InvalidModelException,FileNotFoundException {
+	private void parseFileNames(Element filesElt) throws InvalidModelException,
+			FileNotFoundException, CoreException {
 
 		Node node = filesElt.getFirstChild();
 
@@ -358,7 +486,13 @@ public class ScenarioParser {
 				if (url.length() > 0) {
 					if (type.equals("algorithm")) {
 						scenario.setAlgorithmURL(url);
-						algo = getAlgorithm(url);
+						if (url.endsWith(".graphml")) {
+							algoSDF = getSDFGraph(url);
+							algoPi = null;
+						} else if (url.endsWith(".pi")) {
+							algoPi = getPiGraph(url);
+							algoSDF = null;
+						}
 					} else if (type.equals("architecture")) {
 						scenario.setArchitectureURL(url);
 						initializeArchitectureInformation(url);
@@ -402,8 +536,6 @@ public class ScenarioParser {
 			// Extract the root object from the resource.
 			Design design = parseSlamDesign(url);
 
-			System.out.println(design.getVlnv().getName());
-
 			scenario.setOperatorIds(DesignTools.getOperatorInstanceIds(design));
 			scenario.setComNodeIds(DesignTools.getComNodeInstanceIds(design));
 			scenario.setOperatorDefinitionIds(DesignTools
@@ -429,7 +561,8 @@ public class ScenarioParser {
 		return design;
 	}
 
-	public static SDFGraph getAlgorithm(String path) throws InvalidModelException,FileNotFoundException {
+	public static SDFGraph getSDFGraph(String path)
+			throws InvalidModelException, FileNotFoundException {
 		SDFGraph algorithm = null;
 		GMLSDFImporter importer = new GMLSDFImporter();
 
@@ -449,6 +582,32 @@ public class ScenarioParser {
 		}
 
 		return algorithm;
+	}
+
+	/**
+	 * 
+	 * @param url
+	 *            URL of the Algorithm.
+	 * @return the {@link PiGraph} algorithm.
+	 * @throws InvalidModelException
+	 * @throws CoreException
+	 */
+	public static PiGraph getPiGraph(String url) throws InvalidModelException,
+			CoreException {
+		PiGraph pigraph = null;
+		ResourceSet resourceSet = new ResourceSetImpl();
+
+		URI uri = URI.createPlatformResourceURI(url, true);
+		if (uri.fileExtension() == null
+				|| !uri.fileExtension().contentEquals("pi"))
+			return null;
+		Resource ressource = resourceSet.getResource(uri, true);
+		pigraph = (PiGraph) (ressource.getContents().get(0));
+
+		SubgraphConnector connector = new SubgraphConnector();
+		connector.connectSubgraphs(pigraph);
+
+		return pigraph;
 	}
 
 	/**
@@ -501,30 +660,26 @@ public class ScenarioParser {
 
 		ConstraintGroup cg = new ConstraintGroup();
 
-		if (algo != null) {
-
+		if (algoSDF != null || algoPi != null) {
 			Node node = cstGroupElt.getFirstChild();
 
 			while (node != null) {
-
 				if (node instanceof Element) {
 					Element elt = (Element) node;
 					String type = elt.getTagName();
 					String name = elt.getAttribute("name");
 					if (type.equals("task")) {
-						SDFAbstractVertex vertex = algo
-								.getHierarchicalVertexFromPath(name);
-						if (vertex != null)
-							cg.addVertexPath(name);
+						if (getActorFromPath(name) != null)
+							cg.addActorPath(name);
 					} else if (type.equals("operator")
 							&& scenario.getOperatorIds() != null) {
 						if (scenario.getOperatorIds().contains(name))
 							cg.addOperatorId(name);
 					}
 				}
-
 				node = node.getNextSibling();
 			}
+			return cg;
 		}
 
 		return cg;
@@ -549,8 +704,7 @@ public class ScenarioParser {
 					Timing timing = getTiming(elt);
 					if (timing != null)
 						scenario.getTimingManager().addTiming(timing);
-				}
-				else if (type.equals("memcpyspeed")) {
+				} else if (type.equals("memcpyspeed")) {
 					retrieveMemcpySpeed(scenario.getTimingManager(), elt);
 				}
 			}
@@ -566,27 +720,36 @@ public class ScenarioParser {
 
 		Timing timing = null;
 
-		if (algo != null) {
+		if (algoSDF != null || algoPi != null) {
 
 			String type = timingElt.getTagName();
 			if (type.equals("timing")) {
 				String vertexpath = timingElt.getAttribute("vertexname");
 				String opdefname = timingElt.getAttribute("opname");
-				int time;
-
+				long time;
+				String stringValue = timingElt.getAttribute("time");
+				boolean isEvaluated = false;
 				try {
-					time = Integer.parseInt(timingElt.getAttribute("time"));
+					time = Long.parseLong(stringValue);
+					isEvaluated = true;
 				} catch (NumberFormatException e) {
 					time = -1;
 				}
 
-				SDFAbstractVertex vertex = algo
-						.getHierarchicalVertex(vertexpath);
+				String actorName;
+				if (vertexpath.contains("/"))
+					actorName = getActorNameFromPath(vertexpath);
+				else
+					actorName = vertexpath;
 
-				if (vertex != null
+				if (actorName != null
 						&& scenario.getOperatorDefinitionIds().contains(
-								opdefname) && time >= 0) {
-					timing = new Timing(opdefname, vertex.getName(), time);
+								opdefname)) {
+					if (isEvaluated) {
+						timing = new Timing(opdefname, actorName, time);
+					} else {
+						timing = new Timing(opdefname, actorName, stringValue);
+					}
 				}
 			}
 		}
@@ -595,14 +758,54 @@ public class ScenarioParser {
 	}
 
 	/**
-	 * Retrieves one memcopy speed composed of integer setup time and timeperunit
+	 * Returns an actor Object (either SDFAbstractVertex from SDFGraph or
+	 * AbstractActor from PiGraph) from the path in its container graph
+	 * 
+	 * @param path
+	 *            the path to the actor, where its segment is the name of an
+	 *            actor and separators are "/"
+	 * @return the wanted actor, if existing, null otherwise
 	 */
-	private void retrieveMemcpySpeed(TimingManager timingManager, Element timingElt) {
+	private Object getActorFromPath(String path) {
+		Object result = null;
+		if (algoSDF != null)
+			result = algoSDF.getHierarchicalVertexFromPath(path);
+		else if (algoPi != null)
+			result = algoPi.getHierarchicalActorFromPath(path);
+		return result;
+	}
 
-		if (algo != null) {
+	/**
+	 * Returns the name of an actor (either SDFAbstractVertex from SDFGraph or
+	 * AbstractActor from PiGraph) from the path in its container graph
+	 * 
+	 * @param path
+	 *            the path to the actor, where its segment is the name of an
+	 *            actor and separators are "/"
+	 * @return the name of the wanted actor, if we found it
+	 */
+	private String getActorNameFromPath(String path) {
+		Object actor = getActorFromPath(path);
+		if (actor != null) {
+			if (actor instanceof SDFAbstractVertex)
+				return ((SDFAbstractVertex) actor).getName();
+			else if (actor instanceof AbstractActor)
+				return ((AbstractActor) actor).getName();
+		}
+		return null;
+	}
+
+	/**
+	 * Retrieves one memcopy speed composed of integer setup time and
+	 * timeperunit
+	 */
+	private void retrieveMemcpySpeed(TimingManager timingManager,
+			Element timingElt) {
+
+		if (algoSDF != null || algoPi != null) {
 
 			String type = timingElt.getTagName();
-			if(type.equals("memcpyspeed")) {
+			if (type.equals("memcpyspeed")) {
 				String opdefname = timingElt.getAttribute("opname");
 				String sSetupTime = timingElt.getAttribute("setuptime");
 				String sTimePerUnit = timingElt.getAttribute("timeperunit");
@@ -617,9 +820,10 @@ public class ScenarioParser {
 					timePerUnit = -1;
 				}
 
-				if (scenario.getOperatorDefinitionIds().contains(
-								opdefname) && setupTime >= 0 && timePerUnit >= 0) {
-					MemCopySpeed speed = new MemCopySpeed(opdefname, setupTime, timePerUnit);
+				if (scenario.getOperatorDefinitionIds().contains(opdefname)
+						&& setupTime >= 0 && timePerUnit >= 0) {
+					MemCopySpeed speed = new MemCopySpeed(opdefname, setupTime,
+							timePerUnit);
 					timingManager.putMemcpySpeed(speed);
 				}
 			}

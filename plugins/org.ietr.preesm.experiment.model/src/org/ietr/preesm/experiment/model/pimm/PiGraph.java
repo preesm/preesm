@@ -38,26 +38,31 @@ package org.ietr.preesm.experiment.model.pimm;
 import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
 
 /**
  * <!-- begin-user-doc --> A representation of the model object '
  * <em><b>Graph</b></em>'. <!-- end-user-doc -->
- *
+ * 
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getVertices <em>Vertices</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getFifos <em>Fifos</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getParameters <em>Parameters</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getDependencies <em>Dependencies</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getVertices <em>
+ * Vertices</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getFifos <em>Fifos
+ * </em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getParameters <em>
+ * Parameters</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.PiGraph#getDependencies <em>
+ * Dependencies</em>}</li>
  * </ul>
  * </p>
- *
+ * 
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiGraph()
  * @model
  * @generated
  */
-public interface PiGraph extends AbstractActor {
+public interface PiGraph extends AbstractActor, PiMMVisitable {
 	/**
 	 * Returns the value of the '<em><b>Vertices</b></em>' containment reference
 	 * list. The list contents are of type
@@ -83,15 +88,16 @@ public interface PiGraph extends AbstractActor {
 	EList<AbstractActor> getVertices();
 
 	/**
-	 * Returns the value of the '<em><b>Fifos</b></em>' containment reference list.
-	 * The list contents are of type {@link org.ietr.preesm.experiment.model.pimm.Fifo}.
-	 * <!-- begin-user-doc
+	 * Returns the value of the '<em><b>Fifos</b></em>' containment reference
+	 * list. The list contents are of type
+	 * {@link org.ietr.preesm.experiment.model.pimm.Fifo}. <!-- begin-user-doc
 	 * -->
 	 * <p>
 	 * If the meaning of the '<em>Fifos</em>' containment reference list isn't
 	 * clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * 
 	 * @return the value of the '<em>Fifos</em>' containment reference list.
 	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getPiGraph_Fifos()
 	 * @model containment="true"
@@ -146,8 +152,8 @@ public interface PiGraph extends AbstractActor {
 	public Set<String> getVerticesNames();
 
 	/**
-	 * Return the list of the names of all {@link PiGraph#getParameters()} of the
-	 * Graph.
+	 * Return the list of the names of all {@link PiGraph#getParameters()} of
+	 * the Graph.
 	 * 
 	 * @return the list of names
 	 */
@@ -173,12 +179,36 @@ public interface PiGraph extends AbstractActor {
 	 *         the requested name.
 	 */
 	public Fifo getFifoIded(String id);
-	
+
 	/**
 	 * Get the set of {@link Actor} in the graph.
+	 * 
 	 * @return the set of {@link Actor}
 	 */
 	public Set<Actor> getActors();
-	
-	
+
+	public AbstractActor getHierarchicalActorFromPath(String path);
+
+	/**
+	 * @param name
+	 *            the name of the Parameter we are looking for
+	 * @return the first Parameter with the given name found in the graph
+	 *         hierarchy, null if none is found
+	 */
+	public Parameter getParameterNamedWithParent(String name, String parent);
+
+	/**
+	 * 
+	 * @return the set of all the parameters contained by the graph and its
+	 *         subgraphs
+	 */
+	public Set<Parameter> getAllParameters();
+
+	/**
+	 * 
+	 * @return the set of all the actors contained by the graph and its
+	 *         subgraphs
+	 */
+	public EList<AbstractActor> getAllVertices();
+
 } // Graph

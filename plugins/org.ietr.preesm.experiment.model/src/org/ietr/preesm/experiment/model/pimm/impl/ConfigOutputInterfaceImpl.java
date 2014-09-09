@@ -36,11 +36,11 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.ecore.EClass;
-
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc -->
@@ -78,6 +78,11 @@ public class ConfigOutputInterfaceImpl extends InterfaceActorImpl implements Con
 	@Override
 	protected EClass eStaticClass() {
 		return PiMMPackage.Literals.CONFIG_OUTPUT_INTERFACE;
+	}
+	
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitConfigOutputInterface(this);
 	}
 
 } //ConfigOutputInterfaceImpl

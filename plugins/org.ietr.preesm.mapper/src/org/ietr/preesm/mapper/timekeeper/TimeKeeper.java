@@ -28,7 +28,7 @@ public class TimeKeeper implements Observer {
 	/**
 	 * If debug mode is activated, timing actions are traced
 	 */
-	//private boolean debugMode = true;
+	// private boolean debugMode = true;
 
 	/**
 	 * Current implementation: the same as in the ABC
@@ -78,6 +78,7 @@ public class TimeKeeper implements Observer {
 
 		long vertexfinaltime = VertexTiming.UNAVAILABLE;
 		VertexTiming timingproperty = vertex.getTiming();
+		// XXX: Why don't we use timingproperty in the following code rather than vertex.getTimin()?
 		if (vertex.getTiming().hasCost()) {
 			// Returns, if possible, TLevel + vertex timing
 			vertexfinaltime = vertex.getTiming().getCost()
@@ -118,6 +119,8 @@ public class TimeKeeper implements Observer {
 
 		long finaltime = VertexTiming.UNAVAILABLE;
 
+		// XXX: Is this really useful? Can't we use directly component rather
+		// than finalTimeRefCmp?
 		ComponentInstance finalTimeRefCmp = null;
 		for (ComponentInstance o : orderManager.getArchitectureComponents()) {
 			if (o.getInstanceName().equals(component.getInstanceName())) {
@@ -156,11 +159,10 @@ public class TimeKeeper implements Observer {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void update(Observable arg0, Object arg1) {
-		if(arg1 instanceof MapperDAGVertex){
-			dirtyVertices.add((MapperDAGVertex)arg1);
-		}
-		else if(arg1 instanceof Set<?>){
-			dirtyVertices.addAll((Set<MapperDAGVertex>)arg1);
+		if (arg1 instanceof MapperDAGVertex) {
+			dirtyVertices.add((MapperDAGVertex) arg1);
+		} else if (arg1 instanceof Set<?>) {
+			dirtyVertices.addAll((Set<MapperDAGVertex>) arg1);
 		}
 	}
 }

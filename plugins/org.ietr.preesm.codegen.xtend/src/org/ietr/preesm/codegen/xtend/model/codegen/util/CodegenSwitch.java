@@ -315,6 +315,21 @@ public class CodegenSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
+		case CodegenPackage.NULL_BUFFER: {
+			NullBuffer nullBuffer = (NullBuffer) theEObject;
+			T result = caseNullBuffer(nullBuffer);
+			if (result == null)
+				result = caseSubBuffer(nullBuffer);
+			if (result == null)
+				result = caseBuffer(nullBuffer);
+			if (result == null)
+				result = caseVariable(nullBuffer);
+			if (result == null)
+				result = caseCommentable(nullBuffer);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
 		default:
 			return defaultCase(theEObject);
 		}
@@ -674,6 +689,23 @@ public class CodegenSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseConstantString(ConstantString object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '
+	 * <em>Null Buffer</em>'. <!-- begin-user-doc --> This implementation
+	 * returns null; returning a non-null result will terminate the switch. <!--
+	 * end-user-doc -->
+	 * 
+	 * @param object
+	 *            the target of the switch.
+	 * @return the result of interpreting the object as an instance of '
+	 *         <em>Null Buffer</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseNullBuffer(NullBuffer object) {
 		return null;
 	}
 

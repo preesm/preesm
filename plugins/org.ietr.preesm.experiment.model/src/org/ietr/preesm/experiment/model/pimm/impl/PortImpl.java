@@ -36,14 +36,12 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.common.notify.Notification;
-
 import org.eclipse.emf.ecore.EClass;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc -->
@@ -229,4 +227,8 @@ public abstract class PortImpl extends EObjectImpl implements Port {
 		return result.toString();
 	}
 
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitPort(this);
+	}
 } //PortImpl

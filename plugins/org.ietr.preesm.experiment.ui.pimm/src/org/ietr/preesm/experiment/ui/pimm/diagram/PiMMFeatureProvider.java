@@ -37,6 +37,7 @@ package org.ietr.preesm.experiment.ui.pimm.diagram;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.internal.resources.File;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
@@ -67,49 +68,67 @@ import org.eclipse.graphiti.features.impl.DefaultRemoveFeature;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
-import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
+import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.ui.pimm.features.AddActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddBroadcastActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddConfigInputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddConfigInputPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddConfigOutputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddConfigOutputPortFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddDataInputInterfaceFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddDataInputPortFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddDataOutputInterfaceFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddDataOutputPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddDelayFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddDependencyFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddFifoFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.AddDataInputPortFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.AddDataOutputPortFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddForkActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddJoinActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddParameterFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.AddDataOutputInterfaceFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.AddDataInputInterfaceFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddRefinementFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddRoundBufferActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.ClearActorMemoryScriptFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.ClearActorRefinementFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.CreateBroadcastActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateConfigInputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateConfigOutputInterfaceFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.CreateDataInputInterfaceFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.CreateDataOutputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateDependencyFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateFifoFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.CreateForkActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.CreateJoinActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.CreateParameterFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.CreateDataOutputInterfaceFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.CreateDataInputInterfaceFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.CreateRoundBufferActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteAbstractActorFeature;
-import org.ietr.preesm.experiment.ui.pimm.features.DeleteParameterizableFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteActorPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteDelayFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteDependencyFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DeleteFifoFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.DeleteParameterizableFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.DirectEditingAbstractActorNameFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.LayoutActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.LayoutInterfaceFeature;
@@ -118,11 +137,18 @@ import org.ietr.preesm.experiment.ui.pimm.features.LayoutPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.MoveAbstractActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.MoveDownActorPortFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.MoveUpActorPortFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.OpenMemoryScriptFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.OpenRefinementFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.ReconnectionDependencyFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.ReconnectionFifoFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.RenameAbstractVertexFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.RenameActorPortFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.SetActorMemoryScriptFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.SetActorRefinementFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.SetFifoTypeFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.SetPortMemoryAnnotationFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.SetVisibleAllDependenciesFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.SetVisibleDependenciesFromParameterFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.UpdateAbstractVertexFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.UpdateActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.UpdatePortFeature;
@@ -135,6 +161,7 @@ import org.ietr.preesm.experiment.ui.pimm.features.UpdatePortFeature;
  * @author jheulot
  * 
  */
+@SuppressWarnings("restriction")
 public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
 	public PiMMFeatureProvider(IDiagramTypeProvider dtp) {
@@ -146,6 +173,22 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		// is object for add request an Actor?
 		if (context.getNewObject() instanceof Actor) {
 			return new AddActorFeature(this);
+		}
+
+		if (context.getNewObject() instanceof BroadcastActor) {
+			return new AddBroadcastActorFeature(this);
+		}
+
+		if (context.getNewObject() instanceof JoinActor) {
+			return new AddJoinActorFeature(this);
+		}
+
+		if (context.getNewObject() instanceof ForkActor) {
+			return new AddForkActorFeature(this);
+		}
+		
+		if (context.getNewObject() instanceof RoundBufferActor) {
+			return new AddRoundBufferActorFeature(this);
 		}
 
 		if (context.getNewObject() instanceof Parameter) {
@@ -175,27 +218,34 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		if (context.getNewObject() instanceof Dependency) {
 			return new AddDependencyFeature(this);
 		}
+		
+		if(context.getNewObject() instanceof File){
+			if(getBusinessObjectForPictogramElement(context.getTargetContainer()) instanceof Actor){
+				return new AddRefinementFeature(this);
+			}
+		}
+		
 		return super.getAddFeature(context);
 	}
 
 	@Override
 	public ICreateConnectionFeature[] getCreateConnectionFeatures() {
-		return new ICreateConnectionFeature[] { 
-				new CreateFifoFeature(this),
-				new CreateDependencyFeature(this)
-				};
+		return new ICreateConnectionFeature[] { new CreateFifoFeature(this),
+				new CreateDependencyFeature(this) };
 	}
 
 	@Override
 	public ICreateFeature[] getCreateFeatures() {
-		return new ICreateFeature[] { 
-				new CreateActorFeature(this),
+		return new ICreateFeature[] { new CreateActorFeature(this),
 				new CreateParameterFeature(this),
 				new CreateConfigInputInterfaceFeature(this),
 				new CreateConfigOutputInterfaceFeature(this),
 				new CreateDataInputInterfaceFeature(this),
-				new CreateDataOutputInterfaceFeature(this) 
-				};
+				new CreateDataOutputInterfaceFeature(this),
+				new CreateBroadcastActorFeature(this),
+				new CreateJoinActorFeature(this),
+				new CreateForkActorFeature(this),
+				new CreateRoundBufferActorFeature(this)};
 	}
 
 	@Override
@@ -208,23 +258,43 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		}
 		Object obj = getBusinessObjectForPictogramElement(pes[0]);
 
+		if (obj instanceof PiGraph) {
+			features.add(new SetVisibleAllDependenciesFeature(this, true));
+			features.add(new SetVisibleAllDependenciesFeature(this, false));
+		}
+
 		if (obj instanceof AbstractVertex) {
 			features.add(new RenameAbstractVertexFeature(this));
 		}
 
-		if (obj instanceof Actor) {
+		if (obj instanceof ExecutableActor) {
 			ICustomFeature[] actorFeatures = new ICustomFeature[] {
 					new AddDataOutputPortFeature(this),
 					new AddDataInputPortFeature(this),
 					new AddConfigInputPortFeature(this),
-					new AddConfigOutputPortFeature(this),
-					new SetActorRefinementFeature(this),
-					new ClearActorRefinementFeature(this),
-					new OpenRefinementFeature(this)
-					};
+					new AddConfigOutputPortFeature(this) };
 			for (ICustomFeature feature : actorFeatures) {
 				features.add(feature);
 			}
+		}
+		if (obj instanceof Actor) {
+			ICustomFeature[] actorFeatures = new ICustomFeature[] {
+					new SetActorRefinementFeature(this),
+					new ClearActorRefinementFeature(this),
+					new OpenRefinementFeature(this),
+					new SetActorMemoryScriptFeature(this),
+					new ClearActorMemoryScriptFeature(this),
+					new OpenMemoryScriptFeature(this) };
+			for (ICustomFeature feature : actorFeatures) {
+				features.add(feature);
+			}
+		}
+
+		if (obj instanceof Parameter) {
+			features.add(new SetVisibleDependenciesFromParameterFeature(this,
+					true));
+			features.add(new SetVisibleDependenciesFromParameterFeature(this,
+					false));
 		}
 
 		if (obj instanceof Port) {
@@ -233,8 +303,13 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 			features.add(new MoveDownActorPortFeature(this));
 		}
 
+		if (obj instanceof DataPort) {
+			features.add(new SetPortMemoryAnnotationFeature(this));
+		}
+
 		if (obj instanceof Fifo) {
 			features.add(new AddDelayFeature(this));
+			features.add(new SetFifoTypeFeature(this));
 		}
 
 		return features.toArray(new ICustomFeature[features.size()]);
@@ -247,7 +322,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		Object bo = getBusinessObjectForPictogramElement(pe);
 
 		if (bo instanceof Port) {
-			if (((Port) bo).eContainer() instanceof Actor) {
+			if (((Port) bo).eContainer() instanceof ExecutableActor) {
 				return new DeleteActorPortFeature(this);
 			}
 			if (((Port) bo).eContainer() instanceof InterfaceActor) {
@@ -295,7 +370,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 	public ILayoutFeature getLayoutFeature(ILayoutContext context) {
 		PictogramElement pictogramElement = context.getPictogramElement();
 		Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-		if (bo instanceof Actor) {
+		if (bo instanceof ExecutableActor) {
 			return new LayoutActorFeature(this);
 		}
 		if (bo instanceof Port) {
@@ -341,16 +416,20 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 			return new ReconnectionFifoFeature(this);
 		}
 
+		if (obj instanceof Dependency) {
+			return new ReconnectionDependencyFeature(this);
+		}
+
 		return null;
 	}
 
 	@Override
 	public IRemoveFeature getRemoveFeature(IRemoveContext context) {
-		return new DefaultRemoveFeature(this){
-			public boolean isAvailable(IContext context){
+		return new DefaultRemoveFeature(this) {
+			public boolean isAvailable(IContext context) {
 				return false;
 			}
-		}; 
+		};
 	}
 
 	/**
@@ -374,7 +453,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		PictogramElement pictogramElement = context.getPictogramElement();
 		if (pictogramElement instanceof ContainerShape) {
 			Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-			if (bo instanceof Actor) {
+			if (bo instanceof ExecutableActor) {
 				// We do not allow manual resize of Actor's pictogram elements.
 				// The size of these elements will be computed automatically
 				// to fit the content of the shape
@@ -382,19 +461,21 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 			}
 
 			if (bo instanceof InterfaceActor) {
-				// We do not allow manual resize of Interface Actor's pictogram elements.
+				// We do not allow manual resize of Interface Actor's pictogram
+				// elements.
 				// The size of these elements will be computed automatically
 				// to fit the content of the shape
 				return null;
 			}
 
 			if (bo instanceof Parameter) {
-				// We do not allow manual resize of Parameter's pictogram elements.
+				// We do not allow manual resize of Parameter's pictogram
+				// elements.
 				// The size of these elements will be computed automatically
 				// to fit the content of the shape
 				return null;
 			}
-			
+
 			if (bo instanceof Delay) {
 				// We do not allow manual resize of Delay's pictogram elements.
 				// The size of these elements will be computed automatically
@@ -410,7 +491,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		PictogramElement pictogramElement = context.getPictogramElement();
 		if (pictogramElement instanceof ContainerShape) {
 			Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-			if (bo instanceof Actor) {
+			if (bo instanceof ExecutableActor) {
 				return new UpdateActorFeature(this);
 			} else if (bo instanceof AbstractVertex) {
 				return new UpdateAbstractVertexFeature(this);

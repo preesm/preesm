@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><piscenario>
+    <files>
+        <algorithm url="/tutorialPiMM/Algo/mpSched.pi"/>
+        <architecture url="/tutorialPiMM/Archi/1CoreX86.slam"/>
+        <simulation nbExecutions="2"/>
+    </files>
+    <actorTree>
+        <actor name="mpSched">
+            <actor name="MFilter">
+                <timing coreType="x86" value="100"/>
+            </actor>
+            <actor name="Src">
+                <timing coreType="x86" value="100"/>
+            </actor>
+            <actor name="UserFIRs">
+                <actor name="Switch">
+                    <timing coreType="x86" value="100"/>
+                </actor>
+                <actor name="BroadCast">
+                    <timing coreType="x86" value="100"/>
+                </actor>
+                <actor name="FIR">
+                    <timing coreType="x86" value="100"/>
+                </actor>
+                <actor name="setM">
+                    <timing coreType="x86" value="100"/>
+                </actor>
+                <actor name="InitSwitch">
+                    <timing coreType="x86" value="100"/>
+                </actor>
+                <parameter name="M" type="DYNAMIC" value="[2]"/>
+                <parameter name="nbSamples2" type="STATIC" value="0"/>
+            </actor>
+            <actor name="config">
+                <timing coreType="x86" value="100"/>
+            </actor>
+            <actor name="Snk">
+                <timing coreType="x86" value="100"/>
+            </actor>
+            <parameter name="nbSamples" type="STATIC" value="0"/>
+            <parameter name="NMAX" type="STATIC" value="0"/>
+            <parameter name="N" type="DYNAMIC" value="[4, 6]"/>
+        </actor>
+    </actorTree>
+</piscenario>

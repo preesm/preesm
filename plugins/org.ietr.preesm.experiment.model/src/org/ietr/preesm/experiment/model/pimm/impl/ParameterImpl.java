@@ -56,6 +56,7 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.DependencyCycleDetector;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -64,7 +65,6 @@ import org.ietr.preesm.experiment.model.pimm.util.DependencyCycleDetector;
  * The following features are implemented:
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#getOutgoingDependencies <em>Outgoing Dependencies</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#isLocallyStatic <em>Locally Static</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#isConfigurationInterface <em>Configuration Interface</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#getGraphPort <em>Graph Port</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#getExpression <em>Expression</em>}</li>
@@ -117,8 +117,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 
 	/**
 	 * The cached value of the '{@link #getExpression() <em>Expression</em>}' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getExpression()
 	 * @generated
 	 * @ordered
@@ -129,8 +128,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 */
 	protected ParameterImpl() {
-		super();
-
+		super();		
 		this.setExpression(PiMMFactory.eINSTANCE.createExpression());
 	}
 
@@ -208,13 +206,12 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated NOT
 	 */
-	public boolean isSetLocallyStatic() {
-		// TODO: implement this method to return whether the 'Locally Static' attribute is set
-		// Ensure that you remove @generated or mark it @generated NOT
-		throw new UnsupportedOperationException();
+	public boolean isDependent() {
+		return !this.getConfigInputPorts().isEmpty();
 	}
 
 	/**
@@ -271,9 +268,8 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.PARAMETER__GRAPH_PORT, oldGraphPort, graphPort));
 	}
 
-/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Expression getExpression() {
@@ -281,11 +277,11 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetExpression(Expression newExpression, NotificationChain msgs) {
+	public NotificationChain basicSetExpression(Expression newExpression,
+			NotificationChain msgs) {
 		Expression oldExpression = expression;
 		expression = newExpression;
 		if (eNotificationRequired()) {
@@ -296,8 +292,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public void setExpression(Expression newExpression) {
@@ -315,8 +310,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 */
 	public int getValue() {
 		throw new UnsupportedOperationException();
@@ -362,8 +356,6 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 		switch (featureID) {
 			case PiMMPackage.PARAMETER__OUTGOING_DEPENDENCIES:
 				return getOutgoingDependencies();
-			case PiMMPackage.PARAMETER__LOCALLY_STATIC:
-				return isLocallyStatic();
 			case PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE:
 				return isConfigurationInterface();
 			case PiMMPackage.PARAMETER__GRAPH_PORT:
@@ -432,8 +424,6 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 		switch (featureID) {
 			case PiMMPackage.PARAMETER__OUTGOING_DEPENDENCIES:
 				return outgoingDependencies != null && !outgoingDependencies.isEmpty();
-			case PiMMPackage.PARAMETER__LOCALLY_STATIC:
-				return isSetLocallyStatic();
 			case PiMMPackage.PARAMETER__CONFIGURATION_INTERFACE:
 				return configurationInterface != CONFIGURATION_INTERFACE_EDEFAULT;
 			case PiMMPackage.PARAMETER__GRAPH_PORT:
@@ -495,6 +485,11 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 		result.append(configurationInterface);
 		result.append(')');
 		return result.toString();
+	}
+
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitParameter(this);
 	}
 
 } // ParameterImpl

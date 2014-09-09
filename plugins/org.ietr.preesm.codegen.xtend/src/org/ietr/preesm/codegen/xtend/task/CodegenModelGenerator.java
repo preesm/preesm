@@ -48,17 +48,21 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.ietr.dftools.algorithm.iterators.DAGIterator;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
 import org.ietr.dftools.algorithm.model.CodeRefinement;
-import org.ietr.dftools.algorithm.model.IInterface;
 import org.ietr.dftools.algorithm.model.CodeRefinement.Language;
+import org.ietr.dftools.algorithm.model.IInterface;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
@@ -79,6 +83,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
+import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.IDLPrototypeFactory;
 import org.ietr.preesm.codegen.idl.Prototype;
@@ -102,6 +107,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation;
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
 import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
@@ -111,12 +117,12 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
+import org.ietr.preesm.memory.script.Range;
 import org.ietr.preesm.memory.allocation.MemoryAllocator;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
@@ -175,18 +181,13 @@ public class CodegenModelGenerator {
 	 */
 	private PreesmScenario scenario;
 
+	private Workflow workflow;
+
 	/**
 	 * This {@link Map} associates each {@link ComponentInstance} to its
 	 * corresponding {@link CoreBlock}.
 	 */
 	protected Map<ComponentInstance, CoreBlock> coreBlocks;
-
-	/**
-	 * This {@link SDFGraph} is the original hierarchical {@link SDFGraph}
-	 * parsed by the scenario. It will be used to retrieve the original location
-	 * of the different IDL and Graphml files.
-	 */
-	protected SDFGraph originalSDF;
 
 	/**
 	 * This {@link Map} associates each {@link BufferProperties} aggregated in
@@ -196,10 +197,10 @@ public class CodegenModelGenerator {
 	private Map<BufferProperties, Buffer> srSDFEdgeBuffers;
 
 	/**
-	 * This {@link Map} associates each {@link DAGEdge} to its corresponding
+	 * This {@link BiMap} associates each {@link DAGEdge} to its corresponding
 	 * {@link Buffer}.
 	 */
-	private Map<DAGEdge, Buffer> dagEdgeBuffers;
+	private BiMap<DAGEdge, Buffer> dagEdgeBuffers;
 
 	/**
 	 * This {@link Map} associates each {@link Pair} of init and end
@@ -257,29 +258,23 @@ public class CodegenModelGenerator {
 	 */
 	public CodegenModelGenerator(final Design archi,
 			final DirectedAcyclicGraph dag, final MemoryExclusionGraph memEx,
-			final PreesmScenario scenario) throws CodegenException {
+			final PreesmScenario scenario, Workflow workflow)
+			throws CodegenException {
 		this.archi = archi;
 		this.dag = dag;
 		this.memEx = memEx;
 		this.scenario = scenario;
+		this.workflow = workflow;
 
 		checkInputs(this.archi, this.dag, this.memEx);
 		this.bufferNames = new HashMap<String, Integer>();
 		this.coreBlocks = new HashMap<ComponentInstance, CoreBlock>();
 		this.srSDFEdgeBuffers = new HashMap<BufferProperties, Buffer>();
-		this.dagEdgeBuffers = new HashMap<DAGEdge, Buffer>();
+		this.dagEdgeBuffers = HashBiMap.create(dag.edgeSet().size());
 		this.dagFifoBuffers = new HashMap<Pair<DAGVertex, DAGVertex>, Pair<Buffer, Buffer>>();
 		this.dagVertexCalls = HashBiMap.create(dag.vertexSet().size());
 		this.communications = new HashMap<String, List<Communication>>();
 		this.popFifoCalls = new HashMap<SDFInitVertex, FifoCall>();
-		try {
-			originalSDF = ScenarioParser.getAlgorithm(scenario
-					.getAlgorithmURL());
-		} catch (Exception e) {
-			// This exception should never happen here. as the algorithm is
-			// parsed at the beginning of the workflow execution.
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -330,6 +325,10 @@ public class CodegenModelGenerator {
 			// Check that the MemEx is derived from the Input DAG
 			String sourceName = memObj.getSource();
 			String sinkName = memObj.getSink();
+
+			// If the MObject is a part of a divide buffer
+			sourceName = sourceName.replaceFirst("^part[0-9]+_", "");
+
 			boolean isFifo = sourceName.startsWith("FIFO");
 			if (isFifo) {
 				sourceName = sourceName.substring(10, sourceName.length());
@@ -530,12 +529,16 @@ public class CodegenModelGenerator {
 	 *             If a vertex has an unknown {@link DAGVertex#getKind() Kind}.
 	 */
 	public Set<Block> generate() throws CodegenException {
+		// -1- Add all hosted MemoryObject back in te MemEx
 		// 0 - Create the Buffers of the MemEx
 
 		// 1 - Iterate on the actors of the DAG
 		// 1.0 - Identify the core used.
 		// 1.1 - Construct the "loop" & "init" of each core.
 		// 2 - Put the buffer declaration in their right place
+
+		// -1 - Add all hosted MemoryObject back in te MemEx
+		restoreHostedVertices();
 
 		// 0 - Create the Buffers of the MemEx
 		generateBuffers();
@@ -642,6 +645,58 @@ public class CodegenModelGenerator {
 	}
 
 	/**
+	 * The purpose of this function is to restore to their original size the
+	 * {@link MemoryExclusionVertex} that were merged when applying memory
+	 * scripts.
+	 */
+	protected void restoreHostedVertices() {
+		@SuppressWarnings("unchecked")
+		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostBuffers = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) memEx
+				.getPropertyBean().getValue(
+						MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+		if (hostBuffers != null) {
+			for (Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry : hostBuffers
+					.entrySet()) {
+				// Since host vertices are naturally aligned, no need to restore
+				// them
+
+				// Restore the real size of hosted vertices
+				Set<MemoryExclusionVertex> vertices = entry.getValue();
+
+				for (MemoryExclusionVertex vertex : vertices) {
+					// For non-divided vertices
+					if (vertex.getWeight() != 0) {
+						int emptySpace = (int) vertex
+								.getPropertyBean()
+								.getValue(
+										MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
+
+						// Put the vertex back to its real size
+						vertex.setWeight(vertex.getWeight() - emptySpace);
+
+						// And set the allocated offset
+						int allocatedOffset = (int) vertex
+								.getPropertyBean()
+								.getValue(
+										MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
+
+						vertex.setPropertyValue(
+								MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
+								allocatedOffset + emptySpace);
+						@SuppressWarnings("unchecked")
+						Map<DAGEdge, Integer> dagEdgeAllocation = (Map<DAGEdge, Integer>) memEx
+								.getPropertyBean()
+								.getValue(
+										MemoryExclusionGraph.DAG_EDGE_ALLOCATION);
+						dagEdgeAllocation.put(vertex.getEdge(), allocatedOffset
+								+ emptySpace);
+					}
+				}
+			}
+		}
+	}
+
+	/**
 	 * Generate the {@link CodegenPackage Codegen Model} for an actor firing.
 	 * This method will create an {@link ActorCall} or a {@link FunctionCall}
 	 * and place it in the {@link LoopBlock} of the {@link CoreBlock} passed as
@@ -676,53 +731,65 @@ public class CodegenModelGenerator {
 							+ sdfVertex
 							+ ") are not yet supported by the Xtend Code Generation.\n"
 							+ "Flatten the graph completely before using this code-generation.");
-		} else // If the actor has an IDL refinement
-		if (refinement instanceof CodeRefinement
-				&& ((CodeRefinement) refinement).getLanguage() == Language.IDL) {
-			// Retrieve the prototypes associated to the actor
-			ActorPrototypes prototypes = getActorPrototypes(sdfVertex);
-
-			// Generate the loop functionCall
-			{
-				Prototype loopPrototype = prototypes.getLoopPrototype();
-				if (loopPrototype == null) {
-					throw new CodegenException("Actor " + sdfVertex
-							+ " has no loop interface in its IDL refinement.");
-				}
-				FunctionCall functionCall = generateFunctionCall(dagVertex,
-						loopPrototype, false);
-
-				registerCallVariableToCoreBlock(operatorBlock, functionCall);
-				// Add the function call to the operatorBlock
-				operatorBlock.getLoopBlock().getCodeElts().add(functionCall);
-
-				// Save the functionCall in the dagvertexFunctionCall Map
-				dagVertexCalls.put(dagVertex, functionCall);
+		} else {
+			ActorPrototypes prototypes = null;
+			// If the actor has an IDL refinement
+			if (refinement instanceof CodeRefinement
+					&& ((CodeRefinement) refinement).getLanguage() == Language.IDL) {
+				// Retrieve the prototypes associated to the actor
+				prototypes = getActorPrototypes(sdfVertex);
+			}
+			// Or if we already extracted prototypes from a .h refinement
+			else if (refinement instanceof ActorPrototypes) {
+				prototypes = (ActorPrototypes) refinement;
 			}
 
-			// Generate the init FunctionCall (if any)
-			{
-				Prototype initPrototype = prototypes.getInitPrototype();
-				if (initPrototype != null) {
+			if (prototypes != null) {
+				// Generate the loop functionCall
+				{
+					Prototype loopPrototype = prototypes.getLoopPrototype();
+					if (loopPrototype == null) {
+						throw new CodegenException(
+								"Actor "
+										+ sdfVertex
+										+ " has no loop interface in its IDL refinement.");
+					}
 					FunctionCall functionCall = generateFunctionCall(dagVertex,
-							initPrototype, true);
+							loopPrototype, false);
 
 					registerCallVariableToCoreBlock(operatorBlock, functionCall);
 					// Add the function call to the operatorBlock
-					operatorBlock.getInitBlock().getCodeElts()
+					operatorBlock.getLoopBlock().getCodeElts()
 							.add(functionCall);
+
+					// Save the functionCall in the dagvertexFunctionCall Map
+					dagVertexCalls.put(dagVertex, functionCall);
 				}
 
-			}
+				// Generate the init FunctionCall (if any)
+				{
+					Prototype initPrototype = prototypes.getInitPrototype();
+					if (initPrototype != null) {
+						FunctionCall functionCall = generateFunctionCall(
+								dagVertex, initPrototype, true);
 
-		} else
-		// If the actor has no refinement
-		{
-			throw new CodegenException(
-					"Actor ("
-							+ sdfVertex
-							+ ") has no valid refinement (IDL or graphml)."
-							+ " Associate a refinement to this actor before generating code.");
+						registerCallVariableToCoreBlock(operatorBlock,
+								functionCall);
+						// Add the function call to the operatorBlock
+						operatorBlock.getInitBlock().getCodeElts()
+								.add(functionCall);
+					}
+
+				}
+			}
+			// If the actor has no refinement
+			else {
+				throw new CodegenException(
+						"Actor ("
+								+ sdfVertex
+								+ ") has no valid refinement (.idl, .h or .graphml)."
+								+ " Associate a refinement to this actor before generating code.");
+			}
 		}
 
 	}
@@ -827,6 +894,7 @@ public class CodegenModelGenerator {
 		sharedBuffer.setSize(size);
 		sharedBuffer.setName("SharedMem");
 		sharedBuffer.setType("char");
+		sharedBuffer.setTypeSize(1); // char is 1 byte
 
 		@SuppressWarnings("unchecked")
 		Map<DAGEdge, Integer> allocation = (Map<DAGEdge, Integer>) memEx
@@ -836,39 +904,72 @@ public class CodegenModelGenerator {
 
 		// generate the subbuffer for each dagedge
 		for (Entry<DAGEdge, Integer> dagAlloc : allocation.entrySet()) {
-			SubBuffer dagEdgeBuffer = CodegenFactory.eINSTANCE
-					.createSubBuffer();
+			// If the buffer is not a null buffer
+			if (dagAlloc.getValue() != -1) {
+				SubBuffer dagEdgeBuffer = CodegenFactory.eINSTANCE
+						.createSubBuffer();
 
-			// Old Naming (too long)
-			String comment = dagAlloc.getKey().getSource().getName() + " > "
-					+ dagAlloc.getKey().getTarget().getName();
-			dagEdgeBuffer.setComment(comment);
+				// Old Naming (too long)
+				String comment = dagAlloc.getKey().getSource().getName()
+						+ " > " + dagAlloc.getKey().getTarget().getName();
+				dagEdgeBuffer.setComment(comment);
 
-			String name = dagAlloc.getKey().getSource().getName() + "__"
-					+ dagAlloc.getKey().getTarget().getName();
+				String name = dagAlloc.getKey().getSource().getName() + "__"
+						+ dagAlloc.getKey().getTarget().getName();
 
-			name = generateUniqueBufferName(name);
-			dagEdgeBuffer.setName(name);
-			dagEdgeBuffer.setContainer(sharedBuffer);
-			dagEdgeBuffer.setOffset(dagAlloc.getValue());
-			dagEdgeBuffer.setType("char");
+				name = generateUniqueBufferName(name);
+				dagEdgeBuffer.setName(name);
+				dagEdgeBuffer.setContainer(sharedBuffer);
+				dagEdgeBuffer.setOffset(dagAlloc.getValue());
+				dagEdgeBuffer.setType("char");
+				dagEdgeBuffer.setTypeSize(1);
 
-			// Generate subsubbuffers. Each subsubbuffer corresponds to an edge
-			// of the single rate SDF Graph
-			Integer dagEdgeSize = generateSubBuffers(dagEdgeBuffer,
-					dagAlloc.getKey(), dagAlloc.getValue());
+				// Generate subsubbuffers. Each subsubbuffer corresponds to an
+				// edge
+				// of the single rate SDF Graph
+				Integer dagEdgeSize = generateSubBuffers(dagEdgeBuffer,
+						dagAlloc.getKey(), dagAlloc.getValue());
 
-			// also accessible with dagAlloc.getKey().getWeight();
-			dagEdgeBuffer.setSize(dagEdgeSize);
+				// also accessible with dagAlloc.getKey().getWeight();
+				dagEdgeBuffer.setSize(dagEdgeSize);
 
-			// Save the DAGEdgeBuffer
-			DAGVertex originalSource = dag.getVertex(dagAlloc.getKey()
-					.getSource().getName());
-			DAGVertex originalTarget = dag.getVertex(dagAlloc.getKey()
-					.getTarget().getName());
-			DAGEdge originalDagEdge = dag.getEdge(originalSource,
-					originalTarget);
-			dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
+				// Save the DAGEdgeBuffer
+				DAGVertex originalSource = dag.getVertex(dagAlloc.getKey()
+						.getSource().getName());
+				DAGVertex originalTarget = dag.getVertex(dagAlloc.getKey()
+						.getTarget().getName());
+				DAGEdge originalDagEdge = dag.getEdge(originalSource,
+						originalTarget);
+				dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
+			} else {
+				// the buffer is a null buffer
+				NullBuffer dagEdgeBuffer = CodegenFactory.eINSTANCE
+						.createNullBuffer();
+
+				// Old Naming (too long)
+				String comment = dagAlloc.getKey().getSource().getName()
+						+ " > " + dagAlloc.getKey().getTarget().getName();
+				dagEdgeBuffer.setComment("NULL_" + comment);
+				dagEdgeBuffer.setContainer(sharedBuffer);
+
+				// Generate subsubbuffers. Each subsubbuffer corresponds to an
+				// edge
+				// of the single rate SDF Graph
+				Integer dagEdgeSize = generateSubBuffers(dagEdgeBuffer,
+						dagAlloc.getKey(), dagAlloc.getValue());
+
+				// We set the size to keep the information
+				dagEdgeBuffer.setSize(dagEdgeSize);
+
+				// Save the DAGEdgeBuffer
+				DAGVertex originalSource = dag.getVertex(dagAlloc.getKey()
+						.getSource().getName());
+				DAGVertex originalTarget = dag.getVertex(dagAlloc.getKey()
+						.getTarget().getName());
+				DAGEdge originalDagEdge = dag.getEdge(originalSource,
+						originalTarget);
+				dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
+			}
 		}
 
 		// Generate buffers for each fifo
@@ -947,7 +1048,6 @@ public class CodegenModelGenerator {
 	 *             {@link Prototype}</li>
 	 *             </ul>
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected Entry<List<Variable>, List<PortDirection>> generateCallVariables(
 			DAGVertex dagVertex, Prototype prototype, boolean isInit)
 			throws CodegenException {
@@ -1122,7 +1222,8 @@ public class CodegenModelGenerator {
 
 			// // Retrieve the variable from its context (i.e. from its original
 			// // (sub)graph)
-			// org.ietr.dftools.algorithm.model.parameters.Variable originalVar =
+			// org.ietr.dftools.algorithm.model.parameters.Variable originalVar
+			// =
 			// originalSDF
 			// .getHierarchicalVertexFromPath(sdfVertex.getInfo())
 			// .getBase().getVariables().getVariable(actorParam.getName());
@@ -1135,9 +1236,9 @@ public class CodegenModelGenerator {
 			// }
 		}
 
-		return new AbstractMap.SimpleEntry(new ArrayList<Variable>(
-				variableList.values()), new ArrayList<PortDirection>(
-				directionList.values()));
+		return new AbstractMap.SimpleEntry<List<Variable>, List<PortDirection>>(
+				new ArrayList<Variable>(variableList.values()),
+				new ArrayList<PortDirection>(directionList.values()));
 	}
 
 	/**
@@ -1463,7 +1564,123 @@ public class CodegenModelGenerator {
 					.get(idx));
 		}
 
+		identifyMergedInputRange(callVars);
+
 		return func;
+	}
+
+	protected void identifyMergedInputRange(
+			Entry<List<Variable>, List<PortDirection>> callVars) {
+
+		// Separate input and output buffers
+		List<Buffer> inputs = new ArrayList<Buffer>();
+		List<Buffer> outputs = new ArrayList<Buffer>();
+		for (int i = 0; i < callVars.getKey().size(); i++) {
+			if (callVars.getValue().get(i) == PortDirection.INPUT) {
+				inputs.add((Buffer) callVars.getKey().get(i));
+			} else if (callVars.getValue().get(i) == PortDirection.OUTPUT) {
+				outputs.add((Buffer) callVars.getKey().get(i));
+			}
+		}
+
+		// For each output find the allocated range
+		// (or Ranges in case of a divided buffer)
+		List<Pair<Buffer, Range>> outputRanges = new ArrayList<>();
+		for (Buffer output : outputs) {
+			// If the input is not a NullBufer
+			if (!(output instanceof NullBuffer)) {
+				// Find the parent Buffer container b
+				// and the offset within b.
+				int start = 0;
+				Buffer b = output;
+				while (b instanceof SubBuffer) {
+					start += ((SubBuffer) b).getOffset();
+					b = ((SubBuffer) b).getContainer();
+				}
+				int end = start + (output.getSize() * output.getTypeSize());
+
+				// Save allocated range
+				outputRanges.add(new Pair<Buffer, Range>(b, new Range(start,
+						end)));
+			} else {
+				// The output is a NullBuffer (i.e. it is divided)
+				// Find the allocation of its ranges
+				DAGEdge dagEdge = dagEdgeBuffers.inverse().get(
+						((NullBuffer) output).getContainer());
+				MemoryExclusionVertex mObject = memEx
+						.getVertex(new MemoryExclusionVertex(dagEdge));
+				// Get the real ranges from the memObject
+				@SuppressWarnings("unchecked")
+				List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realRanges = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) mObject
+						.getPropertyBean()
+						.getValue(
+								MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+				// Find the actual allocation range of each real range.
+				for (Pair<MemoryExclusionVertex, Pair<Range, Range>> realRange : realRanges) {
+					DAGEdge hostDagEdge = realRange.getKey().getEdge();
+					DAGVertex originalSource = dag.getVertex(hostDagEdge
+							.getSource().getName());
+					DAGVertex originalTarget = dag.getVertex(hostDagEdge
+							.getTarget().getName());
+					DAGEdge originalDagEdge = dag.getEdge(originalSource,
+							originalTarget);
+					Buffer hostBuffer = dagEdgeBuffers.get(originalDagEdge);
+					// Get the allocated range
+					int start = realRange.getValue().getValue().getStart();
+					Buffer b = hostBuffer;
+					while (b instanceof SubBuffer) {
+						start += ((SubBuffer) b).getOffset();
+						b = ((SubBuffer) b).getContainer();
+					}
+					int end = start
+							+ realRange.getValue().getValue().getLength();
+					// Save allocated range
+					outputRanges.add(new Pair<Buffer, Range>(b, new Range(
+							start, end)));
+				}
+			}
+		}
+
+		// Find if an inputBuffer has an overlap with an outputRange
+		// For each input find the allocated range
+		// Map<Buffer,Pair<Buffer,Range>> inputRanges = new HashMap<>();
+		for (Buffer input : inputs) {
+			// If the input is not a NullBufer
+			if (!(input instanceof NullBuffer)) {
+				// Find the parent Buffer container b
+				// and the offset within b.
+				int start = 0;
+				Buffer b = input;
+				while (b instanceof SubBuffer) {
+					start += ((SubBuffer) b).getOffset();
+					b = ((SubBuffer) b).getContainer();
+				}
+				int end = start + (input.getSize() * input.getTypeSize());
+
+				// Find the input range that are also covered by the output
+				// ranges
+				List<Range> inRanges = new ArrayList<Range>();
+				inRanges.add(new Range(start, end));
+
+				// Check output ranges one by one
+				for (Pair<Buffer, Range> outputRange : outputRanges) {
+					if (outputRange.getKey() == b) {
+						inRanges = Range.difference(inRanges,
+								outputRange.getValue());
+					}
+				}
+				List<Range> mergedRanges = new ArrayList<Range>();
+				mergedRanges.add(new Range(start, end));
+				mergedRanges = Range.difference(mergedRanges, inRanges);
+
+				// Save only if a part of the input buffer is merged
+				if (mergedRanges.size() != 0) {
+					Range.translate(mergedRanges, -start);
+					input.setMergedRange(new BasicEList<>(mergedRanges));
+				}
+			}
+		}
+
 	}
 
 	/**
@@ -1747,6 +1964,8 @@ public class CodegenModelGenerator {
 		operatorBlock.getLoopBlock().getCodeElts().add(f);
 		dagVertexCalls.put(dagVertex, f);
 
+		identifyMergedInputRange(new AbstractMap.SimpleEntry<List<Variable>, List<PortDirection>>(
+				f.getParameters(), f.getParameterDirections()));
 		registerCallVariableToCoreBlock(operatorBlock, f);
 	}
 
@@ -1790,33 +2009,59 @@ public class CodegenModelGenerator {
 		Integer aggregateOffset = new Integer(0);
 		int idx = 0;
 		for (BufferProperties subBufferProperties : buffers) {
-			SubBuffer subBuff = CodegenFactory.eINSTANCE.createSubBuffer();
-			// Old naming techniques with complete path to port. (too long, kept
-			// as a comment)
-			String comment = dagEdge.getSource().getName();
-			comment += '_' + subBufferProperties.getSourceOutputPortID();
-			comment += " > " + dagEdge.getTarget().getName();
-			comment += '_' + subBufferProperties.getDestInputPortID();
-			subBuff.setComment(comment);
+			Buffer buff = null;
+			// If the parent buffer is not null
+			if (!(parentBuffer instanceof NullBuffer)) {
+				SubBuffer subBuff = CodegenFactory.eINSTANCE.createSubBuffer();
+				buff = subBuff;
+				// Old naming techniques with complete path to port. (too long,
+				// kept
+				// as a comment)
+				String comment = dagEdge.getSource().getName();
+				comment += '_' + subBufferProperties.getSourceOutputPortID();
+				comment += " > " + dagEdge.getTarget().getName();
+				comment += '_' + subBufferProperties.getDestInputPortID();
+				subBuff.setComment(comment);
 
-			// Buffer is named only with ports ID
-			String name = subBufferProperties.getSourceOutputPortID();
-			name += "__" + subBufferProperties.getDestInputPortID();
+				// Buffer is named only with ports ID
+				String name = subBufferProperties.getSourceOutputPortID();
+				name += "__" + subBufferProperties.getDestInputPortID();
 
-			// Check for duplicates
-			name = generateUniqueBufferName(name);
+				// Check for duplicates
+				name = generateUniqueBufferName(name);
+
+				subBuff.setName(name);
+				subBuff.setContainer((Buffer) parentBuffer);
+				subBuff.setOffset(aggregateOffset);
+				subBuff.setType(subBufferProperties.getDataType());
+				subBuff.setSize(subBufferProperties.getSize());
+
+				// Save the created SubBuffer
+				srSDFEdgeBuffers.put(subBufferProperties, subBuff);
+			} else {
+				// The parent buffer is a null buffer
+				NullBuffer nullBuff = CodegenFactory.eINSTANCE
+						.createNullBuffer();
+				buff = nullBuff;
+				// Old naming techniques with complete path to port. (too long,
+				// kept
+				// as a comment)
+				String comment = dagEdge.getSource().getName();
+				comment += '_' + subBufferProperties.getSourceOutputPortID();
+				comment += " > " + dagEdge.getTarget().getName();
+				comment += '_' + subBufferProperties.getDestInputPortID();
+				nullBuff.setComment("NULL_" + comment);
+				nullBuff.setContainer(parentBuffer);
+
+				// Save the created SubBuffer
+				srSDFEdgeBuffers.put(subBufferProperties, nullBuff);
+			}
 
 			// If an interSubbufferSpace was defined, add it
 			if (interSubbufferSpace != null) {
 				aggregateOffset += interSubbufferSpace.get(idx);
 			}
 			idx++;
-
-			subBuff.setName(name);
-			subBuff.setContainer(parentBuffer);
-			subBuff.setOffset(aggregateOffset);
-			subBuff.setType(subBufferProperties.getDataType());
-			subBuff.setSize(subBufferProperties.getSize());
 
 			// Increment the aggregate offset with the size of the current
 			// subBuffer multiplied by the size of the datatype
@@ -1832,10 +2077,8 @@ public class CodegenModelGenerator {
 						+ subBufferProperties.getDataType()
 						+ " is undefined in the scenario.");
 			}
-			aggregateOffset += (subBuff.getSize() * subBuffDataType.getSize());
-
-			// Save the created SubBuffer
-			srSDFEdgeBuffers.put(subBufferProperties, subBuff);
+			buff.setTypeSize(subBuffDataType.getSize());
+			aggregateOffset += (buff.getSize() * subBuffDataType.getSize());
 		}
 
 		return aggregateOffset;
@@ -1896,18 +2139,27 @@ public class CodegenModelGenerator {
 
 		// Retrieve the IDL File
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		String path = originalSDF
-				.getHierarchicalVertexFromPath(sdfVertex.getInfo()).getBase()
-				.getPropertyStringValue(AbstractGraph.PATH);
+		IWorkspaceRoot root = workspace.getRoot();
 
-		IFile algoFile = workspace.getRoot().getFileForLocation(new Path(path));
-
-		IFile idlFile = algoFile.getParent().getFile(
-				new Path(((CodeRefinement) refinement).getName()));
+		IPath path = ((CodeRefinement) refinement).getPath();
+		IFile idlFile;
+		// XXX: workaround for existing IBSDF projects where refinements are
+		// under the form "../folder/file"
+		if (path.toOSString().startsWith("..")) {
+			String projectName = workflow.getProjectName();
+			IProject project = root.getProject(projectName);
+			path = new Path(project.getLocation()
+					+ path.toString().substring(2));
+			idlFile = root.getFileForLocation(path);
+		} else {
+			idlFile = root.getFile(path);
+		}
 
 		// Retrieve the ActorPrototype
+		IPath rawPath = idlFile.getRawLocation();
+		String rawLocation = rawPath.toOSString();
 		ActorPrototypes prototypes = IDLPrototypeFactory.INSTANCE
-				.create(idlFile.getRawLocation().toOSString());
+				.create(rawLocation);
 		return prototypes;
 	}
 

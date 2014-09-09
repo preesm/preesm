@@ -1,0 +1,7 @@
+
+module yuv2rgb {
+	typedef long parameter ;
+	interface loop {
+		void yuv2rgb (in parameter width, in parameter height, in char y , in char u , in char v, out char rgb ) ;
+	} ;
+} ;

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">userFIRs</data>
+        <node expr="0" id="M" kind="param"/>
+        <node id="nbSamples2" kind="cfg_in_iface"/>
+        <node id="in" kind="src">
+            <port expr="nbSamples" kind="output" name="in"/>
+        </node>
+        <node id="out" kind="snk">
+            <port expr="nbSamples" kind="input" name="out"/>
+        </node>
+        <node id="setM" kind="actor">
+            <data key="graph_desc"/>
+            <port kind="cfg_output" name="M"/>
+            <port expr="1" kind="input" name="M_in"/>
+        </node>
+        <node id="InitSwitch" kind="actor">
+            <data key="graph_desc"/>
+            <port kind="cfg_input" name="M"/>
+            <port expr="M" kind="output" name="select"/>
+        </node>
+        <node id="Switch" kind="actor">
+            <data key="graph_desc"/>
+            <port kind="cfg_input" name="nbSamples"/>
+            <port expr="1" kind="input" name="select"/>
+            <port expr="nbSamples" kind="input" name="in0"/>
+            <port expr="nbSamples" kind="input" name="in1"/>
+            <port expr="nbSamples" kind="output" name="out"/>
+        </node>
+        <node id="FIR" kind="actor">
+            <data key="graph_desc"/>
+            <port kind="cfg_input" name="nbSamples"/>
+            <port expr="nbSamples" kind="input" name="in"/>
+            <port expr="nbSamples" kind="output" name="out"/>
+        </node>
+        <node id="BroadCast" kind="actor">
+            <data key="graph_desc"/>
+            <port kind="cfg_input" name="nbSamples"/>
+            <port expr="nbSamples" kind="input" name="in"/>
+            <port expr="nbSamples" kind="output" name="out0"/>
+            <port expr="nbSamples" kind="output" name="out1"/>
+        </node>
+        <node id="M_in" kind="src">
+            <port expr="1" kind="output" name="M_in"/>
+        </node>
+        <edge kind="fifo" source="in" sourceport="in" target="Switch" targetport="in0"/>
+        <edge kind="fifo" source="Switch" sourceport="out" target="FIR" targetport="in"/>
+        <edge kind="fifo" source="FIR" sourceport="out"
+            target="BroadCast" targetport="in"/>
+        <edge kind="fifo" source="BroadCast" sourceport="out0"
+            target="out" targetport="out"/>
+        <edge expr="nbSamples2" kind="fifo" source="BroadCast"
+            sourceport="out1" target="Switch" targetport="in1">
+            <data key="delay"/>
+        </edge>
+        <edge kind="fifo" source="InitSwitch" sourceport="select"
+            target="Switch" targetport="select"/>
+        <edge kind="fifo" source="M_in" sourceport="M_in" target="setM" targetport="M_in"/>
+        <edge kind="dependency" source="setM" sourceport="M" target="M"/>
+        <edge kind="dependency" source="M" target="InitSwitch" targetport="M"/>
+        <edge kind="dependency" source="nbSamples2" target="out"/>
+        <edge kind="dependency" source="nbSamples2" target="in"/>
+        <edge kind="dependency" source="nbSamples2" target="Switch" targetport="nbSamples"/>
+        <edge kind="dependency" source="nbSamples2" target="FIR" targetport="nbSamples"/>
+        <edge kind="dependency" source="nbSamples2" target="BroadCast" targetport="nbSamples"/>
+        <edge kind="dependency" source="nbSamples2" target="BroadCast.out1-Switch.in1"/>
+    </graph>
+</graphml>

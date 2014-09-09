@@ -35,8 +35,7 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm.impl;
 
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
@@ -49,9 +48,11 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -73,7 +74,7 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String FILE_NAME_EDEFAULT = "";
+	protected static final String FILE_NAME_EDEFAULT = "\"\"";
 
 	/**
 	 * The cached value of the '{@link #getFileName() <em>File Name</em>}' attribute.
@@ -161,26 +162,31 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 	 */
 	public AbstractActor getAbstractActor() {
 
-		URI refinementURI = getFileURI();
+		if (this.getFilePath() != null && this.filePath.getFileExtension().equals("pi")) {			
+			URI refinementURI = URI.createPlatformResourceURI(this.getFilePath().makeRelative().toString(), true);
 
-		// Check if the file exists
-		if (refinementURI != null && refinementURI.isPlatformResource()) {
-			final ResourceSet rSet = new ResourceSetImpl();
-			Resource resourceRefinement;
-			try {
-				resourceRefinement = rSet.getResource(refinementURI, true);
-				if (resourceRefinement != null) {
-					// does resource contain a graph as root object?
-					final EList<EObject> contents = resourceRefinement
-							.getContents();
-					for (final EObject object : contents) {
-						if (object instanceof PiGraph) {
-							return (AbstractActor) object;
+			// Check if the file exists
+			if (refinementURI != null) {
+				final ResourceSet rSet = new ResourceSetImpl();
+				Resource resourceRefinement;
+				try {
+					resourceRefinement = rSet.getResource(refinementURI, true);					
+					if (resourceRefinement != null) {
+						// does resource contain a graph as root object?
+						final EList<EObject> contents = resourceRefinement
+								.getContents();
+						for (final EObject object : contents) {
+							if (object instanceof PiGraph) {
+								AbstractActor actor = (AbstractActor) object;
+								actor.setName(((Actor) this.eContainer)
+										.getName());
+								return actor;
+							}
 						}
 					}
+				} catch (final WrappedException e) {
+					e.printStackTrace();
 				}
-			} catch (final WrappedException e) {
-				e.printStackTrace();
 			}
 		}
 
@@ -195,32 +201,17 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 		return fileName;
 	}
 
+	IPath filePath;
+
 	@Override
-	public URI getFileURI() {
-		// If the fileName is null, return nothing
-		if (this.fileName == null) {
-			return null;
-		}
-		Resource resource = this.eResource();
-		URI uri = resource.getURI();
-		URI uriTrimmed = uri.trimFragment();
+	public IPath getFilePath() {
+		return filePath;
+	}
 
-		if (uriTrimmed.isPlatformResource()) {
-
-			// Removing the file name from the URI
-			URI folder = uriTrimmed.trimSegments(1);
-			URI refinementFile = folder.appendSegment(this.fileName);
-
-			IResource fileResource = ResourcesPlugin.getWorkspace().getRoot()
-					.findMember(refinementFile.toPlatformString(true));
-
-			// Check if the file exists
-			if (fileResource != null
-					&& fileResource.getType() == IResource.FILE) {
-				return refinementFile;
-			}
-		}
-		return null;
+	@Override
+	public void setFilePath(IPath path) {
+		filePath = path;
+		if (path != null) setFileName(path.lastSegment());
 	}
 
 	/**
@@ -247,6 +238,11 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 		result.append(fileName);
 		result.append(')');
 		return result.toString();
+	}
+
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitRefinement(this);
 	}
 
 } // RefinementImpl

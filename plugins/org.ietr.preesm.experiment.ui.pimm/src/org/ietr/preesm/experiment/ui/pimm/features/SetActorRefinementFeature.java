@@ -35,11 +35,26 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.ui.pimm.features;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.model.ICElement;
+import org.eclipse.cdt.core.model.ITranslationUnit;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.ietr.preesm.experiment.header.parser.cdt.ASTAndActorComparisonVisitor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
+import org.ietr.preesm.experiment.model.pimm.HRefinement;
+import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.ui.pimm.util.PiMMUtil;
 
@@ -97,25 +112,103 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 			Object bo = getBusinessObjectForPictogramElement(pes[0]);
 			if (bo instanceof Actor) {
 				Actor actor = (Actor) bo;
-				Refinement refinement = actor.getRefinement();
 
-				// Ask user for Actor name until a valid name is entered.
-				String question = "Enter new file name";
-				String newFileName = refinement.getFileName();
-
-				newFileName = PiMMUtil.askRefinement("Change file", question,
-						newFileName, null);
-
-				if (newFileName != null
-						&& !newFileName.equals(refinement.getFileName())) {
-					this.hasDoneChanges = true;
-					refinement.setFileName(newFileName);
-				}
+				String question = "Please select a valid file\n(.idl, .h or .pi)";
+				String dialogTitle = "Select a refinement file";
+				askRefinement(actor, question, dialogTitle);
 
 				// Call the layout feature
 				layoutPictogramElement(pes[0]);
 			}
 		}
+	}
+
+	private void askRefinement(Actor actor, String question, String dialogTitle) {
+		// Ask user for Actor name until a valid name is entered.
+		// For now, authorized refinements are other PiGraphs (.pi files) and
+		// .idl prototypes
+		Set<String> fileExtensions = new HashSet<String>();
+		fileExtensions.add("pi");
+		fileExtensions.add("idl");
+		fileExtensions.add("h");
+		IPath newFilePath = PiMMUtil.askFile(dialogTitle, question, null, fileExtensions);
+
+		setActorRefinement(actor, newFilePath);
+	}
+
+	/**
+	 * Set the refinement file of the actor and ask for the prototype in case
+	 * the file is a C Header.
+	 * 
+	 * @param newFilePath
+	 */
+	protected void setActorRefinement(Actor actor,
+			IPath newFilePath) {
+		String dialogTitle = "Select a refinement file";
+		Refinement refinement = actor.getRefinement();
+		if (newFilePath != null) {
+			this.hasDoneChanges = true;
+			// If the file is a .h header
+			if (newFilePath.getFileExtension().equals("h")) {
+				// We get it
+				IFile file = ResourcesPlugin.getWorkspace().getRoot()
+						.getFile(newFilePath);
+				Set<FunctionPrototype> prototypes = getPrototypes(file, actor);
+				if (prototypes.isEmpty()) {
+					String message = "The .h file you selected does not contain any prototype corresponding to actor "
+							+ actor.getName()
+							+ ".\nPlease select another valid file.";
+					this.askRefinement(actor, message, dialogTitle);
+				} else {
+					String title = "Loop Function Selection";
+					String message = "Select a loop function for actor "
+							+ actor.getName()
+							+ "\n(* = any string, ? = any char):";
+					FunctionPrototype[] protoArray = prototypes
+							.toArray(new FunctionPrototype[prototypes.size()]);
+					FunctionPrototype loopProto = PiMMUtil.selectFunction(
+							protoArray, title, message, true);
+
+					title = "Init Function Selection";
+					message = "Select an optionnal init function for actor "
+							+ actor.getName()
+							+ ", or click Cancel\n(* = any string, ? = any char):";
+					FunctionPrototype initProto = PiMMUtil.selectFunction(
+							protoArray, title, message, false);
+
+					HRefinement newRefinement = PiMMFactory.eINSTANCE
+							.createHRefinement();
+					newRefinement.setLoopPrototype(loopProto);
+					newRefinement.setInitPrototype(initProto);
+					newRefinement.setFilePath(newFilePath);
+					actor.setRefinement(newRefinement);
+				}
+
+			} else {
+				refinement.setFilePath(newFilePath);
+			}
+		}
+	}
+
+	private Set<FunctionPrototype> getPrototypes(IFile file, Actor actor) {
+		Set<FunctionPrototype> result = new HashSet<FunctionPrototype>();
+
+		if (file != null) {
+			ICElement element = CoreModel.getDefault().create(file);
+			ITranslationUnit tu = (ITranslationUnit) element;
+			try {
+				// Parse it
+				IASTTranslationUnit ast = tu.getAST();
+				ASTAndActorComparisonVisitor visitor = new ASTAndActorComparisonVisitor();
+				ast.accept(visitor);
+				// And extract from it the functions
+				// compatible with the current actor
+				result = visitor.filterPrototypesFor(actor);
+			} catch (CoreException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
 	}
 
 	@Override

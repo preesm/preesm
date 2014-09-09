@@ -35,8 +35,9 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm;
 
-import org.eclipse.emf.common.util.URI;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.ecore.EObject;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
 
 /**
  * <!-- begin-user-doc --> A representation of the model object '
@@ -53,7 +54,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model
  * @generated
  */
-public interface Refinement extends EObject {
+public interface Refinement extends EObject, PiMMVisitable {
 	/**
 	 * Returns the value of the '<em><b>File Name</b></em>' attribute. <!--
 	 * begin-user-doc -->
@@ -77,8 +78,10 @@ public interface Refinement extends EObject {
 	 * @return the URI of the file associated to the Refinement or
 	 *         <code>null</code> if the file does not exists.
 	 */
-	URI getFileURI();
+	IPath getFilePath();
 
+	void setFilePath(IPath path);
+	
 	/**
 	 * Sets the value of the '
 	 * {@link org.ietr.preesm.experiment.model.pimm.Refinement#getFileName

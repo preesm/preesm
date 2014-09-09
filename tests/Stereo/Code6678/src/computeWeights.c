@@ -1,14 +1,14 @@
 /*
- ============================================================================
- Name        : computeWeights.c
- Author      : kdesnos
- Author      : JZHAHG
- Version     : 1.0
- Copyright   : CeCILL-C, IETR, INSA Rennes
- Description : Computation of the weights associated to the pixel of an rgb
- image.
- ============================================================================
- */
+	============================================================================
+	Name        : computeWeights.c
+	Author      : kdesnos
+	Author      : JZHAHG
+	Version     : 1.0
+	Copyright   : CeCILL-C, IETR, INSA Rennes
+	Description : Computation of the weights associated to the pixel of an rgb 
+	              image.
+	============================================================================
+*/
 
 #include <math.h>
 #include "computeWeights.h"
@@ -21,10 +21,6 @@ void computeWeights (int height , int width, int horOrVert,
 					 int *offset, unsigned char *rgbL, float *weights)
 {
     int i, j;
-
-    // Beginning of the g anb b components
-    const int idxG = 2*height*width;
-    const int idxB = height*width;
 
     // hOffset of vOffset depending on the computed weights
     int hOffset = (horOrVert == 0)? *offset : 0;
@@ -43,18 +39,18 @@ void computeWeights (int height , int width, int horOrVert,
             float weightM, weightP, weightO;
 
             // Compute the weights
-            r0 = rgbL[j*width+i];
-            g0 = rgbL[idxG+j*width+i];
-            b0 = rgbL[idxB+j*width+i];
+            r0 = rgbL[3*(j*width+i)];
+            g0 = rgbL[3*(j*width+i)+1];
+            b0 = rgbL[3*(j*width+i)+2];
 
-            r  = rgbL[max(j-vOffset,0)*width+max(i-hOffset,0)];
-            g  = rgbL[idxG+max(j-vOffset,0)*width+max(i-hOffset,0)];
-            b  = rgbL[idxB+max(j-vOffset,0)*width+max(i-hOffset,0)];
+            r  = rgbL[3*(max(j-vOffset,0)*width+max(i-hOffset,0))];
+            g  = rgbL[3*(max(j-vOffset,0)*width+max(i-hOffset,0))+1];
+            b  = rgbL[3*(max(j-vOffset,0)*width+max(i-hOffset,0))+2];
             weightM = sqrtf((r0-r)*(r0-r)+(g0-g)*(g0-g)+(b0-b)*(b0-b))* R_gamaC;
 
-            r  = rgbL[min(j+vOffset,height-1)*width+min(i+hOffset,width-1)];
-            g  = rgbL[idxG+min(j+vOffset,height-1)*width+min(i+hOffset,width-1)];
-            b  = rgbL[idxB+min(j+vOffset,height-1)*width+min(i+hOffset,width-1)];
+            r  = rgbL[3*(min(j+vOffset,height-1)*width+min(i+hOffset,width-1))];
+            g  = rgbL[3*(min(j+vOffset,height-1)*width+min(i+hOffset,width-1))+1];
+            b  = rgbL[3*(min(j+vOffset,height-1)*width+min(i+hOffset,width-1))+2];
             weightP = sqrtf((r0-r)*(r0-r)+(g0-g)*(g0-g)+(b0-b)*(b0-b))* R_gamaC;
 
             weightM = exp(distanceCoeff-weightM);

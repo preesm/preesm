@@ -51,6 +51,7 @@ import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -270,6 +271,18 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements
 			}
 		}
 		return null;
+	}
+
+	public String getPath() {
+		if (eContainer != null && eContainer instanceof AbstractActor) {
+			return ((AbstractActor) eContainer).getPath() + "/" + getName();
+		}
+		return getName();
+	}
+	
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitAbstractActor(this);
 	}
 
 } // AbstractActoImpl

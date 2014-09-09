@@ -50,6 +50,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.Timing;
 
 /**
  * This class is a visitor for SDF graphs whose purpose is to export the visited
@@ -173,9 +174,9 @@ public class DIFExporterVisitor implements
 		// Retrieve execution time
 		// Only the execution runtime for cores with type x86 will be taken
 		// into account
-		long time = scenario.getTimingManager().getTimingOrDefault(
+		Timing time = scenario.getTimingManager().getTimingOrDefault(
 				vertex.getId(), "x86");
-		attributesMap.put("exec_time", time);
+		attributesMap.put("exec_time", time.getStringValue());
 		attributesMap.put("hierarchical", false);
 
 		// If the actor has a refinement
@@ -189,13 +190,12 @@ public class DIFExporterVisitor implements
 				// Overwrite the execution time for hierarchical actors
 				attributesMap.remove("exec_time");
 				time = scenario.getTimingManager()
-						.generateVertexTimingFromHierarchy(vertex, "x86")
-						.getTime();
+						.generateVertexTimingFromHierarchy(vertex, "x86");
 				// If the previous method returns an unexpected result
 				// it might be because actor with default timing (100) are
 				// not taken into account when computing the exec_time of
 				// a hierarchical actor.
-				attributesMap.put("exec_time", time);
+				attributesMap.put("exec_time", time.getStringValue());
 			}
 		}
 

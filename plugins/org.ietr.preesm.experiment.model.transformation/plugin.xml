@@ -26,6 +26,11 @@
                id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor"
                label="BasicActor">
          </propertyTab>
+         <propertyTab
+               category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
+               id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicFifo"
+               label="BasicFifo">
+         </propertyTab>
       </propertyTabs>
    </extension>
    <extension
@@ -33,7 +38,7 @@
       <propertySections
             contributorId="PiMM.PropertyContributor">
          <propertySection
-              class="org.ietr.preesm.experiment.model.transformation.properties.Section"
+              class="org.ietr.preesm.experiment.model.transformation.properties.PortParameterAndDelayPropertiesSection"
               filter="org.ietr.preesm.experiment.model.transformation.properties.PiMMFilter"
               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basic"
               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basic">
@@ -43,6 +48,12 @@
                filter="org.ietr.preesm.experiment.model.transformation.properties.PiMMActorFilter"
                id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicActor"
                tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor">
+         </propertySection>
+         <propertySection
+               class="org.ietr.preesm.experiment.model.transformation.properties.FifoPropertiesSection"
+               filter="org.ietr.preesm.experiment.model.transformation.properties.PiMMFifoFilter"
+               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicFifo"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicFifo">
          </propertySection>
       </propertySections>
    </extension>

@@ -42,7 +42,7 @@ import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.PortNameValidator;
 import org.ietr.preesm.experiment.ui.pimm.util.PiMMUtil;
@@ -86,7 +86,7 @@ public class RenameActorPortFeature extends AbstractCustomFeature {
 		if (pes != null && pes.length == 1) {
 			Object bo = getBusinessObjectForPictogramElement(pes[0]);
 			if (bo instanceof Port) {
-				if (((Port) bo).eContainer() instanceof Actor) {
+				if (((Port) bo).eContainer() instanceof ExecutableActor) {
 					ret = true;
 				}
 			}

@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Multi Xtend Codegen
+Bundle-SymbolicName: org.ietr.preesm.experiment.codegen.xtend;singleton:=true
+Bundle-Version: 2.0.0.qualifier
+Bundle-Activator: org.ietr.preesm.experiment.codegen.xtend.Activator
+Bundle-Vendor: IETR/INSA Rennes
+Require-Bundle: org.eclipse.core.runtime,
+ org.ietr.dftools.workflow;bundle-version="1.1.0",
+ org.ietr.preesm.codegen.xtend;bundle-version="1.1.0",
+ org.ietr.preesm.core;bundle-version="1.1.0",
+ org.ietr.preesm.memory;bundle-version="1.1.0",
+ org.ietr.dftools.algorithm;bundle-version="1.1.0",
+ org.ietr.dftools.architecture;bundle-version="1.1.0",
+ org.eclipse.core.resources;bundle-version="3.8.101",
+ org.jgrapht;bundle-version="0.8.2"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+Export-Package: org.ietr.preesm.experiment.codegen.xtend

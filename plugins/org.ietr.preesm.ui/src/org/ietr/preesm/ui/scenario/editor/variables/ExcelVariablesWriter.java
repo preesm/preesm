@@ -126,7 +126,7 @@ public class ExcelVariablesWriter extends ExcelWriter {
 			int maxVOrdinate = 0;
 
 			// Get variables of the graph
-			SDFGraph currentGraph = ScenarioParser.getAlgorithm(scenario
+			SDFGraph currentGraph = ScenarioParser.getSDFGraph(scenario
 					.getAlgorithmURL());
 			VariableSet variablesGraph = currentGraph.getVariables();
 

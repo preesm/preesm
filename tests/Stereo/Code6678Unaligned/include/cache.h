@@ -25,7 +25,7 @@
 #ifndef L2
 #ifndef L1
 // NO cache is activated
-#define CACHE_LINE_SIZE 0
+#define CACHE_LINE_SIZE 1
 #define cache_wbInv(buffer,size)
 #define cache_wb(buffer,size)
 #define cache_inv(buffer,size)

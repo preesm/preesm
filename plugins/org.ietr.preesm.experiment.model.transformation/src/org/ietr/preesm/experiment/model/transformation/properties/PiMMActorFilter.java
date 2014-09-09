@@ -39,7 +39,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.platform.AbstractPropertySectionFilter;
-import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 
 public class PiMMActorFilter extends AbstractPropertySectionFilter{
 
@@ -51,8 +51,8 @@ public class PiMMActorFilter extends AbstractPropertySectionFilter{
 	protected boolean accept(PictogramElement pictogramElement) {
 		EObject eObject = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pictogramElement);
 
-		// Actor.
-		if(eObject instanceof Actor){
+		// ExecutableActor.
+		if(eObject instanceof ExecutableActor){
 			return true;
 		}
 	

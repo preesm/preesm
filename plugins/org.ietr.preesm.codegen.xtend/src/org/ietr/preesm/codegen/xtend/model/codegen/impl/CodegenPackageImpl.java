@@ -37,7 +37,9 @@ package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EGenericType;
 import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -65,6 +67,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation;
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
 import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
@@ -232,6 +235,13 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	private EClass nullBufferEClass = null;
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	private EEnum directionEEnum = null;
 
 	/**
@@ -261,6 +271,13 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * @generated
 	 */
 	private EEnum portDirectionEEnum = null;
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	private EDataType rangeEDataType = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -499,6 +516,24 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 */
 	public EReference getBuffer_Childrens() {
 		return (EReference) bufferEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EAttribute getBuffer_TypeSize() {
+		return (EAttribute) bufferEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EAttribute getBuffer_MergedRange() {
+		return (EAttribute) bufferEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
@@ -952,6 +987,15 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	public EClass getNullBuffer() {
+		return nullBufferEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	public EEnum getDirection() {
 		return directionEEnum;
 	}
@@ -990,6 +1034,15 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 */
 	public EEnum getPortDirection() {
 		return portDirectionEEnum;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EDataType getrange() {
+		return rangeEDataType;
 	}
 
 	/**
@@ -1044,6 +1097,8 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		bufferEClass = createEClass(BUFFER);
 		createEAttribute(bufferEClass, BUFFER__SIZE);
 		createEReference(bufferEClass, BUFFER__CHILDRENS);
+		createEAttribute(bufferEClass, BUFFER__TYPE_SIZE);
+		createEAttribute(bufferEClass, BUFFER__MERGED_RANGE);
 
 		subBufferEClass = createEClass(SUB_BUFFER);
 		createEReference(subBufferEClass, SUB_BUFFER__CONTAINER);
@@ -1111,12 +1166,17 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		constantStringEClass = createEClass(CONSTANT_STRING);
 		createEAttribute(constantStringEClass, CONSTANT_STRING__VALUE);
 
+		nullBufferEClass = createEClass(NULL_BUFFER);
+
 		// Create enums
 		directionEEnum = createEEnum(DIRECTION);
 		delimiterEEnum = createEEnum(DELIMITER);
 		specialTypeEEnum = createEEnum(SPECIAL_TYPE);
 		fifoOperationEEnum = createEEnum(FIFO_OPERATION);
 		portDirectionEEnum = createEEnum(PORT_DIRECTION);
+
+		// Create data types
+		rangeEDataType = createEDataType(RANGE);
 	}
 
 	/**
@@ -1167,6 +1227,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		sharedMemoryCommunicationEClass.getESuperTypes().add(
 				this.getCommunication());
 		constantStringEClass.getESuperTypes().add(this.getVariable());
+		nullBufferEClass.getESuperTypes().add(this.getSubBuffer());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(blockEClass, Block.class, "Block", !IS_ABSTRACT,
@@ -1256,6 +1317,16 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 				Buffer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
+		initEAttribute(getBuffer_TypeSize(), ecorePackage.getEInt(),
+				"typeSize", null, 1, 1, Buffer.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+		EGenericType g1 = createEGenericType(ecorePackage.getEEList());
+		EGenericType g2 = createEGenericType(this.getrange());
+		g1.getETypeArguments().add(g2);
+		initEAttribute(getBuffer_MergedRange(), g1, "mergedRange", null, 0, 1,
+				Buffer.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(subBufferEClass, SubBuffer.class, "SubBuffer", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -1484,6 +1555,9 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
 
+		initEClass(nullBufferEClass, NullBuffer.class, "NullBuffer",
+				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
 		// Initialize enums and add enum literals
 		initEEnum(directionEEnum, Direction.class, "Direction");
 		addEEnumLiteral(directionEEnum, Direction.SEND);
@@ -1508,6 +1582,11 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		addEEnumLiteral(portDirectionEEnum, PortDirection.INPUT);
 		addEEnumLiteral(portDirectionEEnum, PortDirection.OUTPUT);
 		addEEnumLiteral(portDirectionEEnum, PortDirection.NONE);
+
+		// Initialize data types
+		initEDataType(rangeEDataType,
+				org.ietr.preesm.memory.script.Range.class, "range",
+				IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS);
 
 		// Create resource
 		createResource(eNS_URI);

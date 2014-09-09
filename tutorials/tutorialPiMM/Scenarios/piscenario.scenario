@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <files>
+        <algorithm url="/tutorialPiMM/Algo/doubleLoopL0.pi"/>
+        <architecture url="/tutorialPiMM/Archi/1CoreX86.slam"/>
+        <codegenDirectory url=""/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="doubleLoop/RB1"/>
+            <task name="doubleLoop/RB0"/>
+            <task name="doubleLoop/MLoop/Line_out"/>
+            <task name="doubleLoop/MLoop/Line_in"/>
+            <task name="doubleLoop"/>
+            <task name="doubleLoop/MLoop/ConfigM"/>
+            <task name="doubleLoop/MLoop/EndMLoop"/>
+            <task name="doubleLoop/MLoop/InitMLoop"/>
+            <task name="doubleLoop/MLoop/M_in"/>
+            <task name="doubleLoop/WriteFile"/>
+            <task name="doubleLoop/BroadCast"/>
+            <task name="doubleLoop/EndNLoop"/>
+            <task name="doubleLoop/InitNLoop"/>
+            <task name="doubleLoop/MLoop/F"/>
+            <task name="doubleLoop/MLoop"/>
+            <task name="doubleLoop/ReadFile"/>
+        </constraintGroup>
+    </constraints>
+    <relativeconstraints excelUrl=""/>
+    <timings excelUrl="">
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="1.0"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="short" size="2"/>
+            <dataType name="char" size="1"/>
+            <dataType name="uchar" size="1"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+        <numberOfTopExecutions>3</numberOfTopExecutions>
+    </simuParams>
+    <variables excelUrl=""/>
+    <parameterValues>
+        <parameter name="M" parent="UserFIRs" type="DYNAMIC" value="[1, 2, 3]"/>
+        <parameter name="NMAX" parent="mpSched" type="STATIC" value="0"/>
+        <parameter name="nbSamples2" parent="UserFIRs" type="STATIC" value="0"/>
+        <parameter name="nbSamples" parent="mpSched" type="STATIC" value="0"/>
+        <parameter name="N" parent="mpSched" type="DYNAMIC" value="[4, 5]"/>
+    </parameterValues>
+</scenario>

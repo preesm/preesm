@@ -124,6 +124,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 			return createSharedMemoryCommunication();
 		case CodegenPackage.CONSTANT_STRING:
 			return createConstantString();
+		case CodegenPackage.NULL_BUFFER:
+			return createNullBuffer();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName()
 					+ "' is not a valid classifier");
@@ -148,6 +150,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 			return createFifoOperationFromString(eDataType, initialValue);
 		case CodegenPackage.PORT_DIRECTION:
 			return createPortDirectionFromString(eDataType, initialValue);
+		case CodegenPackage.RANGE:
+			return createrangeFromString(eDataType, initialValue);
 		default:
 			throw new IllegalArgumentException("The datatype '"
 					+ eDataType.getName() + "' is not a valid classifier");
@@ -172,6 +176,8 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 			return convertFifoOperationToString(eDataType, instanceValue);
 		case CodegenPackage.PORT_DIRECTION:
 			return convertPortDirectionToString(eDataType, instanceValue);
+		case CodegenPackage.RANGE:
+			return convertrangeToString(eDataType, instanceValue);
 		default:
 			throw new IllegalArgumentException("The datatype '"
 					+ eDataType.getName() + "' is not a valid classifier");
@@ -353,6 +359,16 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
+	public NullBuffer createNullBuffer() {
+		NullBufferImpl nullBuffer = new NullBufferImpl();
+		return nullBuffer;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	public Direction createDirectionFromString(EDataType eDataType,
 			String initialValue) {
 		Direction result = Direction.get(initialValue);
@@ -471,6 +487,26 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	public String convertPortDirectionToString(EDataType eDataType,
 			Object instanceValue) {
 		return instanceValue == null ? null : instanceValue.toString();
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public org.ietr.preesm.memory.script.Range createrangeFromString(
+			EDataType eDataType, String initialValue) {
+		return (org.ietr.preesm.memory.script.Range) super.createFromString(
+				eDataType, initialValue);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public String convertrangeToString(EDataType eDataType, Object instanceValue) {
+		return super.convertToString(eDataType, instanceValue);
 	}
 
 	/**

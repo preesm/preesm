@@ -61,8 +61,8 @@ import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 
 /**
- * This page contains general informations of the {@link PiScenario} 
- * including current algorithm and current architecture
+ * This page contains general informations of the {@link PiScenario} including
+ * current algorithm and current architecture
  * 
  * @author jheulot
  */
@@ -127,6 +127,52 @@ public class PiOverviewPage extends FormPage {
 				piscenario.getArchitectureURL(),
 				Messages.getString("Overview.architectureBrowseTitle"),
 				archiExtensions);
+
+		// Simulation section
+		createIntFieldSection(managedForm,
+				Messages.getString("Overview.simulationTitle"),
+				Messages.getString("Overview.simulationDescription"),
+				Messages.getString("Overview.simulationEdit"),
+				piscenario.getNumberOfTopLevelExecutions());
+	}
+
+	private void createIntFieldSection(IManagedForm managedForm, String title,
+			String desc, String edit, int initialValue) {
+		Composite client = createSection(managedForm, title, desc, 2);
+
+		FormToolkit toolkit = managedForm.getToolkit();
+
+		GridData gd = new GridData();
+		toolkit.createLabel(client, edit);
+
+		String initialTextValue = null;
+		if (initialValue > 0) {
+			initialTextValue = String.valueOf(initialValue);
+		}
+
+		Text text = toolkit.createText(client, initialTextValue, SWT.SINGLE);
+		text.setData(title);
+		text.addModifyListener(new ModifyListener() {
+
+			@Override
+			public void modifyText(ModifyEvent e) {
+				Text text = (Text) e.getSource();
+				String type = ((String) text.getData());
+
+				if (type.equals(Messages.getString("Overview.simulationTitle"))) {
+					piscenario.setNumberOfTopLevelExecutions(Integer
+							.parseInt(text.getText()));
+					piscenario.update();
+				}
+				firePropertyChange(PROP_DIRTY);
+
+			}
+		});
+
+		gd.widthHint = 400;
+		text.setLayoutData(gd);
+
+		toolkit.paintBordersFor(client);
 
 	}
 
@@ -194,11 +240,11 @@ public class PiOverviewPage extends FormPage {
 				Text text = (Text) e.getSource();
 				String type = ((String) text.getData());
 
-				if (type.equals(Messages.getString("Overview.algorithmFile"))){
+				if (type.equals(Messages.getString("Overview.algorithmFile"))) {
 					piscenario.setAlgorithmURL(text.getText());
 					piscenario.update();
-				}
-				else if (type.equals(Messages.getString("Overview.architectureFile"))){
+				} else if (type.equals(Messages
+						.getString("Overview.architectureFile"))) {
 					piscenario.setArchitectureURL(text.getText());
 					piscenario.update();
 				}

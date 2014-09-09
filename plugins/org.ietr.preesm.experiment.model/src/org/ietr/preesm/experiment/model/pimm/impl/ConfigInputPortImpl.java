@@ -38,17 +38,16 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
-
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Config Input Port</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '
+ * <em><b>Config Input Port</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
@@ -61,8 +60,8 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 	/**
 	 * The cached value of the '{@link #getIncomingDependency() <em>Incoming Dependency</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
 	 * @see #getIncomingDependency()
 	 * @generated
 	 * @ordered
@@ -70,8 +69,7 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 	protected Dependency incomingDependency;
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 */
 	protected ConfigInputPortImpl() {
@@ -80,8 +78,7 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -90,8 +87,7 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Dependency getIncomingDependency() {
@@ -107,8 +103,7 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Dependency basicGetIncomingDependency() {
@@ -116,11 +111,11 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetIncomingDependency(Dependency newIncomingDependency, NotificationChain msgs) {
+	public NotificationChain basicSetIncomingDependency(
+			Dependency newIncomingDependency, NotificationChain msgs) {
 		Dependency oldIncomingDependency = incomingDependency;
 		incomingDependency = newIncomingDependency;
 		if (eNotificationRequired()) {
@@ -131,8 +126,7 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public void setIncomingDependency(Dependency newIncomingDependency) {
@@ -150,12 +144,12 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseAdd(InternalEObject otherEnd,
+			int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case PiMMPackage.CONFIG_INPUT_PORT__INCOMING_DEPENDENCY:
 				if (incomingDependency != null)
@@ -166,12 +160,12 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseRemove(InternalEObject otherEnd,
+			int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case PiMMPackage.CONFIG_INPUT_PORT__INCOMING_DEPENDENCY:
 				return basicSetIncomingDependency(null, msgs);
@@ -180,8 +174,7 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -195,8 +188,7 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -210,8 +202,7 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -225,8 +216,7 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -238,4 +228,9 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 		return super.eIsSet(featureID);
 	}
 
-} //ConfigInputPortImpl
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitConfigInputPort(this);
+	}
+
+} // ConfigInputPortImpl

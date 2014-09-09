@@ -43,6 +43,7 @@ import java.util.Set;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.preesm.core.scenario.serialize.ExcelConstraintsParser;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 
 /**
  * container and manager of Constraint groups. It can load and store constraint
@@ -81,11 +82,25 @@ public class ConstraintGroupManager {
 		if (cgSet.isEmpty()) {
 			ConstraintGroup cg = new ConstraintGroup();
 			cg.addOperatorId(opId);
-			cg.addVertexPath(vertex.getInfo());
+			cg.addActorPath(vertex.getInfo());
 			constraintgroups.add(cg);
 		} else {
-			((ConstraintGroup) cgSet.toArray()[0]).addVertexPath(vertex
+			((ConstraintGroup) cgSet.toArray()[0]).addActorPath(vertex
 					.getInfo());
+		}
+	}
+
+	public void addConstraint(String opId, AbstractActor vertex) {
+
+		Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
+
+		if (cgSet.isEmpty()) {
+			ConstraintGroup cg = new ConstraintGroup();
+			cg.addOperatorId(opId);
+			cg.addActorPath(vertex.getPath());
+			constraintgroups.add(cg);
+		} else {
+			((ConstraintGroup) cgSet.toArray()[0]).addActorPath(vertex.getPath());
 		}
 	}
 
@@ -116,6 +131,16 @@ public class ConstraintGroupManager {
 		if (!cgSet.isEmpty()) {
 			for (ConstraintGroup cg : cgSet) {
 				cg.removeVertexPath(vertex.getInfo());
+			}
+		}
+	}
+	
+	public void removeConstraint(String opId, AbstractActor vertex) {
+		Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
+
+		if (!cgSet.isEmpty()) {
+			for (ConstraintGroup cg : cgSet) {
+				cg.removeVertexPath(vertex.getPath());
 			}
 		}
 	}
@@ -182,11 +207,16 @@ public class ConstraintGroupManager {
 		this.excelFileURL = excelFileURL;
 	}
 
-	public void importConstraints(PreesmScenario currentScenario) throws InvalidModelException,FileNotFoundException {
+	public void importConstraints(PreesmScenario currentScenario)
+			throws InvalidModelException, FileNotFoundException {
 		if (!excelFileURL.isEmpty() && currentScenario != null) {
 			ExcelConstraintsParser parser = new ExcelConstraintsParser(
 					currentScenario);
 			parser.parse(excelFileURL, currentScenario.getOperatorIds());
 		}
+	}
+
+	public void update() {
+		removeAll();
 	}
 }

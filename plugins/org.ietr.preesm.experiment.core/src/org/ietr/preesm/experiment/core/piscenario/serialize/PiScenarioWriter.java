@@ -117,6 +117,10 @@ public class PiScenarioWriter {
 		xmlStreamWriter.writeStartElement("architecture");
 		xmlStreamWriter.writeAttribute("url", piscenario.getArchitectureURL());
 		xmlStreamWriter.writeEndElement();
+		
+		xmlStreamWriter.writeStartElement("simulation");
+		xmlStreamWriter.writeAttribute("nbExecutions", "" + piscenario.getNumberOfTopLevelExecutions());
+		xmlStreamWriter.writeEndElement();
 
 		xmlStreamWriter.writeEndElement();
 	}

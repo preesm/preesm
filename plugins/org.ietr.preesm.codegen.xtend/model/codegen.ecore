@@ -39,6 +39,13 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="size" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="childrens" upperBound="-1"
         eType="#//SubBuffer" eOpposite="#//SubBuffer/container"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="typeSize" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="mergedRange" transient="true">
+      <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EEList">
+        <eTypeArguments eClassifier="#//range"/>
+      </eGenericType>
+    </eStructuralFeatures>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="SubBuffer" eSuperTypes="#//Buffer">
     <eStructuralFeatures xsi:type="ecore:EReference" name="container" lowerBound="1"
@@ -165,4 +172,6 @@
   <eClassifiers xsi:type="ecore:EClass" name="ConstantString" eSuperTypes="#//Variable">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="NullBuffer" eSuperTypes="#//SubBuffer"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="range" instanceClassName="org.ietr.preesm.memory.script.Range"/>
 </ecore:EPackage>

@@ -53,6 +53,7 @@ import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.core.scenario.serialize.ScenarioWriter;
 import org.ietr.preesm.ui.scenario.editor.codegen.CodegenPage;
 import org.ietr.preesm.ui.scenario.editor.constraints.ConstraintsPage;
+import org.ietr.preesm.ui.scenario.editor.parametervalues.PiParametersPage;
 import org.ietr.preesm.ui.scenario.editor.simulation.SimulationPage;
 import org.ietr.preesm.ui.scenario.editor.timings.TimingsPage;
 import org.ietr.preesm.ui.scenario.editor.variables.VariablesPage;
@@ -137,6 +138,9 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements
 		VariablesPage variablesPage = new VariablesPage(scenario, this,
 				"Variables", "Variables");
 		variablesPage.addPropertyListener(this);
+		
+		PiParametersPage paramPage = new PiParametersPage(scenario, this, "Parameters", "Parameters");
+		paramPage.addPropertyListener(this);
 
 		try {
 			addPage(overviewPage);
@@ -146,8 +150,8 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements
 			addPage(simulationPage);
 			addPage(codegenPage);
 			addPage(variablesPage);
+			addPage(paramPage);
 		} catch (PartInitException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -179,7 +183,6 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements
 
 	@Override
 	public boolean isSaveAsAllowed() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -190,5 +193,4 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements
 			this.firePropertyChange(propId);
 		}
 	}
-
 }

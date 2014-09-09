@@ -98,6 +98,30 @@
             </output>
          </outputs>
       </task>
+      <task
+            id="org.ietr.preesm.memory.script.MemoryScriptTask"
+            name="Memory Script Runner"
+            type="org.ietr.preesm.memory.script.MemoryScriptTask">
+         <inputs>
+            <input
+                  id="MemEx"
+                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+            </input>
+            <input
+                  id="DAG"
+                  object="org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="MemEx"
+                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+            </output>
+         </outputs>
+      </task>
    </extension>
-
 </plugin>

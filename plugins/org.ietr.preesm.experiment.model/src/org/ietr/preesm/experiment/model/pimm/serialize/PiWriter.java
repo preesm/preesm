@@ -41,25 +41,36 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
 import org.ietr.dftools.algorithm.exporter.Key;
 import org.ietr.dftools.architecture.utils.DomUtil;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.BroadcastActor;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.ForkActor;
+import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
+import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
+import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -230,8 +241,8 @@ public class PiWriter {
 	}
 
 	/**
-	 * Write the PiMM {@link PiGraph} to the given {@link OutputStream} using the
-	 * Pi format.
+	 * Write the PiMM {@link PiGraph} to the given {@link OutputStream} using
+	 * the Pi format.
 	 * 
 	 * @param graph
 	 *            The Graph to write
@@ -283,7 +294,9 @@ public class PiWriter {
 
 		if (abstractActor instanceof Actor) {
 			writeActor(vertexElt, (Actor) abstractActor);
-		} else if (abstractActor instanceof InterfaceActor) {
+		} else if (abstractActor instanceof ExecutableActor) {
+			writeSpecialActor(vertexElt, abstractActor);
+		}else if (abstractActor instanceof InterfaceActor) {
 			writeInterfaceVertex(vertexElt, (InterfaceActor) abstractActor);
 		}
 
@@ -303,6 +316,7 @@ public class PiWriter {
 		// Set the kind of the Actor
 		vertexElt.setAttribute("kind", "actor");
 		writeRefinement(vertexElt, actor.getRefinement());
+		writeMemoryScript(vertexElt,actor.getMemoryScriptPath());
 		// writeDataElt(vertexElt, "kind", "actor");
 		// Write ports of the actor
 		writePorts(vertexElt, actor.getConfigInputPorts());
@@ -382,8 +396,7 @@ public class PiWriter {
 		}
 		dependencyElt.setAttribute("source", source.getName());
 		if (setter instanceof ConfigOutputPort) {
-			dependencyElt.setAttribute("sourceport",
-					((Port) setter).getName());
+			dependencyElt.setAttribute("sourceport", ((Port) setter).getName());
 		}
 
 		Parameterizable target = (Parameterizable) dependency.getGetter()
@@ -393,14 +406,15 @@ public class PiWriter {
 			dependencyElt.setAttribute("target",
 					((AbstractVertex) target).getName());
 
-			if (target instanceof Actor) {
+			if (target instanceof ExecutableActor) {
 				dependencyElt.setAttribute("targetport", dependency.getGetter()
 						.getName());
 			}
 		}
-		
-		if (target instanceof Delay){
-			dependencyElt.setAttribute("target",((Fifo) target.eContainer()).getId());
+
+		if (target instanceof Delay) {
+			dependencyElt.setAttribute("target",
+					((Fifo) target.eContainer()).getId());
 		}
 	}
 
@@ -416,18 +430,19 @@ public class PiWriter {
 	 */
 	protected void writeFifos(Element graphElt, Fifo fifo) {
 		// Add the node to the document
-		Element fifoElt = appendChild(graphElt, "edge");
+		Element fifoElt = appendChild(graphElt, PiXMLIdentifiers.EDGE);
 
 		// Set the source and target attributes
 		AbstractActor source = (AbstractActor) fifo.getSourcePort()
 				.eContainer();
 		AbstractActor target = (AbstractActor) fifo.getTargetPort()
 				.eContainer();
-		fifoElt.setAttribute("kind", "fifo");
-		fifoElt.setAttribute("source", source.getName());
-		fifoElt.setAttribute("target", target.getName());
-		fifoElt.setAttribute("sourceport", fifo.getSourcePort().getName());
-		fifoElt.setAttribute("targetport", fifo.getTargetPort().getName());
+		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_KIND, PiXMLIdentifiers.FIFO);
+		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_TYPE, fifo.getType());
+		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_SOURCE, source.getName());
+		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_TARGET, target.getName());
+		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_SOURCE_PORT, fifo.getSourcePort().getName());
+		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_TARGET_PORT, fifo.getTargetPort().getName());
 
 		if (fifo.getDelay() != null) {
 			writeDelay(fifoElt, fifo.getDelay());
@@ -494,6 +509,23 @@ public class PiWriter {
 		}
 
 	}
+	
+	/**
+	 * Write information of the memory script in the given {@link Element}.
+	 * 
+	 * @param vertexElt
+	 *            The {@link Element} to write
+	 * @param memScriptPath
+	 *            The memory script path to serialize
+	 */
+	protected void writeMemoryScript(Element vertexElt, IPath memScriptPath) {
+		if (memScriptPath != null) {
+			// The makeRelative() call ensures that the path is relative to the
+			// project.
+			writeDataElt(vertexElt, PiXMLIdentifiers.ACTOR_MEMORY_SCRIPT, memScriptPath
+					.makeRelative().toPortableString());
+		}
+	}
 
 	/**
 	 * Create and add a node {@link Element} to the given parent {@link Element}
@@ -551,21 +583,38 @@ public class PiWriter {
 	protected void writePorts(Element vertexElt, EList<?> ports) {
 		for (Object portObj : ports) {
 			Port port = (Port) portObj;
-			Element portElt = appendChild(vertexElt, "port");
-			portElt.setAttribute("name", port.getName());
-			portElt.setAttribute("kind", port.getKind());
-			
-			switch(port.getKind()){
+			Element portElt = appendChild(vertexElt, PiXMLIdentifiers.PORT);
+
+			String name = port.getName();
+			if (name == null || name.isEmpty()) {
+				EObject container = port.eContainer();
+				if (container instanceof AbstractVertex)
+					name = ((AbstractVertex) container).getName();
+			}
+
+			portElt.setAttribute(PiXMLIdentifiers.PORT_NAME, port.getName());
+			portElt.setAttribute(PiXMLIdentifiers.PORT_KIND, port.getKind());
+
+			switch (port.getKind()) {
 			case "input":
-				portElt.setAttribute("expr", ((DataInputPort)port).getExpression().getString());
+				portElt.setAttribute(PiXMLIdentifiers.PORT_EXPRESSION,
+						((DataInputPort) port).getExpression().getString());
 				break;
 			case "output":
-				portElt.setAttribute("expr", ((DataOutputPort)port).getExpression().getString());
+				portElt.setAttribute(PiXMLIdentifiers.PORT_EXPRESSION,
+						((DataOutputPort) port).getExpression().getString());
 				break;
 			case "cfg_input":
 				break;
 			case "cfg_output":
 				break;
+			}
+			if (port instanceof DataPort) {
+				DataPort dataPort = (DataPort) port;
+				if (dataPort.getAnnotation() != null)
+					portElt.setAttribute(
+							PiXMLIdentifiers.PORT_MEMORY_ANNOTATION, dataPort
+									.getAnnotation().toString());
 			}
 		}
 	}
@@ -579,8 +628,69 @@ public class PiWriter {
 	 *            The {@link Refinement} to serialize
 	 */
 	protected void writeRefinement(Element vertexElt, Refinement refinement) {
-		if (refinement.getFileName() != null) {
-			writeDataElt(vertexElt, "graph_desc", refinement.getFileName());
+		if (refinement != null && refinement.getFilePath() != null) {
+			// The makeRelative() call ensures that the path is relative to the
+			// project.
+			writeDataElt(vertexElt, PiXMLIdentifiers.REFINEMENT, refinement.getFilePath()
+					.makeRelative().toPortableString());
+			if (refinement instanceof HRefinement) {
+				HRefinement hrefinement = (HRefinement) refinement;
+				writeFunctionPrototype(vertexElt,
+						hrefinement.getLoopPrototype(),
+						PiXMLIdentifiers.REFINEMENT_LOOP);
+				if (hrefinement.getInitPrototype() != null)
+					writeFunctionPrototype(vertexElt,
+							hrefinement.getInitPrototype(),
+							PiXMLIdentifiers.REFINEMENT_INIT);
+			}
 		}
+	}
+
+	private void writeFunctionPrototype(Element vertexElt,
+			FunctionPrototype prototype, String functionName) {
+		Element protoElt = appendChild(vertexElt, functionName);
+		protoElt.setAttribute("name", prototype.getName());
+		for (FunctionParameter p : prototype.getParameters()) {
+			writeFunctionParameter(protoElt, p);
+		}
+	}
+
+	private void writeFunctionParameter(Element prototypeElt,
+			FunctionParameter p) {
+		Element protoElt = appendChild(prototypeElt, "param");
+		protoElt.setAttribute("name", p.getName());
+		protoElt.setAttribute("type", p.getType());
+		protoElt.setAttribute("direction", p.getDirection().toString());
+		protoElt.setAttribute("isConfig",
+				String.valueOf(p.isIsConfigurationParameter()));
+	}
+	
+	/**
+	 * Write information of the {@link Actor} in the given {@link Element}. The
+	 * {@link AbstractActor} serialized by this method is either:
+	 * {@link BroadcastActor}, {@link JoinActor}, {@link ForkActor}, and
+	 * {@link RoundBufferActor}.
+	 * 
+	 * @param vertexElt
+	 *            The {@link Element} to write
+	 * @param actor
+	 *            The {@link Actor} to serialize
+	 */
+	protected void writeSpecialActor(Element vertexElt, AbstractActor actor) {
+		String kind = null;
+		if (actor instanceof BroadcastActor) {
+			kind = "broadcast";
+		} else if (actor instanceof JoinActor) {
+			kind = "join";
+		} else if (actor instanceof ForkActor) {
+			kind = "fork";
+		}  else if(actor instanceof RoundBufferActor){
+		   kind = "roundbuffer";
+		}
+		vertexElt.setAttribute("kind", kind);
+		
+		writePorts(vertexElt, actor.getConfigInputPorts());
+		writePorts(vertexElt, actor.getDataInputPorts());
+		writePorts(vertexElt, actor.getDataOutputPorts());
 	}
 }

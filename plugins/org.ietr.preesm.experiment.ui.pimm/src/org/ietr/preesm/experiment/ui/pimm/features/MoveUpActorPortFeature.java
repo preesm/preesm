@@ -43,7 +43,7 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
@@ -87,8 +87,8 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
 			Object bo = getBusinessObjectForPictogramElement(pes[0]);
 			if (bo instanceof Port) {
 				Port port = (Port) bo;
-				if (port.eContainer() instanceof Actor) {
-					Actor actor = (Actor)(port.eContainer());
+				if (port.eContainer() instanceof ExecutableActor) {
+					ExecutableActor actor = (ExecutableActor)(port.eContainer());
 					String kind = port.getKind();
 					if(kind.compareTo("input") == 0){
 						ret = actor.getDataInputPorts().size() > 1;
@@ -122,10 +122,10 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
 			if (bo instanceof Port) {
 				Port portToMoveUp, portToMoveDown;
 				int portToMoveUpIndex, portToMoveDownIndex;
-				Actor actor;
+				ExecutableActor actor;
 				
 				portToMoveUp = (Port) bo;
-				actor = (Actor)(portToMoveUp.eContainer());
+				actor = (ExecutableActor)(portToMoveUp.eContainer());
 				String portKind = portToMoveUp.getKind();
 
 				// Switch Port into Actor Object

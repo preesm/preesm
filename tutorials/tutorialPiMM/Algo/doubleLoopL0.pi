@@ -11,49 +11,49 @@
         <node id="ReadFile" kind="actor">
             <data key="graph_desc"/>
             <port kind="cfg_output" name="N"/>
-            <port expr="0" kind="output" name="M"/>
-            <port expr="0" kind="output" name="Array"/>
+            <port expr="1" kind="output" name="M"/>
+            <port expr="1" kind="output" name="Array"/>
         </node>
         <node id="BroadCast" kind="actor">
             <data key="graph_desc"/>
-            <port expr="0" kind="input" name="in"/>
-            <port expr="0" kind="output" name="out1"/>
-            <port expr="0" kind="output" name="out2"/>
+            <port expr="1" kind="input" name="in"/>
+            <port expr="1" kind="output" name="out1"/>
+            <port expr="1" kind="output" name="out2"/>
         </node>
         <node id="InitNLoop" kind="actor">
             <data key="graph_desc"/>
             <port kind="cfg_input" name="N"/>
-            <port expr="0" kind="input" name="M_in"/>
-            <port expr="0" kind="input" name="Array_in"/>
-            <port expr="0" kind="output" name="M_out"/>
-            <port expr="0" kind="output" name="Array_out"/>
+            <port expr="1" kind="input" name="M_in"/>
+            <port expr="1" kind="input" name="Array_in"/>
+            <port expr="N" kind="output" name="M_out"/>
+            <port expr="N" kind="output" name="Array_out"/>
         </node>
         <node id="MLoop" kind="actor">
             <data key="graph_desc">doubleLoopL1.pi</data>
-            <port expr="0" kind="input" name="M_in"/>
-            <port expr="0" kind="input" name="Line_in"/>
-            <port expr="0" kind="output" name="Line_out"/>
+            <port expr="1" kind="input" name="M_in"/>
+            <port expr="1" kind="input" name="Line_in"/>
+            <port expr="1" kind="output" name="Line_out"/>
         </node>
         <node id="EndNLoop" kind="actor">
             <data key="graph_desc"/>
             <port kind="cfg_input" name="N"/>
-            <port expr="0" kind="input" name="Array_in"/>
-            <port expr="0" kind="output" name="Array_out"/>
+            <port expr="N" kind="input" name="Array_in"/>
+            <port expr="1" kind="output" name="Array_out"/>
         </node>
         <node id="WriteFile" kind="actor">
             <data key="graph_desc"/>
-            <port expr="0" kind="input" name="M"/>
-            <port expr="0" kind="input" name="Array"/>
+            <port expr="1" kind="input" name="M"/>
+            <port expr="1" kind="input" name="Array"/>
         </node>
         <node id="RB0" kind="actor">
             <data key="graph_desc"/>
-            <port expr="0" kind="input" name="in"/>
-            <port expr="0" kind="output" name="out"/>
+            <port expr="1" kind="input" name="in"/>
+            <port expr="1" kind="output" name="out"/>
         </node>
         <node id="RB1" kind="actor">
             <data key="graph_desc"/>
-            <port expr="0" kind="input" name="in"/>
-            <port expr="0" kind="output" name="out"/>
+            <port expr="1" kind="input" name="in"/>
+            <port expr="1" kind="output" name="out"/>
         </node>
         <edge kind="fifo" source="ReadFile" sourceport="M" target="RB0" targetport="in"/>
         <edge kind="fifo" source="BroadCast" sourceport="out2"

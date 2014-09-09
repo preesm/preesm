@@ -5,7 +5,7 @@
          point="org.ietr.dftools.workflow.scenarios">
       <scenario
             id="org.ietr.preesm.scenario.task"
-            type="org.ietr.preesm.core.workflow.SDFAndArchitectureScenarioNode">
+            type="org.ietr.preesm.core.workflow.AlgorithmAndArchitectureScenarioNode">
          <outputs>
             <output
                   id="scenario"
@@ -18,6 +18,10 @@
             <output
                   id="architecture"
                   object="org.ietr.dftools.architecture.slam.Design">
+            </output>
+            <output
+                  id="PiMM"
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
             </output>
          </outputs>
       </scenario>

@@ -50,7 +50,7 @@ public class IBSDFAndSLAMScenarioNode extends AbstractScenarioImplementation {
 		try {
 			scenario = scenarioParser.parseXmlFile(file);
 
-			algorithm = ScenarioParser.getAlgorithm(scenario
+			algorithm = ScenarioParser.getSDFGraph(scenario
 					.getAlgorithmURL());
 		} catch (Exception e) {
 			throw new WorkflowException(e.getMessage());

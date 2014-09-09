@@ -44,6 +44,7 @@ import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
@@ -86,12 +87,18 @@ public class UpdatePortFeature extends AbstractUpdateFeature {
 			}
 		}
 
-		// retrieve Actor name from business model (from the graph)
+		// retrieve Port name from business model (from the graph)
 		String businessName = null;
 		Object bo = getBusinessObjectForPictogramElement(pictogramElement);
 		if (bo instanceof Port) {
-			Port port = (Port) bo;
-			businessName = port.getName();
+			// if the container actor is a data interface
+			// then the port has no name.
+			if(((Port)bo).eContainer() instanceof InterfaceActor){
+				businessName = null;
+			} else {
+				Port port = (Port) bo;
+				businessName = port.getName();
+			}
 		}
 
 		// update needed, if names are different

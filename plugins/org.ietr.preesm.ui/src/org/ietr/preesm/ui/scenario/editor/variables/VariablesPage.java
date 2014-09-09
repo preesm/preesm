@@ -113,7 +113,6 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 	 */
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		// TODO Auto-generated method stub
 		super.createFormContent(managedForm);
 
 		ScrolledForm form = managedForm.getForm();
@@ -123,20 +122,23 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 		GridLayout layout = new GridLayout();
 		form.getBody().setLayout(layout);
 
-		// Timing file chooser section
-		createFileSection(managedForm,
-				Messages.getString("Variables.excelFile"),
-				Messages.getString("Variables.excelFileDescription"),
-				Messages.getString("Variables.excelFileEdit"), scenario
-						.getVariablesManager().getExcelFileURL(),
-				Messages.getString("Variables.excelFileBrowseTitle"), "xls");
+		if (scenario.isIBSDFScenario()) {
 
-		createVariablesSection(managedForm,
-				Messages.getString("Variables.title"),
-				Messages.getString("Variables.description"));
+			// Variable file chooser section
+			createFileSection(managedForm,
+					Messages.getString("Variables.excelFile"),
+					Messages.getString("Variables.excelFileDescription"),
+					Messages.getString("Variables.excelFileEdit"), scenario
+							.getVariablesManager().getExcelFileURL(),
+					Messages.getString("Variables.excelFileBrowseTitle"), "xls");
 
-		managedForm.refresh();
-		managedForm.reflow(true);
+			createVariablesSection(managedForm,
+					Messages.getString("Variables.title"),
+					Messages.getString("Variables.description"));
+
+			managedForm.refresh();
+			managedForm.reflow(true);
+		}
 
 	}
 
@@ -404,7 +406,7 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 
 		gd.widthHint = 400;
 		text.setLayoutData(gd);
-		
+
 		// Add a "Refresh" button to the scenario editor
 		final Button refreshButton = toolkit.createButton(client,
 				Messages.getString("Variables.variablesFileRefresh"), SWT.PUSH);
@@ -431,7 +433,7 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 		SelectionAdapter browseAdapter = new FileSelectionAdapter(text,
 				client.getShell(), browseTitle, fileExtension);
 		browseButton.addSelectionListener(browseAdapter);
-		
+
 		final Button exportButton = toolkit.createButton(client,
 				Messages.getString("Variables.variablesExportExcel"), SWT.PUSH);
 		exportButton.addSelectionListener(new ExcelVariablesWriter(scenario));
@@ -446,8 +448,10 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 		if (active) {
 			// Setting the current graph when the variables tab is shown
 			try {
-				currentGraph = ScenarioParser.getAlgorithm(scenario
-						.getAlgorithmURL());
+				if (scenario.isIBSDFScenario()) {
+					currentGraph = ScenarioParser.getSDFGraph(scenario
+							.getAlgorithmURL());
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

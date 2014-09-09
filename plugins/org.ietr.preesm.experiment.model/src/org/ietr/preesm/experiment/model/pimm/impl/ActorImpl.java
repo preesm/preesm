@@ -37,15 +37,13 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
-
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
@@ -55,6 +53,7 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -64,12 +63,13 @@ import org.ietr.preesm.experiment.model.pimm.Refinement;
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#getRefinement <em>Refinement</em>}</li>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#isConfigurationActor <em>Configuration Actor</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#getMemoryScriptPath <em>Memory Script Path</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class ActorImpl extends AbstractActorImpl implements Actor {
+public class ActorImpl extends ExecutableActorImpl implements Actor {
 	/**
 	 * The cached value of the '{@link #getRefinement() <em>Refinement</em>}' containment reference.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -88,6 +88,26 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 	 * @ordered
 	 */
 	protected static final boolean CONFIGURATION_ACTOR_EDEFAULT = false;
+
+	/**
+	 * The default value of the '{@link #getMemoryScriptPath() <em>Memory Script Path</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getMemoryScriptPath()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final IPath MEMORY_SCRIPT_PATH_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getMemoryScriptPath() <em>Memory Script Path</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getMemoryScriptPath()
+	 * @generated
+	 * @ordered
+	 */
+	protected IPath memoryScriptPath = MEMORY_SCRIPT_PATH_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -199,6 +219,27 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 	}
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IPath getMemoryScriptPath() {
+		return memoryScriptPath;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setMemoryScriptPath(IPath newMemoryScriptPath) {
+		IPath oldMemoryScriptPath = memoryScriptPath;
+		memoryScriptPath = newMemoryScriptPath;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH, oldMemoryScriptPath, memoryScriptPath));
+	}
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
@@ -223,6 +264,8 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 				return getRefinement();
 			case PiMMPackage.ACTOR__CONFIGURATION_ACTOR:
 				return isConfigurationActor();
+			case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
+				return getMemoryScriptPath();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -237,6 +280,9 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 			case PiMMPackage.ACTOR__REFINEMENT:
 				setRefinement((Refinement)newValue);
 				return;
+			case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
+				setMemoryScriptPath((IPath)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -250,6 +296,9 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 		switch (featureID) {
 			case PiMMPackage.ACTOR__REFINEMENT:
 				setRefinement((Refinement)null);
+				return;
+			case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
+				setMemoryScriptPath(MEMORY_SCRIPT_PATH_EDEFAULT);
 				return;
 		}
 		super.eUnset(featureID);
@@ -266,16 +315,34 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 				return refinement != null;
 			case PiMMPackage.ACTOR__CONFIGURATION_ACTOR:
 				return isSetConfigurationActor();
+			case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
+				return MEMORY_SCRIPT_PATH_EDEFAULT == null ? memoryScriptPath != null : !MEMORY_SCRIPT_PATH_EDEFAULT.equals(memoryScriptPath);
 		}
 		return super.eIsSet(featureID);
 	}
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String toString() {
+		if (eIsProxy()) return super.toString();
+
+		StringBuffer result = new StringBuffer(super.toString());
+		result.append(" (memoryScriptPath: ");
+		result.append(memoryScriptPath);
+		result.append(')');
+		return result.toString();
+	}
+
 	/**
 	 * Test if the actor is a hierarchical one.
 	 * @return true, if it is.
 	 */
 	@Override
 	public boolean isHierarchical() {
-		return !(this.getRefinement().getFileName() == null || this.getRefinement().getFileName() == "") ;
+		return !(this.getRefinement().getFilePath() == null || this.getRefinement().getFilePath().isEmpty()) ;
 	}
 	
 	/**
@@ -284,13 +351,16 @@ public class ActorImpl extends AbstractActorImpl implements Actor {
 	 */
 	@Override
 	public PiGraph getGraph() {
-		URI uri = this.getRefinement().getFileURI();
-		ResourceSet resourceSet = new ResourceSetImpl();	
-		
-		if(uri.fileExtension() == null || !uri.fileExtension().contentEquals("pi")) 
-			return null;
+		AbstractActor subgraph = this.getRefinement().getAbstractActor();		
+		if(subgraph instanceof PiGraph) 
+			return (PiGraph) subgraph;
 		else			
-			return (PiGraph) (resourceSet.getResource(uri, true).getContents().get(0));
+			return null;
+	}
+
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitActor(this);
 	}
 
 } // ActorImpl

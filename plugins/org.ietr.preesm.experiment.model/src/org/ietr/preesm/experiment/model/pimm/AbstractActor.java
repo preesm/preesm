@@ -36,6 +36,7 @@
 package org.ietr.preesm.experiment.model.pimm;
 
 import org.eclipse.emf.common.util.EList;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
 
 /**
  * <!-- begin-user-doc --> A representation of the model object '
@@ -54,7 +55,7 @@ import org.eclipse.emf.common.util.EList;
  * @model abstract="true"
  * @generated
  */
-public interface AbstractActor extends AbstractVertex {
+public interface AbstractActor extends AbstractVertex, PiMMVisitable {
 	/**
 	 * Returns the value of the '<em><b>Data Input Ports</b></em>' containment reference list.
 	 * The list contents are of type {@link org.ietr.preesm.experiment.model.pimm.DataInputPort}.
@@ -102,5 +103,7 @@ public interface AbstractActor extends AbstractVertex {
 	 * @generated
 	 */
 	EList<ConfigOutputPort> getConfigOutputPorts();
+
+	public String getPath();
 
 } // AbstractActor

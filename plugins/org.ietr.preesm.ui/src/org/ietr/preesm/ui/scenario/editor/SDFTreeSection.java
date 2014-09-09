@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -88,13 +88,13 @@ public class SDFTreeSection extends SectionPart {
 				SWT.CHECK));
 
 		// The content provider fills the tree
-		SDFTreeContentProvider contentProvider = new SDFTreeContentProvider(
+		PreesmAlgorithmTreeContentProvider contentProvider = new PreesmAlgorithmTreeContentProvider(
 				treeviewer);
 		treeviewer.setContentProvider(contentProvider);
 
 		// The check state listener modifies the check status of elements
 		checkStateListener.setTreeViewer(treeviewer, contentProvider, listener);
-		treeviewer.setLabelProvider(new SDFTreeLabelProvider());
+		treeviewer.setLabelProvider(new PreesmAlgorithmTreeLabelProvider());
 		treeviewer.setAutoExpandLevel(AbstractTreeViewer.ALL_LEVELS);
 
 		treeviewer.addCheckStateListener(checkStateListener);

@@ -144,6 +144,8 @@ public class SdfToDagConverter {
 							+ " edges.");
 		}
 
+		scenario.getDAGs2SDFs().put(dag.getName(), sdfIn);
+		
 		return dag;
 	}
 
@@ -412,8 +414,12 @@ public class SdfToDagConverter {
 
 			for (DAGVertex v : dag.vertexSet()) {
 				MapperDAGVertex mv = (MapperDAGVertex) v;
-				if (sdfVertexIds.contains(mv.getCorrespondingSDFVertex()
-						.getInfo())) {
+				
+				SDFAbstractVertex correspondingVertex = mv.getCorrespondingSDFVertex();
+				
+				String lookingFor = correspondingVertex.getInfo();
+				
+				if (sdfVertexIds.contains(lookingFor)) {
 
 					for (String opId : cg.getOperatorIds()) {
 						ComponentInstance currentIOp = DesignTools

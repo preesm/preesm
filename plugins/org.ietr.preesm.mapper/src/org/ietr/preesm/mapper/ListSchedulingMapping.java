@@ -68,12 +68,6 @@ import org.ietr.preesm.mapper.params.AbcParameters;
  */
 public class ListSchedulingMapping extends AbstractMapping {
 
-	/**
-	 * 
-	 */
-	public ListSchedulingMapping() {
-	}
-
 	@Override
 	public Map<String, String> getDefaultParameters() {
 		Map<String, String> parameters = super.getDefaultParameters();
@@ -85,10 +79,9 @@ public class ListSchedulingMapping extends AbstractMapping {
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName, Workflow workflow) throws WorkflowException {
 
-		Map<String, Object> outputs = new HashMap<String, Object>();
-		Design architecture = (Design) inputs.get("architecture");
-		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
-		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+		Design architecture = (Design) inputs.get(KEY_ARCHITECTURE);
+		SDFGraph algorithm = (SDFGraph) inputs.get(KEY_SDF_GRAPH);
+		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
 
 		super.execute(inputs, parameters, monitor, nodeName, workflow);
 
@@ -97,14 +90,9 @@ public class ListSchedulingMapping extends AbstractMapping {
 		MapperDAG dag = SdfToDagConverter.convert(algorithm, architecture,
 				scenario, false);
 
-		// DAGExporter exporter = new DAGExporter();
-		// exporter.export(dag,
-		// "D:\\Projets\\LTE\\PreesmProjects\\MPEG4P2_Encoder_Preesm\\DAG\\test.graphml");
-
 		// calculates the DAG span length on the architecture main operator (the
-		// tasks that can
-		// not be executed by the main operator are deported without transfer
-		// time to other operator)
+		// tasks that can not be executed by the main operator are deported
+		// without transfer time to other operator)
 		calculateSpan(dag, architecture, scenario, abcParameters);
 
 		IAbc simu = new InfiniteHomogeneousAbc(abcParameters, dag,
@@ -124,8 +112,6 @@ public class ListSchedulingMapping extends AbstractMapping {
 		// order of the infinite homogeneous simulation
 		AbstractTaskSched taskSched = new TopologicalTaskSched(
 				simu.getTotalOrder());
-
-		// AbstractTaskSched taskSched = new TaskSwitcher();
 
 		simu.resetDAG();
 		IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture,
@@ -147,8 +133,9 @@ public class ListSchedulingMapping extends AbstractMapping {
 			throw (new WorkflowException(e.getMessage()));
 		}
 
-		outputs.put("DAG", dag);
-		outputs.put("ABC", simu2);
+		Map<String, Object> outputs = new HashMap<String, Object>();
+		outputs.put(KEY_SDF_DAG, dag);
+		outputs.put(KEY_SDF_ABC, simu2);
 
 		super.clean(architecture, scenario);
 		return outputs;

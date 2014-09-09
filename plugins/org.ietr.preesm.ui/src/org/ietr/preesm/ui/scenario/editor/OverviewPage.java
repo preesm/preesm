@@ -36,9 +36,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.ui.scenario.editor;
 
+import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -57,6 +59,7 @@ import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
 /**
@@ -100,6 +103,7 @@ public class OverviewPage extends FormPage {
 		form.getBody().setLayout(layout);
 
 		Set<String> algoExtensions = new HashSet<String>();
+		algoExtensions.add("pi");
 		algoExtensions.add("graphml");
 
 		// Algorithm file chooser section
@@ -190,11 +194,23 @@ public class OverviewPage extends FormPage {
 				Text text = (Text) e.getSource();
 				String type = ((String) text.getData());
 
-				if (type.equals(Messages.getString("Overview.algorithmFile")))
+				if (type.equals(Messages.getString("Overview.algorithmFile"))) {
 					scenario.setAlgorithmURL(text.getText());
+					try {
+						scenario.update(true, false);
+					} catch (InvalidModelException | CoreException | FileNotFoundException e1) {
+						e1.printStackTrace();
+					}
+				}
 				else if (type.equals(Messages
-						.getString("Overview.architectureFile")))
+						.getString("Overview.architectureFile"))) {
 					scenario.setArchitectureURL(text.getText());
+					try {
+						scenario.update(false, true);
+					} catch (InvalidModelException | CoreException | FileNotFoundException e1) {
+						e1.printStackTrace();
+					}
+				}
 
 				firePropertyChange(PROP_DIRTY);
 

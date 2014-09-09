@@ -38,12 +38,19 @@ package org.ietr.preesm.mapper.exporter;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.logging.Level;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.exporter.GMLExporter;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
+import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.w3c.dom.Element;
 
@@ -151,6 +158,22 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 	protected Element exportPort(DAGVertex interfaceVertex,
 			Element parentELement) {
 		return null;
+	}
+	
+	public void exportDAG(DirectedAcyclicGraph dag, Path path) {
+
+		MapperDAG mapperDag = (MapperDAG) dag;
+
+		MapperDAG clone = mapperDag.clone();
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IFile iGraphMLFile = workspace.getRoot().getFile(path);
+
+		if (iGraphMLFile.getLocation() != null) {
+			this.export(clone, iGraphMLFile.getLocation().toOSString());
+		} else {
+			WorkflowLogger.getLogger().log(Level.SEVERE,
+					"The output file " + path + " can not be written.");
+		}
 	}
 
 }

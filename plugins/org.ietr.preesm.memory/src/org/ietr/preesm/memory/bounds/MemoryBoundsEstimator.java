@@ -44,13 +44,8 @@ import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
-import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.memory.allocation.MemoryAllocatorTask;
-import org.ietr.preesm.memory.exclusiongraph.MemExBroadcastMerger;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
-import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
-import org.jgrapht.graph.DefaultEdge;
 
 /**
  * Workflow element that takes a MemoryExclusionGraph as input and computes its
@@ -60,22 +55,7 @@ import org.jgrapht.graph.DefaultEdge;
  * @author kdesnos
  * 
  */
-public class MemoryBoundsEstimator extends AbstractTaskImplementation {
-
-	static final public String PARAM_SOLVER = "Solver";
-	static final public String VALUE_SOLVER_DEFAULT = "? C {Heuristic, Ostergard, Yamaguchi}";
-	static final public String VALUE_SOLVER_OSTERGARD = "Ostergard";
-	static final public String VALUE_SOLVER_YAMAGUCHI = "Yamaguchi";
-	static final public String VALUE_SOLVER_HEURISTIC = "Heuristic";
-
-	static final public String PARAM_VERBOSE = "Verbose";
-	static final public String VALUE_VERBOSE_DEFAULT = "? C {True, False}";
-	static final public String VALUE_VERBOSE_TRUE = "True";
-	static final public String VALUE_VERBOSE_FALSE = "False";
-
-	static final public String OUTPUT_KEY_BOUND_MIN = "BoundMin";
-	static final public String OUTPUT_KEY_BOUND_MAX = "BoundMax";
-	static final public String OUTPUT_KEY_MEM_EX = "MemEx";
+public class MemoryBoundsEstimator extends AbstractMemoryBoundsEstimator {
 
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
@@ -87,99 +67,30 @@ public class MemoryBoundsEstimator extends AbstractTaskImplementation {
 
 		// Check Workflow element parameters
 		String valueVerbose = parameters.get(PARAM_VERBOSE);
-		boolean verbose;
-		verbose = valueVerbose.contains(VALUE_VERBOSE_TRUE);
-
 		String valueSolver = parameters.get(PARAM_SOLVER);
-		if (verbose) {
-			if (valueSolver.equals(VALUE_SOLVER_DEFAULT)) {
-				logger.log(Level.INFO,
-						"No solver specified. Heuristic solver used by default.");
-			} else {
-				if (valueSolver.equals(VALUE_SOLVER_HEURISTIC)
-						|| valueSolver.equals(VALUE_SOLVER_OSTERGARD)
-						|| valueSolver.equals(VALUE_SOLVER_YAMAGUCHI)) {
-					logger.log(Level.INFO, valueSolver + " solver used.");
-				} else {
-					logger.log(Level.INFO, "Incorrect solver :" + valueSolver
-							+ ". Heuristic solver used by default.");
-				}
-			}
-		}
-
+		
 		MemoryExclusionGraph memEx = (MemoryExclusionGraph) inputs.get("MemEx");
 		
-		// Check if the broadcast were merged in the past
-		String merged = memEx.getPropertyStringValue(MemoryAllocatorTask.BROADCAST_MERGED_PROPERTY);
-		MemExBroadcastMerger merger = null;
-		if(merged!=null && merged.equalsIgnoreCase("true") && !valueVerbose.contains("NO_MERGE")){
-			int nbBefore = memEx.vertexSet().size();
-			if(verbose){
-				logger.log(Level.INFO,
-						"Merging broadcast edges (when possible).");
-			}
-			merger = new MemExBroadcastMerger(memEx);
-			int nbBroadcast = merger.merge();
-			
-			if (verbose) {
-				logger.log(Level.INFO, "Merging broadcast: " + nbBroadcast
-						+ " were mergeable for a total of "
-						+ (nbBefore - memEx.vertexSet().size())
-						+ " memory objects.");
-			}
-		}
-
-		double density = memEx.edgeSet().size()
-				/ (memEx.vertexSet().size() * (memEx.vertexSet().size() - 1) / 2.0);
-		if (verbose)
-			logger.log(Level.INFO, "Memory exclusion graph with "
-					+ memEx.vertexSet().size() + " vertices and density = "
-					+ density);
-
-		// Derive bounds
-		AbstractMaximumWeightCliqueSolver<MemoryExclusionVertex, DefaultEdge> solver = null;
-
-		switch (valueSolver) {
-		case VALUE_SOLVER_HEURISTIC:
-			solver = new HeuristicSolver<MemoryExclusionVertex, DefaultEdge>(
-					memEx);
-			break;
-		case VALUE_SOLVER_OSTERGARD:
-			solver = new OstergardSolver<MemoryExclusionVertex, DefaultEdge>(
-					memEx);
-			break;
-		case VALUE_SOLVER_YAMAGUCHI:
-			solver = new YamaguchiSolver<MemoryExclusionVertex, DefaultEdge>(
-					memEx);
-			break;
-		default:
-			solver = new HeuristicSolver<MemoryExclusionVertex, DefaultEdge>(
-					memEx);
-		}
-
-		if (verbose) {
-			logger.log(Level.INFO,
-					"Maximum-Weight Clique Problem : start solving");
-		}
-
-		solver.solve();
-		int minBound = solver.sumWeight(solver.getHeaviestClique());
-		int maxBound = solver.sumWeight(memEx.vertexSet());
+		MemoryBoundsEstimatorEngine engine = new MemoryBoundsEstimatorEngine(memEx, valueVerbose);
+		engine.mergeBroadcasts();
+		engine.selectSolver(valueSolver);
+		engine.solve();
+		
+		int minBound = engine.getMinBound();
+		
+		int maxBound = engine.getMaxBound();
 
 		logger.log(Level.INFO, "Bound_Max = " + maxBound + " Bound_Min = "
 				+ minBound);
 		System.out.println(minBound+";");
 		
-		// unmerge
-		if(merger != null){
-			merger.unmerge();
-		}
+		engine.unmerge();
 
 		// Generate output
 		Map<String, Object> output = new HashMap<String, Object>();
-		output.put(OUTPUT_KEY_BOUND_MAX, maxBound);
-		output.put(OUTPUT_KEY_BOUND_MIN, minBound);
-		output.put(OUTPUT_KEY_MEM_EX, memEx);
+		output.put(KEY_BOUND_MAX, maxBound);
+		output.put(KEY_BOUND_MIN, minBound);
+		output.put(KEY_MEM_EX, memEx);
 		return output;
 	}
 

@@ -48,11 +48,12 @@ import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.experiment.core.piscenario.serialize.PiScenarioParser;
 
 /**
- * Storing all information of a {@link PiScenario}: a scenario for PiGraphs 
+ * Storing all information of a {@link PiScenario}: a scenario for PiGraphs
+ * 
  * @author jheulot
- *
+ * 
  */
-public class PiScenario {	
+public class PiScenario {
 	/**
 	 * Path to the algorithm file
 	 */
@@ -67,12 +68,12 @@ public class PiScenario {
 	 * Path to the scenario file
 	 */
 	private String scenarioURL = "";
-	
+
 	/**
 	 * The {@link ActorTree} storing timings and constraints.
 	 */
 	private ActorTree actorTree;
-	
+
 	/**
 	 * Set of Operators
 	 */
@@ -82,14 +83,19 @@ public class PiScenario {
 	 * Set of Operator Types
 	 */
 	private Set<String> operatorTypes;
-		
+
+	/**
+	 * Number of executions of the top level graph (the one describe by the .pi
+	 * file given to the PiScenario)
+	 */
+	private int numberOfTopLevelExecutions = 0;
 
 	public PiScenario() {
 		setActorTree(new ActorTree(this));
 		operatorIds = new HashSet<String>();
 		operatorTypes = new HashSet<String>();
 	}
-	
+
 	public String getScenarioURL() {
 		return scenarioURL;
 	}
@@ -97,7 +103,7 @@ public class PiScenario {
 	public void setScenarioURL(String scenarioURL) {
 		this.scenarioURL = scenarioURL;
 	}
-	
+
 	public String getAlgorithmURL() {
 		return algorithmURL;
 	}
@@ -109,7 +115,7 @@ public class PiScenario {
 	public void setAlgorithmURL(String algorithmURL) {
 		this.algorithmURL = algorithmURL;
 	}
-	
+
 	public String getArchitectureURL() {
 		return architectureURL;
 	}
@@ -136,8 +142,8 @@ public class PiScenario {
 
 	public void update() {
 		if (architectureURL.endsWith(".slam")) {
-			Map<String, Object> extToFactoryMap = 
-					Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
+			Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE
+					.getExtensionToFactoryMap();
 			Object instance = extToFactoryMap.get("slam");
 			if (instance == null) {
 				instance = new IPXACTResourceFactoryImpl();
@@ -154,15 +160,23 @@ public class PiScenario {
 
 			operatorIds.clear();
 			operatorIds.addAll(DesignTools.getOperatorInstanceIds(design));
-//			piscenario.setComNodeIds(DesignTools.getComNodeInstanceIds(design));
+			// piscenario.setComNodeIds(DesignTools.getComNodeInstanceIds(design));
 			operatorTypes.clear();
 			operatorTypes.addAll(DesignTools.getOperatorComponentIds(design));
-			
-		}else{
+
+		} else {
 			operatorIds.clear();
 			operatorTypes.clear();
 		}
-		
+
 		actorTree.update();
+	}
+
+	public int getNumberOfTopLevelExecutions() {
+		return numberOfTopLevelExecutions;
+	}
+
+	public void setNumberOfTopLevelExecutions(int numberOfTopLevelExecutions) {
+		this.numberOfTopLevelExecutions = numberOfTopLevelExecutions;
 	}
 }

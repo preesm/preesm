@@ -40,6 +40,7 @@ import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -75,6 +76,19 @@ public class DataOutputInterfaceImpl extends InterfaceActorImpl implements
 	@Override
 	protected EClass eStaticClass() {
 		return PiMMPackage.Literals.DATA_OUTPUT_INTERFACE;
+	}
+	
+	@Override
+	public void accept(PiMMVisitor v) {
+		v.visitDataOutputInterface(this);
+	}
+	
+	@Override
+	public void setName(String value) {
+		super.setName(value);
+		for (DataInputPort p : getDataInputPorts()) {
+			p.setName(value);
+		}
 	}
 
 } // SinkInterfaceImpl

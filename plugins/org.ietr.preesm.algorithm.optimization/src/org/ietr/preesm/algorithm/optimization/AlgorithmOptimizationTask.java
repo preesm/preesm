@@ -55,15 +55,13 @@ import org.ietr.preesm.algorithm.optimization.clean.joinfork.JoinForkCleaner;
  */
 public class AlgorithmOptimizationTask extends AbstractTaskImplementation {
 
-	private static final String SDF_KEY = "SDF";
-
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName, Workflow workflow) throws WorkflowException {
 
 		// Get the SDFGraph to optimize
-		SDFGraph graph = (SDFGraph) inputs.get(SDF_KEY);
+		SDFGraph graph = (SDFGraph) inputs.get(KEY_SDF_GRAPH);
 
 		// First pass is to clean the graph from useless pairs of join-fork
 		// vertices which can hinder scheduling
@@ -80,7 +78,7 @@ public class AlgorithmOptimizationTask extends AbstractTaskImplementation {
 		}
 
 		Map<String, Object> outputs = new HashMap<String, Object>();
-		outputs.put(SDF_KEY, graph);
+		outputs.put(KEY_SDF_GRAPH, graph);
 		return outputs;
 	}
 

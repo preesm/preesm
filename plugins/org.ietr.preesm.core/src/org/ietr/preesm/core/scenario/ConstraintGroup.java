@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -56,11 +56,11 @@ public class ConstraintGroup {
 	/**
 	 * The set of graphs belonging to the constraint group
 	 */
-	private Set<String> sdfVertexPaths;
+	private Set<String> actorsPaths;
 
 	public ConstraintGroup() {
 		operatorIds = new HashSet<String>();
-		sdfVertexPaths = new HashSet<String>();
+		actorsPaths = new HashSet<String>();
 
 	}
 
@@ -75,16 +75,16 @@ public class ConstraintGroup {
 	 * When a vertex is added to the constraints, its hierarchical path is added
 	 * in its properties in order to separate distinct vertices with same name
 	 */
-	public void addVertexPath(String vertexId) {
+	public void addActorPath(String vertexId) {
 		if (!hasVertexPath(vertexId)) {
-			sdfVertexPaths.add(vertexId);
+			actorsPaths.add(vertexId);
 
 		}
 	}
 
 	public void addVertexPaths(Set<String> vertexIdSet) {
 		for (String vertexId : vertexIdSet) {
-			addVertexPath(vertexId);
+			addActorPath(vertexId);
 		}
 	}
 
@@ -99,7 +99,7 @@ public class ConstraintGroup {
 	}
 
 	public Set<String> getVertexPaths() {
-		return new HashSet<String>(sdfVertexPaths);
+		return new HashSet<String>(actorsPaths);
 	}
 
 	public boolean hasOperatorId(String operatorId) {
@@ -115,7 +115,7 @@ public class ConstraintGroup {
 
 	public boolean hasVertexPath(String vertexInfo) {
 
-		for (String vId : sdfVertexPaths) {
+		for (String vId : actorsPaths) {
 			if (vId.equals(vertexInfo)) {
 				return true;
 			}
@@ -135,7 +135,7 @@ public class ConstraintGroup {
 	}
 
 	public void removeVertexPath(String sdfVertexInfo) {
-		Iterator<String> it = sdfVertexPaths.iterator();
+		Iterator<String> it = actorsPaths.iterator();
 		while (it.hasNext()) {
 			String v = it.next();
 			if ((v.equals(sdfVertexInfo))) {
@@ -149,7 +149,7 @@ public class ConstraintGroup {
 	public String toString() {
 		String s = "<";
 		s += operatorIds.toString();
-		s += sdfVertexPaths.toString();
+		s += actorsPaths.toString();
 		s += ">";
 
 		return s;

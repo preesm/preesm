@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="model" attr.type="string" for="graph"/>
+    <key attr.name="name" attr.type="string" for="node"/>
+    <key attr.name="kind" attr.type="string" for="node"/>
+    <key attr.name="port_direction" attr.type="string" for="node"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="nbRepeat" attr.type="int" for="node"/>
+    <key attr.name="memory_script" attr.type="string" for="node"/>
+    <key attr.name="edge_cons" attr.type="string" for="edge"/>
+    <key attr.name="edge_delay" attr.type="string" for="edge"/>
+    <key attr.name="edge_prod" attr.type="string" for="edge"/>
+    <key attr.name="target_port_modifier" attr.type="string" for="edge"/>
+    <key attr.name="source_port_modifier" attr.type="string" for="edge"/>
+    <key attr.name="data_type" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">YUVstereo_top</data>
+        <data key="kind">sdf</data>
+        <data key="parameters"/>
+        <data key="variables">
+            <variable name="height" value="270"/>
+            <variable name="maxDisparity" value="8"/>
+            <variable name="minDisparity" value="-8"/>
+            <variable name="nbIterations" value="5"/>
+            <variable name="nbSlice" value="2"/>
+            <variable name="scale" value="12"/>
+            <variable name="truncValue" value="12"/>
+            <variable name="width" value="480"/>
+        </data>
+        <node id="Display_rgb0">
+            <data key="name">Display_rgb0</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/displayRGB.idl</data>
+            <data key="arguments">
+                <argument name="height" value="height"/>
+                <argument name="index" value="0"/>
+                <argument name="width" value="width"/>
+            </data>
+        </node>
+        <node id="Display_rgb1">
+            <data key="name">Display_rgb1</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/displayLum.idl</data>
+            <data key="arguments">
+                <argument name="height" value="height"/>
+                <argument name="index" value="1"/>
+                <argument name="width" value="width"/>
+            </data>
+        </node>
+        <node id="RGB2Gray_L">
+            <data key="name">RGB2Gray_L</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/RGB2Gray.idl</data>
+            <data key="arguments">
+                <argument name="size" value="height*width"/>
+            </data>
+        </node>
+        <node id="RGB2Gray_R">
+            <data key="name">RGB2Gray_R</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/RGB2Gray.idl</data>
+            <data key="memory_script">../Code/Scripts/rgb2gray.bsh</data>
+            <data key="arguments">
+                <argument name="size" value="height*width"/>
+            </data>
+        </node>
+        <node id="Census_L">
+            <data key="name">Census_L</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/census.idl</data>
+            <data key="arguments">
+                <argument name="height" value="height"/>
+                <argument name="width" value="width"/>
+            </data>
+        </node>
+        <node id="Census_R">
+            <data key="name">Census_R</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/census.idl</data>
+            <data key="arguments">
+                <argument name="height" value="height"/>
+                <argument name="width" value="width"/>
+            </data>
+        </node>
+        <node id="Cost_Parallel_Work">
+            <data key="name">Cost_Parallel_Work</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">cost_parallel_work.graphml</data>
+            <data key="arguments">
+                <argument name="height" value="height"/>
+                <argument name="maxDisparity" value="maxDisparity"/>
+                <argument name="minDisparity" value="minDisparity"/>
+                <argument name="nbIterations" value="nbIterations"/>
+                <argument name="scale" value="scale"/>
+                <argument name="truncValue" value="truncValue"/>
+                <argument name="width" value="width"/>
+            </data>
+        </node>
+        <node id="medianFilter">
+            <data key="name">medianFilter</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/medianFilter.idl</data>
+            <data key="arguments">
+                <argument name="height" value="height/nbSlice+2"/>
+                <argument name="topDownBorderSize" value="1"/>
+                <argument name="width" value="width"/>
+            </data>
+        </node>
+        <node id="Split">
+            <data key="name">Split</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/split.idl</data>
+            <data key="memory_script">../Code/Scripts/split.bsh</data>
+            <data key="arguments">
+                <argument name="height" value="height"/>
+                <argument name="nbSlice" value="nbSlice"/>
+                <argument name="overlap" value="1"/>
+                <argument name="width" value="width"/>
+            </data>
+        </node>
+        <node id="yuv2rgb">
+            <data key="name">yuv2rgb</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/yuv2RGB.idl</data>
+            <data key="arguments">
+                <argument name="height" value="height"/>
+                <argument name="width" value="width"/>
+            </data>
+        </node>
+        <node id="Read_YUV">
+            <data key="name">Read_YUV</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/readYuv.idl</data>
+            <data key="arguments">
+                <argument name="id" value="0"/>
+                <argument name="xSize" value="width"/>
+                <argument name="ySize" value="height"/>
+            </data>
+        </node>
+        <node id="Read_YUV_R">
+            <data key="name">Read_YUV_R</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/readYuv.idl</data>
+            <data key="arguments">
+                <argument name="id" value="1"/>
+                <argument name="xSize" value="width"/>
+                <argument name="ySize" value="height"/>
+            </data>
+        </node>
+        <node id="yuv2rgb_R">
+            <data key="name">yuv2rgb_R</data>
+            <data key="kind">vertex</data>
+            <data key="graph_desc">../Code/IDL/yuv2RGB.idl</data>
+            <data key="arguments">
+                <argument name="height" value="height"/>
+                <argument name="width" value="width"/>
+            </data>
+        </node>
+        <edge source="RGB2Gray_L" sourceport="gray" target="Census_L" targetport="gray">
+            <data key="edge_prod">height*width</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width</data>
+            <data key="data_type">float</data>
+            <data key="target_port_modifier">read_only</data>
+        </edge>
+        <edge source="RGB2Gray_R" sourceport="gray" target="Census_R" targetport="gray">
+            <data key="edge_prod">width*height</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">width*height</data>
+            <data key="data_type">float</data>
+            <data key="target_port_modifier">read_only</data>
+        </edge>
+        <edge source="Cost_Parallel_Work" sourceport="raw_disparity"
+            target="Split" targetport="input">
+            <data key="edge_prod">height*width</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="Split" sourceport="output" target="medianFilter" targetport="rawDisparity">
+            <data key="edge_prod">nbSlice*(height*width/nbSlice+2*width)</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width/nbSlice+2*width</data>
+            <data key="data_type">uchar</data>
+            <data key="target_port_modifier">read_only</data>
+        </edge>
+        <edge source="RGB2Gray_L" sourceport="gray"
+            target="Cost_Parallel_Work" targetport="grayL">
+            <data key="edge_prod">height*width</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width</data>
+            <data key="data_type">float</data>
+            <data key="target_port_modifier">read_only</data>
+        </edge>
+        <edge source="Census_L" sourceport="cen"
+            target="Cost_Parallel_Work" targetport="cenL">
+            <data key="edge_prod">height*width</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="RGB2Gray_R" sourceport="gray"
+            target="Cost_Parallel_Work" targetport="grayR">
+            <data key="edge_prod">height*width</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width</data>
+            <data key="data_type">float</data>
+            <data key="target_port_modifier">read_only</data>
+        </edge>
+        <edge source="Census_R" sourceport="cen"
+            target="Cost_Parallel_Work" targetport="cenR">
+            <data key="edge_prod">height*width</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="Read_YUV" sourceport="y" target="yuv2rgb" targetport="y">
+            <data key="edge_prod">height*width</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="Read_YUV" sourceport="u" target="yuv2rgb" targetport="u">
+            <data key="edge_prod">height*width/4</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width/4</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="Read_YUV" sourceport="v" target="yuv2rgb" targetport="v">
+            <data key="edge_prod">height*width/4</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width/4</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="yuv2rgb" sourceport="rgb"
+            target="Cost_Parallel_Work" targetport="rgbL">
+            <data key="edge_prod">height*width*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="yuv2rgb" sourceport="rgb" target="Display_rgb0" targetport="rgb">
+            <data key="edge_prod">height*width*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width*3</data>
+            <data key="data_type">uchar</data>
+            <data key="target_port_modifier">read_only</data>
+        </edge>
+        <edge source="yuv2rgb" sourceport="rgb" target="RGB2Gray_L" targetport="rgb">
+            <data key="edge_prod">height*width*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width*3</data>
+            <data key="data_type">uchar</data>
+            <data key="target_port_modifier">read_only</data>
+        </edge>
+        <edge source="Read_YUV_R" sourceport="y" target="yuv2rgb_R" targetport="y">
+            <data key="edge_prod">height*width</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="Read_YUV_R" sourceport="u" target="yuv2rgb_R" targetport="u">
+            <data key="edge_prod">height*width/4</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width/4</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="Read_YUV_R" sourceport="v" target="yuv2rgb_R" targetport="v">
+            <data key="edge_prod">height*width/4</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width/4</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="yuv2rgb_R" sourceport="rgb" target="RGB2Gray_R" targetport="rgb">
+            <data key="edge_prod">height*width*3</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width*3</data>
+            <data key="data_type">uchar</data>
+        </edge>
+        <edge source="medianFilter" sourceport="filteredDisparity"
+            target="Display_rgb1" targetport="lum">
+            <data key="edge_prod">height*width/nbSlice</data>
+            <data key="edge_delay">0</data>
+            <data key="edge_cons">height*width</data>
+            <data key="data_type">uchar</data>
+            <data key="target_port_modifier">read_only</data>
+        </edge>
+    </graph>
+</graphml>

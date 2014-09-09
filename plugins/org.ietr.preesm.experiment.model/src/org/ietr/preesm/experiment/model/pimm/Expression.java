@@ -36,6 +36,7 @@
 package org.ietr.preesm.experiment.model.pimm;
 
 import org.eclipse.emf.ecore.EObject;
+import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
 
 
 /**
@@ -54,7 +55,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model
  * @generated
  */
-public interface Expression extends EObject {
+public interface Expression extends EObject, PiMMVisitable {
 
 	/**
 	 * Returns the value of the '<em><b>String</b></em>' attribute.

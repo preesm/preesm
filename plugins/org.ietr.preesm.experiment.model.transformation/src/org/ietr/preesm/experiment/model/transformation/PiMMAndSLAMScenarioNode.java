@@ -60,7 +60,7 @@ public class PiMMAndSLAMScenarioNode extends AbstractScenarioImplementation {
 		Design slamDesign = PiScenarioParser.parseSlamDesign(piScenario
 				.getArchitectureURL());
 
-		outputs.put("piscenario", piScenario);
+		outputs.put("scenario", piScenario);
 		outputs.put("PiMM", pigraph);
 		outputs.put("architecture", slamDesign);
 		return outputs;

@@ -68,9 +68,6 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
 
 	static final public String PARAM_SUPPR_FORK_JOIN = "Suppr Fork/Join";
 
-	static final public String OUTPUT_KEY_MEM_EX = "MemEx";
-	static final public String OUTPUT_KEY_DAG = "DAG";
-
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
@@ -126,8 +123,7 @@ public class MemoryExclusionGraphBuilder extends AbstractTaskImplementation {
 
 		// Generate output
 		Map<String, Object> output = new HashMap<String, Object>();
-		output.put(OUTPUT_KEY_MEM_EX, memEx);
-		output.put(OUTPUT_KEY_DAG, localDAG);
+		output.put(KEY_MEM_EX, memEx);
 		return output;
 	}
 
