@@ -26,5 +26,5 @@ Export-Package: org.ietr.preesm.codegen.xtend.task,
  org.ietr.preesm.codegen.xtend.model.codegen,
  org.ietr.preesm.codegen.xtend.model.codegen.impl,
  org.ietr.preesm.codegen.xtend.model.codegen.util
-Bundle-Version: 1.1.0.qualifier
+Bundle-Version: 2.0.0.qualifier
 
