@@ -319,6 +319,9 @@ public class PreesmScenario {
 			getOperatorDefinitionIds().clear();
 			getOperatorDefinitionIds().addAll(DesignTools
 					.getOperatorComponentIds(design));
+			
+			getComNodeIds().clear();
+			getComNodeIds().addAll(DesignTools.getComNodeInstanceIds(design));
 
 		}
 
