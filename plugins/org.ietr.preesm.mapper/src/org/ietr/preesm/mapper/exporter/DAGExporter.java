@@ -49,7 +49,17 @@ import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGBroadcastVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGEndVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGInitVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGJoinVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFJoinVertex;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.w3c.dom.Element;
@@ -74,7 +84,30 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 	protected Element exportNode(DAGVertex vertex, Element parentELement) {
 
 		Element vertexElt = createNode(parentELement, vertex.getName());
-		vertexElt.setAttribute(SDFAbstractVertex.KIND, "vertex");
+		String kind;
+		switch (vertex.getKind()) {
+		case DAGVertex.DAG_VERTEX:
+			kind = "vertex";
+			break;
+		case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
+			kind = SDFBroadcastVertex.BROADCAST;
+			break;
+		case DAGEndVertex.DAG_END_VERTEX:
+			kind = SDFEndVertex.END;
+			break;
+		case DAGForkVertex.DAG_FORK_VERTEX:
+			kind = SDFForkVertex.FORK;
+			break;
+		case DAGInitVertex.DAG_INIT_VERTEX:
+			kind = SDFInitVertex.INIT;
+			break;
+		case DAGJoinVertex.DAG_JOIN_VERTEX:
+			kind = SDFJoinVertex.JOIN;
+			break;
+		default:
+			kind = "vertex";
+		}
+		vertexElt.setAttribute(SDFAbstractVertex.KIND, kind);
 
 		exportKeys(vertex, "node", vertexElt);
 
@@ -159,7 +192,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 			Element parentELement) {
 		return null;
 	}
-	
+
 	public void exportDAG(DirectedAcyclicGraph dag, Path path) {
 
 		MapperDAG mapperDag = (MapperDAG) dag;
