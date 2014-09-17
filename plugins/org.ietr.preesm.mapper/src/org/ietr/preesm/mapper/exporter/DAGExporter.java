@@ -38,6 +38,8 @@ package org.ietr.preesm.mapper.exporter;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IFile;
@@ -73,6 +75,10 @@ import org.w3c.dom.Element;
  */
 public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 
+	// Map to keep the number of ports for each DAGVertex
+	private Map<DAGVertex, Integer> inPortNb;
+	private Map<DAGVertex, Integer> outPortNb;
+	
 	/**
 	 * Builds a new DAGExporter
 	 */
@@ -120,8 +126,9 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 
 	@Override
 	protected Element exportEdge(DAGEdge edge, Element parentELement) {
-		String sourcePort = "out";
-		String targetPort = "in";
+		// TODO: add port number (maps from vertex to int?)
+		String sourcePort = getOutPortName(edge.getSource());
+		String targetPort = getInPortName(edge.getTarget());
 		Element edgeElt = createEdge(parentELement, edge.getSource().getName(),
 				edge.getTarget().getName(), sourcePort, targetPort);
 		exportKeys(edge, "edge", edgeElt);
@@ -156,6 +163,10 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 	}
 
 	public Element exportGraph(AbstractGraph<DAGVertex, DAGEdge> graph) {
+		// Instantiate maps
+		inPortNb = new HashMap<DAGVertex, Integer>();
+		outPortNb = new HashMap<DAGVertex, Integer>();
+		
 		addKeySet(rootElt);
 		MapperDAG myGraph = (MapperDAG) graph;
 		Element graphElt = createGraph(rootElt, true);
@@ -183,7 +194,6 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 			exportGraph(graph);
 			transform(new FileOutputStream(path));
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -194,7 +204,8 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 	}
 
 	public void exportDAG(DirectedAcyclicGraph dag, Path path) {
-
+		// XXX: Why are cloning the dag for a simple serialization (we should
+		// not modify the dag)?
 		MapperDAG mapperDag = (MapperDAG) dag;
 
 		MapperDAG clone = mapperDag.clone();
@@ -207,6 +218,24 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 			WorkflowLogger.getLogger().log(Level.SEVERE,
 					"The output file " + path + " can not be written.");
 		}
+	}
+	
+	private String getOutPortName(DAGVertex vertex) {
+		if (!(outPortNb.containsKey(vertex))) outPortNb.put(vertex, 0);
+		int nb = outPortNb.get(vertex);
+		String result = "out" + nb;
+		nb++;
+		outPortNb.put(vertex, nb);
+		return result;
+	}
+	
+	private String getInPortName(DAGVertex vertex) {
+		if (!(inPortNb.containsKey(vertex))) inPortNb.put(vertex, 0);
+		int nb = inPortNb.get(vertex);
+		String result = "in" + nb;
+		nb++;
+		inPortNb.put(vertex, nb);
+		return result;
 	}
 
 }
