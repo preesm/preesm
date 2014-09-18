@@ -43,6 +43,7 @@ import java.io.OutputStream;
 import jxl.write.WritableSheet;
 import jxl.write.biff.RowsExceededException;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.events.SelectionListener;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 
@@ -71,7 +72,8 @@ public abstract class ExcelWriter implements SelectionListener  {
 	 * @throws FileNotFoundException 
 	 * @throws InvalidModelException 
 	 * @throws RowsExceededException 
+	 * @throws CoreException 
 	 */
-	protected abstract void addCells(WritableSheet sheet) throws InvalidModelException, FileNotFoundException, RowsExceededException;
+	protected abstract void addCells(WritableSheet sheet) throws InvalidModelException, FileNotFoundException, RowsExceededException, CoreException;
 
 }

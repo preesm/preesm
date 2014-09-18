@@ -86,7 +86,7 @@ public class PreesmAlgorithmListContentProvider implements
 		return elementTable;
 	}
 
-	private Set<AbstractActor> getSortedPISDFVertices(
+	public Set<AbstractActor> getSortedPISDFVertices(
 			PreesmScenario inputScenario) throws InvalidModelException,
 			CoreException {
 		PiGraph currentGraph = ScenarioParser.getPiGraph(inputScenario

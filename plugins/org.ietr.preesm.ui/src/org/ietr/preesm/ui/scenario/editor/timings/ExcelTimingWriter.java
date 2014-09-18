@@ -39,6 +39,7 @@ package org.ietr.preesm.ui.scenario.editor.timings;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
@@ -52,6 +53,7 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.ui.IWorkbench;
@@ -62,6 +64,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.core.scenario.serialize.PreesmAlgorithmListContentProvider;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.ui.scenario.editor.ExcelWriter;
 import org.ietr.preesm.ui.scenario.editor.SaveAsWizard;
 
@@ -117,24 +120,36 @@ public class ExcelTimingWriter extends ExcelWriter {
 
 	/**
 	 * Add timing cells to the newly created file
+	 * 
+	 * @throws CoreException
 	 */
 	protected void addCells(WritableSheet sheet) throws InvalidModelException,
-			FileNotFoundException {
+			FileNotFoundException, CoreException {
 		if (sheet != null) {
 
-			int maxOpAbscissa = 1, maxVOrdinate = 1;
+			Integer maxOpAbscissa = 1, maxVOrdinate = 1;
 
 			PreesmAlgorithmListContentProvider provider = new PreesmAlgorithmListContentProvider();
-			
-			Set<SDFAbstractVertex> vSet = provider
-					.getSortedIBSDFVertices(scenario);
+
+			Set<String> vertexNames = new HashSet<String>();
+
+			if (scenario.isIBSDFScenario()) {
+				Set<SDFAbstractVertex> vSet = provider
+						.getSortedIBSDFVertices(scenario);
+				for (SDFAbstractVertex vertex : vSet)
+					vertexNames.add(vertex.getName());
+			} else if (scenario.isPISDFScenario()) {
+				Set<AbstractActor> vSet = provider
+						.getSortedPISDFVertices(scenario);
+				for (AbstractActor vertex : vSet)
+					vertexNames.add(vertex.getName());
+			}
 
 			for (String opDefId : scenario.getOperatorDefinitionIds()) {
-				for (SDFAbstractVertex vertex : vSet) {
-					String vertexName = vertex.getName();
+				for (String vertexName : vertexNames) {
 
 					Timing timing = scenario.getTimingManager()
-							.getTimingOrDefault(vertex.getName(), opDefId);
+							.getTimingOrDefault(vertexName, opDefId);
 
 					WritableCell opCell = (WritableCell) sheet
 							.findCell(opDefId), vCell = (WritableCell) sheet
