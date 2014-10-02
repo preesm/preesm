@@ -21,6 +21,7 @@ public class MultiDAGExportTransform extends AbstractTaskImplementation {
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName, Workflow workflow) throws WorkflowException {
 
+		@SuppressWarnings("unchecked")
 		Set<DirectedAcyclicGraph> dags = (Set<DirectedAcyclicGraph>) inputs
 				.get("DAGs");
 

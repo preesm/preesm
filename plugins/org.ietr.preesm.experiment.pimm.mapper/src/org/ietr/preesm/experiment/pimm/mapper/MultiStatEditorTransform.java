@@ -64,6 +64,7 @@ public class MultiStatEditorTransform extends AbstractTaskImplementation {
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName, Workflow workflow) throws WorkflowException {
 
+		@SuppressWarnings("unchecked")
 		Set<IAbc> simulators = (Set<IAbc>) inputs.get(KEY_SDF_ABC_SET);
 		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
 

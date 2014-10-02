@@ -56,6 +56,7 @@ public class MultiSDF4JGMLExporter extends AbstractTaskImplementation {
 
 		IPath xmlPath = new Path(parameters.get("path"));
 
+		@SuppressWarnings("unchecked")
 		Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs.get(KEY_SDF_GRAPHS_SET);
 		SDF2GraphmlExporter exporter = new SDF2GraphmlExporter();
 		

@@ -45,6 +45,7 @@ public class MultiCodegenTask extends AbstractTaskImplementation {
 		// Retrieve inputs
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 		Design archi = (Design) inputs.get("architecture");
+		@SuppressWarnings("unchecked")
 		Map<DirectedAcyclicGraph, MemoryExclusionGraph> dagsAndMemExs = (Map<DirectedAcyclicGraph, MemoryExclusionGraph>) inputs
 				.get(KEY_DAG_AND_MEM_EX_MAP);
 

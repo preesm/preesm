@@ -76,6 +76,7 @@ public class MultiMemoryScriptTask extends AbstractMemoryScriptTask {
 		String checkString = parameters.get(PARAM_CHECK);
 
 		// Retrieve the input of the task
+		@SuppressWarnings("unchecked")
 		Map<DirectedAcyclicGraph, MemoryExclusionGraph> dagsAndMemExs = (Map<DirectedAcyclicGraph, MemoryExclusionGraph>) inputs
 				.get(KEY_DAG_AND_MEM_EX_MAP);
 

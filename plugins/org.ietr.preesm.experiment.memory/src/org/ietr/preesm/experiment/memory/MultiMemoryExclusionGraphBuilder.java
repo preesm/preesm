@@ -57,6 +57,7 @@ public class MultiMemoryExclusionGraphBuilder extends
 
 		// Make a copy of the Input DAG for treatment
 		// The DAG is altered when building the exclusion graph.
+		@SuppressWarnings("unchecked")
 		Set<DirectedAcyclicGraph> dags = (Set<DirectedAcyclicGraph>) inputs
 				.get("DAGs");
 

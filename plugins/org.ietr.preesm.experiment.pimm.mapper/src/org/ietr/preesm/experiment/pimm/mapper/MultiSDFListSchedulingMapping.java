@@ -40,6 +40,7 @@ public class MultiSDFListSchedulingMapping extends AbstractMapping {
 			String nodeName, Workflow workflow) throws WorkflowException {
 
 		Design architecture = (Design) inputs.get(KEY_ARCHITECTURE);
+		@SuppressWarnings("unchecked")
 		Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs
 				.get(KEY_SDF_GRAPHS_SET);
 		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);

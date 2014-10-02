@@ -30,6 +30,7 @@ public class MultiMemExUpdater extends AbstractMemExUpdater {
 		boolean forkJoin = valueSupprForkJoin.equals(VALUE_TRUE);
 
 		// Retrieve the input of the task
+		@SuppressWarnings("unchecked")
 		Map<DirectedAcyclicGraph, MemoryExclusionGraph> dagsAndMemExsInput = (Map<DirectedAcyclicGraph, MemoryExclusionGraph>) inputs
 				.get(KEY_DAG_AND_MEM_EX_MAP);
 		
