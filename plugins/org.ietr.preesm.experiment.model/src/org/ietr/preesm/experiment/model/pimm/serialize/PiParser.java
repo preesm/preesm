@@ -37,6 +37,10 @@ package org.ietr.preesm.experiment.model.pimm.serialize;
 
 import java.io.InputStream;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
@@ -111,10 +115,10 @@ public class PiParser {
 	/**
 	 * The URI of the parsed file
 	 */
-	private URI uri;
+	private URI documentURI;
 
 	public PiParser(URI uri) {
-		this.uri = uri;
+		this.documentURI = uri;
 	}
 
 	/**
@@ -165,10 +169,22 @@ public class PiParser {
 		// Add the actor to the parsed graph
 		graph.getVertices().add(actor);
 
-		String refinement = getProperty(nodeElt, PiXMLIdentifiers.REFINEMENT);
+		parseRefinement(nodeElt, actor);
 
+		String memoryScript = getProperty(nodeElt,
+				PiXMLIdentifiers.ACTOR_MEMORY_SCRIPT);
+		if (memoryScript != null && !memoryScript.isEmpty()) {
+			IPath path = getWorkspaceRelativePathFrom(new Path(memoryScript));
+			actor.setMemoryScriptPath(path);
+		}
+
+		return actor;
+	}
+
+	private void parseRefinement(Element nodeElt, Actor actor) {
+		String refinement = getProperty(nodeElt, PiXMLIdentifiers.REFINEMENT);
 		if (refinement != null && !refinement.isEmpty()) {
-			IPath path = new Path(refinement);
+			IPath path = getWorkspaceRelativePathFrom(new Path(refinement));
 
 			// If the refinement is a .h file, then we need to create a
 			// HRefinement
@@ -206,15 +222,6 @@ public class PiParser {
 
 			actor.getRefinement().setFilePath(path);
 		}
-
-		String memoryScript = getProperty(nodeElt,
-				PiXMLIdentifiers.ACTOR_MEMORY_SCRIPT);
-		if (memoryScript != null && !memoryScript.isEmpty()) {
-			IPath path = new Path(memoryScript);
-			actor.setMemoryScriptPath(path);
-		}
-
-		return actor;
 	}
 
 	private FunctionPrototype parseFunctionPrototype(Element protoElt,
@@ -537,7 +544,10 @@ public class PiParser {
 		case "actor":
 			vertex = parseActor(nodeElt, graph);
 			break;
-		case "broadcast": case "fork": case "join": case "roundbuffer":
+		case "broadcast":
+		case "fork":
+		case "join":
+		case "roundbuffer":
 			vertex = parseSpecialActor(nodeElt, graph);
 			break;
 		case "src":
@@ -827,5 +837,33 @@ public class PiParser {
 		graph.getVertices().add(actor);
 
 		return actor;
+	}
+
+	/**
+	 * Transform a project relative path to workspace relative path
+	 * 
+	 * @param path
+	 *            the IPath to transform
+	 * @return the path to the file inside the project containing the parsed
+	 *         file if this file exists, path otherwise
+	 */
+	private IPath getWorkspaceRelativePathFrom(IPath path) {
+		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+		// If the file pointed by path does not exist, we try to add the
+		// name of the project containing the file we parse to it
+		if (!root.getFile(path).exists()) {
+			// Get the project
+			String platformString = documentURI.toPlatformString(true);
+			IFile documentFile = ResourcesPlugin.getWorkspace().getRoot()
+					.getFile(new Path(platformString));
+			IProject documentProject = documentFile.getProject();
+			// Create a new path using the project name
+			IPath newPath = new Path(documentProject.getName()).append(path);
+			// Check there is a file where newPath points, if yes, use it
+			// instead of path
+			if (root.getFile(newPath).exists())
+				return newPath;
+		}
+		return path;
 	}
 }

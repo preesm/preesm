@@ -41,8 +41,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.ietr.dftools.algorithm.exporter.Key;
 import org.ietr.dftools.architecture.utils.DomUtil;
@@ -89,6 +94,9 @@ public class PiWriter {
 	 */
 	protected Document domDocument;
 
+	// URI where the document will be saved
+	private URI documentURI;
+
 	/**
 	 * This HashMap associates a List to each <b>element</b> (graph, node, edge,
 	 * port) of a Pi description. For each <b>element</b>, a list of {@link Key}
@@ -109,15 +117,17 @@ public class PiWriter {
 
 	/**
 	 * Default constructor of the {@link PiWriter}
+	 * 
+	 * @param uri
 	 */
-	public PiWriter() {
+	public PiWriter(URI uri) {
 		// Instantiate an empty elementKeys Map
 		elementKeys = new HashMap<>();
 
 		// Initialize attributes to null
 		rootElement = null;
 		graphElement = null;
-
+		documentURI = uri;
 	}
 
 	/**
@@ -296,7 +306,7 @@ public class PiWriter {
 			writeActor(vertexElt, (Actor) abstractActor);
 		} else if (abstractActor instanceof ExecutableActor) {
 			writeSpecialActor(vertexElt, abstractActor);
-		}else if (abstractActor instanceof InterfaceActor) {
+		} else if (abstractActor instanceof InterfaceActor) {
 			writeInterfaceVertex(vertexElt, (InterfaceActor) abstractActor);
 		}
 
@@ -312,11 +322,11 @@ public class PiWriter {
 	 *            The {@link Actor} to serialize
 	 */
 	protected void writeActor(Element vertexElt, Actor actor) {
-		// TODO change this method when severa kinds will exist
+		// TODO change this method when several kinds will exist
 		// Set the kind of the Actor
 		vertexElt.setAttribute("kind", "actor");
 		writeRefinement(vertexElt, actor.getRefinement());
-		writeMemoryScript(vertexElt,actor.getMemoryScriptPath());
+		writeMemoryScript(vertexElt, getProjectRelativePathFrom(actor.getMemoryScriptPath()));
 		// writeDataElt(vertexElt, "kind", "actor");
 		// Write ports of the actor
 		writePorts(vertexElt, actor.getConfigInputPorts());
@@ -441,8 +451,10 @@ public class PiWriter {
 		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_TYPE, fifo.getType());
 		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_SOURCE, source.getName());
 		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_TARGET, target.getName());
-		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_SOURCE_PORT, fifo.getSourcePort().getName());
-		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_TARGET_PORT, fifo.getTargetPort().getName());
+		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_SOURCE_PORT, fifo
+				.getSourcePort().getName());
+		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_TARGET_PORT, fifo
+				.getTargetPort().getName());
 
 		if (fifo.getDelay() != null) {
 			writeDelay(fifoElt, fifo.getDelay());
@@ -509,7 +521,7 @@ public class PiWriter {
 		}
 
 	}
-	
+
 	/**
 	 * Write information of the memory script in the given {@link Element}.
 	 * 
@@ -522,8 +534,8 @@ public class PiWriter {
 		if (memScriptPath != null) {
 			// The makeRelative() call ensures that the path is relative to the
 			// project.
-			writeDataElt(vertexElt, PiXMLIdentifiers.ACTOR_MEMORY_SCRIPT, memScriptPath
-					.makeRelative().toPortableString());
+			writeDataElt(vertexElt, PiXMLIdentifiers.ACTOR_MEMORY_SCRIPT,
+					memScriptPath.makeRelative().toPortableString());
 		}
 	}
 
@@ -629,9 +641,13 @@ public class PiWriter {
 	 */
 	protected void writeRefinement(Element vertexElt, Refinement refinement) {
 		if (refinement != null && refinement.getFilePath() != null) {
+
+			IPath refinementPath = getProjectRelativePathFrom(refinement
+					.getFilePath());
+
 			// The makeRelative() call ensures that the path is relative to the
 			// project.
-			writeDataElt(vertexElt, PiXMLIdentifiers.REFINEMENT, refinement.getFilePath()
+			writeDataElt(vertexElt, PiXMLIdentifiers.REFINEMENT, refinementPath
 					.makeRelative().toPortableString());
 			if (refinement instanceof HRefinement) {
 				HRefinement hrefinement = (HRefinement) refinement;
@@ -644,6 +660,29 @@ public class PiWriter {
 							PiXMLIdentifiers.REFINEMENT_INIT);
 			}
 		}
+	}
+
+	/**
+	 * Returns an IPath without the project name (project relative IPath) if the
+	 * file pointed by path is contained by the same project as the file we
+	 * write
+	 * 
+	 * @param path the IPath to make project relative
+	 * @return a project relative IPath if possible, path otherwise
+	 */
+	private IPath getProjectRelativePathFrom(IPath path) {
+		// If the refinement file is contained in the same project than the .pi
+		// we are serializing, then save a project relative path
+		// Get the project
+		String platformString = documentURI.toPlatformString(true);
+		IFile documentFile = ResourcesPlugin.getWorkspace().getRoot()
+				.getFile(new Path(platformString));
+		IProject documentProject = documentFile.getProject();
+		// If the project name is the first segment of the refinement file path,
+		// then remove it
+		if (path.segment(0).equals(documentProject.getName()))
+			return path.removeFirstSegments(1);
+		return path;
 	}
 
 	private void writeFunctionPrototype(Element vertexElt,
@@ -664,7 +703,7 @@ public class PiWriter {
 		protoElt.setAttribute("isConfig",
 				String.valueOf(p.isIsConfigurationParameter()));
 	}
-	
+
 	/**
 	 * Write information of the {@link Actor} in the given {@link Element}. The
 	 * {@link AbstractActor} serialized by this method is either:
@@ -684,11 +723,11 @@ public class PiWriter {
 			kind = "join";
 		} else if (actor instanceof ForkActor) {
 			kind = "fork";
-		}  else if(actor instanceof RoundBufferActor){
-		   kind = "roundbuffer";
+		} else if (actor instanceof RoundBufferActor) {
+			kind = "roundbuffer";
 		}
 		vertexElt.setAttribute("kind", kind);
-		
+
 		writePorts(vertexElt, actor.getConfigInputPorts());
 		writePorts(vertexElt, actor.getDataInputPorts());
 		writePorts(vertexElt, actor.getDataOutputPorts());

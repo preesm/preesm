@@ -78,7 +78,7 @@ public class PiResourceImpl extends ResourceImpl {
 		PiGraph graph = (PiGraph) this.getContents().get(0);
 
 		// Write the Graph to the OutputStream using the Pi format
-		new PiWriter().write(graph, outputStream);
+		new PiWriter(uri).write(graph, outputStream);
 	}
 
 	@Override
