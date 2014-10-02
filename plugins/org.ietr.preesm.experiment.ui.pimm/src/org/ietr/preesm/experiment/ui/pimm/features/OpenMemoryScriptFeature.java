@@ -80,8 +80,8 @@ public class OpenMemoryScriptFeature extends AbstractCustomFeature {
 			Object bo = getBusinessObjectForPictogramElement(pes[0]);
 			if (bo instanceof Actor) {
 				// Check if the actor has a valid refinement
-				IPath refinementPath = ((Actor) bo).getRefinement().getFilePath();
-				if (refinementPath != null) {
+				IPath memoryScriptPath = ((Actor) bo).getMemoryScriptPath();
+				if (memoryScriptPath != null) {
 					return true;
 				}
 			}

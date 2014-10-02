@@ -80,10 +80,8 @@ public class OpenRefinementFeature extends AbstractCustomFeature {
 			Object bo = getBusinessObjectForPictogramElement(pes[0]);
 			if (bo instanceof Actor) {
 				// Check if the actor has a valid refinement
-				IPath refinementPath = ((Actor) bo).getRefinement().getFilePath();
-				if (refinementPath != null) {
+				if (((Actor) bo).getRefinement().getFilePath() != null)
 					return true;
-				}
 			}
 		}
 		return false;
@@ -97,24 +95,24 @@ public class OpenRefinementFeature extends AbstractCustomFeature {
 			Object bo = getBusinessObjectForPictogramElement(pes[0]);
 			if (bo instanceof Actor) {
 				// Check if the actor has a valid refinement
-				IPath refinementPath = ((Actor) bo).getRefinement().getFilePath();
+				IPath refinementPath = ((Actor) bo).getRefinement()
+						.getFilePath();
 				if (refinementPath != null) {
 					IWorkbenchWindow dw = PlatformUI.getWorkbench()
 							.getActiveWorkbenchWindow();
 
 					IResource refResource = ResourcesPlugin.getWorkspace()
 							.getRoot().getFile(refinementPath);
-							//.findMember(refinementFile.toPlatformString(true));
 
 					// If the refinement is a Pi file, open a diagram
 					// instead (if it exists)
 					String extension = refResource.getFileExtension();
 					if (extension != null && extension.equals("pi")) {
-						IPath diagramFile = refinementPath.removeFileExtension()
-								.addFileExtension("diagram");
+						IPath diagramFile = refinementPath
+								.removeFileExtension().addFileExtension(
+										"diagram");
 						IResource diagResource = ResourcesPlugin.getWorkspace()
 								.getRoot().getFile(diagramFile);
-								//.findMember(diagramFile.toPlatformString(true));
 
 						// Check if the diaram file exists
 						if (diagResource == null) {
