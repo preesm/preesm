@@ -7,7 +7,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
-import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.memory.exclusiongraph.AbstractMemExUpdater;
 import org.ietr.preesm.memory.exclusiongraph.MemExUpdaterEngine;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
