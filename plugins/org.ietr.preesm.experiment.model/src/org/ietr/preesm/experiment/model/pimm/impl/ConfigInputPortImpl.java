@@ -43,6 +43,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
@@ -74,7 +75,7 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 	 */
 	protected ConfigInputPortImpl() {
 		super();
-		kind = "cfg_input";
+		kind = PiIdentifiers.CONFIGURATION_INPUT_PORT;
 	}
 
 	/**

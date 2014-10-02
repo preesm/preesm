@@ -40,6 +40,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
@@ -61,7 +62,7 @@ public class ConfigOutputInterfaceImpl extends InterfaceActorImpl implements Con
 	protected ConfigOutputInterfaceImpl() {
 		super();
 		
-		kind = KIND;
+		kind = PiIdentifiers.CONFIGURATION_OUTPUT_INTERFACE;
 
 		// Add the unique input port of the ConfigOutputInterface
 		// The port intentionally has no name

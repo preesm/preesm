@@ -70,6 +70,7 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
+import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -164,7 +165,7 @@ public class PiParser {
 		Actor actor = PiMMFactory.eINSTANCE.createActor();
 
 		// Get the actor properties
-		actor.setName(nodeElt.getAttribute("id"));
+		actor.setName(nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME));
 
 		// Add the actor to the parsed graph
 		graph.getVertices().add(actor);
@@ -172,7 +173,7 @@ public class PiParser {
 		parseRefinement(nodeElt, actor);
 
 		String memoryScript = getProperty(nodeElt,
-				PiXMLIdentifiers.ACTOR_MEMORY_SCRIPT);
+				PiIdentifiers.ACTOR_MEMORY_SCRIPT);
 		if (memoryScript != null && !memoryScript.isEmpty()) {
 			IPath path = getWorkspaceRelativePathFrom(new Path(memoryScript));
 			actor.setMemoryScriptPath(path);
@@ -182,7 +183,7 @@ public class PiParser {
 	}
 
 	private void parseRefinement(Element nodeElt, Actor actor) {
-		String refinement = getProperty(nodeElt, PiXMLIdentifiers.REFINEMENT);
+		String refinement = getProperty(nodeElt, PiIdentifiers.REFINEMENT);
 		if (refinement != null && !refinement.isEmpty()) {
 			IPath path = getWorkspaceRelativePathFrom(new Path(refinement));
 
@@ -199,19 +200,19 @@ public class PiParser {
 					String eltName = elt.getNodeName();
 					Element elmt;
 					switch (eltName) {
-					case "loop":
+					case PiIdentifiers.REFINEMENT_LOOP:
 						elmt = (Element) elt;
 						hrefinement
 								.setLoopPrototype(parseFunctionPrototype(
 										elmt,
-										elmt.getAttribute(PiXMLIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
+										elmt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
 						break;
-					case "init":
+					case PiIdentifiers.REFINEMENT_INIT:
 						elmt = (Element) elt;
 						hrefinement
 								.setInitPrototype(parseFunctionPrototype(
 										elmt,
-										elmt.getAttribute(PiXMLIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
+										elmt.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
 						break;
 					default:
 						// ignore #text and other children
@@ -235,7 +236,7 @@ public class PiParser {
 			Node elt = childList.item(i);
 			String eltName = elt.getNodeName();
 			switch (eltName) {
-			case "param":
+			case PiIdentifiers.REFINEMENT_PARAMETER:
 				proto.getParameters()
 						.add(parseFunctionParameter((Element) elt));
 				break;
@@ -250,12 +251,14 @@ public class PiParser {
 		FunctionParameter param = PiMMFactory.eINSTANCE
 				.createFunctionParameter();
 
-		param.setName(elt.getAttribute("name"));
-		param.setType(elt.getAttribute("type"));
+		param.setName(elt
+				.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_NAME));
+		param.setType(elt
+				.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_TYPE));
 		param.setDirection(PiMMFactory.eINSTANCE.createDirection(elt
-				.getAttribute("direction")));
+				.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_DIRECTION)));
 		param.setIsConfigurationParameter(Boolean.valueOf(elt
-				.getAttribute("isConfig")));
+				.getAttribute(PiIdentifiers.REFINEMENT_PARAMETER_IS_CONFIG)));
 
 		return param;
 	}
@@ -278,7 +281,7 @@ public class PiParser {
 		// param.setLocallyStatic(true);
 
 		// Get the actor properties
-		param.setName(nodeElt.getAttribute("id"));
+		param.setName(nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME));
 
 		// Add the actor to the parsed graph
 		graph.getParameters().add(param);
@@ -299,8 +302,10 @@ public class PiParser {
 		Dependency dependency = PiMMFactory.eINSTANCE.createDependency();
 
 		// Find the source and target of the fifo
-		String setterName = edgeElt.getAttribute("source");
-		String getterName = edgeElt.getAttribute("target");
+		String setterName = edgeElt
+				.getAttribute(PiIdentifiers.DEPENDENCY_SOURCE);
+		String getterName = edgeElt
+				.getAttribute(PiIdentifiers.DEPENDENCY_TARGET);
 		AbstractVertex source = graph.getVertexNamed(setterName);
 		Parameterizable target = graph.getVertexNamed(getterName);
 		if (source == null) {
@@ -328,7 +333,8 @@ public class PiParser {
 		// Get the sourcePort and targetPort
 		if (source instanceof ExecutableActor) {
 
-			String sourcePortName = edgeElt.getAttribute("sourceport");
+			String sourcePortName = edgeElt
+					.getAttribute(PiIdentifiers.DEPENDENCY_SOURCE_PORT);
 			sourcePortName = (sourcePortName == "") ? null : sourcePortName;
 			ConfigOutputPort oPort = (ConfigOutputPort) ((ExecutableActor) source)
 					.getPortNamed(sourcePortName);
@@ -343,7 +349,8 @@ public class PiParser {
 		}
 
 		if (target instanceof ExecutableActor) {
-			String targetPortName = edgeElt.getAttribute("targetport");
+			String targetPortName = edgeElt
+					.getAttribute(PiIdentifiers.DEPENDENCY_TARGET_PORT);
 			targetPortName = (targetPortName == "") ? null : targetPortName;
 			ConfigInputPort iPort = (ConfigInputPort) ((AbstractVertex) target)
 					.getPortNamed(targetPortName);
@@ -385,13 +392,13 @@ public class PiParser {
 	 */
 	protected void parseEdge(Element edgeElt, PiGraph graph) {
 		// Identify if the node is an actor or a parameter
-		String edgeKind = edgeElt.getAttribute("kind");
+		String edgeKind = edgeElt.getAttribute(PiIdentifiers.EDGE_KIND);
 
 		switch (edgeKind) {
-		case "fifo":
+		case PiIdentifiers.FIFO:
 			parseFifo(edgeElt, graph);
 			break;
-		case "dependency":
+		case PiIdentifiers.DEPENDENCY:
 			parseDependencies(edgeElt, graph);
 			break;
 		default:
@@ -413,8 +420,8 @@ public class PiParser {
 		Fifo fifo = PiMMFactory.eINSTANCE.createFifo();
 
 		// Find the source and target of the fifo
-		String sourceName = edgeElt.getAttribute(PiXMLIdentifiers.FIFO_SOURCE);
-		String targetName = edgeElt.getAttribute(PiXMLIdentifiers.FIFO_TARGET);
+		String sourceName = edgeElt.getAttribute(PiIdentifiers.FIFO_SOURCE);
+		String targetName = edgeElt.getAttribute(PiIdentifiers.FIFO_TARGET);
 		AbstractActor source = (AbstractActor) graph.getVertexNamed(sourceName);
 		AbstractActor target = (AbstractActor) graph.getVertexNamed(targetName);
 		if (source == null) {
@@ -426,17 +433,17 @@ public class PiParser {
 					+ " does not exist.");
 		}
 		// Get the type
-		String type = edgeElt.getAttribute(PiXMLIdentifiers.FIFO_TYPE);
+		String type = edgeElt.getAttribute(PiIdentifiers.FIFO_TYPE);
 		// If none is find, add the default type
 		if (type == null || type.equals(""))
 			type = "void";
 		fifo.setType(type);
 		// Get the sourcePort and targetPort
 		String sourcePortName = edgeElt
-				.getAttribute(PiXMLIdentifiers.FIFO_SOURCE_PORT);
+				.getAttribute(PiIdentifiers.FIFO_SOURCE_PORT);
 		sourcePortName = (sourcePortName == "") ? null : sourcePortName;
 		String targetPortName = edgeElt
-				.getAttribute(PiXMLIdentifiers.FIFO_TARGET_PORT);
+				.getAttribute(PiIdentifiers.FIFO_TARGET_PORT);
 		targetPortName = (targetPortName == "") ? null : targetPortName;
 		DataOutputPort oPort = (DataOutputPort) source
 				.getPortNamed(sourcePortName);
@@ -456,11 +463,12 @@ public class PiParser {
 		fifo.setTargetPort(iPort);
 
 		// Check if the fifo has a delay
-		if (getProperty(edgeElt, "delay") != null) {
+		if (getProperty(edgeElt, PiIdentifiers.DELAY) != null) {
 			// TODO replace with a parse Delay if delay have their own element
 			// in the future
 			Delay delay = PiMMFactory.eINSTANCE.createDelay();
-			delay.getExpression().setString(edgeElt.getAttribute("expr"));
+			delay.getExpression().setString(
+					edgeElt.getAttribute(PiIdentifiers.DELAY_EXPRESSION));
 			fifo.setDelay(delay);
 		}
 
@@ -478,7 +486,8 @@ public class PiParser {
 	 */
 	protected void parseGraph(Element rootElt, PiGraph graph) {
 		// Retrieve the Graph Element
-		NodeList graphElts = rootElt.getElementsByTagName("graph");
+		NodeList graphElts = rootElt
+				.getElementsByTagName(PiIdentifiers.GRAPH);
 		if (graphElts.getLength() == 0) {
 			throw new RuntimeException(
 					"No graph was found in the parsed document");
@@ -501,22 +510,22 @@ public class PiParser {
 			String eltName = elt.getNodeName();
 
 			switch (eltName) {
-			case "data":
+			case PiIdentifiers.DATA:
 				// Properties of the Graph.
 				// TODO transfer this code in a separate function
 				// parseGraphProperties()
-				String keyName = elt.getAttributes().getNamedItem("key")
-						.getNodeValue();
+				String keyName = elt.getAttributes()
+						.getNamedItem(PiIdentifiers.DATA_KEY).getNodeValue();
 				String keyValue = elt.getTextContent();
-				if (keyName.equals("name")) {
+				if (keyName.equals(PiIdentifiers.GRAPH_NAME)) {
 					graph.setName(keyValue);
 				}
 				break;
-			case "node":
+			case PiIdentifiers.NODE:
 				// Node elements
 				parseNode((Element) elt, graph);
 				break;
-			case "edge":
+			case PiIdentifiers.EDGE:
 				// Edge elements
 				parseEdge((Element) elt, graph);
 				break;
@@ -537,32 +546,32 @@ public class PiParser {
 	 */
 	protected void parseNode(Element nodeElt, PiGraph graph) {
 		// Identify if the node is an actor or a parameter
-		String nodeKind = nodeElt.getAttribute("kind");
+		String nodeKind = nodeElt.getAttribute(PiIdentifiers.NODE_KIND);
 		AbstractVertex vertex;
 
 		switch (nodeKind) {
-		case "actor":
+		case PiIdentifiers.ACTOR:
 			vertex = parseActor(nodeElt, graph);
 			break;
-		case "broadcast":
-		case "fork":
-		case "join":
-		case "roundbuffer":
+		case PiIdentifiers.BROADCAST:
+		case PiIdentifiers.FORK:
+		case PiIdentifiers.JOIN:
+		case PiIdentifiers.ROUND_BUFFER:
 			vertex = parseSpecialActor(nodeElt, graph);
 			break;
-		case "src":
+		case PiIdentifiers.DATA_INPUT_INTERFACE:
 			vertex = parseSourceInterface(nodeElt, graph);
 			break;
-		case "snk":
+		case PiIdentifiers.DATA_OUTPUT_INTERFACE:
 			vertex = parseSinkInterface(nodeElt, graph);
 			break;
-		case "param":
+		case PiIdentifiers.PARAMETER:
 			vertex = parseParameter(nodeElt, graph);
 			break;
-		case "cfg_in_iface":
+		case PiIdentifiers.CONFIGURATION_INPUT_INTERFACE:
 			vertex = parseConfigInputInterface(nodeElt, graph);
 			break;
-		case "cfg_out_iface":
+		case PiIdentifiers.CONFIGURATION_OUTPUT_INTERFACE:
 			vertex = parseConfigOutputInterface(nodeElt, graph);
 			break;
 		// TODO Parse all types of nodes
@@ -585,17 +594,13 @@ public class PiParser {
 			String eltName = elt.getNodeName();
 
 			switch (eltName) {
-			case "port":
-
+			case PiIdentifiers.PORT:
 				parsePort((Element) elt, vertex);
-
 				break;
 			default:
 				// ignore #text and unknown children
 			}
 		}
-		// TODO parsePorts() of the vertex
-
 	}
 
 	/**
@@ -611,14 +616,15 @@ public class PiParser {
 	protected AbstractVertex parseParameter(Element nodeElt, PiGraph graph) {
 		// Instantiate the new Parameter
 		Parameter param = PiMMFactory.eINSTANCE.createParameter();
-		param.getExpression().setString(nodeElt.getAttribute("expr"));
+		param.getExpression().setString(
+				nodeElt.getAttribute(PiIdentifiers.PARAMETER_EXPRESSION));
 		param.setConfigurationInterface(false);
 		// param.setLocallyStatic(true);
 		param.setGraphPort(null); // No port of the graph corresponds to this
 									// parameter
 
 		// Get the actor properties
-		param.setName(nodeElt.getAttribute("id"));
+		param.setName(nodeElt.getAttribute(PiIdentifiers.PARAMETER_NAME));
 
 		// Add the actor to the parsed graph
 		graph.getParameters().add(param);
@@ -652,11 +658,11 @@ public class PiParser {
 	 *            the {@link AbstractVertex} owning this {@link Port}
 	 */
 	protected void parsePort(Element elt, AbstractVertex vertex) {
-		String portName = elt.getAttribute(PiXMLIdentifiers.PORT_NAME);
-		String portKind = elt.getAttribute(PiXMLIdentifiers.PORT_KIND);
+		String portName = elt.getAttribute(PiIdentifiers.PORT_NAME);
+		String portKind = elt.getAttribute(PiIdentifiers.PORT_KIND);
 
 		switch (portKind) {
-		case "input":
+		case PiIdentifiers.DATA_INPUT_PORT:
 			// Throw an error if the parsed vertex is not an actor
 			if (!(vertex instanceof AbstractActor)) {
 				throw new RuntimeException("Parsed data port " + portName
@@ -676,11 +682,11 @@ public class PiParser {
 				iPort = ((AbstractActor) vertex).getDataInputPorts().get(0);
 			}
 			iPort.getExpression().setString(
-					elt.getAttribute(PiXMLIdentifiers.PORT_EXPRESSION));
+					elt.getAttribute(PiIdentifiers.PORT_EXPRESSION));
 			iPort.setAnnotation(PortMemoryAnnotation.get(elt
-					.getAttribute(PiXMLIdentifiers.PORT_MEMORY_ANNOTATION)));
+					.getAttribute(PiIdentifiers.PORT_MEMORY_ANNOTATION)));
 			break;
-		case "output":
+		case PiIdentifiers.DATA_OUTPUT_PORT:
 			// Throw an error if the parsed vertex is not an actor
 			if (!(vertex instanceof AbstractActor)) {
 				throw new RuntimeException("Parsed data port " + portName
@@ -700,18 +706,18 @@ public class PiParser {
 				oPort = ((AbstractActor) vertex).getDataOutputPorts().get(0);
 			}
 			oPort.getExpression().setString(
-					elt.getAttribute(PiXMLIdentifiers.PORT_EXPRESSION));
+					elt.getAttribute(PiIdentifiers.PORT_EXPRESSION));
 			oPort.setAnnotation(PortMemoryAnnotation.get(elt
-					.getAttribute(PiXMLIdentifiers.PORT_MEMORY_ANNOTATION)));
+					.getAttribute(PiIdentifiers.PORT_MEMORY_ANNOTATION)));
 			break;
-		case "cfg_input":
+		case PiIdentifiers.CONFIGURATION_INPUT_PORT:
 			ConfigInputPort iCfgPort = PiMMFactory.eINSTANCE
 					.createConfigInputPort();
 			iCfgPort.setName(portName);
 			vertex.getConfigInputPorts().add(iCfgPort);
 			break;
 
-		case "cfg_output":
+		case PiIdentifiers.CONFIGURATION_OUPUT_PORT:
 			// Throw an error if the parsed vertex is not an actor
 			if (!(vertex instanceof AbstractActor)) {
 				throw new RuntimeException("Parsed config. port " + portName
@@ -745,7 +751,8 @@ public class PiParser {
 				.createConfigOutputInterface();
 
 		// Set the Interface properties
-		cfgOutIf.setName(nodeElt.getAttribute("id"));
+		cfgOutIf.setName(nodeElt
+				.getAttribute(PiIdentifiers.CONFIGURATION_OUTPUT_INTERFACE_NAME));
 
 		// Add the actor to the parsed graph
 		graph.getVertices().add(cfgOutIf);
@@ -768,7 +775,8 @@ public class PiParser {
 				.createDataOutputInterface();
 
 		// Set the sourceInterface properties
-		snkInterface.setName(nodeElt.getAttribute("id"));
+		snkInterface.setName(nodeElt
+				.getAttribute(PiIdentifiers.DATA_OUTPUT_INTERFACE_NAME));
 
 		// Add the actor to the parsed graph
 		graph.getVertices().add(snkInterface);
@@ -791,7 +799,8 @@ public class PiParser {
 				.createDataInputInterface();
 
 		// Set the sourceInterface properties
-		srcInterface.setName(nodeElt.getAttribute("id"));
+		srcInterface.setName(nodeElt
+				.getAttribute(PiIdentifiers.DATA_INPUT_INTERFACE_NAME));
 
 		// Add the actor to the parsed graph
 		graph.getVertices().add(srcInterface);
@@ -811,27 +820,27 @@ public class PiParser {
 	 */
 	protected AbstractActor parseSpecialActor(Element nodeElt, PiGraph graph) {
 		// Identify if the node is an actor or a parameter
-		String nodeKind = nodeElt.getAttribute("kind");
+		String nodeKind = nodeElt.getAttribute(PiIdentifiers.NODE_KIND);
 		AbstractActor actor = null;
 
 		// Instantiate the actor.
 		switch (nodeKind) {
-		case "broadcast":
+		case PiIdentifiers.BROADCAST:
 			actor = PiMMFactory.eINSTANCE.createBroadcastActor();
 			break;
-		case "fork":
+		case PiIdentifiers.FORK:
 			actor = PiMMFactory.eINSTANCE.createForkActor();
 			break;
-		case "join":
+		case PiIdentifiers.JOIN:
 			actor = PiMMFactory.eINSTANCE.createJoinActor();
 			break;
-		case "roundbuffer":
+		case PiIdentifiers.ROUND_BUFFER:
 			actor = PiMMFactory.eINSTANCE.createRoundBufferActor();
 			break;
 		}
 
 		// Get the actor properties
-		actor.setName(nodeElt.getAttribute("id"));
+		actor.setName(nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME));
 
 		// Add the actor to the parsed graph
 		graph.getVertices().add(actor);

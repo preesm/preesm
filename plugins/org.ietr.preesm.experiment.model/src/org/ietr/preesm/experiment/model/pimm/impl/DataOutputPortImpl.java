@@ -45,6 +45,7 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
@@ -78,7 +79,7 @@ public class DataOutputPortImpl extends DataPortImpl implements DataOutputPort {
 	 */
 	protected DataOutputPortImpl() {
 		super();
-		kind = "output";
+		kind = PiIdentifiers.DATA_OUTPUT_PORT;
 
 		this.setExpression(PiMMFactory.eINSTANCE.createExpression());
 	}

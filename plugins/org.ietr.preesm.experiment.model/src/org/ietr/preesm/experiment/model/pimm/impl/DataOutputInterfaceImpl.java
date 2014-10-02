@@ -40,6 +40,7 @@ import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
+import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
@@ -60,7 +61,7 @@ public class DataOutputInterfaceImpl extends InterfaceActorImpl implements
 	protected DataOutputInterfaceImpl() {
 		super();
 
-		kind = KIND;
+		kind = PiIdentifiers.DATA_OUTPUT_INTERFACE;
 
 		// Add the unique input port of the Sink Interface
 		// The port intentionally has no name

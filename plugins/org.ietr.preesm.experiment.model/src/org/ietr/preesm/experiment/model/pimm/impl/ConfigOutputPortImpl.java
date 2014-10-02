@@ -47,6 +47,7 @@ import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
+import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**
@@ -80,7 +81,7 @@ public class ConfigOutputPortImpl extends DataOutputPortImpl implements ConfigOu
 	 */
 	protected ConfigOutputPortImpl() {
 		super();
-		kind = "cfg_output";
+		kind = PiIdentifiers.CONFIGURATION_OUPUT_PORT;
 	}
 
 	/**

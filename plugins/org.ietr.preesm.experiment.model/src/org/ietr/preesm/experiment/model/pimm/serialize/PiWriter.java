@@ -76,6 +76,7 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
+import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -138,9 +139,10 @@ public class PiWriter {
 	 * @return The created element
 	 */
 	protected Element addGraphElt(Element parentElement) {
-		Element newElt = appendChild(parentElement, "graph");
+		Element newElt = appendChild(parentElement, PiIdentifiers.GRAPH);
 		graphElement = newElt;
-		newElt.setAttribute("edgedefault", "directed");
+		newElt.setAttribute(PiIdentifiers.GRAPH_EDGE_DEFAULT,
+				PiIdentifiers.GRAPH_DIRECTED);
 
 		return newElt;
 	}
@@ -294,10 +296,11 @@ public class PiWriter {
 	protected void writeAbstractActor(Element graphElt,
 			AbstractActor abstractActor) {
 		// Add the node to the document
-		Element vertexElt = appendChild(graphElt, "node");
+		Element vertexElt = appendChild(graphElt, PiIdentifiers.NODE);
 
 		// Set the unique ID of the node (equal to the vertex name)
-		vertexElt.setAttribute("id", abstractActor.getName());
+		vertexElt.setAttribute(PiIdentifiers.ACTOR_NAME,
+				abstractActor.getName());
 
 		// Add the name in the data of the node
 		// writeDataElt(vertexElt, "name", vertex.getName());
@@ -324,9 +327,11 @@ public class PiWriter {
 	protected void writeActor(Element vertexElt, Actor actor) {
 		// TODO change this method when several kinds will exist
 		// Set the kind of the Actor
-		vertexElt.setAttribute("kind", "actor");
+		vertexElt.setAttribute(PiIdentifiers.NODE_KIND,
+				PiIdentifiers.ACTOR);
 		writeRefinement(vertexElt, actor.getRefinement());
-		writeMemoryScript(vertexElt, getProjectRelativePathFrom(actor.getMemoryScriptPath()));
+		writeMemoryScript(vertexElt,
+				getProjectRelativePathFrom(actor.getMemoryScriptPath()));
 		// writeDataElt(vertexElt, "kind", "actor");
 		// Write ports of the actor
 		writePorts(vertexElt, actor.getConfigInputPorts());
@@ -351,8 +356,8 @@ public class PiWriter {
 	protected void writeDataElt(Element parentElt, String keyName,
 			String textContent) {
 		addKey(null, keyName, parentElt.getTagName(), "string", null);
-		Element nameElt = appendChild(parentElt, "data");
-		nameElt.setAttribute("key", keyName);
+		Element nameElt = appendChild(parentElt, PiIdentifiers.DATA);
+		nameElt.setAttribute(PiIdentifiers.DATA_KEY, keyName);
 		nameElt.setTextContent(textContent);
 	}
 
@@ -365,8 +370,9 @@ public class PiWriter {
 	 *            the {@link Delay} to serialize
 	 */
 	protected void writeDelay(Element fifoElt, Delay delay) {
-		writeDataElt(fifoElt, "delay", null);
-		fifoElt.setAttribute("expr", delay.getExpression().getString());
+		writeDataElt(fifoElt, PiIdentifiers.DELAY, null);
+		fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, delay
+				.getExpression().getString());
 		// TODO when delay class will be updated, modify the writer/parser.
 		// Maybe a specific element will be needed to store the Expression
 		// associated to a delay as well as it .h file storing the default value
@@ -385,8 +391,9 @@ public class PiWriter {
 	 */
 	protected void writeDependency(Element graphElt, Dependency dependency) {
 		// Add the node to the document
-		Element dependencyElt = appendChild(graphElt, "edge");
-		dependencyElt.setAttribute("kind", "dependency");
+		Element dependencyElt = appendChild(graphElt, PiIdentifiers.EDGE);
+		dependencyElt.setAttribute(PiIdentifiers.EDGE_KIND,
+				PiIdentifiers.DEPENDENCY);
 
 		// Set the source and target attributes
 		ISetter setter = dependency.getSetter();
@@ -404,26 +411,29 @@ public class PiWriter {
 					"Setter of the dependency has a type not supported by the writer: "
 							+ setter.getClass());
 		}
-		dependencyElt.setAttribute("source", source.getName());
+		dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_SOURCE,
+				source.getName());
 		if (setter instanceof ConfigOutputPort) {
-			dependencyElt.setAttribute("sourceport", ((Port) setter).getName());
+			dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_SOURCE_PORT,
+					((Port) setter).getName());
 		}
 
 		Parameterizable target = (Parameterizable) dependency.getGetter()
 				.eContainer();
 		if (target instanceof AbstractVertex) {
 
-			dependencyElt.setAttribute("target",
+			dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_TARGET,
 					((AbstractVertex) target).getName());
 
 			if (target instanceof ExecutableActor) {
-				dependencyElt.setAttribute("targetport", dependency.getGetter()
-						.getName());
+				dependencyElt.setAttribute(
+						PiIdentifiers.DEPENDENCY_TARGET_PORT, dependency
+								.getGetter().getName());
 			}
 		}
 
 		if (target instanceof Delay) {
-			dependencyElt.setAttribute("target",
+			dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_TARGET,
 					((Fifo) target.eContainer()).getId());
 		}
 	}
@@ -440,20 +450,20 @@ public class PiWriter {
 	 */
 	protected void writeFifos(Element graphElt, Fifo fifo) {
 		// Add the node to the document
-		Element fifoElt = appendChild(graphElt, PiXMLIdentifiers.EDGE);
+		Element fifoElt = appendChild(graphElt, PiIdentifiers.EDGE);
 
 		// Set the source and target attributes
 		AbstractActor source = (AbstractActor) fifo.getSourcePort()
 				.eContainer();
 		AbstractActor target = (AbstractActor) fifo.getTargetPort()
 				.eContainer();
-		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_KIND, PiXMLIdentifiers.FIFO);
-		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_TYPE, fifo.getType());
-		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_SOURCE, source.getName());
-		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_TARGET, target.getName());
-		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_SOURCE_PORT, fifo
+		fifoElt.setAttribute(PiIdentifiers.EDGE_KIND, PiIdentifiers.FIFO);
+		fifoElt.setAttribute(PiIdentifiers.FIFO_TYPE, fifo.getType());
+		fifoElt.setAttribute(PiIdentifiers.FIFO_SOURCE, source.getName());
+		fifoElt.setAttribute(PiIdentifiers.FIFO_TARGET, target.getName());
+		fifoElt.setAttribute(PiIdentifiers.FIFO_SOURCE_PORT, fifo
 				.getSourcePort().getName());
-		fifoElt.setAttribute(PiXMLIdentifiers.FIFO_TARGET_PORT, fifo
+		fifoElt.setAttribute(PiIdentifiers.FIFO_TARGET_PORT, fifo
 				.getTargetPort().getName());
 
 		if (fifo.getDelay() != null) {
@@ -474,7 +484,7 @@ public class PiWriter {
 	protected void writeGraph(Element rootElt, PiGraph graph) {
 		// Create and add the graphElt to the Document
 		Element graphElt = addGraphElt(rootElt);
-		writeDataElt(graphElt, "name", graph.getName());
+		writeDataElt(graphElt, PiIdentifiers.GRAPH_NAME, graph.getName());
 
 		// TODO addProperties() of the graph
 		// TODO writeParameters()
@@ -507,14 +517,14 @@ public class PiWriter {
 	 */
 	protected void writeInterfaceVertex(Element vertexElt, InterfaceActor vertex) {
 		// Set the kind of the Actor
-		vertexElt.setAttribute("kind", vertex.getKind());
+		vertexElt.setAttribute(PiIdentifiers.NODE_KIND, vertex.getKind());
 		// writeDataElt(vertexElt, "kind", "actor");
 		// Write ports of the actor
 		switch (vertex.getKind()) {
-		case "src":
+		case PiIdentifiers.DATA_INPUT_INTERFACE:
 			writePorts(vertexElt, vertex.getDataOutputPorts());
 			break;
-		case "snk":
+		case PiIdentifiers.DATA_OUTPUT_INTERFACE:
 			writePorts(vertexElt, vertex.getDataInputPorts());
 			break;
 		default:
@@ -534,7 +544,7 @@ public class PiWriter {
 		if (memScriptPath != null) {
 			// The makeRelative() call ensures that the path is relative to the
 			// project.
-			writeDataElt(vertexElt, PiXMLIdentifiers.ACTOR_MEMORY_SCRIPT,
+			writeDataElt(vertexElt, PiIdentifiers.ACTOR_MEMORY_SCRIPT,
 					memScriptPath.makeRelative().toPortableString());
 		}
 	}
@@ -551,17 +561,20 @@ public class PiWriter {
 	 */
 	protected void writeParameter(Element graphElt, Parameter param) {
 		// Add the node to the document
-		Element paramElt = appendChild(graphElt, "node");
+		Element paramElt = appendChild(graphElt, PiIdentifiers.NODE);
 
 		// Set the unique ID of the node (equal to the param name)
-		paramElt.setAttribute("id", param.getName());
+		paramElt.setAttribute(PiIdentifiers.PARAMETER_NAME, param.getName());
 
 		// Set the kind of the node
 		if (!param.isConfigurationInterface()) {
-			paramElt.setAttribute("kind", "param");
-			paramElt.setAttribute("expr", param.getExpression().getString());
+			paramElt.setAttribute(PiIdentifiers.NODE_KIND,
+					PiIdentifiers.PARAMETER);
+			paramElt.setAttribute(PiIdentifiers.PARAMETER_EXPRESSION, param
+					.getExpression().getString());
 		} else {
-			paramElt.setAttribute("kind", "cfg_in_iface");
+			paramElt.setAttribute(PiIdentifiers.NODE_KIND,
+					PiIdentifiers.CONFIGURATION_INPUT_INTERFACE);
 		}
 	}
 
@@ -595,7 +608,7 @@ public class PiWriter {
 	protected void writePorts(Element vertexElt, EList<?> ports) {
 		for (Object portObj : ports) {
 			Port port = (Port) portObj;
-			Element portElt = appendChild(vertexElt, PiXMLIdentifiers.PORT);
+			Element portElt = appendChild(vertexElt, PiIdentifiers.PORT);
 
 			String name = port.getName();
 			if (name == null || name.isEmpty()) {
@@ -604,28 +617,28 @@ public class PiWriter {
 					name = ((AbstractVertex) container).getName();
 			}
 
-			portElt.setAttribute(PiXMLIdentifiers.PORT_NAME, port.getName());
-			portElt.setAttribute(PiXMLIdentifiers.PORT_KIND, port.getKind());
+			portElt.setAttribute(PiIdentifiers.PORT_NAME, port.getName());
+			portElt.setAttribute(PiIdentifiers.PORT_KIND, port.getKind());
 
 			switch (port.getKind()) {
-			case "input":
-				portElt.setAttribute(PiXMLIdentifiers.PORT_EXPRESSION,
+			case PiIdentifiers.DATA_INPUT_PORT:
+				portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION,
 						((DataInputPort) port).getExpression().getString());
 				break;
-			case "output":
-				portElt.setAttribute(PiXMLIdentifiers.PORT_EXPRESSION,
+			case PiIdentifiers.DATA_OUTPUT_PORT:
+				portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION,
 						((DataOutputPort) port).getExpression().getString());
 				break;
-			case "cfg_input":
+			case PiIdentifiers.CONFIGURATION_INPUT_PORT:
 				break;
-			case "cfg_output":
+			case PiIdentifiers.CONFIGURATION_OUPUT_PORT:
 				break;
 			}
 			if (port instanceof DataPort) {
 				DataPort dataPort = (DataPort) port;
 				if (dataPort.getAnnotation() != null)
 					portElt.setAttribute(
-							PiXMLIdentifiers.PORT_MEMORY_ANNOTATION, dataPort
+							PiIdentifiers.PORT_MEMORY_ANNOTATION, dataPort
 									.getAnnotation().toString());
 			}
 		}
@@ -647,17 +660,17 @@ public class PiWriter {
 
 			// The makeRelative() call ensures that the path is relative to the
 			// project.
-			writeDataElt(vertexElt, PiXMLIdentifiers.REFINEMENT, refinementPath
+			writeDataElt(vertexElt, PiIdentifiers.REFINEMENT, refinementPath
 					.makeRelative().toPortableString());
 			if (refinement instanceof HRefinement) {
 				HRefinement hrefinement = (HRefinement) refinement;
 				writeFunctionPrototype(vertexElt,
 						hrefinement.getLoopPrototype(),
-						PiXMLIdentifiers.REFINEMENT_LOOP);
+						PiIdentifiers.REFINEMENT_LOOP);
 				if (hrefinement.getInitPrototype() != null)
 					writeFunctionPrototype(vertexElt,
 							hrefinement.getInitPrototype(),
-							PiXMLIdentifiers.REFINEMENT_INIT);
+							PiIdentifiers.REFINEMENT_INIT);
 			}
 		}
 	}
@@ -667,7 +680,8 @@ public class PiWriter {
 	 * file pointed by path is contained by the same project as the file we
 	 * write
 	 * 
-	 * @param path the IPath to make project relative
+	 * @param path
+	 *            the IPath to make project relative
 	 * @return a project relative IPath if possible, path otherwise
 	 */
 	private IPath getProjectRelativePathFrom(IPath path) {
@@ -688,7 +702,9 @@ public class PiWriter {
 	private void writeFunctionPrototype(Element vertexElt,
 			FunctionPrototype prototype, String functionName) {
 		Element protoElt = appendChild(vertexElt, functionName);
-		protoElt.setAttribute("name", prototype.getName());
+		protoElt.setAttribute(
+				PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME,
+				prototype.getName());
 		for (FunctionParameter p : prototype.getParameters()) {
 			writeFunctionParameter(protoElt, p);
 		}
@@ -696,11 +712,15 @@ public class PiWriter {
 
 	private void writeFunctionParameter(Element prototypeElt,
 			FunctionParameter p) {
-		Element protoElt = appendChild(prototypeElt, "param");
-		protoElt.setAttribute("name", p.getName());
-		protoElt.setAttribute("type", p.getType());
-		protoElt.setAttribute("direction", p.getDirection().toString());
-		protoElt.setAttribute("isConfig",
+		Element protoElt = appendChild(prototypeElt,
+				PiIdentifiers.REFINEMENT_PARAMETER);
+		protoElt.setAttribute(PiIdentifiers.REFINEMENT_PARAMETER_NAME,
+				p.getName());
+		protoElt.setAttribute(PiIdentifiers.REFINEMENT_PARAMETER_TYPE,
+				p.getType());
+		protoElt.setAttribute(PiIdentifiers.REFINEMENT_PARAMETER_DIRECTION,
+				p.getDirection().toString());
+		protoElt.setAttribute(PiIdentifiers.REFINEMENT_PARAMETER_IS_CONFIG,
 				String.valueOf(p.isIsConfigurationParameter()));
 	}
 
@@ -718,15 +738,15 @@ public class PiWriter {
 	protected void writeSpecialActor(Element vertexElt, AbstractActor actor) {
 		String kind = null;
 		if (actor instanceof BroadcastActor) {
-			kind = "broadcast";
+			kind = PiIdentifiers.BROADCAST;
 		} else if (actor instanceof JoinActor) {
-			kind = "join";
+			kind = PiIdentifiers.JOIN;
 		} else if (actor instanceof ForkActor) {
-			kind = "fork";
+			kind = PiIdentifiers.FORK;
 		} else if (actor instanceof RoundBufferActor) {
-			kind = "roundbuffer";
+			kind = PiIdentifiers.ROUND_BUFFER;
 		}
-		vertexElt.setAttribute("kind", kind);
+		vertexElt.setAttribute(PiIdentifiers.NODE_KIND, kind);
 
 		writePorts(vertexElt, actor.getConfigInputPorts());
 		writePorts(vertexElt, actor.getDataInputPorts());
