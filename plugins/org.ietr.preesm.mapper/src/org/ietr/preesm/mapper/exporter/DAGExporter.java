@@ -78,7 +78,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 	// Map to keep the number of ports for each DAGVertex
 	private Map<DAGVertex, Integer> inPortNb;
 	private Map<DAGVertex, Integer> outPortNb;
-	
+
 	/**
 	 * Builds a new DAGExporter
 	 */
@@ -91,27 +91,31 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 
 		Element vertexElt = createNode(parentELement, vertex.getName());
 		String kind;
-		switch (vertex.getKind()) {
-		case DAGVertex.DAG_VERTEX:
+		if (vertex.getKind() == null)
 			kind = "vertex";
-			break;
-		case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
-			kind = SDFBroadcastVertex.BROADCAST;
-			break;
-		case DAGEndVertex.DAG_END_VERTEX:
-			kind = SDFEndVertex.END;
-			break;
-		case DAGForkVertex.DAG_FORK_VERTEX:
-			kind = SDFForkVertex.FORK;
-			break;
-		case DAGInitVertex.DAG_INIT_VERTEX:
-			kind = SDFInitVertex.INIT;
-			break;
-		case DAGJoinVertex.DAG_JOIN_VERTEX:
-			kind = SDFJoinVertex.JOIN;
-			break;
-		default:
-			kind = "vertex";
+		else {
+			switch (vertex.getKind()) {
+			case DAGVertex.DAG_VERTEX:
+				kind = "vertex";
+				break;
+			case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
+				kind = SDFBroadcastVertex.BROADCAST;
+				break;
+			case DAGEndVertex.DAG_END_VERTEX:
+				kind = SDFEndVertex.END;
+				break;
+			case DAGForkVertex.DAG_FORK_VERTEX:
+				kind = SDFForkVertex.FORK;
+				break;
+			case DAGInitVertex.DAG_INIT_VERTEX:
+				kind = SDFInitVertex.INIT;
+				break;
+			case DAGJoinVertex.DAG_JOIN_VERTEX:
+				kind = SDFJoinVertex.JOIN;
+				break;
+			default:
+				kind = "vertex";
+			}
 		}
 		vertexElt.setAttribute(SDFAbstractVertex.KIND, kind);
 
@@ -166,7 +170,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		// Instantiate maps
 		inPortNb = new HashMap<DAGVertex, Integer>();
 		outPortNb = new HashMap<DAGVertex, Integer>();
-		
+
 		addKeySet(rootElt);
 		MapperDAG myGraph = (MapperDAG) graph;
 		Element graphElt = createGraph(rootElt, true);
@@ -219,18 +223,20 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 					"The output file " + path + " can not be written.");
 		}
 	}
-	
+
 	private String getOutPortName(DAGVertex vertex) {
-		if (!(outPortNb.containsKey(vertex))) outPortNb.put(vertex, 0);
+		if (!(outPortNb.containsKey(vertex)))
+			outPortNb.put(vertex, 0);
 		int nb = outPortNb.get(vertex);
 		String result = "out" + nb;
 		nb++;
 		outPortNb.put(vertex, nb);
 		return result;
 	}
-	
+
 	private String getInPortName(DAGVertex vertex) {
-		if (!(inPortNb.containsKey(vertex))) inPortNb.put(vertex, 0);
+		if (!(inPortNb.containsKey(vertex)))
+			inPortNb.put(vertex, 0);
 		int nb = inPortNb.get(vertex);
 		String result = "in" + nb;
 		nb++;
