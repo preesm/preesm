@@ -46,6 +46,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
 import org.ietr.dftools.architecture.slam.Design
 import org.ietr.preesm.core.scenario.PreesmScenario
+import org.ietr.preesm.core.scenario.Timing
 
 /**
  * This class is used to print an {@link SDFGraph} in the SDF For Free (SDF3)
@@ -236,7 +237,7 @@ class Sdf3Printer {
 				«FOR component : components»
 					«IF !(constraintManager.getGraphConstraintGroups(actor).map[it.operatorIds.head]).forall[!component.instances.map[it.instanceName].contains(it)]»
 						<processor type="«component.vlnv.name»" default="«if(firstIsDefault) {firstIsDefault = false; true} else false»">
-							<executionTime time="«timingManager.getTimingOrDefault(actor.name, component.vlnv.name)»"/>
+							<executionTime time="«timingManager.getTimingOrDefault(actor.name, component.vlnv.name).print»"/>
 						</processor>
 					«ENDIF»
 				«ENDFOR»
@@ -251,6 +252,20 @@ class Sdf3Printer {
 			«ENDIF»
 		</actorProperties>
 		'''
+	}
+	
+	/**
+	 * Print the properties of an {@link Timing} of an actor.
+	 * 
+	 * @param timing
+	 *    the {@link Timing} whose properties are printed.
+	 * 
+	 * @return the {@link CharSequence} containing the XML code for the
+	 * properties of a timing in the SDF3 format.
+	 */
+	def print(Timing timing) {
+		if (timing.evaluated) timing.time
+		else timing.stringValue
 	}
 	
 	/** 
