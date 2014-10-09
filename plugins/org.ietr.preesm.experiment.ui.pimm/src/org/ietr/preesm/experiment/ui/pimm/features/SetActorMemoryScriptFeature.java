@@ -44,11 +44,10 @@ import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.ui.pimm.util.PiMMUtil;
 
 /**
- * Custom Feature to set a new {@link Refinement} of an {@link Actor}
+ * Custom Feature to set a new memory script to an {@link Actor}
  * 
  * @author kdesnos
  * 
