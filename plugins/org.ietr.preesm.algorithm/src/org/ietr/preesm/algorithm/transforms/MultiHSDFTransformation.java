@@ -25,6 +25,7 @@ public class MultiHSDFTransformation extends AbstractTaskImplementation {
 			String nodeName, Workflow workflow) throws WorkflowException {
 
 		Set<SDFGraph> result = new HashSet<SDFGraph>();
+		@SuppressWarnings("unchecked")
 		Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs
 				.get(KEY_SDF_GRAPHS_SET);
 
