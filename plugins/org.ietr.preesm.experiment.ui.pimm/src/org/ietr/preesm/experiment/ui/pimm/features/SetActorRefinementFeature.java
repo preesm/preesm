@@ -131,7 +131,8 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 		fileExtensions.add("pi");
 		fileExtensions.add("idl");
 		fileExtensions.add("h");
-		IPath newFilePath = PiMMUtil.askFile(dialogTitle, question, null, fileExtensions);
+		IPath newFilePath = PiMMUtil.askFile(dialogTitle, question, null,
+				fileExtensions);
 
 		setActorRefinement(actor, newFilePath);
 	}
@@ -142,8 +143,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 	 * 
 	 * @param newFilePath
 	 */
-	protected void setActorRefinement(Actor actor,
-			IPath newFilePath) {
+	protected void setActorRefinement(Actor actor, IPath newFilePath) {
 		String dialogTitle = "Select a refinement file";
 		Refinement refinement = actor.getRefinement();
 		if (newFilePath != null) {
@@ -153,8 +153,9 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 				// We get it
 				IFile file = ResourcesPlugin.getWorkspace().getRoot()
 						.getFile(newFilePath);
-				Set<FunctionPrototype> prototypes = getPrototypes(file, actor);
-				if (prototypes.isEmpty()) {
+				Set<FunctionPrototype> loopPrototypes = getPrototypes(file,
+						actor, false);
+				if (loopPrototypes.isEmpty()) {
 					String message = "The .h file you selected does not contain any prototype corresponding to actor "
 							+ actor.getName()
 							+ ".\nPlease select another valid file.";
@@ -164,24 +165,33 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 					String message = "Select a loop function for actor "
 							+ actor.getName()
 							+ "\n(* = any string, ? = any char):";
-					FunctionPrototype[] protoArray = prototypes
-							.toArray(new FunctionPrototype[prototypes.size()]);
+					FunctionPrototype[] loopProtoArray = loopPrototypes
+							.toArray(new FunctionPrototype[loopPrototypes
+									.size()]);
 					FunctionPrototype loopProto = PiMMUtil.selectFunction(
-							protoArray, title, message, true);
+							loopProtoArray, title, message, true);
 
-					title = "Init Function Selection";
-					message = "Select an optionnal init function for actor "
-							+ actor.getName()
-							+ ", or click Cancel\n(* = any string, ? = any char):";
-					FunctionPrototype initProto = PiMMUtil.selectFunction(
-							protoArray, title, message, false);
+					Set<FunctionPrototype> initPrototypes = getPrototypes(file,
+							actor, true);
+					if (!initPrototypes.isEmpty()) {
+						title = "Init Function Selection";
+						message = "Select an optionnal init function for actor "
+								+ actor.getName()
+								+ ", or click Cancel\n(* = any string, ? = any char):";
+						FunctionPrototype[] initProtoArray = initPrototypes
+								.toArray(new FunctionPrototype[initPrototypes
+										.size()]);
+						FunctionPrototype initProto = PiMMUtil.selectFunction(
+								initProtoArray, title, message, false);
 
-					HRefinement newRefinement = PiMMFactory.eINSTANCE
-							.createHRefinement();
-					newRefinement.setLoopPrototype(loopProto);
-					newRefinement.setInitPrototype(initProto);
-					newRefinement.setFilePath(newFilePath);
-					actor.setRefinement(newRefinement);
+						HRefinement newRefinement = PiMMFactory.eINSTANCE
+								.createHRefinement();
+						newRefinement.setLoopPrototype(loopProto);
+						newRefinement.setInitPrototype(initProto);
+						newRefinement.setFilePath(newFilePath);
+						actor.setRefinement(newRefinement);
+					}
+
 				}
 
 			} else {
@@ -190,7 +200,8 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 		}
 	}
 
-	private Set<FunctionPrototype> getPrototypes(IFile file, Actor actor) {
+	private Set<FunctionPrototype> getPrototypes(IFile file, Actor actor,
+			boolean initPrototypes) {
 		Set<FunctionPrototype> result = new HashSet<FunctionPrototype>();
 
 		if (file != null) {
@@ -203,7 +214,10 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 				ast.accept(visitor);
 				// And extract from it the functions
 				// compatible with the current actor
-				result = visitor.filterPrototypesFor(actor);
+				if (initPrototypes)
+					result = visitor.filterInitPrototypesFor(actor);
+				else
+					result = visitor.filterLoopPrototypesFor(actor);
 			} catch (CoreException e) {
 				e.printStackTrace();
 			}

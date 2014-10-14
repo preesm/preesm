@@ -76,7 +76,8 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 		// The name of the argument is the last segment (others are the
 		// type)
 		String argumentName = segments[segments.length - 1];
-		if (argumentName.startsWith("*")) argumentName = argumentName.replace("*", "");
+		if (argumentName.startsWith("*"))
+			argumentName = argumentName.replace("*", "");
 		parameter.setName(argumentName);
 		// Type of the argument is the whole string minus the name
 		parameter.setType(argument.replace(argumentName, ""));
@@ -92,33 +93,74 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 	 *            the AbstractActor which ports we use to filter prototypes
 	 * @return the set of FunctionPrototypes corresponding to actor
 	 */
-	public Set<FunctionPrototype> filterPrototypesFor(AbstractActor actor) {
+	public Set<FunctionPrototype> filterLoopPrototypesFor(AbstractActor actor) {
 		Set<FunctionPrototype> result = new HashSet<FunctionPrototype>();
 
 		// For each function prototype proto
 		for (FunctionPrototype proto : this.prototypes) {
 			// proto matches the signature of actor if:
-			boolean matches = true;
-			// each of its parameter matches one of the ports of actor
-			for (FunctionParameter param : proto.getParameters()) {
-				if (hasCorrespondingPort(param, actor.getDataInputPorts())) {
-					param.setDirection(Direction.IN);
-					param.setIsConfigurationParameter(false);
-				} else if (hasCorrespondingPort(param,
-						actor.getDataOutputPorts())) {
-					param.setDirection(Direction.OUT);
-					param.setIsConfigurationParameter(false);
-				} else if (hasCorrespondingPort(param,
-						actor.getConfigInputPorts())) {
-					param.setDirection(Direction.IN);
-					param.setIsConfigurationParameter(true);
-				} else if (hasCorrespondingPort(param,
-						actor.getConfigOutputPorts())) {
-					param.setDirection(Direction.OUT);
-					param.setIsConfigurationParameter(true);
-				}else {
-					matches = false;
-					break;
+			// -it does not have more parameters than the actors ports
+			Set<FunctionParameter> params = new HashSet<FunctionParameter>(
+					proto.getParameters());
+			boolean matches = params.size() <= (actor.getDataInputPorts()
+					.size()
+					+ actor.getDataOutputPorts().size()
+					+ actor.getConfigInputPorts().size() + actor
+					.getConfigOutputPorts().size());
+			// -each of the data input and output ports of the actor matches one
+			// of the parameters of proto
+			if (matches) {
+				for (Port p : actor.getDataInputPorts()) {
+					FunctionParameter param = getCorrespondingFunctionParameter(
+							p, params);
+					if (param != null) {
+						param.setDirection(Direction.IN);
+						param.setIsConfigurationParameter(false);
+						params.remove(param);
+					} else {
+						matches = false;
+						break;
+					}
+				}
+			}
+			if (matches) {
+				for (Port p : actor.getDataOutputPorts()) {
+					FunctionParameter param = getCorrespondingFunctionParameter(
+							p, params);
+					if (param != null) {
+						param.setDirection(Direction.OUT);
+						param.setIsConfigurationParameter(false);
+						params.remove(param);
+					} else {
+						matches = false;
+						break;
+					}
+				}
+			}
+			// -each of the configuration output ports of the actor matches one
+			// of the parameters of proto
+			if (matches) {
+				for (Port p : actor.getConfigOutputPorts()) {
+					FunctionParameter param = getCorrespondingFunctionParameter(
+							p, params);
+					if (param != null) {
+						param.setDirection(Direction.OUT);
+						param.setIsConfigurationParameter(true);
+						params.remove(param);
+					} else {
+						matches = false;
+						break;
+					}
+				}
+			}
+			// -all other function parameters of proto match a configuration
+			// input port of the actor
+			if (matches) {
+				for (FunctionParameter param : params) {
+					if (hasCorrespondingPort(param, actor.getConfigInputPorts())) {
+						param.setDirection(Direction.IN);
+						param.setIsConfigurationParameter(true);
+					}
 				}
 			}
 			if (matches) {
@@ -127,6 +169,55 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 		}
 
 		return result;
+	}
+
+	/**
+	 * Filters the prototypes obtained from the parsed file to keep only the
+	 * ones corresponding to the actor possible initialization
+	 * 
+	 * @param actor
+	 *            the AbstractActor which ports we use to filter prototypes
+	 * @return the set of FunctionPrototypes corresponding to actor
+	 *         initialization
+	 */
+	public Set<FunctionPrototype> filterInitPrototypesFor(AbstractActor actor) {
+		Set<FunctionPrototype> result = new HashSet<FunctionPrototype>();
+
+		// For each function prototype proto
+		for (FunctionPrototype proto : this.prototypes) {
+			// proto matches the initialization of actor if:
+			// -it does not have more parameters than the actors configuration
+			// input ports
+			Set<FunctionParameter> params = new HashSet<FunctionParameter>(
+					proto.getParameters());
+			boolean matches = params.size() <= actor.getConfigInputPorts()
+					.size();
+			// -all function parameters of proto match a configuration input
+			// port of the actor (initialization function cannot read or write
+			// in fifo nor write on configuration output ports)
+			if (matches) {
+				for (FunctionParameter param : params) {
+					if (hasCorrespondingPort(param, actor.getConfigInputPorts())) {
+						param.setDirection(Direction.IN);
+						param.setIsConfigurationParameter(true);
+					}
+				}
+			}
+			if (matches) {
+				result.add(proto);
+			}
+		}
+
+		return result;
+	}
+
+	private FunctionParameter getCorrespondingFunctionParameter(Port p,
+			Set<FunctionParameter> params) {
+		for (FunctionParameter param : params) {
+			if (p.getName().equals(param.getName()))
+				return param;
+		}
+		return null;
 	}
 
 	private boolean hasCorrespondingPort(FunctionParameter f,

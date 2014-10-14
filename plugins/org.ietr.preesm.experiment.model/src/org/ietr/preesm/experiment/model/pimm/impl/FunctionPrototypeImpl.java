@@ -212,7 +212,7 @@ public class FunctionPrototypeImpl extends EObjectImpl implements FunctionProtot
 			} else {
 				result += ",";
 			}
-			result += p.getType();
+			result += p.getType() + p.getName();
 		}
 		result += ")";
 		return result;
