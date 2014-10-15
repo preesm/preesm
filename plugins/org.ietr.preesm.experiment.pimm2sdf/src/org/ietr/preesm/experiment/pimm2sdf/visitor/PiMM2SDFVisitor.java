@@ -143,9 +143,11 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 		if (result == null) {
 			result = new SDFGraph();
 			result.setName(pg.getName());
-			
-			// Save the original Path to the pigraph in the property bean (used by memory scripts)
-			result.setPropertyValue(AbstractGraph.PATH, pg.eResource().getURI().toPlatformString(false));
+
+			// Save the original Path to the pigraph in the property bean (used
+			// by memory scripts)
+			result.setPropertyValue(AbstractGraph.PATH, pg.eResource().getURI()
+					.toPlatformString(false));
 
 			// Set these values into the parameters of pg when possible
 			for (Parameter p : pg.getParameters()) {
@@ -231,15 +233,25 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitParameter(Parameter p) {
-		// If there is only one value available for Parameter p, we can set it
-		Integer value = execution.getUniqueValue(p);
-		if (value != null) {
-			Expression pExp = piFactory.createExpression();
-			pExp.setString(value.toString());
-			p.setExpression(pExp);
+		if (p.isConfigurationInterface()) {
+			ISetter setter = p.getGraphPort().getIncomingDependency()
+					.getSetter();
+			// Setter of an incoming dependency into a ConfigInputInterface must
+			// be a parameter
+			if (setter instanceof Parameter)
+				p.setExpression(((Parameter) setter).getExpression());
+		} else {
+			// If there is only one value available for Parameter p, we can set
+			// it
+			Integer value = execution.getUniqueValue(p);
+			if (value != null) {
+				Expression pExp = piFactory.createExpression();
+				pExp.setString(value.toString());
+				p.setExpression(pExp);
 
-			Variable v = new Variable(p.getName(), value.toString());
-			result.getVariables().addVariable(v);
+				Variable v = new Variable(p.getName(), value.toString());
+				result.getVariables().addVariable(v);
+			}
 		}
 	}
 
@@ -714,7 +726,7 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 	public void visitDataPort(DataPort p) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public void visitExecutableActor(ExecutableActor ea) {
 		throw new UnsupportedOperationException();
