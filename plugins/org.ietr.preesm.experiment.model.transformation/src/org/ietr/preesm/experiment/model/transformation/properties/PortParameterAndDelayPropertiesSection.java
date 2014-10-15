@@ -48,6 +48,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
@@ -72,8 +73,8 @@ import org.ietr.preesm.experiment.ui.pimm.features.SetPortMemoryAnnotationFeatur
  * @author jheulot
  * 
  */
-public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUpdater
-		implements ITabbedPropertyConstants {
+public class PortParameterAndDelayPropertiesSection extends
+		DataPortPropertiesUpdater implements ITabbedPropertyConstants {
 
 	private CLabel lblName;
 	private CLabel lblNameObj;
@@ -250,10 +251,10 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 			if (bo instanceof DataPort) {
 				DataPort port = (DataPort) bo;
 				updateDataPortProperties(port, txtExpression);
-				
+
 				getDiagramTypeProvider().getDiagramBehavior()
-				.refreshRenderingDecorators(
-						(PictogramElement) (pe.eContainer()));
+						.refreshRenderingDecorators(
+								(PictogramElement) (pe.eContainer()));
 			}// end DataPort
 
 			if (bo instanceof DataPort) {
@@ -294,6 +295,7 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 		String name = null;
 		Expression e = null;
 		boolean expressionFocus = txtExpression.isFocusControl();
+		Point sel = txtExpression.getSelection();
 		txtExpression.setEnabled(false);
 
 		if (pe != null) {
@@ -321,7 +323,7 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 
 			if (bo instanceof DataPort) {
 				DataPort iPort = ((DataPort) bo);
-				
+
 				comboAnnotation.select(((DataPort) bo).getAnnotation()
 						.getValue());
 
@@ -368,8 +370,10 @@ public class PortParameterAndDelayPropertiesSection extends DataPortPropertiesUp
 
 				lblValueObj.setText(e.evaluate());
 
-				if (expressionFocus)
+				if (expressionFocus) {
 					txtExpression.setFocus();
+					txtExpression.setSelection(sel);
+				}
 			}
 		}
 	}
