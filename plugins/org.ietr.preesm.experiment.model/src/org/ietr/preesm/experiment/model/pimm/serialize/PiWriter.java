@@ -329,9 +329,11 @@ public class PiWriter {
 		// Set the kind of the Actor
 		vertexElt.setAttribute(PiIdentifiers.NODE_KIND,
 				PiIdentifiers.ACTOR);
-		writeRefinement(vertexElt, actor.getRefinement());
-		writeMemoryScript(vertexElt,
-				getProjectRelativePathFrom(actor.getMemoryScriptPath()));
+		Refinement refinement = actor.getRefinement();
+		if (refinement != null) writeRefinement(vertexElt, refinement);
+		IPath memoryScriptPath = actor.getMemoryScriptPath();
+		if (memoryScriptPath != null) writeMemoryScript(vertexElt,
+				getProjectRelativePathFrom(memoryScriptPath));
 		// writeDataElt(vertexElt, "kind", "actor");
 		// Write ports of the actor
 		writePorts(vertexElt, actor.getConfigInputPorts());
@@ -653,7 +655,7 @@ public class PiWriter {
 	 *            The {@link Refinement} to serialize
 	 */
 	protected void writeRefinement(Element vertexElt, Refinement refinement) {
-		if (refinement != null && refinement.getFilePath() != null) {
+		if (refinement.getFilePath() != null) {
 
 			IPath refinementPath = getProjectRelativePathFrom(refinement
 					.getFilePath());
