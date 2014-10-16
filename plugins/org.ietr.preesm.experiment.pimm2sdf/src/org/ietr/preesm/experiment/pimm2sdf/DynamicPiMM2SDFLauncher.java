@@ -47,14 +47,14 @@ import org.ietr.preesm.core.scenario.ParameterValue;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.pimm2sdf.visitor.PiMM2SDFVisitor;
+import org.ietr.preesm.experiment.pimm2sdf.visitor.DynamicPiMM2SDFVisitor;
 
-public class PiMM2SDFLauncher {
+public class DynamicPiMM2SDFLauncher {
 
 	private PreesmScenario scenario;
 	private PiGraph graph;
 
-	public PiMM2SDFLauncher(PreesmScenario scenario, PiGraph graph) {
+	public DynamicPiMM2SDFLauncher(PreesmScenario scenario, PiGraph graph) {
 		this.scenario = scenario;
 		this.graph = graph;
 	}
@@ -79,7 +79,7 @@ public class PiMM2SDFLauncher {
 		}
 
 		// Visitor creating the SDFGraphs
-		PiMM2SDFVisitor visitor;
+		DynamicPiMM2SDFVisitor visitor;
 		PiGraphExecution execution;
 		// Values for the parameters for one execution
 		Map<String, List<Integer>> currentValues;
@@ -100,7 +100,7 @@ public class PiMM2SDFLauncher {
 			}
 
 			execution = new PiGraphExecution(graph, currentValues, "_" + i, i);
-			visitor = new PiMM2SDFVisitor(execution);
+			visitor = new DynamicPiMM2SDFVisitor(execution);
 			graph.accept(visitor);
 
 			SDFGraph sdf = visitor.getResult();
