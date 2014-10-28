@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Cdt
 Bundle-SymbolicName: org.ietr.preesm.experiment.header.parser.cdt
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.0.1.qualifier
 Export-Package: org.ietr.preesm.experiment.header.parser.cdt
 Require-Bundle: org.eclipse.cdt.core,
  org.eclipse.core.runtime,
