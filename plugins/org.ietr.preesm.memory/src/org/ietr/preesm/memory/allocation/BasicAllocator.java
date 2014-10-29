@@ -92,8 +92,13 @@ public class BasicAllocator extends MemoryAllocator {
 							- (offset % align);
 
 				}
+				// Save the verexWeight befor allocating.
+				// Since the Mobject may be the result of a merge
+				// vertex.getWeight may be changed during the call to
+				// allocateMemoryObject
+				int vertexWeight = vertex.getWeight();
 				allocateMemoryObject(vertex, offset);
-				offset += vertex.getWeight();
+				offset += vertexWeight;
 			}
 		}
 	}
