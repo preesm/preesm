@@ -62,7 +62,7 @@ public class SubgraphConnector extends PiMMVisitor {
 			}
 		}
 	}
-	
+
 	@Override
 	public void visitPiGraph(PiGraph pg) {
 		PiGraph oldGraph = currentGraph;
@@ -114,9 +114,9 @@ public class SubgraphConnector extends PiMMVisitor {
 					Fifo fifo = dip1.getIncomingFifo();
 					dip2.setIncomingFifo(fifo);
 					fifo.setTargetPort(dip2);
-					
+
 					dip2.setExpression(dip1.getExpression());
-					
+
 					found = true;
 					break;
 				}
@@ -134,9 +134,9 @@ public class SubgraphConnector extends PiMMVisitor {
 					Fifo fifo = dop1.getOutgoingFifo();
 					dop2.setOutgoingFifo(fifo);
 					fifo.setSourcePort(dop2);
-					
+
 					dop2.setExpression(dop1.getExpression());
-					
+
 					found = true;
 					break;
 				}
@@ -153,7 +153,7 @@ public class SubgraphConnector extends PiMMVisitor {
 				if (cip1.getName().equals(cip2.getName())) {
 					Dependency dep = cip1.getIncomingDependency();
 					cip2.setIncomingDependency(dep);
-					dep.setGetter(cip2);										
+					dep.setGetter(cip2);
 					found = true;
 					break;
 				}
@@ -170,7 +170,7 @@ public class SubgraphConnector extends PiMMVisitor {
 				if (cop1.getName().equals(cop2.getName())) {
 					for (Dependency dep : cop1.getOutgoingDependencies()) {
 						cop2.getOutgoingDependencies().add(dep);
-						dep.setSetter(cop2);						
+						dep.setSetter(cop2);
 					}
 					found = true;
 					break;
@@ -186,31 +186,36 @@ public class SubgraphConnector extends PiMMVisitor {
 
 	@Override
 	public void visitDataInputInterface(DataInputInterface dii) {
-		// Connect the interface to the incoming fifo from the outer graph
-		DataInputPort correspondingPort = null;
-		for (DataInputPort dip : currentActor.getDataInputPorts()) {
-			if (dip.getName() == dii.getName()) {
-				correspondingPort = dip;
-				break;
+		// Connect the interface to the incoming fifo from the outer graph, if
+		// any
+		if (currentActor != null) {
+			DataInputPort correspondingPort = null;
+			for (DataInputPort dip : currentActor.getDataInputPorts()) {
+				if (dip.getName() == dii.getName()) {
+					correspondingPort = dip;
+					break;
+				}
 			}
-		}
-		if (correspondingPort != null) {
-			dii.setGraphPort(correspondingPort);
+			if (correspondingPort != null) {
+				dii.setGraphPort(correspondingPort);
+			}
 		}
 	}
 
 	@Override
 	public void visitDataOutputInterface(DataOutputInterface doi) {
-		// Connect the interface to the outgoing fifo to the outer graph
-		DataOutputPort correspondingPort = null;
-		for (DataOutputPort dop : currentActor.getDataOutputPorts()) {
-			if (dop.getName() == doi.getName()) {
-				correspondingPort = dop;
-				break;
+		// Connect the interface to the outgoing fifo to the outer graph, if any
+		if (currentActor != null) {
+			DataOutputPort correspondingPort = null;
+			for (DataOutputPort dop : currentActor.getDataOutputPorts()) {
+				if (dop.getName() == doi.getName()) {
+					correspondingPort = dop;
+					break;
+				}
 			}
-		}
-		if (correspondingPort != null) {
-			doi.setGraphPort(correspondingPort);
+			if (correspondingPort != null) {
+				doi.setGraphPort(correspondingPort);
+			}
 		}
 	}
 
@@ -276,7 +281,7 @@ public class SubgraphConnector extends PiMMVisitor {
 	public void visitDataPort(DataPort p) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public void visitDataInputPort(DataInputPort dip) {
 		throw new UnsupportedOperationException();
@@ -363,7 +368,7 @@ public class SubgraphConnector extends PiMMVisitor {
 	public void visitRoundBufferActor(RoundBufferActor rba) {
 		// Do nothing
 	}
-	
+
 	@Override
 	public void visitExecutableActor(ExecutableActor ea) {
 		throw new UnsupportedOperationException();
