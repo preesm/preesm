@@ -124,6 +124,22 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 	public abstract void visitPiGraph(PiGraph pg);
 
 	/**
+	 * Transforms parameters from a PiGraph into graph variables of an SDFGraph
+	 * 
+	 * @param pg
+	 *            the PiGraph from which we extract the Parameters
+	 * @param sdf
+	 *            the SDFGraph to which we add the graph variables
+	 */
+	protected void parameters2GraphVariables(PiGraph pg, SDFGraph sdf) {
+		for (Parameter p : pg.getParameters()) {
+			Variable var = new Variable(p.getName(), p.getExpression()
+					.evaluate());
+			sdf.addVariable(var);
+		}
+	}
+
+	/**
 	 * Parameters of a top graph must be visited before parameters of a
 	 * subgraph, since the expression of ConfigurationInputInterface depends on
 	 * the value of its connected Parameter
@@ -145,12 +161,10 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 				Expression pExp = piFactory.createExpression();
 				pExp.setString(value.toString());
 				p.setExpression(pExp);
-
-				Variable v = new Variable(p.getName(), value.toString());
-				result.getVariables().addVariable(v);
 			}
 		}
 	}
+
 	@Override
 	public void visitConfigInputInterface(ConfigInputInterface cii) {
 		ISetter setter = cii.getGraphPort().getIncomingDependency().getSetter();
@@ -159,7 +173,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 		if (setter instanceof Parameter)
 			cii.setExpression(((Parameter) setter).getExpression());
 	}
-	
+
 	/**
 	 * Set the value of parameters of a PiGraph when possible (i.e., if we have
 	 * currently only one available value, or if we can compute the value)
@@ -183,9 +197,6 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 				String value = p.getExpression().evaluate();
 				pExp.setString(value);
 				p.setExpression(pExp);
-
-				Variable v = new Variable(p.getName(), value);
-				result.getVariables().addVariable(v);
 			}
 		}
 	}
