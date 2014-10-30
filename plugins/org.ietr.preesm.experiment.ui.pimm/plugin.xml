@@ -76,6 +76,22 @@
             </and>
          </enablement>
       </renameParticipant>
+      <renameParticipant
+            class="org.ietr.preesm.experiment.ui.pimm.refactoring.RenameDiagram"
+            id="org.ietr.preesm.experiment.ui.pimm.refactoring.RenameDiagram"
+            name="RenameDiagram">
+         <enablement>
+            <and>
+               <instanceof
+                     value="org.eclipse.core.resources.IFile">
+               </instanceof>
+               <test
+                     property="org.eclipse.core.resources.extension"
+                     value="diagram">
+               </test>
+            </and>
+         </enablement>
+      </renameParticipant>
    </extension>
 
 </plugin>

@@ -20,13 +20,13 @@ import org.eclipse.text.edits.ReplaceEdit;
 
 /**
  * The purpose of this class is to handle the rename refactoring of a file with
- * the ".pi" extension. In the rename operation, it is assumed that the
- * corresponding file with the ".diagram" extension is renamed similarly.
+ * the ".diagram" extension. In the rename operation, it is assumed that the
+ * corresponding file with the ".pi" extension is renamed similarly.
  * 
  * @author kdesnos
  * 
  */
-public class RenamePi extends RenameParticipant {
+public class RenameDiagram extends RenameParticipant {
 
 	String oldName;
 	String newName;
@@ -36,9 +36,9 @@ public class RenamePi extends RenameParticipant {
 		oldName = ((IFile) element).getName();
 		newName = this.getArguments().getNewName();
 
-		// Check that both names end with extension ".pi"
+		// Check that both names end with extension ".diagram"
 		// and remove both extensions
-		final String extension = ".pi";
+		final String extension = ".diagram";
 		if (oldName.endsWith(extension) && newName.endsWith(extension)) {
 			oldName = oldName.substring(0, oldName.length() - extension.length());
 			newName = newName.substring(0, newName.length() - extension.length());
@@ -52,7 +52,7 @@ public class RenamePi extends RenameParticipant {
 
 	@Override
 	public String getName() {
-		return "Rename .pi file";
+		return "Rename .diagram file";
 	}
 
 	@Override
@@ -62,13 +62,12 @@ public class RenamePi extends RenameParticipant {
 		return null;
 	}
 
-	@Override
 	public Change createPreChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
 
 		// Get the refactored file
 		IFile refactored = (IFile) getProcessor().getElements()[0];
-		
+
 		// Read file content
 		StringBuffer buffer = new StringBuffer();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -88,13 +87,12 @@ public class RenamePi extends RenameParticipant {
 		// Create the change
 		TextFileChange change = new TextFileChange(refactored.getName(),
 				refactored);
-		Pattern pattern = Pattern.compile("(<data key=\"name\">)(" + oldName
-				+ ")(</data>)");
+		Pattern pattern = Pattern.compile("(<pi:Diagram.*?name=\")("+oldName+")(\".*?>)");
 		Matcher matcher = pattern.matcher(buffer.toString());
-		
+
 		// If the change is applicable: apply it ! (else do nothing)
 		if (matcher.find()) {
-			ReplaceEdit edit = new ReplaceEdit(matcher.start(2), matcher.end(2)
+			ReplaceEdit edit = new ReplaceEdit(matcher.start(2)+1, matcher.end(2)
 					- matcher.start(2), newName);
 			change.setEdit(new MultiTextEdit());
 			change.addEdit(edit);
