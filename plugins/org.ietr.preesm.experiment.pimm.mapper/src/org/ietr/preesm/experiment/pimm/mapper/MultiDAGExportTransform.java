@@ -4,9 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
+import org.ietr.dftools.ui.util.FileUtils;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
@@ -26,14 +29,22 @@ public class MultiDAGExportTransform extends AbstractTaskImplementation {
 				.get("DAGs");
 
 		for (DirectedAcyclicGraph dag : dags) {
-			String path = parameters.get("path");
-			if (path.endsWith(".graphml")) {
-				path.replace(".graphml", "");
-			}
-			path = path + "_" + dag.getName() + ".graphml";
+			String path = parameters.get("path");			
 			String sGraphmlPath = PathTools.getAbsolutePath(path,
 					workflow.getProjectName());
-			Path graphmlPath = new Path(sGraphmlPath);
+			
+			IPath graphmlPath = new Path(sGraphmlPath);
+			// Get a complete valid path with all folders existing
+			try {
+				if (graphmlPath.getFileExtension() != null)
+					FileUtils.createMissingFolders(graphmlPath.removeFileExtension().removeLastSegments(1));
+				else {
+					FileUtils.createMissingFolders(graphmlPath);
+					graphmlPath = graphmlPath.removeFileExtension().removeLastSegments(1).append(dag.getName() + ".graphml");
+				}
+			} catch (CoreException e) {
+				throw new WorkflowException("Path " + sGraphmlPath + " is not a valid path for export.");
+			}
 
 			// Exporting the DAG in a GraphML
 			if (graphmlPath != null) {

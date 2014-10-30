@@ -48,7 +48,7 @@ import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
-public class PiMM2SDFTask extends AbstractTaskImplementation {
+public class DynamicPiMM2SDFTask extends AbstractTaskImplementation {
 	
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
@@ -58,11 +58,11 @@ public class PiMM2SDFTask extends AbstractTaskImplementation {
 		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
 		PiGraph graph = (PiGraph) inputs.get(KEY_PI_GRAPH);
 		
-		PiMM2SDFLauncher launcher = new PiMM2SDFLauncher(scenario, graph);
+		DynamicPiMM2SDFLauncher launcher = new DynamicPiMM2SDFLauncher(scenario, graph);
 		Set<SDFGraph> result = launcher.launch();
 		
 		Map<String, Object> output = new HashMap<String, Object>();
-		output.put("SDFs", result);
+		output.put(KEY_SDF_GRAPHS_SET, result);
 		return output;
 	}
 

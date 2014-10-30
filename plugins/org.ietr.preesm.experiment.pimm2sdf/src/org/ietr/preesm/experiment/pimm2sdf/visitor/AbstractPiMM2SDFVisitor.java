@@ -35,16 +35,10 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.pimm2sdf.visitor;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 
 import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
-import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.CodeRefinement;
 import org.ietr.dftools.algorithm.model.IRefinement;
 import org.ietr.dftools.algorithm.model.parameters.Argument;
@@ -62,8 +56,6 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFExpressionEdgePropertyType;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
-import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor;
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
@@ -104,133 +96,38 @@ import org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 import org.ietr.preesm.experiment.pimm2sdf.PiGraphExecution;
 
-/**
- * This class visits a PiGraph with one value for each of the Parameters and
- * generates one SDFGraph
- * 
- * @author cguy
- * 
- */
-public class PiMM2SDFVisitor extends PiMMVisitor {
+public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 	// SDFGraph created from the outer graph
-	private SDFGraph result;
+	protected SDFGraph result;
 	// Original list of fixed values for all the parameters of the graph
-	private PiGraphExecution execution;
+	protected PiGraphExecution execution;
 
 	// Map from original PiMM vertices to generated SDF vertices
-	private Map<AbstractVertex, SDFAbstractVertex> piVx2SDFVx = new HashMap<AbstractVertex, SDFAbstractVertex>();
+	protected Map<AbstractVertex, SDFAbstractVertex> piVx2SDFVx = new HashMap<AbstractVertex, SDFAbstractVertex>();
 	// Map from PiMM ports to their vertex (used for SDFEdge creation)
-	private Map<Port, Parameterizable> piPort2Vx = new HashMap<Port, Parameterizable>();
-	// Set of subgraphs to visit afterwards
-	private Set<PiGraph> subgraphs = new HashSet<PiGraph>();
+	protected Map<Port, Parameterizable> piPort2Vx = new HashMap<Port, Parameterizable>();
 
 	// Current SDF Refinement
-	private IRefinement currentSDFRefinement;
+	protected IRefinement currentSDFRefinement;
 
 	// Factory for creation of new Pi Expressions
-	private PiMMFactory piFactory = PiMMFactory.eINSTANCE;
+	protected PiMMFactory piFactory = PiMMFactory.eINSTANCE;
 
-	public PiMM2SDFVisitor(PiGraphExecution execution) {
+	public AbstractPiMM2SDFVisitor(PiGraphExecution execution) {
 		this.execution = execution;
 	}
 
 	/**
-	 * Entry point of the visitor
+	 * Entry point of the visitor is to be defined by the subclass
 	 */
 	@Override
-	public void visitPiGraph(PiGraph pg) {
-		// If result == null, then pg is the first PiGraph we encounter
-		if (result == null) {
-			result = new SDFGraph();
-			result.setName(pg.getName());
-
-			// Save the original Path to the pigraph in the property bean (used
-			// by memory scripts)
-			result.setPropertyValue(AbstractGraph.PATH, pg.eResource().getURI()
-					.toPlatformString(false));
-
-			// Set these values into the parameters of pg when possible
-			for (Parameter p : pg.getParameters()) {
-				p.accept(this);
-			}
-			computeDerivedParameterValues(pg, execution);
-
-			// Visit each of the vertices of pg with the values set
-			for (AbstractActor aa : pg.getVertices()) {
-				aa.accept(this);
-			}
-			// And each of the data edges of pg with the values set
-			for (Fifo f : pg.getFifos()) {
-				f.accept(this);
-			}
-
-			// Pass the currentSDFGraph in Single Rate which will result in
-			// duplicating the SDFAbstractVertices when needed
-			ToHSDFVisitor toHsdf = new ToHSDFVisitor();
-			// the HSDF visitor will duplicates SDFAbstractVertices
-			// corresponding to subgraphs and we will just have to visit
-			// them afterwards with the good parameter values
-			try {
-				result.accept(toHsdf);
-			} catch (SDF4JException e) {
-				// TODO: handle the exception in order to stop the execution and
-				// inform the user
-				e.printStackTrace();
-			}
-			if (toHsdf.hasChanged())
-				result = toHsdf.getOutput();
-
-			// Then visit the subgraphs of pg once for each duplicates of
-			// their corresponding SDFAbstractVertex created by single rate
-			// transformation
-			visitDuplicatesOfSubgraphs(toHsdf.getMatchCopies(), execution);
-		}
-
-		// Otherwise (if pg is not the first PiGraph we encounter during this
-		// visit), we need to visit separately pg later
-		else {
-			SDFVertex v = new SDFVertex();
-			v.setName(pg.getName());
-
-			visitAbstractActor(pg);
-
-			result.addVertex(v);
-			piVx2SDFVx.put(pg, v);
-
-			subgraphs.add(pg);
-		}
-	}
+	public abstract void visitPiGraph(PiGraph pg);
 
 	/**
-	 * Set the value of parameters of a PiGraph when possible (i.e., if we have
-	 * currently only one available value, or if we can compute the value)
-	 * 
-	 * @param graph
-	 *            the PiGraph in which we want to set the values of parameters
-	 * @param execution
-	 *            the list of available values for each parameter
+	 * Parameters of a top graph must be visited before parameters of a
+	 * subgraph, since the expression of ConfigurationInputInterface depends on
+	 * the value of its connected Parameter
 	 */
-	private void computeDerivedParameterValues(PiGraph graph,
-			PiGraphExecution execution) {
-		// If there is no value or list of valuse for one Parameter, the value
-		// of the parameter is derived (i.e., computed from other parameters
-		// values), we can evaluate it (after the values of other parameters
-		// have been fixed)
-		for (Parameter p : graph.getParameters()) {
-			if (!execution.hasValue(p)) {
-				// Evaluate the expression wrt. the current values of the
-				// parameters and set the result as new expression
-				Expression pExp = piFactory.createExpression();
-				String value = p.getExpression().evaluate();
-				pExp.setString(value);
-				p.setExpression(pExp);
-
-				Variable v = new Variable(p.getName(), value);
-				result.getVariables().addVariable(v);
-			}
-		}
-	}
-
 	@Override
 	public void visitParameter(Parameter p) {
 		if (p.isConfigurationInterface()) {
@@ -254,57 +151,41 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 			}
 		}
 	}
-
+	@Override
+	public void visitConfigInputInterface(ConfigInputInterface cii) {
+		ISetter setter = cii.getGraphPort().getIncomingDependency().getSetter();
+		// Setter of an incoming dependency into a ConfigInputInterface must be
+		// a parameter
+		if (setter instanceof Parameter)
+			cii.setExpression(((Parameter) setter).getExpression());
+	}
+	
 	/**
-	 * Visit each subgraph of the currently visited PiGraph once for each
-	 * duplicates obtained through single rate transformation
+	 * Set the value of parameters of a PiGraph when possible (i.e., if we have
+	 * currently only one available value, or if we can compute the value)
 	 * 
-	 * @param verticesToDuplicates
-	 *            Map from the vertices of the currentSDFGraph before and its
-	 *            vertices after the single rate transformation
+	 * @param graph
+	 *            the PiGraph in which we want to set the values of parameters
 	 * @param execution
-	 *            Values for the parameters of the currently visited PiGraph and
-	 *            its inner graphs
+	 *            the list of available values for each parameter
 	 */
-	private void visitDuplicatesOfSubgraphs(
-			Map<SDFAbstractVertex, Vector<SDFAbstractVertex>> verticesToDuplicates,
+	protected void computeDerivedParameterValues(PiGraph graph,
 			PiGraphExecution execution) {
+		// If there is no value or list of valuse for one Parameter, the value
+		// of the parameter is derived (i.e., computed from other parameters
+		// values), we can evaluate it (after the values of other parameters
+		// have been fixed)
+		for (Parameter p : graph.getParameters()) {
+			if (!execution.hasValue(p)) {
+				// Evaluate the expression wrt. the current values of the
+				// parameters and set the result as new expression
+				Expression pExp = piFactory.createExpression();
+				String value = p.getExpression().evaluate();
+				pExp.setString(value);
+				p.setExpression(pExp);
 
-		// For each subgraph, visit it once for each duplicates of its
-		// corresponding SDFAbstractVertex, changing the value of parameters
-		// each time, and associates the result of the visits to the duplicates
-		for (PiGraph subgraph : subgraphs) {
-			// Get all the duplicates of the SDFAbstractVertex for subgraph
-			List<SDFAbstractVertex> duplicates;
-			if (verticesToDuplicates != null) {
-				duplicates = verticesToDuplicates.get(piVx2SDFVx.get(subgraph));
-			}
-			// If verticesToDuplicate is null, the graph was already in
-			// single-rate, there is no duplicates for the initially generated
-			// SDFAbstractVertex, use it directly
-			else {
-				duplicates = new ArrayList<SDFAbstractVertex>();
-				duplicates.add(piVx2SDFVx.get(subgraph));
-			}
-
-			int duplicateIndex = 0;
-			// For each of the duplicates
-			for (SDFAbstractVertex duplicate : duplicates) {
-				int selector = duplicateIndex + duplicates.size()
-						* execution.getExecutionNumber();
-				// Obtain a new PiGraphExecution fixing values for Parameters
-				// directly contained by subgraph
-				PiGraphExecution innerExecution = execution
-						.extractInnerExecution(subgraph, selector);
-				// Visit subgraph with the PiGraphExecution
-				PiMM2SDFVisitor innerVisitor = new PiMM2SDFVisitor(
-						innerExecution);
-				innerVisitor.visit(subgraph);
-				// Set the obtained SDFGraph as refinement for duplicate
-				SDFGraph sdf = innerVisitor.getResult();
-				sdf.setName(sdf.getName() + innerExecution.getExecutionLabel());
-				duplicate.setGraphDescription(sdf);
-				duplicateIndex++;
+				Variable v = new Variable(p.getName(), value);
+				result.getVariables().addVariable(v);
 			}
 		}
 	}
@@ -467,15 +348,6 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 	}
 
 	@Override
-	public void visitConfigInputInterface(ConfigInputInterface cii) {
-		ISetter setter = cii.getGraphPort().getIncomingDependency().getSetter();
-		// Setter of an incoming dependency into a ConfigInputInterface must be
-		// a parameter
-		if (setter instanceof Parameter)
-			cii.setExpression(((Parameter) setter).getExpression());
-	}
-
-	@Override
 	public void visitConfigOutputInterface(ConfigOutputInterface coi) {
 		visitInterfaceActor(coi);
 	}
@@ -508,10 +380,10 @@ public class PiMM2SDFVisitor extends PiMMVisitor {
 	}
 
 	// Current Prototype
-	private Prototype currentPrototype;
+	protected Prototype currentPrototype;
 	// Current Argument and Parameter
-	private CodeGenArgument currentArgument;
-	private CodeGenParameter currentParameter;
+	protected CodeGenArgument currentArgument;
+	protected CodeGenParameter currentParameter;
 
 	@Override
 	public void visitHRefinement(HRefinementImpl h) {

@@ -62,6 +62,13 @@ public class PiGraphExecution {
 	
 	private Map<String, List<Integer>> parameterValues;
 
+	public PiGraphExecution(PiGraph graph, Map<String, List<Integer>> values) {
+		this.executedPiGraph = graph;
+		this.parameterValues = values;
+		this.executionLabel = "";
+		this.executionNumber = 0;
+	}
+	
 	public PiGraphExecution(PiGraph graph, Map<String, List<Integer>> values, String label, int number) {
 		this.executedPiGraph = graph;
 		this.parameterValues = values;

@@ -5,8 +5,8 @@
          point="org.ietr.dftools.workflow.tasks">
       <task
             id="org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask"
-            name="PiMM to SDF transformation"
-            type="org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask">
+            name="Dynamic PiMM to SDF transformation"
+            type="org.ietr.preesm.experiment.pimm2sdf.DynamicPiMM2SDFTask">
          <inputs>
             <input
                   id="PiMM"

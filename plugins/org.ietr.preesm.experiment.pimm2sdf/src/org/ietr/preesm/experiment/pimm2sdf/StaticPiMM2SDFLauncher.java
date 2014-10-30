@@ -37,95 +37,63 @@ package org.ietr.preesm.experiment.pimm2sdf;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.ParameterValue;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.pimm2sdf.visitor.PiMM2SDFVisitor;
+import org.ietr.preesm.experiment.pimm2sdf.visitor.StaticPiMM2SDFVisitor;
 
-public class PiMM2SDFLauncher {
+public class StaticPiMM2SDFLauncher {
 
 	private PreesmScenario scenario;
 	private PiGraph graph;
 
-	public PiMM2SDFLauncher(PreesmScenario scenario, PiGraph graph) {
+	public StaticPiMM2SDFLauncher(PreesmScenario scenario, PiGraph graph) {
 		this.scenario = scenario;
 		this.graph = graph;
 	}
 
-	public Set<SDFGraph> launch() {
-		Set<SDFGraph> result = new HashSet<SDFGraph>();
+	/**
+	 * Precondition: All
+	 * 
+	 * @return the SDFGraph obtained by visiting graph
+	 * @throws StaticPiMM2SDFException 
+	 */
+	public SDFGraph launch() throws StaticPiMM2SDFException {
+		SDFGraph result;
 
 		// Get all the available values for all the parameters
 		Map<String, List<Integer>> parametersValues = getParametersValues();
-		// Get the values for Parameters directly contained by graph (top-level
-		// parameters), if any
-		Map<String, List<Integer>> outerParametersValues = new HashMap<String, List<Integer>>();
-		// The number of time we need to execute, and thus visit graph
-		int nbExecutions = scenario.getSimulationManager()
-				.getNumberOfTopExecutions();
 
-		for (Parameter param : graph.getParameters()) {
-			List<Integer> pValues = parametersValues.get(param.getName());
-			if (pValues != null) {
-				outerParametersValues.put(param.getName(), pValues);
-			}
-		}
+		// Visitor creating the SDFGraph
+		StaticPiMM2SDFVisitor visitor;
+		PiGraphExecution execution = new PiGraphExecution(graph,
+				parametersValues);
+		visitor = new StaticPiMM2SDFVisitor(execution);
+		graph.accept(visitor);
 
-		// Visitor creating the SDFGraphs
-		PiMM2SDFVisitor visitor;
-		PiGraphExecution execution;
-		// Values for the parameters for one execution
-		Map<String, List<Integer>> currentValues;
-		for (int i = 0; i < nbExecutions; i++) {
-			// Values for one execution are parametersValues except for
-			// top-level Parameters, for which we select only one value for a
-			// given execution
-			currentValues = parametersValues;
-			for (String s : outerParametersValues.keySet()) {
-				// Value selection
-				List<Integer> availableValues = outerParametersValues.get(s);
-				int nbValues = availableValues.size();
-				if (nbValues > 0) {
-					ArrayList<Integer> value = new ArrayList<Integer>();
-					value.add(availableValues.get(i % nbValues));
-					currentValues.put(s, new ArrayList<Integer>(value));
-				}
-			}
-
-			execution = new PiGraphExecution(graph, currentValues, "_" + i, i);
-			visitor = new PiMM2SDFVisitor(execution);
-			graph.accept(visitor);
-
-			SDFGraph sdf = visitor.getResult();
-			// sdf.setName(sdf.getName() + "_" + i);
-
-			result.add(sdf);
-		}
-
+		result = visitor.getResult();
 		return result;
 	}
 
-	private Map<String, List<Integer>> getParametersValues() {
+	private Map<String, List<Integer>> getParametersValues() throws StaticPiMM2SDFException {
 		Map<String, List<Integer>> result = new HashMap<String, List<Integer>>();
 
 		for (ParameterValue paramValue : scenario.getParameterValueManager()
 				.getParameterValues()) {
 			switch (paramValue.getType()) {
 			case ACTOR_DEPENDENT:
-				result.put(paramValue.getName(), new ArrayList<Integer>(
-						paramValue.getValues()));
-				break;
+				throw new StaticPiMM2SDFException(
+						"Parameter "
+								+ paramValue.getName()
+								+ " is depends on a configuration actor. It is thus impossible to use the Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
 			case INDEPENDENT:
-				List<Integer> values = new ArrayList<Integer>();
 				int value = Integer.parseInt(paramValue.getValue());
-				values.add(value);				
+				List<Integer> values = new ArrayList<Integer>();
+				values.add(value);
 				result.put(paramValue.getName(), values);
 				break;
 			default:
@@ -134,6 +102,17 @@ public class PiMM2SDFLauncher {
 		}
 
 		return result;
+	}
+
+	public class StaticPiMM2SDFException extends Exception {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 8272147472427685537L;
+
+		public StaticPiMM2SDFException(String message) {
+			super(message);
+		}
 	}
 
 }

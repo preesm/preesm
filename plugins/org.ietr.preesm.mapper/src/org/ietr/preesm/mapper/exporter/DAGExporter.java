@@ -45,7 +45,7 @@ import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.IPath;
 import org.ietr.dftools.algorithm.exporter.GMLExporter;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
@@ -207,7 +207,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		return null;
 	}
 
-	public void exportDAG(DirectedAcyclicGraph dag, Path path) {
+	public void exportDAG(DirectedAcyclicGraph dag, IPath path) {
 		// XXX: Why are cloning the dag for a simple serialization (we should
 		// not modify the dag)?
 		MapperDAG mapperDag = (MapperDAG) dag;
