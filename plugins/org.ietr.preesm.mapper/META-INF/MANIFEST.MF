@@ -15,7 +15,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.jgrapht,
  org.ietr.dftools.architecture;bundle-version="0.0.1",
  org.ietr.dftools.algorithm;bundle-version="0.0.1",
- org.ietr.preesm.experiment.model;bundle-version="1.1.0"
+ org.ietr.preesm.experiment.model;bundle-version="1.1.0",
+ org.ietr.dftools.ui
 Bundle-ClassPath: lib/jcommon-1.0.13.jar,
  lib/jfreechart.jar,
  lib/jetm.jar,

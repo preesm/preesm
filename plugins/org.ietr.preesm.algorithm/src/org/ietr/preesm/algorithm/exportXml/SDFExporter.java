@@ -39,10 +39,12 @@ package org.ietr.preesm.algorithm.exportXml;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.ui.util.FileUtils;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
@@ -56,11 +58,22 @@ public class SDFExporter extends AbstractTaskImplementation {
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName, Workflow workflow) throws WorkflowException {
 
+
+		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
 		String sXmlPath = PathTools.getAbsolutePath(parameters.get("path"),
 				workflow.getProjectName());
 		IPath xmlPath = new Path(sXmlPath);
-
-		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
+		// Get a complete valid path with all folders existing
+		try {
+			if (xmlPath.getFileExtension() != null)
+				FileUtils.createMissingFolders(xmlPath.removeFileExtension().removeLastSegments(1));
+			else {
+				FileUtils.createMissingFolders(xmlPath);
+				xmlPath = xmlPath.append(algorithm.getName() + ".graphml");
+			}
+		} catch (CoreException e) {
+			throw new WorkflowException("Path " + sXmlPath + " is not a valid path for export.");
+		}
 		
 		SDF2GraphmlExporter exporter = new SDF2GraphmlExporter();
 		exporter.export(algorithm, xmlPath);

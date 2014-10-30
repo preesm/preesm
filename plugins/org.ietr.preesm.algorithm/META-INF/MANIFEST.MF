@@ -18,7 +18,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtend.lib,
  com.google.guava,
  org.eclipse.xtext.xbase.lib,
- org.ietr.preesm.experiment.model;bundle-version="1.1.0"
+ org.ietr.preesm.experiment.model;bundle-version="1.1.0",
+ org.ietr.dftools.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: IETR/INSA Rennes
 Export-Package: org.ietr.preesm.algorithm.exportDif,

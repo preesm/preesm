@@ -4,10 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.ui.util.FileUtils;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
@@ -17,7 +19,7 @@ import org.ietr.preesm.core.tools.PathTools;
 public class MultiSDFExporter extends AbstractTaskImplementation {
 
 	private static final String PATH_KEY = "path";
-	
+
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
@@ -27,15 +29,32 @@ public class MultiSDFExporter extends AbstractTaskImplementation {
 		IPath xmlPath;
 
 		@SuppressWarnings("unchecked")
-		Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs.get(KEY_SDF_GRAPHS_SET);
+		Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs
+				.get(KEY_SDF_GRAPHS_SET);
 		SDF2GraphmlExporter exporter = new SDF2GraphmlExporter();
-		
+
 		for (SDFGraph algorithm : algorithms) {
-			
-			sXmlPath = PathTools.getAbsolutePath(parameters.get(PATH_KEY) + "/" + algorithm.getName() + ".graphml",
+
+			sXmlPath = PathTools.getAbsolutePath(parameters.get(PATH_KEY) + "/"
+					+ algorithm.getName() + ".graphml",
 					workflow.getProjectName());
 			xmlPath = new Path(sXmlPath);
-			
+			// Get a complete valid path with all folders existing
+			try {
+				if (xmlPath.getFileExtension() != null)
+					FileUtils.createMissingFolders(xmlPath
+							.removeFileExtension().removeLastSegments(1));
+				else {
+					FileUtils.createMissingFolders(xmlPath);
+					xmlPath = xmlPath.removeFileExtension()
+							.removeLastSegments(1)
+							.append(algorithm.getName() + ".graphml");
+				}
+			} catch (CoreException e) {
+				throw new WorkflowException("Path " + sXmlPath
+						+ " is not a valid path for export.");
+			}
+
 			exporter.export(algorithm, xmlPath);
 		}
 
