@@ -72,11 +72,11 @@ public class RenameDiagram extends RenameParticipant {
 		StringBuffer buffer = new StringBuffer();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
 				refactored.getContents()));
-		String line;
+		int nbCharRead;
+		char[] cbuf = new char[1024]; 
 		try {
-			while ((line = reader.readLine()) != null) {
-				buffer.append(line);
-				buffer.append('\n');
+			while ((nbCharRead = reader.read(cbuf)) != -1) {
+				buffer.append(cbuf,0,nbCharRead);
 			}
 			reader.close();
 		} catch (IOException e) {
@@ -92,7 +92,7 @@ public class RenameDiagram extends RenameParticipant {
 
 		// If the change is applicable: apply it ! (else do nothing)
 		if (matcher.find()) {
-			ReplaceEdit edit = new ReplaceEdit(matcher.start(2)+1, matcher.end(2)
+			ReplaceEdit edit = new ReplaceEdit(matcher.start(2), matcher.end(2)
 					- matcher.start(2), newName);
 			change.setEdit(new MultiTextEdit());
 			change.addEdit(edit);
