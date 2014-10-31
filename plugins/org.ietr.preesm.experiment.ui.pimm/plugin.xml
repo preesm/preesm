@@ -111,6 +111,21 @@
             </and>
          </enablement>
       </copyParticipant>
+      <copyParticipant
+            class="org.ietr.preesm.experiment.ui.pimm.refactoring.CopyDiagram"
+            id="org.ietr.preesm.experiment.ui.pimm.refactoring.CopyDiagram"
+            name="CopyDiagram">
+         <enablement>
+            <and>
+               <instanceof
+                     value="org.eclipse.core.resources.IFile">
+               </instanceof>
+               <test
+                     property="org.eclipse.core.resources.extension"
+                     value="diagram">
+               </test>
+            </and></enablement>
+      </copyParticipant>
    </extension>
 
 </plugin>

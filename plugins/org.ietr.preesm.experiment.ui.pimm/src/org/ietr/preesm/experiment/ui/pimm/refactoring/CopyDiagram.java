@@ -13,7 +13,7 @@ import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.CopyArguments;
 import org.eclipse.ltk.core.refactoring.participants.CopyParticipant;
 
-public class CopyPi extends CopyParticipant {
+public class CopyDiagram extends CopyParticipant {
 
 	IFile refactored;
 
@@ -35,7 +35,7 @@ public class CopyPi extends CopyParticipant {
 
 	@Override
 	public String getName() {
-		return "Copy and Rename a .pi File";
+		return "Copy and Rename a .diagram File";
 	}
 
 	@Override
@@ -48,11 +48,10 @@ public class CopyPi extends CopyParticipant {
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
-
 		// Make arguments accessible to CompositeChange method.
 		final CopyArguments currentArgs = this.getArguments();
 
-		// Create the a composite change that will automatically adapt itself
+		// Create a composite change that will automatically adapt itself
 		// to the new name of the copied file.
 		CompositeChange comp = new CompositeChange(getName()) {
 
@@ -65,9 +64,9 @@ public class CopyPi extends CopyParticipant {
 				String newFileName = copyArgs.getExecutionLog().getNewName(
 						refactored);
 
-				// Check that both names end with extension ".pi"
+				// Check that both names end with extension ".diagram"
 				// and remove both extensions
-				final String extension = ".pi";
+				final String extension = ".diagram";
 				String newName;
 				String oldName;
 				if (oldFileName.endsWith(extension) && newFileName != null
@@ -88,7 +87,8 @@ public class CopyPi extends CopyParticipant {
 				}
 
 				TextFileChange change = RefactoringHelper.createChange(
-						"(<data key=\"name\">)(" + oldName + ")(</data>)", 2,
+						"(<pi:Diagram.*?name=\"|<businessObjects href=\")(" + oldName
+						+ ")(\".*?>|.pi#.*?\"/>)", 2,
 						newName, newFile);
 
 				if (change != null) {
