@@ -93,5 +93,24 @@
          </enablement>
       </renameParticipant>
    </extension>
+   <extension
+         point="org.eclipse.ltk.core.refactoring.copyParticipants">
+      <copyParticipant
+            class="org.ietr.preesm.experiment.ui.pimm.refactoring.CopyPi"
+            id="org.ietr.preesm.experiment.ui.pimm.refactoring.CopyPi"
+            name="CopyPi">
+         <enablement>
+            <and>
+               <instanceof
+                     value="org.eclipse.core.resources.IFile">
+               </instanceof>
+               <test
+                     property="org.eclipse.core.resources.extension"
+                     value="pi">
+               </test>
+            </and>
+         </enablement>
+      </copyParticipant>
+   </extension>
 
 </plugin>
