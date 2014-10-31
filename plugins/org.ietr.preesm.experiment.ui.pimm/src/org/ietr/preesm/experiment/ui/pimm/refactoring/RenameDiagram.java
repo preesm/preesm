@@ -40,8 +40,10 @@ public class RenameDiagram extends RenameParticipant {
 		// and remove both extensions
 		final String extension = ".diagram";
 		if (oldName.endsWith(extension) && newName.endsWith(extension)) {
-			oldName = oldName.substring(0, oldName.length() - extension.length());
-			newName = newName.substring(0, newName.length() - extension.length());
+			oldName = oldName.substring(0,
+					oldName.length() - extension.length());
+			newName = newName.substring(0,
+					newName.length() - extension.length());
 
 			return true;
 
@@ -73,10 +75,10 @@ public class RenameDiagram extends RenameParticipant {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
 				refactored.getContents()));
 		int nbCharRead;
-		char[] cbuf = new char[1024]; 
+		char[] cbuf = new char[1024];
 		try {
 			while ((nbCharRead = reader.read(cbuf)) != -1) {
-				buffer.append(cbuf,0,nbCharRead);
+				buffer.append(cbuf, 0, nbCharRead);
 			}
 			reader.close();
 		} catch (IOException e) {
@@ -84,22 +86,34 @@ public class RenameDiagram extends RenameParticipant {
 			e.printStackTrace();
 		}
 
-		// Create the change
+		// Create the change for graph name
 		TextFileChange change = new TextFileChange(refactored.getName(),
 				refactored);
-		Pattern pattern = Pattern.compile("(<pi:Diagram.*?name=\")("+oldName+")(\".*?>)");
+		change.setEdit(new MultiTextEdit());
+		Pattern pattern = Pattern.compile("(<pi:Diagram.*?name=\")(" + oldName
+				+ ")(\".*?>)");
 		Matcher matcher = pattern.matcher(buffer.toString());
 
-		// If the change is applicable: apply it ! (else do nothing)
+		// If the change is applicable: apply it ! 
 		if (matcher.find()) {
 			ReplaceEdit edit = new ReplaceEdit(matcher.start(2), matcher.end(2)
 					- matcher.start(2), newName);
-			change.setEdit(new MultiTextEdit());
+
 			change.addEdit(edit);
-			return change;
-		} else {
-			return null;
 		}
+
+		// Create the change for pi references
+		Pattern patternPi = Pattern.compile("(<businessObjects href=\")("+ oldName	+ ")(.pi#.*?\"/>)");
+		Matcher matcherPi = patternPi.matcher(buffer.toString());
+
+		// If the change is applicable: apply it ! 
+		while (matcherPi.find()) {
+			ReplaceEdit edit = new ReplaceEdit(matcherPi.start(2), matcherPi.end(2)
+					- matcherPi.start(2), newName);
+			change.addEdit(edit);		
+		} 
+		
+		return change;
 	}
 
 	@Override
