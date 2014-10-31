@@ -1,22 +1,13 @@
 package org.ietr.preesm.experiment.ui.pimm.refactoring;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RenameParticipant;
-import org.eclipse.text.edits.MultiTextEdit;
-import org.eclipse.text.edits.ReplaceEdit;
 
 /**
  * The purpose of this class is to handle the rename refactoring of a file with
@@ -70,49 +61,13 @@ public class RenameDiagram extends RenameParticipant {
 		// Get the refactored file
 		IFile refactored = (IFile) getProcessor().getElements()[0];
 
-		// Read file content
-		StringBuffer buffer = new StringBuffer();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				refactored.getContents()));
-		int nbCharRead;
-		char[] cbuf = new char[1024];
-		try {
-			while ((nbCharRead = reader.read(cbuf)) != -1) {
-				buffer.append(cbuf, 0, nbCharRead);
-			}
-			reader.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// The regex is a combination of the two following expressions:
+		// "(<pi:Diagram.*?name=\")(" + oldName + ")(\".*?>)"
+		// "(<businessObjects href=\")("+ oldName + ")(.pi#.*?\"/>)"
+		Change change = RefactoringHelper.createChange(
+				"(<pi:Diagram.*?name=\"|<businessObjects href=\")(" + oldName
+						+ ")(\".*?>|.pi#.*?\"/>)", 2, newName, refactored);
 
-		// Create the change for graph name
-		TextFileChange change = new TextFileChange(refactored.getName(),
-				refactored);
-		change.setEdit(new MultiTextEdit());
-		Pattern pattern = Pattern.compile("(<pi:Diagram.*?name=\")(" + oldName
-				+ ")(\".*?>)");
-		Matcher matcher = pattern.matcher(buffer.toString());
-
-		// If the change is applicable: apply it ! 
-		if (matcher.find()) {
-			ReplaceEdit edit = new ReplaceEdit(matcher.start(2), matcher.end(2)
-					- matcher.start(2), newName);
-
-			change.addEdit(edit);
-		}
-
-		// Create the change for pi references
-		Pattern patternPi = Pattern.compile("(<businessObjects href=\")("+ oldName	+ ")(.pi#.*?\"/>)");
-		Matcher matcherPi = patternPi.matcher(buffer.toString());
-
-		// If the change is applicable: apply it ! 
-		while (matcherPi.find()) {
-			ReplaceEdit edit = new ReplaceEdit(matcherPi.start(2), matcherPi.end(2)
-					- matcherPi.start(2), newName);
-			change.addEdit(edit);		
-		} 
-		
 		return change;
 	}
 

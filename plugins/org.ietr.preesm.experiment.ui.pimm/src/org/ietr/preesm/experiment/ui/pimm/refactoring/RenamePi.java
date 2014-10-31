@@ -1,22 +1,13 @@
 package org.ietr.preesm.experiment.ui.pimm.refactoring;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RenameParticipant;
-import org.eclipse.text.edits.MultiTextEdit;
-import org.eclipse.text.edits.ReplaceEdit;
 
 /**
  * The purpose of this class is to handle the rename refactoring of a file with
@@ -40,8 +31,10 @@ public class RenamePi extends RenameParticipant {
 		// and remove both extensions
 		final String extension = ".pi";
 		if (oldName.endsWith(extension) && newName.endsWith(extension)) {
-			oldName = oldName.substring(0, oldName.length() - extension.length());
-			newName = newName.substring(0, newName.length() - extension.length());
+			oldName = oldName.substring(0,
+					oldName.length() - extension.length());
+			newName = newName.substring(0,
+					newName.length() - extension.length());
 
 			return true;
 
@@ -68,40 +61,12 @@ public class RenamePi extends RenameParticipant {
 
 		// Get the refactored file
 		IFile refactored = (IFile) getProcessor().getElements()[0];
-		
-		// Read file content
-		StringBuffer buffer = new StringBuffer();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				refactored.getContents()));
-		int nbCharRead;
-		char[] cbuf = new char[1024]; 
-		try {
-			while ((nbCharRead = reader.read(cbuf)) != -1) {
-				buffer.append(cbuf,0,nbCharRead);
-			}
-			reader.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 		// Create the change
-		TextFileChange change = new TextFileChange(refactored.getName(),
-				refactored);
-		Pattern pattern = Pattern.compile("(<data key=\"name\">)(" + oldName
-				+ ")(</data>)");
-		Matcher matcher = pattern.matcher(buffer.toString());
-		
-		// If the change is applicable: apply it ! (else do nothing)
-		if (matcher.find()) {
-			ReplaceEdit edit = new ReplaceEdit(matcher.start(2), matcher.end(2)
-					- matcher.start(2), newName);
-			change.setEdit(new MultiTextEdit());
-			change.addEdit(edit);
-			return change;
-		} else {
-			return null;
-		}
+		Change change = RefactoringHelper.createChange("(<data key=\"name\">)("
+				+ oldName + ")(</data>)", 2, newName, refactored);
+
+		return change;
 	}
 
 	@Override
