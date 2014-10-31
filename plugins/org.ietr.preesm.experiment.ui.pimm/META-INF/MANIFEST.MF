@@ -10,6 +10,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide;bundle-version="3.8.1",
  org.eclipse.ui.editors,
  org.eclipse.core.runtime,
+ org.eclipse.ltk.core.refactoring;bundle-version="3.6.100",
  org.eclipse.graphiti;bundle-version="0.10.1",
  org.eclipse.graphiti.ui;bundle-version="0.10.1",
  org.eclipse.graphiti.examples.common;bundle-version="0.9.1",
@@ -20,7 +21,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.graphiti,
  org.eclipse.cdt.core,
  org.ietr.preesm.experiment.header.parser.cdt,
- org.ietr.preesm.experiment.model;bundle-version="1.1.0"
+ org.ietr.preesm.experiment.model;bundle-version="1.1.0",
+ org.eclipse.text
 Export-Package: org.ietr.preesm.experiment.ui.pimm.features
 Import-Package: org.eclipse.draw2d,
  org.ietr.preesm.experiment.model.pimm,
