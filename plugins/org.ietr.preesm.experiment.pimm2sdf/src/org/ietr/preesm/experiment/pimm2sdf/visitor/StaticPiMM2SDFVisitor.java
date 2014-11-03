@@ -67,6 +67,8 @@ public class StaticPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
 			sdf.setName(sdf.getName() + execution.getExecutionLabel());
 			v.setGraphDescription(sdf);
 
+			result.addVertex(v);
+			piVx2SDFVx.put(pg, v);
 		}
 	}
 
