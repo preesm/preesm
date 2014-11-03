@@ -67,6 +67,12 @@ import org.ietr.preesm.experiment.ui.pimm.util.PiMMUtil;
 public class SetActorRefinementFeature extends AbstractCustomFeature {
 
 	protected boolean hasDoneChanges = false;
+	
+	enum PrototypeFilter  {
+		NONE,
+		INIT,
+		LOOP
+	}
 
 	/**
 	 * Default Constructor of {@link SetActorRefinementFeature}
@@ -153,8 +159,15 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 				// We get it
 				IFile file = ResourcesPlugin.getWorkspace().getRoot()
 						.getFile(newFilePath);
+				
+				// Get all prototypes first (no filter)
+				Set<FunctionPrototype> allPrototypes = getPrototypes(file,
+						actor, PrototypeFilter.NONE);
+				FunctionPrototype[] allProtoArray = (FunctionPrototype[]) allPrototypes
+						.toArray(new FunctionPrototype[allPrototypes.size()]);
+				
 				Set<FunctionPrototype> loopPrototypes = getPrototypes(file,
-						actor, false);
+						actor,  PrototypeFilter.LOOP);
 				if (loopPrototypes.isEmpty()) {
 					String message = "The .h file you selected does not contain any prototype corresponding to actor "
 							+ actor.getName()
@@ -169,10 +182,10 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 							.toArray(new FunctionPrototype[loopPrototypes
 									.size()]);
 					FunctionPrototype loopProto = PiMMUtil.selectFunction(
-							loopProtoArray, title, message, true);
+							loopProtoArray, allProtoArray, title, message, true);
 
 					Set<FunctionPrototype> initPrototypes = getPrototypes(file,
-							actor, true);
+							actor, PrototypeFilter.INIT);
 					
 					HRefinement newRefinement = PiMMFactory.eINSTANCE
 							.createHRefinement();
@@ -187,7 +200,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 								.toArray(new FunctionPrototype[initPrototypes
 										.size()]);
 						FunctionPrototype initProto = PiMMUtil.selectFunction(
-								initProtoArray, title, message, false);
+								initProtoArray, allProtoArray, title, message, false);
 
 						
 						newRefinement.setInitPrototype(initProto);
@@ -203,7 +216,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 	}
 
 	private Set<FunctionPrototype> getPrototypes(IFile file, Actor actor,
-			boolean initPrototypes) {
+			PrototypeFilter prototypeFilter) {
 		Set<FunctionPrototype> result = new HashSet<FunctionPrototype>();
 
 		if (file != null) {
@@ -216,10 +229,17 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 				ast.accept(visitor);
 				// And extract from it the functions
 				// compatible with the current actor
-				if (initPrototypes)
+				switch(prototypeFilter){
+				case INIT:
 					result = visitor.filterInitPrototypesFor(actor);
-				else
+					break;
+				case LOOP:
 					result = visitor.filterLoopPrototypesFor(actor);
+					break;
+				case NONE:
+					result = visitor.getPrototypes();
+					break;
+				}
 			} catch (CoreException e) {
 				e.printStackTrace();
 			}

@@ -44,11 +44,20 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.platform.IDiagramBehavior;
+import org.eclipse.graphiti.platform.IDiagramEditor;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
@@ -164,10 +173,12 @@ public class PiMMUtil {
 	}
 
 	public static FunctionPrototype selectFunction(
-			FunctionPrototype[] prototypes, String title, String message,
-			boolean mandatorySelection) {
+			final FunctionPrototype[] prototypes,
+			final FunctionPrototype[] allProtoArray, String title,
+			String message, boolean mandatorySelection) {
 		ElementListSelectionDialog dialog = new ElementListSelectionDialog(
 				getShell(), new LabelProvider() {
+					
 					@Override
 					public String getText(Object element) {
 						if (element != null
@@ -176,7 +187,48 @@ public class PiMMUtil {
 						else
 							return "";
 					}
-				});
+				}) {
+			
+			final FunctionPrototype[] filteredPrototypes = prototypes;
+			final FunctionPrototype[] allPrototypes = allProtoArray;
+			
+			protected void switchDisplayedPrototypes(boolean filtered){
+				if(filtered){
+					setListElements(filteredPrototypes);
+				} else {
+					setListElements(allPrototypes);
+				}
+				
+				// Trick to force an update
+				setFilter(getFilter());
+			}
+			
+			@Override
+			protected Control createDialogArea(Composite parent) {
+				Composite composite = (Composite) super.createDialogArea(parent);
+				GridData data = new GridData();
+				data.grabExcessVerticalSpace = false;
+				data.grabExcessHorizontalSpace = true;
+				data.horizontalAlignment = GridData.FILL;
+				data.verticalAlignment = GridData.BEGINNING;
+				// Checkbox check = new Checkbox("Show only functions with corresponding ports.", true);
+				Button check = new Button(composite, SWT.CHECK);
+				check.setText("Show only functions with corresponding ports.");
+				check.setSelection(true);
+				
+				SelectionListener listener = new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						boolean newState = ((Button)e.getSource()).getSelection();
+						switchDisplayedPrototypes(newState);
+					}
+				};
+				
+				check.addSelectionListener(listener);
+				
+				return composite;
+			}
+		};
 
 		dialog.setTitle(title);
 		dialog.setMessage(message);

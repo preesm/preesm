@@ -229,4 +229,14 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 		}
 		return false;
 	}
+
+	/**
+	 * Returns an unfiltered list of the {@link FunctionPrototype} found by the
+	 * {@link ASTAndActorComparisonVisitor}.
+	 * 
+	 * @return The parsed {@link FunctionPrototype}.
+	 */
+	public Set<FunctionPrototype> getPrototypes() {
+		return new HashSet<FunctionPrototype>(this.prototypes);
+	}
 }
