@@ -92,6 +92,7 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.ui.pimm.features.AddActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.AddActorFromRefinementFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddBroadcastActorFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddConfigInputInterfaceFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.AddConfigInputPortFeature;
@@ -222,6 +223,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		if(context.getNewObject() instanceof File){
 			if(getBusinessObjectForPictogramElement(context.getTargetContainer()) instanceof Actor){
 				return new AddRefinementFeature(this);
+			}
+			if(getBusinessObjectForPictogramElement(context.getTargetContainer()) instanceof PiGraph){
+				return new AddActorFromRefinementFeature(this);
 			}
 		}
 		
