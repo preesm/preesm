@@ -165,7 +165,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 					else
 						parameterName = port.getName();
 
-					String evaluatedParam= p.getExpression().evaluate();
+					String evaluatedParam = p.getExpression().evaluate();
 
 					jep.addVariable(parameterName,
 							Double.parseDouble(evaluatedParam));
@@ -186,7 +186,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 					+ allExpression;
 		} catch (JepException e) {
 			return "Error in parameter subtitution" + " : " + allExpression;
-		} catch (NumberFormatException e){
+		} catch (NumberFormatException e) {
 			return "Evaluation Error, check parameter dependencies" + " : "
 					+ allExpression;
 		}

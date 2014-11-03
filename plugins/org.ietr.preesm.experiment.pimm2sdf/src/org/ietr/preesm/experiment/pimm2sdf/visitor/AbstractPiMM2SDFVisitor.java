@@ -151,8 +151,11 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 					.getSetter();
 			// Setter of an incoming dependency into a ConfigInputInterface must
 			// be a parameter
-			if (setter instanceof Parameter)
-				p.setExpression(((Parameter) setter).getExpression());
+			if (setter instanceof Parameter) {
+				Expression pExp = piFactory.createExpression();
+				pExp.setString(((Parameter) setter).getExpression().getString());
+				p.setExpression(pExp);
+			}
 		} else {
 			// If there is only one value available for Parameter p, we can set
 			// it
@@ -170,8 +173,11 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 		ISetter setter = cii.getGraphPort().getIncomingDependency().getSetter();
 		// Setter of an incoming dependency into a ConfigInputInterface must be
 		// a parameter
-		if (setter instanceof Parameter)
-			cii.setExpression(((Parameter) setter).getExpression());
+		if (setter instanceof Parameter) {
+			Expression pExp = piFactory.createExpression();
+			pExp.setString(((Parameter) setter).getExpression().getString());
+			cii.setExpression(pExp);
+		}
 	}
 
 	/**
