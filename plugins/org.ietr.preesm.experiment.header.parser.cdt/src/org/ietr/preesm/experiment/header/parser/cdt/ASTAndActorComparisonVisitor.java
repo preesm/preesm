@@ -211,6 +211,38 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 		return result;
 	}
 
+	/**
+	 * Filters the prototypes obtained from the parsed file to keep only the
+	 * ones corresponding to possible initializations.
+	 * 
+	 * @return the set of FunctionPrototypes corresponding to initialization
+	 */
+	public Set<FunctionPrototype> filterInitPrototypes() {
+		Set<FunctionPrototype> result = new HashSet<FunctionPrototype>();
+
+		// For each function prototype proto
+		for (FunctionPrototype proto : this.prototypes) {
+			Set<FunctionParameter> params = new HashSet<FunctionParameter>(
+					proto.getParameters());
+			boolean allParams = true;
+			for (FunctionParameter param : params) {
+				if (!param.getType().contains("*")) {
+					param.setDirection(Direction.IN);
+					param.setIsConfigurationParameter(true);
+				} else {
+					allParams = false;
+					break;
+				}
+			}
+
+			if (allParams) {
+				result.add(proto);
+			}
+		}
+
+		return result;
+	}
+
 	private FunctionParameter getCorrespondingFunctionParameter(Port p,
 			Set<FunctionParameter> params) {
 		for (FunctionParameter param : params) {

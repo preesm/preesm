@@ -69,7 +69,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 	protected boolean hasDoneChanges = false;
 
 	enum PrototypeFilter {
-		NONE, INIT, LOOP
+		NONE, INIT_ACTOR, LOOP_ACTOR, INIT
 	}
 
 	/**
@@ -175,7 +175,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 						.toArray(new FunctionPrototype[allPrototypes.size()]);
 
 				loopPrototypes = getPrototypes(file, actor,
-						PrototypeFilter.LOOP);
+						PrototypeFilter.LOOP_ACTOR);
 				validRefinement = (!loopPrototypes.isEmpty())
 						|| (!allPrototypes.isEmpty());
 				if (!validRefinement) {
@@ -203,8 +203,11 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 									title, message, true);
 
 					Set<FunctionPrototype> initPrototypes = getPrototypes(file,
-							actor, PrototypeFilter.INIT);
-					if (!initPrototypes.isEmpty()) {
+							actor, PrototypeFilter.INIT_ACTOR);	
+					Set<FunctionPrototype> allInitPrototypes = getPrototypes(file, actor, PrototypeFilter.INIT);
+					
+					FunctionPrototype initProto = null;
+					if (!initPrototypes.isEmpty() || !allInitPrototypes.isEmpty()) {
 						title = "Init Function Selection";
 						message = "Select an optionnal init function for actor "
 								+ actor.getName()
@@ -212,11 +215,14 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 						FunctionPrototype[] initProtoArray = initPrototypes
 								.toArray(new FunctionPrototype[initPrototypes
 										.size()]);
-						FunctionPrototype initProto = PiMMUtil.selectFunction(
-								initProtoArray, allProtoArray, title, message,
-								false);
+						FunctionPrototype[] allInitProtoArray = allInitPrototypes
+								.toArray(new FunctionPrototype[allInitPrototypes
+										.size()]);
+						initProto = PiMMUtil.selectFunction(initProtoArray,
+								allInitProtoArray, title, message, false);
 
-						if (loopProto != null || initProto != null) {
+					}					
+					if (loopProto != null || initProto != null) {
 							this.hasDoneChanges = true;
 							HRefinement newRefinement = PiMMFactory.eINSTANCE
 									.createHRefinement();
@@ -224,7 +230,6 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 							newRefinement.setInitPrototype(initProto);
 							newRefinement.setFilePath(newFilePath);
 							actor.setRefinement(newRefinement);
-						}
 					}
 				}
 			} else {
@@ -251,11 +256,14 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 				// And extract from it the functions
 				// compatible with the current actor
 				switch (prototypeFilter) {
-				case INIT:
+				case INIT_ACTOR:
 					result = visitor.filterInitPrototypesFor(actor);
 					break;
-				case LOOP:
+				case LOOP_ACTOR:
 					result = visitor.filterLoopPrototypesFor(actor);
+					break;
+				case INIT:
+					result = visitor.filterInitPrototypes();
 					break;
 				case NONE:
 					result = visitor.getPrototypes();
