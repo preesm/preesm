@@ -41,6 +41,7 @@ import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
 import org.ietr.preesm.experiment.core.piscenario.PiScenario;
 import org.ietr.preesm.experiment.core.piscenario.serialize.PiScenarioWriter;
 
+
 /**
  * A wizard to create a new {@link PiScenario} file
  * @author jheulot

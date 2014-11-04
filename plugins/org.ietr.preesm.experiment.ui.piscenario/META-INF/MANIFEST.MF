@@ -18,21 +18,13 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jface.databinding,
  com.ibm.icu,
  org.eclipse.swt,
- org.ietr.preesm.ui;bundle-version="1.0.0"
+ org.ietr.preesm.ui;bundle-version="1.0.0",
+ org.eclipse.ui.ide,
+ org.ietr.preesm.experiment.core,
+ org.eclipse.core.resources,
+ org.eclipse.ui.forms,
+ org.ietr.dftools.workflow,
+ org.ietr.dftools.algorithm
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: IETR/INSA Rennes
-Import-Package: org.eclipse.core.resources,
- org.eclipse.graphiti.platform;version="0.10.1",
- org.eclipse.graphiti.tb;version="0.10.1",
- org.eclipse.ui.dialogs,
- org.eclipse.ui.forms,
- org.eclipse.ui.forms.editor,
- org.eclipse.ui.forms.events,
- org.eclipse.ui.forms.widgets,
- org.eclipse.ui.part,
- org.eclipse.ui.wizards.newresource,
- org.ietr.dftools.algorithm.importer,
- org.ietr.dftools.workflow.tools,
- org.ietr.preesm.experiment.core.piscenario,
- org.ietr.preesm.experiment.core.piscenario.serialize

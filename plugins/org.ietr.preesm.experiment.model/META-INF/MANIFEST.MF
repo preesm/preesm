@@ -9,7 +9,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui;bundle-version="3.7.0",
  org.eclipse.core.resources;bundle-version="3.7.100",
  org.eclipse.jdt.core;bundle-version="3.7.0",
- org.eclipse.emf.ecore.xmi;bundle-version="2.7.0"
+ org.eclipse.emf.ecore.xmi;bundle-version="2.7.0",
+ org.ietr.dftools.architecture,
+ org.ietr.dftools.algorithm
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: com.singularsys.jep,
  org.ietr.preesm.experiment.model.pimm,
@@ -22,7 +24,3 @@ Bundle-ClassPath: .,
  lib/jep-java-3.4-trial.jar
 Bundle-Vendor: IETR/INSA Rennes
 Bundle-Localization: plugin
-Import-Package: org.ietr.dftools.algorithm.exporter,
- org.ietr.dftools.algorithm.importer,
- org.ietr.dftools.architecture.utils,
- org.ietr.dftools.workflow.tools

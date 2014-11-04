@@ -14,7 +14,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtext.xbase.lib,
  org.eclipse.xtend.lib;bundle-version="2.5.2",
  com.google.guava,
- org.junit;bundle-version="4.5.0"
+ org.junit;bundle-version="4.5.0",
+ org.ietr.preesm.core,
+ org.eclipse.core.resources
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: IETR/INSA Rennes
@@ -23,6 +25,3 @@ Export-Package: org.ietr.preesm.memory.allocation,
  org.ietr.preesm.memory.bounds,
  org.ietr.preesm.memory.exclusiongraph,
  org.ietr.preesm.memory.script
-Import-Package: org.eclipse.core.resources,
- org.ietr.preesm.core.scenario,
- org.ietr.preesm.core.types

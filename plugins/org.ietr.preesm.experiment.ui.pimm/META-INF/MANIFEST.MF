@@ -24,7 +24,4 @@ Require-Bundle: org.eclipse.ui,
  org.ietr.preesm.experiment.model;bundle-version="1.1.0",
  org.eclipse.text
 Export-Package: org.ietr.preesm.experiment.ui.pimm.features
-Import-Package: org.eclipse.draw2d,
- org.ietr.preesm.experiment.model.pimm,
- org.ietr.preesm.experiment.model.pimm.util
 Bundle-Vendor: IETR/INSA Rennes

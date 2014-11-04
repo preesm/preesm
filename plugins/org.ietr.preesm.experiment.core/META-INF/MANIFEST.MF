@@ -6,27 +6,13 @@ Bundle-Version: 2.0.1.qualifier
 Bundle-Activator: org.ietr.preesm.experiment.core.Activator
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.ietr.preesm.experiment.model,
+ org.ietr.dftools.architecture,
+ org.ietr.preesm.core,
+ org.ietr.dftools.algorithm,
+ org.eclipse.core.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.ietr.preesm.experiment.core.piscenario,
  org.ietr.preesm.experiment.core.piscenario.serialize
-Import-Package: com.singularsys.jep,
- org.eclipse.core.internal.resources,
- org.eclipse.core.resources,
- org.eclipse.emf.common.notify,
- org.eclipse.emf.common.util,
- org.eclipse.emf.ecore,
- org.eclipse.emf.ecore.resource,
- org.eclipse.emf.ecore.resource.impl,
- org.ietr.dftools.algorithm.importer,
- org.ietr.dftools.algorithm.model.sdf,
- org.ietr.dftools.architecture.design,
- org.ietr.dftools.architecture.slam,
- org.ietr.dftools.architecture.slam.attributes,
- org.ietr.dftools.architecture.slam.serialize,
- org.ietr.dftools.workflow.tools,
- org.ietr.preesm.core.architecture.util,
- org.ietr.preesm.core.scenario,
- org.ietr.preesm.experiment.model.pimm,
- org.ietr.preesm.experiment.model.pimm.serialize
