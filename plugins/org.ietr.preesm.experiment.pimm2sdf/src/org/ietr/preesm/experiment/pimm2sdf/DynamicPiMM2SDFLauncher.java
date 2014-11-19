@@ -104,8 +104,7 @@ public class DynamicPiMM2SDFLauncher {
 			graph.accept(visitor);
 
 			SDFGraph sdf = visitor.getResult();
-			// sdf.setName(sdf.getName() + "_" + i);
-
+			
 			result.add(sdf);
 		}
 

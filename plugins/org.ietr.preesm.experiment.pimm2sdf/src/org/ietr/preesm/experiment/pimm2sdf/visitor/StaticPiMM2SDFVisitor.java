@@ -32,6 +32,9 @@ public class StaticPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
 				p.accept(this);
 			}
 			computeDerivedParameterValues(pg, execution);
+			// Once the values are set, use them to put parameters as graph
+			// variables in the resulting SDF graph
+			parameters2GraphVariables(pg, result);
 
 			// Visit each of the vertices of pg with the values set
 			for (AbstractActor aa : pg.getVertices()) {
@@ -64,6 +67,8 @@ public class StaticPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
 			sdf.setName(sdf.getName() + execution.getExecutionLabel());
 			v.setGraphDescription(sdf);
 
+			result.addVertex(v);
+			piVx2SDFVx.put(pg, v);
 		}
 	}
 

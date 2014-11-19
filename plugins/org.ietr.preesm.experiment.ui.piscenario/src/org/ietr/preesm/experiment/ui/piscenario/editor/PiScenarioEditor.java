@@ -35,6 +35,7 @@
  ******************************************************************************/
 package org.ietr.preesm.experiment.ui.piscenario.editor;
 
+import java.io.FileNotFoundException;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IFile;
@@ -46,6 +47,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.IFormPage;
 import org.eclipse.ui.forms.editor.SharedHeaderFormEditor;
 import org.eclipse.ui.part.FileEditorInput;
+import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.core.piscenario.PiScenario;
 import org.ietr.preesm.experiment.core.piscenario.serialize.PiScenarioParser;
@@ -94,7 +96,7 @@ public class PiScenarioEditor extends SharedHeaderFormEditor implements
 			PiScenarioParser parser = new PiScenarioParser();
 			try {
 				piscenario = parser.parseXmlFile(scenarioFile);
-			} catch (Exception e) {
+			} catch (InvalidModelException | FileNotFoundException e) {
 				e.printStackTrace();
 			}
 
