@@ -173,6 +173,11 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 
 					Set<FunctionPrototype> initPrototypes = getPrototypes(file,
 							actor, true);
+					
+					HRefinement newRefinement = PiMMFactory.eINSTANCE
+							.createHRefinement();
+					newRefinement.setLoopPrototype(loopProto);
+					newRefinement.setFilePath(newFilePath);
 					if (!initPrototypes.isEmpty()) {
 						title = "Init Function Selection";
 						message = "Select an optionnal init function for actor "
@@ -184,14 +189,11 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 						FunctionPrototype initProto = PiMMUtil.selectFunction(
 								initProtoArray, title, message, false);
 
-						HRefinement newRefinement = PiMMFactory.eINSTANCE
-								.createHRefinement();
-						newRefinement.setLoopPrototype(loopProto);
+						
 						newRefinement.setInitPrototype(initProto);
-						newRefinement.setFilePath(newFilePath);
-						actor.setRefinement(newRefinement);
-					}
-
+						
+					}					
+					actor.setRefinement(newRefinement);
 				}
 
 			} else {
