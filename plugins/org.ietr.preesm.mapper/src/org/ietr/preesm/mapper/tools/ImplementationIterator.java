@@ -37,10 +37,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.mapper.tools;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.preesm.mapper.abc.IAbc;
@@ -101,15 +100,12 @@ public abstract class ImplementationIterator extends
 
 	public void createOrderedList(MapperDAG implementation) {
 		// Creating a sorted list using the current class as a comparator
-		SortedSet<MapperDAGVertex> vertexSet = new ConcurrentSkipListSet<MapperDAGVertex>(
-				this);
-
-		for (DAGVertex dv : implementation.vertexSet()) {
-			MapperDAGVertex currentvertex = (MapperDAGVertex) dv;
-			vertexSet.add(currentvertex);
+		orderedlist = new ArrayList<MapperDAGVertex>();
+		for(DAGVertex dv :  implementation.vertexSet()){
+			orderedlist.add((MapperDAGVertex) dv);
 		}
-
-		orderedlist = new ArrayList<MapperDAGVertex>(vertexSet);
+		
+		Collections.sort(orderedlist, this);		
 	}
 
 	public List<MapperDAGVertex> getOrderedlist() {
