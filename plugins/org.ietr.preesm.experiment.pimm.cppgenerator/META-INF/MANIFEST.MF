@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PREESM C++ Generator for PiMM models
 Bundle-SymbolicName: org.ietr.preesm.experiment.pimm.cppgenerator;singleton:=true
-Bundle-Version: 2.1.0.qualifier
+Bundle-Version: 2.1.1.qualifier
 Bundle-Activator: org.ietr.preesm.experiment.pimm.cppgenerator.Activator
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.core.runtime,

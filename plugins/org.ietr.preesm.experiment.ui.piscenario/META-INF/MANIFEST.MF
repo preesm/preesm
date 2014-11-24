@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm PiScenario Editor
 Bundle-SymbolicName: org.ietr.preesm.experiment.ui.piscenario;singleton:=true
-Bundle-Version: 2.1.0.qualifier
+Bundle-Version: 2.1.1.qualifier
 Bundle-Activator: org.ietr.preesm.experiment.ui.piscenario.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
