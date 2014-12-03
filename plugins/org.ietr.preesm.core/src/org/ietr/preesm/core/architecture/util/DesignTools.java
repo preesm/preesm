@@ -150,8 +150,9 @@ public class DesignTools {
 	public static boolean contains(List<ComponentInstance> instances,
 			ComponentInstance instance) {
 		for (ComponentInstance cmpInstance : instances) {
-			if (cmpInstance.getInstanceName()
-					.equals(instance.getInstanceName())) {
+			if (instance != null
+					&& cmpInstance.getInstanceName().equals(
+							instance.getInstanceName())) {
 				return true;
 			}
 		}
