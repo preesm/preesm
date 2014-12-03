@@ -35,13 +35,14 @@
  */
 package org.ietr.preesm.algorithm.transforms
 
-import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
+import java.util.HashMap
 import java.util.Map
 import org.eclipse.core.runtime.IProgressMonitor
-import org.ietr.dftools.workflow.elements.Workflow
-import org.ietr.dftools.workflow.WorkflowException
-import java.util.HashMap
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import org.ietr.dftools.workflow.WorkflowException
+import org.ietr.dftools.workflow.elements.Workflow
+import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
 
 /**
  * Repeating N times the same single rate IBSDF algorithm into a new IBSDF graph.
@@ -56,10 +57,23 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 	/**
 	 * Tag for storing the requested number of iterations
 	 */
-	val NB_IT = "nbIt";
+	val NB_IT = "nbIt";	
+	
+	/**
+	 * Mixing several iterations of a single graph
+	 */
+	def iterate(SDFGraph inputAlgorithm, int nbIt) {
+		// Generating a first graph clone
+		var mainIteration = inputAlgorithm.clone
+		
+		// Incorporating new iterations
+		for (Integer i: 1..nbIt-1)  {
+			// Adding vertices of new_iteration to the ones of mainIteration, vertices are automatically renamed
+			mainIteration.fill(inputAlgorithm)
+    	}
 
-	def iterate(SDFGraph inputAlgorithm) {
-		return inputAlgorithm
+		return mainIteration
+	
 	}
 
 	/**
@@ -69,19 +83,25 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 		String nodeName, Workflow workflow) throws WorkflowException {
 		val outMap = new HashMap<String, Object>
 		val inputAlgorithm = inputs.get("SDF") as SDFGraph
-		val outputAlgorithm = iterate(inputAlgorithm)
+		val nbIt = Integer.valueOf(parameters.get(NB_IT))
+		val outputAlgorithm = iterate(inputAlgorithm, nbIt)
 		outMap.put("SDF", outputAlgorithm)
 		return outMap;
 	}
 
+	/**
+	 * If no parameter is set, using default value
+	 */
 	override getDefaultParameters() {
 		val defaultParameters = new HashMap<String, String>
 		defaultParameters.put(NB_IT, "1")
 		return defaultParameters
 	}
 
-	override monitorMessage() {
-		println("Iterating a single rate IBSDF")
-	}
+	/**
+	 * Message displayed in the DFTools console
+	 */
+	override monitorMessage() '''
+    Iterating a single rate IBSDF «defaultParameters.get(NB_IT)» time(s).'''
 
 }
