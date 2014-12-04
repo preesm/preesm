@@ -82,14 +82,17 @@ class FilesManager {
 	 * 
 	 * @param path The path of the source (folder or file) to copy
 	 * @param targetFolder The directory where to copy the source element
+	 * @param bundleFilter
+	 * 			A filter to indicate in which bundle to look for
 	 * @return A Result object counting exactly how many files have been really
 	 * 		written, and how many haven't because they were already up-to-date
 	 * @throws FileNotFoundException If not resource have been found at the given path
 	 */
-	def static extract(String path, String targetFolder) {
+	def static extract(String path, String targetFolder, String bundleFilter) {
 		val targetF = new File(targetFolder.sanitize)
-		val url = path.url
-		if(url == null) {
+		val url = getUrl(path, bundleFilter)
+
+		if (url == null) {
 			throw new FileNotFoundException(path)
 		}
 		if (url.protocol.equals("jar")) {
@@ -98,7 +101,7 @@ class FilesManager {
 			val jar = new JarFile(new File(fileUri))
 			jarExtract(jar, splittedURL.last, targetF)
 		} else {
-			fsExtract(new File(path.url.toURI), targetF)
+			fsExtract(new File(url.toURI), targetF)
 		}
 	}
 
@@ -254,10 +257,12 @@ class FilesManager {
 	 * 
 	 * @param path
 	 * 			A path
+	 * @param bundleFilter
+	 * 			A filter to indicate in which bundle to look for
 	 * @return
 	 * 			An URL for an existing file, or null
 	 */
-	def static getUrl(String path) {
+	def static getUrl(String path, String bundleFilter) {
 		val sanitizedPath = path.sanitize
 
 		val file = new File(sanitizedPath)
@@ -266,16 +271,15 @@ class FilesManager {
 
 		// Search in all reachable bundles for the given path resource
 		val bundle = FrameworkUtil::getBundle(FilesManager)
-		val url =
-			if(bundle != null) {
+		val url = if (bundle != null) {
 				val bundles = bundle.bundleContext.bundles
 				bundles
-					// Search only in Orcc plugins
-					.filter[symbolicName.contains("orcc")]
+					// Search only in plugins containing the bundleFilter String
+				.filter[symbolicName.contains(bundleFilter)]
 					// We want an URL to the resource
-					.map[getEntry(path)]
+				.map[getEntry(path)]
 					// We keep the first URL not null (we found the resource)
-					.findFirst[it != null]
+				.findFirst[it != null]
 			}
 			// Fallback, we are not in a bundle context (maybe unit tests execution?),
 			// we use the default ClassLoader method. The problem with this method is
@@ -389,14 +393,13 @@ class FilesManager {
 	 * @throws FileNotFoundException
 	 * 			If the file doesn't exists
 	 */
-	static def readFile(String path) {
+	static def readFile(String path, String bundleFilter) {
 
-		val url = path.url
-		if(url == null) {
+		val url = getUrl(path, bundleFilter)
+		if (url == null) {
 			throw new FileNotFoundException(path)
 		}
 
-		val inputStream =
 			if (url.protocol.equals("jar")) {
 				val splittedURL = url.file.split("!")
 				val jar = new JarFile(splittedURL.head.substring(5))
