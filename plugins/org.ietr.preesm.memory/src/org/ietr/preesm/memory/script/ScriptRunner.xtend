@@ -74,6 +74,7 @@ import org.ietr.preesm.utils.files.FilesManager
 
 import static extension org.ietr.preesm.memory.script.Buffer.*
 import static extension org.ietr.preesm.memory.script.Range.*
+import org.eclipse.xtend.lib.annotations.Accessors
 
 enum CheckPolicy {
 	NONE,
@@ -99,15 +100,13 @@ class ScriptRunner {
 		vertex.base.outgoingEdgesOf(vertex)
 	}
 
-	@Property
-	var checkPolicy = CheckPolicy::NONE
+	@Accessors CheckPolicy checkPolicy = CheckPolicy::NONE
 
 	/**
 	 * A {@link Map} that associates each {@link String} representing a type name 
 	 * with a corresponding {@link DataType}. 
 	 */
-	@Property
-	var Map<String, DataType> dataTypes
+	@Accessors Map<String, DataType> dataTypes
 
 	/**
 	 * A {@link Map} that associates each {@link DAGVertex} from the
@@ -132,8 +131,7 @@ class ScriptRunner {
 	 */
 	package val List<List<Buffer>> bufferGroups = newArrayList
 
-	@Property
-	var CharSequence log = ''''''
+	@Accessors CharSequence log = ''''''
 
 	static public final boolean printTodo = false
 
@@ -149,8 +147,7 @@ class ScriptRunner {
 	 * The same value, or a multiple should always be used in the memory 
 	 * allocation. 
 	 */
-	@Property
-	val int alignment
+	@Accessors val int alignment
 
 	/**
 	 * Check the results obtained when running the {@link #run()} method.
@@ -455,7 +452,7 @@ class ScriptRunner {
 		scriptResults.forEach[vertex, result|identifyDivisibleBuffers(result)]
 
 		// Update output buffers for alignment
-		if (_alignment > 0) {
+		if (alignment > 0) {
 			scriptResults.forEach [ vertex, result |
 				// All outputs except the mergeable one linked only to read_only 
 				// inputs within their actor must be enlarged.
@@ -485,7 +482,7 @@ class ScriptRunner {
 		val groups = groupVertices()
 
 		// Update input buffers on the group border for alignment
-		if (_alignment > 0) {
+		if (alignment > 0) {
 
 			// For each group
 			groups.forEach [ group |
@@ -535,13 +532,13 @@ class ScriptRunner {
 		// same cache line as other real tokens. 
 		// Consequently, enlarging buffers as follows is sufficient to 
 		// prevent cache-line alignment issues:
-		// minIdx = min(0 - (_alignment -1), minIdx)
-		// maxIdx = max(maxIdx + (_alignment -1), maxIdx)
+		// minIdx = min(0 - (alignment -1), minIdx)
+		// maxIdx = max(maxIdx + (alignment -1), maxIdx)
 		//			 
 		}
 		val oldMinIndex = buffer.minIndex
 		if (oldMinIndex == 0 || (oldMinIndex) % alignment != 0) {
-			buffer.minIndex = ((oldMinIndex / _alignment) - 1) * _alignment
+			buffer.minIndex = ((oldMinIndex / alignment) - 1) * alignment
 
 			// New range is indivisible with end of buffer
 			buffer.indivisibleRanges.lazyUnion(new Range(buffer.minIndex, oldMinIndex + 1))
@@ -549,7 +546,7 @@ class ScriptRunner {
 
 		val oldMaxIndex = buffer.maxIndex
 		if (oldMaxIndex == buffer.nbTokens * buffer.tokenSize || (oldMaxIndex) % alignment != 0) {
-			buffer.maxIndex = ((oldMaxIndex / _alignment) + 1) * _alignment
+			buffer.maxIndex = ((oldMaxIndex / alignment) + 1) * alignment
 
 			// New range is indivisible with end of buffer
 			buffer.indivisibleRanges.lazyUnion(new Range(oldMaxIndex - 1, buffer.maxIndex))
@@ -1402,7 +1399,7 @@ class ScriptRunner {
 	}
 
 	new(int alignment) {
-		this._alignment = alignment
+		this.alignment = alignment
 	}
 
 	/**
@@ -1596,7 +1593,7 @@ class ScriptRunner {
 				val arguments = sdfVertex.propertyBean.getValue(SDFAbstractVertex.ARGUMENTS) as HashMap<String, Argument>
 				if(arguments != null) arguments.entrySet.forEach[parameters.put(it.key, it.value.intValue)]
 			}
-			parameters.put("alignment", _alignment)
+			parameters.put("alignment", alignment)
 
 			// Create the input/output lists
 			val inputs = sdfVertex.incomingEdges.map[
@@ -1724,13 +1721,13 @@ class ScriptRunner {
 
 				// Enlarge the corresponding mObject to the required size
 				val mObj = bufferAndMObjectMap.get(buffer)
-				val minIndex = if (buffer.minIndex == 0 || _alignment == -1) {
+				val minIndex = if (buffer.minIndex == 0 || alignment == -1) {
 						buffer.minIndex
 					} else {
 
 						// Make sure that index aligned in the buffer are in 
 						// fact aligned
-						((buffer.minIndex / _alignment) - 1) * _alignment
+						((buffer.minIndex / alignment) - 1) * alignment
 					}
 				mObj.setWeight(buffer.maxIndex - minIndex)
 
