@@ -2,12 +2,22 @@
  */
 package org.ietr.preesm.experiment.model.pimm.impl;
 
+import java.util.List;
+
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Direction;
+import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.HRefinement;
+import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
@@ -100,6 +110,53 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
 		loopPrototype = newLoopPrototype;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE, oldLoopPrototype, loopPrototype));
+	}
+	
+	@Override
+	public AbstractActor getAbstractActor() {
+		if (getLoopPrototype() != null) {
+			// Create the actor returned by the function
+			AbstractActor result = PiMMFactory.eINSTANCE.createActor();
+			
+			// Create all its ports corresponding to parameters of the 
+			// prototype
+			FunctionPrototype loopProto = getLoopPrototype();
+			List<FunctionParameter> loopParameters = loopProto.getParameters();
+			for(FunctionParameter param : loopParameters){
+				if(!param.isIsConfigurationParameter()){
+					// Data Port
+					if(param.getDirection().equals(Direction.IN)){
+						// Data Input
+						DataInputPort port = PiMMFactory.eINSTANCE.createDataInputPort();
+						port.setName(param.getName());
+						result.getDataInputPorts().add(port);
+					} else {
+						// Data Output
+						DataOutputPort port = PiMMFactory.eINSTANCE.createDataOutputPort();
+						port.setName(param.getName());
+						result.getDataOutputPorts().add(port);
+					}
+				} else {
+					// Config Port
+					if(param.getDirection().equals(Direction.IN)){
+						// Config Input
+						ConfigInputPort port = PiMMFactory.eINSTANCE.createConfigInputPort();
+						port.setName(param.getName());
+						result.getConfigInputPorts().add(port);
+					} else {
+						// Config Output
+						ConfigOutputPort port = PiMMFactory.eINSTANCE.createConfigOutputPort();
+						port.setName(param.getName());
+						result.getConfigOutputPorts().add(port);
+					}
+				}
+			}
+			
+			return result;
+		} else {
+			return null;
+		}
+		
 	}
 
 	/**
