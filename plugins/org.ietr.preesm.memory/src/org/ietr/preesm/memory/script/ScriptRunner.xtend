@@ -40,7 +40,6 @@ import bsh.Interpreter
 import bsh.ParseException
 import java.io.File
 import java.io.IOException
-import java.net.URI
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.List
@@ -48,8 +47,9 @@ import java.util.Map
 import java.util.Set
 import java.util.logging.Level
 import java.util.logging.Logger
+import org.eclipse.core.resources.IFolder
+import org.eclipse.core.resources.IProject
 import org.eclipse.core.resources.ResourcesPlugin
-import org.eclipse.core.runtime.FileLocator
 import org.eclipse.core.runtime.Path
 import org.ietr.dftools.algorithm.model.dag.DAGEdge
 import org.ietr.dftools.algorithm.model.dag.DAGVertex
@@ -69,6 +69,8 @@ import org.ietr.preesm.core.scenario.PreesmScenario
 import org.ietr.preesm.core.types.DataType
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex
+import org.ietr.preesm.utils.files.ContainersManager
+import org.ietr.preesm.utils.files.FilesManager
 
 import static extension org.ietr.preesm.memory.script.Buffer.*
 import static extension org.ietr.preesm.memory.script.Range.*
@@ -311,16 +313,44 @@ class ScriptRunner {
 	 */
 	def protected findScripts(DirectedAcyclicGraph dag, PreesmScenario scenario) {
 
+		// Name of bundle where to look for files (allow not to search into all projects)
+		val bundleId = "org.ietr.preesm.memory"
+
+		// Name of the IProject where to extract script files
+		val tmpProjectName = bundleId + "." + "temporary"
+
+		// Name of the IFolder where to extract script files
+		val tmpFolderPath = "/scripts/"
+
+		// Special scripts files
+		val specialScriptFiles = new HashMap<String, File>()
+
+		// Script files already found
+		val scriptFiles = new HashMap<String, File>();
+
+		// Create temporary containers for special scripts files
+		val projectAlreadyExisting = ContainersManager.projectExists(tmpProjectName)
+		val project = ContainersManager.createProject(tmpProjectName)
+		val folderAlreadyExisting = ContainersManager.folderExistsInto(tmpFolderPath, project)
+		val folder = ContainersManager.createFolderInto(tmpFolderPath, project)
+
+		// Extract special script files and fill the map with it
+		FilesManager.extract(tmpFolderPath, tmpProjectName, bundleId)
+
+		// Paths to the special scripts files
+		val JOIN = tmpProjectName + "/" + tmpFolderPath + "join.bsh"
+		val FORK = tmpProjectName + "/" + tmpFolderPath + "fork.bsh"
+		val ROUNDBUFFER = tmpProjectName + "/" + tmpFolderPath + "roundbuffer.bsh"
+		val BROADCAST = tmpProjectName + "/" + tmpFolderPath + "broadcast.bsh"
+
+		putSpecialScriptFile(specialScriptFiles, JOIN, bundleId)
+		putSpecialScriptFile(specialScriptFiles, FORK, bundleId)
+		putSpecialScriptFile(specialScriptFiles, ROUNDBUFFER, bundleId)
+		putSpecialScriptFile(specialScriptFiles, BROADCAST, bundleId)
+
 		// Retrieve the original sdf folder
 		val workspace = ResourcesPlugin.getWorkspace
-		val graphPath = scenario.algorithmURL
-//		val graphPath = ""
-//		if (scenario.IBSDFScenario) {
-//			dag.propertyBean.getValue(DirectedAcyclicGraph.PATH, String) as String
-//		} else if (scenario.PISDFScenario) {
-//			graphPath = scenario.algorithmURL
-//		}
-//		var sdfFile = workspace.getRoot().getFile(new Path(graphPath))//workspace.root.getFileForLocation(new Path(graphPath).makeAbsolute)
+		val root = workspace.getRoot
 
 		// Logger is used to display messages in the console
 		val logger = WorkflowLogger.getLogger
@@ -336,83 +366,77 @@ class ScriptRunner {
 
 							// Retrieve the script path as a relative path to the
 							// graphml
-							var scriptFile = workspace.getRoot().getFile(new Path(pathString)).rawLocation.makeAbsolute.
-								toFile
+							var scriptFile = scriptFiles.get(pathString)
+							if (scriptFile == null)
+								scriptFile = root.getFile(new Path(pathString)).rawLocation.makeAbsolute.toFile
 							if (scriptFile.exists) {
 								scriptedVertices.put(dagVertex, scriptFile)
+								scriptFiles.put(pathString, scriptFile)
 							} else {
-
-								// If this code is reached
-								// Check if the script file exists in the source code
-								// /scripts directory.
-								val classpathString = "/../scripts/" + pathString
-								var URI sourceStream
-								try {
-									sourceStream = class.getResource(classpathString).toURI
-									scriptFile = new File(FileLocator.resolve(sourceStream.toURL).file)
-									if (scriptFile.exists) {
-										scriptedVertices.put(dagVertex, scriptFile)
-									}
-								} catch (Exception e) {
-									// Nothing to do
-								}
-								if (scriptFile == null || !scriptFile.exists)
-									logger.log(Level.WARNING,
-										"Memory script of vertex " + sdfVertex.getName() + " is invalid: \"" +
-											pathString + "\". Change it in the graphml editor.")
+								logger.log(Level.WARNING,
+									"Memory script of vertex " + sdfVertex.getName() + " is invalid: \"" +
+										pathString + "\". Change it in the graphml editor.")
 							}
 						}
 					}
 					case DAGForkVertex.DAG_FORK_VERTEX: {
-						val classpathString = "/../scripts/fork.bsh";
-						try {
-							val sourceStream = class.getResource(classpathString).toURI;
-							val scriptFile = new File(FileLocator.resolve(sourceStream.toURL).file)
-							if (scriptFile.exists) {
-								scriptedVertices.put(dagVertex, scriptFile)
-							}
-						} catch (Exception e) {
-							logger.log(Level.SEVERE,
-								"Memory script of fork vertices not found. Please contact Preesm developers.")
-						}
+						associateScriptToSpecialVertex(dagVertex, "fork", specialScriptFiles.get(FORK))
 					}
 					case DAGJoinVertex.DAG_JOIN_VERTEX: {
-						val classpathString = "/../scripts/join.bsh"
-						try {
-							val sourceStream = class.getResource(classpathString).toURI
-							val scriptFile = new File(FileLocator.resolve(sourceStream.toURL).file)
-							if (scriptFile.exists) {
-								scriptedVertices.put(dagVertex, scriptFile)
-							}
-						} catch (Exception e) {
-							logger.log(Level.SEVERE,
-								"Memory script of join vertices not found. Please contact Preesm developers.")
-						}
-
+						associateScriptToSpecialVertex(dagVertex, "join", specialScriptFiles.get(JOIN))
 					}
 					case DAGBroadcastVertex.DAG_BROADCAST_VERTEX: {
-						var classpathString = if (sdfVertex instanceof SDFRoundBufferVertex) {
-								"/../scripts/roundbuffer.bsh"
-							} else {
-								"/../scripts/broadcast.bsh"
-							}
-						try {
-							val sourceStream = class.getResource(classpathString).toURI
-
-							val scriptFile = new File(FileLocator.resolve(sourceStream.toURL).file)
-							if (scriptFile.exists) {
-								scriptedVertices.put(dagVertex, scriptFile)
-							}
-						} catch (Exception e) {
-							logger.log(Level.SEVERE,
-								"Memory script of broadcast/roundbuffer vertices not found. Please contact Preesm developers.")
+						if (sdfVertex instanceof SDFRoundBufferVertex) {
+							associateScriptToSpecialVertex(dagVertex, "roundbuffer", specialScriptFiles.get(ROUNDBUFFER))
+						} else {
+							associateScriptToSpecialVertex(dagVertex, "broadcast", specialScriptFiles.get(BROADCAST))
 						}
 					}
 				}
 			}
 		}
 
+		// Remove all temporary objects (containers created, files extracted)
+		cleanTemporaryObjects(projectAlreadyExisting, project, folderAlreadyExisting, folder, specialScriptFiles.keySet)
+
 		scriptedVertices.size
+	}
+
+	/**
+	 * Associate a script file to a special DAGVertex if this script file have been extracted,
+	 * display an error otherwise
+	 */
+	private def associateScriptToSpecialVertex(DAGVertex dagVertex, String vertexName, File scriptFile) {
+
+		// Logger is used to display messages in the console
+		val logger = WorkflowLogger.getLogger
+		if (scriptFile == null || !scriptFile.exists)
+			logger.log(Level.SEVERE,
+				"Memory script of " + vertexName + " vertices not found. Please contact Preesm developers.")
+		else
+			scriptedVertices.put(dagVertex, scriptFile)
+	}
+
+	/**
+	 * Remove all temporary objects (containers created, files extracted)
+	 * depending on what was already existing before the execution of the script runner
+	 */
+	private def cleanTemporaryObjects(boolean projectAlreadyExisting, IProject project, boolean folderAlreadyExisting,
+		IFolder folder, Set<String> fileNames) {
+		if (!projectAlreadyExisting && !folderAlreadyExisting)
+			ContainersManager.deleteProject(project)
+		else if (!folderAlreadyExisting)
+			ContainersManager.deleteFolder(folder)
+		else
+			ContainersManager.deleteFilesFrom(fileNames, folder)
+	}
+
+	/**
+	 * Get the special script file at the right path and put it into the map
+	 */
+	private def putSpecialScriptFile(Map<String, File> specialScriptFiles, String filePath, String bundleFilter) {
+		var File file = FilesManager.getFile(filePath, bundleFilter)
+		if(file != null) specialScriptFiles.put(filePath, file)
 	}
 
 	/**
@@ -493,14 +517,13 @@ class ScriptRunner {
 		if (generateLog) {
 			log = '''# Memory scripts summary''' + '\n' + '''- Independent match trees : *«groups.size»*''' + '\n' +
 				'''- Total number of buffers in these trees: From «nbBuffersBefore» to «nbBuffersAfter» buffers.''' +
-				"\n" +
-				'''- Total size of these buffers: From «sizeBefore» to «sizeAfter» («100.0 *
+				"\n" + '''- Total size of these buffers: From «sizeBefore» to «sizeAfter» («100.0 *
 					(sizeBefore - sizeAfter as float) / sizeBefore»%).''' + "\n\n" + '''# Match tree optimization log''' +
 				'\n' + log
 		}
 	}
 
-	def enlargeForAlignment(Buffer buffer) {
+	def private enlargeForAlignment(Buffer buffer) {
 		if (printTodo) {
 			println('''Alignment minus one is probably sufficient + Only enlarge [0-Alignment,Max+alignment];''')
 
@@ -555,7 +578,7 @@ class ScriptRunner {
 	 * and value respectively contain input and output {@link Buffer} of an 
 	 * actor. 
 	 */
-	def identifyMatchesType(Pair<List<Buffer>, List<Buffer>> result) {
+	def private identifyMatchesType(Pair<List<Buffer>, List<Buffer>> result) {
 		result.key.forEach [
 			it.matchTable.values.flatten.forEach [
 				if (result.key.contains(it.remoteBuffer)) {
@@ -581,7 +604,7 @@ class ScriptRunner {
 	 * Also fill the {@link Buffer#getDivisibilityRequiredMatches() 
 	 * divisibilityRequiredMatches} {@link List}. 
 	 */
-	def identifyDivisibleBuffers(Pair<List<Buffer>, List<Buffer>> result) {
+	def private identifyDivisibleBuffers(Pair<List<Buffer>, List<Buffer>> result) {
 		val allBuffers = new ArrayList<Buffer>
 		allBuffers.addAll(result.key)
 		allBuffers.addAll(result.value)
@@ -639,7 +662,7 @@ class ScriptRunner {
 	 * @param outputs
 	 * 	{@link List} of output {@link Buffer} of an actor.
 	 */
-	def identifyConflictingMatchCandidates(List<Buffer> inputs, List<Buffer> outputs) {
+	def private identifyConflictingMatchCandidates(List<Buffer> inputs, List<Buffer> outputs) {
 
 		// Identify potentially conflicting matches
 		// For each Buffer
@@ -668,7 +691,7 @@ class ScriptRunner {
 	 * Process the groups generated by the groupVertices method.
 	 * @return the total amount of memory saved
 	 */
-	def processGroup(ArrayList<DAGVertex> vertices) {
+	def private processGroup(ArrayList<DAGVertex> vertices) {
 
 		// Get all the buffers
 		val buffers = newArrayList
@@ -783,7 +806,7 @@ class ScriptRunner {
 	 * 		buffers will be removed from this list by the method.
 	 * @return a {@link List} of merged {@link Buffer}.
 	 */
-	def processGroupStep0(List<Buffer> buffers) {
+	def private processGroupStep0(List<Buffer> buffers) {
 		val candidates = newArrayList
 
 		for (candidate : buffers) {
@@ -844,7 +867,7 @@ class ScriptRunner {
 	 * 		buffers will be removed from this list by the method.
 	 * @return a {@link List} of merged {@link Buffer}.
 	 */
-	def processGroupStep1(List<Buffer> buffers) {
+	def private processGroupStep1(List<Buffer> buffers) {
 
 		val candidates = newArrayList
 
@@ -878,11 +901,13 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(generateLog && !candidates.empty) log = log +
-			'''- __Step 1 - «candidates.fold(0)[v, c|c.matchTable.values.flatten.size + v]» matches__ ''' + "\n>"
+		if (generateLog && !candidates.empty)
+			log = log +
+				'''- __Step 1 - «candidates.fold(0)[v, c|c.matchTable.values.flatten.size + v]» matches__ ''' + "\n>"
 		for (candidate : candidates) {
-			if(generateLog) log = log +
-				'''«FOR match : candidate.matchTable.values.flatten.toList SEPARATOR ', '»«match»«ENDFOR», '''
+			if (generateLog)
+				log = log +
+					'''«FOR match : candidate.matchTable.values.flatten.toList SEPARATOR ', '»«match»«ENDFOR», '''
 			applyDivisionMatch(candidate, candidate.matchTable.values.flatten.toList)
 		}
 		if(generateLog && !candidates.empty) log = log + '\n'
@@ -909,7 +934,7 @@ class ScriptRunner {
 	 * 		buffers will be removed from this list by the method.
 	 * @return a {@link List} of merged {@link Buffer}.
 	 */
-	def processGroupStep2(List<Buffer> buffers) {
+	def private processGroupStep2(List<Buffer> buffers) {
 		val candidates = newLinkedHashMap
 		val involved = newArrayList
 
@@ -951,8 +976,9 @@ class ScriptRunner {
 		// If there are candidates, apply the matches
 		if(generateLog && !candidates.empty) log = log + '''- __Step 2 - «candidates.size» matches__''' + "\n>"
 		for (candidate : candidates.entrySet) {
-			if(generateLog) log = log +
-				'''«candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head»  '''
+			if (generateLog)
+				log = log +
+					'''«candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head»  '''
 			candidate.key.applyMatches(
 				#[candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head])
 		}
@@ -982,7 +1008,7 @@ class ScriptRunner {
 	 * 		buffers will be removed from this list by the method.
 	 * @return a {@link List} of merged {@link Buffer}.
 	 */
-	def processGroupStep3(List<Buffer> buffers) {
+	def private processGroupStep3(List<Buffer> buffers) {
 		val candidates = newLinkedHashMap
 
 		for (candidate : buffers) {
@@ -1020,12 +1046,13 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(generateLog && !candidates.empty) log = log +
-			'''- __Step 3 - «candidates.entrySet.fold(0)[v, c|
+		if (generateLog && !candidates.empty)
+			log = log + '''- __Step 3 - «candidates.entrySet.fold(0)[v, c|
 				c.key.matchTable.values.flatten.filter[it.type == c.value].size + v]» matches__''' + "\n>"
 		for (candidate : candidates.entrySet) {
-			if(generateLog) log = log +
-				'''«FOR match : candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList SEPARATOR ', '»«match»«ENDFOR», '''
+			if (generateLog)
+				log = log +
+					'''«FOR match : candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList SEPARATOR ', '»«match»«ENDFOR», '''
 			applyDivisionMatch(candidate.key,
 				candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList)
 		}
@@ -1053,7 +1080,7 @@ class ScriptRunner {
 	 * 		buffers will be removed from this list by the method.
 	 * @return a {@link List} of merged {@link Buffer}.
 	 */
-	def processGroupStep4(List<Buffer> buffers) {
+	def private processGroupStep4(List<Buffer> buffers) {
 		val candidates = newArrayList
 		val involved = newArrayList
 
@@ -1128,7 +1155,7 @@ class ScriptRunner {
 	 * 		buffers will be removed from this list by the method.
 	 * @return a {@link List} of merged {@link Buffer}.
 	 */
-	def processGroupStep5(List<Buffer> buffers) {
+	def private processGroupStep5(List<Buffer> buffers) {
 		val candidates = newArrayList
 
 		for (candidate : buffers) {
@@ -1171,11 +1198,13 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(generateLog && !candidates.empty) log = log +
-			'''- __Step 5 - «candidates.fold(0)[v, c|c.matchTable.values.flatten.size + v]» matches__''' + "\n>"
+		if (generateLog && !candidates.empty)
+			log = log + '''- __Step 5 - «candidates.fold(0)[v, c|c.matchTable.values.flatten.size + v]» matches__''' +
+				"\n>"
 		for (candidate : candidates) {
-			if(generateLog) log = log +
-				'''«FOR match : candidate.matchTable.values.flatten.toList SEPARATOR ', '»«match»«ENDFOR», '''
+			if (generateLog)
+				log = log +
+					'''«FOR match : candidate.matchTable.values.flatten.toList SEPARATOR ', '»«match»«ENDFOR», '''
 			applyDivisionMatch(candidate,
 				candidate.matchTable.values.flatten.filter[it.type == MatchType::BACKWARD].toList)
 		}
@@ -1203,7 +1232,7 @@ class ScriptRunner {
 	 * 		buffers will be removed from this list by the method.
 	 * @return a {@link List} of merged {@link Buffer}.
 	 */
-	def processGroupStep6(List<Buffer> buffers) {
+	def private processGroupStep6(List<Buffer> buffers) {
 
 		val candidates = newLinkedHashMap
 		val involved = newArrayList
@@ -1267,8 +1296,9 @@ class ScriptRunner {
 		// If there are candidates, apply the matches
 		if(generateLog && !candidates.empty) log = log + '''- __Step 6 - «candidates.size» matches__''' + "\n>"
 		for (candidate : candidates.entrySet) {
-			if(generateLog) log = log +
-				'''«candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head»  '''
+			if (generateLog)
+				log = log +
+					'''«candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head»  '''
 			candidate.key.applyMatches(
 				#[candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].head])
 		}
@@ -1297,7 +1327,7 @@ class ScriptRunner {
 	 * 		buffers will be removed from this list by the method.
 	 * @return a {@link List} of merged {@link Buffer}.
 	 */
-	def processGroupStep7(List<Buffer> buffers) {
+	def private processGroupStep7(List<Buffer> buffers) {
 		val candidates = newLinkedHashMap
 
 		for (candidate : buffers) {
@@ -1353,12 +1383,13 @@ class ScriptRunner {
 		}
 
 		// If there are candidates, apply the matches
-		if(generateLog && !candidates.empty) log = log +
-			'''- __Step 7 - «candidates.entrySet.fold(0)[v, c|
+		if (generateLog && !candidates.empty)
+			log = log + '''- __Step 7 - «candidates.entrySet.fold(0)[v, c|
 				c.key.matchTable.values.flatten.filter[it.type == c.value].size + v]» matches__ ''' + "\n>"
 		for (candidate : candidates.entrySet) {
-			if(generateLog) log = log +
-				'''«FOR match : candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList SEPARATOR ', '»«match»«ENDFOR», '''
+			if (generateLog)
+				log = log +
+					'''«FOR match : candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList SEPARATOR ', '»«match»«ENDFOR», '''
 			applyDivisionMatch(candidate.key,
 				candidate.key.matchTable.values.flatten.filter[it.type == candidate.value].toList)
 		}
