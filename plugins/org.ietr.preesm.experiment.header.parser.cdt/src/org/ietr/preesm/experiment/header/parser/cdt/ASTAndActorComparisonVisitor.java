@@ -1,5 +1,6 @@
 package org.ietr.preesm.experiment.header.parser.cdt;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -107,6 +108,17 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 					+ actor.getDataOutputPorts().size()
 					+ actor.getConfigInputPorts().size() + actor
 					.getConfigOutputPorts().size());
+
+			// Check that all proto parameters can be matched with a port
+			List<Port> allPorts = new ArrayList<Port>();
+			allPorts.addAll(actor.getDataInputPorts());
+			allPorts.addAll(actor.getDataOutputPorts());
+			allPorts.addAll(actor.getConfigInputPorts());
+			allPorts.addAll(actor.getConfigOutputPorts());
+			for(FunctionParameter param : proto.getParameters()){
+				matches &= hasCorrespondingPort(param, allPorts);
+			}
+			
 			// -each of the data input and output ports of the actor matches one
 			// of the parameters of proto
 			if (matches) {
@@ -200,9 +212,13 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 					if (hasCorrespondingPort(param, actor.getConfigInputPorts())) {
 						param.setDirection(Direction.IN);
 						param.setIsConfigurationParameter(true);
+					} else {
+						matches = false;
+						break;
 					}
 				}
 			}
+
 			if (matches) {
 				result.add(proto);
 			}
@@ -220,7 +236,8 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 	public Set<FunctionPrototype> filterInitPrototypes() {
 		Set<FunctionPrototype> result = new HashSet<FunctionPrototype>();
 
-		// For each function prototype proto
+		// For each function prototype proto check that the prototype has no
+		// input or output buffers (i.e. parameters with a pointer type)
 		for (FunctionPrototype proto : this.prototypes) {
 			Set<FunctionParameter> params = new HashSet<FunctionParameter>(
 					proto.getParameters());
