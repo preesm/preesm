@@ -9,12 +9,12 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.ui.util.FileUtils;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.tools.PathTools;
+import org.ietr.preesm.utils.files.ContainersManager;
 
 public class MultiSDFExporter extends AbstractTaskImplementation {
 
@@ -42,10 +42,10 @@ public class MultiSDFExporter extends AbstractTaskImplementation {
 			// Get a complete valid path with all folders existing
 			try {
 				if (xmlPath.getFileExtension() != null)
-					FileUtils.createMissingFolders(xmlPath
+					ContainersManager.createMissingFolders(xmlPath
 							.removeFileExtension().removeLastSegments(1));
 				else {
-					FileUtils.createMissingFolders(xmlPath);
+					ContainersManager.createMissingFolders(xmlPath);
 					xmlPath = xmlPath.removeFileExtension()
 							.removeLastSegments(1)
 							.append(algorithm.getName() + ".graphml");

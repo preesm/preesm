@@ -44,12 +44,12 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import org.ietr.dftools.ui.util.FileUtils;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.tools.PathTools;
+import org.ietr.preesm.utils.files.ContainersManager;
 
 /**
  * Block in workflow exporting a DAG that can be displayed in Graphiti
@@ -72,10 +72,10 @@ public class DAGExportTransform extends AbstractTaskImplementation {
 		// Get a complete valid path with all folders existing
 		try {
 			if (graphmlPath.getFileExtension() != null)
-				FileUtils.createMissingFolders(graphmlPath
+				ContainersManager.createMissingFolders(graphmlPath
 						.removeFileExtension().removeLastSegments(1));
 			else {
-				FileUtils.createMissingFolders(graphmlPath);
+				ContainersManager.createMissingFolders(graphmlPath);
 				graphmlPath = graphmlPath.append(dag.getName() + ".graphml");
 			}
 		} catch (CoreException e) {

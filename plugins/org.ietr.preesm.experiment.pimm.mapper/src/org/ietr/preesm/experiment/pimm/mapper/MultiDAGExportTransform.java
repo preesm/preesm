@@ -9,13 +9,13 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
-import org.ietr.dftools.ui.util.FileUtils;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.tools.PathTools;
 import org.ietr.preesm.mapper.exporter.DAGExporter;
+import org.ietr.preesm.utils.files.ContainersManager;
 
 public class MultiDAGExportTransform extends AbstractTaskImplementation {
 
@@ -37,9 +37,9 @@ public class MultiDAGExportTransform extends AbstractTaskImplementation {
 			// Get a complete valid path with all folders existing
 			try {
 				if (graphmlPath.getFileExtension() != null)
-					FileUtils.createMissingFolders(graphmlPath.removeFileExtension().removeLastSegments(1));
+					ContainersManager.createMissingFolders(graphmlPath.removeFileExtension().removeLastSegments(1));
 				else {
-					FileUtils.createMissingFolders(graphmlPath);
+					ContainersManager.createMissingFolders(graphmlPath);
 					graphmlPath = graphmlPath.removeFileExtension().removeLastSegments(1).append(dag.getName() + ".graphml");
 				}
 			} catch (CoreException e) {
