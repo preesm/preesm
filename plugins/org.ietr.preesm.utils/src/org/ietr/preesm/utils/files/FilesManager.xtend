@@ -125,8 +125,7 @@ class FilesManager {
 			} else {
 				new FileInputStream(source).streamExtract(target)
 			}
-		}
-		else if (source.directory)
+		} else if (source.directory)
 			source.fsDirectoryExtract(target)
 	}
 
@@ -166,14 +165,13 @@ class FilesManager {
 			}
 
 		val entry = jar.getJarEntry(updatedPath)
+
 		// Remove the last char if it is '/'
-		val name =
-			if(entry.name.endsWith("/"))
+		val name = if (entry.name.endsWith("/"))
 				entry.name.substring(0, entry.name.length - 1)
 			else
 				entry.name
-		val fileName =
-			if(name.lastIndexOf("/") != -1)
+		val fileName = if (name.lastIndexOf("/") != -1)
 				name.substring(name.lastIndexOf("/"))
 			else
 				name
@@ -231,7 +229,7 @@ class FilesManager {
 	 * @return A Result object with information about extraction status
 	 */
 	private def static streamExtract(InputStream inputStream, File targetFile) {
-		if(!targetFile.parentFile.exists) {
+		if (!targetFile.parentFile.exists) {
 			targetFile.parentFile.mkdirs
 		}
 		val bufferedInput = new BufferedInputStream(inputStream)
@@ -400,7 +398,7 @@ class FilesManager {
 			throw new FileNotFoundException(path)
 		}
 
-			if (url.protocol.equals("jar")) {
+		val inputStream = if (url.protocol.equals("jar")) {
 				val splittedURL = url.file.split("!")
 				val jar = new JarFile(splittedURL.head.substring(5))
 				val entryPath = splittedURL.last
@@ -436,6 +434,7 @@ class FilesManager {
 	 * </ul>
 	 */
 	static def sanitize(String path) {
+
 		// We use the following construction because Xtend infer '~' as a String instead of a char
 		// path.substring(0,1).equals('~')
 		if (!path.nullOrEmpty && path.substring(0, 1).equals('~')) {
