@@ -77,11 +77,28 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 		// The name of the argument is the last segment (others are the
 		// type)
 		String argumentName = segments[segments.length - 1];
-		if (argumentName.startsWith("*"))
-			argumentName = argumentName.replace("*", "");
+		// Separate parameters from data 
+		if (argumentName.startsWith("*") || segments[segments.length - 2].endsWith("*")) {
+			// Following lines is useless if * is stuck to the end of the data 
+			// type as in "char* param" (but not as in char *param)
+			argumentName = argumentName.replace("*", ""); 
+		} else {
+			parameter.setIsConfigurationParameter(true);
+		}
 		parameter.setName(argumentName);
 		// Type of the argument is the whole string minus the name
 		parameter.setType(argument.replace(argumentName, ""));
+		
+		// If the argument declaration contains a direction, use it !
+		for(String s:segments){				
+			if(s.equals("IN")){
+				parameter.setDirection(Direction.IN);
+				break;
+			}
+			if(s.equals("OUT")){
+				parameter.setDirection(Direction.OUT);
+			}
+		}
 
 		return parameter;
 	}
