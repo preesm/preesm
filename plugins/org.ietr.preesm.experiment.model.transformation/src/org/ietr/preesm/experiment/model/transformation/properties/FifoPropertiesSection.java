@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
+import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 
@@ -27,14 +28,12 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements
 	private CLabel lblType;
 	private Text txtTypeObj;
 
-	//private Text txtSourcePortExpression;
-	private CLabel txtSourcePortExpression;
+	private Text txtSourcePortExpression;
 	private CLabel lblSourcePortExpression;
 	private CLabel lblSourcePortValueObj;
 	private CLabel lblSourcePortValue;
 
-	//private Text txtTargetPortExpression;
-	private CLabel txtTargetPortExpression;
+	private Text txtTargetPortExpression;
 	private CLabel lblTargetPortExpression;
 	private CLabel lblTargetPortValueObj;
 	private CLabel lblTargetPortValue;
@@ -65,9 +64,8 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements
 		lblType.setLayoutData(data);
 
 		/**** SOURCE PORT ****/
-		/**** EXPRESION ****/
-		//txtSourcePortExpression = factory.createText(composite, "");
-		txtSourcePortExpression = factory.createCLabel(composite, "");
+		/**** EXPRESSION ****/
+		txtSourcePortExpression = factory.createText(composite, "");
 		data = new FormData();
 		data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
 		data.right = new FormAttachment(100, 0);
@@ -100,8 +98,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements
 
 		/**** TARGET PORT ****/
 		/**** EXPRESION ****/
-		//txtTargetPortExpression = factory.createText(composite, "");
-		txtTargetPortExpression = factory.createCLabel(composite, "");
+		txtTargetPortExpression = factory.createText(composite, "");
 		data = new FormData();
 		data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
 		data.right = new FormAttachment(100, 0);
@@ -155,44 +152,90 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements
 			}
 		});
 
-//		txtSourcePortExpression.addModifyListener(new ModifyListener() {
-//			@Override
-//			public void modifyText(ModifyEvent e) {
-//				updateProperties();
-//			}
-//		});
-//
-//		txtTargetPortExpression.addModifyListener(new ModifyListener() {
-//			@Override
-//			public void modifyText(ModifyEvent e) {
-//				updateProperties();
-//			}
-//		});
+		/** SourcePort expression listener */
+		txtSourcePortExpression.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				PictogramElement pe = getSelectedPictogramElement();
+				if (pe != null) {
+					EObject bo = Graphiti.getLinkService()
+							.getBusinessObjectForLinkedPictogramElement(pe);
+					if (bo == null)
+						return;
+					if (bo instanceof Fifo) {
+						DataPort port = ((Fifo) bo).getSourcePort();
+						updateDataPortProperties(port, txtSourcePortExpression);
+						PictogramElement pict = Graphiti.getLinkService().getPictogramElements(getDiagram(), port).get(0);
+						getDiagramTypeProvider().getDiagramBehavior()
+						.refreshRenderingDecorators((PictogramElement) pict.eContainer());
+					}					
+				}
+				refresh();
+			}
+		});
+		
+		/** TargetPort expression listener */
+		txtTargetPortExpression.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				PictogramElement pe = getSelectedPictogramElement();
+				if (pe != null) {
+					EObject bo = Graphiti.getLinkService()
+							.getBusinessObjectForLinkedPictogramElement(pe);
+					if (bo == null)
+						return;
+					if (bo instanceof Fifo) {
+						DataPort port = ((Fifo) bo).getTargetPort();
+						updateDataPortProperties(port, txtTargetPortExpression);
+						PictogramElement pict = Graphiti.getLinkService().getPictogramElements(getDiagram(), port).get(0);
+						getDiagramTypeProvider().getDiagramBehavior()
+						.refreshRenderingDecorators((PictogramElement) pict.eContainer());
+					}					
+				}
+				
+				refresh();
+			}
+
+		});
+
+		// txtSourcePortExpression.addModifyListener(new ModifyListener() {
+		// @Override
+		// public void modifyText(ModifyEvent e) {
+		// updateProperties();
+		// }
+		// });
+		//
+		// txtTargetPortExpression.addModifyListener(new ModifyListener() {
+		// @Override
+		// public void modifyText(ModifyEvent e) {
+		// updateProperties();
+		// }
+		// });
 
 	}
 
-//	private void updateProperties() {
-//		PictogramElement pe = getSelectedPictogramElement();
-//		if (pe != null) {
-//			EObject bo = Graphiti.getLinkService()
-//					.getBusinessObjectForLinkedPictogramElement(pe);
-//			if (bo == null)
-//				return;
-//
-//			if (bo instanceof Fifo) {
-//				Fifo fifo = (Fifo) bo;
-//				updateDataPortProperties(fifo.getSourcePort(),
-//						txtSourcePortExpression);
-//				updateDataPortProperties(fifo.getTargetPort(),
-//						txtTargetPortExpression);
-//
-//				getDiagramTypeProvider().getDiagramBehavior()
-//						.refreshRenderingDecorators(
-//								(PictogramElement) (pe.eContainer()));
-//			}
-//		}
-//		refresh();
-//	}
+	// private void updateProperties() {
+	// PictogramElement pe = getSelectedPictogramElement();
+	// if (pe != null) {
+	// EObject bo = Graphiti.getLinkService()
+	// .getBusinessObjectForLinkedPictogramElement(pe);
+	// if (bo == null)
+	// return;
+	//
+	// if (bo instanceof Fifo) {
+	// Fifo fifo = (Fifo) bo;
+	// updateDataPortProperties(fifo.getSourcePort(),
+	// txtSourcePortExpression);
+	// updateDataPortProperties(fifo.getTargetPort(),
+	// txtTargetPortExpression);
+	//
+	// getDiagramTypeProvider().getDiagramBehavior()
+	// .refreshRenderingDecorators(
+	// (PictogramElement) (pe.eContainer()));
+	// }
+	// }
+	// refresh();
+	// }
 
 	/**
 	 * Safely set a new type to the {@link Fifo}.
