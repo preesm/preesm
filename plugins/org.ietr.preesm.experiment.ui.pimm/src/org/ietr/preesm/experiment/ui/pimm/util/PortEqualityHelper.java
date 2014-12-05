@@ -119,20 +119,40 @@ public class PortEqualityHelper {
 			AbstractActor vertex1, AbstractActor vertex2) {
 		Map<SimpleEntry<Port, Port>, IReason> result = new HashMap<SimpleEntry<Port, Port>, IReason>();
 
-		comparePortLists(vertex1.getConfigInputPorts(),
-				vertex2.getConfigInputPorts(), result);
+		// Do it backward (vertex2 with vertex1) for ConfigInputPort
+		// because ConfigInputPort of actor are not mandatorily in the 
+		// refinement
+		comparePortLists(vertex2.getConfigInputPorts(),
+				vertex1.getConfigInputPorts(), result, false);
 		comparePortLists(vertex1.getConfigOutputPorts(),
-				vertex2.getConfigOutputPorts(), result);
-		comparePortLists(vertex1.getDataInputPorts(), vertex2.getDataInputPorts(),
-				result);
-		comparePortLists(vertex1.getDataOutputPorts(), vertex2.getDataOutputPorts(),
-				result);
+				vertex2.getConfigOutputPorts(), result, true);
+		comparePortLists(vertex1.getDataInputPorts(),
+				vertex2.getDataInputPorts(), result, true);
+		comparePortLists(vertex1.getDataOutputPorts(),
+				vertex2.getDataOutputPorts(), result, true);
 
 		return result;
 	}
 
+	/**
+	 * Compares two lists of {@link Port} to make sure all ports from the first
+	 * list are also in the second. (and optionally vice-versa).
+	 * 
+	 * @param ports1
+	 *            the first {@link List} of {@link Port}
+	 * @param ports2
+	 *            the second {@link List} of {@link Port}
+	 * @param result
+	 *            cf. Comments of
+	 *            {@link #buildEquivalentPortsMap(AbstractActor, AbstractActor)}
+	 *            for details.
+	 * @param backwardTest
+	 *            Optionally tests if all ports of the second list belong to the
+	 *            first
+	 */
 	protected static <T extends Port> void comparePortLists(EList<T> ports1,
-			EList<T> ports2, Map<SimpleEntry<Port, Port>, IReason> result) {
+			EList<T> ports2, Map<SimpleEntry<Port, Port>, IReason> result,
+			boolean backwardTest) {
 		// Maintain a list of input port of vertex2 whose equivalent has not
 		// been
 		// found yet
@@ -152,10 +172,12 @@ public class PortEqualityHelper {
 					comparePorts(p1, equivalent));
 		}
 
-		// Add of vertex2 that have no equivalents
-		for (Port p2 : noEquivalentFound) {
-			result.put(new SimpleEntry<>((Port) null, p2),
-					comparePorts((Port) null, p2));
+		if (backwardTest) {
+			// Add of vertex2 that have no equivalents
+			for (Port p2 : noEquivalentFound) {
+				result.put(new SimpleEntry<>((Port) null, p2),
+						comparePorts((Port) null, p2));
+			}
 		}
 	}
 
