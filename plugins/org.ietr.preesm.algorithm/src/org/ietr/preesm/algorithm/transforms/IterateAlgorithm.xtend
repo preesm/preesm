@@ -38,11 +38,15 @@ package org.ietr.preesm.algorithm.transforms
 import java.util.HashMap
 import java.util.Map
 import org.eclipse.core.runtime.IProgressMonitor
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.workflow.WorkflowException
 import org.ietr.dftools.workflow.elements.Workflow
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
+import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
 
 /**
  * Repeating N times the same single rate IBSDF algorithm into a new IBSDF graph.
@@ -57,23 +61,96 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 	/**
 	 * Tag for storing the requested number of iterations
 	 */
-	val NB_IT = "nbIt";	
+	val NB_IT = "nbIt";
 	
 	/**
-	 * Mixing several iterations of a single graph
+	 * Adding precedence edges to take into account a hidden state in each actor
 	 */
-	def iterate(SDFGraph inputAlgorithm, int nbIt) {
-		// Generating a first graph clone
+	val SET_STATES = "setStates";
+	
+
+	/**
+	 * Inserting mergedGraph into refGraph and adding optionally state edges of weight 1
+	 */
+	def merge(SDFGraph refGraph, SDFGraph mergedGraphIn, int index, boolean setStates) {
+
+		// Generating a graph clone to avoid concurrent modifications
+		var mergedGraph = mergedGraphIn.clone
+
+		for (SDFAbstractVertex vertex : mergedGraph.vertexSet) {
+			var mergedVertexName = vertex.getName
+			vertex.setId(vertex.getId + "_" + index)
+			vertex.setName(vertex.getName + "_" + index)
+			refGraph.addVertex(vertex)
+
+			// If a state is introduced, a synthetic edge is put between 2 iterations of each actor
+			if (setStates) {
+				var current = refGraph.getVertex(mergedVertexName + "_" + index)
+				var previous = refGraph.getVertex(mergedVertexName + "_" + (index-1))
+				if (previous != null && current != null) {
+					var newEdge = refGraph.addEdge(previous, current)
+					newEdge.setProd(new SDFIntEdgePropertyType(1));
+					newEdge.setCons(new SDFIntEdgePropertyType(1));
+
+					// Create a new source stateout port
+					var stateout = new SDFSourceInterfaceVertex()
+					stateout.setName("stateout");
+					previous.addSource(stateout);
+
+					// Create a new sink statein port
+					var statein = new SDFSinkInterfaceVertex()
+					statein.setName("statein");
+					current.addSink(statein);
+					newEdge.setSourceInterface(statein)
+					newEdge.setTargetInterface(stateout)
+				}
+			}
+		}
+
+		for (SDFEdge edge : mergedGraph.edgeSet) {
+			var source = mergedGraph.getEdgeSource(edge)
+			var target = mergedGraph.getEdgeTarget(edge)
+			var newEdge = refGraph.addEdge(source, target)
+			newEdge.setSourceInterface(edge.getSourceInterface())
+			newEdge.setTargetInterface(edge.getTargetInterface())
+			target.setInterfaceVertexExternalLink(newEdge, edge.getTargetInterface())
+			source.setInterfaceVertexExternalLink(newEdge, edge.getSourceInterface())
+
+			newEdge.setCons(edge.getCons().clone())
+			newEdge.setProd(edge.getProd().clone())
+			newEdge.setDelay(edge.getDelay().clone())
+
+		}
+
+		for (String propertyKey : mergedGraph.getPropertyBean().keys()) {
+			var property = mergedGraph.getPropertyBean().getValue(propertyKey);
+			refGraph.getPropertyBean().setValue(propertyKey, property);
+		}
+		return refGraph
+	}
+
+	/**
+	 * Mixing nbIt iterations of a single graph, adding a state in case makeStates = true
+	 */
+	def iterate(SDFGraph inputAlgorithm, int nbIt, boolean setStates) {
+
 		var mainIteration = inputAlgorithm.clone
-		
+
+		// setting first iteration with name "_0"
+		for (SDFAbstractVertex vertex : mainIteration.vertexSet) {
+			vertex.setId(vertex.getId + "_0");
+			vertex.setName(vertex.getName + "_0");
+		}
+
 		// Incorporating new iterations
-		for (Integer i: 1..nbIt-1)  {
+		for (Integer i : 1 .. nbIt - 1) {
+
 			// Adding vertices of new_iteration to the ones of mainIteration, vertices are automatically renamed
-			mainIteration.fill(inputAlgorithm)
-    	}
+			mainIteration = merge(mainIteration, inputAlgorithm, i, setStates)
+		}
 
 		return mainIteration
-	
+
 	}
 
 	/**
@@ -84,7 +161,8 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 		val outMap = new HashMap<String, Object>
 		val inputAlgorithm = inputs.get("SDF") as SDFGraph
 		val nbIt = Integer.valueOf(parameters.get(NB_IT))
-		val outputAlgorithm = iterate(inputAlgorithm, nbIt)
+		val setStates = Boolean.valueOf(parameters.get(SET_STATES))
+		val outputAlgorithm = iterate(inputAlgorithm, nbIt, setStates)
 		outMap.put("SDF", outputAlgorithm)
 		return outMap;
 	}
@@ -95,6 +173,7 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 	override getDefaultParameters() {
 		val defaultParameters = new HashMap<String, String>
 		defaultParameters.put(NB_IT, "1")
+		defaultParameters.put(SET_STATES, "true")
 		return defaultParameters
 	}
 
@@ -102,6 +181,6 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 	 * Message displayed in the DFTools console
 	 */
 	override monitorMessage() '''
-    Iterating a single rate IBSDF «defaultParameters.get(NB_IT)» time(s).'''
+	Iterating a single rate IBSDF «defaultParameters.get(NB_IT)» time(s).'''
 
 }
