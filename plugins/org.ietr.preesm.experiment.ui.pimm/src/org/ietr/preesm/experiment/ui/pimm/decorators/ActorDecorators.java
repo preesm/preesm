@@ -180,7 +180,7 @@ public class ActorDecorators {
 			}
 			if (!reasons.equals("")) {
 				return Reason
-						.createTrueReason("Ports are out of sync with the refinement graph."
+						.createTrueReason("Ports are out of sync with the refinement."
 								+ reasons);
 			}
 		}

@@ -68,6 +68,10 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 
 	protected boolean hasDoneChanges = false;
 
+	enum PrototypeFilter {
+		NONE, INIT_ACTOR, LOOP_ACTOR, INIT
+	}
+
 	/**
 	 * Default Constructor of {@link SetActorRefinementFeature}
 	 * 
@@ -115,7 +119,10 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 
 				String question = "Please select a valid file\n(.idl, .h or .pi)";
 				String dialogTitle = "Select a refinement file";
-				askRefinement(actor, question, dialogTitle);
+				IPath path = askRefinement(actor, question, dialogTitle);
+				if (path != null) {
+					setActorRefinement(actor, path);
+				}
 
 				// Call the layout feature
 				layoutPictogramElement(pes[0]);
@@ -123,7 +130,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 		}
 	}
 
-	private void askRefinement(Actor actor, String question, String dialogTitle) {
+	private IPath askRefinement(Actor actor, String question, String dialogTitle) {
 		// Ask user for Actor name until a valid name is entered.
 		// For now, authorized refinements are other PiGraphs (.pi files) and
 		// .idl prototypes
@@ -134,7 +141,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 		IPath newFilePath = PiMMUtil.askFile(dialogTitle, question, null,
 				fileExtensions);
 
-		setActorRefinement(actor, newFilePath);
+		return newFilePath;
 	}
 
 	/**
@@ -142,25 +149,48 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 	 * the file is a C Header.
 	 * 
 	 * @param newFilePath
+	 *            The {@link IPath} to the file. (Must not be null)
 	 */
 	protected void setActorRefinement(Actor actor, IPath newFilePath) {
 		String dialogTitle = "Select a refinement file";
 		Refinement refinement = actor.getRefinement();
-		if (newFilePath != null) {
-			this.hasDoneChanges = true;
+
+		boolean validRefinement = false;
+		do {
 			// If the file is a .h header
 			if (newFilePath.getFileExtension().equals("h")) {
+
+				Set<FunctionPrototype> loopPrototypes;
+				FunctionPrototype[] allProtoArray;
+				IFile file;
+
 				// We get it
-				IFile file = ResourcesPlugin.getWorkspace().getRoot()
+				file = ResourcesPlugin.getWorkspace().getRoot()
 						.getFile(newFilePath);
-				Set<FunctionPrototype> loopPrototypes = getPrototypes(file,
-						actor, false);
-				if (loopPrototypes.isEmpty()) {
-					String message = "The .h file you selected does not contain any prototype corresponding to actor "
-							+ actor.getName()
+
+				// Get all prototypes first (no filter)
+				Set<FunctionPrototype> allPrototypes = getPrototypes(file,
+						actor, PrototypeFilter.NONE);
+				allProtoArray = (FunctionPrototype[]) allPrototypes
+						.toArray(new FunctionPrototype[allPrototypes.size()]);
+
+				loopPrototypes = getPrototypes(file, actor,
+						PrototypeFilter.LOOP_ACTOR);
+				validRefinement = (!loopPrototypes.isEmpty())
+						|| (!allPrototypes.isEmpty());
+				if (!validRefinement) {
+					String message = "The .h file you selected does not contain any prototype."
 							+ ".\nPlease select another valid file.";
-					this.askRefinement(actor, message, dialogTitle);
+					newFilePath = this.askRefinement(actor, message,
+							dialogTitle);
+
+					// If the cancel button of the dialog box was clicked
+					// stop the setRefinement process.
+					if (newFilePath == null) {
+						return;
+					}
 				} else {
+					// The file is a valid .h file.
 					String title = "Loop Function Selection";
 					String message = "Select a loop function for actor "
 							+ actor.getName()
@@ -168,17 +198,16 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 					FunctionPrototype[] loopProtoArray = loopPrototypes
 							.toArray(new FunctionPrototype[loopPrototypes
 									.size()]);
-					FunctionPrototype loopProto = PiMMUtil.selectFunction(
-							loopProtoArray, title, message, true);
+					FunctionPrototype loopProto = PiMMUtil
+							.selectFunction(loopProtoArray, allProtoArray,
+									title, message, true);
 
 					Set<FunctionPrototype> initPrototypes = getPrototypes(file,
-							actor, true);
+							actor, PrototypeFilter.INIT_ACTOR);	
+					Set<FunctionPrototype> allInitPrototypes = getPrototypes(file, actor, PrototypeFilter.INIT);
 					
-					HRefinement newRefinement = PiMMFactory.eINSTANCE
-							.createHRefinement();
-					newRefinement.setLoopPrototype(loopProto);
-					newRefinement.setFilePath(newFilePath);
-					if (!initPrototypes.isEmpty()) {
+					FunctionPrototype initProto = null;
+					if (!initPrototypes.isEmpty() || !allInitPrototypes.isEmpty()) {
 						title = "Init Function Selection";
 						message = "Select an optionnal init function for actor "
 								+ actor.getName()
@@ -186,24 +215,34 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 						FunctionPrototype[] initProtoArray = initPrototypes
 								.toArray(new FunctionPrototype[initPrototypes
 										.size()]);
-						FunctionPrototype initProto = PiMMUtil.selectFunction(
-								initProtoArray, title, message, false);
+						FunctionPrototype[] allInitProtoArray = allInitPrototypes
+								.toArray(new FunctionPrototype[allInitPrototypes
+										.size()]);
+						initProto = PiMMUtil.selectFunction(initProtoArray,
+								allInitProtoArray, title, message, false);
 
-						
-						newRefinement.setInitPrototype(initProto);
-						
 					}					
-					actor.setRefinement(newRefinement);
+					if (loopProto != null || initProto != null) {
+							this.hasDoneChanges = true;
+							HRefinement newRefinement = PiMMFactory.eINSTANCE
+									.createHRefinement();
+							newRefinement.setLoopPrototype(loopProto);
+							newRefinement.setInitPrototype(initProto);
+							newRefinement.setFilePath(newFilePath);
+							actor.setRefinement(newRefinement);
+					}
 				}
-
 			} else {
+				// The file is either a .pi or a .IDL file.
+				validRefinement = true;
 				refinement.setFilePath(newFilePath);
+				this.hasDoneChanges = true;
 			}
-		}
+		} while (!validRefinement);
 	}
 
 	private Set<FunctionPrototype> getPrototypes(IFile file, Actor actor,
-			boolean initPrototypes) {
+			PrototypeFilter prototypeFilter) {
 		Set<FunctionPrototype> result = new HashSet<FunctionPrototype>();
 
 		if (file != null) {
@@ -216,10 +255,20 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 				ast.accept(visitor);
 				// And extract from it the functions
 				// compatible with the current actor
-				if (initPrototypes)
+				switch (prototypeFilter) {
+				case INIT_ACTOR:
 					result = visitor.filterInitPrototypesFor(actor);
-				else
+					break;
+				case LOOP_ACTOR:
 					result = visitor.filterLoopPrototypesFor(actor);
+					break;
+				case INIT:
+					result = visitor.filterInitPrototypes();
+					break;
+				case NONE:
+					result = visitor.getPrototypes();
+					break;
+				}
 			} catch (CoreException e) {
 				e.printStackTrace();
 			}

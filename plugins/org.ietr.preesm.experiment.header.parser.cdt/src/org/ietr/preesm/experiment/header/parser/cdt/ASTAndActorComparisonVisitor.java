@@ -1,5 +1,6 @@
 package org.ietr.preesm.experiment.header.parser.cdt;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -76,11 +77,28 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 		// The name of the argument is the last segment (others are the
 		// type)
 		String argumentName = segments[segments.length - 1];
-		if (argumentName.startsWith("*"))
-			argumentName = argumentName.replace("*", "");
+		// Separate parameters from data 
+		if (argumentName.startsWith("*") || segments[segments.length - 2].endsWith("*")) {
+			// Following lines is useless if * is stuck to the end of the data 
+			// type as in "char* param" (but not as in char *param)
+			argumentName = argumentName.replace("*", ""); 
+		} else {
+			parameter.setIsConfigurationParameter(true);
+		}
 		parameter.setName(argumentName);
 		// Type of the argument is the whole string minus the name
 		parameter.setType(argument.replace(argumentName, ""));
+		
+		// If the argument declaration contains a direction, use it !
+		for(String s:segments){				
+			if(s.equals("IN")){
+				parameter.setDirection(Direction.IN);
+				break;
+			}
+			if(s.equals("OUT")){
+				parameter.setDirection(Direction.OUT);
+			}
+		}
 
 		return parameter;
 	}
@@ -107,6 +125,17 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 					+ actor.getDataOutputPorts().size()
 					+ actor.getConfigInputPorts().size() + actor
 					.getConfigOutputPorts().size());
+
+			// Check that all proto parameters can be matched with a port
+			List<Port> allPorts = new ArrayList<Port>();
+			allPorts.addAll(actor.getDataInputPorts());
+			allPorts.addAll(actor.getDataOutputPorts());
+			allPorts.addAll(actor.getConfigInputPorts());
+			allPorts.addAll(actor.getConfigOutputPorts());
+			for(FunctionParameter param : proto.getParameters()){
+				matches &= hasCorrespondingPort(param, allPorts);
+			}
+			
 			// -each of the data input and output ports of the actor matches one
 			// of the parameters of proto
 			if (matches) {
@@ -200,10 +229,47 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 					if (hasCorrespondingPort(param, actor.getConfigInputPorts())) {
 						param.setDirection(Direction.IN);
 						param.setIsConfigurationParameter(true);
+					} else {
+						matches = false;
+						break;
 					}
 				}
 			}
+
 			if (matches) {
+				result.add(proto);
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Filters the prototypes obtained from the parsed file to keep only the
+	 * ones corresponding to possible initializations.
+	 * 
+	 * @return the set of FunctionPrototypes corresponding to initialization
+	 */
+	public Set<FunctionPrototype> filterInitPrototypes() {
+		Set<FunctionPrototype> result = new HashSet<FunctionPrototype>();
+
+		// For each function prototype proto check that the prototype has no
+		// input or output buffers (i.e. parameters with a pointer type)
+		for (FunctionPrototype proto : this.prototypes) {
+			Set<FunctionParameter> params = new HashSet<FunctionParameter>(
+					proto.getParameters());
+			boolean allParams = true;
+			for (FunctionParameter param : params) {
+				if (!param.getType().contains("*")) {
+					param.setDirection(Direction.IN);
+					param.setIsConfigurationParameter(true);
+				} else {
+					allParams = false;
+					break;
+				}
+			}
+
+			if (allParams) {
 				result.add(proto);
 			}
 		}
@@ -228,5 +294,15 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Returns an unfiltered list of the {@link FunctionPrototype} found by the
+	 * {@link ASTAndActorComparisonVisitor}.
+	 * 
+	 * @return The parsed {@link FunctionPrototype}.
+	 */
+	public Set<FunctionPrototype> getPrototypes() {
+		return new HashSet<FunctionPrototype>(this.prototypes);
 	}
 }

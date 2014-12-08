@@ -64,6 +64,14 @@ import org.ietr.preesm.experiment.ui.pimm.util.PiMMUtil;
 public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature {
 
 	/**
+	 * The {@link ICustomContext} given to the {@link #execute(ICustomContext)}
+	 * method can be associated to properties. The {@link #NAME_PROPERTY} key is
+	 * associated to a {@link String} that should be used as a name for the
+	 * created port, thus bypassing the need to ask for a port name to the user.
+	 */
+	public static final String NAME_PROPERTY = "name";
+
+	/**
 	 * Position of the port
 	 * 
 	 * @author kdesnos
@@ -158,12 +166,18 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 			// Ask the name of the new port
 			String portName = "newPort";
 
-			portName = PiMMUtil.askString(this.getName(),
-					this.getDescription(), portName, new PortNameValidator(
-							actor, null));
-			if (portName == null) {
-				this.hasDoneChanges = false;
-				return;
+			// If a name was given in the property, bypass the dialog box
+			Object nameProperty = context.getProperty(NAME_PROPERTY);
+			if (nameProperty != null && nameProperty instanceof String) {
+				portName = (String) nameProperty;
+			} else {
+				portName = PiMMUtil.askString(this.getName(), this
+						.getDescription(), portName, new PortNameValidator(
+						actor, null));
+				if (portName == null) {
+					this.hasDoneChanges = false;
+					return;
+				}
 			}
 
 			// create an box relative anchor
