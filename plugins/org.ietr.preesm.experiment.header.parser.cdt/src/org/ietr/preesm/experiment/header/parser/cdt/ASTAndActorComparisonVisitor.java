@@ -62,7 +62,9 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 		String argumentsString = summary.getArguments();
 		// Arguments are separated by commas
 		for (String argument : argumentsString.split(",")) {
-			proto.getParameters().add(createFunctionParameterFrom(argument));
+			if(!argument.isEmpty()){
+				proto.getParameters().add(createFunctionParameterFrom(argument));
+			}
 		}
 
 		return proto;
@@ -78,7 +80,7 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 		// type)
 		String argumentName = segments[segments.length - 1];
 		// Separate parameters from data 
-		if (argumentName.startsWith("*") || segments[segments.length - 2].endsWith("*")) {
+		if (argumentName.startsWith("*") || (segments.length > 1 &&  segments[segments.length - 2].endsWith("*"))) {
 			// Following lines is useless if * is stuck to the end of the data 
 			// type as in "char* param" (but not as in char *param)
 			argumentName = argumentName.replace("*", ""); 
