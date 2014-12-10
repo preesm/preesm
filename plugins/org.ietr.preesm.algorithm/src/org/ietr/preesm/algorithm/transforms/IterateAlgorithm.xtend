@@ -79,7 +79,8 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 
 		for (SDFAbstractVertex vertex : mergedGraph.vertexSet) {
 			var mergedVertexName = vertex.getName
-			vertex.setId(vertex.getId + "_" + index)
+			// Id is identical to all iterations, same as for srSDF transformation
+			vertex.setId(vertex.getId)
 			vertex.setName(vertex.getName + "_" + index)
 			refGraph.addVertex(vertex)
 
@@ -140,7 +141,8 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 		// setting first iteration with name "_0"
 		for (SDFAbstractVertex vertex : mainIteration.vertexSet) {
 			val id = vertex.getId
-			vertex.setId(id + "_0");
+			// Id is identical to all iterations, same as for srSDF transformation
+			vertex.setId(id);
 			vertex.setName(vertex.getName + "_0")
 			// Adding relative constraints to the scenario if present
 			if(scenario != null){
@@ -170,7 +172,7 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 		val outMap = new HashMap<String, Object>
 		val inputAlgorithm = inputs.get("SDF") as SDFGraph
 		
-		// If we retrive a scenario, relative constraints are added in the scenario
+		// If we retrieve a scenario, relative constraints are added in the scenario
 		var scenario = inputs.get("scenario") as PreesmScenario
 		
 		val nbIt = Integer.valueOf(parameters.get(NB_IT))
