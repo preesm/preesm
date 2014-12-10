@@ -86,4 +86,9 @@ abstract public class GroupProperty implements Cloneable {
 		
 		return vertices;
 	}
+
+	@Override
+	public String toString() {
+		return vertexIDs.toString();
+	}
 }

@@ -81,6 +81,10 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 
 		ComponentInstance mainComNode = DesignTools.getComponentInstance(archi,
 				scenario.getSimulationManager().getMainComNodeName());
+
+		ComponentInstance mainOperator = DesignTools.getComponentInstance(archi,
+				scenario.getSimulationManager().getMainOperatorName());
+		
 		if (mainComNode != null) {
 			WorkflowLogger.getLogger().info("Infinite homogeneous simulation");
 		} else {
@@ -88,11 +92,17 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 					.getLogger()
 					.severe("Current architecture has no main communication node. Please set a main communication node.");
 		}
+		
+		if (mainOperator == null) {
+			WorkflowLogger
+					.getLogger()
+					.severe("Current architecture has no main operator. Please set a main operator.");
+		}
 
 		// The InfiniteHomogeneousArchitectureSimulator is specifically done
 		// to map all vertices on the main operator definition but consider
 		// as many cores as there are tasks.
-		mapAllVerticesOnOperator(mainComNode);
+		mapAllVerticesOnOperator(mainOperator);
 
 		updateFinalCosts();
 		orderManager.resetTotalOrder();

@@ -199,7 +199,8 @@ public abstract class AbstractAbc implements IAbc {
 			verticesToAssociate.add(end);
 		}
 
-		((MapperDAG)vertex.getBase()).getMappings().associate(verticesToAssociate);
+		// TODO: understand why this was here. This line was erasing all relative constraints.
+		//((MapperDAG)vertex.getBase()).getMappings().associate(verticesToAssociate);
 	}
 
 	public final MapperDAG getDAG() {
@@ -312,13 +313,13 @@ public abstract class AbstractAbc implements IAbc {
 
 			if (isMapable(impvertex, operator) || !updateRank
 					|| impvertex instanceof TransferVertex) {
-
+				
 				// Implementation property is set in both DAG and implementation
+				// Modifying effective operator of the vertex and all its mapping set!
 				dagprop.setEffectiveOperator(operator);
 				impprop.setEffectiveOperator(operator);
 
 				fireNewMappedVertex(impvertex, updateRank);
-
 			} else {
 				WorkflowLogger.getLogger().log(
 						Level.SEVERE,

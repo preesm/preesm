@@ -151,4 +151,11 @@ public class VertexMapping extends GroupProperty {
 
 		return operators;
 	}
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "<" + super.toString() + ", " + effectiveComponent + ">";
+	}
+
 }

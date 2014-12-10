@@ -136,7 +136,7 @@ public interface IAbc extends IMapperAbc {
 	/**
 	 * maps the vertex on the operator the rank is the scheduling order. The
 	 * current rank is maintained in simulator. User can choose to update the
-	 * rank to the current one or to keep the sank set during last
+	 * rank to the current one or to keep the rank set during last
 	 * implementation
 	 * @throws WorkflowException 
 	 */
