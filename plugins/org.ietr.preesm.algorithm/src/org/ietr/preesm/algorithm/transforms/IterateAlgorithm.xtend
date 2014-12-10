@@ -94,16 +94,16 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 					newEdge.setCons(new SDFIntEdgePropertyType(1));
 
 					// Create a new source stateout port
-					var stateout = new SDFSourceInterfaceVertex()
-					stateout.setName("stateout");
-					previous.addSource(stateout);
+					var statein = new SDFSourceInterfaceVertex()
+					statein.setName("statein");
+					previous.addSource(statein);
 
 					// Create a new sink statein port
-					var statein = new SDFSinkInterfaceVertex()
-					statein.setName("statein");
-					current.addSink(statein);
-					newEdge.setSourceInterface(statein)
-					newEdge.setTargetInterface(stateout)
+					var stateout = new SDFSinkInterfaceVertex()
+					stateout.setName("stateout");
+					current.addSink(stateout);
+					newEdge.setSourceInterface(stateout)
+					newEdge.setTargetInterface(statein)
 				}
 			}
 		}
