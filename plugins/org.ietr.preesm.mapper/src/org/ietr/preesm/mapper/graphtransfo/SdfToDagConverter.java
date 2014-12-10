@@ -179,13 +179,13 @@ public class SdfToDagConverter {
 		
 		// We iterate the dag to add to each vertex its relative constraints (if any)
 		for(DAGVertex dv : dag.vertexSet()){
-			String sdfVName = dv.getCorrespondingSDFVertex().getId();
+			String sdfVId = dv.getCorrespondingSDFVertex().getId();
 			
 			// If a group was found, the actor is associated to a group with other actors
-			if(manager.hasRelativeConstraint(sdfVName)){
+			if(manager.hasRelativeConstraint(sdfVId)){
 				
 				// We get the group ID if any was set in the scenario
-				int group = manager.getConstraintOrDefault(sdfVName);
+				int group = manager.getConstraintOrDefault(sdfVId);
 				
 				if(!relativeConstraints.containsKey(group)){
 					relativeConstraints.put(group, new HashSet<MapperDAGVertex>());

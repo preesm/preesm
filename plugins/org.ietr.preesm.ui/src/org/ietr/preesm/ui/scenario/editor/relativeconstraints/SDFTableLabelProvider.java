@@ -93,7 +93,7 @@ public class SDFTableLabelProvider implements ITableLabelProvider {
 				text = vertex.getName();
 			else if (columnIndex == 1 && scenario != null) {
 				int time = scenario.getRelativeconstraintManager()
-						.getConstraintOrDefault(vertex.getName());
+						.getConstraintOrDefault(vertex.getId());
 
 				text = Integer.toString(time);
 			}
@@ -160,7 +160,7 @@ public class SDFTableLabelProvider implements ITableLabelProvider {
 					+ vertex.getName();
 			String init = String.valueOf(scenario
 					.getRelativeconstraintManager().getConstraintOrDefault(
-							vertex.getName()));
+							vertex.getId()));
 
 			InputDialog dialog = new InputDialog(PlatformUI.getWorkbench()
 					.getActiveWorkbenchWindow().getShell(), title, message,

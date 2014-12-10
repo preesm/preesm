@@ -47,6 +47,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
+import org.ietr.preesm.core.scenario.PreesmScenario
 
 /**
  * Repeating N times the same single rate IBSDF algorithm into a new IBSDF graph.
@@ -62,12 +63,11 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 	 * Tag for storing the requested number of iterations
 	 */
 	val NB_IT = "nbIt";
-	
+
 	/**
 	 * Adding precedence edges to take into account a hidden state in each actor
 	 */
 	val SET_STATES = "setStates";
-	
 
 	/**
 	 * Inserting mergedGraph into refGraph and adding optionally state edges of weight 1
@@ -86,7 +86,7 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 			// If a state is introduced, a synthetic edge is put between 2 iterations of each actor
 			if (setStates) {
 				var current = refGraph.getVertex(mergedVertexName + "_" + index)
-				var previous = refGraph.getVertex(mergedVertexName + "_" + (index-1))
+				var previous = refGraph.getVertex(mergedVertexName + "_" + (index - 1))
 				if (previous != null && current != null) {
 					var newEdge = refGraph.addEdge(previous, current)
 					newEdge.setProd(new SDFIntEdgePropertyType(1));
@@ -132,14 +132,23 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 	/**
 	 * Mixing nbIt iterations of a single graph, adding a state in case makeStates = true
 	 */
-	def iterate(SDFGraph inputAlgorithm, int nbIt, boolean setStates) {
+	def iterate(SDFGraph inputAlgorithm, int nbIt, boolean setStates, PreesmScenario scenario) {
 
 		var mainIteration = inputAlgorithm.clone
 
+		var groupId = 0
 		// setting first iteration with name "_0"
 		for (SDFAbstractVertex vertex : mainIteration.vertexSet) {
-			vertex.setId(vertex.getId + "_0");
-			vertex.setName(vertex.getName + "_0");
+			val id = vertex.getId
+			vertex.setId(id + "_0");
+			vertex.setName(vertex.getName + "_0")
+			// Adding relative constraints to the scenario if present
+			if(scenario != null){
+				for(Integer i : 0 .. nbIt - 1){
+					scenario.relativeconstraintManager.addConstraint(id,groupId)
+				}
+			}
+			groupId++
 		}
 
 		// Incorporating new iterations
@@ -160,9 +169,13 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 		String nodeName, Workflow workflow) throws WorkflowException {
 		val outMap = new HashMap<String, Object>
 		val inputAlgorithm = inputs.get("SDF") as SDFGraph
+		
+		// If we retrive a scenario, relative constraints are added in the scenario
+		var scenario = inputs.get("scenario") as PreesmScenario
+		
 		val nbIt = Integer.valueOf(parameters.get(NB_IT))
 		val setStates = Boolean.valueOf(parameters.get(SET_STATES))
-		val outputAlgorithm = iterate(inputAlgorithm, nbIt, setStates)
+		val outputAlgorithm = iterate(inputAlgorithm, nbIt, setStates, scenario)
 		outMap.put("SDF", outputAlgorithm)
 		return outMap;
 	}
@@ -171,7 +184,7 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 	 * If no parameter is set, using default value
 	 */
 	override getDefaultParameters() {
-		val defaultParameters = new HashMap<String, String>
+		var defaultParameters = new HashMap<String, String>
 		defaultParameters.put(NB_IT, "1")
 		defaultParameters.put(SET_STATES, "true")
 		return defaultParameters
