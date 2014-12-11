@@ -53,6 +53,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
 import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
+import org.eclipse.xtend.lib.annotations.Accessors
+import java.util.Map
 
 /**
  * This printer is currently used to print C code only for X86 processor with
@@ -63,28 +65,27 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
  * @author kdesnos
  */
 class DynamicAllocCPrinter extends CPrinter {
-		
+
 	/**
 	 * Default constructor.
-	 */	
+	 */
 	new() {
 		super()
 		IGNORE_USELESS_MEMCPY = false
 	}
-	
+
 	/**
 	 * Stores the merged {@link Buffer} already
 	 * {@link #printBufferDeclaration(Buffer) declared} for the current
 	 * {@link CoreBlock}. Must be emptied before printed a new {@link CoreBlock}
 	 */
 	Set<Buffer> printedMerged
-	
+
 	/**
 	 * Associates a buffer to all its merged buffers.
 	 */
-	 @Property
-	var mergedMalloc = new HashMap<Buffer,List<Buffer>>
-	
+	@Accessors Map<Buffer, List<Buffer>> mergedMalloc = new HashMap<Buffer, List<Buffer>>
+
 	/**
 	 * Associates a {@link Buffer} to all its merged buffers. Each entry
 	 * corresponds to a set of Buffers that are allocated in the same place.
@@ -92,25 +93,22 @@ class DynamicAllocCPrinter extends CPrinter {
 	 * effective for these buffers. Extra care must be taken to ensure that only
 	 * one malloc is executed.
 	 */
-	 @Property
-	var mergedFree = new HashMap<Buffer, List<Buffer>>
-	
+	@Accessors Map<Buffer, List<Buffer>> mergedFree = new HashMap<Buffer, List<Buffer>>
+
 	/**
 	 * Associates a key from the {@link #mergedFree} map to a {@link Semaphore}
 	 * used to ensure that the malloc for this {@link Buffer} is only called
 	 * once.
 	 */
-	 @Property
-	var mergedFreeSemaphore = new HashMap<Buffer,Semaphore>
-	
+	@Accessors Map<Buffer, Semaphore> mergedFreeSemaphore = new HashMap<Buffer, Semaphore>
+
 	/**
 	 * Associates merged buffers to their allocated buffer.
 	 */
-	 @Property
-	var mergedBuffers = new HashMap<Buffer,Buffer>
-	
+	@Accessors Map<Buffer, Buffer> mergedBuffers = new HashMap<Buffer, Buffer>
+
 	override printCoreBlockHeader(CoreBlock block) '''
-		«{// Empty the printedMerge
+		«{ // Empty the printedMerge
 			printedMerged = new HashSet<Buffer>
 			super.printCoreBlockHeader(block)
 		}»
@@ -118,7 +116,7 @@ class DynamicAllocCPrinter extends CPrinter {
 		
 		
 	'''
-	
+
 	/**
 	 * In this Printer, the preprocessing method searches for mergeable broadcasts
 	 * and replaces their classic malloc method with a malloc with multiple free.
@@ -148,8 +146,8 @@ class DynamicAllocCPrinter extends CPrinter {
 									} else {
 										mergedMalloc.put(malloc.key, malloc.value)
 										malloc.key
-									} 
-								
+									}
+
 								// Fill the mergedBuffers map
 								malloc.value.forEach[mergedBuffers.put(it, mergedInBuffer)]
 							}
@@ -167,43 +165,42 @@ class DynamicAllocCPrinter extends CPrinter {
 								if (free.value.fold(true)[res, buffer|
 									res && (codeElt as SpecialCall).inputBuffers.contains(buffer)]) {
 									mergedFree.put(free.key, free.value)
-									
+
 									// Create the associated mutex semaphore
 									val sem = CodegenFactory.eINSTANCE.createSemaphore
-									sem.setName("sem_multipleAlloc_"+mergedFreeSemaphore.size)
+									sem.setName("sem_multipleAlloc_" + mergedFreeSemaphore.size)
 									sem.setCreator(block)
-									
+
 									// And the associated init function call
-									var initSem = CodegenFactory.eINSTANCE
-									.createFunctionCall();
+									var initSem = CodegenFactory.eINSTANCE.createFunctionCall();
 									initSem.addParameter(sem, PortDirection.NONE);
-						
+
 									var cstShared = CodegenFactory.eINSTANCE.createConstant();
 									cstShared.setType("int");
 									cstShared.setValue(0);
 									initSem.addParameter(cstShared, PortDirection.NONE);
 									cstShared.setCreator(block);
-						
+
 									var cstInitVal = CodegenFactory.eINSTANCE.createConstant();
 									cstInitVal.setType("int");
 									cstInitVal.setValue(1);
 									cstInitVal.setName("init_val");
 									initSem.addParameter(cstInitVal, PortDirection.NONE);
-									cstInitVal.setCreator(block);						
+									cstInitVal.setCreator(block);
 									initSem.setName("sem_init");
-									
+
 									// Register function to the current block
 									(block as CoreBlock).getInitBlock().getCodeElts().add(initSem);
-									
+
 									// Register the semaphore to all its users
 									free.key.users.forEach[sem.users.add(it)]
-									free.value.forEach[
+									free.value.forEach [
 										sem.users.add(it.creator)
-										it.users.forEach[
-											sem.users.add(it)	
+										it.users.forEach [
+											sem.users.add(it)
 										]
 									]
-									
+
 									// Backup the semaphore						
 									mergedFreeSemaphore.put(free.key, sem)
 								} else {
@@ -228,44 +225,45 @@ class DynamicAllocCPrinter extends CPrinter {
 			«buffer.type» *«buffer.name» = 0; // «buffer.comment» size:= «buffer.size»*«buffer.type»
 		«ENDIF»
 	'''
-	
+
 	override printBufferDeclaration(Buffer buffer) {
-		if(!mergedBuffers.containsKey(buffer) && !printedMerged.contains(buffer)){
-			if(mergedMalloc.containsKey(buffer)){
+		if (!mergedBuffers.containsKey(buffer) && !printedMerged.contains(buffer)) {
+			if (mergedMalloc.containsKey(buffer)) {
 				printedMerged.add(buffer)
 			}
 			'''
 				extern «buffer.type» *«buffer.name»; // «buffer.comment» size:= «buffer.size»*«buffer.type»
 			'''
-		} else if (mergedBuffers.containsKey(buffer)){
+		} else if (mergedBuffers.containsKey(buffer)) {
 			printBufferDeclaration(mergedBuffers.get(buffer))
 		} else {
 			''''''
 		}
 	}
-	
+
 	override printSubBufferDefinition(SubBuffer buffer) '''
 		«printBufferDefinition(buffer)»
 	'''
-	
+
 	override printSubBufferDeclaration(SubBuffer buffer) {
 		printBufferDeclaration(buffer)
 	}
-	
+
 	override printBuffer(Buffer buffer) {
 		if (!mergedBuffers.containsKey(buffer)) {
-		/* No need to declare pointers for merged buffers */
+
+			/* No need to declare pointers for merged buffers */
 			'''«buffer.name»'''
-		} else 
-		{ /* Print the merged buffer name */
+		} else { /* Print the merged buffer name */
 			'''«mergedBuffers.get(buffer).name»'''
 		}
 	}
-	
+
 	override printFunctionCall(FunctionCall functionCall) '''
-		«printCallWithMallocFree(functionCall,super.printFunctionCall(functionCall))»
+		«printCallWithMallocFree(functionCall, super.printFunctionCall(functionCall))»
 	'''
-		/**
+
+	/**
 	 * Add the necessary <code>malloc()</code> and <code>free()</code> calls to
 	 * a call passed as a parameter. Before the {@link Call}, a
 	 * <code>malloc()</code> for all the output {@link Buffer} of the
@@ -279,18 +277,16 @@ class DynamicAllocCPrinter extends CPrinter {
 	 * @return the {@link Call} printed with <code>malloc()</code> and
 	 */
 	def printCallWithMallocFree(Call call, CharSequence sequence) '''
-		«/*Allocate output buffers */
-		IF call.parameters.size > 0»
-			«FOR i : 0 .. call.parameters.size -1 »
+		«/*Allocate output buffers */IF call.parameters.size > 0»
+			«FOR i : 0 .. call.parameters.size - 1»
 				«IF call.parameterDirections.get(i) == PortDirection.OUTPUT»
 					«printMalloc(call.parameters.get(i) as Buffer)»
 				«ENDIF»
 			«ENDFOR»
 		«ENDIF»
 		«sequence»
-		«/*Free input buffers*/
-		IF call.parameters.size > 0»
-			«FOR i : 0 .. call.parameters.size -1 »
+		«/*Free input buffers*/IF call.parameters.size > 0»
+			«FOR i : 0 .. call.parameters.size - 1»
 				«IF call.parameterDirections.get(i) == PortDirection.INPUT»
 					«printFree(call.parameters.get(i) as Buffer)»
 				«ENDIF»
@@ -305,27 +301,33 @@ class DynamicAllocCPrinter extends CPrinter {
 	 * @return the printed code as a {@link CharSequence}.
  	 */
 	def printMalloc(Buffer buffer) {
-		if(!mergedBuffers.containsKey(buffer) && !mergedMalloc.containsKey(buffer) && !mergedFree.containsKey(buffer)) {
+		if (!mergedBuffers.containsKey(buffer) && !mergedMalloc.containsKey(buffer) && !mergedFree.containsKey(buffer)) {
+
 			// If the buffer is not involved in any merge operation
 			// print a regular malloc
 			'''«buffer.doSwitch» = («buffer.type»*) malloc(«buffer.size»*sizeof(«buffer.type»));'''
-		} else if(mergedMalloc.containsKey(buffer)) {
+		} else if (mergedMalloc.containsKey(buffer)) {
+
 			// If the buffer is the allocated buffer of a merge
-			'''«buffer.doSwitch» = («buffer.type»*) merged_malloc(«buffer.size»*sizeof(«buffer.type»),«mergedMalloc.get(buffer).size + 1»/*nbOfFree*/);'''
-		} else if(mergedFree.containsKey(buffer) || (mergedBuffers.containsKey(buffer) && mergedFree.containsKey(mergedBuffers.get(buffer)))){
+			'''«buffer.doSwitch» = («buffer.type»*) merged_malloc(«buffer.size»*sizeof(«buffer.type»),«mergedMalloc.
+				get(buffer).size + 1»/*nbOfFree*/);'''
+		} else if (mergedFree.containsKey(buffer) ||
+			(mergedBuffers.containsKey(buffer) && mergedFree.containsKey(mergedBuffers.get(buffer)))) {
+
 			// The buffer is a merged free. It will be allocated several times.
-			var mergedBuffer =  
-				if(mergedFree.containsKey(buffer)){
+			var mergedBuffer = if (mergedFree.containsKey(buffer)) {
 					buffer
 				} else {
 					mergedBuffers.get(buffer)
-				}			
-			'''«mergedBuffer.doSwitch» = («mergedBuffer.type»*) multiple_malloc(&«mergedBuffer.doSwitch», «mergedBuffer.size»*sizeof(«mergedBuffer.type»),«mergedFree.get(mergedBuffer).size + 1»/*nbOfFree*/, «mergedFreeSemaphore.get(mergedBuffer).doSwitch»);'''
+				}
+			'''«mergedBuffer.doSwitch» = («mergedBuffer.type»*) multiple_malloc(&«mergedBuffer.doSwitch», «mergedBuffer.
+				size»*sizeof(«mergedBuffer.type»),«mergedFree.get(mergedBuffer).size + 1»/*nbOfFree*/, «mergedFreeSemaphore.
+				get(mergedBuffer).doSwitch»);'''
 		}
-		// else, the buffer is a merged buffer that does not need to be allocated
+
+	// else, the buffer is a merged buffer that does not need to be allocated
 	}
-	
-	
+
 	/**
 	 * Methods used to print a Free.
 	 * @param buffer 
@@ -333,11 +335,13 @@ class DynamicAllocCPrinter extends CPrinter {
 	 * @return the printed code as a {@link CharSequence}.
  	 */
 	def printFree(Buffer buffer) {
-		if(!mergedBuffers.containsKey(buffer) && !mergedMalloc.containsKey(buffer) && !mergedFree.containsKey(buffer)) {
+		if (!mergedBuffers.containsKey(buffer) && !mergedMalloc.containsKey(buffer) && !mergedFree.containsKey(buffer)) {
+
 			// If the buffer is not involved in any merge operation
 			// print a regular free
 			'''free(«buffer.doSwitch»);'''
 		} else {
+
 			// The buffer takes part in a merged malloc operation
 			// print a merged free
 			'''«buffer.doSwitch» = («buffer.type»*) merged_free(«buffer.doSwitch», «buffer.size»*sizeof(«buffer.type»));'''
@@ -352,29 +356,29 @@ class DynamicAllocCPrinter extends CPrinter {
 		«ENDIF»
 		«IF fifoCall.operation == FifoOperation.PUSH || fifoCall.operation == FifoOperation.INIT»
 			«printMalloc(fifoCall.headBuffer)»
-		«ELSE /*POP */»
+		«ELSE/*POP */»
 			cache_inv(&«fifoCall.headBuffer.doSwitch»,1);
 		«ENDIF»
-		«printCallWithMallocFree(fifoCall,super.printFifoCall(fifoCall))»
+		«printCallWithMallocFree(fifoCall, super.printFifoCall(fifoCall))»
 		«IF fifoCall.operation == FifoOperation.POP»
 			«printFree(fifoCall.headBuffer)»
 		«ENDIF»
 	'''
-	
+
 	override printBroadcast(SpecialCall call) '''
-		«printCallWithMallocFree(call,super.printBroadcast(call))»
-	'''	
-	
-	override printRoundBuffer(SpecialCall call) ''' 
-		«printCallWithMallocFree(call,super.printRoundBuffer(call))»
-	'''	
-	
-	override printFork(SpecialCall call) '''
-		«printCallWithMallocFree(call,super.printFork(call))»
+		«printCallWithMallocFree(call, super.printBroadcast(call))»
 	'''
-	
+
+	override printRoundBuffer(SpecialCall call) ''' 
+		«printCallWithMallocFree(call, super.printRoundBuffer(call))»
+	'''
+
+	override printFork(SpecialCall call) '''
+		«printCallWithMallocFree(call, super.printFork(call))»
+	'''
+
 	override printJoin(SpecialCall call) '''
-		«printCallWithMallocFree(call,super.printJoin(call))»
+		«printCallWithMallocFree(call, super.printJoin(call))»
 	'''
 }
 
@@ -383,21 +387,22 @@ class DynamicAllocCPrinter extends CPrinter {
  * {@link Buffer buffers} that do not need to be allocated separately.
  */
 class MergeableBroadcastRoundBufferHelper extends CPrinter {
-	
-	new(){
+
+	new() {
 		super()
 		IGNORE_USELESS_MEMCPY = true
 	}
-	
+
 	/**
 	 * When calling {@link #doSwitch(org.eclipse.emf.ecore.EObject)} on a 
 	 * Broadcast or a RoundBuffer {@link SpecialCall}, this {@link Map}
 	 * is filled with lists of mergeable {@link Buffer buffers}.
 	 */
 	@Property
-	HashMap<Buffer,List<Buffer>> mergeableBuffers 
-	
+	HashMap<Buffer, List<Buffer>> mergeableBuffers
+
 	override printMemcpy(Buffer output, int outOffset, Buffer input, int inOffset, int size, String type) {
+
 		// Retrieve the container buffer of the input and output as well
 		// as their offset in this buffer
 		var totalOffsetOut = outOffset
@@ -406,91 +411,92 @@ class MergeableBroadcastRoundBufferHelper extends CPrinter {
 			totalOffsetOut = totalOffsetOut + (bOutput as SubBuffer).offset
 			bOutput = (bOutput as SubBuffer).container
 		}
-		
+
 		var totalOffsetIn = inOffset
 		var bInput = input
 		while (bInput instanceof SubBuffer) {
 			totalOffsetIn = totalOffsetIn + (bInput as SubBuffer).offset
 			bInput = (bInput as SubBuffer).container
 		}
-		
+
 		// If the Buffer and offsets are identical, add them to the map of mergeable buffers
-		if(IGNORE_USELESS_MEMCPY && bInput == bOutput && totalOffsetIn == totalOffsetOut){
-				var list = mergeableBuffers.get(input) ?: new ArrayList<Buffer>()
-				list.add(output)
-				mergeableBuffers.put(input,list)
-			
+		if (IGNORE_USELESS_MEMCPY && bInput == bOutput && totalOffsetIn == totalOffsetOut) {
+			var list = mergeableBuffers.get(input) ?: new ArrayList<Buffer>()
+			list.add(output)
+			mergeableBuffers.put(input, list)
+
 		} else {
-		}	
+		}
 		''''''
 	}
-	
+
 	override printRoundBuffer(SpecialCall call) {
-			// Get all inputs except the last
-			var inputs = call.inputBuffers.subList(0, call.inputBuffers.size - 1)
 
-			// Among the inputs, retrieve those that are mergeable (i.e. those
-			// that are allocated in the same Buffer, and at the same offset)
-			var List<Buffer> mergeableInputs
-			for (i : 0 .. inputs.size - 2) {
+		// Get all inputs except the last
+		var inputs = call.inputBuffers.subList(0, call.inputBuffers.size - 1)
 
-				var totalOffsetRef = 0
-				var ref = inputs.get(i)
-				while (ref instanceof SubBuffer) {
-					totalOffsetRef = totalOffsetRef + (ref as SubBuffer).offset
-					ref = (ref as SubBuffer).container
-				}
+		// Among the inputs, retrieve those that are mergeable (i.e. those
+		// that are allocated in the same Buffer, and at the same offset)
+		var List<Buffer> mergeableInputs
+		for (i : 0 .. inputs.size - 2) {
 
-				val offRef = totalOffsetRef
-				val r = ref
-				var mergeableBuffers = inputs.filter [
-					var totalOffset = 0
-					var b = it
-					while (b instanceof SubBuffer) {
-						totalOffset = totalOffset + (b as SubBuffer).offset
-						b = (b as SubBuffer).container
-					}
-					(totalOffset == offRef && b == r)
-				]
-
-				if (mergeableBuffers.size > 1) {
-					mergeableInputs = new ArrayList<Buffer>
-					mergeableInputs.addAll(mergeableBuffers)
-				}
+			var totalOffsetRef = 0
+			var ref = inputs.get(i)
+			while (ref instanceof SubBuffer) {
+				totalOffsetRef = totalOffsetRef + (ref as SubBuffer).offset
+				ref = (ref as SubBuffer).container
 			}
 
-			// If there are mergeable inputs
-			if (mergeableInputs != null) {
-				var mergedBuffer = mergeableInputs.head
-				mergeableInputs.remove(0)
-				mergeableBuffers.put(mergedBuffer, mergeableInputs)
+			val offRef = totalOffsetRef
+			val r = ref
+			var mergeableBuffers = inputs.filter [
+				var totalOffset = 0
+				var b = it
+				while (b instanceof SubBuffer) {
+					totalOffset = totalOffset + (b as SubBuffer).offset
+					b = (b as SubBuffer).container
+				}
+				(totalOffset == offRef && b == r)
+			]
+
+			if (mergeableBuffers.size > 1) {
+				mergeableInputs = new ArrayList<Buffer>
+				mergeableInputs.addAll(mergeableBuffers)
 			}
-
-			// Check if the last input is mergeable with the output
-			{
-				var totalOffsetOut = 0
-				var bOutput = call.outputBuffers.head
-				while (bOutput instanceof SubBuffer) {
-					totalOffsetOut = totalOffsetOut + (bOutput as SubBuffer).offset
-					bOutput = (bOutput as SubBuffer).container
-				}
-
-				var totalOffsetIn = 0
-				var bInput = call.inputBuffers.last
-				while (bInput instanceof SubBuffer) {
-					totalOffsetIn = totalOffsetIn + (bInput as SubBuffer).offset
-					bInput = (bInput as SubBuffer).container
-				}
-
-				if (totalOffsetIn == totalOffsetOut && bInput == bOutput) {
-
-					// The last input and the output are mergeable
-					var out = new ArrayList()
-					out.add(call.outputBuffers.head)
-					mergeableBuffers.put(call.inputBuffers.last, out)
-				}
-			}
-
-			''''''
 		}
+
+		// If there are mergeable inputs
+		if (mergeableInputs != null) {
+			var mergedBuffer = mergeableInputs.head
+			mergeableInputs.remove(0)
+			mergeableBuffers.put(mergedBuffer, mergeableInputs)
+		}
+
+		// Check if the last input is mergeable with the output
+		{
+			var totalOffsetOut = 0
+			var bOutput = call.outputBuffers.head
+			while (bOutput instanceof SubBuffer) {
+				totalOffsetOut = totalOffsetOut + (bOutput as SubBuffer).offset
+				bOutput = (bOutput as SubBuffer).container
+			}
+
+			var totalOffsetIn = 0
+			var bInput = call.inputBuffers.last
+			while (bInput instanceof SubBuffer) {
+				totalOffsetIn = totalOffsetIn + (bInput as SubBuffer).offset
+				bInput = (bInput as SubBuffer).container
+			}
+
+			if (totalOffsetIn == totalOffsetOut && bInput == bOutput) {
+
+				// The last input and the output are mergeable
+				var out = new ArrayList()
+				out.add(call.outputBuffers.head)
+				mergeableBuffers.put(call.inputBuffers.last, out)
+			}
+		}
+
+		''''''
 	}
+}
