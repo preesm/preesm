@@ -69,4 +69,9 @@ public class PiMMDiagramTypeProvider extends AbstractDiagramTypeProvider {
 		}
 		return toolBehaviorProviders;
 	}
+	
+	@Override
+	public boolean isAutoUpdateAtStartup() {
+		return true;
+	}
 }
