@@ -152,6 +152,7 @@ import org.ietr.preesm.experiment.ui.pimm.features.SetVisibleAllDependenciesFeat
 import org.ietr.preesm.experiment.ui.pimm.features.SetVisibleDependenciesFromParameterFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.UpdateAbstractVertexFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.UpdateActorFeature;
+import org.ietr.preesm.experiment.ui.pimm.features.UpdateDiagramFeature;
 import org.ietr.preesm.experiment.ui.pimm.features.UpdatePortFeature;
 
 /**
@@ -493,6 +494,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 	@Override
 	public IUpdateFeature getUpdateFeature(IUpdateContext context) {
 		PictogramElement pictogramElement = context.getPictogramElement();
+		if (pictogramElement instanceof Diagram) return new UpdateDiagramFeature(this);
 		if (pictogramElement instanceof ContainerShape) {
 			Object bo = getBusinessObjectForPictogramElement(pictogramElement);
 			if (bo instanceof ExecutableActor) {

@@ -44,7 +44,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.platform.IDiagramBehavior;
-import org.eclipse.graphiti.platform.IDiagramEditor;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;

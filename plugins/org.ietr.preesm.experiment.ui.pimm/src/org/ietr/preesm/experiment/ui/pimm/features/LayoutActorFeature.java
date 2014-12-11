@@ -151,47 +151,55 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 			int cfgInputsHeight = 0;
 			int cfgOutputsHeight = 0;
 			for (Anchor anchor : anchorShapes) {
-				// Retrieve the children of the invisible rectangle of the
-				// anchor
-				EList<GraphicsAlgorithm> anchorChildren = anchor
-						.getGraphicsAlgorithm().getGraphicsAlgorithmChildren();
+				// Invisible anchors added to actors in order to start
+				// connections without ports do not have any GraphicAlgorithm
+				// Only process anchors with a GraphicAlgorithm
+				if (anchor.getGraphicsAlgorithm() != null) {
+					// Retrieve the children of the invisible rectangle of the
+					// anchor
+					EList<GraphicsAlgorithm> anchorChildren = anchor
+							.getGraphicsAlgorithm()
+							.getGraphicsAlgorithmChildren();
 
-				// Scan the children of the invisible rectangle looking for
-				// the label
-				for (GraphicsAlgorithm child : anchorChildren) {
-					// The Label of the anchor should be the only child with
-					// type Text
-					if (child instanceof Text) {
-						// Retrieve the size of the text
-						String text = ((Text) child).getValue();
-						Font font = ((Text) child).getFont();
-						IDimension size = GraphitiUi.getUiLayoutService()
-								.calculateTextSize(text, font);
-						// Write the port font height in
-						// AbstractAddActorPortFeature. This is needed when
-						// opening a saved graph because in such case
-						// PORT_FONT_HEIGHT will remain equal to 0 until a port
-						// is added to the graph
-						AbstractAddActorPortFeature.PORT_FONT_HEIGHT = size
-								.getHeight();
-						EObject obj = (EObject) getBusinessObjectForPictogramElement(anchor);
+					// Scan the children of the invisible rectangle looking for
+					// the label
+					for (GraphicsAlgorithm child : anchorChildren) {
+						// The Label of the anchor should be the only child with
+						// type Text
+						if (child instanceof Text) {
+							// Retrieve the size of the text
+							String text = ((Text) child).getValue();
+							Font font = ((Text) child).getFont();
+							IDimension size = GraphitiUi.getUiLayoutService()
+									.calculateTextSize(text, font);
+							// Write the port font height in
+							// AbstractAddActorPortFeature. This is needed when
+							// opening a saved graph because in such case
+							// PORT_FONT_HEIGHT will remain equal to 0 until a
+							// port
+							// is added to the graph
+							AbstractAddActorPortFeature.PORT_FONT_HEIGHT = size
+									.getHeight();
+							EObject obj = (EObject) getBusinessObjectForPictogramElement(anchor);
 
-						switch (obj.eClass().getClassifierID()) {
-						case PiMMPackage.CONFIG_INPUT_PORT:
-							cfgInputsHeight += size.getHeight();
-							break;
-						case PiMMPackage.CONFIG_OUTPUT_PORT:
-							cfgOutputsHeight += size.getHeight();
-							break;
+							switch (obj.eClass().getClassifierID()) {
+							case PiMMPackage.CONFIG_INPUT_PORT:
+								cfgInputsHeight += size.getHeight();
+								break;
+							case PiMMPackage.CONFIG_OUTPUT_PORT:
+								cfgOutputsHeight += size.getHeight();
+								break;
 
-						case PiMMPackage.DATA_INPUT_PORT:
-							inputsHeight += size.getHeight();
-							break;
-						case PiMMPackage.DATA_OUTPUT_PORT:
-							outputsHeight += size.getHeight();
-							break;
+							case PiMMPackage.DATA_INPUT_PORT:
+								inputsHeight += size.getHeight();
+								break;
+							case PiMMPackage.DATA_OUTPUT_PORT:
+								outputsHeight += size.getHeight();
+								break;
+							}
 						}
 					}
+
 				}
 			}
 			anchorMaxHeight = Math.max(cfgInputsHeight, cfgOutputsHeight)
@@ -254,31 +262,38 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 			int labelGASpace = AbstractAddActorPortFeature.PORT_LABEL_GA_SPACE;
 
 			for (Anchor anchor : anchorShapes) {
-				// Retrieve the children of the invisible rectangle of the
-				// anchor
-				EList<GraphicsAlgorithm> anchorChildren = anchor
-						.getGraphicsAlgorithm().getGraphicsAlgorithmChildren();
+				// Invisible anchors added to actors in order to start
+				// connections without ports do not have any GraphicAlgorithm
+				// Only process anchors with a GraphicAlgorithm
+				if (anchor.getGraphicsAlgorithm() != null) {
+					// Retrieve the children of the invisible rectangle of the
+					// anchor
+					EList<GraphicsAlgorithm> anchorChildren = anchor
+							.getGraphicsAlgorithm()
+							.getGraphicsAlgorithmChildren();
 
-				// Scan the children of the invisible rectangle looking for
-				// the label
-				for (GraphicsAlgorithm child : anchorChildren) {
-					// The Label of the anchor should be the only child with
-					// type Text
-					if (child instanceof Text) {
-						// Retrieve the size of the text
-						String text = ((Text) child).getValue();
-						Font font = ((Text) child).getFont();
-						IDimension size = GraphitiUi.getUiLayoutService()
-								.calculateTextSize(text, font);
+					// Scan the children of the invisible rectangle looking for
+					// the label
+					for (GraphicsAlgorithm child : anchorChildren) {
+						// The Label of the anchor should be the only child with
+						// type Text
+						if (child instanceof Text) {
+							// Retrieve the size of the text
+							String text = ((Text) child).getValue();
+							Font font = ((Text) child).getFont();
+							IDimension size = GraphitiUi.getUiLayoutService()
+									.calculateTextSize(text, font);
 
-						if (((BoxRelativeAnchor) anchor).getRelativeWidth() == 0.0) {
-							// This is an input port
-							inputMaxWidth = Math.max(size.getWidth() + gaSize
-									+ labelGASpace, inputMaxWidth);
-						} else {
-							// This is an output port
-							outputMaxWidth = Math.max(size.getWidth() + gaSize
-									+ labelGASpace, outputMaxWidth);
+							if (((BoxRelativeAnchor) anchor).getRelativeWidth() == 0.0) {
+								// This is an input port
+								inputMaxWidth = Math.max(size.getWidth()
+										+ gaSize + labelGASpace, inputMaxWidth);
+							} else {
+								// This is an output port
+								outputMaxWidth = Math
+										.max(size.getWidth() + gaSize
+												+ labelGASpace, outputMaxWidth);
+							}
 						}
 					}
 				}
@@ -328,7 +343,8 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 			Actor actor = (Actor) bo;
 			layoutActor(actor, childrenShapes, containerGa);
 		} else if (bo instanceof ExecutableActor) {
-			layoutSpecialActor((ExecutableActor) bo, childrenShapes, containerGa);
+			layoutSpecialActor((ExecutableActor) bo, childrenShapes,
+					containerGa);
 		}
 
 		// If Anything changed, call the move feature to layout connections
@@ -347,8 +363,8 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 		return anythingChanged;
 	}
 
-	private void layoutSpecialActor(ExecutableActor ea, EList<Shape> childrenShapes,
-			GraphicsAlgorithm containerGa) {
+	private void layoutSpecialActor(ExecutableActor ea,
+			EList<Shape> childrenShapes, GraphicsAlgorithm containerGa) {
 		IColorConstant backgroundColor = IColorConstant.WHITE;
 		IColorConstant foregroundColor = IColorConstant.BLACK;
 		if (ea instanceof BroadcastActor) {
@@ -373,10 +389,8 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
 			}
 		}
 		RoundedRectangle roundedRectangle = (RoundedRectangle) containerGa;
-		roundedRectangle
-				.setBackground(manageColor(backgroundColor));
-		roundedRectangle
-				.setForeground(manageColor(foregroundColor));
+		roundedRectangle.setBackground(manageColor(backgroundColor));
+		roundedRectangle.setForeground(manageColor(foregroundColor));
 		roundedRectangle.setLineWidth(2);
 	}
 
