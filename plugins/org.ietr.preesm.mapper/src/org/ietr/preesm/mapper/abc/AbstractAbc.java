@@ -308,7 +308,14 @@ public abstract class AbstractAbc implements IAbc {
 
 			if (impprop.getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE) {
 				// Unmapping if necessary before mapping
-				unmap(dagvertex);
+				
+				// On a single actor if it is alone in the group
+				if(impprop.getNumberOfVertices() < 2){
+					unmap(dagvertex);
+				} else {
+					// On the whole group otherwise
+					unmap(dagprop.getVertices((MapperDAG)dagvertex.getBase()));
+				}
 			}
 
 			if (isMapable(impvertex, operator) || !updateRank
@@ -319,7 +326,16 @@ public abstract class AbstractAbc implements IAbc {
 				dagprop.setEffectiveOperator(operator);
 				impprop.setEffectiveOperator(operator);
 
-				fireNewMappedVertex(impvertex, updateRank);
+
+				// On a single actor if it is alone in the group
+				if(impprop.getNumberOfVertices() < 2){
+					fireNewMappedVertex(impvertex, updateRank);
+				} else {
+					// On the whole group otherwise
+					for(MapperDAGVertex groupv : impprop.getVertices(implementation)){
+						fireNewMappedVertex(groupv, true);
+					}
+				}
 			} else {
 				WorkflowLogger.getLogger().log(
 						Level.SEVERE,
@@ -567,6 +583,29 @@ public abstract class AbstractAbc implements IAbc {
 				DesignTools.NO_COMPONENT_INSTANCE);
 
 		impvertex.getMapping().setEffectiveOperator(
+				DesignTools.NO_COMPONENT_INSTANCE);
+	}
+
+	/**
+	 * Removes the vertex implementation of a group of vertices that share the same mapping. In silent mode, does not update
+	 * implementation timings
+	 */
+	public final void unmap(List<MapperDAGVertex> dagvertices) {
+
+		VertexMapping impMapping = null;
+		VertexMapping dagMapping = null;
+		for(MapperDAGVertex dagvertex : dagvertices){
+			MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
+	
+			fireNewUnmappedVertex(impvertex);
+			dagMapping = dagvertex.getMapping();
+			impMapping = impvertex.getMapping();
+		}
+
+		dagMapping.setEffectiveOperator(
+				DesignTools.NO_COMPONENT_INSTANCE);
+
+		impMapping.setEffectiveOperator(
 				DesignTools.NO_COMPONENT_INSTANCE);
 	}
 

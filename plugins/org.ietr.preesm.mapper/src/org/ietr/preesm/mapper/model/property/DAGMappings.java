@@ -66,14 +66,32 @@ public class DAGMappings {
 		mappings.remove(vertex.getName());
 	}
 
+	/**
+	 * Cloning the common mappings of vertices and ensuring that several vertices with same group share the same mapping object
+	 */
 	@Override
 	public Object clone() {
+		Map<VertexMapping,VertexMapping> relateOldAndNew = new HashMap<VertexMapping,VertexMapping>();
 		DAGMappings newMappings = new DAGMappings();
 		for(String s : mappings.keySet()){
-			newMappings.put(s,mappings.get(s).clone());
+			VertexMapping m = mappings.get(s);
+			if(relateOldAndNew.containsKey(m)){
+				newMappings.put(s,relateOldAndNew.get(m));
+			} else {
+				VertexMapping newM = mappings.get(s).clone();
+				relateOldAndNew.put(m, newM);
+				newMappings.put(s,newM);
+			}
 		}
 		return newMappings;
 	}
+
+
+	@Override
+	public String toString() {
+		return mappings.toString();
+	}
+	
 	
 	
 }

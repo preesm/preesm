@@ -131,7 +131,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 		 */
 		if (effectiveOp == DesignTools.NO_COMPONENT_INSTANCE) {
 			WorkflowLogger.getLogger().severe(
-					"implementation of " + vertex.getName() + " failed");
+					"implementation of " + vertex.getName() + " failed. No operator was assigned.");
 
 			vertex.getTiming().setCost(0);
 

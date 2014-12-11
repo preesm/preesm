@@ -69,7 +69,10 @@ abstract public class GroupProperty implements Cloneable {
 			}
 		}
 	}
-	
+
+	/**
+	 * Returns the number of actors sharing the same property
+	 */
 	public int getNumberOfVertices(){
 		return vertexIDs.size();
 	}
