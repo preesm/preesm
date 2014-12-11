@@ -117,6 +117,9 @@ public class UpdateDiagramFeature extends DefaultUpdateDiagramFeature {
 		if (CURRENT_EDITOR_VERSION == version)
 			return;
 
+		// The diagram is not up-to-date, some changes will appear
+		hasDoneChanges = true;
+
 		if (version == VERSION_1)
 			updateFromVersion1(diagram);
 
