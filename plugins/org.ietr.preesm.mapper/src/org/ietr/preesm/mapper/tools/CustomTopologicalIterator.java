@@ -69,7 +69,7 @@ public class CustomTopologicalIterator extends
 	public boolean hasNext() {
 		return (visitedVertices.size() < dag.vertexSet().size());
 	}
-
+	
 	@Override
 	public MapperDAGVertex next() {
 		if (directOrder) {

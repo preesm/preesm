@@ -36,6 +36,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.mapper.abc;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -68,6 +69,7 @@ import org.ietr.preesm.mapper.model.property.VertexMapping;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 import org.ietr.preesm.mapper.params.AbcParameters;
+import org.ietr.preesm.mapper.tools.CustomTopologicalIterator;
 import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
 
 /**
@@ -314,7 +316,18 @@ public abstract class AbstractAbc implements IAbc {
 					unmap(dagvertex);
 				} else {
 					// On the whole group otherwise
-					unmap(dagprop.getVertices((MapperDAG)dagvertex.getBase()));
+					List<MapperDAGVertex> vList = dagprop.getVertices((MapperDAG)dagvertex.getBase());
+					List<MapperDAGVertex> orderedVList = new ArrayList<MapperDAGVertex>();
+					// On the whole group otherwise
+					CustomTopologicalIterator iterator = new CustomTopologicalIterator(implementation,false);
+					while(iterator.hasNext()){
+						MapperDAGVertex v = iterator.next();
+						if(vList.contains(v)){
+							orderedVList.add(v);
+						}
+					}
+					
+					unmap(orderedVList);
 				}
 			}
 
@@ -331,8 +344,19 @@ public abstract class AbstractAbc implements IAbc {
 				if(impprop.getNumberOfVertices() < 2){
 					fireNewMappedVertex(impvertex, updateRank);
 				} else {
+					List<MapperDAGVertex> vList = impprop.getVertices((MapperDAG)impvertex.getBase());
+					List<MapperDAGVertex> orderedVList = new ArrayList<MapperDAGVertex>();
 					// On the whole group otherwise
-					for(MapperDAGVertex groupv : impprop.getVertices(implementation)){
+					CustomTopologicalIterator iterator = new CustomTopologicalIterator(implementation,true);
+					while(iterator.hasNext()){
+						MapperDAGVertex v = iterator.next();
+						if(vList.contains(v)){
+							orderedVList.add(v);
+						}
+					}
+					
+					//List<MapperDAGVertex> vList = taskScheduler.getDirectOrder(impprop.getVertices(implementation));
+					for(MapperDAGVertex groupv : orderedVList){
 						fireNewMappedVertex(groupv, true);
 					}
 				}
