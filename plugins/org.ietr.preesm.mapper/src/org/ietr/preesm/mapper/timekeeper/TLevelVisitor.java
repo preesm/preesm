@@ -3,11 +3,14 @@
  */
 package org.ietr.preesm.mapper.timekeeper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
+import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
@@ -16,7 +19,9 @@ import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.property.EdgeTiming;
 import org.ietr.preesm.mapper.model.property.VertexTiming;
+import org.ietr.preesm.mapper.tools.CustomTopologicalIterator;
 import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
+import org.jgrapht.alg.CycleDetector;
 
 /**
  * Visitor computing the TLevel of each actor firing
@@ -35,6 +40,19 @@ public class TLevelVisitor implements
 		super();
 		this.dirtyVertices = dirtyVertices;
 	}
+	
+	/**
+	 * Method to detect bugs
+	 */
+	private void detectCycle(MapperDAG dag){
+
+		//TODO: delete test code
+		CycleDetector cd = new CycleDetector<DAGVertex, DAGEdge>(dag);
+		if(cd.detectCycles()){
+			System.out.println("cycle detected");
+			System.out.println("cycle " + cd.findCycles());
+		}
+	}
 
 	/**
 	 * Visiting a graph in topological order to assign t-levels
@@ -45,31 +63,48 @@ public class TLevelVisitor implements
 		// starting from vertices without predecessors
 		TopologicalDAGIterator iterator = new TopologicalDAGIterator(dag);
 
-		// Recomputing all TLevels
-		if (dirtyVertices.isEmpty()) {
-			while (iterator.hasNext()) {
-				DAGVertex next = iterator.next();
-				try {
-					next.accept(this);
-				} catch (SDF4JException e) {
-					e.printStackTrace();
-				}
-			}
-		} else {
-			boolean dirty = false;
-			while (iterator.hasNext()) {
-				DAGVertex next = iterator.next();
-				if (!dirty) {
-					dirty |= dirtyVertices.contains(next);
-				}
-				if (dirty) {
+		detectCycle(dag);
+
+/*		//TODO: delete test code
+		List<MapperDAGVertex> orderedVList = new ArrayList<MapperDAGVertex>();
+		// On the whole group otherwise
+		CustomTopologicalIterator iterator2 = new CustomTopologicalIterator(dag,true);
+		while(iterator2.hasNext()){
+			MapperDAGVertex v = iterator2.next();
+			orderedVList.add(v);
+		}
+		System.out.println("list" + orderedVList);*/
+		
+		try {
+			// Recomputing all TLevels
+			if (dirtyVertices.isEmpty()) {
+				while (iterator.hasNext()) {
+					DAGVertex next = iterator.next();
 					try {
 						next.accept(this);
 					} catch (SDF4JException e) {
 						e.printStackTrace();
 					}
 				}
+			} else {				
+				boolean dirty = false;
+				while (iterator.hasNext()) {
+					DAGVertex next = iterator.next();
+					//TODO: Remove test
+					//System.out.println(next.getName());
+					dag.getPredecessorVerticesOf(next);
+					if (!dirty) {
+						dirty |= dirtyVertices.contains(next);
+					}
+					if (dirty) {
+						next.accept(this);
+					}
+				}
 			}
+		} catch (SDF4JException e) {
+			e.printStackTrace();
+		} catch (NoSuchElementException e) {
+			e.printStackTrace();
 		}
 	}
 
