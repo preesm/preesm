@@ -287,9 +287,112 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	/**
-	 * Maps the vertex on the operator. If updaterank is true, finds a new place
-	 * for the vertex in the schedule. Otherwise, use the vertex rank to know
-	 * where to schedule it.
+	 * Maps a single vertex vertex on the operator. If updaterank is true, finds
+	 * a new place for the vertex in the schedule. Otherwise, use the vertex
+	 * rank to know where to schedule it.
+	 */
+	private final void mapSingleVertex(MapperDAGVertex dagvertex,
+			ComponentInstance operator, boolean updateRank)
+			throws WorkflowException {
+
+		MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
+
+		if (impvertex.getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE) {
+			// Unmapping if necessary before mapping
+			unmap(dagvertex);
+		}
+
+		// Testing if the vertex or its group can be mapped on the
+		// target operator
+		if (isMapable(impvertex, operator, false) || !updateRank
+				|| impvertex instanceof TransferVertex) {
+
+			// Implementation property is set in both DAG and
+			// implementation
+			// Modifying effective operator of the vertex and all its
+			// mapping set!
+			dagvertex.setEffectiveOperator(operator);
+			impvertex.setEffectiveOperator(operator);
+
+			fireNewMappedVertex(impvertex, updateRank);
+
+		} else {
+			WorkflowLogger.getLogger().log(
+					Level.SEVERE,
+					impvertex.toString() + " can not be mapped (single) on "
+							+ operator.toString());
+		}
+	}
+
+	/**
+	 * Maps a vertex and its non-trivial group. If the boolean remapGroup is
+	 * true, the whole group is forced to be unmapped and remapped.
+	 */
+	private final void mapVertexWithGroup(MapperDAGVertex dagvertex,
+			ComponentInstance operator, boolean updateRank, boolean remapGroup)
+			throws WorkflowException {
+
+		MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
+		VertexMapping impprop = impvertex.getMapping();
+
+		// Generating a list of vertices to remap in topological order
+		List<MapperDAGVertex> vList = impprop.getVertices((MapperDAG) impvertex
+				.getBase());
+		List<MapperDAGVertex> orderedVList = new ArrayList<MapperDAGVertex>();
+		// On the whole group otherwise
+		CustomTopologicalIterator iterator = new CustomTopologicalIterator(
+				implementation, true);
+		while (iterator.hasNext()) {
+			MapperDAGVertex v = iterator.next();
+			if (vList.contains(v)) {
+				orderedVList.add(v);
+			}
+		}
+
+		// TODO: Remove, only for debug
+		System.out.println("unmap and rema " + orderedVList);
+		for (MapperDAGVertex dv : orderedVList) {
+
+			ComponentInstance previousOperator = dv.getEffectiveOperator();
+
+			// We remap systematically the main vertex and optionally its group
+			boolean isToUnmap = (previousOperator != DesignTools.NO_COMPONENT_INSTANCE)
+					&& (dv.equals(impvertex) || remapGroup);
+
+			boolean isToMap = (dv.equals(impvertex) || remapGroup) && (isMapable(dv, operator, false)
+					|| !updateRank || impvertex instanceof TransferVertex);
+
+			if (isToUnmap) {
+				// Unmapping if necessary before mapping
+				unmap(dv);
+			}
+
+			if (isToMap) {
+				// TODO: Remove, only for debug
+				System.out.println("map " + dv);
+
+				dagvertex.setEffectiveOperator(operator);
+				impvertex.setEffectiveOperator(operator);
+				
+				fireNewMappedVertex(dv, updateRank);
+			} else if(dv.equals(impvertex)) {
+				WorkflowLogger.getLogger().log(
+						Level.SEVERE,
+						impvertex.toString() + " can not be mapped (group) on "
+								+ operator.toString());
+
+				dagvertex
+						.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+				impvertex
+						.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+			}
+		}
+	}
+
+	/**
+	 * Maps the vertex aith a group on the operator. If updaterank is true,
+	 * finds a new place for the vertex in the schedule. Otherwise, use the
+	 * vertex rank to know where to schedule it.
 	 */
 	@Override
 	public final void map(MapperDAGVertex dagvertex,
@@ -298,99 +401,12 @@ public abstract class AbstractAbc implements IAbc {
 		MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
 		if (operator != DesignTools.NO_COMPONENT_INSTANCE) {
-			VertexMapping impprop = impvertex.getMapping();
-
-			ComponentInstance previousOperator = dagvertex
-					.getEffectiveOperator();
-
 			// On a single actor if it is alone in the group
-			if (impprop.getNumberOfVertices() < 2) {
-				if (impvertex.getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE) {
-					// Unmapping if necessary before mapping
-					unmap(dagvertex);
-				}
-
-				// Testing if the vertex or its group can be mapped on the
-				// target operator
-				if (isMapable(impvertex, operator, false) || !updateRank
-						|| impvertex instanceof TransferVertex) {
-
-					// Implementation property is set in both DAG and
-					// implementation
-					// Modifying effective operator of the vertex and all its
-					// mapping set!
-					dagvertex.setEffectiveOperator(operator);
-					impvertex.setEffectiveOperator(operator);
-
-					fireNewMappedVertex(impvertex, updateRank);
-
-				} else {
-					WorkflowLogger.getLogger().log(
-							Level.SEVERE,
-							impvertex.toString() + " can not be mapped on "
-									+ operator.toString());
-				}
-				// Case of a group with several actors
+			if (impvertex.getMapping().getNumberOfVertices() < 2) {
+				mapSingleVertex(dagvertex, operator, updateRank);
 			} else {
-				// Generating a list of vertices to remap in topological order
-				List<MapperDAGVertex> vList = impprop
-						.getVertices((MapperDAG) impvertex.getBase());
-				List<MapperDAGVertex> orderedVList = new ArrayList<MapperDAGVertex>();
-				// On the whole group otherwise
-				CustomTopologicalIterator iterator = new CustomTopologicalIterator(
-						implementation, true);
-				while (iterator.hasNext()) {
-					MapperDAGVertex v = iterator.next();
-					if (vList.contains(v)) {
-						orderedVList.add(v);
-						// Mappings of grouped actors are temporarily
-						// uncorrelated
-						v.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
-					}
-				}
-
-				boolean isToUnmap = (previousOperator != DesignTools.NO_COMPONENT_INSTANCE);
-
-				boolean isToMap = isMapable(impvertex, operator, false) || !updateRank
-						|| impvertex instanceof TransferVertex;
-
-				for (MapperDAGVertex dv : orderedVList) {
-					dv.setEffectiveOperator(previousOperator);
-				}
-
-				// TODO: Remove, only for debug
-				System.out.println("unmap and rema " + orderedVList);
-				for (MapperDAGVertex dv : orderedVList) {
-
-					if (isToUnmap) {
-						// Unmapping if necessary before mapping
-						fireNewUnmappedVertex(dv);
-					}
-
-					// Implementation property is set in both DAG and
-					// implementation
-					// Modifying effective operator of the vertex and all
-					// its
-					// mapping set!
-					dagvertex.setEffectiveOperator(operator);
-					impvertex.setEffectiveOperator(operator);
-
-					if (isToMap) {
-						// TODO: Remove, only for debug
-						System.out.println("map " + orderedVList);
-						fireNewMappedVertex(dv, updateRank);
-					} else {
-						WorkflowLogger.getLogger().log(
-								Level.SEVERE,
-								impvertex.toString() + " can not be mapped on "
-										+ operator.toString());
-
-						dagvertex
-								.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
-						impvertex
-								.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
-					}
-				}
+				// Case of a group with several actors
+				mapVertexWithGroup(dagvertex, operator, updateRank, remapGroup);
 			}
 
 		} else {
@@ -526,7 +542,8 @@ public abstract class AbstractAbc implements IAbc {
 
 			// Looks for an operator able to execute currentvertex (preferably
 			// the given operator)
-			ComponentInstance adequateOp = findOperator(currentvertex, operator, true);
+			ComponentInstance adequateOp = findOperator(currentvertex,
+					operator, true);
 
 			if (adequateOp != null) {
 				// Mapping in list order without remapping the group
@@ -547,15 +564,16 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	/**
-	 * Looks for operators able to execute currentvertex.
-	 * If the boolean protectGroupMapping is true and at least one vertex is mapped
-	 * in the current vertex group, this unique operator is returned. Otherwise,
-	 * the intersection of the available operators for the group is returned.
+	 * Looks for operators able to execute currentvertex. If the boolean
+	 * protectGroupMapping is true and at least one vertex is mapped in the
+	 * current vertex group, this unique operator is returned. Otherwise, the
+	 * intersection of the available operators for the group is returned.
 	 * 
 	 * @throws WorkflowException
 	 */
 	@Override
-	public List<ComponentInstance> getCandidateOperators(MapperDAGVertex vertex, boolean protectGroupMapping)
+	public List<ComponentInstance> getCandidateOperators(
+			MapperDAGVertex vertex, boolean protectGroupMapping)
 			throws WorkflowException {
 
 		vertex = translateInImplementationVertex(vertex);
@@ -564,10 +582,13 @@ public abstract class AbstractAbc implements IAbc {
 		VertexMapping vm = vertex.getMapping();
 
 		if (vm != null) {
-			initOperators = vm.getCandidateComponents(vertex, protectGroupMapping);
+			// Delegating the list construction to a mapping group
+			initOperators = vm.getCandidateComponents(vertex,
+					protectGroupMapping);
 		} else {
 			initOperators = vertex.getInit().getInitialOperatorList();
-			WorkflowLogger.getLogger().log(Level.WARNING, "Found no mapping group for vertex " + vertex);
+			WorkflowLogger.getLogger().log(Level.WARNING,
+					"Found no mapping group for vertex " + vertex);
 		}
 
 		if (initOperators.isEmpty()) {
@@ -583,21 +604,23 @@ public abstract class AbstractAbc implements IAbc {
 
 	/**
 	 * Looks for an operator able to execute currentvertex (preferably the given
-	 * operator or an operator with same type)
-	 * If the boolean protectGroupMapping is true and at least one vertex is mapped
-	 * in the current vertex group, this unique operator is compared to the prefered one.
-	 * Otherwise, the prefered operator is checked of belonging to available operators 
-	 * of the group.
+	 * operator or an operator with same type) If the boolean
+	 * protectGroupMapping is true and at least one vertex is mapped in the
+	 * current vertex group, this unique operator is compared to the prefered
+	 * one. Otherwise, the prefered operator is checked of belonging to
+	 * available operators of the group.
 	 * 
 	 * @throws WorkflowException
 	 */
 
 	@Override
 	public final ComponentInstance findOperator(MapperDAGVertex currentvertex,
-			ComponentInstance preferedOperator, boolean protectGroupMapping) throws WorkflowException {
+			ComponentInstance preferedOperator, boolean protectGroupMapping)
+			throws WorkflowException {
 
 		ComponentInstance adequateOp = null;
-		List<ComponentInstance> opList = getCandidateOperators(currentvertex, protectGroupMapping);
+		List<ComponentInstance> opList = getCandidateOperators(currentvertex,
+				protectGroupMapping);
 
 		if (DesignTools.contains(opList, preferedOperator)) {
 			adequateOp = preferedOperator;
@@ -634,9 +657,11 @@ public abstract class AbstractAbc implements IAbc {
 
 	@Override
 	public final boolean isMapable(MapperDAGVertex vertex,
-			ComponentInstance operator, boolean protectGroupMapping) throws WorkflowException {
+			ComponentInstance operator, boolean protectGroupMapping)
+			throws WorkflowException {
 
-		return DesignTools.contains(getCandidateOperators(vertex, protectGroupMapping), operator);
+		return DesignTools.contains(
+				getCandidateOperators(vertex, protectGroupMapping), operator);
 	}
 
 	/**

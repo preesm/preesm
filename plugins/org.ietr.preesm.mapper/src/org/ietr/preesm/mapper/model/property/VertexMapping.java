@@ -37,7 +37,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.mapper.model.property;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.ietr.dftools.architecture.slam.ComponentInstance;
@@ -87,20 +89,26 @@ public class VertexMapping extends GroupProperty {
 		}
 
 		MapperDAGVertex firstVertex = relatedVertices.get(0);
-		ComponentInstance op = firstVertex.getEffectiveComponent();
-		// If the group has an effective component (shared)
-		if (op != null) {
-			// Forcing the mapper to put together related vertices
-			operators.add(op);
-		} else {
-			// Adding to the list all candidate components of the first vertex
-			operators.addAll(firstVertex.getInit().getInitialOperatorList());
+		
+		// Adding to the list all candidate components of the first vertex
+		operators.addAll(firstVertex.getInit().getInitialOperatorList());
 
-			// computing intersection with other initial operator lists
-			for (int i = 1; i < relatedVertices.size(); i++) {
-				MapperDAGVertex locVertex = relatedVertices.get(i);
-				DesignTools.retainAll(operators, locVertex.getInit()
-						.getInitialOperatorList());
+		// computing intersection with other initial operator lists
+		for (MapperDAGVertex locVertex : relatedVertices) {
+			DesignTools.retainAll(operators, locVertex.getInit()
+					.getInitialOperatorList());
+			
+		}
+		
+		// If we consider group mapping and a vertex in the group is mapped, we keep its operator only
+		if(considerGroupMapping){
+			for (MapperDAGVertex locVertex : relatedVertices) {
+				ComponentInstance op = locVertex.getEffectiveComponent();
+				if(op != null){
+					Set<ComponentInstance> effectiveOp = new HashSet<ComponentInstance>();
+					effectiveOp.add(op);
+					operators.retainAll(effectiveOp);
+				}
 			}
 		}
 
