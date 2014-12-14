@@ -130,7 +130,7 @@ public class StatGenerator {
 				// (preferably
 				// the given operator)
 				ComponentInstance adequateOp = abc.findOperator(
-						(MapperDAGVertex) vertex, mainOp);
+						(MapperDAGVertex) vertex, mainOp, false);
 
 				work += ((MapperDAGVertex) vertex).getInit()
 						.getTime(adequateOp);

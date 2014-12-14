@@ -154,7 +154,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 			MapperDAGVertex vertex = iterator.next();
 			ComponentInstance operator = operators.get(vertex);
 
-			map(vertex, operator, false);
+			map(vertex, operator, false, false);
 		}
 	}
 

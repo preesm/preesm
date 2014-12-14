@@ -293,7 +293,7 @@ public abstract class AbstractAbc implements IAbc {
 	 */
 	@Override
 	public final void map(MapperDAGVertex dagvertex,
-			ComponentInstance operator, boolean updateRank)
+			ComponentInstance operator, boolean updateRank, boolean remapGroup)
 			throws WorkflowException {
 		MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
@@ -312,7 +312,7 @@ public abstract class AbstractAbc implements IAbc {
 
 				// Testing if the vertex or its group can be mapped on the
 				// target operator
-				if (isMapable(impvertex, operator) || !updateRank
+				if (isMapable(impvertex, operator, false) || !updateRank
 						|| impvertex instanceof TransferVertex) {
 
 					// Implementation property is set in both DAG and
@@ -351,7 +351,7 @@ public abstract class AbstractAbc implements IAbc {
 
 				boolean isToUnmap = (previousOperator != DesignTools.NO_COMPONENT_INSTANCE);
 
-				boolean isToMap = isMapable(impvertex, operator) || !updateRank
+				boolean isToMap = isMapable(impvertex, operator, false) || !updateRank
 						|| impvertex instanceof TransferVertex;
 
 				for (MapperDAGVertex dv : orderedVList) {
@@ -452,7 +452,7 @@ public abstract class AbstractAbc implements IAbc {
 
 			// Testing if the vertex or its group can be mapped on the target
 			// operator
-			if (isMapable(impvertex, operator) || !updateRank
+			if (isMapable(impvertex, operator, false) || !updateRank
 					|| impvertex instanceof TransferVertex) {
 
 				// Implementation property is set in both DAG and implementation
@@ -526,10 +526,11 @@ public abstract class AbstractAbc implements IAbc {
 
 			// Looks for an operator able to execute currentvertex (preferably
 			// the given operator)
-			ComponentInstance adequateOp = findOperator(currentvertex, operator);
+			ComponentInstance adequateOp = findOperator(currentvertex, operator, true);
 
 			if (adequateOp != null) {
-				map(currentvertex, adequateOp, true);
+				// Mapping in list order without remapping the group
+				map(currentvertex, adequateOp, true, false);
 			} else {
 				WorkflowLogger
 						.getLogger()
@@ -546,11 +547,15 @@ public abstract class AbstractAbc implements IAbc {
 	}
 
 	/**
-	 * Looks for operators able to execute currentvertex
+	 * Looks for operators able to execute currentvertex.
+	 * If the boolean protectGroupMapping is true and at least one vertex is mapped
+	 * in the current vertex group, this unique operator is returned. Otherwise,
+	 * the intersection of the available operators for the group is returned.
 	 * 
 	 * @throws WorkflowException
 	 */
-	public List<ComponentInstance> getCandidateOperators(MapperDAGVertex vertex)
+	@Override
+	public List<ComponentInstance> getCandidateOperators(MapperDAGVertex vertex, boolean protectGroupMapping)
 			throws WorkflowException {
 
 		vertex = translateInImplementationVertex(vertex);
@@ -559,9 +564,10 @@ public abstract class AbstractAbc implements IAbc {
 		VertexMapping vm = vertex.getMapping();
 
 		if (vm != null) {
-			initOperators = vm.getCandidateComponents(vertex);
+			initOperators = vm.getCandidateComponents(vertex, protectGroupMapping);
 		} else {
 			initOperators = vertex.getInit().getInitialOperatorList();
+			WorkflowLogger.getLogger().log(Level.WARNING, "Found no mapping group for vertex " + vertex);
 		}
 
 		if (initOperators.isEmpty()) {
@@ -578,14 +584,20 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Looks for an operator able to execute currentvertex (preferably the given
 	 * operator or an operator with same type)
+	 * If the boolean protectGroupMapping is true and at least one vertex is mapped
+	 * in the current vertex group, this unique operator is compared to the prefered one.
+	 * Otherwise, the prefered operator is checked of belonging to available operators 
+	 * of the group.
+	 * 
+	 * @throws WorkflowException
 	 */
 
 	@Override
 	public final ComponentInstance findOperator(MapperDAGVertex currentvertex,
-			ComponentInstance preferedOperator) throws WorkflowException {
+			ComponentInstance preferedOperator, boolean protectGroupMapping) throws WorkflowException {
 
 		ComponentInstance adequateOp = null;
-		List<ComponentInstance> opList = getCandidateOperators(currentvertex);
+		List<ComponentInstance> opList = getCandidateOperators(currentvertex, protectGroupMapping);
 
 		if (DesignTools.contains(opList, preferedOperator)) {
 			adequateOp = preferedOperator;
@@ -622,11 +634,9 @@ public abstract class AbstractAbc implements IAbc {
 
 	@Override
 	public final boolean isMapable(MapperDAGVertex vertex,
-			ComponentInstance operator) throws WorkflowException {
+			ComponentInstance operator, boolean protectGroupMapping) throws WorkflowException {
 
-		vertex = translateInImplementationVertex(vertex);
-
-		return DesignTools.contains(getCandidateOperators(vertex), operator);
+		return DesignTools.contains(getCandidateOperators(vertex, protectGroupMapping), operator);
 	}
 
 	/**

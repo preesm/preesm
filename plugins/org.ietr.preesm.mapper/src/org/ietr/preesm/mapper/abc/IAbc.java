@@ -137,11 +137,12 @@ public interface IAbc extends IMapperAbc {
 	 * maps the vertex on the operator the rank is the scheduling order. The
 	 * current rank is maintained in simulator. User can choose to update the
 	 * rank to the current one or to keep the rank set during last
-	 * implementation
+	 * implementation (changing or not the scheduling order).
+	 * User can also choose to remap the whole group or only the current vertex.
 	 * @throws WorkflowException 
 	 */
 	public void map(MapperDAGVertex vertex, ComponentInstance operator,
-			boolean updateRank) throws WorkflowException;
+			boolean updateRank, boolean remapGroup) throws WorkflowException;
 
 	public void unmap(MapperDAGVertex dagvertex);
 
@@ -156,7 +157,7 @@ public interface IAbc extends IMapperAbc {
 	 * given operator
 	 * @throws WorkflowException 
 	 */
-	public boolean isMapable(MapperDAGVertex vertex, ComponentInstance operator) throws WorkflowException;
+	public boolean isMapable(MapperDAGVertex vertex, ComponentInstance operator, boolean protectGroupMapping) throws WorkflowException;
 
 	/**
 	 * Extracting from the Abc information the data to display in the Gantt chart
@@ -215,17 +216,26 @@ public interface IAbc extends IMapperAbc {
 
 	/**
 	 * Looks for an operator able to execute currentvertex (preferably the given
-	 * operator)
-	 * @throws WorkflowException 
+	 * operator or an operator with same type)
+	 * If the boolean protectGroupMapping is true and at least one vertex is mapped
+	 * in the current vertex group, this unique operator is compared to the prefered one.
+	 * Otherwise, the prefered operator is checked of belonging to available operators 
+	 * of the group.
+	 * 
+	 * @throws WorkflowException
 	 */
 	public ComponentInstance findOperator(MapperDAGVertex currentvertex,
-			ComponentInstance preferedOperator) throws WorkflowException;
+			ComponentInstance preferedOperator, boolean protectGroupMapping) throws WorkflowException;
 
 	/**
-	 * Looks for operators able to execute currentvertex
-	 * @throws WorkflowException 
+	 * Looks for operators able to execute currentvertex.
+	 * If the boolean protectGroupMapping is true and at least one vertex is mapped
+	 * in the current vertex group, this unique operator is returned. Otherwise,
+	 * the intersection of the available operators for the group is returned.
+	 * 
+	 * @throws WorkflowException
 	 */
 	public List<ComponentInstance> getCandidateOperators(
-			MapperDAGVertex currentvertex) throws WorkflowException;
+			MapperDAGVertex currentvertex, boolean protectGroupMapping) throws WorkflowException;
 
 }

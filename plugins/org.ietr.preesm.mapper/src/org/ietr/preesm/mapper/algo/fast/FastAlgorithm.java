@@ -266,7 +266,7 @@ public class FastAlgorithm extends Observable {
 					nonBlockingIndex++;
 					currentvertex = (MapperDAGVertex) vertexiter.next();
 					operatorList = simulator
-							.getCandidateOperators(currentvertex);
+							.getCandidateOperators(currentvertex, false);
 				} while (operatorList.size() < 2 && nonBlockingIndex < 100);
 
 				SL = simulator.getFinalCost();
@@ -285,7 +285,7 @@ public class FastAlgorithm extends Observable {
 				}
 				
 				// step 9 
-				simulator.map(currentvertex, operatortest, false);
+				simulator.map(currentvertex, operatortest, false, true);
 
 				
 				if(!currentvertex.hasEffectiveComponent()){
@@ -299,7 +299,7 @@ public class FastAlgorithm extends Observable {
 				if (newSL >= SL) {
 					// TODO: check if ok to use mapWithGroup
 					// simulator.map(currentvertex, operatorprec, false);
-					simulator.map(currentvertex, operatorprec, false);
+					simulator.map(currentvertex, operatorprec, false, true);
 					simulator.updateFinalCosts();
 					localCounter++;
 				} else {
@@ -346,7 +346,7 @@ public class FastAlgorithm extends Observable {
 			do {
 				nonBlockingIndex++;
 				fcpvertex = (MapperDAGVertex) iter.next();
-				operatorList = simulator.getCandidateOperators(fcpvertex);
+				operatorList = simulator.getCandidateOperators(fcpvertex, false);
 			} while (operatorList.size() < 2 && nonBlockingIndex < 100);
 
 			// Choosing an operator different from the current vertex operator

@@ -67,9 +67,11 @@ public class VertexMapping extends GroupProperty {
 
 	/**
 	 * Returns a list of components, computed from initial and relative
-	 * constraints
+	 * constraints. If the boolean considerGroupMapping is true, one mapped
+	 * vertex in the group causes the return of its effective operator.
 	 */
-	public List<ComponentInstance> getCandidateComponents(MapperDAGVertex vertex) {
+	public List<ComponentInstance> getCandidateComponents(
+			MapperDAGVertex vertex, boolean considerGroupMapping) {
 
 		List<ComponentInstance> operators = new ArrayList<ComponentInstance>();
 		MapperDAG dag = (MapperDAG) vertex.getBase();
