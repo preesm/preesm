@@ -49,6 +49,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
+import org.ietr.dftools.architecture.slam.component.Operator;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
@@ -301,6 +302,8 @@ public abstract class AbstractAbc implements IAbc {
 			VertexMapping dagprop = dagvertex.getMapping();
 			VertexMapping impprop = impvertex.getMapping();
 
+			ComponentInstance previousOperator = dagprop.getEffectiveOperator();
+
 			// On a single actor if it is alone in the group
 			if (impprop.getNumberOfVertices() < 2) {
 				if (impprop.getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE) {
@@ -330,63 +333,64 @@ public abstract class AbstractAbc implements IAbc {
 				}
 				// Case of a group with several actors
 			} else {
-				if (impprop.getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE) {
-					// Unmapping if necessary before mapping
-
-					// On the whole group otherwise
-					List<MapperDAGVertex> vList = dagprop
-							.getVertices((MapperDAG) dagvertex.getBase());
-					List<MapperDAGVertex> orderedVList = new ArrayList<MapperDAGVertex>();
-
-					CustomTopologicalIterator iterator = new CustomTopologicalIterator(
-							implementation, false);
-					while (iterator.hasNext()) {
-						MapperDAGVertex v = iterator.next();
-						if (vList.contains(v)) {
-							orderedVList.add(v);
-						}
+				// Generating a list of vertices to remap in topological order
+				List<MapperDAGVertex> vList = impprop
+						.getVertices((MapperDAG) impvertex.getBase());
+				List<MapperDAGVertex> orderedVList = new ArrayList<MapperDAGVertex>();
+				// On the whole group otherwise
+				CustomTopologicalIterator iterator = new CustomTopologicalIterator(
+						implementation, true);
+				while (iterator.hasNext()) {
+					MapperDAGVertex v = iterator.next();
+					if (vList.contains(v)) {
+						orderedVList.add(v);
+						// Mappings of grouped actors are temporarily uncorrelated
+						v.usePrivateMapping(impprop.clone());
+						v.getMapping().setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
 					}
-
-					// TODO: Remove, only for debug
-					System.out.println("unmap " + orderedVList);
-					unmap(orderedVList);
 				}
 
-				// Testing if the vertex or its group can be mapped on the
-				// target operator
-				if (isMapable(impvertex, operator) || !updateRank
-						|| impvertex instanceof TransferVertex) {
+				boolean isToUnmap = (previousOperator != DesignTools.NO_COMPONENT_INSTANCE);
+				
+				boolean isToMap = isMapable(impvertex, operator) || !updateRank
+						|| impvertex instanceof TransferVertex;
+
+				for (MapperDAGVertex dv : orderedVList) {
+					dv.getMapping().setEffectiveOperator(previousOperator);
+				}
+				
+				// TODO: Remove, only for debug
+				System.out.println("unmap and rema " + orderedVList);
+				for (MapperDAGVertex dv : orderedVList) {
+
+					if (isToUnmap) {
+						// Unmapping if necessary before mapping
+						fireNewUnmappedVertex(dv);
+					}
 
 					// Implementation property is set in both DAG and
 					// implementation
-					// Modifying effective operator of the vertex and all its
+					// Modifying effective operator of the vertex and all
+					// its
 					// mapping set!
 					dagprop.setEffectiveOperator(operator);
 					impprop.setEffectiveOperator(operator);
+					
+					if (isToMap) {
+						// TODO: Remove, only for debug
+						System.out.println("map " + orderedVList);
+						fireNewMappedVertex(dv, updateRank);
+						// Back to the shared mapping
+						dv.useSharedMapping();
+					} else {
+						WorkflowLogger.getLogger().log(
+								Level.SEVERE,
+								impvertex.toString() + " can not be mapped on "
+										+ operator.toString());
 
-					List<MapperDAGVertex> vList = impprop
-							.getVertices((MapperDAG) impvertex.getBase());
-					List<MapperDAGVertex> orderedVList = new ArrayList<MapperDAGVertex>();
-					// On the whole group otherwise
-					CustomTopologicalIterator iterator = new CustomTopologicalIterator(
-							implementation, true);
-					while (iterator.hasNext()) {
-						MapperDAGVertex v = iterator.next();
-						if (vList.contains(v)) {
-							orderedVList.add(v);
-						}
+						dagprop.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+						impprop.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
 					}
-
-					// TODO: Remove, only for debug
-					System.out.println("map " + orderedVList);
-					for (MapperDAGVertex groupv : orderedVList) {
-						fireNewMappedVertex(groupv, true);
-					}
-				} else {
-					WorkflowLogger.getLogger().log(
-							Level.SEVERE,
-							impvertex.toString() + " can not be mapped on "
-									+ operator.toString());
 				}
 			}
 
@@ -750,7 +754,6 @@ public abstract class AbstractAbc implements IAbc {
 
 		if (impMapping != null && dagMapping != null) {
 			dagMapping.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
-
 			impMapping.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
 		}
 	}

@@ -60,6 +60,13 @@ import org.ietr.preesm.mapper.model.special.TransferVertex;
 public class MapperDAGVertex extends DAGVertex {
 
 	/**
+	 * Mapping can be either shared (stored in DAG) of private (stored here)
+	 */
+	private boolean usePrivateMapping = false;
+	
+	private VertexMapping privateMapping = null;
+	
+	/**
 	 * Properties set when converting sdf to dag
 	 */
 	private static final String INITIAL_PROPERTY = "INITIAL_PROPERTY";
@@ -300,7 +307,26 @@ public class MapperDAGVertex extends DAGVertex {
 	 * vertices.
 	 */
 	public VertexMapping getMapping() {
-		return ((MapperDAG) getBase()).getMappings().getMapping(getName());
+		if(usePrivateMapping){
+			return privateMapping;
+		} else {
+			return ((MapperDAG) getBase()).getMappings().getMapping(getName());
+		}
 	}
 
+	/**
+	 * Mapping properties can be made private temporarily.
+	 */
+	public void usePrivateMapping(VertexMapping mapping) {
+		privateMapping = mapping;
+		usePrivateMapping = true;
+	}
+
+
+	/**
+	 * Mapping properties can be made private temporarily.
+	 */
+	public void useSharedMapping() {
+		usePrivateMapping = false;
+	}
 }
