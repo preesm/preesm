@@ -150,7 +150,7 @@ public class TransferVertex extends MapperDAGVertex {
 	public String getPropertyStringValue(String propertyName) {
 		if (propertyName
 				.equals(ImplementationPropertyNames.SendReceive_OperatorDef)) {
-			return getMapping().getEffectiveOperator()
+			return getEffectiveOperator()
 					.getComponent().getVlnv().getName();
 		}
 		return super.getPropertyStringValue(propertyName);

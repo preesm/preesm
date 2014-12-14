@@ -134,12 +134,11 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 		for (DAGVertex v : dag.vertexSet()) {
 			MapperDAGVertex mdv = (MapperDAGVertex) v;
-			operators.put(mdv, mdv.getMapping()
+			operators.put(mdv, mdv
 					.getEffectiveOperator());
-			mdv.getMapping().setEffectiveComponent(
+			mdv.setEffectiveComponent(
 					DesignTools.NO_COMPONENT_INSTANCE);
 			implementation.getMapperDAGVertex(mdv.getName())
-					.getMapping()
 					.setEffectiveComponent(DesignTools.NO_COMPONENT_INSTANCE);
 			;
 		}
@@ -164,7 +163,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 			boolean updateRank) {
 
 		ComponentInstance effectiveOp = vertex
-				.getMapping().getEffectiveOperator();
+				.getEffectiveOperator();
 
 		if (effectiveOp == DesignTools.NO_COMPONENT_INSTANCE) {
 			WorkflowLogger.getLogger().severe(

@@ -221,10 +221,10 @@ public class StatGenerator {
 
 				if (!(me instanceof PrecedenceEdge)) {
 					ComponentInstance srcOp = scr
-							.getMapping()
+							
 							.getEffectiveComponent();
 					ComponentInstance tgtOp = tgt
-							.getMapping()
+							
 							.getEffectiveComponent();
 
 					if (srcOp.getInstanceName().equals(

@@ -208,7 +208,7 @@ public class AddTransferVertexTransaction extends Transaction {
 
 			implementation.addVertex(tVertex);
 			tVertex.getTiming().setCost(transferTime);
-			tVertex.getMapping().setEffectiveComponent(
+			tVertex.setEffectiveComponent(
 					effectiveComponent);
 
 			newInEdge = (MapperDAGEdge) implementation.addEdge(currentSource,

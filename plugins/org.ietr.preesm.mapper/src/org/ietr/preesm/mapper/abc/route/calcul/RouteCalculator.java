@@ -254,9 +254,9 @@ public class RouteCalculator {
 	public Route getRoute(MapperDAGEdge edge) {
 		MapperDAGVertex source = (MapperDAGVertex) edge.getSource();
 		MapperDAGVertex target = (MapperDAGVertex) edge.getTarget();
-		ComponentInstance sourceOp = source.getMapping()
+		ComponentInstance sourceOp = source
 				.getEffectiveOperator();
-		ComponentInstance targetOp = target.getMapping()
+		ComponentInstance targetOp = target
 				.getEffectiveOperator();
 		return getRoute(sourceOp, targetOp);
 	}

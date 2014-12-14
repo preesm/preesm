@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.ietr.dftools.architecture.slam.ComponentInstance;
-import org.ietr.dftools.architecture.slam.component.Operator;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.mapper.model.MapperDAG;
@@ -55,56 +54,15 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
  */
 public class VertexMapping extends GroupProperty {
 
-	/**
-	 * Operator to which the vertex has been affected by the mapping algorithm
-	 */
-	private ComponentInstance effectiveComponent;
-
 	public VertexMapping() {
 		super();
-		effectiveComponent = DesignTools.NO_COMPONENT_INSTANCE;
 	}
 
 	@Override
 	public VertexMapping clone() {
 
 		VertexMapping property = (VertexMapping) super.clone();
-		property.setEffectiveComponent(this.getEffectiveComponent());
 		return property;
-	}
-
-	/**
-	 * A computation vertex has an effective operator
-	 */
-	public ComponentInstance getEffectiveOperator() {
-		if (effectiveComponent != null
-				&& effectiveComponent.getComponent() instanceof Operator)
-			return effectiveComponent;
-		else
-			return DesignTools.NO_COMPONENT_INSTANCE;
-	}
-
-	public boolean hasEffectiveOperator() {
-		return getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE;
-	}
-
-	public void setEffectiveOperator(ComponentInstance effectiveOperator) {
-		this.effectiveComponent = effectiveOperator;
-	}
-
-	/**
-	 * Effective component is common to communication and computation vertices
-	 */
-	public ComponentInstance getEffectiveComponent() {
-		return effectiveComponent;
-	}
-
-	public boolean hasEffectiveComponent() {
-		return getEffectiveComponent() != DesignTools.NO_COMPONENT_INSTANCE;
-	}
-
-	public void setEffectiveComponent(ComponentInstance component) {
-		this.effectiveComponent = component;
 	}
 
 	/**
@@ -115,7 +73,7 @@ public class VertexMapping extends GroupProperty {
 
 		List<ComponentInstance> operators = new ArrayList<ComponentInstance>();
 		MapperDAG dag = (MapperDAG) vertex.getBase();
-		
+
 		// Gets all vertices corresponding to the relative constraint group
 		List<MapperDAGVertex> relatedVertices = getVertices(dag);
 
@@ -127,7 +85,7 @@ public class VertexMapping extends GroupProperty {
 		}
 
 		MapperDAGVertex firstVertex = relatedVertices.get(0);
-		ComponentInstance op = firstVertex.getMapping().getEffectiveComponent();
+		ComponentInstance op = firstVertex.getEffectiveComponent();
 		// If the group has an effective component (shared)
 		if (op != null) {
 			// Forcing the mapper to put together related vertices
@@ -135,7 +93,7 @@ public class VertexMapping extends GroupProperty {
 		} else {
 			// Adding to the list all candidate components of the first vertex
 			operators.addAll(firstVertex.getInit().getInitialOperatorList());
-			
+
 			// computing intersection with other initial operator lists
 			for (int i = 1; i < relatedVertices.size(); i++) {
 				MapperDAGVertex locVertex = relatedVertices.get(i);
@@ -155,7 +113,7 @@ public class VertexMapping extends GroupProperty {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return "<" + super.toString() + ", " + effectiveComponent + ">";
+		return "<" + super.toString() + ">";
 	}
 
 }

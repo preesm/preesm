@@ -45,7 +45,6 @@ import org.ietr.preesm.mapper.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.property.VertexMapping;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
 import org.ietr.preesm.mapper.params.AbcParameters;
 
@@ -74,8 +73,7 @@ public class LooselyTimedAbc extends LatencyAbc {
 
 		super.fireNewMappedVertex(vertex, updateRank);
 
-		ComponentInstance effectiveOp = vertex
-				.getMapping().getEffectiveOperator();
+		ComponentInstance effectiveOp = vertex.getEffectiveOperator();
 
 		if (effectiveOp != DesignTools.NO_COMPONENT_INSTANCE) {
 			// Adding precedence edges for an automatic graph timings
@@ -92,13 +90,11 @@ public class LooselyTimedAbc extends LatencyAbc {
 	@Override
 	protected final void setEdgeCost(MapperDAGEdge edge) {
 
-		VertexMapping sourceimp = ((MapperDAGVertex) edge
-				.getSource()).getMapping();
-		VertexMapping destimp = ((MapperDAGVertex) edge
-				.getTarget()).getMapping();
+		MapperDAGVertex source = ((MapperDAGVertex) edge.getSource());
+		MapperDAGVertex dest = ((MapperDAGVertex) edge.getTarget());
 
-		ComponentInstance sourceOp = sourceimp.getEffectiveOperator();
-		ComponentInstance destOp = destimp.getEffectiveOperator();
+		ComponentInstance sourceOp = source.getEffectiveOperator();
+		ComponentInstance destOp = dest.getEffectiveOperator();
 
 		if (sourceOp != DesignTools.NO_COMPONENT_INSTANCE
 				&& destOp != DesignTools.NO_COMPONENT_INSTANCE) {
@@ -107,8 +103,7 @@ public class LooselyTimedAbc extends LatencyAbc {
 			} else {
 
 				// The transfer evaluation takes into account the route
-				edge.getTiming().setCost(
-						comRouter.evaluateTransferCost(edge));
+				edge.getTiming().setCost(comRouter.evaluateTransferCost(edge));
 			}
 		}
 

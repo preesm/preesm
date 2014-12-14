@@ -36,8 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.mapper.abc.taskscheduling;
 
-import java.util.List;
-
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
 /**

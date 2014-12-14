@@ -88,7 +88,7 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 		super.fireNewMappedVertex(vertex, updateRank);
 
 		ComponentInstance effectiveOp = vertex
-				.getMapping().getEffectiveOperator();
+				.getEffectiveOperator();
 
 		if (effectiveOp != DesignTools.NO_COMPONENT_INSTANCE) {
 

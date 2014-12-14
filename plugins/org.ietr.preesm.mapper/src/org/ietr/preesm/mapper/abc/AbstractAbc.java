@@ -49,7 +49,6 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
-import org.ietr.dftools.architecture.slam.component.Operator;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
@@ -238,7 +237,7 @@ public abstract class AbstractAbc implements IAbc {
 	@Override
 	public final ComponentInstance getEffectiveComponent(MapperDAGVertex vertex) {
 		vertex = translateInImplementationVertex(vertex);
-		return vertex.getMapping().getEffectiveComponent();
+		return vertex.getEffectiveComponent();
 	}
 
 	/**
@@ -299,14 +298,14 @@ public abstract class AbstractAbc implements IAbc {
 		MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
 		if (operator != DesignTools.NO_COMPONENT_INSTANCE) {
-			VertexMapping dagprop = dagvertex.getMapping();
 			VertexMapping impprop = impvertex.getMapping();
 
-			ComponentInstance previousOperator = dagprop.getEffectiveOperator();
+			ComponentInstance previousOperator = dagvertex
+					.getEffectiveOperator();
 
 			// On a single actor if it is alone in the group
 			if (impprop.getNumberOfVertices() < 2) {
-				if (impprop.getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE) {
+				if (impvertex.getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE) {
 					// Unmapping if necessary before mapping
 					unmap(dagvertex);
 				}
@@ -320,8 +319,8 @@ public abstract class AbstractAbc implements IAbc {
 					// implementation
 					// Modifying effective operator of the vertex and all its
 					// mapping set!
-					dagprop.setEffectiveOperator(operator);
-					impprop.setEffectiveOperator(operator);
+					dagvertex.setEffectiveOperator(operator);
+					impvertex.setEffectiveOperator(operator);
 
 					fireNewMappedVertex(impvertex, updateRank);
 
@@ -344,21 +343,21 @@ public abstract class AbstractAbc implements IAbc {
 					MapperDAGVertex v = iterator.next();
 					if (vList.contains(v)) {
 						orderedVList.add(v);
-						// Mappings of grouped actors are temporarily uncorrelated
-						v.usePrivateMapping(impprop.clone());
-						v.getMapping().setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+						// Mappings of grouped actors are temporarily
+						// uncorrelated
+						v.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
 					}
 				}
 
 				boolean isToUnmap = (previousOperator != DesignTools.NO_COMPONENT_INSTANCE);
-				
+
 				boolean isToMap = isMapable(impvertex, operator) || !updateRank
 						|| impvertex instanceof TransferVertex;
 
 				for (MapperDAGVertex dv : orderedVList) {
-					dv.getMapping().setEffectiveOperator(previousOperator);
+					dv.setEffectiveOperator(previousOperator);
 				}
-				
+
 				// TODO: Remove, only for debug
 				System.out.println("unmap and rema " + orderedVList);
 				for (MapperDAGVertex dv : orderedVList) {
@@ -373,23 +372,23 @@ public abstract class AbstractAbc implements IAbc {
 					// Modifying effective operator of the vertex and all
 					// its
 					// mapping set!
-					dagprop.setEffectiveOperator(operator);
-					impprop.setEffectiveOperator(operator);
-					
+					dagvertex.setEffectiveOperator(operator);
+					impvertex.setEffectiveOperator(operator);
+
 					if (isToMap) {
 						// TODO: Remove, only for debug
 						System.out.println("map " + orderedVList);
 						fireNewMappedVertex(dv, updateRank);
-						// Back to the shared mapping
-						dv.useSharedMapping();
 					} else {
 						WorkflowLogger.getLogger().log(
 								Level.SEVERE,
 								impvertex.toString() + " can not be mapped on "
 										+ operator.toString());
 
-						dagprop.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
-						impprop.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+						dagvertex
+								.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+						impvertex
+								.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
 					}
 				}
 			}
@@ -423,7 +422,7 @@ public abstract class AbstractAbc implements IAbc {
 
 			VertexMapping impprop = impvertex.getMapping();
 
-			if (impprop.getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE) {
+			if (impvertex.getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE) {
 				// Unmapping if necessary before mapping
 
 				// On a single actor if it is alone in the group
@@ -459,8 +458,8 @@ public abstract class AbstractAbc implements IAbc {
 				// Implementation property is set in both DAG and implementation
 				// Modifying effective operator of the vertex and all its
 				// mapping set!
-				dagprop.setEffectiveOperator(operator);
-				impprop.setEffectiveOperator(operator);
+				dagvertex.setEffectiveOperator(operator);
+				impvertex.setEffectiveOperator(operator);
 
 				// On a single actor if it is alone in the group
 				if (impprop.getNumberOfVertices() < 2) {
@@ -710,7 +709,7 @@ public abstract class AbstractAbc implements IAbc {
 
 		while (iterator.hasNext()) {
 			MapperDAGVertex v = (MapperDAGVertex) iterator.next();
-			if (v.getMapping().hasEffectiveComponent()) {
+			if (v.hasEffectiveComponent()) {
 				unmap(v);
 			}
 		}
@@ -729,11 +728,9 @@ public abstract class AbstractAbc implements IAbc {
 
 		fireNewUnmappedVertex(impvertex);
 
-		dagvertex.getMapping().setEffectiveOperator(
-				DesignTools.NO_COMPONENT_INSTANCE);
+		dagvertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
 
-		impvertex.getMapping().setEffectiveOperator(
-				DesignTools.NO_COMPONENT_INSTANCE);
+		impvertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
 	}
 
 	/**
@@ -742,20 +739,18 @@ public abstract class AbstractAbc implements IAbc {
 	 */
 	public final void unmap(List<MapperDAGVertex> dagvertices) {
 
-		VertexMapping impMapping = null;
-		VertexMapping dagMapping = null;
+		MapperDAGVertex cImpVertex = null;
+		MapperDAGVertex cDagVertex = null;
 		for (MapperDAGVertex dagvertex : dagvertices) {
 			MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
 
 			fireNewUnmappedVertex(impvertex);
-			dagMapping = dagvertex.getMapping();
-			impMapping = impvertex.getMapping();
+			cDagVertex = dagvertex;
+			cImpVertex = impvertex;
 		}
 
-		if (impMapping != null && dagMapping != null) {
-			dagMapping.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
-			impMapping.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
-		}
+		cDagVertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+		cImpVertex.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
 	}
 
 	/**

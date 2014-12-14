@@ -288,7 +288,7 @@ public class FastAlgorithm extends Observable {
 				simulator.map(currentvertex, operatortest, false);
 
 				
-				if(currentvertex.getMapping().getEffectiveComponent() == null){
+				if(!currentvertex.hasEffectiveComponent()){
 					WorkflowLogger.getLogger().log(Level.SEVERE, "FAST algorithm has difficulties to find a valid component for vertex: " + currentvertex);
 				}
 				
@@ -352,7 +352,7 @@ public class FastAlgorithm extends Observable {
 			// Choosing an operator different from the current vertex operator
 			ComponentInstance currentOp = dagfinal
 					.getMapperDAGVertex(fcpvertex.getName())
-					.getMapping().getEffectiveOperator();
+					.getEffectiveOperator();
 
 			do {
 				int randomIndex = randomGenerator.nextInt(operatorList.size());

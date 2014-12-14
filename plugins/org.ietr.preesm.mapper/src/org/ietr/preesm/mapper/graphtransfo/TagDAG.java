@@ -233,7 +233,7 @@ public class TagDAG {
 
 				// Setting the operator on which vertex is executed
 				bean.setValue(ImplementationPropertyNames.Vertex_Operator,
-						currentVertex.getMapping()
+						currentVertex
 								.getEffectiveOperator());
 
 				// Setting the vertex type
@@ -246,7 +246,7 @@ public class TagDAG {
 
 				// Setting the task duration
 				ComponentInstance effectiveOperator = currentVertex
-						.getMapping()
+						
 						.getEffectiveOperator();
 				long singleRepeatTime = currentVertex.getInit()
 						.getTime(effectiveOperator);

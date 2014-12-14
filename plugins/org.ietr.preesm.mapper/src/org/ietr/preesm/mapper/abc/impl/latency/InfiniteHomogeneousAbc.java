@@ -121,7 +121,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 			boolean updateRank) {
 
 		ComponentInstance effectiveOp = vertex
-				.getMapping().getEffectiveOperator();
+				.getEffectiveOperator();
 
 		/*
 		 * mapping a vertex sets the cost of the current vertex and its edges
