@@ -107,7 +107,7 @@ public class MapperDAGVertex extends DAGVertex {
 		this.setName(name);
 		this.getPropertyBean().setValue(INITIAL_PROPERTY, new VertexInit());
 		this.getInit().setParentVertex(this);
-
+		effectiveComponent = DesignTools.NO_COMPONENT_INSTANCE;
 	}
 
 	@Override
@@ -142,6 +142,7 @@ public class MapperDAGVertex extends DAGVertex {
 		}
 
 		result.setInit(this.getInit().clone(result));
+		result.setEffectiveComponent(getEffectiveComponent());
 
 		for (String propertyKey : this.getPropertyBean().keys()) {
 			Object property = this.getPropertyBean().getValue(propertyKey);
