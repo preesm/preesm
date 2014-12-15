@@ -220,6 +220,9 @@ public class FastAlgorithm extends Observable {
 				* DesignTools.getNumberOfOperatorInstances(archi);
 		// the number of better solutions found in a neighborhood is limited
 		int margin = Math.max(maxStep / 10, 1);
+		
+		//TODO: Remove, debug only
+		System.out.println("start fast neighborhood search.");
 
 		// step 4/17
 		// Stopping after the given time in seconds is reached

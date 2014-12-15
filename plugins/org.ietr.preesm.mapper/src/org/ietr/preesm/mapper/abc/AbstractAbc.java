@@ -332,16 +332,15 @@ public abstract class AbstractAbc implements IAbc {
 			ComponentInstance operator, boolean updateRank, boolean remapGroup)
 			throws WorkflowException {
 
-		MapperDAGVertex impvertex = translateInImplementationVertex(dagvertex);
-		VertexMapping impprop = impvertex.getMapping();
+		VertexMapping dagprop = dagvertex.getMapping();
 
 		// Generating a list of vertices to remap in topological order
-		List<MapperDAGVertex> vList = impprop.getVertices((MapperDAG) impvertex
+		List<MapperDAGVertex> vList = dagprop.getVertices((MapperDAG) dagvertex
 				.getBase());
 		List<MapperDAGVertex> orderedVList = new ArrayList<MapperDAGVertex>();
 		// On the whole group otherwise
-		CustomTopologicalIterator iterator = new CustomTopologicalIterator(
-				implementation, true);
+		CustomTopologicalIterator iterator = new CustomTopologicalIterator(dag,
+				true);
 		while (iterator.hasNext()) {
 			MapperDAGVertex v = iterator.next();
 			if (vList.contains(v)) {
@@ -350,41 +349,44 @@ public abstract class AbstractAbc implements IAbc {
 		}
 
 		// TODO: Remove, only for debug
-		System.out.println("unmap and rema " + orderedVList);
+		System.out.println("unmap and remap " + orderedVList);
 		for (MapperDAGVertex dv : orderedVList) {
 
-			ComponentInstance previousOperator = dv.getEffectiveOperator();
+			MapperDAGVertex dvi = translateInImplementationVertex(dv);
+			ComponentInstance previousOperator = dvi.getEffectiveOperator();
 
-			// We remap systematically the main vertex and optionally its group
+			// We unmap systematically the main vertex (impvertex) if it has an
+			// effectiveComponent and optionally its group
 			boolean isToUnmap = (previousOperator != DesignTools.NO_COMPONENT_INSTANCE)
-					&& (dv.equals(impvertex) || remapGroup);
+					&& (dv.equals(dagvertex) || remapGroup);
 
-			boolean isToMap = (dv.equals(impvertex) || remapGroup) && (isMapable(dv, operator, false)
-					|| !updateRank || impvertex instanceof TransferVertex);
+			// We map transfer vertices, if rank is kept, and if mappable
+			boolean isToMap = (dv.equals(dagvertex) || remapGroup)
+					&& (isMapable(dvi, operator, false) || !updateRank || dv instanceof TransferVertex);
 
 			if (isToUnmap) {
 				// Unmapping if necessary before mapping
-				unmap(dv);
+				// TODO: Remove, debug only
+				System.out.println("unmap " + dvi);
+				unmap(dvi);
 			}
 
 			if (isToMap) {
 				// TODO: Remove, only for debug
-				System.out.println("map " + dv);
+				System.out.println("map " + dvi);
 
-				dagvertex.setEffectiveOperator(operator);
-				impvertex.setEffectiveOperator(operator);
-				
-				fireNewMappedVertex(dv, updateRank);
-			} else if(dv.equals(impvertex)) {
+				dv.setEffectiveOperator(operator);
+				dvi.setEffectiveOperator(operator);
+
+				fireNewMappedVertex(dvi, updateRank);
+			} else if (dv.equals(dagvertex)) {
 				WorkflowLogger.getLogger().log(
 						Level.SEVERE,
-						impvertex.toString() + " can not be mapped (group) on "
+						dagvertex.toString() + " can not be mapped (group) on "
 								+ operator.toString());
 
-				dagvertex
-						.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
-				impvertex
-						.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+				dv.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
+				dv.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
 			}
 		}
 	}
