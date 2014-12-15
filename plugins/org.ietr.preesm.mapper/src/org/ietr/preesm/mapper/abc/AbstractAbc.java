@@ -349,7 +349,8 @@ public abstract class AbstractAbc implements IAbc {
 		}
 
 		// TODO: Remove, only for debug
-		System.out.println("unmap and remap " + orderedVList);
+		System.out.println("unmap and remap " + orderedVList + " on " + operator);
+		System.out.println(" ");
 		for (MapperDAGVertex dv : orderedVList) {
 
 			MapperDAGVertex dvi = translateInImplementationVertex(dv);
@@ -369,17 +370,24 @@ public abstract class AbstractAbc implements IAbc {
 				// TODO: Remove, debug only
 				System.out.println("unmap " + dvi);
 				unmap(dvi);
+
+				// TODO: Remove, debug only
+				System.out.println("unmapped " + dvi);
 			}
 
 			if (isToMap) {
 				// TODO: Remove, only for debug
-				System.out.println("map " + dvi);
+				System.out.println("map " + dvi + " to " + operator);
 
 				dv.setEffectiveOperator(operator);
 				dvi.setEffectiveOperator(operator);
 
 				fireNewMappedVertex(dvi, updateRank);
-			} else if (dv.equals(dagvertex)) {
+
+				// TODO: Remove, only for debug
+				System.out.println("mapped " + dvi);
+				
+			} else if (dv.equals(dagvertex) || remapGroup) {
 				WorkflowLogger.getLogger().log(
 						Level.SEVERE,
 						dagvertex.toString() + " can not be mapped (group) on "
@@ -389,6 +397,9 @@ public abstract class AbstractAbc implements IAbc {
 				dv.setEffectiveOperator(DesignTools.NO_COMPONENT_INSTANCE);
 			}
 		}
+
+		// TODO: Remove, only for debug
+		System.out.println("unmapped and remapped " + orderedVList + " on " + operator);
 	}
 
 	/**
