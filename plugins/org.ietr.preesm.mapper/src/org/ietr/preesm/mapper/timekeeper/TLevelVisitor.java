@@ -40,11 +40,9 @@ public class TLevelVisitor implements
 	}
 
 	/**
-	 * Method to detect bugs
+	 * Method to detect bugs. Activate if there is some problem in the DAG (usually caused by cycles)
 	 */
 	private void detectCycle(MapperDAG dag) {
-
-		// TODO: delete test code
 		CycleDetector<DAGVertex, DAGEdge> cd = new CycleDetector<DAGVertex, DAGEdge>(dag);
 		if (cd.detectCycles()) {
 			System.out.println("cycle detected");
@@ -61,16 +59,8 @@ public class TLevelVisitor implements
 		// starting from vertices without predecessors
 		TopologicalDAGIterator iterator = new TopologicalDAGIterator(dag);
 
-		detectCycle(dag);
-
-		/*
-		 * //TODO: delete test code List<MapperDAGVertex> orderedVList = new
-		 * ArrayList<MapperDAGVertex>(); // On the whole group otherwise
-		 * CustomTopologicalIterator iterator2 = new
-		 * CustomTopologicalIterator(dag,true); while(iterator2.hasNext()){
-		 * MapperDAGVertex v = iterator2.next(); orderedVList.add(v); }
-		 * System.out.println("list" + orderedVList);
-		 */
+		// Activate to detect problems
+		// detectCycle(dag);
 
 		try {
 			// Recomputing all TLevels
@@ -87,8 +77,6 @@ public class TLevelVisitor implements
 				boolean dirty = false;
 				while (iterator.hasNext()) {
 					DAGVertex next = iterator.next();
-					// TODO: Remove test
-					// System.out.println(next.getName());
 					dag.getPredecessorVerticesOf(next);
 					if (!dirty) {
 						dirty |= dirtyVertices.contains(next);
