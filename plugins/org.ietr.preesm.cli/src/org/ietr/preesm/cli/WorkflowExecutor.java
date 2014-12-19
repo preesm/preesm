@@ -53,6 +53,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.ietr.dftools.workflow.WorkflowManager;
@@ -98,7 +99,7 @@ public class WorkflowExecutor implements IApplication {
 			}
 			String projectName = line.getArgs()[0];
 			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-			project = root.getProject(projectName);
+			project = root.getProject(new Path(projectName).lastSegment());
 
 			// Handle options
 			String workflowPath = line.getOptionValue('w');
