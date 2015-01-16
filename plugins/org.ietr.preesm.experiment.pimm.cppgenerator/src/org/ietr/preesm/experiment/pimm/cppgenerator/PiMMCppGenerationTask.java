@@ -52,7 +52,7 @@ import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.pimm.cppgenerator.visitor.CPPCodeGenerationLauncher;
+import org.ietr.preesm.experiment.pimm.cppgenerator.visitor.PiSDFCodeGenerator;
 
 public class PiMMCppGenerationTask extends AbstractTaskImplementation {
 
@@ -65,10 +65,10 @@ public class PiMMCppGenerationTask extends AbstractTaskImplementation {
 		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
 		PiGraph pg = (PiGraph) inputs.get(KEY_PI_GRAPH);
 
-		CPPCodeGenerationLauncher launcher = new CPPCodeGenerationLauncher(scenario);
+		PiSDFCodeGenerator launcher = new PiSDFCodeGenerator(scenario);
 
-		String finalResult = launcher.generateCPPCode(pg);
-		String addGraph = launcher.addGraph();
+		String cppCode = launcher.generateCppCode(pg);
+		String hCode = launcher.generateHeaderCode(pg);
 
 		// Get the root of the workspace
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -87,22 +87,22 @@ public class PiMMCppGenerationTask extends AbstractTaskImplementation {
 		parent.mkdirs();
 
 		// Create the files
-		String filePath = pg.getName() + ".h";
-		File file = new File(parent, filePath);
+		String piCppfilePath = "pi_" + pg.getName() + ".cpp";
+		File piCppFile = new File(parent, piCppfilePath);
 
-		String addGraphFilePath = "addGraph.h";
-		File addGraphFile = new File(parent, addGraphFilePath);
+		String hFilePath = pg.getName() + ".h";
+		File hFile = new File(parent, hFilePath);
 		
 		// Write the files
-		FileWriter out;
-		FileWriter addGraphOut;
+		FileWriter piCppWriter;
+		FileWriter hWriter;
 		try {
-			out = new FileWriter(file);
-			out.write(finalResult);
-			out.close();
-			addGraphOut = new FileWriter(addGraphFile);
-			addGraphOut.write(addGraph);
-			addGraphOut.close();
+			piCppWriter = new FileWriter(piCppFile);
+			piCppWriter.write(cppCode);
+			piCppWriter.close();
+			hWriter = new FileWriter(hFile);
+			hWriter.write(hCode);
+			hWriter.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
