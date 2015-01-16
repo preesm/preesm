@@ -34,8 +34,6 @@ public class MultiMemoryAllocator extends AbstractMemoryAllocatorTask {
 	
 			createAllocators(memEx);
 	
-			mergeBroadcast(memEx);
-	
 			// Heat up the neighborsBackup
 			if (verbose) {
 				logger.log(Level.INFO, "Heat up MemEx");
@@ -49,8 +47,6 @@ public class MultiMemoryAllocator extends AbstractMemoryAllocatorTask {
 			for (MemoryAllocator allocator : allocators) {
 				this.allocateWith(allocator, csv);
 			}
-	
-			unmergeBroadcast(memEx);
 			
 			System.out.println(csv);
 		}
@@ -67,7 +63,6 @@ public class MultiMemoryAllocator extends AbstractMemoryAllocatorTask {
 		parameters.put(PARAM_ALLOCATORS, VALUE_ALLOCATORS_DEFAULT);
 		parameters.put(PARAM_XFIT_ORDER, VALUE_XFIT_ORDER_DEFAULT);
 		parameters.put(PARAM_NB_SHUFFLE, VALUE_NB_SHUFFLE_DEFAULT);
-		parameters.put(PARAM_MERGE_BROADCAST, VALUE_TRUE_FALSE_DEFAULT);
 		parameters.put(PARAM_ALIGNMENT, VALUE_ALIGNEMENT_DEFAULT);
 		return parameters;
 	}

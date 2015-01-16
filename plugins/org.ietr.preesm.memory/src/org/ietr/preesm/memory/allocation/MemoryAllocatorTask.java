@@ -61,8 +61,6 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 
 		createAllocators(memEx);
 
-		mergeBroadcast(memEx);
-
 		// Heat up the neighborsBackup
 		if (verbose) {
 			logger.log(Level.INFO, "Heat up MemEx");
@@ -77,8 +75,6 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 			this.allocateWith(allocator, csv);
 		}
 
-		unmergeBroadcast(memEx);
-
 		System.out.println(csv);
 		Map<String, Object> output = new HashMap<String, Object>();
 		output.put("MemEx", memEx);
@@ -92,7 +88,6 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 		parameters.put(PARAM_ALLOCATORS, VALUE_ALLOCATORS_DEFAULT);
 		parameters.put(PARAM_XFIT_ORDER, VALUE_XFIT_ORDER_DEFAULT);
 		parameters.put(PARAM_NB_SHUFFLE, VALUE_NB_SHUFFLE_DEFAULT);
-		parameters.put(PARAM_MERGE_BROADCAST, VALUE_TRUE_FALSE_DEFAULT);
 		parameters.put(PARAM_ALIGNMENT, VALUE_ALIGNEMENT_DEFAULT);
 		return parameters;
 	}

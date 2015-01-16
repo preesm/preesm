@@ -4,8 +4,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.memory.allocation.MemoryAllocatorTask;
-import org.ietr.preesm.memory.exclusiongraph.MemExBroadcastMerger;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.jgrapht.graph.DefaultEdge;
@@ -23,47 +21,13 @@ public class MemoryBoundsEstimatorEngine {
 	// Rem: Logger is used to display messages in the console
 	private Logger logger = WorkflowLogger.getLogger();
 	private MemoryExclusionGraph memEx;
-	private String valueVerbose;
 	private boolean verbose;
 	private AbstractMaximumWeightCliqueSolver<MemoryExclusionVertex, DefaultEdge> solver;
-	private MemExBroadcastMerger merger;
 
 	public MemoryBoundsEstimatorEngine(MemoryExclusionGraph memEx,
 			String valueVerbose) {
 		this.memEx = memEx;
-		this.valueVerbose = valueVerbose;
 		this.verbose = valueVerbose.contains(VALUE_VERBOSE_TRUE);
-	}
-
-	public void mergeBroadcasts() {
-		// Check if the broadcast were merged in the past
-		String merged = memEx
-				.getPropertyStringValue(MemoryAllocatorTask.BROADCAST_MERGED_PROPERTY);
-		if (merged != null && merged.equalsIgnoreCase("true")
-				&& !valueVerbose.contains("NO_MERGE")) {
-			int nbBefore = memEx.vertexSet().size();
-			if (verbose) {
-				logger.log(Level.INFO,
-						"Merging broadcast edges (when possible).");
-			}
-			merger = new MemExBroadcastMerger(memEx);
-			int nbBroadcast = merger.merge();
-
-			if (verbose) {
-				logger.log(Level.INFO, "Merging broadcast: " + nbBroadcast
-						+ " were mergeable for a total of "
-						+ (nbBefore - memEx.vertexSet().size())
-						+ " memory objects.");
-			}
-		}
-
-		double density = memEx.edgeSet().size()
-				/ (memEx.vertexSet().size() * (memEx.vertexSet().size() - 1) / 2.0);
-		if (verbose)
-			logger.log(Level.INFO, "Memory exclusion graph with "
-					+ memEx.vertexSet().size() + " vertices and density = "
-					+ density);
-
 	}
 
 	public void selectSolver(String valueSolver) {
@@ -117,12 +81,4 @@ public class MemoryBoundsEstimatorEngine {
 	public int getMaxBound() {
 		return solver.sumWeight(memEx.vertexSet());
 	}
-
-	public void unmerge() {
-		// unmerge
-		if (merger != null) {
-			merger.unmerge();
-		}
-	}
-
 }

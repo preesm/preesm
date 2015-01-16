@@ -40,7 +40,6 @@ public class MultiMemoryBoundsEstimator extends AbstractMemoryBoundsEstimator {
 		for (MemoryExclusionGraph memEx : dagsAndMemExs.values()) {
 			MemoryBoundsEstimatorEngine engine = new MemoryBoundsEstimatorEngine(
 					memEx, valueVerbose);
-			engine.mergeBroadcasts();
 			engine.selectSolver(valueSolver);
 			engine.solve();
 
@@ -51,8 +50,6 @@ public class MultiMemoryBoundsEstimator extends AbstractMemoryBoundsEstimator {
 			logger.log(Level.INFO, "Bound_Max = " + maxBound + " Bound_Min = "
 					+ minBound);
 			System.out.println(minBound + ";");
-
-			engine.unmerge();
 			
 			minBounds.add(minBound);
 			maxBounds.add(maxBound);

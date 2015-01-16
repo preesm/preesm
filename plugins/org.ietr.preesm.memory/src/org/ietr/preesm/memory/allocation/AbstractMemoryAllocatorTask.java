@@ -11,7 +11,6 @@ import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.memory.allocation.OrderedAllocator.Order;
 import org.ietr.preesm.memory.allocation.OrderedAllocator.Policy;
-import org.ietr.preesm.memory.exclusiongraph.MemExBroadcastMerger;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
 public abstract class AbstractMemoryAllocatorTask extends
@@ -40,9 +39,6 @@ public abstract class AbstractMemoryAllocatorTask extends
 	static final public String PARAM_NB_SHUFFLE = "Nb of Shuffling Tested";
 	static final public String VALUE_NB_SHUFFLE_DEFAULT = "10";
 
-	static final public String PARAM_MERGE_BROADCAST = "Merge broadcasts";
-	static final public String BROADCAST_MERGED_PROPERTY = "broadcast_merged";
-
 	static final public String PARAM_ALIGNMENT = "Data alignment";
 	static final public String VALUE_ALIGNEMENT_NONE = "None";
 	static final public String VALUE_ALIGNEMENT_DATA = "Data";
@@ -57,15 +53,12 @@ public abstract class AbstractMemoryAllocatorTask extends
 	protected String valueAllocators;
 	protected String valueXFitOrder;
 	protected String valueNbShuffle;
-	protected String valueMergeBroadcast;
 	protected boolean verbose;
-	protected boolean mergeBroadcast;
 	protected String valueAlignment;
 	protected int alignment;
 	protected int nbShuffle;
 	protected List<Order> ordering;
 	protected List<MemoryAllocator> allocators;
-	protected MemExBroadcastMerger broadcastMerger;
 
 	protected void init(Map<String, String> parameters) {
 		// Retrieve parameters from workflow
@@ -73,10 +66,8 @@ public abstract class AbstractMemoryAllocatorTask extends
 		valueAllocators = parameters.get(PARAM_ALLOCATORS);
 		valueXFitOrder = parameters.get(PARAM_XFIT_ORDER);
 		valueNbShuffle = parameters.get(PARAM_NB_SHUFFLE);
-		valueMergeBroadcast = parameters.get(PARAM_MERGE_BROADCAST);
 
 		verbose = valueVerbose.equals(VALUE_TRUE);
-		mergeBroadcast = valueMergeBroadcast.equals(VALUE_TRUE);
 
 		// Retrieve the alignment param
 		valueAlignment = parameters.get(PARAM_ALIGNMENT);
@@ -153,36 +144,6 @@ public abstract class AbstractMemoryAllocatorTask extends
 			MemoryAllocator alloc = new DeGreefAllocator(memEx);
 			alloc.setAlignment(alignment);
 			allocators.add(alloc);
-		}
-	}
-
-	protected void mergeBroadcast(MemoryExclusionGraph memEx) {
-		// Merge broadcast (if required)
-		if (mergeBroadcast) {
-			int nbBefore = memEx.vertexSet().size();
-			if (verbose) {
-				logger.log(Level.INFO,
-						"Merging broadcast edges (when possible).");
-			}
-			broadcastMerger = new MemExBroadcastMerger(memEx);
-			int nbBroadcast = broadcastMerger.merge();
-
-			if (verbose) {
-				logger.log(Level.INFO, "Merging broadcast: " + nbBroadcast
-						+ " were mergeable for a total of "
-						+ (nbBefore - memEx.vertexSet().size())
-						+ " memory objects.");
-			}
-		}
-	}
-
-	protected void unmergeBroadcast(MemoryExclusionGraph memEx) {
-		if (mergeBroadcast) {
-			if (verbose) {
-				logger.log(Level.INFO, "Unmerge broadcast edges.");
-			}
-			broadcastMerger.unmerge();
-			memEx.setPropertyValue(BROADCAST_MERGED_PROPERTY, true);
 		}
 	}
 
