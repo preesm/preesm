@@ -72,7 +72,6 @@ public class MemoryBoundsEstimator extends AbstractMemoryBoundsEstimator {
 		MemoryExclusionGraph memEx = (MemoryExclusionGraph) inputs.get("MemEx");
 		
 		MemoryBoundsEstimatorEngine engine = new MemoryBoundsEstimatorEngine(memEx, valueVerbose);
-		engine.mergeBroadcasts();
 		engine.selectSolver(valueSolver);
 		engine.solve();
 		
@@ -84,7 +83,6 @@ public class MemoryBoundsEstimator extends AbstractMemoryBoundsEstimator {
 				+ minBound);
 		System.out.println(minBound+";");
 		
-		engine.unmerge();
 
 		// Generate output
 		Map<String, Object> output = new HashMap<String, Object>();

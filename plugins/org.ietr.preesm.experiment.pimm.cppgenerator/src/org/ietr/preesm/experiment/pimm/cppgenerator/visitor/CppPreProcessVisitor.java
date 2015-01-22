@@ -40,6 +40,7 @@ package org.ietr.preesm.experiment.pimm.cppgenerator.visitor;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
@@ -59,6 +60,8 @@ import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
+import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
+import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
@@ -72,45 +75,36 @@ import org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl;
 import org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl;
 import org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
-import org.ietr.preesm.experiment.pimm.cppgenerator.utils.CPPNameGenerator;
 
-public class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor {
-
-	CPPNameGenerator nameGen = new CPPNameGenerator();
-
+public class CppPreProcessVisitor extends PiMMVisitor {
 	private AbstractActor currentAbstractActor = null;
+	private String currentAbstractVertexName = "";
+
+	private Map<Port, Integer> portMap = new HashMap<Port, Integer>();
+	private Map<ISetter, String> setterMap = new HashMap<ISetter, String>();
+	private Map<FunctionPrototype, Integer> functionMap;
+	// Map from Actor names to pairs of CoreType numbers and Timing expressions
+	private Map<String, AbstractActor> actorNames = new HashMap<String, AbstractActor>();
+
+	private Map<AbstractActor, Integer> dataInPortIndices = new HashMap<AbstractActor, Integer>();
+	private Map<AbstractActor, Integer> dataOutPortIndices = new HashMap<AbstractActor, Integer>();
+	private Map<AbstractActor, Integer> cfgInPortIndices = new HashMap<AbstractActor, Integer>();
+	private Map<AbstractActor, Integer> cfgOutPortIndices = new HashMap<AbstractActor, Integer>();
+	
 	// Variables containing the name of the currently visited AbstractActor for
 	// PortDescriptions
-	private String currentAbstractVertexName = "";
 	// Map linking data ports to their corresponding description
-	private Map<Port, DataPortDescription> dataPortMap = new HashMap<Port, DataPortDescription>();
-
-	private Map<AbstractActor, Integer> inPortIndices = new HashMap<AbstractActor, Integer>();
-	private Map<AbstractActor, Integer> outPortIndices = new HashMap<AbstractActor, Integer>();
 	
-	public Map<Port, DataPortDescription> getDataPortMap() {
-		return dataPortMap;
+	public Map<Port, Integer> getPortMap() {
+		return portMap;
 	}
 
-	// Map linking configuration input ports to the name of their node
-	private Map<ConfigInputPort, String> cfgInPortMap = new HashMap<ConfigInputPort, String>();
-
-	// Map linking ISetters (Parameter and ConfigOutputPort) to the name of
-	// their node or their name
-	private Map<ISetter, String> setterMap = new HashMap<ISetter, String>();
-
-	// Map linking Fifos to their C++ names
-	private Map<Fifo, Integer> fifoMap = new HashMap<Fifo, Integer>();
-
-	public Map<Fifo, Integer> getFifoMap() {
-		return fifoMap;
+	public Map<String, AbstractActor> getActorNames() {
+		return actorNames;
 	}
-
-	// Map linking dependencies to their corresponding description
-	private Map<Dependency, DependencyDescription> dependencyMap = new HashMap<Dependency, DependencyDescription>();
-
-	public Map<Dependency, DependencyDescription> getDependencyMap() {
-		return dependencyMap;
+	
+	public Map<FunctionPrototype, Integer> getFunctionMap() {
+		return functionMap;
 	}
 
 	@Override
@@ -122,9 +116,6 @@ public class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor {
 		for (Parameter p : pg.getParameters()) {
 			p.accept(this);
 		}
-		for (Dependency d : pg.getDependencies()) {
-			d.accept(this);
-		}
 	}
 
 	@Override
@@ -132,9 +123,12 @@ public class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor {
 		// Fix currentAbstractActor
 		currentAbstractActor = aa;
 		// Fix currentAbstractVertexName
-		currentAbstractVertexName = nameGen.getVertexName(aa);
-		inPortIndices.put(aa, 0);
-		outPortIndices.put(aa, 0);
+		currentAbstractVertexName = "vx" + aa.getName();
+		dataInPortIndices.put(aa, 0);
+		dataOutPortIndices.put(aa, 0);
+		cfgInPortIndices.put(aa, 0);
+		cfgOutPortIndices.put(aa, 0);
+						
 		// Visit configuration input ports to fill cfgInPortMap
 		visitAbstractVertex(aa);
 		// Visit data ports to fill the dataPortMap
@@ -159,20 +153,35 @@ public class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor {
 	}
 
 	@Override
-	public void visitActor(Actor a) {
+	public void visitActor(Actor a) {		
+		// Register associated function
+		if(!a.isHierarchical()){
+			if(a.getRefinement() instanceof HRefinement){
+				FunctionPrototype proto = ((HRefinement)a.getRefinement()).getLoopPrototype();
+				if(!functionMap.containsKey(proto)){
+					functionMap.put(proto, functionMap.size());
+				}
+			}else
+				WorkflowLogger.getLogger().warning("Actor "+a.getName()+" doesn't have correct refinement.");
+		}
+		
+		actorNames.put(a.getName(), a);
+				
 		visitAbstractActor(a);
 	}
 
 	@Override
 	public void visitConfigInputPort(ConfigInputPort cip) {
-		// Fill cfgInPortMap
-		cfgInPortMap.put(cip, currentAbstractVertexName);
+		int index = cfgInPortIndices.get(currentAbstractActor);
+		cfgInPortIndices.put(currentAbstractActor, index+1);
+		portMap.put(cip, index);		
 	}
 
 	@Override
 	public void visitConfigOutputPort(ConfigOutputPort cop) {
-		// Fill setterMap
-		setterMap.put(cop, currentAbstractVertexName);
+		int index = cfgOutPortIndices.get(currentAbstractActor);
+		cfgOutPortIndices.put(currentAbstractActor, index+1);
+		portMap.put(cop, index);		
 	}
 
 	/**
@@ -187,14 +196,11 @@ public class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor {
 		// in the same order => Modify the C++ headers?
 		// Get the position of the incoming fifo of dip wrt.
 		// currentAbstractActor
-		Fifo f = dip.getIncomingFifo();
-		int index = inPortIndices.get(currentAbstractActor);
-		inPortIndices.put(currentAbstractActor, index+1);
-		fifoMap.put(f, index);
+		int index = dataInPortIndices.get(currentAbstractActor);
+		dataInPortIndices.put(currentAbstractActor, index+1);
 
 		// Fill dataPortMap
-		dataPortMap.put(dip, new DataPortDescription(currentAbstractActor,
-				dip.getExpression().getString(), index));
+		portMap.put(dip, index);
 	}
 
 	@Override
@@ -205,32 +211,26 @@ public class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor {
 		// in the same order => Modify the C++ headers?
 		// Get the position of the outgoing fifo of dop wrt.
 		// currentAbstractActor
-		Fifo f = dop.getOutgoingFifo();
-		int index = outPortIndices.get(currentAbstractActor);
-		outPortIndices.put(currentAbstractActor, index+1);
-		fifoMap.put(f, index);
+		int index = dataOutPortIndices.get(currentAbstractActor);
+		dataOutPortIndices.put(currentAbstractActor, index+1);
 
 		// Fill dataPortMap
-		dataPortMap.put(dop, new DataPortDescription(currentAbstractActor,
-				dop.getExpression().getString(), index));
-	}
-
-	@Override
-	public void visitDependency(Dependency d) {
-		// Fill the dependencyMap with the names of source and target of d
-		String srcName = setterMap.get(d.getSetter());
-		String tgtName = cfgInPortMap.get(d.getGetter());
-		dependencyMap.put(d, new DependencyDescription(srcName, tgtName));
+		portMap.put(dop, index);
 	}
 
 	@Override
 	public void visitParameter(Parameter p) {
 		// Fix currentAbstractVertexName
-		currentAbstractVertexName = nameGen.getParameterName(p);
+		currentAbstractVertexName = "param_" + p.getName();
 		// Visit configuration input ports to fill cfgInPortMap
 		visitAbstractVertex(p);
 		// Fill the setterMap
-		setterMap.put(p, nameGen.getParameterName(p));
+		setterMap.put(p, currentAbstractVertexName);
+	}
+
+	@Override
+	public void visitDependency(Dependency d) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -317,7 +317,8 @@ public class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitBroadcastActor(BroadcastActor ba) {
-		throw new UnsupportedOperationException();
+		visitAbstractActor(ba);
+//		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -338,35 +339,5 @@ public class CPPCodeGenerationPreProcessVisitor extends PiMMVisitor {
 	@Override
 	public void visitExecutableActor(ExecutableActor ea) {
 		throw new UnsupportedOperationException();
-	}
-
-	/**
-	 * Class allowing to stock necessary information about data ports for the
-	 * edges generation
-	 */
-	public class DataPortDescription {
-		public AbstractActor actor;
-		public String expression;
-		public int index;
-
-		public DataPortDescription(AbstractActor actor, String expression, int index) {
-			this.actor = actor;
-			this.expression = expression;
-			this.index = index;
-		}
-	}
-
-	/**
-	 * Class allowing to stock necessary information about dependencies for
-	 * parameter connections
-	 */
-	public class DependencyDescription {
-		String srcName;
-		String tgtName;
-
-		public DependencyDescription(String srcName, String tgtName) {
-			this.srcName = srcName;
-			this.tgtName = tgtName;
-		}
 	}
 }

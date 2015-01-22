@@ -56,6 +56,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
+import org.ietr.preesm.memory.script.MemoryScriptEngine;
 
 /**
  * The purpose of this class is to process a {@link MemoryExclusionGraph MemEx}
@@ -68,7 +69,10 @@ import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
  * 
  * @author kdesnos
  * 
+ * @deprecated Replaced with {@link MemoryScriptEngine} since november 2014
+ * 
  */
+@Deprecated
 public class MemExBroadcastMerger {
 
 	/**
