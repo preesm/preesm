@@ -379,9 +379,11 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 		}
 		
 		if(aa instanceof Actor && !((Actor) aa).isHierarchical()){
-			for(String core : constraints.get(aa)){
-				append("\t" + vertexName + "->isExecutableOnPE(");
-				append(CppNameGenerator.getCoreName(core) + ");\n");
+			if(constraints.get(aa) != null){
+				for(String core : constraints.get(aa)){
+					append("\t" + vertexName + "->isExecutableOnPE(");
+					append(CppNameGenerator.getCoreName(core) + ");\n");
+				}
 			}
 		}
 
