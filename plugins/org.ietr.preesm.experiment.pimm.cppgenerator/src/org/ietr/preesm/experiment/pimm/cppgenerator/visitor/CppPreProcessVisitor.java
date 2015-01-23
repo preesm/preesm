@@ -323,12 +323,14 @@ public class CppPreProcessVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitJoinActor(JoinActor ja) {
-		throw new UnsupportedOperationException();
+		visitAbstractActor(ja);
+//		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void visitForkActor(ForkActor fa) {
-		throw new UnsupportedOperationException();
+		visitAbstractActor(fa);
+//		throw new UnsupportedOperationException();
 	}
 
 	@Override

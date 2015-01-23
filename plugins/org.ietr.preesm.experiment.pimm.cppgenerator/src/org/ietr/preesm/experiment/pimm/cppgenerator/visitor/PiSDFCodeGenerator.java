@@ -249,7 +249,7 @@ public class PiSDFCodeGenerator{
 	 * corresponding to pg
 	 */
 	private void topMehod(PiGraph pg) {
-		String sgName = CppNameGenerator.getSubraphName(pg);
+		String sgName = pg.getName();
 		
 		append("/**\n");
 		append(" * This is the method you need to call to build a complete PiSDF graph.\n");
