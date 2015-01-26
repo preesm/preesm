@@ -393,7 +393,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 				append("\t" + vertexName + "->setTimingOnType(");
 				append(CppNameGenerator.getCoreTypeName(coreType) + ", \"");
 				append(aaTimings.get(coreType));
-				append("\");\n");
+				append("\", stack);\n");
 			}
 		}
 		
@@ -483,11 +483,17 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 			append(" = graph->addDynamicParam("
 					+ "\"" + p.getName() + "\""
 					+ ");\n");
+		}else if(p.getGraphPort() instanceof ConfigInputPort){
+			/* HERITED */			
+			append(" = graph->addHeritedParam("
+					+ "\"" + p.getName() + "\", "
+					+ portMap.get(p.getGraphPort())
+					+ ");\n");						
 		}else if(p.getConfigInputPorts().isEmpty()){ 
 			/* STATIC */
 			append(" = graph->addStaticParam("
 					+ "\"" + p.getName() + "\", "
-					+ p.getExpression().evaluate()
+					+ (int)Double.parseDouble(p.getExpression().evaluate())
 					+ ");\n");
 		}else{
 			/* DEPENDANT */
@@ -511,6 +517,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 			append(CppNameGenerator.getParameterName((Parameter)cip.getIncomingDependency().getSetter()));
 			append(");\n");
 		}
+		append("\n");
 	}
 
 	@Override
@@ -529,6 +536,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 			append(CppNameGenerator.getParameterName((Parameter)cip.getIncomingDependency().getSetter()));
 			append(");\n");
 		}
+		append("\n");
 	}
 
 	@Override
@@ -547,6 +555,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 			append(CppNameGenerator.getParameterName((Parameter)cip.getIncomingDependency().getSetter()));
 			append(");\n");
 		}
+		append("\n");
 	}
 
 	@Override
