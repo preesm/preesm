@@ -38,6 +38,7 @@
 package org.ietr.preesm.experiment.pimm.cppgenerator.visitor;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
@@ -60,7 +61,6 @@ import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
-import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
@@ -82,9 +82,9 @@ public class CppPreProcessVisitor extends PiMMVisitor {
 
 	private Map<Port, Integer> portMap = new HashMap<Port, Integer>();
 	private Map<ISetter, String> setterMap = new HashMap<ISetter, String>();
-	private Map<FunctionPrototype, Integer> functionMap;
 	// Map from Actor names to pairs of CoreType numbers and Timing expressions
 	private Map<String, AbstractActor> actorNames = new HashMap<String, AbstractActor>();
+	private Map<AbstractActor, Integer> functionMap = new LinkedHashMap<AbstractActor, Integer>();;
 
 	private Map<AbstractActor, Integer> dataInPortIndices = new HashMap<AbstractActor, Integer>();
 	private Map<AbstractActor, Integer> dataOutPortIndices = new HashMap<AbstractActor, Integer>();
@@ -103,7 +103,7 @@ public class CppPreProcessVisitor extends PiMMVisitor {
 		return actorNames;
 	}
 	
-	public Map<FunctionPrototype, Integer> getFunctionMap() {
+	public Map<AbstractActor, Integer> getFunctionMap() {
 		return functionMap;
 	}
 
@@ -155,13 +155,9 @@ public class CppPreProcessVisitor extends PiMMVisitor {
 	@Override
 	public void visitActor(Actor a) {		
 		// Register associated function
-		if(!a.isHierarchical()){
-			if(a.getRefinement() instanceof HRefinement){
-				FunctionPrototype proto = ((HRefinement)a.getRefinement()).getLoopPrototype();
-				if(!functionMap.containsKey(proto)){
-					functionMap.put(proto, functionMap.size());
-				}
-			}else
+		if(!(a instanceof PiGraph)){
+			functionMap.put(a, functionMap.size());
+			if(!(a.getRefinement() instanceof HRefinement))
 				WorkflowLogger.getLogger().warning("Actor "+a.getName()+" doesn't have correct refinement.");
 		}
 		

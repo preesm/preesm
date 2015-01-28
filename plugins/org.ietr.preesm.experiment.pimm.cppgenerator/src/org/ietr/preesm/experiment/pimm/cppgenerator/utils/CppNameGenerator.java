@@ -45,6 +45,10 @@ public final class CppNameGenerator {
 	public static String getMethodName(PiGraph pg) {
 		return pg.getName();
 	}
+	
+	public static String getFunctionName(AbstractActor aa) {
+		return aa.getName();
+	}
 
 	/**
 	 * Returns the name of the parameter

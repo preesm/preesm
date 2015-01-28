@@ -67,7 +67,9 @@ public class PiMMCppGenerationTask extends AbstractTaskImplementation {
 
 		PiSDFCodeGenerator launcher = new PiSDFCodeGenerator(scenario);
 
-		String cppCode = launcher.generateCppCode(pg);
+		launcher.initGenerator(pg);
+		String graphCode = launcher.generateGraphCode(pg);
+		String fctCode = launcher.generateFunctionCode(pg);
 		String hCode = launcher.generateHeaderCode(pg);
 
 		// Get the root of the workspace
@@ -87,22 +89,29 @@ public class PiMMCppGenerationTask extends AbstractTaskImplementation {
 		parent.mkdirs();
 
 		// Create the files
-		String piCppfilePath = "pi_" + pg.getName() + ".cpp";
-		File piCppFile = new File(parent, piCppfilePath);
-
 		String hFilePath = pg.getName() + ".h";
 		File hFile = new File(parent, hFilePath);
 		
+		String piGraphfilePath = "pi_" + pg.getName() + ".cpp";
+		File piGraphFile = new File(parent, piGraphfilePath);
+		
+		String piFctfilePath = "fct_" + pg.getName() + ".cpp";
+		File piFctFile = new File(parent, piFctfilePath);
+		
 		// Write the files
-		FileWriter piCppWriter;
+		FileWriter piGraphWriter;
+		FileWriter piFctWriter;
 		FileWriter hWriter;
 		try {
-			piCppWriter = new FileWriter(piCppFile);
-			piCppWriter.write(cppCode);
-			piCppWriter.close();
 			hWriter = new FileWriter(hFile);
 			hWriter.write(hCode);
 			hWriter.close();
+			piGraphWriter = new FileWriter(piGraphFile);
+			piGraphWriter.write(graphCode);
+			piGraphWriter.close();
+			piFctWriter = new FileWriter(piFctFile);
+			piFctWriter.write(fctCode);
+			piFctWriter.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

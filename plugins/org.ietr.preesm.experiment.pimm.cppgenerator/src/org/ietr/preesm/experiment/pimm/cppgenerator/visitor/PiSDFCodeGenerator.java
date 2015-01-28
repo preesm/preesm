@@ -42,14 +42,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.ConstraintGroup;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
-import org.ietr.preesm.experiment.core.piscenario.ActorNode;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.Dependency;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
+import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
+import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.pimm.cppgenerator.utils.CppNameGenerator;
@@ -67,14 +68,16 @@ public class PiSDFCodeGenerator{
 	private Map<String, Integer> coreTypesIds;
 	private Map<String, Integer> coreIds;
 	
+	private CppPreProcessVisitor preprocessor;
+	
 	/* Map timing strings to actors */
 	private Map<AbstractActor, Map<String, String>> timings;
 	
 	/* Map functions to function ix */
-	private Map<String, Integer> functions;
+	private Map<AbstractActor, Integer> functionMap;
 	
 	/* Map Port to its description */
-	private Map<Port, Integer> dataPortMap;
+	private Map<Port, Integer> portMap;
 	
 	private HashMap<AbstractActor, Set<String>> constraints;
 		
@@ -82,49 +85,14 @@ public class PiSDFCodeGenerator{
 		this.scenario = scenario;
 	}
 	
-	public String generateHeaderCode(PiGraph pg) {
-		cppString.setLength(0);
-		
-		/* Put license */
-		append(getLicense());
-		
-		/* Add Include Protection */
-		append("#ifndef " + pg.getName().toUpperCase() + "_H\n");
-		append("#define " + pg.getName().toUpperCase() + "_H\n\n");
-		
-		/* Declare Include Files */
-		append("#include <spider.h>\n\n");
-		
-		/* Declare the addGraph method */
-		append("#define N_FCT_" + pg.getName().toUpperCase() + " " + 0 + "\n");
-		append("extern lrtFct " + pg.getName().toLowerCase() + "[N_FCT_" + pg.getName().toUpperCase() + "];\n");
-		append("\n");
-
-		/* Declare Fcts */
-		append("PiSDFGraph* init_"+pg.getName()+"(Archi* archi, Stack* stack);\n");
-		append("void free_"+pg.getName()+"(Archi* archi, Stack* stack);\n");
-		append("\n");
-
-		/* Close Include Protection */
-		append("#endif//" + pg.getName().toUpperCase() + "_H\n");
-
-		return cppString.toString();
-	}
-	
-	/**
-	 * Main method, launching the generation for the whole PiGraph pg, including
-	 * license, includes, constants and top method generation
-	 */
-	public String generateCppCode(PiGraph pg) {	
-		cppString.setLength(0);
-		
-		/* Initialize Maps */	
-				
+	public void initGenerator(PiGraph pg){
 		/* Preprocessor visitor */	
 		/* Initialize functions, dataports and dependency maps */
-		CppPreProcessVisitor preprocessor = new CppPreProcessVisitor();
+		preprocessor = new CppPreProcessVisitor();
 		preprocessor.visit(pg);
-
+		
+		portMap = preprocessor.getPortMap();
+		functionMap = preprocessor.getFunctionMap();
 
 		coreTypesIds = new HashMap<String, Integer>();
 		int coreTypeId = 0;
@@ -161,17 +129,79 @@ public class PiSDFCodeGenerator{
 					constraints.get(aa).add(core);
 				}
 			}
-		}	
+		}			
+	}
+	
+	public String generateHeaderCode(PiGraph pg) {
+		cppString.setLength(0);
+		
+		/* Put license */
+		append(getLicense());
+		
+		/* Add Include Protection */
+		append("#ifndef " + pg.getName().toUpperCase() + "_H\n");
+		append("#define " + pg.getName().toUpperCase() + "_H\n\n");
+		
+		/* Declare Include Files */
+		append("#include <spider.h>\n\n");
+		
+		/* Declare the addGraph method */
+		append("#define N_FCT_" + pg.getName().toUpperCase() + " " + functionMap.size() + "\n");
+		append("extern lrtFct " + pg.getName().toLowerCase() + "_fcts[N_FCT_" + pg.getName().toUpperCase() + "];\n");
+		append("\n");
+
+		/* Declare Fcts */
+		append("PiSDFGraph* init_"+pg.getName()+"(Archi* archi, Stack* stack);\n");
+		append("void free_"+pg.getName()+"(PiSDFGraph* top, Stack* stack);\n");
+		append("\n");
+		
+		/* Core */
+		append("typedef enum{\n");
+		for(String core : coreIds.keySet()){
+			append("\t" + CppNameGenerator.getCoreName(core) 
+					+ " = " + coreIds.get(core) + ",\n");			
+		}
+		append("} PE;\n\n");
+		
+		/* Core Type */
+		append("typedef enum{\n");
+		for(String coreType : coreTypesIds.keySet()){
+			append("\t" + CppNameGenerator.getCoreTypeName(coreType) 
+					+ " = " + coreTypesIds.get(coreType) + ",\n");			
+		}
+		append("} PEType;\n\n");	
+		
+		/* Fct Ix */
+		append("typedef enum{\n");
+		for(AbstractActor aa : functionMap.keySet()){
+			append("\t" + CppNameGenerator.getFunctionName(aa).toUpperCase() + "_FCT"
+					+ " = " + functionMap.get(aa) + ",\n");			
+		}
+		append("} FctIxs;\n\n");
+
+		/* Close Include Protection */
+		append("#endif//" + pg.getName().toUpperCase() + "_H\n");
+
+		return cppString.toString();
+	}
+	
+	/**
+	 * Main method, launching the generation for the whole PiGraph pg, including
+	 * license, includes, constants and top method generation
+	 */
+	public String generateGraphCode(PiGraph pg) {	
+		cppString.setLength(0);
 		
 		StringBuilder tmp = new StringBuilder();
 		CPPCodeGenerationVisitor codeGenerator = new CPPCodeGenerationVisitor(
-				tmp, preprocessor, timings, constraints);
+				tmp, preprocessor, timings, constraints, scenario.getSimulationManager().getDataTypes());
 		// Generate C++ code for the whole PiGraph, at the end, tmp will contain
 		// the vertex declaration for pg
 		codeGenerator.visit(pg);
 
 		// /Generate the header (license, includes and constants)
-		generateHeader();
+		append(getLicense());
+		append("#include \"" + pg.getName() + ".h\"\n\n");
 
 		// Generate the prototypes for each method except top
 		for (String p : codeGenerator.getPrototypes()) {
@@ -185,6 +215,66 @@ public class PiSDFCodeGenerator{
 		// Concatenate the results
 		for (StringBuilder m : codeGenerator.getMethods()) {
 			cppString.append(m);
+		}
+		
+		// Add free fct
+		append("\n");
+		append("void free_" + pg.getName() + "(PiSDFGraph* top, Stack* stack){\n");
+		append("\ttop->~PiSDFGraph();\n");
+		append("\tstack->free(top);\n");
+		append("}\n");
+		
+		// Returns the final C++ code
+		return cppString.toString();
+	}
+	
+	/**
+	 * Main method, launching the generation for the whole PiGraph pg, including
+	 * license, includes, constants and top method generation
+	 */
+	public String generateFunctionCode(PiGraph pg) {	
+		cppString.setLength(0);
+		
+		// /Generate the header (license, includes and constants)
+		append(getLicense());
+
+		append("#include <spider.h>\n");
+		append("#include \"" + pg.getName() + ".h\"\n\n");
+		
+		Set<String> includeList = new HashSet<String>();
+		for(AbstractActor aa : functionMap.keySet()){
+			Actor a = (Actor)aa;
+			if(a.getRefinement() instanceof HRefinement){			
+				if(!includeList.contains(a.getRefinement().getFileName())){
+					includeList.add(a.getRefinement().getFileName());
+				}
+			}
+		}
+		
+		for(String file : includeList){
+			append("#include \""+file+"\"\n");
+		}
+		
+		append("\n");
+		
+		/* Generate prototypes */
+		for(AbstractActor aa : functionMap.keySet()){
+			append("void ");
+			append(CppNameGenerator.getFunctionName(aa));
+			append("(void* inputFIFOs[], void* outputFIFOs[], Param inParams[], Param outParams[]);\n");
+		}
+		append("\n");
+
+		/* Generate LrtFct */
+		append("lrtFct " + pg.getName() + "_fcts[N_FCT_" + pg.getName().toUpperCase() + "] = {\n");
+		for(AbstractActor aa : functionMap.keySet()){
+			append("\t&" + CppNameGenerator.getFunctionName(aa) + ",\n");			
+		}
+		append("};\n\n");
+		
+		// Generate functions
+		for(AbstractActor aa : functionMap.keySet()){
+			generateFunctionBody(aa);
 		}
 		
 		// Returns the final C++ code
@@ -203,45 +293,6 @@ public class PiSDFCodeGenerator{
 		}		
 		
 		return timings;
-	}
-
-	/**
-	 * Generate the header of the final C++ file (license, includes and
-	 * constants)
-	 */
-	private void generateHeader() {
-		append(getLicense());
-		generateIncludes();
-		generateConstants();
-	}
-
-	/**
-	 * Generate the needed includes for the final C++ file
-	 */
-	private void generateIncludes() {
-		append("#include <spider.h>\n");
-		append("\n");
-	}
-
-	/**
-	 * Generate the needed constants for the final C++ file
-	 */
-	private void generateConstants() {
-		/* Core */
-		append("typedef enum{\n");
-		for(String core : coreIds.keySet()){
-			append("\t" + CppNameGenerator.getCoreName(core) 
-					+ " = " + coreIds.get(core) + ",\n");			
-		}
-		append("} PE;\n\n");
-		
-		/* Core Type */
-		append("typedef enum{\n");
-		for(String coreType : coreTypesIds.keySet()){
-			append("\t" + CppNameGenerator.getCoreTypeName(coreType) 
-					+ " = " + coreTypesIds.get(coreType) + ",\n");			
-		}
-		append("} PEType;\n\n");		
 	}
 
 	/**
@@ -278,6 +329,79 @@ public class PiSDFCodeGenerator{
 		
 		append("\treturn top;\n");
 		append("}\n");
+	}
+	
+	private void generateFunctionBody(AbstractActor aa) {
+		append("void ");
+		append(CppNameGenerator.getFunctionName(aa));
+		append("(void* inputFIFOs[], void* outputFIFOs[], Param inParams[], Param outParams[]){\n");
+		
+		Actor a = (Actor)aa;
+		if(a.getRefinement() != null && a.getRefinement() instanceof HRefinement){
+			HRefinement href = (HRefinement) a.getRefinement();
+			FunctionPrototype proto = href.getLoopPrototype();
+
+			append("\t" + proto.getName() + "(\n");
+			int maxParamSize = 0;
+			for(FunctionParameter param : proto.getParameters()){
+				maxParamSize = Math.max(maxParamSize, param.getName().length());				
+			}
+			
+			boolean first = true;
+			for(FunctionParameter param : proto.getParameters()){
+				if(first){
+					first = false;
+				}else{
+					append(",\n");					
+				}
+				boolean found = false;
+				switch(param.getDirection()){
+				case IN:
+					if(param.isIsConfigurationParameter()){
+						for(Port port : a.getConfigInputPorts()){
+							if(port.getName().equals(param.getName())){
+								append("\t\t/* " + String.format("%1$-" + maxParamSize + "s", param.getName()) 
+										+ " */ (Param) inParams[" + portMap.get(port) + "]");
+								found = true;
+							}
+						}						
+					}else{
+						for(Port port : a.getDataInputPorts()){
+							if(port.getName().equals(param.getName())){
+								append("\t\t/* " + String.format("%1$-" + maxParamSize + "s", param.getName()) 
+										+ " */ ("+param.getType().replaceAll("[^a-zA-Z0-9*]","")+") inputFIFOs[" + portMap.get(port) + "]");
+								found = true;
+							}
+						}						
+					}
+					break;
+				case OUT:
+					if(param.isIsConfigurationParameter()){
+						for(Port port : a.getConfigOutputPorts()){
+							if(port.getName().equals(param.getName())){
+								append("\t\t/* " + String.format("%1$-" + maxParamSize + "s", param.getName()) 
+										+ " */ (Param*) &outParams[" + portMap.get(port) + "]");
+								found = true;
+							}
+						}						
+					}else{
+						for(Port port : a.getDataOutputPorts()){
+							if(port.getName().equals(param.getName())){
+								append("\t\t/* " + String.format("%1$-" + maxParamSize + "s", param.getName()) 
+										+ " */ ("+param.getType().replaceAll("[^a-zA-Z0-9*]","")+") outputFIFOs[" + portMap.get(port) + "]");
+								found = true;
+							}
+						}
+					}
+					break;
+				}
+				if(!found){
+					WorkflowLogger.getLogger().warning("Port " + param.getName() + " not found.");
+				}
+			}
+			append("\n\t);\n");
+		}
+		append("}\n\n");
 	}
 
 	/**

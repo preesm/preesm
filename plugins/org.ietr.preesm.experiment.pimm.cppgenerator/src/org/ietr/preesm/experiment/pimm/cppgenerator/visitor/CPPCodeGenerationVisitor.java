@@ -46,6 +46,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
@@ -65,8 +67,6 @@ import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
-import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
-import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
@@ -105,6 +105,8 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 	// Maps to handle hierarchical graphs
 	private Map<PiGraph, StringBuilder> graph2method = new LinkedHashMap<PiGraph, StringBuilder>();
 	private Map<PiGraph, List<PiGraph>> graph2subgraphs = new HashMap<PiGraph, List<PiGraph>>();
+	
+	private Map<String, DataType> dataTypes;
 
 	private StringBuilder currentMethod;
 	private PiGraph currentGraph;
@@ -118,7 +120,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 	// Map linking data ports to their corresponding description
 	private Map<Port, Integer> portMap;
 
-	private Map<FunctionPrototype, Integer> functionMap;
+	private Map<AbstractActor, Integer> functionMap;
 
 	private Map<AbstractActor, Map<String, String>> timings;
 
@@ -140,13 +142,15 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 	public CPPCodeGenerationVisitor(StringBuilder topMethod,
 			CppPreProcessVisitor prepocessor,
 			Map<AbstractActor, Map<String, String>> timings, 
-			Map<AbstractActor, Set<String>> constraints) {
+			Map<AbstractActor, Set<String>> constraints,
+			Map<String, DataType> dataTypes) {
 		this.currentMethod = topMethod;
 		this.preprocessor = prepocessor;
 		this.portMap = preprocessor.getPortMap();
 		this.functionMap = preprocessor.getFunctionMap();
 		this.timings = timings;
 		this.constraints = constraints;
+		this.dataTypes = dataTypes;
 	}
 
 	/**
@@ -206,7 +210,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 		}
 		currentGraph = currentOuterGraph;
 	}
-
+	
 	/**
 	 * Concatenate the signature of the method corresponding to a PiGraph to the
 	 * currentMethod StringBuilder
@@ -286,12 +290,12 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 
 	private String generateConfigVertex(AbstractActor aa){
 		String vertexName = CppNameGenerator.getVertexName(aa);
-
-		int fctIx = -1;
-		if(((Actor)aa).getRefinement() instanceof HRefinement){
-			FunctionPrototype proto = ((HRefinement)((Actor)aa).getRefinement()).getLoopPrototype();
-			fctIx = functionMap.get(proto);
-		}
+		
+		String fctIx;
+		if(functionMap.containsKey(aa))
+			fctIx = CppNameGenerator.getFunctionName(aa).toUpperCase() + "_FCT";
+		else
+			fctIx = "-1";
 		
 		// Call the addVertex method on the current graph
 		append("\tPiSDFVertex* " + vertexName);
@@ -309,12 +313,12 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 	
 	private String generateBodyVertex(AbstractActor aa){
 		String vertexName = CppNameGenerator.getVertexName(aa);
-
-		int fctIx = -1;
-//		if(((Actor)aa).getRefinement() instanceof HRefinement){
-//			FunctionPrototype proto = ((HRefinement)((Actor)aa).getRefinement()).getLoopPrototype();
-//			fctIx = functionMap.get(proto);
-//		}
+		
+		String fctIx;
+		if(functionMap.containsKey(aa))
+			fctIx = CppNameGenerator.getFunctionName(aa).toUpperCase() + "_FCT";
+		else
+			fctIx = "-1";
 		
 		// Call the addVertex method on the current graph
 		append("\tPiSDFVertex* " + vertexName);
@@ -357,8 +361,6 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 			vertexName = generateHierarchicalVertex(aa);
 		else 
 			vertexName = generateBodyVertex(aa);
-		
-		/* XXX Handle Special vertices */
 
 		// Add connections to parameters if necessary
 		for (ConfigOutputPort cop : aa.getConfigOutputPorts()) {
@@ -378,7 +380,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 			append(");\n");
 		}
 		
-		if(aa instanceof Actor && !((Actor) aa).isHierarchical()){
+		if(aa instanceof Actor && !(aa instanceof PiGraph)){
 			if(constraints.get(aa) != null){
 				for(String core : constraints.get(aa)){
 					append("\t" + vertexName + "->isExecutableOnPE(");
@@ -453,17 +455,31 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 
 		DataOutputPort src = f.getSourcePort();
 		DataInputPort  snk = f.getTargetPort();
+		
+		int typeSize;
+		if(dataTypes.containsKey(f.getType())){
+			typeSize = dataTypes.get(f.getType()).getSize();
+		}else{
+			WorkflowLogger.getLogger().warning("Type "+f.getType()+" is not defined in scenario (considered size = 1).");	
+			typeSize = 1;
+		}
 
 		append("\t\t/*Src*/ " + CppNameGenerator.getVertexName((AbstractVertex)src.eContainer()) 
 				+ ", /*SrcPrt*/ "+ portMap.get(src)
-				+ ", /*Prod*/ \"" + src.getExpression().getString() + "\",\n");
-		// XXX Sizeof token types
+				+ ", /*Prod*/ \"" 
+				+ /* Type size */ typeSize + "*("
+				+ src.getExpression().getString() + ")\",\n");
+
 		append("\t\t/*Snk*/ " + CppNameGenerator.getVertexName((AbstractVertex)snk.eContainer()) 
 				+ ", /*SnkPrt*/ "+ portMap.get(snk)
-				+ ", /*Cons*/ \"" + snk.getExpression().getString() + "\",\n");
+				+ ", /*Cons*/ \""
+				+ /* Type size */ typeSize + "*("
+				+ snk.getExpression().getString() + ")\",\n");
 		
 		if(f.getDelay() != null)
-			append("\t\t/*Delay*/ \"" + f.getDelay().getExpression().getString() + "\",0);\n\n" );
+			append("\t\t/*Delay*/ \"" 
+					+ /* Type size */ typeSize + "*("
+					+ f.getDelay().getExpression().getString() + ")\",0);\n\n" );
 		else
 			append("\t\t/*Delay*/ \"0\",0);\n\n" );
 	}
