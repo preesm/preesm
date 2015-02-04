@@ -2,7 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         id="org.ietr.preesm.cli"
+         id="workflowCli"
          point="org.eclipse.core.runtime.applications">
       <application
             cardinality="singleton-global"
@@ -10,6 +10,18 @@
             visible="true">
          <run
                class="org.ietr.preesm.cli.WorkflowExecutor">
+         </run>
+      </application>
+   </extension>
+   <extension
+         id="workspaceSetup"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="singleton-global"
+            thread="main"
+            visible="true">
+         <run
+               class="org.ietr.preesm.cli.WorkspaceCreator">
          </run>
       </application>
    </extension>
