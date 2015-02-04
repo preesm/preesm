@@ -38,6 +38,7 @@ package org.ietr.preesm.cli;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -56,7 +57,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
-import org.ietr.dftools.workflow.WorkflowManager;
+import org.ietr.dftools.workflow.AbstractWorkflowExecutor;
+import org.ietr.dftools.workflow.messages.WorkflowMessages;
 import org.ietr.preesm.utils.log.PreesmLogger;
 
 /**
@@ -69,7 +71,7 @@ import org.ietr.preesm.utils.log.PreesmLogger;
  * @author Antoine Lorence
  * 
  */
-public class WorkflowExecutor implements IApplication {
+public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IApplication {
 
 	/**
 	 * Project to test
@@ -148,8 +150,7 @@ public class WorkflowExecutor implements IApplication {
 
 			// Launch the execution of the given workflow with the given
 			// scenario
-			WorkflowManager manager = new WorkflowManager();
-			manager.execute(workflowPath, scenarioPath, null);
+			execute(workflowPath, scenarioPath, null);
 
 		} catch (UnrecognizedOptionException uoe) {
 			printUsage(options, uoe.getLocalizedMessage());
@@ -202,5 +203,13 @@ public class WorkflowExecutor implements IApplication {
 		helpFormatter.setWidth(80);
 		helpFormatter.printHelp(getClass().getSimpleName() + " [options] ",
 				"Valid options are :", options, footer);
+	}
+	
+	/**
+	 * Log method for workflow execution without eclipse UI
+	 */
+	@Override
+	protected void log(Level level, String msgKey, String... variables) {
+		System.out.println(WorkflowMessages.getString(msgKey, variables));
 	}
 }

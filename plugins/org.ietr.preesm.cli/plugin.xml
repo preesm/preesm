@@ -9,7 +9,7 @@
             thread="main"
             visible="true">
          <run
-               class="org.ietr.preesm.cli.WorkflowExecutor">
+               class="org.ietr.preesm.cli.CLIWorkflowExecutor">
          </run>
       </application>
    </extension>
