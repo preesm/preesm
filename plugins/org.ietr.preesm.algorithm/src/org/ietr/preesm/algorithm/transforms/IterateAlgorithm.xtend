@@ -137,27 +137,29 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 
 		var mainIteration = inputAlgorithm.clone
 
-		var groupId = 0
-		// setting first iteration with name "_0"
-		for (SDFAbstractVertex vertex : mainIteration.vertexSet) {
-			val id = vertex.getId
-			// Id is identical to all iterations, same as for srSDF transformation
-			vertex.setId(id);
-			vertex.setName(vertex.getName + "_0")
-			// Adding relative constraints to the scenario if present
-			if(scenario != null){
-				for(Integer i : 0 .. nbIt - 1){
-					scenario.relativeconstraintManager.addConstraint(id,groupId)
+		if(nbIt > 1){
+			var groupId = 0
+			// setting first iteration with name "_0"
+			for (SDFAbstractVertex vertex : mainIteration.vertexSet) {
+				val id = vertex.getId
+				// Id is identical to all iterations, same as for srSDF transformation
+				vertex.setId(id);
+				vertex.setName(vertex.getName + "_0")
+				// Adding relative constraints to the scenario if present
+				if(scenario != null){
+					for(Integer i : 0 .. nbIt - 1){
+						scenario.relativeconstraintManager.addConstraint(id,groupId)
+					}
 				}
+				groupId++
 			}
-			groupId++
-		}
-
-		// Incorporating new iterations
-		for (Integer i : 1 .. nbIt - 1) {
-
-			// Adding vertices of new_iteration to the ones of mainIteration, vertices are automatically renamed
-			mainIteration = merge(mainIteration, inputAlgorithm, i, setStates)
+	
+			// Incorporating new iterations
+			for (Integer i : 1 .. nbIt - 1) {
+	
+				// Adding vertices of new_iteration to the ones of mainIteration, vertices are automatically renamed
+				mainIteration = merge(mainIteration, inputAlgorithm, i, setStates)
+			}
 		}
 
 		return mainIteration
