@@ -38,6 +38,7 @@ package org.ietr.preesm.algorithm.optimization;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
@@ -53,7 +54,7 @@ import org.ietr.preesm.algorithm.optimization.clean.joinfork.JoinForkCleaner;
  * @author cguy
  * 
  */
-public class AlgorithmOptimizationTask extends AbstractTaskImplementation {
+public class MultiAlgorithmOptimizationTask extends AbstractTaskImplementation {
 
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
@@ -61,7 +62,7 @@ public class AlgorithmOptimizationTask extends AbstractTaskImplementation {
 			String nodeName, Workflow workflow) throws WorkflowException {
 
 		// Get the SDFGraph to optimize
-		SDFGraph graph = (SDFGraph) inputs.get(KEY_SDF_GRAPH);
+		Set<SDFGraph> graphs = (Set<SDFGraph>) inputs.get(KEY_SDF_GRAPHS_SET);
 
 		// First pass is to clean the graph from useless pairs of join-fork
 		// vertices which can hinder scheduling
@@ -69,16 +70,18 @@ public class AlgorithmOptimizationTask extends AbstractTaskImplementation {
 		// JoinForkCleaner evaluates some rates and delays expressions, and thus
 		// can throw InvalidExpressionExceptions, even if at this point of the
 		// workflow, there should have been already raised
-		try {
-			while(cleaner.cleanJoinForkPairsFrom(graph));
-		} catch (InvalidExpressionException e) {
-			System.err.println("SDFGraph " + graph.getName()
-					+ " contains invalid expressions.");
-			e.printStackTrace();
+		for(SDFGraph graph : graphs){
+			try {
+				while(cleaner.cleanJoinForkPairsFrom(graph));
+			} catch (InvalidExpressionException e) {
+				System.err.println("SDFGraph " + graph.getName()
+						+ " contains invalid expressions.");
+				e.printStackTrace();
+			}
 		}
 
 		Map<String, Object> outputs = new HashMap<String, Object>();
-		outputs.put(KEY_SDF_GRAPH, graph);
+		outputs.put(KEY_SDF_GRAPHS_SET, graphs);
 		return outputs;
 	}
 

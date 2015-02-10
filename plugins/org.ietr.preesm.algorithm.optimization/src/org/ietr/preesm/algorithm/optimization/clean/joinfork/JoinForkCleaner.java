@@ -60,6 +60,7 @@ public class JoinForkCleaner {
 
 	// Set of edges to remove from graph
 	Set<SDFEdge> edgesToRemove;
+	Set<SDFEdge> edgesToRemove2;
 	// Set of vertices to remove from graph
 	Set<SDFAbstractVertex> verticesToRemove;
 
@@ -70,11 +71,15 @@ public class JoinForkCleaner {
 	 * @param graph
 	 *            the SDFGraph we want to clean
 	 * @throws InvalidExpressionException
+	 * 
+	 * @return true if some join-fork pairs has be removed
 	 */
-	public void cleanJoinForkPairsFrom(SDFGraph graph)
+	public boolean cleanJoinForkPairsFrom(SDFGraph graph)
 			throws InvalidExpressionException {
 		edgesToRemove = new HashSet<SDFEdge>();
+		edgesToRemove2 = new HashSet<SDFEdge>();
 		verticesToRemove = new HashSet<SDFAbstractVertex>();
+		
 		// For every edge e of the graph
 		for (SDFEdge e : graph.edgeSet()) {
 			// Check whether it stands between an SDFJoinVertex and an
@@ -88,14 +93,19 @@ public class JoinForkCleaner {
 			}
 		}
 		
+		boolean result = !edgesToRemove.isEmpty();
+		
 		// Then, add the edges to replace e
 		for(SDFEdge e : edgesToRemove) {			
 			addEdgesToReplace(e, graph);
 		}
 
 		// Finally, remove all useless elements from graph
+		graph.removeAllEdges(edgesToRemove2);
 		graph.removeAllEdges(edgesToRemove);
 		graph.removeAllVertices(verticesToRemove);
+		
+		return result;
 	}
 
 	/**
@@ -199,18 +209,21 @@ public class JoinForkCleaner {
 		int nbForkEdges = target.getOutgoingConnections().size();
 		int nbJoinEdges = source.getIncomingConnections().size();
 		// Number of SDFForkVertex to create
-		int nbNewFork = nbForkEdges / nbJoinEdges;
+		int nbNewFork = nbJoinEdges;
 		for (int i = 0; i < nbNewFork; i++) {
 			// Create a new SDFJoinVertex
 			SDFForkVertex newFork = new SDFForkVertex();
+			newFork.setName(target.getName() + "_" + i);
+			graph.addVertex(newFork);
 			// Reconnect outgoing edges from the original fork vertex to the
 			// new one
-			for (int j = 0; j < nbJoinEdges; j++) {
+			for (int j = 0; j < nbForkEdges/nbNewFork; j++) {
 				SDFEdge edgeToReconnect = target.getOutgoingConnections().get(
 						i * nbJoinEdges + j);
 				SDFAbstractVertex newTarget = edgeToReconnect.getTarget();
 				SDFEdge newEdge = graph.addEdge(newFork, newTarget, edgeToReconnect.getProd(),
 						edgeToReconnect.getCons(), edgeToReconnect.getDelay());
+
 				// Set ports for the newEdge
 				newEdge.setTargetInterface(edgeToReconnect.getTargetInterface());
 				SDFSourceInterfaceVertex srcPort = new SDFSourceInterfaceVertex();
@@ -218,7 +231,7 @@ public class JoinForkCleaner {
 				newFork.getSources().add(srcPort);
 				newEdge.setSourceInterface(srcPort);
 				
-				edgesToRemove.add(edgeToReconnect);
+				edgesToRemove2.add(edgeToReconnect);
 			}
 
 			// Then connect the new fork vertex to its predecessor (one of the
@@ -267,13 +280,14 @@ public class JoinForkCleaner {
 		int nbForkEdges = target.getOutgoingConnections().size();
 		int nbJoinEdges = source.getIncomingConnections().size();
 		// Number of SDFJoinVertex to create
-		int nbNewJoin = nbJoinEdges / nbForkEdges;
+		int nbNewJoin = nbForkEdges;
 		for (int i = 0; i < nbNewJoin; i++) {
 			// Create a new SDFJoinVertex
 			SDFJoinVertex newJoin = new SDFJoinVertex();
+			newJoin.setName(source.getName() + "_" + i);
 			// Reconnect incoming edges to the original join vertex to the
 			// new one
-			for (int j = 0; j < nbForkEdges; j++) {
+			for (int j = 0; j < nbJoinEdges/nbNewJoin; j++) {
 				SDFEdge edgeToReconnect = source.getIncomingConnections().get(
 						i * nbForkEdges + j);
 				SDFAbstractVertex newSource = edgeToReconnect.getSource();
@@ -286,7 +300,8 @@ public class JoinForkCleaner {
 				newJoin.getSinks().add(tgtPort);
 				newEdge.setTargetInterface(tgtPort);
 				
-				edgesToRemove.add(edgeToReconnect);
+				graph.removeEdge(edgeToReconnect);
+//				edgesToRemove.add(edgeToReconnect);
 			}
 
 			// Then connect the new join vertex to its successor (one of the
