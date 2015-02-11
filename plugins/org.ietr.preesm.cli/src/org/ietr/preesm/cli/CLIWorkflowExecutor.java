@@ -67,11 +67,13 @@ import org.ietr.preesm.utils.log.PreesmLogger;
  * 
  * @author cguy
  * 
- * Code adapted from ORCC (net.sf.orcc.backends, https://github.com/orcc/orcc)
+ *         Code adapted from ORCC (net.sf.orcc.backends,
+ *         https://github.com/orcc/orcc)
  * @author Antoine Lorence
  * 
  */
-public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IApplication {
+public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
+		IApplication {
 
 	/**
 	 * Project to test
@@ -141,7 +143,7 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
 					}
 				}
 				if (scenarios.size() == 1) {
-					workflowPath = (project.getLocation().append(scenarios.get(
+					scenarioPath = (project.getLocation().append(scenarios.get(
 							0).getProjectRelativePath())).toPortableString();
 				} else
 					PreesmLogger
