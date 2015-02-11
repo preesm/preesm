@@ -210,6 +210,6 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
 	 */
 	@Override
 	protected void log(Level level, String msgKey, String... variables) {
-		System.out.println(WorkflowMessages.getString(msgKey, variables));
+		PreesmLogger.logln(level, WorkflowMessages.getString(msgKey, variables));
 	}
 }
