@@ -47,6 +47,7 @@ import org.ietr.dftools.algorithm.model.parameters.Variable;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex;
@@ -106,6 +107,9 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 	protected Map<AbstractVertex, SDFAbstractVertex> piVx2SDFVx = new HashMap<AbstractVertex, SDFAbstractVertex>();
 	// Map from PiMM ports to their vertex (used for SDFEdge creation)
 	protected Map<Port, Parameterizable> piPort2Vx = new HashMap<Port, Parameterizable>();
+	// Map from original PiMM ports to generated SDF ports (used for SDFEdge
+	// creation)
+	protected Map<Port, SDFInterfaceVertex> piPort2SDFPort = new HashMap<Port, SDFInterfaceVertex>();
 
 	// Current SDF Refinement
 	protected IRefinement currentSDFRefinement;
@@ -209,10 +213,42 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitAbstractActor(AbstractActor aa) {
+		// Handle the target ports (DataInputPort in PISDF,
+		// SDFSourceInterfaceVertex in IBSDF) keeping the order
 		for (DataInputPort dip : aa.getDataInputPorts()) {
+			// The target SDF port
+			SDFSourceInterfaceVertex sdfInputPort;
+			// The SDF vertex to which to add the created port
+			SDFAbstractVertex sdfTarget = piVx2SDFVx.get(aa);
+			if (sdfTarget instanceof SDFSourceInterfaceVertex) {
+				// If the SDF vertex is an interface, use it as the port
+				sdfInputPort = (SDFSourceInterfaceVertex) sdfTarget;
+			} else {
+				// Otherwise create a new port and add it to the SDF vertex
+				sdfInputPort = new SDFSourceInterfaceVertex();
+				sdfInputPort.setName(dip.getName());
+				sdfTarget.addSource(sdfInputPort);
+			}
+			piPort2SDFPort.put(dip, sdfInputPort);
 			piPort2Vx.put(dip, aa);
 		}
+		// Handle the source ports (DataOuputPort in PISDF,
+		// SDFSinkInterfaceVertex in IBSDF) keeping the order
 		for (DataOutputPort dop : aa.getDataOutputPorts()) {
+			// The source SDF port
+			SDFSinkInterfaceVertex sdfOutputPort;
+			// The SDF vertex to which to add the created port
+			SDFAbstractVertex sdfSource = piVx2SDFVx.get(aa);
+			if (sdfSource instanceof SDFSinkInterfaceVertex) {
+				// If the SDF vertex is an interface, use it as the port
+				sdfOutputPort = (SDFSinkInterfaceVertex) sdfSource;
+			} else {
+				// Otherwise create a new port and add it to the SDF vertex
+				sdfOutputPort = new SDFSinkInterfaceVertex();
+				sdfOutputPort.setName(dop.getName());
+				sdfSource.addSink(sdfOutputPort);
+			}
+			piPort2SDFPort.put(dop, sdfOutputPort);
 			piPort2Vx.put(dop, aa);
 		}
 		for (ConfigOutputPort cop : aa.getConfigOutputPorts()) {
@@ -229,6 +265,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 	@Override
 	public void visitActor(Actor a) {
 		SDFVertex v = new SDFVertex();
+		piVx2SDFVx.put(a, v);
 		// Handle vertex's name
 		v.setName(a.getName());
 		// Handle vertex's path inside the graph hierarchy
@@ -259,13 +296,15 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 		visitAbstractActor(a);
 
 		result.addVertex(v);
-		piVx2SDFVx.put(a, v);
 	}
 
 	@Override
 	public void visitFifo(Fifo f) {
-		Parameterizable source = piPort2Vx.get(f.getSourcePort());
-		Parameterizable target = piPort2Vx.get(f.getTargetPort());
+		DataOutputPort piOutputPort = f.getSourcePort();
+		DataInputPort piInputPort = f.getTargetPort();
+
+		Parameterizable source = piPort2Vx.get(piOutputPort);
+		Parameterizable target = piPort2Vx.get(piInputPort);
 
 		if (source instanceof AbstractVertex
 				&& target instanceof AbstractVertex) {
@@ -273,29 +312,13 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 			SDFAbstractVertex sdfSource = piVx2SDFVx.get(source);
 			SDFAbstractVertex sdfTarget = piVx2SDFVx.get(target);
 
-			// Handle the source port (DataOuputPort in PISDF,
-			// SDFSinkInterfaceVertex in IBSDF)
-			SDFSinkInterfaceVertex sdfOutputPort;
-			DataOutputPort piOutputPort = f.getSourcePort();
-			if (sdfSource instanceof SDFSinkInterfaceVertex) {
-				sdfOutputPort = (SDFSinkInterfaceVertex) sdfSource;
-			} else {
-				sdfOutputPort = new SDFSinkInterfaceVertex();
-				sdfOutputPort.setName(piOutputPort.getName());
-				sdfSource.addSink(sdfOutputPort);
-			}
+			// Get the source port created in visitAbstractActor
+			SDFSinkInterfaceVertex sdfOutputPort = (SDFSinkInterfaceVertex) piPort2SDFPort
+					.get(piOutputPort);
 
-			// Handle the target port (DataInputPort in PISDF,
-			// SDFSourceInterfaceVertex in IBSDF)
-			SDFSourceInterfaceVertex sdfInputPort;
-			DataInputPort piInputPort = f.getTargetPort();
-			if (sdfTarget instanceof SDFSourceInterfaceVertex) {
-				sdfInputPort = (SDFSourceInterfaceVertex) sdfTarget;
-			} else {
-				sdfInputPort = new SDFSourceInterfaceVertex();
-				sdfInputPort.setName(piInputPort.getName());
-				sdfTarget.addSource(sdfInputPort);
-			}
+			// Get the target port created in visitAbstractActor
+			SDFSourceInterfaceVertex sdfInputPort = (SDFSourceInterfaceVertex) piPort2SDFPort
+					.get(piInputPort);
 
 			// Handle Delay, Consumption and Production rates
 			AbstractEdgePropertyType<ExpressionValue> delay;
@@ -372,23 +395,23 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 	@Override
 	public void visitDataInputInterface(DataInputInterface dii) {
 		SDFSourceInterfaceVertex v = new SDFSourceInterfaceVertex();
+		piVx2SDFVx.put(dii, v);
 		v.setName(dii.getName());
 
 		visitAbstractActor(dii);
 
 		result.addVertex(v);
-		piVx2SDFVx.put(dii, v);
 	}
 
 	@Override
 	public void visitDataOutputInterface(DataOutputInterface doi) {
 		SDFSinkInterfaceVertex v = new SDFSinkInterfaceVertex();
+		piVx2SDFVx.put(doi, v);
 		v.setName(doi.getName());
 
 		visitAbstractActor(doi);
 
 		result.addVertex(v);
-		piVx2SDFVx.put(doi, v);
 	}
 
 	@Override
@@ -461,6 +484,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 	@Override
 	public void visitBroadcastActor(BroadcastActor ba) {
 		SDFBroadcastVertex bv = new SDFBroadcastVertex();
+		piVx2SDFVx.put(ba, bv);
 		// Handle vertex's name
 		bv.setName(ba.getName());
 		// Handle vertex's path inside the graph hierarchy
@@ -480,12 +504,12 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 		visitAbstractActor(ba);
 
 		result.addVertex(bv);
-		piVx2SDFVx.put(ba, bv);
 	}
 
 	@Override
 	public void visitJoinActor(JoinActor ja) {
 		SDFJoinVertex jv = new SDFJoinVertex();
+		piVx2SDFVx.put(ja, jv);
 		// Handle vertex's name
 		jv.setName(ja.getName());
 		// Handle vertex's path inside the graph hierarchy
@@ -505,12 +529,12 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 		visitAbstractActor(ja);
 
 		result.addVertex(jv);
-		piVx2SDFVx.put(ja, jv);
 	}
 
 	@Override
 	public void visitForkActor(ForkActor fa) {
 		SDFForkVertex fv = new SDFForkVertex();
+		piVx2SDFVx.put(fa, fv);
 		// Handle vertex's name
 		fv.setName(fa.getName());
 		// Handle vertex's path inside the graph hierarchy
@@ -530,12 +554,12 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 		visitAbstractActor(fa);
 
 		result.addVertex(fv);
-		piVx2SDFVx.put(fa, fv);
 	}
 
 	@Override
 	public void visitRoundBufferActor(RoundBufferActor rba) {
 		SDFRoundBufferVertex rbv = new SDFRoundBufferVertex();
+		piVx2SDFVx.put(rba, rbv);
 		// Handle vertex's name
 		rbv.setName(rba.getName());
 		// Handle vertex's path inside the graph hierarchy
@@ -555,7 +579,6 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 		visitAbstractActor(rba);
 
 		result.addVertex(rbv);
-		piVx2SDFVx.put(rba, rbv);
 	}
 
 	public SDFGraph getResult() {

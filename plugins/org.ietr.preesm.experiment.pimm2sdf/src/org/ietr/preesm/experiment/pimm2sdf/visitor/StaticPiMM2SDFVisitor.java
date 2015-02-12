@@ -49,6 +49,7 @@ public class StaticPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
 		// subgraph
 		else {
 			SDFVertex v = new SDFVertex();
+			piVx2SDFVx.put(pg, v);
 			// Handle vertex's name
 			v.setName(pg.getName());
 			// Handle vertex's path inside the graph hierarchy
@@ -68,7 +69,6 @@ public class StaticPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
 			v.setGraphDescription(sdf);
 
 			result.addVertex(v);
-			piVx2SDFVx.put(pg, v);
 		}
 	}
 

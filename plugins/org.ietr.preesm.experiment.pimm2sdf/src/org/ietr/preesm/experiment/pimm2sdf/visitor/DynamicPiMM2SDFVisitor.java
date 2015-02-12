@@ -128,12 +128,12 @@ public class DynamicPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
 		// visit), we need to visit separately pg later
 		else {
 			SDFVertex v = new SDFVertex();
+			piVx2SDFVx.put(pg, v);
 			v.setName(pg.getName());
 
 			visitAbstractActor(pg);
 
 			result.addVertex(v);
-			piVx2SDFVx.put(pg, v);
 
 			subgraphs.add(pg);
 		}
