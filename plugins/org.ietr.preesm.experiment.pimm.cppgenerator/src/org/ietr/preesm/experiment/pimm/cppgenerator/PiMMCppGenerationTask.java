@@ -80,8 +80,8 @@ public class PiMMCppGenerationTask extends AbstractTaskImplementation {
 		IProject project = root.getProject(projectName);
 
 		// Get the name of the folder for code generation
-		// TODO: Correct when a codegen part is added to PiScenarios
-		String codegenFolder = "/Code/generated/cpp/";// scenario.getCodegenManager().getCodegenDirectory();
+		String codegenFolder = scenario.getCodegenManager().getCodegenDirectory();
+		if (codegenFolder == null) codegenFolder = "/Code/generated/cpp/";
 
 		// Create the folder and its parent if necessary
 		String folderPath = project.getLocation() + codegenFolder;
