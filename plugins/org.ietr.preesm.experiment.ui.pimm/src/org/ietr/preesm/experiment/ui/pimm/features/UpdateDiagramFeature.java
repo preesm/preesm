@@ -45,6 +45,7 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 
 /**
  * This feature try to detect cases when a Diagram or a Network need to be
@@ -62,11 +63,17 @@ import org.ietr.preesm.experiment.model.pimm.Actor;
 public class UpdateDiagramFeature extends DefaultUpdateDiagramFeature {
 	// Name of the property of the diagram giving its version
 	private static String GLOBAL_VERSION_KEY = "editor_version";
-	// Versions number
+	/*
+	 * Versions number of the diagram editor
+	 */
+	// First version
 	private static int VERSION_1 = 1;
+	// Second version: anchors added on actors
 	private static int VERSION_2 = 2;
+	// Third version: anchors added special actors
+	private static int VERSION_3 = 3;
 	// Current version
-	private static int CURRENT_EDITOR_VERSION = VERSION_2;
+	private static int CURRENT_EDITOR_VERSION = VERSION_3;
 
 	private boolean hasDoneChanges;
 
@@ -120,8 +127,8 @@ public class UpdateDiagramFeature extends DefaultUpdateDiagramFeature {
 		// The diagram is not up-to-date, some changes will appear
 		hasDoneChanges = true;
 
-		if (version == VERSION_1)
-			updateFromVersion1(diagram);
+		if (version < CURRENT_EDITOR_VERSION)
+			updateToCurrentVersion(diagram, version);
 
 		// Set the version to current
 		if (property == null)
@@ -129,6 +136,25 @@ public class UpdateDiagramFeature extends DefaultUpdateDiagramFeature {
 					GLOBAL_VERSION_KEY, String.valueOf(CURRENT_EDITOR_VERSION));
 		else
 			property.setValue(String.valueOf(CURRENT_EDITOR_VERSION));
+	}
+
+	/**
+	 * Update incrementally a Diagram from its version number to the current one
+	 * 
+	 * @param diagram
+	 *            the Diagram to update
+	 * @param version
+	 *            the current version of diagram
+	 */
+	private void updateToCurrentVersion(Diagram diagram, int version) {
+		if (version == VERSION_1) {
+			updateFromVersion1(diagram);
+			version = VERSION_2;
+		}
+		if (version == VERSION_2) {
+			updateFromVersion2(diagram);
+			version = VERSION_3;
+		}
 	}
 
 	private void updateFromVersion1(final Diagram diagram) {
@@ -139,6 +165,22 @@ public class UpdateDiagramFeature extends DefaultUpdateDiagramFeature {
 				Object o = getBusinessObjectForPictogramElement(s);
 				if (o instanceof Actor) {
 					Actor actor = (Actor) o;
+					ChopboxAnchor cba = Graphiti.getPeCreateService()
+							.createChopboxAnchor(s);
+					link(cba, actor);
+				}
+			}
+		}
+	}
+
+	private void updateFromVersion2(final Diagram diagram) {
+		// Update Shapes of Actors to add an anchor, allowing to start a
+		// connection by clicking on an Actor rather than a Port
+		for (Shape s : diagram.getChildren()) {
+			if (s instanceof ContainerShape) {
+				Object o = getBusinessObjectForPictogramElement(s);
+				if (o instanceof ExecutableActor && !(o instanceof Actor)) {
+					ExecutableActor actor = (ExecutableActor) o;
 					ChopboxAnchor cba = Graphiti.getPeCreateService()
 							.createChopboxAnchor(s);
 					link(cba, actor);
