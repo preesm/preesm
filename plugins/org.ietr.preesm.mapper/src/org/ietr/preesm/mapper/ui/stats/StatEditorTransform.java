@@ -61,19 +61,14 @@ public class StatEditorTransform extends AbstractTaskImplementation {
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName, Workflow workflow) throws WorkflowException {
 
-		IAbc simulator = (IAbc) inputs.get("ABC");
+		IAbc abc = (IAbc) inputs.get("ABC");
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 
-		if (simulator instanceof IAbc) {
-			IAbc abc = (IAbc) simulator;
+		IEditorInput input = new StatEditorInput(abc, scenario, parameters);
 
-			IEditorInput input = new StatEditorInput(abc, scenario, parameters);
-			
-			// Run statistic editor
-			PlatformUI.getWorkbench().getDisplay()
-					.asyncExec(new EditorRunnable(input));
-			
-		}
+		// Run statistic editor
+		PlatformUI.getWorkbench().getDisplay()
+				.asyncExec(new EditorRunnable(input));
 
 		return new HashMap<String, Object>();
 	}

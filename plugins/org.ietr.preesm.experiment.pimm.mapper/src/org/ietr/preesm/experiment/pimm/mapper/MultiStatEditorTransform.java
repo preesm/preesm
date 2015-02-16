@@ -68,18 +68,12 @@ public class MultiStatEditorTransform extends AbstractTaskImplementation {
 		Set<IAbc> simulators = (Set<IAbc>) inputs.get(KEY_SDF_ABC_SET);
 		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
 
-		for (IAbc simulator : simulators) {
-			if (simulator instanceof IAbc) {
-				IAbc abc = (IAbc) simulator;
+		for (IAbc abc : simulators) {
+			IEditorInput input = new StatEditorInput(abc, scenario, parameters);
 
-				IEditorInput input = new StatEditorInput(abc, scenario,
-						parameters);
-
-				// Run statistic editor
-				PlatformUI.getWorkbench().getDisplay()
-						.asyncExec(new EditorRunnable(input));
-
-			}
+			// Run statistic editor
+			PlatformUI.getWorkbench().getDisplay()
+					.asyncExec(new EditorRunnable(input));
 		}
 
 		return new HashMap<String, Object>();
