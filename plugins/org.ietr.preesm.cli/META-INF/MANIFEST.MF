@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PREESM Command Line Interface
+Bundle-SymbolicName: org.ietr.preesm.cli;singleton:=true
+Bundle-Version: 2.1.2.qualifier
+Bundle-Activator: org.ietr.preesm.cli.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.apache.commons.cli;bundle-version="1.2.0",
+ org.apache.commons.lang;bundle-version="2.6.0",
+ org.eclipse.core.resources,
+ org.ietr.dftools.workflow,
+ org.ietr.preesm.utils;bundle-version="2.1.2",
+ org.ietr.preesm.ui,
+ org.ietr.dftools.ui
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
