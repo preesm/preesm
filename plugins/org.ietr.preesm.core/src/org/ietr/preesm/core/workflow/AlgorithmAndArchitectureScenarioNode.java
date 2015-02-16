@@ -35,12 +35,15 @@ knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 package org.ietr.preesm.core.workflow;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.algorithm.model.parameters.VariableSet;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.architecture.slam.Design;
@@ -83,6 +86,7 @@ public class AlgorithmAndArchitectureScenarioNode extends
 		// Retrieving the algorithm
 		SDFGraph sdfAlgorithm = null;
 		PiGraph piAlgorithm = null;
+
 		try {
 			scenario = scenarioParser.parseXmlFile(file);
 			String url = scenario.getAlgorithmURL();
@@ -90,7 +94,7 @@ public class AlgorithmAndArchitectureScenarioNode extends
 				sdfAlgorithm = ScenarioParser.getSDFGraph(url);
 			else if (scenario.isPISDFScenario())
 				piAlgorithm = ScenarioParser.getPiGraph(url);
-		} catch (Exception e) {
+		} catch (FileNotFoundException | InvalidModelException | CoreException e) {
 			throw new WorkflowException(e.getMessage());
 		}
 
