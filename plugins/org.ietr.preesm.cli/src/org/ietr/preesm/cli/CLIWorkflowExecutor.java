@@ -157,6 +157,7 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 
 			// Launch the execution of the given workflow with the given
 			// scenario
+			DFToolsWorkflowLogger.runFromCLI();
 			execute(workflowPath, scenarioPath, null);
 
 		} catch (UnrecognizedOptionException uoe) {

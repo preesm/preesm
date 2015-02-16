@@ -10,6 +10,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.ietr.dftools.workflow,
  org.ietr.preesm.utils;bundle-version="2.1.2",
- org.ietr.preesm.ui
+ org.ietr.preesm.ui,
+ org.ietr.dftools.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
