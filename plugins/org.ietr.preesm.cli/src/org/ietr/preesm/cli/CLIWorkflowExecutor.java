@@ -52,11 +52,13 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.ietr.dftools.ui.workflow.tools.DFToolsWorkflowLogger;
 import org.ietr.dftools.workflow.AbstractWorkflowExecutor;
 import org.ietr.dftools.workflow.messages.WorkflowMessages;
 import org.ietr.preesm.utils.log.PreesmLogger;
@@ -102,7 +104,8 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 						"Expected project name as last argument", 0);
 			}
 			String projectName = line.getArgs()[0];
-			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			IWorkspace workspace = ResourcesPlugin.getWorkspace();
+			IWorkspaceRoot root = workspace.getRoot();
 			project = root.getProject(new Path(projectName).lastSegment());
 
 			// Handle options
@@ -124,8 +127,9 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 					}
 				}
 				if (workflows.size() == 1) {
-					workflowPath = (project.getLocation().append(workflows.get(
-							0).getProjectRelativePath())).toPortableString();
+					workflowPath = (new Path(project.getName())
+							.append(workflows.get(0).getProjectRelativePath()))
+							.toPortableString();
 				} else
 					PreesmLogger
 							.warn("Test projects must contain one and only one workflow file, or the workflow file to be used must be specified using the -w option.");
@@ -143,8 +147,9 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 					}
 				}
 				if (scenarios.size() == 1) {
-					scenarioPath = (project.getLocation().append(scenarios.get(
-							0).getProjectRelativePath())).toPortableString();
+					scenarioPath = (new Path(project.getName())
+							.append(scenarios.get(0).getProjectRelativePath()))
+							.toPortableString();
 				} else
 					PreesmLogger
 							.warn("Test projects must contain one and only one scenario file, or the scenario file to be used must be specified using the -s option.");
@@ -206,12 +211,13 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 		helpFormatter.printHelp(getClass().getSimpleName() + " [options] ",
 				"Valid options are :", options, footer);
 	}
-	
+
 	/**
 	 * Log method for workflow execution without eclipse UI
 	 */
 	@Override
 	protected void log(Level level, String msgKey, String... variables) {
-		PreesmLogger.logln(level, WorkflowMessages.getString(msgKey, variables));
+		PreesmLogger
+				.logln(level, WorkflowMessages.getString(msgKey, variables));
 	}
 }
