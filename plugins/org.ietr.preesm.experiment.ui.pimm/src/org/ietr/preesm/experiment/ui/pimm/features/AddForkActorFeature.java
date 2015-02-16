@@ -41,6 +41,7 @@ import org.eclipse.graphiti.features.impl.AbstractAddFeature;
 import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
+import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -98,10 +99,8 @@ public class AddForkActorFeature extends AbstractAddFeature {
 			// create and set graphics algorithm
 			roundedRectangle = gaService.createRoundedRectangle(containerShape,
 					5, 5);
-			roundedRectangle
-					.setForeground(manageColor(FORK_ACTOR_FOREGROUND));
-			roundedRectangle
-					.setBackground(manageColor(FORK_ACTOR_BACKGROUND));
+			roundedRectangle.setForeground(manageColor(FORK_ACTOR_FOREGROUND));
+			roundedRectangle.setBackground(manageColor(FORK_ACTOR_BACKGROUND));
 			roundedRectangle.setLineWidth(2);
 			gaService.setLocationAndSize(roundedRectangle, context.getX(),
 					context.getY(), width, height);
@@ -133,6 +132,13 @@ public class AddForkActorFeature extends AbstractAddFeature {
 			// create link and wire it
 			link(shape, addedActor);
 		}
+
+		// Add a ChopBoxAnchor for the actor
+		// this ChopBoxAnchor is used to create connection from an actor to
+		// another rather than between ports (output and input ports are then
+		// created)
+		ChopboxAnchor cba = peCreateService.createChopboxAnchor(containerShape);
+		link(cba, addedActor);
 
 		// Call the layout feature
 		layoutPictogramElement(containerShape);
