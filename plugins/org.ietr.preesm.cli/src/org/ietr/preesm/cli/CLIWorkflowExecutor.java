@@ -78,11 +78,14 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 		IApplication {
 
 	/**
-	 * Project to test
+	 * Project containing the
 	 */
 	protected IProject project;
 
-	// private boolean debug;
+	private static final String workflowsDir = "/Workflows";
+	private static final String workflowExt = "workflow";
+	private static final String scenarioDir = "/Scenarios";
+	private static final String scenarioExt = "scenario";
 
 	@Override
 	public Object start(IApplicationContext context) throws Exception {
@@ -111,18 +114,17 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 			// Handle options
 			String workflowPath = line.getOptionValue('w');
 			String scenarioPath = line.getOptionValue('s');
-			// debug = line.hasOption('d');
 
 			// If paths to workflow and scenario are not specified using
 			// options, find them in the project given as arguments
 			if (workflowPath == null) {
-				IFolder workflowsFolder = project.getFolder("/Workflows");
+				IFolder workflowsFolder = project.getFolder(workflowsDir);
 				List<IFile> workflows = new ArrayList<IFile>();
 				for (IResource resource : workflowsFolder.members()) {
 					if (resource instanceof IFile) {
 						IFile file = (IFile) resource;
 						if (file.getProjectRelativePath().getFileExtension()
-								.equals("workflow"))
+								.equals(workflowExt))
 							workflows.add(file);
 					}
 				}
@@ -132,11 +134,17 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 							.toPortableString();
 				} else
 					PreesmLogger
-							.warn("Test projects must contain one and only one workflow file, or the workflow file to be used must be specified using the -w option.");
+							.warn("Project must contain one and only one workflow file, or the workflow file to be used must be specified using the -w option.");
+			} else {
+				if (!workflowPath.contains(projectName))
+					workflowPath = projectName + workflowsDir + "/"
+							+ workflowPath;
+				if (!workflowPath.endsWith(workflowExt))
+					workflowPath = workflowPath + "." + workflowExt;
 			}
 
 			if (scenarioPath == null) {
-				IFolder scenariosFolder = project.getFolder("/Scenarios");
+				IFolder scenariosFolder = project.getFolder(scenarioDir);
 				List<IFile> scenarios = new ArrayList<IFile>();
 				for (IResource resource : scenariosFolder.members()) {
 					if (resource instanceof IFile) {
@@ -152,7 +160,13 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 							.toPortableString();
 				} else
 					PreesmLogger
-							.warn("Test projects must contain one and only one scenario file, or the scenario file to be used must be specified using the -s option.");
+							.warn("Project must contain one and only one scenario file, or the scenario file to be used must be specified using the -s option.");
+			} else {
+				if (!scenarioPath.contains(projectName))
+					scenarioPath = projectName + scenarioDir + "/"
+							+ scenarioPath;
+				if (!scenarioPath.endsWith(scenarioExt))
+					scenarioPath = scenarioPath + "." + scenarioExt;
 			}
 
 			// Launch the execution of the given workflow with the given
@@ -185,9 +199,6 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 		options.addOption(opt);
 
 		opt = new Option("s", "scenario", true, "Scenario path");
-		options.addOption(opt);
-
-		opt = new Option("d", "debug", false, "Enable debug mode");
 		options.addOption(opt);
 
 		return options;
