@@ -46,6 +46,7 @@ import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.preesm.core.scenario.serialize.CsvTimingParser;
 import org.ietr.preesm.core.scenario.serialize.ExcelTimingParser;
 
 /**
@@ -248,11 +249,19 @@ public class TimingManager {
 
 	public void importTimings(PreesmScenario currentScenario) {
 		if (!excelFileURL.isEmpty() && currentScenario != null) {
-			ExcelTimingParser parser = new ExcelTimingParser(currentScenario);
+			ExcelTimingParser excelParser = new ExcelTimingParser(currentScenario);
+			CsvTimingParser csvParser = new CsvTimingParser(currentScenario);
 
 			try {
-				parser.parse(excelFileURL,
-						currentScenario.getOperatorDefinitionIds());
+				String[] fileExt = excelFileURL.split("\\.");
+				switch(fileExt[fileExt.length-1]){
+				case "xls":
+					excelParser.parse(excelFileURL, currentScenario.getOperatorDefinitionIds());
+					break;
+				case "csv":
+					csvParser.parse(excelFileURL, currentScenario.getOperatorDefinitionIds());
+					break;
+				}					
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

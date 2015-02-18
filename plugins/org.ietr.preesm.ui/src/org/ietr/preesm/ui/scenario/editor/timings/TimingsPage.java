@@ -37,7 +37,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.ui.scenario.editor.timings;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -120,12 +123,14 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		form.getBody().setLayout(layout);
 
 		// Timing file chooser section
-		createFileSection(managedForm,
+		createFileSection(
+				managedForm,
 				Messages.getString("Timings.timingFile"),
 				Messages.getString("Timings.timingFileDescription"),
-				Messages.getString("Timings.timingFileEdit"), scenario
-						.getTimingManager().getExcelFileURL(),
-				Messages.getString("Timings.timingFileBrowseTitle"), "xls");
+				Messages.getString("Timings.timingFileEdit"), 
+				scenario.getTimingManager().getExcelFileURL(),
+				Messages.getString("Timings.timingFileBrowseTitle"), 
+				new HashSet<String>(Arrays.asList("xls", "csv")));
 
 		createTimingsSection(managedForm, Messages.getString("Timings.title"),
 				Messages.getString("Timings.description"));
@@ -411,7 +416,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 	 */
 	private void createFileSection(IManagedForm mform, String title,
 			String desc, String fileEdit, String initValue, String browseTitle,
-			String fileExtension) {
+			Set<String> fileExtension) {
 
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.heightHint = 120;
