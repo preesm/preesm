@@ -38,7 +38,6 @@ package org.ietr.preesm.algorithm.transforms
 import java.util.HashMap
 import java.util.Map
 import org.eclipse.core.runtime.IProgressMonitor
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.workflow.WorkflowException
 import org.ietr.dftools.workflow.elements.Workflow
