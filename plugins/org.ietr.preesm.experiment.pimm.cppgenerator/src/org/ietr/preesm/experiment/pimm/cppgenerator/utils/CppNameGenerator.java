@@ -4,7 +4,6 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.pimm.cppgenerator.utils.CppTypeConverter.PiSDFSubType;
 
 public final class CppNameGenerator {
 	/** Private constructor: prevents instantiation by client code */
