@@ -114,5 +114,24 @@
             </input>
          </inputs>
       </task>
+      <task
+            id="org.ietr.preesm.experiment.codegen.xtend.MultiCodegenTask"
+            name="Multi Xtend Code Generation"
+            type="org.ietr.preesm.codegen.xtend.multiSDFTasks.MultiCodegenTask">
+         <inputs>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+            <input
+                  id="architecture"
+                  object="org.ietr.dftools.architecture.slam.Design">
+            </input>
+            <input
+                  id="DAGsAndMemExs"
+                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+            </input>
+         </inputs>
+      </task>
    </extension>
 </plugin>

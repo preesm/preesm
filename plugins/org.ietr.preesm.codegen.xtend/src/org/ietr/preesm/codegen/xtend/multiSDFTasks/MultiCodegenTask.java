@@ -1,4 +1,4 @@
-package org.ietr.preesm.experiment.codegen.xtend;
+package org.ietr.preesm.codegen.xtend.multiSDFTasks;
 
 import java.util.ArrayList;
 import java.util.HashMap;
