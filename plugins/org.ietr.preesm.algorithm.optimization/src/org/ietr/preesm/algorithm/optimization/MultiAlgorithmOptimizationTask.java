@@ -62,6 +62,7 @@ public class MultiAlgorithmOptimizationTask extends AbstractTaskImplementation {
 			String nodeName, Workflow workflow) throws WorkflowException {
 
 		// Get the SDFGraph to optimize
+		@SuppressWarnings("unchecked")
 		Set<SDFGraph> graphs = (Set<SDFGraph>) inputs.get(KEY_SDF_GRAPHS_SET);
 
 		// First pass is to clean the graph from useless pairs of join-fork
