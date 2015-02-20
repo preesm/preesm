@@ -281,20 +281,6 @@ public class PiSDFCodeGenerator{
 		return cppString.toString();
 	}
 
-	private Map<String, Map<Integer, String>> extractTimings() {
-		Map<String, Map<Integer, String>> timings = new HashMap<String, Map<Integer, String>>();
-		
-		for (Timing t : scenario.getTimingManager().getTimings()) {
-			String nodeName = t.getVertexId();
-			if (!timings.containsKey(nodeName)) {
-				timings.put(nodeName, new HashMap<Integer, String>());
-			}
-			timings.get(nodeName).put(coreTypesIds.get(t.getOperatorDefinitionId()), t.getStringValue());
-		}		
-		
-		return timings;
-	}
-
 	/**
 	 * Generate the top method, responsible for building the whole C++ PiGraph
 	 * corresponding to pg
