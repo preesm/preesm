@@ -40,9 +40,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
 /**
-import org.ietr.preesm.experiment.core.piscenario.ActorNode;
-import org.ietr.preesm.experiment.core.piscenario.ActorTree;
-import org.ietr.preesm.experiment.core.piscenario.ParameterValue;
  * This class provides the elements displayed in {@link ActorTree}. Each
  * element is a {@link ActorNode}. This tree is used in scenario editor to edit
  * parameters
