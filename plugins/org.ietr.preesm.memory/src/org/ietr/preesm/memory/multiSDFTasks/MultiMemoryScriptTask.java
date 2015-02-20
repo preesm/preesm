@@ -34,7 +34,7 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
 
-package org.ietr.preesm.experiment.memory;
+package org.ietr.preesm.memory.multiSDFTasks;
 
 import java.util.HashMap;
 import java.util.Map;

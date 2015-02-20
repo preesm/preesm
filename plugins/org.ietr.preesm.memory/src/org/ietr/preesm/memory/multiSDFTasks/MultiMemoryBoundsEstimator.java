@@ -1,4 +1,4 @@
-package org.ietr.preesm.experiment.memory;
+package org.ietr.preesm.memory.multiSDFTasks;
 
 import java.util.HashMap;
 import java.util.HashSet;
