@@ -159,14 +159,14 @@ class InstrumentedCPrinter extends CPrinter {
 				// Retrieve the function ID
 				val elt = coreLoop.codeElts.get(i)
 				val functionID = switch elt {
-					FunctionCall case true:
+					FunctionCall:
 						elt.name
-					SpecialCall case true:
+					SpecialCall:
 						elt.name
-					SharedMemoryCommunication case true:
+					SharedMemoryCommunication:
 						elt.direction.toString.toLowerCase + elt.delimiter.toString.toLowerCase.toFirstUpper +
 							elt.data.name
-					FifoCall case true:
+					FifoCall:
 						elt.name
 					default:
 						"undefined"
