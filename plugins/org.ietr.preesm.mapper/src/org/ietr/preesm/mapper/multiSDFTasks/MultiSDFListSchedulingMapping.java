@@ -1,4 +1,4 @@
-package org.ietr.preesm.experiment.pimm.mapper;
+package org.ietr.preesm.mapper.multiSDFTasks;
 
 import java.util.HashMap;
 import java.util.HashSet;

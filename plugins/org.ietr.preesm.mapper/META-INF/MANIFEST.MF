@@ -34,6 +34,7 @@ Export-Package: org.ietr.preesm.mapper,
  org.ietr.preesm.mapper.gantt,
  org.ietr.preesm.mapper.graphtransfo,
  org.ietr.preesm.mapper.model,
+ org.ietr.preesm.mapper.multiSDFTasks,
  org.ietr.preesm.mapper.params,
  org.ietr.preesm.mapper.scenariogen,
  org.ietr.preesm.mapper.ui.stats

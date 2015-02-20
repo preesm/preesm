@@ -234,6 +234,61 @@
             </input>
          </inputs>
       </task>
+      <task
+            id="org.ietr.preesm.experiment.pimm.mapper.MultiSDFListSchedulingMapping"
+            name="Multi Kwok list scheduling algorithm"
+            type="org.ietr.preesm.mapper.multiSDFTasks.MultiSDFListSchedulingMapping">
+         <inputs>
+            <input
+                  id="SDFs"
+                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.sdf.SDFGraph&gt;">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+            <input
+                  id="architecture"
+                  object="org.ietr.dftools.architecture.slam.Design">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="DAGs"
+                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph&gt;">
+            </output>
+            <output
+                  id="ABCs"
+                  object="java.util.Set&lt;org.ietr.preesm.mapper.abc.IAbc&gt;">
+            </output>
+         </outputs>
+      </task>
+      <task
+            id="org.ietr.preesm.experiment.pimm.mapper.MultiStatEditorTransform"
+            name="Multi Gantt plot transform"
+            type="org.ietr.preesm.mapper.multiSDFTasks.MultiStatEditorTransform">
+         <inputs>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+            <input
+                  id="ABCs"
+                  object="java.util.Set&lt;org.ietr.preesm.mapper.abc.IAbc&gt;">
+            </input>
+         </inputs>
+      </task>
+      <task
+            id="org.ietr.preesm.experiment.pimm.mapper.MultiDAGExportTransform"
+            name="Multi DAG Exporter"
+            type="org.ietr.preesm.mapper.multiSDFTasks.MultiDAGExportTransform">
+         <inputs>
+            <input
+                  id="DAGs"
+                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph&gt;">
+            </input>
+         </inputs>
+      </task>
    </extension>
 
 </plugin>
