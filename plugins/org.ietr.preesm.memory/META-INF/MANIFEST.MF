@@ -25,4 +25,5 @@ Bundle-ClassPath: lib/bsh-2.1.7.jar,.
 Export-Package: org.ietr.preesm.memory.allocation,
  org.ietr.preesm.memory.bounds,
  org.ietr.preesm.memory.exclusiongraph,
+ org.ietr.preesm.memory.multiSDFTasks,
  org.ietr.preesm.memory.script

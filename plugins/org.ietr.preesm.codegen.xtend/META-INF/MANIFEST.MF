@@ -22,9 +22,10 @@ Require-Bundle: org.eclipse.core.runtime,
  org.ietr.preesm.codegen;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Export-Package: org.ietr.preesm.codegen.xtend.task,
- org.ietr.preesm.codegen.xtend.model.codegen,
+Export-Package: org.ietr.preesm.codegen.xtend.model.codegen,
  org.ietr.preesm.codegen.xtend.model.codegen.impl,
- org.ietr.preesm.codegen.xtend.model.codegen.util
+ org.ietr.preesm.codegen.xtend.model.codegen.util,
+ org.ietr.preesm.codegen.xtend.multiSDFTasks,
+ org.ietr.preesm.codegen.xtend.task
 Bundle-Version: 2.1.2.qualifier
 
