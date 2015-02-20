@@ -131,21 +131,7 @@ The fact that you are presently reading this means that you have had knowledge o
          unpack="false"/>
 
    <plugin
-         id="org.ietr.preesm.experiment.memory"
-         download-size="0"
-         install-size="0"
-         version="2.1.2.qualifier"
-         unpack="false"/>
-
-   <plugin
          id="org.ietr.preesm.experiment.pimm.cppgenerator"
-         download-size="0"
-         install-size="0"
-         version="2.1.2.qualifier"
-         unpack="false"/>
-
-   <plugin
-         id="org.ietr.preesm.experiment.pimm.mapper"
          download-size="0"
          install-size="0"
          version="2.1.2.qualifier"
