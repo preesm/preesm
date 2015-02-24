@@ -99,7 +99,7 @@
             hasPages="true"
             icon="icons/graphiti.gif"
             id="org.ietr.preesm.ui.wizards.graphml"
-            name="Algorithm (IBSDF)"
+            name="Preesm Algorithm (IBSDF)"
             project="false">
          <description>
             Create a new IBSDF algorithm.
@@ -127,7 +127,7 @@
             hasPages="true"
             icon="icons/preesm4mini.PNG"
             id="org.ietr.preesm.core.ui.wizards.NewScenarioFileWizard"
-            name="Scenario"
+            name="Preesm Scenario"
             project="false">
          <description>
             Create a new scenario file

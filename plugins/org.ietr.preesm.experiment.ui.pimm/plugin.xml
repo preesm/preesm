@@ -33,7 +33,7 @@
             hasPages="true"
             icon="icons/pi.gif"
             id="org.ietr.preesm.experiment.ui.pimm.wizards.NewPiMMWizard"
-            name="Algorithm Description (PiMM)"
+            name="Preesm Algorithm (PiSDF)"
             project="true">
          <description>
             Create a new PiMM algorithm.
