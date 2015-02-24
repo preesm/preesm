@@ -93,11 +93,7 @@ public class FunctionArgumentFactory {
 				try {
 					currentParam = new Constant(argName, vertex.getArgument(
 							argName).intValue());
-				} catch (InvalidExpressionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (NoIntegerValueException e) {
-					// TODO Auto-generated catch block
+				} catch (InvalidExpressionException | NoIntegerValueException e) {
 					e.printStackTrace();
 				}
 			}
@@ -107,11 +103,7 @@ public class FunctionArgumentFactory {
 				try {
 					currentParam = new Constant(argName, vertex.getArgument(
 							argName).intValue());
-				} catch (InvalidExpressionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (NoIntegerValueException e) {
-					// TODO Auto-generated catch block
+				} catch (InvalidExpressionException | NoIntegerValueException e) {
 					e.printStackTrace();
 				}
 			} else if (vertex instanceof CodeGenSDFSubInitVertex) {
@@ -165,7 +157,6 @@ public class FunctionArgumentFactory {
 				}
 				return currentParam;
 			} catch (InvalidExpressionException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return null;
 			}

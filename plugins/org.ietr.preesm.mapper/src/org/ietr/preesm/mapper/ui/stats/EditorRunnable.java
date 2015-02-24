@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -65,9 +65,10 @@ public class EditorRunnable implements Runnable {
 			IWorkbenchPage page = dwindow.getActivePage();
 
 			try {
-				page.openEditor(input, "org.ietr.preesm.plugin.mapper.plot.stats.StatEditor",false);
+				page.openEditor(input,
+						"org.ietr.preesm.plugin.mapper.plot.stats.StatEditor",
+						false);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

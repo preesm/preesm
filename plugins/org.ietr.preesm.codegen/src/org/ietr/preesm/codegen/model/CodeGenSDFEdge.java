@@ -70,7 +70,6 @@ public class CodeGenSDFEdge extends SDFEdge {
 					+ getSourceInterface().getName() + " ["
 					+ getProd().intValue() + "];\n";
 		} catch (InvalidExpressionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return "error";
 		}

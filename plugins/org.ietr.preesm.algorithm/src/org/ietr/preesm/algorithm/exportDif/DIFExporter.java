@@ -106,11 +106,7 @@ public class DIFExporter extends AbstractTaskImplementation {
 			// Write the result into the text file
 			exporter.write(file);
 
-		} catch (SDF4JException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
+		} catch (SDF4JException | CoreException e) {
 			e.printStackTrace();
 		}
 

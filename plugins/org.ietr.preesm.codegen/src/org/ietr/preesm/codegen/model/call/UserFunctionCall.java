@@ -116,7 +116,6 @@ public class UserFunctionCall extends AbstractCodeElement {
 								+ "*sizeof("
 								+ outEdge.getDataType().toString() + ")"));
 					} catch (InvalidExpressionException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}

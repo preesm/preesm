@@ -124,7 +124,6 @@ public class CodeGenerationTransformation extends AbstractTaskImplementation {
 			try {
 				codeGenSDFGraph.accept(printer);
 			} catch (SDF4JException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

@@ -55,18 +55,16 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 
 /**
- * This Workflow element is used to generate random SDF graphs
- * The user can define the following options:
- * - Number of vertices
- * - Minimum/maximum number of input/output per actor
- * - Minimum/maximum input/output rates
- * - Minimum/maximum execution time
+ * This Workflow element is used to generate random SDF graphs The user can
+ * define the following options: - Number of vertices - Minimum/maximum number
+ * of input/output per actor - Minimum/maximum input/output rates -
+ * Minimum/maximum execution time
  * 
- * The Workflow element must have a scenario, a sdf and an architecture
- * as inputs and outputs a SDF and a Scenario
+ * The Workflow element must have a scenario, a sdf and an architecture as
+ * inputs and outputs a SDF and a Scenario
  * 
- * This Workflow element is experimental and probably have many
- * flaws. It should be used with great caution.
+ * This Workflow element is experimental and probably have many flaws. It should
+ * be used with great caution.
  * 
  * @author kdesnos
  *
@@ -85,7 +83,7 @@ public class RandomSDF extends AbstractTaskImplementation {
 	// All prod./Cons. rate will be multiplied by the value.
 	// This does not change the consistency, only make
 	// the production/consumption rates to be more significant
-	private int rateMultiplier; 
+	private int rateMultiplier;
 
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
@@ -109,7 +107,6 @@ public class RandomSDF extends AbstractTaskImplementation {
 					minInDegree, maxInDegree, minOutDegree, maxOutDegree,
 					minRate, maxRate, rateMultiplier);
 		} catch (SDF4JException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -184,7 +181,7 @@ public class RandomSDF extends AbstractTaskImplementation {
 
 		param = parameters.get("maxTime");
 		maxTime = (param != null) ? Integer.decode(param) : 1000;
-		
+
 		param = parameters.get("rateMultiplier");
 		rateMultiplier = (param != null) ? Integer.decode(param) : 1000;
 	}

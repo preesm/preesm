@@ -99,7 +99,6 @@ public class XsltTransformer {
 			try {
 				transformer = factory.newTransformer(source);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -141,10 +140,8 @@ public class XsltTransformer {
 						"Problem finding files for XSL transfo ("
 								+ osSourceFilePath, "," + osDestFilePath + ")");
 			} catch (TransformerException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 

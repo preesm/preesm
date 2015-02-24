@@ -80,7 +80,6 @@ public class ForkJoinRemover {
 		try {
 			iterSDFVertices = new SDFIterator(hsdf);
 		} catch (InvalidExpressionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return;
 		} catch (RuntimeException e) {

@@ -92,7 +92,6 @@ public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 			this.outputPath = outputPath;
 			isWrapper = true;
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -129,20 +128,15 @@ public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 			edges_declarations.add(edgeDeclarationTemplate);
 		}
 
-/*		try {
-			if (sdfEdge.getDelay().intValue() > 0) {
-				StringTemplate edgeDelayTemplate = group
-						.getInstanceOf("edge_delay");
-				edgeDelayTemplate.setAttribute("fifo", fifoName);
-				edgeDelayTemplate.setAttribute("delay_size", sdfEdge.getDelay()
-						.intValue());
-				edgeDelayTemplate.setAttribute("delay_value", 0);
-				edge_delay_init.add(edgeDelayTemplate);
-			}
-		} catch (InvalidExpressionException e) {
-			e.printStackTrace();
-		}
-*/
+		/*
+		 * try { if (sdfEdge.getDelay().intValue() > 0) { StringTemplate
+		 * edgeDelayTemplate = group .getInstanceOf("edge_delay");
+		 * edgeDelayTemplate.setAttribute("fifo", fifoName);
+		 * edgeDelayTemplate.setAttribute("delay_size", sdfEdge.getDelay()
+		 * .intValue()); edgeDelayTemplate.setAttribute("delay_value", 0);
+		 * edge_delay_init.add(edgeDelayTemplate); } } catch
+		 * (InvalidExpressionException e) { e.printStackTrace(); }
+		 */
 		StringTemplate srcConnection = group.getInstanceOf("connection");
 		if (sdfEdge.getTarget() instanceof SDFSinkInterfaceVertex && !isWrapper) {
 			srcConnection.setAttribute("actor", sdfEdge.getSource().getName());
@@ -176,7 +170,8 @@ public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 		}
 
 		StringTemplate trgtConnection = group.getInstanceOf("connection");
-		if (sdfEdge.getSource() instanceof SDFSourceInterfaceVertex && !isWrapper) {
+		if (sdfEdge.getSource() instanceof SDFSourceInterfaceVertex
+				&& !isWrapper) {
 			trgtConnection.setAttribute("actor", sdfEdge.getTarget().getName());
 			trgtConnection.setAttribute("edge", sdfEdge.getSource().getName());
 		} else {
@@ -306,7 +301,6 @@ public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 			fileWriter.write(fileTemplate.toString());
 			fileWriter.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -390,7 +384,7 @@ public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 				} else {
 					return "invoke";
 				}
-			} else if(incEdge.getSource() != v){ // avoid state edges ...
+			} else if (incEdge.getSource() != v) { // avoid state edges ...
 				return "dv_" + incEdge.getSource().getName();
 			}
 		}
@@ -419,7 +413,8 @@ public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 			StringTemplate broadcastTemplate = broadcastTemplateAttribute((CodeGenSDFBroadcastVertex) sdfVertex);
 			vertexDeclarationTemplate.setAttribute("type_template",
 					broadcastTemplate);
-			vertexDeclarationTemplate.setAttribute("type", "preesm_rtl_broadcast");
+			vertexDeclarationTemplate.setAttribute("type",
+					"preesm_rtl_broadcast");
 			if (!includes.contains("preesm_rtl_broadcast")) {
 				includes.add("preesm_rtl_broadcast");
 			}
@@ -632,7 +627,6 @@ public class RtlSystemCPrinterVisitor extends SystemCPrinterVisitor {
 			fileWriter.write(fileTemplate.toString());
 			fileWriter.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

@@ -115,7 +115,6 @@ public class DIFExporterVisitor implements
 				return;
 			}
 		} catch (InvalidExpressionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -213,7 +212,6 @@ public class DIFExporterVisitor implements
 			// If the number of core is not specified, 1 is the default
 			attributesMap.put("nb_cores", 1);
 		} catch (NoIntegerValueException e) {
-			// TODO Auto-generated catch block
 			// If the number of core is not specified, 1 is the default
 			attributesMap.put("nb_cores", 1);
 		}
@@ -245,7 +243,6 @@ public class DIFExporterVisitor implements
 
 			writer.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -270,7 +267,6 @@ public class DIFExporterVisitor implements
 			writer.write('\t' + "}" + "\n\n");
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -354,7 +350,6 @@ public class DIFExporterVisitor implements
 				writer.write("\t}\n\n");
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -379,7 +374,6 @@ public class DIFExporterVisitor implements
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

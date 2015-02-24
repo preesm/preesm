@@ -94,7 +94,6 @@ public class XsltTransform extends AbstractTaskImplementation {
 
 				// xsltTransfo.
 			} catch (TransformerConfigurationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

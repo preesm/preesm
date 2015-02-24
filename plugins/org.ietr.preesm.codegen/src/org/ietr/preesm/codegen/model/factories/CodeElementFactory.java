@@ -221,7 +221,6 @@ public class CodeElementFactory {
 					}
 				}
 			} catch (InvalidExpressionException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -273,7 +272,6 @@ public class CodeElementFactory {
 							* outEdge.getProd().intValue() + "]");
 					container.addCall(ass);
 				} catch (InvalidExpressionException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
@@ -532,7 +530,6 @@ public class CodeElementFactory {
 							incomingEdge.getCons().intValue()));
 					return delayCall;
 				} catch (InvalidExpressionException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -565,7 +562,6 @@ public class CodeElementFactory {
 							outgoingEdge.getProd().intValue()));
 					return delayCall;
 				} catch (InvalidExpressionException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

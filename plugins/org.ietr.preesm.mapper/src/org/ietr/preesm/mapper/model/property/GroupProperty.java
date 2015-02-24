@@ -24,7 +24,6 @@ abstract public class GroupProperty implements Cloneable {
 	 */
 	private Set<String> vertexIDs;
 
-	
 	public GroupProperty() {
 		vertexIDs = new HashSet<String>();
 	}
@@ -39,51 +38,50 @@ abstract public class GroupProperty implements Cloneable {
 			newProp = (GroupProperty) super.clone();
 			newProp.vertexIDs.addAll(vertexIDs);
 		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return newProp;
 	}
-	
+
 	/**
 	 * Adding a new member to the group
 	 */
-	public void addVertexID(String id){
-		for(String i:vertexIDs){
-			if(i.equals(id)){
+	public void addVertexID(String id) {
+		for (String i : vertexIDs) {
+			if (i.equals(id)) {
 				return;
 			}
 		}
 		vertexIDs.add(id);
 	}
-	
+
 	/**
 	 * Removing a member from the group
 	 */
-	public void removeVertexID(String id){
+	public void removeVertexID(String id) {
 		Iterator<String> it = vertexIDs.iterator();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			String i = it.next();
-			if(i.equals(id)){
+			if (i.equals(id)) {
 				it.remove();
 			}
 		}
 	}
-	
-	public int getNumberOfVertices(){
+
+	public int getNumberOfVertices() {
 		return vertexIDs.size();
 	}
-	
+
 	/**
 	 * Gets the vertices corresponding to the group
 	 */
-	public List<MapperDAGVertex> getVertices(MapperDAG dag){
+	public List<MapperDAGVertex> getVertices(MapperDAG dag) {
 		List<MapperDAGVertex> vertices = new ArrayList<MapperDAGVertex>();
-		
-		for(String id: vertexIDs){
-			vertices.add((MapperDAGVertex)dag.getVertex(id));
+
+		for (String id : vertexIDs) {
+			vertices.add((MapperDAGVertex) dag.getVertex(id));
 		}
-		
+
 		return vertices;
 	}
 }

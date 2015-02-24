@@ -205,7 +205,6 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 		try {
 			return correspondingVertex.getNbRepeat().toString();
 		} catch (InvalidExpressionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return "0";
 		}

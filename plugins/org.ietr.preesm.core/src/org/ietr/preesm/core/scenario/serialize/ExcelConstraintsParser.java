@@ -75,7 +75,8 @@ public class ExcelConstraintsParser {
 		this.scenario = scenario;
 	}
 
-	public void parse(String url, Set<String> allOperatorIds) throws InvalidModelException,FileNotFoundException {
+	public void parse(String url, Set<String> allOperatorIds)
+			throws InvalidModelException, FileNotFoundException {
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
@@ -112,14 +113,7 @@ public class ExcelConstraintsParser {
 				}
 			}
 
-		} catch (BiffException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
+		} catch (BiffException | IOException | CoreException e) {
 			e.printStackTrace();
 		}
 	}

@@ -59,7 +59,6 @@ public class CodeGenSDFGraph extends SDFGraph {
 	public CodeGenSDFGraph(CodeGenSDFEdgeFactory factory) {
 		super(factory);
 	}
-	
 
 	public String toString() {
 		String code = new String();
@@ -78,7 +77,6 @@ public class CodeGenSDFGraph extends SDFGraph {
 			}
 
 		} catch (InvalidExpressionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return code;

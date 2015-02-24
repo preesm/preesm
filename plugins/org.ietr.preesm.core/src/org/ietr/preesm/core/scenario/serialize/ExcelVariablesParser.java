@@ -70,7 +70,8 @@ public class ExcelVariablesParser {
 		this.scenario = scenario;
 	}
 
-	public void parse(String url) throws InvalidModelException,FileNotFoundException {
+	public void parse(String url) throws InvalidModelException,
+			FileNotFoundException {
 		WorkflowLogger.getLogger().log(Level.INFO,
 				"Importing variables from an excel sheet.");
 
@@ -88,14 +89,7 @@ public class ExcelVariablesParser {
 
 			parseVariables(w, currentGraph);
 
-		} catch (BiffException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
+		} catch (BiffException | IOException | CoreException e) {
 			e.printStackTrace();
 		}
 	}

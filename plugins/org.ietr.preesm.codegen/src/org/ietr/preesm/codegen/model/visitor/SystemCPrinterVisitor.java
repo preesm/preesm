@@ -122,7 +122,6 @@ public class SystemCPrinterVisitor implements
 					+ File.separator + base_template));
 			this.outputPath = outputPath;
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -366,7 +365,6 @@ public class SystemCPrinterVisitor implements
 			fileWriter.write(fileTemplate.toString());
 			fileWriter.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -655,7 +653,6 @@ public class SystemCPrinterVisitor implements
 			fileWriter.write(fileTemplate.toString());
 			fileWriter.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

@@ -183,7 +183,6 @@ public class BufferToolBox {
 							.getSource().getNbRepeat().toString()));
 				}
 			} catch (InvalidExpressionException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

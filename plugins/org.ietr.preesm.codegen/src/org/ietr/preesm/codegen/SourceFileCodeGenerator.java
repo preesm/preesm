@@ -188,7 +188,6 @@ public class SourceFileCodeGenerator {
 		try {
 			allocateBuffers(algorithm);
 		} catch (InvalidExpressionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return;
 		}

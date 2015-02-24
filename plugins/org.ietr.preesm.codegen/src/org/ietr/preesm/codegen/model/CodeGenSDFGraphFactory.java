@@ -539,7 +539,6 @@ public class CodeGenSDFGraphFactory {
 		try {
 			graph.validateModel(WorkflowLogger.getLogger());
 		} catch (SDF4JException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 
 		}
