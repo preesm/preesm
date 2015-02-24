@@ -24,10 +24,7 @@ public class ProjectExplorerFilter extends ViewerFilter {
 	 */
 	@Override
 	public boolean select(Viewer viewer, Object parentElement, Object element) {
-		// TODO Auto-generated method stub
-
 		if (element instanceof IFile) {
-
 			IFile file = (IFile) element;
 			String fileName = file.getName();
 			if (fileName.endsWith(".layout")) {
