@@ -11,8 +11,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.jgrapht,
  org.ietr.preesm.experiment.model,
  org.ietr.preesm.core,
- org.eclipse.core.resources,
- org.ietr.preesm.experiment.core
+ org.eclipse.core.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.ietr.preesm.experiment.pimm.cppgenerator
