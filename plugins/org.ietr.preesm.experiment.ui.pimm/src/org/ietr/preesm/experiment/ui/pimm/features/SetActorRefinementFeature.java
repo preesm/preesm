@@ -50,13 +50,13 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.ietr.preesm.experiment.header.parser.cdt.ASTAndActorComparisonVisitor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.ui.pimm.util.PiMMUtil;
+import org.ietr.preesm.pimm.header.parser.cdt.ASTAndActorComparisonVisitor;
 
 /**
  * Custom Feature to set a new {@link Refinement} of an {@link Actor}
