@@ -20,11 +20,21 @@ Require-Bundle: org.eclipse.ui,
  org.ietr.preesm.core;bundle-version="0.6.1",
  org.ietr.dftools.algorithm;bundle-version="0.0.1",
  org.eclipse.emf.common,
- org.ietr.preesm.experiment.model;bundle-version="2.0.1"
+ org.ietr.preesm.experiment.model;bundle-version="2.0.1",
+ org.eclipse.graphiti.ui,
+ org.eclipse.graphiti.mm,
+ org.eclipse.graphiti,
+ org.eclipse.emf.transaction,
+ org.eclipse.ltk.core.refactoring,
+ org.eclipse.text,
+ org.eclipse.cdt.core,
+ org.ietr.preesm.utils,
+ org.eclipse.ui.editors;bundle-version="3.8.200"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
 Export-Package: org.ietr.preesm.ui.console,
+ org.ietr.preesm.ui.pimm.features,
  org.ietr.preesm.ui.scenario.editor,
  org.ietr.preesm.ui.scenario.editor.codegen,
  org.ietr.preesm.ui.scenario.editor.constraints,

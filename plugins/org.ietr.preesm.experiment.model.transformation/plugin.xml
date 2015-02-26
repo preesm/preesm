@@ -3,87 +3,7 @@
 <plugin>
   
   
-   <extension
-         point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
-      <propertyContributor
-            contributorId="PiMM.PropertyContributor">
-         <propertyCategory
-               category="org.ietr.preesm.experiment.model.transformation.properties.category.graph">
-         </propertyCategory> 
-      </propertyContributor>
-   </extension>
-   <extension
-         point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
-      <propertyTabs
-            contributorId="PiMM.PropertyContributor">
-         <propertyTab
-               category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
-               id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basic"
-               label="Basic">
-         </propertyTab>
-         <propertyTab
-               category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
-               id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor"
-               label="BasicActor">
-         </propertyTab>
-         <propertyTab
-               category="org.ietr.preesm.experiment.model.transformation.properties.category.graph"
-               id="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicFifo"
-               label="BasicFifo">
-         </propertyTab>
-      </propertyTabs>
-   </extension>
-   <extension
-         point="org.eclipse.ui.views.properties.tabbed.propertySections">
-      <propertySections
-            contributorId="PiMM.PropertyContributor">
-         <propertySection
-              class="org.ietr.preesm.experiment.model.transformation.properties.PortParameterAndDelayPropertiesSection"
-              filter="org.ietr.preesm.experiment.model.transformation.properties.PiMMFilter"
-              id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basic"
-              tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basic">
-        </propertySection>
-         <propertySection
-               class="org.ietr.preesm.experiment.model.transformation.properties.ActorPropertiesSection"
-               filter="org.ietr.preesm.experiment.model.transformation.properties.PiMMActorFilter"
-               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicActor"
-               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor">
-         </propertySection>
-         <propertySection
-               class="org.ietr.preesm.experiment.model.transformation.properties.FifoPropertiesSection"
-               filter="org.ietr.preesm.experiment.model.transformation.properties.PiMMFifoFilter"
-               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicFifo"
-               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicFifo">
-         </propertySection>
-      </propertySections>
-   </extension>
    
-   <extension
-         point="org.eclipse.ui.navigator.navigatorContent">
-      <commonFilter
-            activeByDefault="true"
-            class="org.ietr.preesm.experiment.model.filter.ProjectExplorerPiFilter"
-            description="Filters the *.pi files"
-            id="org.ietr.preesm.experiment.pifilefilter"
-            name="PiFileFilter"
-            visibleInUI="true">
-      </commonFilter>
-   </extension>
-   <extension
-         point="org.eclipse.ui.navigator.viewer">
-      <viewerContentBinding
-            viewerId="org.eclipse.ui.navigator.ProjectExplorer">
-         <includes>
-            <contentExtension
-                  isRoot="true"
-                  pattern="org.ietr.preesm.experiment.pifilefilter">
-            </contentExtension>
-            <contentExtension
-                  isRoot="true"
-                  pattern="org.eclipse.ui.navigator.resourceContent">
-            </contentExtension></includes>
-      </viewerContentBinding>
-   </extension>
    <extension
          point="org.ietr.dftools.workflow.tasks">
       <task
@@ -96,26 +16,5 @@
             </input>
          </inputs>
       </task>
-   </extension>
-   <extension
-         point="org.ietr.dftools.workflow.scenarios">
-      <scenario
-            id="org.ietr.preesm.experiment.model.transformation.PiMMAndS-LAM"
-            type="org.ietr.preesm.experiment.model.transformation.PiMMAndSLAMScenarioNode">
-         <outputs>
-            <output
-                  id="scenario"
-                  object="org.ietr.preesm.experiment.core.piscenario.PiScenario">
-            </output>
-            <output
-                  id="PiMM"
-                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
-            </output>
-            <output
-                  id="architecture"
-                  object="org.ietr.dftools.architecture.slam.Design">
-            </output>
-         </outputs>
-      </scenario>
    </extension>
 </plugin>
