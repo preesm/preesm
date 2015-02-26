@@ -1,4 +1,4 @@
-package org.ietr.preesm.stats.exporter;
+package org.ietr.preesm.mapper.stats.exporter;
 
 import java.io.File;
 import java.util.HashMap;
