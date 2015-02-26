@@ -33,33 +33,47 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.experiment.pimm.subgraph.connector;
+package org.ietr.preesm.pimm.algorithm.subgraph.connector;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Activator implements BundleActivator {
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.dftools.workflow.WorkflowException;
+import org.ietr.dftools.workflow.elements.Workflow;
+import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.util.SubgraphConnector;
 
-	private static BundleContext context;
+public class SubgraphConnectorTask extends AbstractTaskImplementation {
 
-	static BundleContext getContext() {
-		return context;
+	@Override
+	public Map<String, Object> execute(Map<String, Object> inputs,
+			Map<String, String> parameters, IProgressMonitor monitor,
+			String nodeName, Workflow workflow) throws WorkflowException {
+
+		// Get the input
+		PiGraph pg = (PiGraph) inputs.get(KEY_PI_GRAPH);
+
+		// Visit it with the subgraph connector
+		SubgraphConnector connector = new SubgraphConnector();
+		connector.connectSubgraphs(pg);
+
+		// Return pg
+		Map<String, Object> outputs = new HashMap<String, Object>();
+		outputs.put(KEY_PI_GRAPH, pg);
+		return outputs;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
-	 */
-	public void start(BundleContext bundleContext) throws Exception {
-		Activator.context = bundleContext;
+	@Override
+	public Map<String, String> getDefaultParameters() {
+		return Collections.emptyMap();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
-	 */
-	public void stop(BundleContext bundleContext) throws Exception {
-		Activator.context = null;
+	@Override
+	public String monitorMessage() {
+		return "Connecting subgraphs";
 	}
 
 }

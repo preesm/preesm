@@ -59,6 +59,22 @@
             </output>
          </outputs>
       </task>
+      <task
+            id="org.ietr.preesm.experiment.pimm.subgraph.connector.SubgraphConnectorTask"
+            name="PiMM Subgraph Connector Task"
+            type="org.ietr.preesm.pimm.algorithm.subgraph.connector.SubgraphConnectorTask">
+         <inputs>
+            <input
+                  id="PiMM"
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="PiMM"
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph"></output>
+         </outputs>
+      </task>
    </extension>
 
 </plugin>
