@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.experiment.pimm2sdf.visitor;
+package org.ietr.preesm.pimm.algorithm.pimm2sdf.visitor;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -52,7 +52,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.pimm2sdf.PiGraphExecution;
+import org.ietr.preesm.pimm.algorithm.pimm2sdf.PiGraphExecution;
 
 /**
  * This class visits a PiGraph with one value for each of the Parameters and

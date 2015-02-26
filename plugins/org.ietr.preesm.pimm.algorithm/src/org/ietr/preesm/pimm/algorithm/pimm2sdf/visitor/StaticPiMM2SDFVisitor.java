@@ -1,4 +1,4 @@
-package org.ietr.preesm.experiment.pimm2sdf.visitor;
+package org.ietr.preesm.pimm.algorithm.pimm2sdf.visitor;
 
 import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -7,7 +7,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.pimm2sdf.PiGraphExecution;
+import org.ietr.preesm.pimm.algorithm.pimm2sdf.PiGraphExecution;
 
 public class StaticPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
 

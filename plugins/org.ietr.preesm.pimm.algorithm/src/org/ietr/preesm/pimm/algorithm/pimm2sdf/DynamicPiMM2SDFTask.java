@@ -33,24 +33,22 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.experiment.pimm2sdf;
+package org.ietr.preesm.pimm.algorithm.pimm2sdf;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.pimm2sdf.StaticPiMM2SDFLauncher.StaticPiMM2SDFException;
 
-public class StaticPiMM2SDFTask extends AbstractTaskImplementation {
+public class DynamicPiMM2SDFTask extends AbstractTaskImplementation {
 	
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
@@ -60,17 +58,11 @@ public class StaticPiMM2SDFTask extends AbstractTaskImplementation {
 		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
 		PiGraph graph = (PiGraph) inputs.get(KEY_PI_GRAPH);
 		
-		StaticPiMM2SDFLauncher launcher = new StaticPiMM2SDFLauncher(scenario, graph);
-		SDFGraph result = null;
-		try {
-			result = launcher.launch();
-		} catch (StaticPiMM2SDFException e) {
-			WorkflowLogger logger = WorkflowLogger.getLogger();
-			logger.log(Level.WARNING, e.getMessage());
-		}
+		DynamicPiMM2SDFLauncher launcher = new DynamicPiMM2SDFLauncher(scenario, graph);
+		Set<SDFGraph> result = launcher.launch();
 		
 		Map<String, Object> output = new HashMap<String, Object>();
-		output.put(KEY_SDF_GRAPH, result);
+		output.put(KEY_SDF_GRAPHS_SET, result);
 		return output;
 	}
 

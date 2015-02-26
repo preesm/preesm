@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.experiment.pimm2sdf.visitor;
+package org.ietr.preesm.pimm.algorithm.pimm2sdf.visitor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -95,7 +95,7 @@ import org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl;
 import org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl;
 import org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
-import org.ietr.preesm.experiment.pimm2sdf.PiGraphExecution;
+import org.ietr.preesm.pimm.algorithm.pimm2sdf.PiGraphExecution;
 
 public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 	// SDFGraph created from the outer graph

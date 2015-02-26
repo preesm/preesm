@@ -9,7 +9,10 @@ Require-Bundle: org.eclipse.core.runtime,
  org.ietr.dftools.workflow;bundle-version="1.1.4",
  org.ietr.preesm.core,
  org.ietr.preesm.experiment.model,
- org.eclipse.core.resources
+ org.eclipse.core.resources,
+ org.ietr.dftools.algorithm,
+ org.ietr.preesm.codegen
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
-Export-Package: org.ietr.preesm.pimm.algorithm.cppgenerator
+Export-Package: org.ietr.preesm.pimm.algorithm.cppgenerator,
+ org.ietr.preesm.pimm.algorithm.pimm2sdf

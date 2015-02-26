@@ -18,6 +18,47 @@
             </input>
          </inputs>
       </task>
+       <task
+            id="org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask"
+            name="Dynamic PiMM to SDF transformation"
+            type="org.ietr.preesm.pimm.algorithm.pimm2sdf.DynamicPiMM2SDFTask">
+         <inputs>
+            <input
+                  id="PiMM"
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="SDFs"
+                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.sdf.SDFGraph&gt;">
+            </output></outputs>
+      </task>
+      <task
+            id="org.ietr.preesm.experiment.pimm2sdf.StaticPiMM2SDFTask"
+            name="Static PiMM to SDF transformation"
+            type="org.ietr.preesm.pimm.algorithm.pimm2sdf.StaticPiMM2SDFTask">
+         <inputs>
+            <input
+                  id="PiMM"
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="SDF"
+                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
+            </output>
+         </outputs>
+      </task>
    </extension>
 
 </plugin>

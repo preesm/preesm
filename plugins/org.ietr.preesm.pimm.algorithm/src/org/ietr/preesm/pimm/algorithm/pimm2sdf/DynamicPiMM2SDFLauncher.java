@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.experiment.pimm2sdf;
+package org.ietr.preesm.pimm.algorithm.pimm2sdf;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,7 +47,7 @@ import org.ietr.preesm.core.scenario.ParameterValue;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.pimm2sdf.visitor.DynamicPiMM2SDFVisitor;
+import org.ietr.preesm.pimm.algorithm.pimm2sdf.visitor.DynamicPiMM2SDFVisitor;
 
 public class DynamicPiMM2SDFLauncher {
 
