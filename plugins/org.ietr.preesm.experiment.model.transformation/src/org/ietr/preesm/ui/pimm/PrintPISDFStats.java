@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.experiment.model.transformation;
+package org.ietr.preesm.ui.pimm;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,21 +52,12 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
  * @author jheulot
  *
  */
-public class TaskExpression extends AbstractTaskImplementation{
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
+public class PrintPISDFStats extends AbstractTaskImplementation{
 
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName, Workflow workflow) throws WorkflowException {
-		// TODO Auto-generated method stub
 		
 		PiGraph piGraph = (PiGraph) inputs.get("PiMM");
 
@@ -81,7 +72,6 @@ public class TaskExpression extends AbstractTaskImplementation{
 
 	@Override
 	public Map<String, String> getDefaultParameters() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

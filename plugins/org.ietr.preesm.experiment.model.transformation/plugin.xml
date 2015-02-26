@@ -8,7 +8,8 @@
          point="org.ietr.dftools.workflow.tasks">
       <task
             id="org.ietr.preesm.experiment.model.transformation.taskExpression"
-            type="org.ietr.preesm.experiment.model.transformation.TaskExpression">
+            name="PREESM PiSDF Stats Printer"
+            type="org.ietr.preesm.experiment.model.transformation.PrintPIMMStats">
          <inputs>
             <input
                   id="PiMM"
