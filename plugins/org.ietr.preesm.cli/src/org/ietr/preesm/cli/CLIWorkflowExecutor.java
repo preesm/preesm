@@ -36,8 +36,8 @@
 package org.ietr.preesm.cli;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.apache.commons.cli.CommandLine;
@@ -55,6 +55,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -82,7 +83,7 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 	 */
 	protected IProject project;
 
-	private static final String workflowsDir = "/Workflows";
+	private static final String workflowDir = "/Workflows";
 	private static final String workflowExt = "workflow";
 	private static final String scenarioDir = "/Scenarios";
 	private static final String scenarioExt = "scenario";
@@ -96,6 +97,7 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 
 			String cliOpts = StringUtils.join((Object[]) context.getArguments()
 					.get(IApplicationContext.APPLICATION_ARGS), " ");
+			PreesmLogger.traceln("Starting workflows execution");
 			PreesmLogger.traceln("Command line arguments: " + cliOpts);
 
 			// parse the command line arguments
@@ -104,8 +106,9 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 
 			if (line.getArgs().length != 1) {
 				throw new ParseException(
-						"Expected project name as last argument", 0);
+						"Expected project name as first argument", 0);
 			}
+			// Get the project containing the scenarios and workflows to execute
 			String projectName = line.getArgs()[0];
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
 			IWorkspaceRoot root = workspace.getRoot();
@@ -115,64 +118,54 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 			String workflowPath = line.getOptionValue('w');
 			String scenarioPath = line.getOptionValue('s');
 
+			// Set of workflows to execute
+			Set<String> workflowPaths = new HashSet<String>();
+			// Set of scenarios to execute
+			Set<String> scenarioPaths = new HashSet<String>();
+
 			// If paths to workflow and scenario are not specified using
 			// options, find them in the project given as arguments
 			if (workflowPath == null) {
-				IFolder workflowsFolder = project.getFolder(workflowsDir);
-				List<IFile> workflows = new ArrayList<IFile>();
-				for (IResource resource : workflowsFolder.members()) {
-					if (resource instanceof IFile) {
-						IFile file = (IFile) resource;
-						if (file.getProjectRelativePath().getFileExtension()
-								.equals(workflowExt))
-							workflows.add(file);
-					}
-				}
-				if (workflows.size() == 1) {
-					workflowPath = (new Path(project.getName())
-							.append(workflows.get(0).getProjectRelativePath()))
-							.toPortableString();
-				} else
-					PreesmLogger
-							.warn("Project must contain one and only one workflow file, or the workflow file to be used must be specified using the -w option.");
+				// If there is no workflow path specified, execute all the
+				// workflows (files with workflowExt) found in workflowDir of
+				// the project
+				workflowPaths = getAllFilePathsIn(workflowExt, project,
+						workflowDir);
 			} else {
+				// Otherwise, format the workflowPath and execute it
 				if (!workflowPath.contains(projectName))
-					workflowPath = projectName + workflowsDir + "/"
+					workflowPath = projectName + workflowDir + "/"
 							+ workflowPath;
 				if (!workflowPath.endsWith(workflowExt))
 					workflowPath = workflowPath + "." + workflowExt;
+				workflowPaths.add(workflowPath);
 			}
 
 			if (scenarioPath == null) {
-				IFolder scenariosFolder = project.getFolder(scenarioDir);
-				List<IFile> scenarios = new ArrayList<IFile>();
-				for (IResource resource : scenariosFolder.members()) {
-					if (resource instanceof IFile) {
-						IFile file = (IFile) resource;
-						if (file.getProjectRelativePath().getFileExtension()
-								.equals("scenario"))
-							scenarios.add(file);
-					}
-				}
-				if (scenarios.size() == 1) {
-					scenarioPath = (new Path(project.getName())
-							.append(scenarios.get(0).getProjectRelativePath()))
-							.toPortableString();
-				} else
-					PreesmLogger
-							.warn("Project must contain one and only one scenario file, or the scenario file to be used must be specified using the -s option.");
+				// If there is no scenario path specified, execute all the
+				// scenarios (files with scenarioExt) found in scenarioDir of
+				// the project
+				scenarioPaths = getAllFilePathsIn(scenarioExt, project,
+						scenarioDir);
 			} else {
+				// Otherwise, format the scenarioPath and execute it
 				if (!scenarioPath.contains(projectName))
 					scenarioPath = projectName + scenarioDir + "/"
 							+ scenarioPath;
 				if (!scenarioPath.endsWith(scenarioExt))
 					scenarioPath = scenarioPath + "." + scenarioExt;
+				scenarioPaths.add(scenarioPath);
 			}
 
-			// Launch the execution of the given workflow with the given
-			// scenario
+			PreesmLogger.traceln("Launching workflows execution");
+			// Launch the execution of the workflos with the scenarios
 			DFToolsWorkflowLogger.runFromCLI();
-			execute(workflowPath, scenarioPath, null);
+			for (String wPath : workflowPaths) {
+				for (String sPath : scenarioPaths) {
+					PreesmLogger.traceln("Launching execution of workflow: " + wPath + " with scenario: " + sPath);
+					execute(wPath, sPath, null);
+				}
+			}
 
 		} catch (UnrecognizedOptionException uoe) {
 			printUsage(options, uoe.getLocalizedMessage());
@@ -182,10 +175,43 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 		return IApplication.EXIT_OK;
 	}
 
+	/**
+	 * Returns the path of all IFiles with extension found in the IFolder named
+	 * folderName in the given IProject
+	 * 
+	 * @param extension
+	 *            the extension we are looking for
+	 * @param project
+	 *            the IProject in which we are looking for
+	 * @param folderName
+	 *            the name of the folder in which we are looking for
+	 * @return the set of paths relative to the workspace for all the files
+	 *         found
+	 * @throws CoreException
+	 */
+	private Set<String> getAllFilePathsIn(String extension, IProject project,
+			String folderName) throws CoreException {
+		Set<String> filePaths = new HashSet<String>();
+		// Get the IFolder
+		IFolder folder = project.getFolder(folderName);
+		// For each of its members
+		for (IResource resource : folder.members()) {
+			// If this member is a IFile with the given extension
+			if (resource instanceof IFile) {
+				IFile file = (IFile) resource;
+				if (file.getProjectRelativePath().getFileExtension()
+						.equals(extension)) {
+					// add its path to the return set
+					filePaths.add((new Path(project.getName()).append(file
+							.getProjectRelativePath())).toPortableString());
+				}
+			}
+		}
+		return filePaths;
+	}
+
 	@Override
 	public void stop() {
-		// TODO Auto-generated method stub
-
 	}
 
 	/**
@@ -207,9 +233,10 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 	/**
 	 * Print command line documentation on options
 	 * 
-	 * @param context
 	 * @param options
+	 *            options to print
 	 * @param parserMsg
+	 *            message to print
 	 */
 	private void printUsage(Options options, String parserMsg) {
 
