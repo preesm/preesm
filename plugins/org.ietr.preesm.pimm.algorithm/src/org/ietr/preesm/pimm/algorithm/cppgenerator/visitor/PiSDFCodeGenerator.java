@@ -35,7 +35,7 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  * ****************************************************************************
  */
-package org.ietr.preesm.experiment.pimm.cppgenerator.visitor;
+package org.ietr.preesm.pimm.algorithm.cppgenerator.visitor;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,7 +53,7 @@ import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.pimm.cppgenerator.utils.CppNameGenerator;
+import org.ietr.preesm.pimm.algorithm.cppgenerator.utils.CppNameGenerator;
 
 public class PiSDFCodeGenerator{	
 	private PreesmScenario scenario;

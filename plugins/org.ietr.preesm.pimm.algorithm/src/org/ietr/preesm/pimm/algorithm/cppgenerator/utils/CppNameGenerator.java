@@ -1,4 +1,4 @@
-package org.ietr.preesm.experiment.pimm.cppgenerator.utils;
+package org.ietr.preesm.pimm.algorithm.cppgenerator.utils;
 
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;

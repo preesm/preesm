@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.experiment.pimm.cppgenerator;
+package org.ietr.preesm.pimm.algorithm.cppgenerator;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -52,7 +52,7 @@ import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.pimm.cppgenerator.visitor.PiSDFCodeGenerator;
+import org.ietr.preesm.pimm.algorithm.cppgenerator.visitor.PiSDFCodeGenerator;
 
 public class PiMMCppGenerationTask extends AbstractTaskImplementation {
 

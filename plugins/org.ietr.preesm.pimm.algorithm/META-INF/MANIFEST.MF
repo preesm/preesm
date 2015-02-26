@@ -1,10 +1,15 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm PISDF graph transformation plug-in
-Bundle-SymbolicName: org.ietr.preesm.pimm.algorithm
+Bundle-SymbolicName: org.ietr.preesm.pimm.algorithm;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.ietr.preesm.pimm.algorithm.Activator
 Bundle-Vendor: IETR/INSA Rennes
-Require-Bundle: org.eclipse.core.runtime
+Require-Bundle: org.eclipse.core.runtime,
+ org.ietr.dftools.workflow;bundle-version="1.1.4",
+ org.ietr.preesm.core,
+ org.ietr.preesm.experiment.model,
+ org.eclipse.core.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
+Export-Package: org.ietr.preesm.pimm.algorithm.cppgenerator

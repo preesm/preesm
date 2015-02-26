@@ -35,7 +35,7 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  * ****************************************************************************
  */
-package org.ietr.preesm.experiment.pimm.cppgenerator.visitor;
+package org.ietr.preesm.pimm.algorithm.cppgenerator.visitor;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

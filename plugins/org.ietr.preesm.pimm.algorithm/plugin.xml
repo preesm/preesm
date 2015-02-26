@@ -6,7 +6,7 @@
       <task
             id="org.ietr.preesm.experiment.pimm.cppgenerator.PiMMCppGenerationTask"
             name="C++ Code Generation from PiMM Models Task"
-            type="org.ietr.preesm.experiment.pimm.cppgenerator.PiMMCppGenerationTask">
+            type="org.ietr.preesm.pimm.algorithm.cppgenerator.PiMMCppGenerationTask">
          <inputs>
             <input
                   id="PiMM"

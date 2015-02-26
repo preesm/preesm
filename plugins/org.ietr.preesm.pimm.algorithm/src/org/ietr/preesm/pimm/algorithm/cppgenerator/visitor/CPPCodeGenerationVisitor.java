@@ -35,7 +35,7 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  * ****************************************************************************
  */
-package org.ietr.preesm.experiment.pimm.cppgenerator.visitor;
+package org.ietr.preesm.pimm.algorithm.cppgenerator.visitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -80,9 +80,9 @@ import org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl;
 import org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl;
 import org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
-import org.ietr.preesm.experiment.pimm.cppgenerator.utils.CppNameGenerator;
-import org.ietr.preesm.experiment.pimm.cppgenerator.utils.CppTypeConverter;
-import org.ietr.preesm.experiment.pimm.cppgenerator.utils.CppTypeConverter.PiSDFSubType;
+import org.ietr.preesm.pimm.algorithm.cppgenerator.utils.CppNameGenerator;
+import org.ietr.preesm.pimm.algorithm.cppgenerator.utils.CppTypeConverter;
+import org.ietr.preesm.pimm.algorithm.cppgenerator.utils.CppTypeConverter.PiSDFSubType;
 
 // TODO: Find a cleaner way to setParentEdge in Interfaces
 /* 
