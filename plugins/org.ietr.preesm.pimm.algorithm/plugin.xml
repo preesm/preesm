@@ -75,6 +75,17 @@
                   object="org.ietr.preesm.experiment.model.pimm.PiGraph"></output>
          </outputs>
       </task>
+      <task
+            id="org.ietr.preesm.experiment.model.transformation.taskExpression"
+            name="PREESM PiSDF Stats Printer"
+            type="org.ietr.preesm.pimm.algorithm.stats.printer.PrintPISDFStats">
+         <inputs>
+            <input
+                  id="PiMM"
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+            </input>
+         </inputs>
+      </task>
    </extension>
 
 </plugin>

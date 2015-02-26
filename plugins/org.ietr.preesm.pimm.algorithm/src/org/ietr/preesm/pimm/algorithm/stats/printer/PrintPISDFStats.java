@@ -33,53 +33,52 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.experiment.model.transformation;
+package org.ietr.preesm.pimm.algorithm.stats.printer;
 
-import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.osgi.framework.BundleContext;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.dftools.workflow.WorkflowException;
+import org.ietr.dftools.workflow.elements.Workflow;
+import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 /**
- * The activator class controls the plug-in life cycle
+ * A Test workflow element for PiGraphs
+ * @author mpelcat
+ * @author jheulot
+ *
  */
-public class Activator extends AbstractUIPlugin {
+public class PrintPISDFStats extends AbstractTaskImplementation{
 
-	// The plug-in ID
-	public static final String PLUGIN_ID = "org.ietr.preesm.experiment.model.transformation"; //$NON-NLS-1$
+	@Override
+	public Map<String, Object> execute(Map<String, Object> inputs,
+			Map<String, String> parameters, IProgressMonitor monitor,
+			String nodeName, Workflow workflow) throws WorkflowException {
+		
+		PiGraph piGraph = (PiGraph) inputs.get("PiMM");
 
-	// The shared instance
-	private static Activator plugin;
+		WorkflowLogger.getLogger().log(Level.INFO, "PiMM Stats:");
+		WorkflowLogger.getLogger().log(Level.INFO, "Name         : "+piGraph.getName());
+		WorkflowLogger.getLogger().log(Level.INFO, "Nb Vertices  : "+piGraph.getVertices().size());
+		WorkflowLogger.getLogger().log(Level.INFO, "Nb Fifos     : "+piGraph.getFifos().size());
+		WorkflowLogger.getLogger().log(Level.INFO, "Nb Parameters: "+piGraph.getParameters().size());	
+		
+		return new HashMap<String, Object>();
+	}
+
+	@Override
+	public Map<String, String> getDefaultParameters() {
+		return null;
+	}
+
+	@Override
+	public String monitorMessage() {
+		return "Display Stats on PiMM.";
+	}
+
 	
-	/**
-	 * The constructor
-	 */
-	public Activator() {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
-	 */
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		plugin = this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
-	 */
-	public void stop(BundleContext context) throws Exception {
-		plugin = null;
-		super.stop(context);
-	}
-
-	/**
-	 * Returns the shared instance
-	 *
-	 * @return the shared instance
-	 */
-	public static Activator getDefault() {
-		return plugin;
-	}
-
 }
