@@ -25,24 +25,6 @@
             </output>
          </outputs>
       </scenario>
-      <scenario
-            id="org.ietr.preesm.scenario.ibsdfandslam"
-            type="org.ietr.preesm.core.workflow.IBSDFAndSLAMScenarioNode">
-         <outputs>
-            <output
-                  id="scenario"
-                  object="org.ietr.preesm.core.scenario.PreesmScenario">
-            </output>
-            <output
-                  id="IBSDF"
-                  object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
-            </output>
-            <output
-                  id="S-LAM"
-                  object="org.ietr.dftools.architecture.slam.Design">
-            </output>
-         </outputs>
-      </scenario>
    </extension>
 
 
