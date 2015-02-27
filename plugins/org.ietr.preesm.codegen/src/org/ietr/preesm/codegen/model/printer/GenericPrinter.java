@@ -53,7 +53,7 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.model.main.SourceFile;
 import org.ietr.preesm.codegen.model.main.SourceFileList;
 import org.ietr.preesm.core.Activator;
-import org.ietr.preesm.core.tools.XsltTransformer;
+import org.ietr.preesm.utils.xml.XsltTransformer;
 
 /**
  * Prints the generated code in an intermediate xml file and applies the xslt

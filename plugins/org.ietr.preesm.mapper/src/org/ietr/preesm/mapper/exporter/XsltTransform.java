@@ -48,8 +48,8 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-import org.ietr.preesm.core.tools.PathTools;
-import org.ietr.preesm.core.tools.XsltTransformer;
+import org.ietr.preesm.utils.paths.PathTools;
+import org.ietr.preesm.utils.xml.XsltTransformer;
 
 /**
  * This class provides methods to transform an XML file or a DOM element to a

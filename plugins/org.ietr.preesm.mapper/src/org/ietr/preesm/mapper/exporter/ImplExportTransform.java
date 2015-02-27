@@ -51,8 +51,8 @@ import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.Activator;
-import org.ietr.preesm.core.tools.PathTools;
 import org.ietr.preesm.mapper.model.MapperDAG;
+import org.ietr.preesm.utils.paths.PathTools;
 
 /**
  * Block in workflow exporting a DAG that contains all information of an

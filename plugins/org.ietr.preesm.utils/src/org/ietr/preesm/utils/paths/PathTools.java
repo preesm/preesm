@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ietr.preesm.core.tools;
+package org.ietr.preesm.utils.paths;
 
 /**
  * Tools to manipulate paths

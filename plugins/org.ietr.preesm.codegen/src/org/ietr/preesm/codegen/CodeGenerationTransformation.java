@@ -61,8 +61,8 @@ import org.ietr.preesm.codegen.model.printer.GenericPrinter;
 import org.ietr.preesm.codegen.model.visitor.SystemCPrinterVisitor;
 import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.tools.PathTools;
 import org.ietr.preesm.core.workflow.PreesmException;
+import org.ietr.preesm.utils.paths.PathTools;
 
 /**
  * Code generation.

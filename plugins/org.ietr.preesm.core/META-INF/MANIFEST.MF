@@ -10,11 +10,11 @@ Require-Bundle: org.eclipse.core.resources,
  org.jgrapht;bundle-version="0.8.2",
  org.ietr.dftools.architecture;bundle-version="0.0.1",
  org.ietr.dftools.algorithm;bundle-version="0.0.1",
- org.ietr.dftools.graphiti.model;bundle-version="1.3.11",
  org.ietr.preesm.experiment.model;bundle-version="1.0.0",
  org.ietr.dftools.workflow,
  org.eclipse.jface,
- org.eclipse.ui.workbench
+ org.eclipse.ui.workbench,
+ org.ietr.preesm.utils
 Bundle-ClassPath: .,
  lib/djep-full-latest.jar,
  lib/jmatharray.jar,
@@ -32,7 +32,6 @@ Export-Package: jscl.math,
  org.ietr.preesm.core.expression,
  org.ietr.preesm.core.scenario,
  org.ietr.preesm.core.scenario.serialize,
- org.ietr.preesm.core.tools,
  org.ietr.preesm.core.types,
  org.ietr.preesm.core.workflow
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

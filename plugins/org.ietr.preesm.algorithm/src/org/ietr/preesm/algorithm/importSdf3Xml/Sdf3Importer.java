@@ -14,7 +14,7 @@ import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.tools.PathTools;
+import org.ietr.preesm.utils.paths.PathTools;
 
 /**
  * This class is a {@link Workflow} task that parse a SDF in the SDF3 XML format

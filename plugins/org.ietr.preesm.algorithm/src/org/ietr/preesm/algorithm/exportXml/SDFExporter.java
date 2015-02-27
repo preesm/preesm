@@ -48,8 +48,8 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.core.Activator;
-import org.ietr.preesm.core.tools.PathTools;
 import org.ietr.preesm.utils.files.ContainersManager;
+import org.ietr.preesm.utils.paths.PathTools;
 
 public class SDFExporter extends AbstractTaskImplementation {
 

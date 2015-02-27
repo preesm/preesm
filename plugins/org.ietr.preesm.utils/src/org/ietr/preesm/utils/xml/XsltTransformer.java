@@ -34,7 +34,7 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.core.tools;
+package org.ietr.preesm.utils.xml;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -53,7 +53,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.ietr.preesm.utils.log.PreesmLogger;
 
 /**
  * This class provides methods to transform an XML file via XSLT
@@ -104,7 +104,7 @@ public class XsltTransformer {
 		}
 
 		if (transformer == null) {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
+			PreesmLogger.log(Level.SEVERE,
 					"XSL sheet not found or not valid: " + fileName);
 			return false;
 		}
@@ -135,10 +135,10 @@ public class XsltTransformer {
 				outStream.close();
 
 			} catch (FileNotFoundException e1) {
-				WorkflowLogger.getLogger().log(
+				PreesmLogger.log(
 						Level.SEVERE,
 						"Problem finding files for XSL transfo ("
-								+ osSourceFilePath, "," + osDestFilePath + ")");
+								+ osSourceFilePath + "," + osDestFilePath + ")");
 			} catch (TransformerException e1) {
 				e1.printStackTrace();
 			} catch (IOException e) {

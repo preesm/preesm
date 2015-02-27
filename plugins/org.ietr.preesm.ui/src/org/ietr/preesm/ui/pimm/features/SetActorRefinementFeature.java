@@ -55,8 +55,8 @@ import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
-import org.ietr.preesm.pimm.header.parser.cdt.ASTAndActorComparisonVisitor;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
+import org.ietr.preesm.utils.pimm.header.parser.cdt.ASTAndActorComparisonVisitor;
 
 /**
  * Custom Feature to set a new {@link Refinement} of an {@link Actor}

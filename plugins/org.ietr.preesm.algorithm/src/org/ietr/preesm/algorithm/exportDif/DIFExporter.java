@@ -54,7 +54,7 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.tools.PathTools;
+import org.ietr.preesm.utils.paths.PathTools;
 
 /**
  * Workflow element taking a *Single-Rate* SDF and the scenario as inputs and

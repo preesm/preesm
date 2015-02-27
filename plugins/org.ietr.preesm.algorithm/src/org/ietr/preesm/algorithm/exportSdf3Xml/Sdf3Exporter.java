@@ -47,7 +47,7 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.tools.PathTools;
+import org.ietr.preesm.utils.paths.PathTools;
 
 public class Sdf3Exporter extends AbstractTaskImplementation {
 

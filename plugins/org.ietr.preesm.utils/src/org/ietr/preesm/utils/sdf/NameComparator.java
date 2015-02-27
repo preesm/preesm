@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -34,57 +34,23 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
 
-package org.ietr.preesm.algorithm.transforms;
+package org.ietr.preesm.utils.sdf;
 
-import org.eclipse.core.runtime.Plugin;
-import org.osgi.framework.BundleContext;
+import java.util.Comparator;
+
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 
 /**
- * The activator class controls the plug-in life cycle
+ * @author mpelcat
+ * 
+ *         Vertex comparator that helps to order vertices in name alphabetical
+ *         order
  */
-public class Activator extends Plugin {
-
-	// The shared instance
-	private static Activator plugin;
-
-	// The plug-in ID
-	public static final String PLUGIN_ID = "org.ietr.preesm.plugin.transforms";
-
-	/**
-	 * Returns the shared instance
-	 * 
-	 * @return the shared instance
-	 */
-	public static Activator getDefault() {
-		return plugin;
-	}
-
-	/**
-	 * The constructor
-	 */
-	public Activator() {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
-	 */
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		plugin = this;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
-	 */
-	public void stop(BundleContext context) throws Exception {
-		plugin = null;
-		super.stop(context);
+public class NameComparator implements Comparator<SDFAbstractVertex> {
+	@Override
+	public int compare(SDFAbstractVertex o1, SDFAbstractVertex o2) {
+		int diff = o1.getName().compareTo(o2.getName());
+		return diff;
 	}
 
 }

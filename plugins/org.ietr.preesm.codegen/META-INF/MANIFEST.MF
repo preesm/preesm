@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.jgrapht,
  org.ietr.preesm.core;bundle-version="0.6.1",
  org.ietr.dftools.architecture;bundle-version="0.0.1",
- org.ietr.dftools.algorithm;bundle-version="0.0.1"
+ org.ietr.dftools.algorithm;bundle-version="0.0.1",
+ org.ietr.preesm.utils
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: lib/JFlex.jar,
  lib/logkit-1.2.jar,
