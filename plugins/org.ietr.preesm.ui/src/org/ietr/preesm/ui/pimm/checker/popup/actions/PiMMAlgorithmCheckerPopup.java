@@ -1,4 +1,4 @@
-package org.ietr.preesm.pimm.checker.popup.actions;
+package org.ietr.preesm.ui.pimm.checker.popup.actions;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.action.IAction;
@@ -12,8 +12,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.pimm.checker.Activator;
-import org.ietr.preesm.pimm.checker.PiMMAlgorithmChecker;
+import org.ietr.preesm.pimm.algorithm.checker.PiMMAlgorithmChecker;
+import org.ietr.preesm.ui.Activator;
 
 /**
  * Class to launch a PiGraph check through pop-up menu

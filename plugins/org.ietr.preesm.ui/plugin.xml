@@ -1190,5 +1190,28 @@
             </and></enablement>
       </copyParticipant>
    </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            id="org.ietr.preesm.pimm.checker.popupPiMMChecker"
+            nameFilter="*.pi"
+            objectClass="org.eclipse.core.resources.IFile">
+         <menu
+               id="org.ietr.preesm.pimm.checker.menu1"
+               label="PREESM"
+               path="additions">
+            <separator
+                  name="group1">
+            </separator>
+         </menu>
+         <action
+               class="org.ietr.preesm.ui.pimm.checker.popup.actions.PiMMAlgorithmCheckerPopup"
+               enablesFor="1"
+               id="org.ietr.preesm.pimm.checker.newAction"
+               label="Check algorithm"
+               menubarPath="org.ietr.preesm.pimm.checker.menu1/group1">
+         </action>
+      </objectContribution>
+   </extension>
 
 </plugin>
