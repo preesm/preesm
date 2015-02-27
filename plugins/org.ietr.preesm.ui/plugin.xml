@@ -12,6 +12,22 @@
             id="org.ietr.preesm.ui.editor.graph"
             name="Preesm Network Editor">
       </editor>
+      <editor
+            class="org.ietr.preesm.ui.scenario.editor.ScenarioEditor"
+            default="true"
+            extensions="scenario"
+            icon="icons/preesm4mini.PNG"
+            id="org.ietr.preesm.ui.scenario.editor.ScenarioEditor"
+            name="Preesm scenario editor">
+      </editor>
+      <editor
+            class="org.eclipse.ui.editors.text.TextEditor"
+            default="false"
+            extensions="pi"
+            icon="icons/pi.gif"
+            id="org.ietr.preesm.experiment.ui.pimm.editor"
+            name="PiMM Editor">
+      </editor>
    </extension>
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
@@ -133,6 +149,19 @@
             Create a new scenario file
          </description>
       </wizard>
+      <wizard
+            canFinishEarly="false"
+            category="org.ietr.preesm.category"
+            class="org.ietr.preesm.ui.pimm.wizards.NewPiMMWizard"
+            hasPages="true"
+            icon="icons/pi.gif"
+            id="org.ietr.preesm.experiment.ui.pimm.wizards.NewPiMMWizard"
+            name="Preesm Algorithm (PiSDF)"
+            project="true">
+         <description>
+            Create a new PiMM algorithm.
+         </description>
+      </wizard>
    </extension>
    <extension
          point="org.eclipse.ui.ide.projectNatureImages">
@@ -144,17 +173,6 @@
             A Preesm project.
          </description>
       </image>
-   </extension>
-   <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            class="org.ietr.preesm.ui.scenario.editor.ScenarioEditor"
-            default="true"
-            extensions="scenario"
-            icon="icons/preesm4mini.PNG"
-            id="org.ietr.preesm.ui.scenario.editor.ScenarioEditor"
-            name="Preesm scenario editor">
-      </editor>
    </extension>
    <extension
          point="org.eclipse.ui.console.consoleFactories">
@@ -186,6 +204,14 @@
             name="LayoutFileFilter"
             visibleInUI="true">
       </commonFilter>
+      <commonFilter
+            activeByDefault="true"
+            class="org.ietr.preesm.ui.pimm.filter.ProjectExplorerPiFilter"
+            description="Filters the *.pi files"
+            id="org.ietr.preesm.experiment.pifilefilter"
+            name="PiFileFilter"
+            visibleInUI="true">
+      </commonFilter>
    </extension>
    <extension
          id="org.ietr.preesm.ui.projectexplorerviewer"
@@ -197,6 +223,19 @@
             <contentExtension
                   isRoot="true"
                   pattern="org.ietr.preesm.core.layoutfilefilter">
+            </contentExtension>
+            <contentExtension
+                  isRoot="true"
+                  pattern="org.eclipse.ui.navigator.resourceContent">
+            </contentExtension>
+         </includes>
+      </viewerContentBinding>
+      <viewerContentBinding
+            viewerId="org.eclipse.ui.navigator.ProjectExplorer">
+         <includes>
+            <contentExtension
+                  isRoot="true"
+                  pattern="org.ietr.preesm.experiment.pifilefilter">
             </contentExtension>
             <contentExtension
                   isRoot="true"
@@ -985,22 +1024,6 @@
       </configuration>
    </extension>
    <extension
-         point="org.eclipse.ui.navigator.viewer">
-      <viewerContentBinding
-            viewerId="org.eclipse.ui.navigator.ProjectExplorer">
-         <includes>
-            <contentExtension
-                  isRoot="true"
-                  pattern="org.ietr.preesm.experiment.pifilefilter">
-            </contentExtension>
-            <contentExtension
-                  isRoot="true"
-                  pattern="org.eclipse.ui.navigator.resourceContent">
-            </contentExtension>
-         </includes>
-      </viewerContentBinding>
-   </extension>
-   <extension
          point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
       <propertyContributor
             contributorId="PiMM.PropertyContributor">
@@ -1031,41 +1054,6 @@
       </propertyTabs>
    </extension>
    <extension
-         point="org.eclipse.ui.views.properties.tabbed.propertySections">
-      <propertySections
-            contributorId="PiMM.PropertyContributor">
-         <propertySection
-               class="org.ietr.preesm.ui.pimm.properties.PortParameterAndDelayPropertiesSection"
-               filter="org.ietr.preesm.ui.pimm.properties.PiMMFilter"
-               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basic"
-               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basic">
-         </propertySection>
-         <propertySection
-               class="org.ietr.preesm.ui.pimm.properties.ActorPropertiesSection"
-               filter="org.ietr.preesm.ui.pimm.properties.PiMMActorFilter"
-               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicActor"
-               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor">
-         </propertySection>
-         <propertySection
-               class="org.ietr.preesm.ui.pimm.properties.FifoPropertiesSection"
-               filter="org.ietr.preesm.ui.pimm.properties.PiMMFifoFilter"
-               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicFifo"
-               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicFifo">
-         </propertySection>
-      </propertySections>
-   </extension>
-   <extension
-         point="org.eclipse.ui.navigator.navigatorContent">
-      <commonFilter
-            activeByDefault="true"
-            class="org.ietr.preesm.ui.pimm.filter.ProjectExplorerPiFilter"
-            description="Filters the *.pi files"
-            id="org.ietr.preesm.experiment.pifilefilter"
-            name="PiFileFilter"
-            visibleInUI="true">
-      </commonFilter>
-   </extension>
-   <extension
          point="org.eclipse.graphiti.ui.diagramTypes">
       <diagramType
             name="PiMM Diagram Type"
@@ -1086,33 +1074,6 @@
                id="org.ietr.preesm.experiment.ui.pimm.util.PiMMImageProvider">
          </imageProvider>
       </diagramTypeProvider>
-   </extension>
-   <extension
-         point="org.eclipse.ui.newWizards">
-      <wizard
-            canFinishEarly="false"
-            category="org.ietr.preesm.category"
-            class="org.ietr.preesm.ui.pimm.wizards.NewPiMMWizard"
-            hasPages="true"
-            icon="icons/pi.gif"
-            id="org.ietr.preesm.experiment.ui.pimm.wizards.NewPiMMWizard"
-            name="Preesm Algorithm (PiSDF)"
-            project="true">
-         <description>
-            Create a new PiMM algorithm.
-         </description>
-      </wizard>
-   </extension>
-   <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            class="org.eclipse.ui.editors.text.TextEditor"
-            default="false"
-            extensions="pi"
-            icon="icons/pi.gif"
-            id="org.ietr.preesm.experiment.ui.pimm.editor"
-            name="PiMM Editor">
-      </editor>
    </extension>
    <extension
          point="org.eclipse.graphiti.ui.imageProviders">
@@ -1155,6 +1116,30 @@
             </and>
          </enablement>
       </renameParticipant>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertySections">
+      <propertySections
+            contributorId="PiMM.PropertyContributor">
+         <propertySection
+               class="org.ietr.preesm.ui.pimm.properties.PortParameterAndDelayPropertiesSection"
+               filter="org.ietr.preesm.ui.pimm.properties.PiMMFilter"
+               id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.basic"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basic">
+         </propertySection>
+         <propertySection
+               class="org.ietr.preesm.ui.pimm.properties.ActorPropertiesSection"
+               filter="org.ietr.preesm.ui.pimm.properties.PiMMActorFilter"
+               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicActor"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor">
+         </propertySection>
+         <propertySection
+               class="org.ietr.preesm.ui.pimm.properties.FifoPropertiesSection"
+               filter="org.ietr.preesm.ui.pimm.properties.PiMMFifoFilter"
+               id="org.ietr.preesm.experiment.model.org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicActor.properties.section.graph.basicFifo"
+               tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicFifo">
+         </propertySection>
+      </propertySections>
    </extension>
    <extension
          point="org.eclipse.ltk.core.refactoring.copyParticipants">
