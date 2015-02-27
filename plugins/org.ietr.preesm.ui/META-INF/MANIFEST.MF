@@ -5,31 +5,24 @@ Bundle-SymbolicName: org.ietr.preesm.ui;singleton:=true
 Bundle-Version: 2.1.2.qualifier
 Bundle-Activator: org.ietr.preesm.ui.Activator
 Bundle-Vendor: IETR/INSA Rennes
-Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime,
- org.ietr.dftools.graphiti.ui,
+Require-Bundle: org.ietr.dftools.graphiti.ui,
  org.ietr.dftools.graphiti.model,
- org.eclipse.core.resources,
  org.eclipse.ui.views.properties.tabbed,
  org.jgrapht,
  org.eclipse.gef,
- org.ietr.dftools.ui;bundle-version="0.0.1",
  org.eclipse.ui.ide;bundle-version="3.7.0",
  org.ietr.dftools.workflow;bundle-version="0.0.1",
  org.eclipse.ui.console;bundle-version="3.5.100",
  org.ietr.preesm.core;bundle-version="0.6.1",
  org.ietr.dftools.algorithm;bundle-version="0.0.1",
- org.eclipse.emf.common,
  org.ietr.preesm.experiment.model;bundle-version="2.0.1",
  org.eclipse.graphiti.ui,
- org.eclipse.graphiti.mm,
  org.eclipse.graphiti,
  org.eclipse.emf.transaction,
  org.eclipse.ltk.core.refactoring,
  org.eclipse.text,
  org.eclipse.cdt.core,
  org.ietr.preesm.utils,
- org.eclipse.ui.editors;bundle-version="3.8.200",
  org.ietr.preesm.pimm.algorithm
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy

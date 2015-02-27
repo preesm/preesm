@@ -7,19 +7,16 @@ Bundle-Activator: org.ietr.preesm.codegen.xtend.Activator
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.core.resources,
  org.eclipse.emf.ecore.xmi,
  org.eclipse.xtend.lib,
- org.eclipse.xtext.xbase.lib,
- com.google.guava,
- org.jgrapht,
  org.ietr.dftools.algorithm,
  org.ietr.dftools.workflow,
  org.ietr.dftools.architecture,
  org.ietr.preesm.memory,
  org.ietr.preesm.core,
- org.ietr.preesm.codegen;bundle-version="1.0.0"
+ org.ietr.preesm.codegen;bundle-version="1.0.0",
+ org.jgrapht;bundle-version="0.8.2"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.ietr.preesm.codegen.xtend.model.codegen,

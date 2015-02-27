@@ -6,18 +6,15 @@ Bundle-Version: 2.1.2.qualifier
 Bundle-Activator: org.ietr.preesm.algorithm.transforms.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.ietr.preesm.core;bundle-version="0.0.1",
- org.eclipse.ui.workbench;bundle-version="3.4.0",
  org.eclipse.core.resources;bundle-version="3.4.0",
  org.ietr.dftools.workflow,
- org.jgrapht,
  org.ietr.dftools.workflow;bundle-version="1.0.0",
  org.eclipse.xtend.lib,
- com.google.guava,
- org.eclipse.xtext.xbase.lib,
  org.ietr.preesm.experiment.model;bundle-version="1.1.0",
  org.ietr.preesm.utils,
  org.ietr.dftools.algorithm,
- org.ietr.dftools.architecture
+ org.ietr.dftools.architecture,
+ org.jgrapht;bundle-version="0.8.2"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: IETR/INSA Rennes
 Export-Package: org.ietr.preesm.algorithm.exportDif,
