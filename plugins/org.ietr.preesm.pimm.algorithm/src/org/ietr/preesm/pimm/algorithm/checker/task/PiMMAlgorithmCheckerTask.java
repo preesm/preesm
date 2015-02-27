@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.pimm.checker.task;
+package org.ietr.preesm.pimm.algorithm.checker.task;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,7 +47,7 @@ import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.pimm.checker.PiMMAlgorithmChecker;
+import org.ietr.preesm.pimm.algorithm.checker.PiMMAlgorithmChecker;
 
 /**
  * Head class to launch check on a PiGraph

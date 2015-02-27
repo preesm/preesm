@@ -30,7 +30,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.cdt.core,
  org.ietr.preesm.utils,
  org.eclipse.ui.editors;bundle-version="3.8.200",
- org.ietr.preesm.pimm.checker
+ org.ietr.preesm.pimm.algorithm
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global

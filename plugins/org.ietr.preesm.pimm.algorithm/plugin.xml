@@ -86,6 +86,23 @@
             </input>
          </inputs>
       </task>
+      <task
+            id="org.ietr.preesm.pimm.checker.task.PiMMAlgorithmCheckerTask"
+            name="PiMM Checker"
+            type="org.ietr.preesm.pimm.algorithm.checker.task.PiMMAlgorithmCheckerTask">
+         <inputs>
+            <input
+                  id="PiMM"
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="PiMM"
+                  object="org.ietr.preesm.experiment.model.pimm.PiGraph">
+            </output>
+         </outputs>
+      </task>
    </extension>
 
 </plugin>

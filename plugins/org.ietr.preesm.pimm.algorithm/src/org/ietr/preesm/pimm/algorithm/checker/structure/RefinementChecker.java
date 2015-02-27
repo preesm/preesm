@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.pimm.checker.structure;
+package org.ietr.preesm.pimm.algorithm.checker.structure;
 
 import java.util.HashSet;
 import java.util.Set;

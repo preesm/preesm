@@ -33,14 +33,14 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.pimm.checker;
+package org.ietr.preesm.pimm.algorithm.checker;
 
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.pimm.checker.structure.FifoChecker;
-import org.ietr.preesm.pimm.checker.structure.RefinementChecker;
+import org.ietr.preesm.pimm.algorithm.checker.structure.FifoChecker;
+import org.ietr.preesm.pimm.algorithm.checker.structure.RefinementChecker;
 
 /**
  * Main class of the checker. Call all the independent checkers and create error
