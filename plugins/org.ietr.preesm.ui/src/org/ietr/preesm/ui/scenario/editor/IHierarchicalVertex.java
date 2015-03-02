@@ -55,10 +55,12 @@ public interface IHierarchicalVertex {
 	/**
 	 * Compares two vertices in hierarchy
 	 */
+	@Override
 	public boolean equals(Object e);
 
 	/**
 	 * Returns the path of the vertex
 	 */
+	@Override
 	public String toString();
 }

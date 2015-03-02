@@ -470,7 +470,7 @@ public class CodegenModelGenerator {
 					// Iterate over the calls of the current operator
 					if (codeElt instanceof Call) {
 						DAGVertex vertex = dagVertexCalls.inverse().get(
-								(Call) codeElt);
+								codeElt);
 
 						if (vertex == null) {
 							// this will happen when a ReceiveStart or a Receive
@@ -722,7 +722,7 @@ public class CodegenModelGenerator {
 		SDFVertex sdfVertex = (SDFVertex) dagVertex.getPropertyBean().getValue(
 				DAGVertex.SDF_VERTEX, SDFVertex.class);
 		Object refinement = sdfVertex.getPropertyBean().getValue(
-				DAGVertex.REFINEMENT);
+				AbstractVertex.REFINEMENT);
 
 		// If the actor is hierarchical
 		if (refinement instanceof AbstractGraph) {
@@ -1371,7 +1371,7 @@ public class CodegenModelGenerator {
 		fifoCall.setName(dagVertex.getName());
 
 		// Find the type of FiFo operation
-		String kind = dagVertex.getPropertyStringValue(DAGVertex.KIND);
+		String kind = dagVertex.getPropertyStringValue(AbstractVertex.KIND);
 		switch (kind) {
 		case DAGInitVertex.DAG_INIT_VERTEX:
 			fifoCall.setOperation(FifoOperation.POP);
@@ -1784,7 +1784,7 @@ public class CodegenModelGenerator {
 
 		SpecialCall f = CodegenFactory.eINSTANCE.createSpecialCall();
 		f.setName(dagVertex.getName());
-		String vertexType = dagVertex.getPropertyStringValue(DAGVertex.KIND);
+		String vertexType = dagVertex.getPropertyStringValue(AbstractVertex.KIND);
 		switch (vertexType) {
 		case DAGForkVertex.DAG_FORK_VERTEX:
 			f.setType(SpecialType.FORK);
@@ -2031,7 +2031,7 @@ public class CodegenModelGenerator {
 				name = generateUniqueBufferName(name);
 
 				subBuff.setName(name);
-				subBuff.setContainer((Buffer) parentBuffer);
+				subBuff.setContainer(parentBuffer);
 				subBuff.setOffset(aggregateOffset);
 				subBuff.setType(subBufferProperties.getDataType());
 				subBuff.setSize(subBufferProperties.getSize());
@@ -2128,7 +2128,7 @@ public class CodegenModelGenerator {
 	protected ActorPrototypes getActorPrototypes(SDFVertex sdfVertex)
 			throws CodegenException {
 		Object refinement = sdfVertex.getPropertyBean().getValue(
-				DAGVertex.REFINEMENT);
+				AbstractVertex.REFINEMENT);
 
 		// Check that it has an IDL refinement.
 		if (!(refinement instanceof CodeRefinement)
@@ -2333,7 +2333,7 @@ public class CodegenModelGenerator {
 						// Iterate over the calls of the current operator
 						if (codeElt instanceof Call) {
 							DAGVertex vertex = dagVertexCalls.inverse().get(
-									(Call) codeElt);
+									codeElt);
 
 							if (vertex == null) {
 								// this will happen when a ReceiveStart,

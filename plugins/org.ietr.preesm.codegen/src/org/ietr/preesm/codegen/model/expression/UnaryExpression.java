@@ -45,6 +45,7 @@ public class UnaryExpression implements IExpression {
 		this.operator = operator;
 	}
 
+	@Override
 	public String toString() {
 		return "(" + operator + op1.toString() + ")";
 	}

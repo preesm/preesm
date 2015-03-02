@@ -228,6 +228,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 
 	}
 
+	@Override
 	public abstract EdgeSchedType getEdgeSchedType();
 
 	/**
@@ -314,6 +315,7 @@ public abstract class LatencyAbc extends AbstractAbc {
 	/**
 	 * Extracting from the Abc information the data to display in the Gantt chart
 	 */
+	@Override
 	public GanttData getGanttData(){
 		GanttData ganttData = new GanttData();
 		ganttData.insertDag(implementation);

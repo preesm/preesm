@@ -82,6 +82,7 @@ public class AdvancedEdgeSched extends AbstractEdgeSched {
 
 	}
 
+	@Override
 	public EdgeSchedType getEdgeSchedType() {
 		return EdgeSchedType.Advanced;
 	}

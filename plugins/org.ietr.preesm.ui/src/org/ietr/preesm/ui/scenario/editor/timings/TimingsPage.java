@@ -78,6 +78,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
+import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
@@ -198,6 +199,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 				.getString("Timings.MemcopySpeeds.timePerUnitColumn"));
 
 		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
 			public void doubleClick(DoubleClickEvent e) {
 				labelProvider.handleDoubleClick((IStructuredSelection) e
 						.getSelection());
@@ -213,6 +215,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 
 		// Setting the column width
 		tablecps.addControlListener(new ControlAdapter() {
+			@Override
 			public void controlResized(ControlEvent e) {
 				Rectangle area = comp.getClientArea();
 				Point size = tref.computeSize(SWT.DEFAULT, SWT.DEFAULT);
@@ -336,6 +339,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		// Make the last column (Expression) editable
 		// XXX: Through an other way than double clicking (direct editing)		
 		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
 			public void doubleClick(DoubleClickEvent e) {
 				labelProvider.handleDoubleClick((IStructuredSelection) e
 						.getSelection());
@@ -348,6 +352,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 
 		// Setting the column width
 		tablecps.addControlListener(new ControlAdapter() {
+			@Override
 			public void controlResized(ControlEvent e) {
 				Rectangle area = comp.getClientArea();
 				Point size = tref.computeSize(SWT.DEFAULT, SWT.DEFAULT);
@@ -508,8 +513,8 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 
 		final ScrolledForm form = mform.getForm();
 		FormToolkit toolkit = mform.getToolkit();
-		Section section = toolkit.createSection(form.getBody(), Section.TWISTIE
-				| Section.TITLE_BAR | Section.DESCRIPTION | Section.EXPANDED);
+		Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
+				| ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
 		section.setText(title);
 		section.setDescription(desc);
 		toolkit.createCompositeSeparator(section);
@@ -520,6 +525,7 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		client.setLayout(layout);
 		section.setClient(client);
 		section.addExpansionListener(new ExpansionAdapter() {
+			@Override
 			public void expansionStateChanged(ExpansionEvent e) {
 				form.reflow(false);
 			}

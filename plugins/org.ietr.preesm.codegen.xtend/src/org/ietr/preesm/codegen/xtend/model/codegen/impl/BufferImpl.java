@@ -157,6 +157,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public int getSize() {
 		return size;
 	}
@@ -166,6 +167,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setSize(int newSize) {
 		int oldSize = size;
 		size = newSize;
@@ -179,6 +181,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EList<SubBuffer> getChildrens() {
 		if (childrens == null) {
 			childrens = new EObjectWithInverseResolvingEList<SubBuffer>(
@@ -193,6 +196,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public int getTypeSize() {
 		return typeSize;
 	}
@@ -202,6 +206,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setTypeSize(int newTypeSize) {
 		int oldTypeSize = typeSize;
 		typeSize = newTypeSize;
@@ -215,6 +220,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EList<org.ietr.preesm.memory.script.Range> getMergedRange() {
 		return mergedRange;
 	}
@@ -224,6 +230,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setMergedRange(
 			EList<org.ietr.preesm.memory.script.Range> newMergedRange) {
 		EList<org.ietr.preesm.memory.script.Range> oldMergedRange = mergedRange;

@@ -112,6 +112,7 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public FunctionPrototype getLoopPrototype() {
 		if (loopPrototype != null && loopPrototype.eIsProxy()) {
 			InternalEObject oldLoopPrototype = (InternalEObject)loopPrototype;
@@ -138,6 +139,7 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setLoopPrototype(FunctionPrototype newLoopPrototype) {
 		FunctionPrototype oldLoopPrototype = loopPrototype;
 		loopPrototype = newLoopPrototype;
@@ -197,6 +199,7 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public FunctionPrototype getInitPrototype() {
 		if (initPrototype != null && initPrototype.eIsProxy()) {
 			InternalEObject oldInitPrototype = (InternalEObject)initPrototype;
@@ -223,6 +226,7 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setInitPrototype(FunctionPrototype newInitPrototype) {
 		FunctionPrototype oldInitPrototype = initPrototype;
 		initPrototype = newInitPrototype;

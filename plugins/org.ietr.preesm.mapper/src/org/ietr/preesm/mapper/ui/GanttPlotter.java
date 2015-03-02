@@ -232,6 +232,7 @@ public class GanttPlotter extends ApplicationFrame {
 
 	}
 
+	@Override
 	public void windowClosing(WindowEvent event) {
 		if (event.equals(WindowEvent.WINDOW_CLOSING)) {
 

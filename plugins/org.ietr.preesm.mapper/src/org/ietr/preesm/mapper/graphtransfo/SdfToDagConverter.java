@@ -473,7 +473,7 @@ public class SdfToDagConverter {
 				for (String id : specialOpIds) {
 					ComponentInstance o = DesignTools.getComponentInstance(
 							architecture, id);
-					((MapperDAGVertex) v).getInit().addOperator(o);
+					v.getInit().addOperator(o);
 				}
 			}
 		}

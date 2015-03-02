@@ -64,6 +64,7 @@ public class CodeGenSDFEdge extends SDFEdge {
 		}
 	}
 
+	@Override
 	public String toString() {
 		try {
 			return getDataType().toString() + " " + getSource().getName() + "_"

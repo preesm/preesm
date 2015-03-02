@@ -210,6 +210,7 @@ public enum Delimiter implements Enumerator {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public int getValue() {
 		return value;
 	}
@@ -219,6 +220,7 @@ public enum Delimiter implements Enumerator {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -228,6 +230,7 @@ public enum Delimiter implements Enumerator {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public String getLiteral() {
 		return literal;
 	}

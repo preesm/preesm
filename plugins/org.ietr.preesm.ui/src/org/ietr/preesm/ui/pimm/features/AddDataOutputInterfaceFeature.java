@@ -109,7 +109,7 @@ public class AddDataOutputInterfaceFeature extends AbstractAddFeature {
 			boxAnchor.setRelativeWidth(0.0);
 			boxAnchor
 					.setRelativeHeight((((double) invisibRectHeight - (double) height))
-							/ 2.0 / (double) invisibRectHeight);
+							/ 2.0 / invisibRectHeight);
 			boxAnchor.setReferencedGraphicsAlgorithm(invisibleRectangle);
 
 			// create and set graphics algorithm for the anchor

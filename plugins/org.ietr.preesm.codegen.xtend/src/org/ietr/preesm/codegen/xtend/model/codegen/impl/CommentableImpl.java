@@ -105,6 +105,7 @@ public abstract class CommentableImpl extends EObjectImpl implements
 	 * 
 	 * @generated
 	 */
+	@Override
 	public String getComment() {
 		return comment;
 	}
@@ -114,6 +115,7 @@ public abstract class CommentableImpl extends EObjectImpl implements
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setComment(String newComment) {
 		String oldComment = comment;
 		comment = newComment;

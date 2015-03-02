@@ -134,6 +134,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public LoopBlock getLoopBlock() {
 		if (loopBlock != null && loopBlock.eIsProxy()) {
 			InternalEObject oldLoopBlock = (InternalEObject) loopBlock;
@@ -162,6 +163,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setLoopBlock(LoopBlock newLoopBlock) {
 		LoopBlock oldLoopBlock = loopBlock;
 		loopBlock = newLoopBlock;
@@ -176,6 +178,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public CallBlock getInitBlock() {
 		if (initBlock != null && initBlock.eIsProxy()) {
 			InternalEObject oldInitBlock = (InternalEObject) initBlock;
@@ -204,6 +207,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setInitBlock(CallBlock newInitBlock) {
 		CallBlock oldInitBlock = initBlock;
 		initBlock = newInitBlock;
@@ -218,6 +222,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public String getCoreType() {
 		return coreType;
 	}
@@ -227,6 +232,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setCoreType(String newCoreType) {
 		String oldCoreType = coreType;
 		coreType = newCoreType;

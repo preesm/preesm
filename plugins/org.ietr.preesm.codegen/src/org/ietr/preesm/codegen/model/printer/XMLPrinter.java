@@ -226,6 +226,7 @@ public class XMLPrinter implements IAbstractPrinter {
 		return currentLocation;
 	}
 
+	@Override
 	public Object visit(BufferAtIndex domElt, CodeZoneId index,
 			Object currentLocation) {
 		if (index == CodeZoneId.body) {
@@ -496,14 +497,14 @@ public class XMLPrinter implements IAbstractPrinter {
 			specialCall.setAttribute("name", element.getName());
 			// adding input buffer
 			Element inputBuffers = dom.createElement("inputBuffers");
-			((Element) specialCall).appendChild(inputBuffers);
+			specialCall.appendChild(inputBuffers);
 			for (Buffer inputBuffer : element.getInputBuffers()) {
 				visit(inputBuffer, index, inputBuffers);
 			}
 
 			// adding output buffers
 			Element outputBuffers = dom.createElement("outputBuffers");
-			((Element) specialCall).appendChild(outputBuffers);
+			specialCall.appendChild(outputBuffers);
 			for (Buffer outputBuffer : element.getOutputBuffers()) {
 				visit(outputBuffer, index, outputBuffers);
 			}

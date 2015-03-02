@@ -45,6 +45,7 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.DataType;
+import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.ietr.preesm.memory.allocation.MemoryAllocatorTask;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.script.AbstractMemoryScriptTask;
@@ -65,7 +66,7 @@ public class MultiMemoryScriptTask extends AbstractMemoryScriptTask {
 
 		// Retrieve the alignment param
 		String valueAlignment = parameters
-				.get(MemoryAllocatorTask.PARAM_ALIGNMENT);
+				.get(AbstractMemoryAllocatorTask.PARAM_ALIGNMENT);
 
 		// Get the data types from the scenario
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
@@ -108,8 +109,8 @@ public class MultiMemoryScriptTask extends AbstractMemoryScriptTask {
 				+ "}");
 		param.put(PARAM_CHECK, "? C {" + VALUE_CHECK_NONE + ", "
 				+ VALUE_CHECK_FAST + ", " + VALUE_CHECK_THOROUGH + "}");
-		param.put(MemoryAllocatorTask.PARAM_ALIGNMENT,
-				MemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
+		param.put(AbstractMemoryAllocatorTask.PARAM_ALIGNMENT,
+				AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
 		param.put(PARAM_LOG, VALUE_LOG);
 
 		return param;

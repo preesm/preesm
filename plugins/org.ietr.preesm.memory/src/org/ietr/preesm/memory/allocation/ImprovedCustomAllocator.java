@@ -117,6 +117,7 @@ public class ImprovedCustomAllocator extends MemoryAllocator {
 	 * elt := {vert<sub>i</sub>, vert<sub>j</sub>,...}<br>
 	 * weight(elt) := vert<sub>i</sub>.weight + vert<sub>j</sub>.weight + ...
 	 */
+	@Override
 	public void allocate() {
 		clear();
 
@@ -332,6 +333,7 @@ public class ImprovedCustomAllocator extends MemoryAllocator {
 		// Define a comparator of list elements. The weight of an element is
 		// used for comparison
 		Comparator<HashSet<MemoryExclusionVertex>> comparator = new Comparator<HashSet<MemoryExclusionVertex>>() {
+			@Override
 			public int compare(HashSet<MemoryExclusionVertex> o1,
 					HashSet<MemoryExclusionVertex> o2) {
 				return (weight(o2) - weight(o1));

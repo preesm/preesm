@@ -103,6 +103,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 	/**
 	 * adds all the necessary communication vertices with the given type
 	 */
+	@Override
 	public void routeAll(MapperDAG implementation, Integer type) {
 		TransactionManager localTransactionManager = new TransactionManager();
 
@@ -150,6 +151,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 	 * adds all the necessary communication vertices with the given type
 	 * affected by the mapping of newVertex
 	 */
+	@Override
 	public void routeNewVertex(MapperDAGVertex newVertex, List<Integer> types) {
 
 		Map<MapperDAGEdge, Route> transferEdges = getRouteMap(newVertex);
@@ -225,6 +227,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 	/**
 	 * Evaluates the transfer between two operators
 	 */
+	@Override
 	public long evaluateTransferCost(MapperDAGEdge edge) {
 
 		VertexMapping sourceimp = ((MapperDAGVertex) edge

@@ -64,6 +64,7 @@ public class ForLoop extends AbstractCodeContainer implements ICodeElement {
 		super(parentContainer, sectionType.toString(), comment);
 	}
 
+	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
@@ -90,6 +91,7 @@ public class ForLoop extends AbstractCodeContainer implements ICodeElement {
 	/**
 	 * Displays pseudo-code for test
 	 */
+	@Override
 	public String toString() {
 		String code = "";
 

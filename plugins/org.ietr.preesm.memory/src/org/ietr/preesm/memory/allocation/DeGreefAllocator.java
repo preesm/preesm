@@ -208,6 +208,7 @@ public class DeGreefAllocator extends MemoryAllocator {
 			this.second = second;
 		}
 
+		@Override
 		public int hashCode() {
 			int hashFirst = first != null ? first.hashCode() : 0;
 			int hashSecond = second != null ? second.hashCode() : 0;
@@ -215,6 +216,7 @@ public class DeGreefAllocator extends MemoryAllocator {
 			return (hashFirst + hashSecond) * hashSecond + hashFirst;
 		}
 
+		@Override
 		public boolean equals(Object other) {
 			if (other instanceof IntegerAndVertex) {
 				IntegerAndVertex otherPair = (IntegerAndVertex) other;
@@ -228,6 +230,7 @@ public class DeGreefAllocator extends MemoryAllocator {
 			return false;
 		}
 
+		@Override
 		public String toString() {
 			return "(" + first + ", " + second + ")";
 		}

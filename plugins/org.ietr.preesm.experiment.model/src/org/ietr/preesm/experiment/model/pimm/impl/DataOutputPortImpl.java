@@ -99,6 +99,7 @@ public class DataOutputPortImpl extends DataPortImpl implements DataOutputPort {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Fifo getOutgoingFifo() {
 		if (outgoingFifo != null && outgoingFifo.eIsProxy()) {
 			InternalEObject oldOutgoingFifo = (InternalEObject)outgoingFifo;
@@ -140,6 +141,7 @@ public class DataOutputPortImpl extends DataPortImpl implements DataOutputPort {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setOutgoingFifo(Fifo newOutgoingFifo) {
 		if (newOutgoingFifo != outgoingFifo) {
 			NotificationChain msgs = null;

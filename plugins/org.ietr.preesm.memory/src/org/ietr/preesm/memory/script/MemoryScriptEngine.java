@@ -52,6 +52,7 @@ import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.DataType;
+import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.ietr.preesm.memory.allocation.MemoryAllocatorTask;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
@@ -73,13 +74,13 @@ public class MemoryScriptEngine {
 		int alignment;
 		switch (valueAlignment.substring(0,
 				Math.min(valueAlignment.length(), 7))) {
-		case MemoryAllocatorTask.VALUE_ALIGNEMENT_NONE:
+		case AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_NONE:
 			alignment = -1;
 			break;
-		case MemoryAllocatorTask.VALUE_ALIGNEMENT_DATA:
+		case AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_DATA:
 			alignment = 0;
 			break;
-		case MemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED:
+		case AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED:
 			String fixedValue = valueAlignment.substring(7);
 			alignment = Integer.parseInt(fixedValue);
 			break;

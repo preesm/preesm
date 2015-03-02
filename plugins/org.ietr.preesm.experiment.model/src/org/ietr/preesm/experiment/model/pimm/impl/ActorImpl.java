@@ -131,6 +131,7 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Refinement getRefinement() {
 		return refinement;
 	}
@@ -154,6 +155,7 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setRefinement(Refinement newRefinement) {
 		if (newRefinement != refinement) {
 			NotificationChain msgs = null;
@@ -179,6 +181,7 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
 	 *         {@link Actor} <code>false</code> else.<!-- end-user-doc -->
 	 * 
 	 */
+	@Override
 	public boolean isConfigurationActor() {
 		boolean result = false;
 
@@ -213,6 +216,7 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean isSetConfigurationActor() {
 		// TODO: implement this method to return whether the 'Configuration Actor' attribute is set
 		// Ensure that you remove @generated or mark it @generated NOT
@@ -224,6 +228,7 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public IPath getMemoryScriptPath() {
 		return memoryScriptPath;
 	}
@@ -233,6 +238,7 @@ public class ActorImpl extends ExecutableActorImpl implements Actor {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setMemoryScriptPath(IPath newMemoryScriptPath) {
 		IPath oldMemoryScriptPath = memoryScriptPath;
 		memoryScriptPath = newMemoryScriptPath;

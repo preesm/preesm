@@ -112,6 +112,7 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public LoopBlock getLoopBlock() {
 		if (loopBlock != null && loopBlock.eIsProxy()) {
 			InternalEObject oldLoopBlock = (InternalEObject) loopBlock;
@@ -140,6 +141,7 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setLoopBlock(LoopBlock newLoopBlock) {
 		LoopBlock oldLoopBlock = loopBlock;
 		loopBlock = newLoopBlock;
@@ -154,6 +156,7 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public CallBlock getInitBlock() {
 		if (initBlock != null && initBlock.eIsProxy()) {
 			InternalEObject oldInitBlock = (InternalEObject) initBlock;
@@ -182,6 +185,7 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setInitBlock(CallBlock newInitBlock) {
 		CallBlock oldInitBlock = initBlock;
 		initBlock = newInitBlock;

@@ -66,6 +66,7 @@ public class SendMsg extends CommunicationFunctionCall {
 		this.target = target;
 	}
 
+	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation);
 		super.accept(printer, currentLocation);

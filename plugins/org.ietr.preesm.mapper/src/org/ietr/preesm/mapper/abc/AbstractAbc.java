@@ -118,6 +118,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * Gets internal implementation graph.
 	 * Use only for debug!
 	 */
+	@Override
 	public MapperDAG getImplementation() {
 		return implementation;
 	}
@@ -202,6 +203,7 @@ public abstract class AbstractAbc implements IAbc {
 		((MapperDAG)vertex.getBase()).getMappings().associate(verticesToAssociate);
 	}
 
+	@Override
 	public final MapperDAG getDAG() {
 		return dag;
 	}
@@ -220,10 +222,12 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Gets the architecture
 	 */
+	@Override
 	public final Design getArchitecture() {
 		return this.archi;
 	}
 
+	@Override
 	public final PreesmScenario getScenario() {
 		return scenario;
 	}
@@ -334,6 +338,7 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Sets the total orders in the dag
 	 */
+	@Override
 	public final void retrieveTotalOrder() {
 
 		orderManager.tagDAG(dag);
@@ -345,6 +350,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * same type. If again none is found, looks for any other operator able to
 	 * execute the vertex.
 	 */
+	@Override
 	public final boolean mapAllVerticesOnOperator(ComponentInstance operator) throws WorkflowException {
 
 		boolean possible = true;
@@ -383,6 +389,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * Looks for operators able to execute currentvertex
 	 * @throws WorkflowException 
 	 */
+	@Override
 	public List<ComponentInstance> getCandidateOperators(MapperDAGVertex vertex) throws WorkflowException {
 
 		vertex = translateInImplementationVertex(vertex);
@@ -484,6 +491,7 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Returns the implementation vertex corresponding to the DAG vertex
 	 */
+	@Override
 	public final MapperDAGVertex translateInImplementationVertex(
 			MapperDAGVertex vertex) {
 
@@ -524,6 +532,7 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Unmaps all vertices from implementation
 	 */
+	@Override
 	public final void resetImplementation() {
 
 		Iterator<DAGVertex> iterator = implementation.vertexSet().iterator();
@@ -537,6 +546,7 @@ public abstract class AbstractAbc implements IAbc {
 	 * Unmaps all vertices in both implementation and DAG Resets the order
 	 * manager only at the end
 	 */
+	@Override
 	public final void resetDAG() {
 
 		Iterator<DAGVertex> iterator = dag.vertexSet().iterator();
@@ -609,6 +619,7 @@ public abstract class AbstractAbc implements IAbc {
 		}
 	}
 
+	@Override
 	public final AbcType getType() {
 		return abcType;
 	}
@@ -616,6 +627,7 @@ public abstract class AbstractAbc implements IAbc {
 	/**
 	 * Prepares task rescheduling
 	 */
+	@Override
 	public void setTaskScheduler(AbstractTaskSched taskScheduler) {
 
 		this.taskScheduler = taskScheduler;

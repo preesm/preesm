@@ -51,6 +51,7 @@ import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 public class CodeGeneratorVisitor implements
 		IGraphVisitor<SDFGraph, SDFAbstractVertex, CodeGenSDFEdge> {
 
+	@Override
 	public void visit(CodeGenSDFEdge edge) {
 
 	}
@@ -58,6 +59,7 @@ public class CodeGeneratorVisitor implements
 	/**
 	 * visiting a vertex implies accepting its children
 	 */
+	@Override
 	public void visit(SDFAbstractVertex vertex) throws SDF4JException {
 		if (vertex.getGraphDescription() != null) {
 			vertex.getGraphDescription().accept(this);
@@ -65,6 +67,7 @@ public class CodeGeneratorVisitor implements
 
 	}
 
+	@Override
 	public void visit(SDFGraph graph) throws SDF4JException {
 		for (SDFEdge edge : graph.edgeSet()) {
 			edge.accept(this);

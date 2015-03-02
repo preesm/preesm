@@ -146,6 +146,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -155,6 +156,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setName(String newName) {
 		String oldName = name;
 		name = newName;
@@ -168,6 +170,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public String getType() {
 		return type;
 	}
@@ -177,6 +180,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setType(String newType) {
 		String oldType = type;
 		type = newType;
@@ -190,6 +194,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public Block getCreator() {
 		if (eContainerFeatureID() != CodegenPackage.VARIABLE__CREATOR)
 			return null;
@@ -213,6 +218,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setCreator(Block newCreator) {
 		if (newCreator != eInternalContainer()
 				|| (eContainerFeatureID() != CodegenPackage.VARIABLE__CREATOR && newCreator != null)) {
@@ -238,6 +244,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EList<Block> getUsers() {
 		if (users == null) {
 			users = new EObjectWithInverseResolvingEList.ManyInverse<Block>(

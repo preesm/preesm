@@ -571,7 +571,7 @@ public class ScenarioParser {
 				.getFile(relativePath);
 
 		try {
-			algorithm = (SDFGraph) importer.parse(new File(file.getLocation()
+			algorithm = importer.parse(new File(file.getLocation()
 					.toOSString()));
 
 			addVertexPathProperties(algorithm, "");

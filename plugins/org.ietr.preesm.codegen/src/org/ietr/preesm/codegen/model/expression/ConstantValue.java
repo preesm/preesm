@@ -60,6 +60,7 @@ public class ConstantValue extends Variable {
 		return value;
 	}
 
+	@Override
 	public String getName() {
 		return Integer.toString(value);
 	}

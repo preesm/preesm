@@ -390,6 +390,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getParameterizable() {
 		return parameterizableEClass;
 	}
@@ -399,6 +400,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getParameterizable_ConfigInputPorts() {
 		return (EReference)parameterizableEClass.getEStructuralFeatures().get(0);
 	}
@@ -408,6 +410,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getAbstractVertex() {
 		return abstractVertexEClass;
 	}
@@ -417,6 +420,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getAbstractVertex_Name() {
 		return (EAttribute)abstractVertexEClass.getEStructuralFeatures().get(0);
 	}
@@ -426,6 +430,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getAbstractActor() {
 		return abstractActorEClass;
 	}
@@ -435,6 +440,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getAbstractActor_DataInputPorts() {
 		return (EReference)abstractActorEClass.getEStructuralFeatures().get(0);
 	}
@@ -444,6 +450,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getAbstractActor_DataOutputPorts() {
 		return (EReference)abstractActorEClass.getEStructuralFeatures().get(1);
 	}
@@ -453,6 +460,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getAbstractActor_ConfigOutputPorts() {
 		return (EReference)abstractActorEClass.getEStructuralFeatures().get(2);
 	}
@@ -462,6 +470,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getPiGraph() {
 		return piGraphEClass;
 	}
@@ -471,6 +480,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getPiGraph_Vertices() {
 		return (EReference)piGraphEClass.getEStructuralFeatures().get(0);
 	}
@@ -480,6 +490,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getPiGraph_Fifos() {
 		return (EReference)piGraphEClass.getEStructuralFeatures().get(1);
 	}
@@ -489,6 +500,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getPiGraph_Parameters() {
 		return (EReference)piGraphEClass.getEStructuralFeatures().get(2);
 	}
@@ -498,6 +510,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getPiGraph_Dependencies() {
 		return (EReference)piGraphEClass.getEStructuralFeatures().get(3);
 	}
@@ -507,6 +520,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getActor() {
 		return actorEClass;
 	}
@@ -516,6 +530,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getActor_Refinement() {
 		return (EReference)actorEClass.getEStructuralFeatures().get(0);
 	}
@@ -525,6 +540,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getActor_ConfigurationActor() {
 		return (EAttribute)actorEClass.getEStructuralFeatures().get(1);
 	}
@@ -534,6 +550,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getActor_MemoryScriptPath() {
 		return (EAttribute)actorEClass.getEStructuralFeatures().get(2);
 	}
@@ -543,6 +560,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getPort() {
 		return portEClass;
 	}
@@ -552,6 +570,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getPort_Name() {
 		return (EAttribute)portEClass.getEStructuralFeatures().get(0);
 	}
@@ -561,6 +580,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getPort_Kind() {
 		return (EAttribute)portEClass.getEStructuralFeatures().get(1);
 	}
@@ -570,6 +590,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getDataInputPort() {
 		return dataInputPortEClass;
 	}
@@ -579,6 +600,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getDataInputPort_IncomingFifo() {
 		return (EReference)dataInputPortEClass.getEStructuralFeatures().get(0);
 	}
@@ -588,6 +610,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getDataOutputPort() {
 		return dataOutputPortEClass;
 	}
@@ -597,6 +620,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getDataOutputPort_OutgoingFifo() {
 		return (EReference)dataOutputPortEClass.getEStructuralFeatures().get(0);
 	}
@@ -606,6 +630,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getConfigInputPort() {
 		return configInputPortEClass;
 	}
@@ -615,6 +640,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getConfigInputPort_IncomingDependency() {
 		return (EReference)configInputPortEClass.getEStructuralFeatures().get(0);
 	}
@@ -624,6 +650,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getConfigOutputPort() {
 		return configOutputPortEClass;
 	}
@@ -633,6 +660,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getFifo() {
 		return fifoEClass;
 	}
@@ -642,6 +670,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getFifo_SourcePort() {
 		return (EReference)fifoEClass.getEStructuralFeatures().get(0);
 	}
@@ -651,6 +680,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getFifo_TargetPort() {
 		return (EReference)fifoEClass.getEStructuralFeatures().get(1);
 	}
@@ -660,6 +690,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getFifo_Delay() {
 		return (EReference)fifoEClass.getEStructuralFeatures().get(2);
 	}
@@ -669,6 +700,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getFifo_Id() {
 		return (EAttribute)fifoEClass.getEStructuralFeatures().get(3);
 	}
@@ -678,6 +710,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getFifo_Type() {
 		return (EAttribute)fifoEClass.getEStructuralFeatures().get(4);
 	}
@@ -687,6 +720,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getInterfaceActor() {
 		return interfaceActorEClass;
 	}
@@ -696,6 +730,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getInterfaceActor_GraphPort() {
 		return (EReference)interfaceActorEClass.getEStructuralFeatures().get(0);
 	}
@@ -705,6 +740,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getInterfaceActor_Kind() {
 		return (EAttribute)interfaceActorEClass.getEStructuralFeatures().get(1);
 	}
@@ -714,6 +750,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getDataInputInterface() {
 		return dataInputInterfaceEClass;
 	}
@@ -723,6 +760,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getDataOutputInterface() {
 		return dataOutputInterfaceEClass;
 	}
@@ -732,6 +770,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getConfigOutputInterface() {
 		return configOutputInterfaceEClass;
 	}
@@ -741,6 +780,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getRefinement() {
 		return refinementEClass;
 	}
@@ -750,6 +790,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getRefinement_FileName() {
 		return (EAttribute)refinementEClass.getEStructuralFeatures().get(0);
 	}
@@ -759,6 +800,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getRefinement_FilePath() {
 		return (EAttribute)refinementEClass.getEStructuralFeatures().get(1);
 	}
@@ -768,6 +810,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getParameter() {
 		return parameterEClass;
 	}
@@ -777,6 +820,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getParameter_ConfigurationInterface() {
 		return (EAttribute)parameterEClass.getEStructuralFeatures().get(0);
 	}
@@ -786,6 +830,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getParameter_GraphPort() {
 		return (EReference)parameterEClass.getEStructuralFeatures().get(1);
 	}
@@ -795,6 +840,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getParameter_Expression() {
 		return (EReference)parameterEClass.getEStructuralFeatures().get(2);
 	}
@@ -804,6 +850,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getDependency() {
 		return dependencyEClass;
 	}
@@ -813,6 +860,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getDependency_Setter() {
 		return (EReference)dependencyEClass.getEStructuralFeatures().get(0);
 	}
@@ -822,6 +870,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getDependency_Getter() {
 		return (EReference)dependencyEClass.getEStructuralFeatures().get(1);
 	}
@@ -831,6 +880,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getISetter() {
 		return iSetterEClass;
 	}
@@ -840,6 +890,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getISetter_OutgoingDependencies() {
 		return (EReference)iSetterEClass.getEStructuralFeatures().get(0);
 	}
@@ -849,6 +900,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getDelay() {
 		return delayEClass;
 	}
@@ -858,6 +910,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getDelay_Expression() {
 		return (EReference)delayEClass.getEStructuralFeatures().get(0);
 	}
@@ -867,6 +920,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getExpression() {
 		return expressionEClass;
 	}
@@ -876,6 +930,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getExpression_String() {
 		return (EAttribute)expressionEClass.getEStructuralFeatures().get(0);
 	}
@@ -885,6 +940,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getHRefinement() {
 		return hRefinementEClass;
 	}
@@ -894,6 +950,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getHRefinement_LoopPrototype() {
 		return (EReference)hRefinementEClass.getEStructuralFeatures().get(0);
 	}
@@ -903,6 +960,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getHRefinement_InitPrototype() {
 		return (EReference)hRefinementEClass.getEStructuralFeatures().get(1);
 	}
@@ -912,6 +970,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getFunctionPrototype() {
 		return functionPrototypeEClass;
 	}
@@ -921,6 +980,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getFunctionPrototype_Name() {
 		return (EAttribute)functionPrototypeEClass.getEStructuralFeatures().get(0);
 	}
@@ -930,6 +990,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getFunctionPrototype_Parameters() {
 		return (EReference)functionPrototypeEClass.getEStructuralFeatures().get(1);
 	}
@@ -939,6 +1000,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getFunctionParameter() {
 		return functionParameterEClass;
 	}
@@ -948,6 +1010,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getFunctionParameter_Name() {
 		return (EAttribute)functionParameterEClass.getEStructuralFeatures().get(0);
 	}
@@ -957,6 +1020,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getFunctionParameter_Direction() {
 		return (EAttribute)functionParameterEClass.getEStructuralFeatures().get(1);
 	}
@@ -966,6 +1030,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getFunctionParameter_Type() {
 		return (EAttribute)functionParameterEClass.getEStructuralFeatures().get(2);
 	}
@@ -975,6 +1040,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getFunctionParameter_IsConfigurationParameter() {
 		return (EAttribute)functionParameterEClass.getEStructuralFeatures().get(3);
 	}
@@ -984,6 +1050,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getDataPort() {
 		return dataPortEClass;
 	}
@@ -993,6 +1060,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EReference getDataPort_Expression() {
 		return (EReference)dataPortEClass.getEStructuralFeatures().get(0);
 	}
@@ -1002,6 +1070,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EAttribute getDataPort_Annotation() {
 		return (EAttribute)dataPortEClass.getEStructuralFeatures().get(1);
 	}
@@ -1011,6 +1080,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getBroadcastActor() {
 		return broadcastActorEClass;
 	}
@@ -1020,6 +1090,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getJoinActor() {
 		return joinActorEClass;
 	}
@@ -1029,6 +1100,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getForkActor() {
 		return forkActorEClass;
 	}
@@ -1038,6 +1110,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getRoundBufferActor() {
 		return roundBufferActorEClass;
 	}
@@ -1047,6 +1120,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getExecutableActor() {
 		return executableActorEClass;
 	}
@@ -1056,6 +1130,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EEnum getDirection() {
 		return directionEEnum;
 	}
@@ -1065,6 +1140,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EEnum getPortMemoryAnnotation() {
 		return portMemoryAnnotationEEnum;
 	}
@@ -1074,6 +1150,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EDataType getIPath() {
 		return iPathEDataType;
 	}
@@ -1083,6 +1160,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EClass getConfigInputInterface() {
 		return configInputInterfaceEClass;
 	}
@@ -1092,6 +1170,7 @@ public class PiMMPackageImpl extends EPackageImpl implements PiMMPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public PiMMFactory getPiMMFactory() {
 		return (PiMMFactory)getEFactoryInstance();
 	}

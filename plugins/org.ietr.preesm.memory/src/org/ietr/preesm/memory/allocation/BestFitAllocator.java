@@ -78,6 +78,7 @@ public class BestFitAllocator extends OrderedAllocator {
 	 *            the ordered vertex list.
 	 * @return the resulting allocation size.
 	 */
+	@Override
 	protected int allocateInOrder(List<MemoryExclusionVertex> vertexList) {
 		// clear all previous allocation
 		clear();

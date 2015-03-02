@@ -95,7 +95,7 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 			parentLoop = parentLoop.getParentContainer();
 		}
 		if (parentLoop != null && parentLoop instanceof FiniteForLoop) {
-			char newIndex = (char) (((int) ((FiniteForLoop) parentLoop)
+			char newIndex = (char) ((((FiniteForLoop) parentLoop)
 					.getIndex().getNameAsChar()) + 1);
 			index = new LoopIndex(newIndex, new DataType("long"));
 		} else {
@@ -210,6 +210,7 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 		}
 	}
 
+	@Override
 	public Buffer getBuffer(SDFEdge edge) {
 		if (allocatedBuffers.get(edge) == null) {
 			return super.getBuffer(edge);
@@ -223,6 +224,7 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 		return correspondingVertex;
 	}
 
+	@Override
 	public AbstractBufferContainer getParentContainer() {
 		return parentContainer;
 	}
@@ -252,6 +254,7 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 		return "for";
 	}
 
+	@Override
 	public String toString() {
 		return "";
 	}
@@ -262,6 +265,7 @@ public class FiniteForLoop extends AbstractBufferContainer implements
 	 * @param var
 	 *            A {@link VariableExpression}.
 	 */
+	@Override
 	public void addVariable(Variable var) {
 		this.getParentContainer().addVariable(var);
 	}

@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -52,6 +52,7 @@ public class Parameter extends Variable {
 		// TODO Auto-generated constructor stub
 	}
 
+	@Override
 	public Parameter clone() {
 		Parameter newParam = new Parameter(this.name);
 		newParam.setValue(this.getValue());
@@ -63,6 +64,7 @@ public class Parameter extends Variable {
 		return sdxIndex;
 	}
 
+	@Override
 	public Object getValue() {
 		return super.getValue();
 	}
@@ -71,6 +73,7 @@ public class Parameter extends Variable {
 		sdxIndex = index;
 	}
 
+	@Override
 	public boolean setValue(Object value) {
 		return super.setValue(value);
 	}

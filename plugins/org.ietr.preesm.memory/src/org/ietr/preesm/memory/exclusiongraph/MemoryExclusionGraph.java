@@ -700,6 +700,7 @@ public class MemoryExclusionGraph extends
 	/**
 	 * @override
 	 */
+	@Override
 	public Object clone() {
 		Object o = super.clone();
 		((MemoryExclusionGraph) o).adjacentVerticesBackup = new HashMap<MemoryExclusionVertex, HashSet<MemoryExclusionVertex>>();
@@ -1007,6 +1008,7 @@ public class MemoryExclusionGraph extends
 	/**
 	 * @override
 	 */
+	@Override
 	public boolean removeAllVertices(
 			Collection<? extends MemoryExclusionVertex> arg0) {
 		boolean result = super.removeAllVertices(arg0);
@@ -1069,6 +1071,7 @@ public class MemoryExclusionGraph extends
 	 * @return A list of merged vertices
 	 * @deprecated Not used anywhere
 	 */
+	@Deprecated
 	public void removeLightestEquivalentNodes() {
 
 		// Retrieve the list of nodes of the gaph

@@ -64,6 +64,7 @@ public class BufferAtIndex extends FunctionArgument {
 		this.index = index;
 	}
 
+	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
 																					// self

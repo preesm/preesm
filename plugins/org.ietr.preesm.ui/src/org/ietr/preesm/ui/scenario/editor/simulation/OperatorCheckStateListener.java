@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -98,6 +98,7 @@ public class OperatorCheckStateListener implements ICheckStateListener,
 		final boolean isChecked = event.getChecked();
 		BusyIndicator.showWhile(section.getDisplay(), new Runnable() {
 
+			@Override
 			public void run() {
 				if (element instanceof String) {
 					String path = (String) element;

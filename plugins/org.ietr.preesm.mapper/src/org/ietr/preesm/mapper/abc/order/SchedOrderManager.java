@@ -156,7 +156,7 @@ public class SchedOrderManager extends Observable {
 	public void addLast(MapperDAGVertex elt) {
 
 		if (elt instanceof MapperDAGVertex) {
-			MapperDAGVertex vertex = (MapperDAGVertex) elt;
+			MapperDAGVertex vertex = elt;
 			if (vertex.getMapping()
 					.hasEffectiveComponent()) {
 				ComponentInstance effectiveCmp = vertex
@@ -465,7 +465,7 @@ public class SchedOrderManager extends Observable {
 			prevElt = schedule.getPrevious(vertex);
 
 			if (prevElt instanceof MapperDAGVertex) {
-				prevVertex = (MapperDAGVertex) prevElt;
+				prevVertex = prevElt;
 			}
 		}
 
@@ -487,7 +487,7 @@ public class SchedOrderManager extends Observable {
 			nextElement = schedule.getNext(vertex);
 
 			if (nextElement instanceof MapperDAGVertex) {
-				nextVertex = (MapperDAGVertex) nextElement;
+				nextVertex = nextElement;
 			}
 		}
 
@@ -536,7 +536,7 @@ public class SchedOrderManager extends Observable {
 		if (s != null) {
 			for (MapperDAGVertex elt : s.getList()) {
 				if (elt instanceof MapperDAGVertex) {
-					vList.add((MapperDAGVertex) elt);
+					vList.add(elt);
 				}
 			}
 		}

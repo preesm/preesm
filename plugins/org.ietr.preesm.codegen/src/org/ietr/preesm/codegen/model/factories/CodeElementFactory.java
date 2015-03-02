@@ -470,7 +470,7 @@ public class CodeElementFactory {
 					|| (vertex.getNbRepeat() instanceof JSCLInteger && (vertex
 							.getNbRepeatAsInteger() > 1))) {
 				FiniteForLoop loop = new FiniteForLoop(parentContainer,
-						(ICodeGenSDFVertex) vertex, sectionType);
+						vertex, sectionType);
 				return loop;
 			} else if (vertex.getGraphDescription() == null
 					&& vertex.getRefinement() instanceof ActorPrototypes) {
@@ -484,7 +484,7 @@ public class CodeElementFactory {
 			} else if (vertex.getGraphDescription() != null) {
 				CompoundCodeElement compound = new CompoundCodeElement(
 						vertex.getName(), parentContainer,
-						(ICodeGenSDFVertex) vertex, sectionType);
+						vertex, sectionType);
 				return compound;
 			}
 			return null;
@@ -566,7 +566,7 @@ public class CodeElementFactory {
 				}
 			}
 		} else {
-			AbstractBufferContainer newContainer = (AbstractBufferContainer) parentContainer
+			AbstractBufferContainer newContainer = parentContainer
 					.getParentContainer();
 			while (newContainer instanceof AbstractCodeContainer
 					&& !(newContainer instanceof CompoundCodeElement)) {

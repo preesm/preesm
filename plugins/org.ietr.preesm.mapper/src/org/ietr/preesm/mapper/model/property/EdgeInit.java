@@ -54,6 +54,7 @@ public class EdgeInit {
 		this.dataSize = dataSize;
 	}
 
+	@Override
 	public EdgeInit clone() {
 		EdgeInit property = new EdgeInit();
 		property.setDataSize(getDataSize());

@@ -90,6 +90,7 @@ public class RenameDiagram extends RenameParticipant {
 		return null;
 	}
 
+	@Override
 	public Change createPreChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
 

@@ -61,6 +61,7 @@ public class ReceiveVertex extends TransferVertex {
 		super(id, base, source, target, routeStepIndex, nodeIndex);
 	}
 
+	@Override
 	public DAGDefaultVertexPropertyType getNbRepeat() {
 		return new DAGDefaultVertexPropertyType(1);
 	}

@@ -54,6 +54,7 @@ public class LinearCodeContainer extends AbstractCodeContainer implements
 		super(parentContainer, sectionType.toString(), comment);
 	}
 
+	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
@@ -64,6 +65,7 @@ public class LinearCodeContainer extends AbstractCodeContainer implements
 	/**
 	 * Displays pseudo-code for test
 	 */
+	@Override
 	public String toString() {
 
 		String code = "";

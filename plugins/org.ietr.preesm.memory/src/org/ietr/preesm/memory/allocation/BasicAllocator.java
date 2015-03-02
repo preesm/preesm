@@ -67,6 +67,7 @@ public class BasicAllocator extends MemoryAllocator {
 	/**
 	 * Each edge of the graph is given a dedicated memory space.
 	 */
+	@Override
 	public void allocate() {
 		clear();
 

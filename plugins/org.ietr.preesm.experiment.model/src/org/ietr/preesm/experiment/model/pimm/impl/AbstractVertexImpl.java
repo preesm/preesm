@@ -99,6 +99,7 @@ public abstract class AbstractVertexImpl extends ParameterizableImpl implements
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -107,6 +108,7 @@ public abstract class AbstractVertexImpl extends ParameterizableImpl implements
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setName(String newName) {
 		String oldName = name;
 		name = newName;

@@ -62,15 +62,18 @@ public class CodeGenSDFForkVertex extends SDFForkVertex implements
 		this.setRefinement(forkCall);
 	}
 
+	@Override
 	public ComponentInstance getOperator() {
 		return (ComponentInstance) this.getPropertyBean().getValue(OPERATOR,
 				ComponentInstance.class);
 	}
 
+	@Override
 	public void setOperator(ComponentInstance op) {
 		this.getPropertyBean().setValue(OPERATOR, getOperator(), op);
 	}
 
+	@Override
 	public int getPos() {
 		if (this.getPropertyBean().getValue(POS) != null) {
 			return (Integer) this.getPropertyBean()
@@ -79,6 +82,7 @@ public class CodeGenSDFForkVertex extends SDFForkVertex implements
 		return 0;
 	}
 
+	@Override
 	public void setPos(int pos) {
 		this.getPropertyBean().setValue(POS, getPos(), pos);
 	}
@@ -120,6 +124,7 @@ public class CodeGenSDFForkVertex extends SDFForkVertex implements
 		removeConnection((SDFEdge) e);
 	}
 
+	@Override
 	public String toString() {
 		return "";
 	}

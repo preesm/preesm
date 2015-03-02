@@ -127,6 +127,7 @@ public class DataTypesLabelProvider implements ITableLabelProvider {
 
 		IInputValidator validator = new IInputValidator() {
 
+			@Override
 			public String isValid(String newText) {
 				String message = null;
 				int size = 0;

@@ -160,6 +160,7 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 */
+	@Override
 	public AbstractActor getAbstractActor() {
 
 		if (this.getFilePath() != null && this.filePath.getFileExtension().equals("pi")) {			
@@ -197,6 +198,7 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getFileName() {
 		return fileName;
 	}
@@ -218,6 +220,7 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setFileName(String newFileName) {
 		String oldFileName = fileName;
 		fileName = newFileName;

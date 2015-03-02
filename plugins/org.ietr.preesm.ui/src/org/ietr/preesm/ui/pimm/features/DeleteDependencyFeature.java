@@ -62,6 +62,7 @@ public class DeleteDependencyFeature extends DefaultDeleteFeature {
 		super(fp);
 	}
 
+	@Override
 	public void preDelete(IDeleteContext context) {
 		super.preDelete(context);
 

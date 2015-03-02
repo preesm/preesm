@@ -96,7 +96,7 @@ public class DelayDecorators {
 		imageRenderingDecorator.setMessage("Problems in parameter resolution");
 		
 		
-		if(((Delay)delay).getExpression().evaluate().contains("Error")){
+		if(delay.getExpression().evaluate().contains("Error")){
 			imageRenderingDecorator.setX(pe.getGraphicsAlgorithm().getWidth()/2-8);
 			imageRenderingDecorator.setY(1);
 

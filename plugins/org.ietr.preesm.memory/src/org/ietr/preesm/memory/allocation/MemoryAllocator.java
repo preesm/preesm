@@ -418,7 +418,7 @@ public abstract class MemoryAllocator {
 						MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
 		if (hostMap != null && hostMap.containsKey(vertex)) {
 			allocateHostMemoryObject(vertex,
-					(Set<MemoryExclusionVertex>) hostMap.get(vertex), offset);
+					hostMap.get(vertex), offset);
 		}
 	}
 
@@ -712,6 +712,7 @@ public abstract class MemoryAllocator {
 				// First, retrieve the fakeMobj of the part
 				final int partIndex = neighborHosts.indexOf(neighborHost);
 				Function1<MemoryExclusionVertex, Boolean> function = new Function1<MemoryExclusionVertex, Boolean>() {
+					@Override
 					public Boolean apply(final MemoryExclusionVertex it) {
 						return it.getSource().startsWith(
 								"part" + partIndex + "_");

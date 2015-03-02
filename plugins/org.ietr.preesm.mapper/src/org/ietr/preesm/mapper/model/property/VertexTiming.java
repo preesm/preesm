@@ -99,6 +99,7 @@ public class VertexTiming extends GroupProperty {
 		totalOrders = new HashMap<String,Integer>();
 	}
 
+	@Override
 	public String toString() {
 		return "";
 	}

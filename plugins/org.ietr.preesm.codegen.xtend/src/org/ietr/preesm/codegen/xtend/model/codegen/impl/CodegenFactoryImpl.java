@@ -189,6 +189,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public Block createBlock() {
 		BlockImpl block = new BlockImpl();
 		return block;
@@ -199,6 +200,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public Buffer createBuffer() {
 		BufferImpl buffer = new BufferImpl();
 		return buffer;
@@ -209,6 +211,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public SubBuffer createSubBuffer() {
 		SubBufferImpl subBuffer = new SubBufferImpl();
 		return subBuffer;
@@ -219,6 +222,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public Constant createConstant() {
 		ConstantImpl constant = new ConstantImpl();
 		return constant;
@@ -229,6 +233,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public FunctionCall createFunctionCall() {
 		FunctionCallImpl functionCall = new FunctionCallImpl();
 		return functionCall;
@@ -239,6 +244,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public Communication createCommunication() {
 		CommunicationImpl communication = new CommunicationImpl();
 		return communication;
@@ -249,6 +255,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public CoreBlock createCoreBlock() {
 		CoreBlockImpl coreBlock = new CoreBlockImpl();
 		return coreBlock;
@@ -259,6 +266,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public ActorBlock createActorBlock() {
 		ActorBlockImpl actorBlock = new ActorBlockImpl();
 		return actorBlock;
@@ -269,6 +277,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public LoopBlock createLoopBlock() {
 		LoopBlockImpl loopBlock = new LoopBlockImpl();
 		return loopBlock;
@@ -279,6 +288,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public ActorCall createActorCall() {
 		ActorCallImpl actorCall = new ActorCallImpl();
 		return actorCall;
@@ -289,6 +299,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public CallBlock createCallBlock() {
 		CallBlockImpl callBlock = new CallBlockImpl();
 		return callBlock;
@@ -299,6 +310,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public SpecialCall createSpecialCall() {
 		SpecialCallImpl specialCall = new SpecialCallImpl();
 		return specialCall;
@@ -309,6 +321,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public FifoCall createFifoCall() {
 		FifoCallImpl fifoCall = new FifoCallImpl();
 		return fifoCall;
@@ -319,6 +332,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public CommunicationNode createCommunicationNode() {
 		CommunicationNodeImpl communicationNode = new CommunicationNodeImpl();
 		return communicationNode;
@@ -329,6 +343,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public Semaphore createSemaphore() {
 		SemaphoreImpl semaphore = new SemaphoreImpl();
 		return semaphore;
@@ -339,6 +354,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public SharedMemoryCommunication createSharedMemoryCommunication() {
 		SharedMemoryCommunicationImpl sharedMemoryCommunication = new SharedMemoryCommunicationImpl();
 		return sharedMemoryCommunication;
@@ -349,6 +365,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public ConstantString createConstantString() {
 		ConstantStringImpl constantString = new ConstantStringImpl();
 		return constantString;
@@ -359,6 +376,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public NullBuffer createNullBuffer() {
 		NullBufferImpl nullBuffer = new NullBufferImpl();
 		return nullBuffer;
@@ -514,6 +532,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public CodegenPackage getCodegenPackage() {
 		return (CodegenPackage) getEPackage();
 	}

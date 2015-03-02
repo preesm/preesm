@@ -60,6 +60,7 @@ public class CodeGenSDFGraph extends SDFGraph {
 		super(factory);
 	}
 
+	@Override
 	public String toString() {
 		String code = new String();
 		if (this.getParentVertex() == null) {

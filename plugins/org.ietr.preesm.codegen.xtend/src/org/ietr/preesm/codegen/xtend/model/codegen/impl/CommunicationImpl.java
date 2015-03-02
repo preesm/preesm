@@ -266,6 +266,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public Direction getDirection() {
 		return direction;
 	}
@@ -275,6 +276,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setDirection(Direction newDirection) {
 		Direction oldDirection = direction;
 		direction = newDirection == null ? DIRECTION_EDEFAULT : newDirection;
@@ -289,6 +291,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public Delimiter getDelimiter() {
 		return delimiter;
 	}
@@ -298,6 +301,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setDelimiter(Delimiter newDelimiter) {
 		Delimiter oldDelimiter = delimiter;
 		delimiter = newDelimiter == null ? DELIMITER_EDEFAULT : newDelimiter;
@@ -312,6 +316,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public Buffer getData() {
 		if (data != null && data.eIsProxy()) {
 			InternalEObject oldData = (InternalEObject) data;
@@ -339,6 +344,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * 
 	 */
+	@Override
 	public void setData(Buffer newData) {
 		Buffer oldData = data;
 		data = newData;
@@ -356,6 +362,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public Communication getSendStart() {
 		if (sendStart != null && sendStart.eIsProxy()) {
 			InternalEObject oldSendStart = (InternalEObject) sendStart;
@@ -384,6 +391,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setSendStart(Communication newSendStart) {
 		Communication oldSendStart = sendStart;
 		sendStart = newSendStart;
@@ -398,6 +406,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public Communication getSendEnd() {
 		if (sendEnd != null && sendEnd.eIsProxy()) {
 			InternalEObject oldSendEnd = (InternalEObject) sendEnd;
@@ -426,6 +435,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setSendEnd(Communication newSendEnd) {
 		Communication oldSendEnd = sendEnd;
 		sendEnd = newSendEnd;
@@ -439,6 +449,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public Communication getReceiveStart() {
 		if (receiveStart != null && receiveStart.eIsProxy()) {
 			InternalEObject oldReceiveStart = (InternalEObject) receiveStart;
@@ -467,6 +478,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setReceiveStart(Communication newReceiveStart) {
 		Communication oldReceiveStart = receiveStart;
 		receiveStart = newReceiveStart;
@@ -481,6 +493,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public Communication getReceiveEnd() {
 		if (receiveEnd != null && receiveEnd.eIsProxy()) {
 			InternalEObject oldReceiveEnd = (InternalEObject) receiveEnd;
@@ -509,6 +522,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setReceiveEnd(Communication newReceiveEnd) {
 		Communication oldReceiveEnd = receiveEnd;
 		receiveEnd = newReceiveEnd;
@@ -523,6 +537,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public int getId() {
 		return id;
 	}
@@ -532,6 +547,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setId(int newId) {
 		int oldId = id;
 		id = newId;
@@ -545,6 +561,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EList<CommunicationNode> getNodes() {
 		if (nodes == null) {
 			nodes = new EObjectContainmentEList<CommunicationNode>(
@@ -559,6 +576,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public Communication getReceiveRelease() {
 		if (receiveRelease != null && receiveRelease.eIsProxy()) {
 			InternalEObject oldReceiveRelease = (InternalEObject) receiveRelease;
@@ -587,6 +605,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setReceiveRelease(Communication newReceiveRelease) {
 		Communication oldReceiveRelease = receiveRelease;
 		receiveRelease = newReceiveRelease;
@@ -601,6 +620,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public Communication getSendReserve() {
 		if (sendReserve != null && sendReserve.eIsProxy()) {
 			InternalEObject oldSendReserve = (InternalEObject) sendReserve;
@@ -629,6 +649,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setSendReserve(Communication newSendReserve) {
 		Communication oldSendReserve = sendReserve;
 		sendReserve = newSendReserve;
@@ -643,6 +664,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	 * 
 	 * 
 	 */
+	@Override
 	public CoreBlock getCoreContainer() {
 		EObject container = this.eContainer();
 		while (!(container instanceof CoreBlock) && container != null) {

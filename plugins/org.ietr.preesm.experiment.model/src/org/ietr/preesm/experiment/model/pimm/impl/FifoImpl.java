@@ -146,6 +146,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public DataOutputPort getSourcePort() {
 		if (sourcePort != null && sourcePort.eIsProxy()) {
 			InternalEObject oldSourcePort = (InternalEObject)sourcePort;
@@ -186,6 +187,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setSourcePort(DataOutputPort newSourcePort) {
 		if (newSourcePort != sourcePort) {
 			NotificationChain msgs = null;
@@ -204,6 +206,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public DataInputPort getTargetPort() {
 		if (targetPort != null && targetPort.eIsProxy()) {
 			InternalEObject oldTargetPort = (InternalEObject)targetPort;
@@ -244,6 +247,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setTargetPort(DataInputPort newTargetPort) {
 		if (newTargetPort != targetPort) {
 			NotificationChain msgs = null;
@@ -263,6 +267,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Delay getDelay() {
 		return delay;
 	}
@@ -287,6 +292,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setDelay(Delay newDelay) {
 		if (newDelay != delay) {
 			NotificationChain msgs = null;
@@ -311,6 +317,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	 * always the unique data {@link Port} of its owner. <!-- end-user-doc -->
 	 * 
 	 */
+	@Override
 	public String getId() {
 
 		Port srcPort = this.getSourcePort();
@@ -340,6 +347,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean isSetId() {
 		// TODO: implement this method to return whether the 'Id' attribute is set
 		// Ensure that you remove @generated or mark it @generated NOT
@@ -351,6 +359,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getType() {
 		return type;
 	}
@@ -360,6 +369,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setType(String newType) {
 		String oldType = type;
 		type = newType;

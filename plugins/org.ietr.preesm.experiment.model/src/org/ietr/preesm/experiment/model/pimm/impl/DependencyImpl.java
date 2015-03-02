@@ -106,6 +106,7 @@ public class DependencyImpl extends EObjectImpl implements Dependency {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ISetter getSetter() {
 		if (setter != null && setter.eIsProxy()) {
 			InternalEObject oldSetter = (InternalEObject)setter;
@@ -147,6 +148,7 @@ public class DependencyImpl extends EObjectImpl implements Dependency {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setSetter(ISetter newSetter) {
 		if (newSetter != setter) {
 			NotificationChain msgs = null;
@@ -166,6 +168,7 @@ public class DependencyImpl extends EObjectImpl implements Dependency {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ConfigInputPort getGetter() {
 		if (getter != null && getter.eIsProxy()) {
 			InternalEObject oldGetter = (InternalEObject)getter;
@@ -207,6 +210,7 @@ public class DependencyImpl extends EObjectImpl implements Dependency {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setGetter(ConfigInputPort newGetter) {
 		if (newGetter != getter) {
 			NotificationChain msgs = null;

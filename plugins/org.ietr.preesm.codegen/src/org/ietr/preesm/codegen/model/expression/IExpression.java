@@ -38,6 +38,7 @@ package org.ietr.preesm.codegen.model.expression;
 
 public interface IExpression {
 
+	@Override
 	public String toString();
 
 }

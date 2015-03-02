@@ -63,6 +63,7 @@ public class SimpleEdgeSched extends AbstractEdgeSched {
 
 	}
 
+	@Override
 	public EdgeSchedType getEdgeSchedType() {
 		return EdgeSchedType.Simple;
 	}

@@ -431,6 +431,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 	@Override
 	public IRemoveFeature getRemoveFeature(IRemoveContext context) {
 		return new DefaultRemoveFeature(this) {
+			@Override
 			public boolean isAvailable(IContext context) {
 				return false;
 			}

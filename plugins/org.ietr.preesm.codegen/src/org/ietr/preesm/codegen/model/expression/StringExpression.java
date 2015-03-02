@@ -43,6 +43,7 @@ public class StringExpression implements IExpression {
 		this.expr = expr;
 	}
 
+	@Override
 	public String toString() {
 		return "(" + expr + ")";
 	}

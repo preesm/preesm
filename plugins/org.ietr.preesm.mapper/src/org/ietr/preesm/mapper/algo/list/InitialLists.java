@@ -103,7 +103,7 @@ public class InitialLists {
 		// retrieve and clone the cpnDominantList
 		Iterator<MapperDAGVertex> iter = this.cpnDominant.listIterator();
 		while (iter.hasNext()) {
-			MapperDAGVertex temp = ((MapperDAGVertex) iter.next()).clone();
+			MapperDAGVertex temp = iter.next().clone();
 			if (temp != null)
 				newlist.add(temp);
 		}
@@ -113,7 +113,7 @@ public class InitialLists {
 		List<MapperDAGVertex> newlist2 = new ArrayList<MapperDAGVertex>();
 		iter = this.blockingNodes.iterator();
 		while (iter.hasNext()) {
-			MapperDAGVertex temp = ((MapperDAGVertex) iter.next()).clone();
+			MapperDAGVertex temp = iter.next().clone();
 			if (temp != null)
 				newlist2.add(temp);
 		}
@@ -123,7 +123,7 @@ public class InitialLists {
 		List<MapperDAGVertex> newlist3 = new ArrayList<MapperDAGVertex>();
 		iter = this.criticalPath.iterator();
 		while (iter.hasNext()) {
-			MapperDAGVertex temp = ((MapperDAGVertex) iter.next()).clone();
+			MapperDAGVertex temp = iter.next().clone();
 			if (temp != null)
 				newlist3.add(temp);
 		}
@@ -165,7 +165,7 @@ public class InitialLists {
 
 			if (cpnvertex != null) {
 				predset.addAll(neighborindex
-						.predecessorListOf((MapperDAGVertex) cpnvertex));
+						.predecessorListOf(cpnvertex));
 			} else {
 				WorkflowLogger.getLogger().log(Level.SEVERE,
 						"Predecessor not found");
@@ -271,7 +271,7 @@ public class InitialLists {
 
 		// Find the successor of the first CPN (Critical Path Node)
 		succset.addAll(neighborindex
-				.successorListOf((MapperDAGVertex) cpnvertex));
+				.successorListOf(cpnvertex));
 
 		WorkflowLogger.getLogger().log(Level.INFO, "Building CPN list.");
 

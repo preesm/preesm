@@ -147,6 +147,7 @@ public class TransferVertex extends MapperDAGVertex {
 		this.involvementVertex = involvementVertex;
 	}
 
+	@Override
 	public String getPropertyStringValue(String propertyName) {
 		if (propertyName
 				.equals(ImplementationPropertyNames.SendReceive_OperatorDef)) {

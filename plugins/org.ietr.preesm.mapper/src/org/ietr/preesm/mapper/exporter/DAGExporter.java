@@ -48,6 +48,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.ietr.dftools.algorithm.exporter.GMLExporter;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
+import org.ietr.dftools.algorithm.model.AbstractVertex;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
@@ -117,7 +118,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 				kind = "vertex";
 			}
 		}
-		vertexElt.setAttribute(SDFAbstractVertex.KIND, kind);
+		vertexElt.setAttribute(AbstractVertex.KIND, kind);
 
 		exportKeys(vertex, "node", vertexElt);
 
@@ -166,6 +167,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		return edgeElt;
 	}
 
+	@Override
 	public Element exportGraph(AbstractGraph<DAGVertex, DAGEdge> graph) {
 		// Instantiate maps
 		inPortNb = new HashMap<DAGVertex, Integer>();
@@ -192,6 +194,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		return null;
 	}
 
+	@Override
 	public void export(AbstractGraph<DAGVertex, DAGEdge> graph, String path) {
 		this.path = path;
 		try {
@@ -202,6 +205,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 		}
 	}
 
+	@Override
 	protected Element exportPort(DAGVertex interfaceVertex,
 			Element parentELement) {
 		return null;

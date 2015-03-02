@@ -128,6 +128,7 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
 
 		IInputValidator intValidator = new IInputValidator() {
 
+			@Override
 			public String isValid(String newText) {
 				String message = null;
 				int val = 0;
@@ -148,6 +149,7 @@ public class MemCopySpeedLabelProvider implements ITableLabelProvider {
 		
 		IInputValidator floatValidator = new IInputValidator() {
 
+			@Override
 			public String isValid(String newText) {
 				String message = null;
 				float val = 0;

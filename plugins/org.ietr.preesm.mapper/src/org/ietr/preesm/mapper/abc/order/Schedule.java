@@ -264,7 +264,7 @@ public class Schedule {
 
 		for (MapperDAGVertex elt : elementList) {
 			if (elt instanceof MapperDAGVertex) {
-				MapperDAGVertex v = (MapperDAGVertex) elt;
+				MapperDAGVertex v = elt;
 				VertexOrderList.OrderProperty op = order.new OrderProperty(
 						v.getName(), indexOf(v));
 				order.addLast(op);

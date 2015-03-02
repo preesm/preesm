@@ -114,6 +114,7 @@ public abstract class AbstractCodeContainer extends AbstractBufferContainer {
 		return comNumber = comNumber + 1;
 	}
 
+	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
@@ -230,6 +231,7 @@ public abstract class AbstractCodeContainer extends AbstractBufferContainer {
 	/**
 	 * Displays pseudo-code for test
 	 */
+	@Override
 	public String toString() {
 		String code = "\n";
 		for (ICodeElement elt : codeElements) {

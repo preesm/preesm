@@ -267,6 +267,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EList<Fifo> getFifos() {
 		if (fifos == null) {
 			fifos = new EObjectContainmentEList<Fifo>(Fifo.class, this,
@@ -280,6 +281,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EList<Parameter> getParameters() {
 		if (parameters == null) {
 			parameters = new EObjectContainmentEList<Parameter>(
@@ -293,6 +295,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EList<Dependency> getDependencies() {
 		if (dependencies == null) {
 			dependencies = new EObjectContainmentEList<Dependency>(
@@ -323,6 +326,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EList<AbstractActor> getVertices() {
 		if (vertices == null) {
 			vertices = new EObjectContainmentEList<AbstractActor>(

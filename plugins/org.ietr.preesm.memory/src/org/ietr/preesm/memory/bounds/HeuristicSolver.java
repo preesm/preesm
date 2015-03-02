@@ -133,6 +133,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
 	 * @author kdesnos
 	 * @deprecated Not used anymore in the HeuristicSolver algorithm
 	 */
+	@Deprecated
 	public class VerticesPair {
 		private V first;
 		private V second;
@@ -142,6 +143,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
 			this.second = second;
 		}
 
+		@Override
 		public boolean equals(Object other) {
 			if (other instanceof HeuristicSolver.VerticesPair) {
 				if (other.getClass() == this.getClass()) {
@@ -170,6 +172,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
 			return second;
 		}
 
+		@Override
 		public int hashCode() {
 			int hashFirst = first != null ? first.hashCode() : 0;
 			int hashSecond = second != null ? second.hashCode() : 0;
@@ -185,6 +188,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
 			this.second = second;
 		}
 
+		@Override
 		public String toString() {
 			return "(" + first + ", " + second + ")";
 		}
@@ -237,6 +241,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
 	 * @return A list of merged vertices
 	 * @deprecated Not used anymore in the HeuristicSolver algorithm
 	 */
+	@Deprecated
 	public HashSet<VerticesPair> mergeSimilarVertices() {
 		ArrayList<V> vertices = new ArrayList<V>(graph.vertexSet());
 
@@ -266,6 +271,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
 	 * @return A list of merged vertices
 	 * @deprecated Not used anymore in the HeuristicSolver algorithm
 	 */
+	@Deprecated
 	public HashSet<VerticesPair> mergeSimilarVertices(
 			Collection<? extends V> vertices) {
 		HashSet<V> mergedVertices = new HashSet<V>();

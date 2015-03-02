@@ -100,6 +100,7 @@ public class ConstantImpl extends VariableImpl implements Constant {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public long getValue() {
 		return value;
 	}
@@ -109,6 +110,7 @@ public class ConstantImpl extends VariableImpl implements Constant {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setValue(long newValue) {
 		long oldValue = value;
 		value = newValue;

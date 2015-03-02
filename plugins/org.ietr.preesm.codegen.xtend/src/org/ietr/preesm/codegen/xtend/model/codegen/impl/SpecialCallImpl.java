@@ -134,6 +134,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public SpecialType getType() {
 		return type;
 	}
@@ -143,6 +144,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setType(SpecialType newType) {
 		SpecialType oldType = type;
 		type = newType == null ? TYPE_EDEFAULT : newType;
@@ -156,6 +158,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EList<Buffer> getInputBuffers() {
 		if (inputBuffers == null) {
 			inputBuffers = new EObjectResolvingEList<Buffer>(Buffer.class,
@@ -169,6 +172,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EList<Buffer> getOutputBuffers() {
 		if (outputBuffers == null) {
 			outputBuffers = new EObjectEList<Buffer>(Buffer.class, this,
@@ -182,6 +186,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 * 
 	 * 
 	 */
+	@Override
 	public boolean isFork() {
 		return this.getType().equals(SpecialType.FORK);
 	}
@@ -191,6 +196,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 * 
 	 * 
 	 */
+	@Override
 	public boolean isJoin() {
 		return this.getType().equals(SpecialType.JOIN);
 	}
@@ -200,6 +206,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 * 
 	 * 
 	 */
+	@Override
 	public boolean isBroadcast() {
 		return this.getType().equals(SpecialType.BROADCAST);
 	}
@@ -209,6 +216,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 * 
 	 * 
 	 */
+	@Override
 	public boolean isRoundBuffer() {
 		return this.getType().equals(SpecialType.ROUND_BUFFER);
 	}
@@ -218,6 +226,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 * 
 	 * 
 	 */
+	@Override
 	public void addInputBuffer(Buffer buffer) {
 		getInputBuffers().add(buffer);
 		addParameter(buffer, PortDirection.INPUT);
@@ -228,6 +237,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 * 
 	 * 
 	 */
+	@Override
 	public void addOutputBuffer(Buffer buffer) {
 		getOutputBuffers().add(buffer);
 		addParameter(buffer, PortDirection.OUTPUT);
@@ -238,6 +248,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 * 
 	 * 
 	 */
+	@Override
 	public void removeInputBuffer(Buffer buffer) {
 		getInputBuffers().remove(buffer);
 		removeParameter(buffer);
@@ -248,6 +259,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 * 
 	 * 
 	 */
+	@Override
 	public void removeOutputBuffer(Buffer buffer) {
 		getOutputBuffers().remove(buffer);
 		removeParameter(buffer);

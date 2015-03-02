@@ -118,6 +118,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	/**
 	 * Sets the different necessary attributes
 	 */
+	@Override
 	public void setTreeViewer(CheckboxTreeViewer treeViewer,
 			PreesmAlgorithmTreeContentProvider contentProvider,
 			IPropertyListener propertyListener) {
@@ -136,6 +137,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 				
 		BusyIndicator.showWhile(section.getDisplay(), new Runnable() {
 
+			@Override
 			public void run() {
 				if (scenario.isIBSDFScenario()) {
 					if (element instanceof SDFGraph) {
@@ -351,6 +353,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	/**
 	 * Adds a combo box for the core selection
 	 */
+	@Override
 	public void addComboBoxSelector(Composite parent, FormToolkit toolkit) {
 		Composite combocps = toolkit.createComposite(parent);
 		combocps.setLayout(new FillLayout());

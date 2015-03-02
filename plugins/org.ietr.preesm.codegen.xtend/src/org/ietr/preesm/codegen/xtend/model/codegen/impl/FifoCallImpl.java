@@ -155,6 +155,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public FifoOperation getOperation() {
 		return operation;
 	}
@@ -164,6 +165,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setOperation(FifoOperation newOperation) {
 		FifoOperation oldOperation = operation;
 		operation = newOperation == null ? OPERATION_EDEFAULT : newOperation;
@@ -178,6 +180,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public FifoCall getFifoHead() {
 		if (fifoHead != null && fifoHead.eIsProxy()) {
 			InternalEObject oldFifoHead = (InternalEObject) fifoHead;
@@ -206,6 +209,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setFifoHead(FifoCall newFifoHead) {
 		FifoCall oldFifoHead = fifoHead;
 		fifoHead = newFifoHead;
@@ -219,6 +223,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public FifoCall getFifoTail() {
 		if (fifoTail != null && fifoTail.eIsProxy()) {
 			InternalEObject oldFifoTail = (InternalEObject) fifoTail;
@@ -247,6 +252,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setFifoTail(FifoCall newFifoTail) {
 		FifoCall oldFifoTail = fifoTail;
 		fifoTail = newFifoTail;
@@ -260,6 +266,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public Buffer getHeadBuffer() {
 		if (headBuffer != null && headBuffer.eIsProxy()) {
 			InternalEObject oldHeadBuffer = (InternalEObject) headBuffer;
@@ -288,6 +295,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setHeadBuffer(Buffer newHeadBuffer) {
 		Buffer oldHeadBuffer = headBuffer;
 		headBuffer = newHeadBuffer;
@@ -302,6 +310,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public Buffer getBodyBuffer() {
 		if (bodyBuffer != null && bodyBuffer.eIsProxy()) {
 			InternalEObject oldBodyBuffer = (InternalEObject) bodyBuffer;
@@ -330,6 +339,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setBodyBuffer(Buffer newBodyBuffer) {
 		Buffer oldBodyBuffer = bodyBuffer;
 		bodyBuffer = newBodyBuffer;

@@ -130,6 +130,7 @@ public class SDFTableLabelProvider implements ITableLabelProvider {
 
 		IInputValidator validator = new IInputValidator() {
 
+			@Override
 			public String isValid(String newText) {
 				String message = null;
 				int time = 0;

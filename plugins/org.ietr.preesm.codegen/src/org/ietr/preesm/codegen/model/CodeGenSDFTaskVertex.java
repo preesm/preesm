@@ -61,15 +61,18 @@ public class CodeGenSDFTaskVertex extends SDFVertex implements
 		this.getPropertyBean().setValue(TYPE, VertexType.TASK);
 	}
 
+	@Override
 	public ComponentInstance getOperator() {
 		return (ComponentInstance) this.getPropertyBean().getValue(OPERATOR,
 				ComponentInstance.class);
 	}
 
+	@Override
 	public void setOperator(ComponentInstance op) {
 		this.getPropertyBean().setValue(OPERATOR, getOperator(), op);
 	}
 
+	@Override
 	public int getPos() {
 		if (this.getPropertyBean().getValue(POS) != null) {
 			return (Integer) this.getPropertyBean()
@@ -78,14 +81,17 @@ public class CodeGenSDFTaskVertex extends SDFVertex implements
 		return 0;
 	}
 
+	@Override
 	public void setPos(int pos) {
 		this.getPropertyBean().setValue(POS, getPos(), pos);
 	}
 
+	@Override
 	public void setNbRepeat(int nb) {
 		this.getPropertyBean().setValue(NB_REPEAT, nb);
 	}
 
+	@Override
 	public String toString() {
 		return this.getName();
 	}
@@ -93,6 +99,7 @@ public class CodeGenSDFTaskVertex extends SDFVertex implements
 	/**
 	 * Creating source and sink vertices from actor prototype
 	 */
+	@Override
 	public void setRefinement(IRefinement desc){
 		super.setRefinement(desc);
 		if(desc instanceof ActorPrototypes){

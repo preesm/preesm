@@ -197,6 +197,7 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<DataInputPort> getDataInputPorts() {
 		if (dataInputPorts == null) {
 			dataInputPorts = new EObjectContainmentEList<DataInputPort>(DataInputPort.class, this, PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS);
@@ -209,6 +210,7 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<DataOutputPort> getDataOutputPorts() {
 		if (dataOutputPorts == null) {
 			dataOutputPorts = new EObjectContainmentEList<DataOutputPort>(DataOutputPort.class, this, PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS);
@@ -241,6 +243,7 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<ConfigOutputPort> getConfigOutputPorts() {
 		if (configOutputPorts == null) {
 			configOutputPorts = new EObjectContainmentEList<ConfigOutputPort>(ConfigOutputPort.class, this, PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS);
@@ -273,6 +276,7 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements
 		return null;
 	}
 
+	@Override
 	public String getPath() {
 		if (eContainer != null && eContainer instanceof AbstractActor) {
 			return ((AbstractActor) eContainer).getPath() + "/" + getName();

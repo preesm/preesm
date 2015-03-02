@@ -362,19 +362,19 @@ public class ComCodeGenerator {
 		// Getting relative sender calls to synchronize with
 		List<SDFAbstractVertex> predList = neighborindex
 				.predecessorListOf(comVertex);
-		SDFAbstractVertex senderVertex = (SDFAbstractVertex) (predList.get(0));
+		SDFAbstractVertex senderVertex = (predList.get(0));
 
 		// The target is the operator on which the corresponding
 		// receive operation is mapped
 		List<SDFAbstractVertex> succList = neighborindex
 				.successorListOf(comVertex);
-		SDFAbstractVertex receive = (SDFAbstractVertex) (succList.get(0));
+		SDFAbstractVertex receive = (succList.get(0));
 		ComponentInstance target = (ComponentInstance) receive
 				.getPropertyBean().getValue(
 						ImplementationPropertyNames.Vertex_Operator);
 
 		succList = neighborindex.successorListOf(comVertex);
-		SDFAbstractVertex receiveVertex = (SDFAbstractVertex) (succList.get(0));
+		SDFAbstractVertex receiveVertex = (succList.get(0));
 
 		succList = neighborindex.successorListOf(receiveVertex);
 		ICodeGenSDFVertex receiverVertex = (ICodeGenSDFVertex) (succList.get(0));
@@ -441,7 +441,7 @@ public class ComCodeGenerator {
 		List<SDFAbstractVertex> predList = neighborindex
 				.predecessorListOf(comVertex);
 
-		SDFAbstractVertex send = (SDFAbstractVertex) (predList.get(0));
+		SDFAbstractVertex send = (predList.get(0));
 		ICodeGenSDFVertex senderVertex = (ICodeGenSDFVertex) (neighborindex
 				.predecessorListOf(send).get(0));
 
@@ -453,7 +453,7 @@ public class ComCodeGenerator {
 		List<ICodeElement> relativeSenderCode = senderFile.getContainer(
 				sectionType).getCodeElements((SDFAbstractVertex) senderVertex);
 
-		SDFAbstractVertex receiverVertex = (SDFAbstractVertex) (neighborindex
+		SDFAbstractVertex receiverVertex = (neighborindex
 				.successorListOf(comVertex).get(0));
 
 		comCalls.setSenderCalls(relativeSenderCode);

@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.ietr.preesm.memory.allocation.MemoryAllocatorTask;
 
 public abstract class AbstractMemoryScriptTask extends AbstractTaskImplementation {
@@ -62,8 +63,8 @@ public abstract class AbstractMemoryScriptTask extends AbstractTaskImplementatio
 				+ "}");
 		param.put(PARAM_CHECK, "? C {" + VALUE_CHECK_NONE + ", "
 				+ VALUE_CHECK_FAST + ", " + VALUE_CHECK_THOROUGH + "}");
-		param.put(MemoryAllocatorTask.PARAM_ALIGNMENT,
-				MemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
+		param.put(AbstractMemoryAllocatorTask.PARAM_ALIGNMENT,
+				AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
 		param.put(PARAM_LOG, VALUE_LOG);
 
 		return param;

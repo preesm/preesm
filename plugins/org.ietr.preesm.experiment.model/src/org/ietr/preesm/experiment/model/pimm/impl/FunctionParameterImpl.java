@@ -165,6 +165,7 @@ public class FunctionParameterImpl extends EObjectImpl implements FunctionParame
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -174,6 +175,7 @@ public class FunctionParameterImpl extends EObjectImpl implements FunctionParame
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setName(String newName) {
 		String oldName = name;
 		name = newName;
@@ -186,6 +188,7 @@ public class FunctionParameterImpl extends EObjectImpl implements FunctionParame
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Direction getDirection() {
 		return direction;
 	}
@@ -195,6 +198,7 @@ public class FunctionParameterImpl extends EObjectImpl implements FunctionParame
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setDirection(Direction newDirection) {
 		Direction oldDirection = direction;
 		direction = newDirection == null ? DIRECTION_EDEFAULT : newDirection;
@@ -207,6 +211,7 @@ public class FunctionParameterImpl extends EObjectImpl implements FunctionParame
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getType() {
 		return type;
 	}
@@ -216,6 +221,7 @@ public class FunctionParameterImpl extends EObjectImpl implements FunctionParame
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setType(String newType) {
 		String oldType = type;
 		type = newType;
@@ -228,6 +234,7 @@ public class FunctionParameterImpl extends EObjectImpl implements FunctionParame
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean isIsConfigurationParameter() {
 		return isConfigurationParameter;
 	}
@@ -237,6 +244,7 @@ public class FunctionParameterImpl extends EObjectImpl implements FunctionParame
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setIsConfigurationParameter(boolean newIsConfigurationParameter) {
 		boolean oldIsConfigurationParameter = isConfigurationParameter;
 		isConfigurationParameter = newIsConfigurationParameter;

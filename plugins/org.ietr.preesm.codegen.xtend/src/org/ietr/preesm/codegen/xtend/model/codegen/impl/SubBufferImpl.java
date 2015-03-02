@@ -117,6 +117,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public Buffer getContainer() {
 		if (container != null && container.eIsProxy()) {
 			InternalEObject oldContainer = (InternalEObject) container;
@@ -165,6 +166,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 */
+	@Override
 	public void setContainer(Buffer newContainer) {
 		if (newContainer != container) {
 			NotificationChain msgs = null;
@@ -201,6 +203,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public int getOffset() {
 		return offset;
 	}
@@ -210,6 +213,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setOffset(int newOffset) {
 		int oldOffset = offset;
 		offset = newOffset;

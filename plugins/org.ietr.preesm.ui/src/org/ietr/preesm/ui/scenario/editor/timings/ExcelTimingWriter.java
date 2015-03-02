@@ -101,6 +101,7 @@ public class ExcelTimingWriter extends ExcelWriter {
 	 * 
 	 * @throws IOException
 	 */
+	@Override
 	public void write(OutputStream os) {
 
 		try {
@@ -123,6 +124,7 @@ public class ExcelTimingWriter extends ExcelWriter {
 	 * 
 	 * @throws CoreException
 	 */
+	@Override
 	protected void addCells(WritableSheet sheet) throws InvalidModelException,
 			FileNotFoundException, CoreException {
 		if (sheet != null) {

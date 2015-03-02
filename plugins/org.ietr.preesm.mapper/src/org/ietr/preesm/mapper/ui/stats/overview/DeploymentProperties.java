@@ -128,7 +128,7 @@ public class DeploymentProperties implements IStructuredContentProvider,
 			comparator = new Comparator<ComponentInstance>() {
 				@Override
 				public int compare(ComponentInstance o1, ComponentInstance o2) {
-					return (int) (memoryNeeds.get(o1) - memoryNeeds.get(o2));
+					return memoryNeeds.get(o1) - memoryNeeds.get(o2);
 				}
 			};
 		}

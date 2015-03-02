@@ -48,6 +48,7 @@ public class BinaryExpression implements IExpression {
 		this.operator = operator;
 	}
 
+	@Override
 	public String toString() {
 		return "(" + op1.toString() + operator + op2.toString() + ")";
 	}

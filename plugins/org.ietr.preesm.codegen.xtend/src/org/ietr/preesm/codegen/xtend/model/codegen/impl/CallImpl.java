@@ -148,6 +148,7 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EList<Variable> getParameters() {
 		if (parameters == null) {
 			parameters = new EObjectResolvingEList<Variable>(Variable.class,
@@ -161,6 +162,7 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -170,6 +172,7 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setName(String newName) {
 		String oldName = name;
 		name = newName;
@@ -183,6 +186,7 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public Call getEReference0() {
 		if (eReference0 != null && eReference0.eIsProxy()) {
 			InternalEObject oldEReference0 = (InternalEObject) eReference0;
@@ -211,6 +215,7 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setEReference0(Call newEReference0) {
 		Call oldEReference0 = eReference0;
 		eReference0 = newEReference0;
@@ -225,6 +230,7 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EList<PortDirection> getParameterDirections() {
 		if (parameterDirections == null) {
 			parameterDirections = new EDataTypeEList<PortDirection>(
@@ -239,6 +245,7 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 	 * 
 	 * 
 	 */
+	@Override
 	public void addParameter(Variable variable, PortDirection direction) {
 		getParameters().add(variable);
 		getParameterDirections().add(direction);
@@ -249,6 +256,7 @@ public abstract class CallImpl extends EObjectImpl implements Call {
 	 * 
 	 * 
 	 */
+	@Override
 	public void removeParameter(Variable variable) {
 		// Must remove the port direction
 		// TODO: implement this method

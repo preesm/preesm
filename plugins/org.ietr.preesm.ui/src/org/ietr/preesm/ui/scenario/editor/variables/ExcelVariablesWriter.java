@@ -101,6 +101,7 @@ public class ExcelVariablesWriter extends ExcelWriter {
 	 * 
 	 * @throws IOException
 	 */
+	@Override
 	public void write(OutputStream os) {
 
 		try {

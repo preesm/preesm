@@ -101,6 +101,7 @@ public abstract class ParameterizableImpl extends EObjectImpl implements Paramet
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<ConfigInputPort> getConfigInputPorts() {
 		if (configInputPorts == null) {
 			configInputPorts = new EObjectContainmentEList<ConfigInputPort>(ConfigInputPort.class, this, PiMMPackage.PARAMETERIZABLE__CONFIG_INPUT_PORTS);

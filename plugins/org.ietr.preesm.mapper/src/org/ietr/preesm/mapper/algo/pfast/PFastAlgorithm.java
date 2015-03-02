@@ -221,7 +221,7 @@ public class PFastAlgorithm extends Observable {
 		if (nbnodes >= nboperator * nodesmin) {
 			nbsubsets = nboperator;
 		} else {
-			nbsubsets = (int) nbnodes / nodesmin;
+			nbsubsets = nbnodes / nodesmin;
 		}
 		return nbsubsets;
 	}
@@ -243,7 +243,7 @@ public class PFastAlgorithm extends Observable {
 		if (nbsubsets == 0)
 			nbsubsets = 1;
 		// Find the number of nodes for each thread
-		int nbnodeset = (int) nbnodes / nbsubsets;
+		int nbnodeset = nbnodes / nbsubsets;
 		if ((nbnodes % nodesmin) != 0)
 			nbnodeset++;
 		return nbnodeset;
@@ -343,7 +343,7 @@ public class PFastAlgorithm extends Observable {
 
 		bestTotalOrder = archisimu.getTotalOrder();
 		archisimu.updateFinalCosts();
-		long iBest = (Long) archisimu.getFinalCost();
+		long iBest = archisimu.getFinalCost();
 
 		setChanged();
 		notifyObservers(iBest);

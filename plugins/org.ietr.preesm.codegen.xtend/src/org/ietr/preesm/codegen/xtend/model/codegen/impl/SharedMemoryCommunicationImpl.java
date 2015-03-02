@@ -96,6 +96,7 @@ public class SharedMemoryCommunicationImpl extends CommunicationImpl implements
 	 * 
 	 * @generated
 	 */
+	@Override
 	public Semaphore getSemaphore() {
 		if (semaphore != null && semaphore.eIsProxy()) {
 			InternalEObject oldSemaphore = (InternalEObject) semaphore;
@@ -126,6 +127,7 @@ public class SharedMemoryCommunicationImpl extends CommunicationImpl implements
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setSemaphore(Semaphore newSemaphore) {
 		Semaphore oldSemaphore = semaphore;
 		semaphore = newSemaphore;

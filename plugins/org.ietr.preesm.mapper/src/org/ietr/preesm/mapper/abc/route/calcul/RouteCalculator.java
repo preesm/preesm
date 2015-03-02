@@ -116,7 +116,7 @@ public class RouteCalculator {
 		WorkflowLogger.getLogger().log(Level.INFO, "creating route steps.");
 
 		for (ComponentInstance c : DesignTools.getOperatorInstances(archi)) {
-			ComponentInstance o = (ComponentInstance) c;
+			ComponentInstance o = c;
 
 			createRouteSteps(o);
 		}

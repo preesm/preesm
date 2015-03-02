@@ -220,6 +220,7 @@ public class ConfigOutputPortImpl extends DataOutputPortImpl implements ConfigOu
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<Dependency> getOutgoingDependencies() {
 		if (outgoingDependencies == null) {
 			outgoingDependencies = new EObjectWithInverseResolvingEList<Dependency>(Dependency.class, this, PiMMPackage.CONFIG_OUTPUT_PORT__OUTGOING_DEPENDENCIES, PiMMPackage.DEPENDENCY__SETTER);
@@ -232,6 +233,7 @@ public class ConfigOutputPortImpl extends DataOutputPortImpl implements ConfigOu
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public int getValue() {
 		// TODO: implement this method
 		// Ensure that you remove @generated or mark it @generated NOT

@@ -89,6 +89,7 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 	/**
 	 * Accepting printer visitor
 	 */
+	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
@@ -99,6 +100,7 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 		}
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 
 		if (obj instanceof ThreadDeclaration) {
@@ -109,6 +111,7 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 		}
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -116,6 +119,7 @@ public class ThreadDeclaration extends AbstractBufferContainer {
 	/**
 	 * Displays pseudo-code for test
 	 */
+	@Override
 	public String toString() {
 
 		String code = "";

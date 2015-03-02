@@ -100,6 +100,7 @@ public class FunctionCallImpl extends CallImpl implements FunctionCall {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public String getActorName() {
 		return actorName;
 	}
@@ -109,6 +110,7 @@ public class FunctionCallImpl extends CallImpl implements FunctionCall {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setActorName(String newActorName) {
 		String oldActorName = actorName;
 		actorName = newActorName;

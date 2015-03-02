@@ -73,6 +73,7 @@ public class CodeGenSDFVertex extends SDFVertex {
 		this.getPropertyBean().setValue(POS, getPos(), pos);
 	}
 
+	@Override
 	public String toString() {
 		return this.getName();
 	}

@@ -101,7 +101,7 @@ public class MultiHierarchyFlattening extends AbstractTaskImplementation {
 								throw (new WorkflowException(e.getMessage()));
 							}
 							logger.log(Level.FINER, "flattening complete");
-							SDFGraph resultGraph = (SDFGraph) flatHier
+							SDFGraph resultGraph = flatHier
 									.getOutput();
 							result.add(resultGraph);
 						} else {

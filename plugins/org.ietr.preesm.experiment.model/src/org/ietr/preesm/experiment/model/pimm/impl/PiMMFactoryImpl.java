@@ -160,6 +160,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public PiGraph createPiGraph() {
 		PiGraphImpl piGraph = new PiGraphImpl();
 		return piGraph;
@@ -169,6 +170,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Actor createActor() {
 		ActorImpl actor = new ActorImpl();
 		return actor;
@@ -178,6 +180,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public DataInputPort createDataInputPort() {
 		DataInputPortImpl dataInputPort = new DataInputPortImpl();
 		return dataInputPort;
@@ -187,6 +190,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public DataOutputPort createDataOutputPort() {
 		DataOutputPortImpl dataOutputPort = new DataOutputPortImpl();
 		return dataOutputPort;
@@ -196,6 +200,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ConfigInputPort createConfigInputPort() {
 		ConfigInputPortImpl configInputPort = new ConfigInputPortImpl();
 		return configInputPort;
@@ -205,6 +210,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ConfigOutputPort createConfigOutputPort() {
 		ConfigOutputPortImpl configOutputPort = new ConfigOutputPortImpl();
 		return configOutputPort;
@@ -214,6 +220,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Fifo createFifo() {
 		FifoImpl fifo = new FifoImpl();
 		return fifo;
@@ -223,6 +230,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public InterfaceActor createInterfaceActor() {
 		InterfaceActorImpl interfaceActor = new InterfaceActorImpl();
 		return interfaceActor;
@@ -232,6 +240,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public DataInputInterface createDataInputInterface() {
 		DataInputInterfaceImpl dataInputInterface = new DataInputInterfaceImpl();
 		return dataInputInterface;
@@ -241,6 +250,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public DataOutputInterface createDataOutputInterface() {
 		DataOutputInterfaceImpl dataOutputInterface = new DataOutputInterfaceImpl();
 		return dataOutputInterface;
@@ -250,6 +260,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ConfigOutputInterface createConfigOutputInterface() {
 		ConfigOutputInterfaceImpl configOutputInterface = new ConfigOutputInterfaceImpl();
 		return configOutputInterface;
@@ -259,6 +270,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Refinement createRefinement() {
 		RefinementImpl refinement = new RefinementImpl();
 		return refinement;
@@ -269,6 +281,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * 
 	 * @generated NOT
 	 */
+	@Override
 	public Parameter createParameter() {
 		ParameterImpl parameter = new ParameterImpl();
 		// Set the expression to 1 to prevent from errors with division with
@@ -281,6 +294,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Dependency createDependency() {
 		DependencyImpl dependency = new DependencyImpl();
 		return dependency;
@@ -290,6 +304,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Delay createDelay() {
 		DelayImpl delay = new DelayImpl();
 		return delay;
@@ -299,6 +314,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression createExpression() {
 		ExpressionImpl expression = new ExpressionImpl();
 		return expression;
@@ -309,6 +325,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public HRefinement createHRefinement() {
 		HRefinementImpl hRefinement = new HRefinementImpl();
 		return hRefinement;
@@ -319,6 +336,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public FunctionPrototype createFunctionPrototype() {
 		FunctionPrototypeImpl functionPrototype = new FunctionPrototypeImpl();
 		return functionPrototype;
@@ -329,6 +347,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public FunctionParameter createFunctionParameter() {
 		FunctionParameterImpl functionParameter = new FunctionParameterImpl();
 		return functionParameter;
@@ -339,6 +358,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public BroadcastActor createBroadcastActor() {
 		BroadcastActorImpl broadcastActor = new BroadcastActorImpl();
 		return broadcastActor;
@@ -349,6 +369,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public JoinActor createJoinActor() {
 		JoinActorImpl joinActor = new JoinActorImpl();
 		return joinActor;
@@ -359,6 +380,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ForkActor createForkActor() {
 		ForkActorImpl forkActor = new ForkActorImpl();
 		return forkActor;
@@ -369,6 +391,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public RoundBufferActor createRoundBufferActor() {
 		RoundBufferActorImpl roundBufferActor = new RoundBufferActorImpl();
 		return roundBufferActor;
@@ -379,6 +402,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Direction createDirection(String literal) {
 		Direction result = Direction.get(literal);
 		if (result == null) throw new IllegalArgumentException("The value '" + literal + "' is not a valid enumerator of '" + PiMMPackage.Literals.DIRECTION.getName() + "'");
@@ -399,6 +423,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String convertDirection(Direction instanceValue) {
 		return instanceValue == null ? null : instanceValue.toString();
 	}
@@ -417,6 +442,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public PortMemoryAnnotation createPortMemoryAnnotation(String literal) {
 		PortMemoryAnnotation result = PortMemoryAnnotation.get(literal);
 		if (result == null) throw new IllegalArgumentException("The value '" + literal + "' is not a valid enumerator of '" + PiMMPackage.Literals.PORT_MEMORY_ANNOTATION.getName() + "'");
@@ -437,6 +463,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String convertPortMemoryAnnotation(PortMemoryAnnotation instanceValue) {
 		return instanceValue == null ? null : instanceValue.toString();
 	}
@@ -455,6 +482,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public IPath createIPath(String literal) {
 		return (IPath)super.createFromString(PiMMPackage.Literals.IPATH, literal);
 	}
@@ -473,6 +501,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String convertIPath(IPath instanceValue) {
 		return super.convertToString(PiMMPackage.Literals.IPATH, instanceValue);
 	}
@@ -490,6 +519,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ConfigInputInterface createConfigInputInterface() {
 		ConfigInputInterfaceImpl configInputInterface = new ConfigInputInterfaceImpl();
 		return configInputInterface;
@@ -499,6 +529,7 @@ public class PiMMFactoryImpl extends EFactoryImpl implements PiMMFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public PiMMPackage getPiMMPackage() {
 		return (PiMMPackage)getEPackage();
 	}

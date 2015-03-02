@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -196,6 +196,7 @@ public class BestCostPlotter extends ApplicationFrame implements
 	 * @param e
 	 *            the action event.
 	 */
+	@Override
 	public void actionPerformed(final ActionEvent e) {
 
 		for (int i = 0; i < subplotCount; i++) {
@@ -294,6 +295,7 @@ public class BestCostPlotter extends ApplicationFrame implements
 		subplotCount = subplot_count;
 	}
 
+	@Override
 	public void windowClosing(WindowEvent event) {
 		if (event.equals(WindowEvent.WINDOW_CLOSING)) {
 

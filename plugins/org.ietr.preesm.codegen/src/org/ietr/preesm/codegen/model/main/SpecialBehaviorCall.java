@@ -93,6 +93,7 @@ public abstract class SpecialBehaviorCall extends AbstractCodeElement {
 
 	public abstract String getBehaviorId();
 
+	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
 	}

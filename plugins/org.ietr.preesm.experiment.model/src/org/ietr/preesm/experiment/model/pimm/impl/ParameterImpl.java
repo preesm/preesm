@@ -145,6 +145,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<Dependency> getOutgoingDependencies() {
 		if (outgoingDependencies == null) {
 			outgoingDependencies = new EObjectWithInverseResolvingEList<Dependency>(Dependency.class, this, PiMMPackage.PARAMETER__OUTGOING_DEPENDENCIES, PiMMPackage.DEPENDENCY__SETTER);
@@ -172,6 +173,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 	 *         end-user-doc -->
 	 * 
 	 */
+	@Override
 	public boolean isLocallyStatic() {
 
 		// Retrieve all incoming dependencies
@@ -210,6 +212,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 	 * <!-- end-user-doc -->
 	 * @generated NOT
 	 */
+	@Override
 	public boolean isDependent() {
 		return !this.getConfigInputPorts().isEmpty();
 	}
@@ -218,6 +221,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean isConfigurationInterface() {
 		return configurationInterface;
 	}
@@ -226,6 +230,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setConfigurationInterface(boolean newConfigurationInterface) {
 		boolean oldConfigurationInterface = configurationInterface;
 		configurationInterface = newConfigurationInterface;
@@ -237,6 +242,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public ConfigInputPort getGraphPort() {
 		if (graphPort != null && graphPort.eIsProxy()) {
 			InternalEObject oldGraphPort = (InternalEObject)graphPort;
@@ -261,6 +267,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setGraphPort(ConfigInputPort newGraphPort) {
 		ConfigInputPort oldGraphPort = graphPort;
 		graphPort = newGraphPort;
@@ -272,6 +279,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getExpression() {
 		return expression;
 	}
@@ -295,6 +303,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setExpression(Expression newExpression) {
 		if (newExpression != expression) {
 			NotificationChain msgs = null;
@@ -312,6 +321,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 */
+	@Override
 	public int getValue() {
 		throw new UnsupportedOperationException();
 	}

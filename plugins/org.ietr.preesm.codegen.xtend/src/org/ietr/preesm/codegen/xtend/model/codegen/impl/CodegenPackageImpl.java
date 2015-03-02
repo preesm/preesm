@@ -352,6 +352,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getBlock() {
 		return blockEClass;
 	}
@@ -361,6 +362,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getBlock_CodeElts() {
 		return (EReference) blockEClass.getEStructuralFeatures().get(0);
 	}
@@ -370,6 +372,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getBlock_Declarations() {
 		return (EReference) blockEClass.getEStructuralFeatures().get(1);
 	}
@@ -379,6 +382,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getBlock_Name() {
 		return (EAttribute) blockEClass.getEStructuralFeatures().get(2);
 	}
@@ -388,6 +392,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getBlock_Definitions() {
 		return (EReference) blockEClass.getEStructuralFeatures().get(3);
 	}
@@ -397,6 +402,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getCodeElt() {
 		return codeEltEClass;
 	}
@@ -406,6 +412,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getCall() {
 		return callEClass;
 	}
@@ -415,6 +422,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getCall_Parameters() {
 		return (EReference) callEClass.getEStructuralFeatures().get(0);
 	}
@@ -424,6 +432,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getCall_Name() {
 		return (EAttribute) callEClass.getEStructuralFeatures().get(1);
 	}
@@ -433,6 +442,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getCall_EReference0() {
 		return (EReference) callEClass.getEStructuralFeatures().get(2);
 	}
@@ -442,6 +452,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getCall_ParameterDirections() {
 		return (EAttribute) callEClass.getEStructuralFeatures().get(3);
 	}
@@ -451,6 +462,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getVariable() {
 		return variableEClass;
 	}
@@ -460,6 +472,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getVariable_Name() {
 		return (EAttribute) variableEClass.getEStructuralFeatures().get(0);
 	}
@@ -469,6 +482,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getVariable_Type() {
 		return (EAttribute) variableEClass.getEStructuralFeatures().get(1);
 	}
@@ -478,6 +492,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getVariable_Creator() {
 		return (EReference) variableEClass.getEStructuralFeatures().get(2);
 	}
@@ -487,6 +502,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getVariable_Users() {
 		return (EReference) variableEClass.getEStructuralFeatures().get(3);
 	}
@@ -496,6 +512,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getBuffer() {
 		return bufferEClass;
 	}
@@ -505,6 +522,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getBuffer_Size() {
 		return (EAttribute) bufferEClass.getEStructuralFeatures().get(0);
 	}
@@ -514,6 +532,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getBuffer_Childrens() {
 		return (EReference) bufferEClass.getEStructuralFeatures().get(1);
 	}
@@ -523,6 +542,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getBuffer_TypeSize() {
 		return (EAttribute) bufferEClass.getEStructuralFeatures().get(2);
 	}
@@ -532,6 +552,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getBuffer_MergedRange() {
 		return (EAttribute) bufferEClass.getEStructuralFeatures().get(3);
 	}
@@ -541,6 +562,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getSubBuffer() {
 		return subBufferEClass;
 	}
@@ -550,6 +572,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getSubBuffer_Container() {
 		return (EReference) subBufferEClass.getEStructuralFeatures().get(0);
 	}
@@ -559,6 +582,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getSubBuffer_Offset() {
 		return (EAttribute) subBufferEClass.getEStructuralFeatures().get(1);
 	}
@@ -568,6 +592,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getConstant() {
 		return constantEClass;
 	}
@@ -577,6 +602,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getConstant_Value() {
 		return (EAttribute) constantEClass.getEStructuralFeatures().get(0);
 	}
@@ -586,6 +612,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getFunctionCall() {
 		return functionCallEClass;
 	}
@@ -595,6 +622,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getFunctionCall_ActorName() {
 		return (EAttribute) functionCallEClass.getEStructuralFeatures().get(0);
 	}
@@ -604,6 +632,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getCommunication() {
 		return communicationEClass;
 	}
@@ -613,6 +642,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getCommunication_Direction() {
 		return (EAttribute) communicationEClass.getEStructuralFeatures().get(0);
 	}
@@ -622,6 +652,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getCommunication_Delimiter() {
 		return (EAttribute) communicationEClass.getEStructuralFeatures().get(1);
 	}
@@ -631,6 +662,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getCommunication_Data() {
 		return (EReference) communicationEClass.getEStructuralFeatures().get(2);
 	}
@@ -640,6 +672,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getCommunication_SendStart() {
 		return (EReference) communicationEClass.getEStructuralFeatures().get(3);
 	}
@@ -649,6 +682,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getCommunication_SendEnd() {
 		return (EReference) communicationEClass.getEStructuralFeatures().get(4);
 	}
@@ -658,6 +692,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getCommunication_ReceiveStart() {
 		return (EReference) communicationEClass.getEStructuralFeatures().get(5);
 	}
@@ -667,6 +702,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getCommunication_ReceiveEnd() {
 		return (EReference) communicationEClass.getEStructuralFeatures().get(6);
 	}
@@ -676,6 +712,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getCommunication_Id() {
 		return (EAttribute) communicationEClass.getEStructuralFeatures().get(7);
 	}
@@ -685,6 +722,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getCommunication_Nodes() {
 		return (EReference) communicationEClass.getEStructuralFeatures().get(8);
 	}
@@ -694,6 +732,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getCommunication_ReceiveRelease() {
 		return (EReference) communicationEClass.getEStructuralFeatures().get(9);
 	}
@@ -703,6 +742,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getCommunication_SendReserve() {
 		return (EReference) communicationEClass.getEStructuralFeatures()
 				.get(10);
@@ -713,6 +753,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getCoreBlock() {
 		return coreBlockEClass;
 	}
@@ -722,6 +763,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getCoreBlock_LoopBlock() {
 		return (EReference) coreBlockEClass.getEStructuralFeatures().get(0);
 	}
@@ -731,6 +773,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getCoreBlock_InitBlock() {
 		return (EReference) coreBlockEClass.getEStructuralFeatures().get(1);
 	}
@@ -740,6 +783,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getCoreBlock_CoreType() {
 		return (EAttribute) coreBlockEClass.getEStructuralFeatures().get(2);
 	}
@@ -749,6 +793,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getActorBlock() {
 		return actorBlockEClass;
 	}
@@ -758,6 +803,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getActorBlock_LoopBlock() {
 		return (EReference) actorBlockEClass.getEStructuralFeatures().get(0);
 	}
@@ -767,6 +813,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getActorBlock_InitBlock() {
 		return (EReference) actorBlockEClass.getEStructuralFeatures().get(1);
 	}
@@ -776,6 +823,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getLoopBlock() {
 		return loopBlockEClass;
 	}
@@ -785,6 +833,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getActorCall() {
 		return actorCallEClass;
 	}
@@ -794,6 +843,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getCallBlock() {
 		return callBlockEClass;
 	}
@@ -803,6 +853,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getSpecialCall() {
 		return specialCallEClass;
 	}
@@ -812,6 +863,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getSpecialCall_Type() {
 		return (EAttribute) specialCallEClass.getEStructuralFeatures().get(0);
 	}
@@ -821,6 +873,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getSpecialCall_InputBuffers() {
 		return (EReference) specialCallEClass.getEStructuralFeatures().get(1);
 	}
@@ -830,6 +883,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getSpecialCall_OutputBuffers() {
 		return (EReference) specialCallEClass.getEStructuralFeatures().get(2);
 	}
@@ -839,6 +893,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getFifoCall() {
 		return fifoCallEClass;
 	}
@@ -848,6 +903,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getFifoCall_Operation() {
 		return (EAttribute) fifoCallEClass.getEStructuralFeatures().get(0);
 	}
@@ -857,6 +913,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getFifoCall_FifoHead() {
 		return (EReference) fifoCallEClass.getEStructuralFeatures().get(1);
 	}
@@ -866,6 +923,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getFifoCall_FifoTail() {
 		return (EReference) fifoCallEClass.getEStructuralFeatures().get(2);
 	}
@@ -875,6 +933,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getFifoCall_HeadBuffer() {
 		return (EReference) fifoCallEClass.getEStructuralFeatures().get(3);
 	}
@@ -884,6 +943,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getFifoCall_BodyBuffer() {
 		return (EReference) fifoCallEClass.getEStructuralFeatures().get(4);
 	}
@@ -893,6 +953,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getCommentable() {
 		return commentableEClass;
 	}
@@ -902,6 +963,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getCommentable_Comment() {
 		return (EAttribute) commentableEClass.getEStructuralFeatures().get(0);
 	}
@@ -911,6 +973,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getCommunicationNode() {
 		return communicationNodeEClass;
 	}
@@ -920,6 +983,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getCommunicationNode_Name() {
 		return (EAttribute) communicationNodeEClass.getEStructuralFeatures()
 				.get(0);
@@ -930,6 +994,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getCommunicationNode_Type() {
 		return (EAttribute) communicationNodeEClass.getEStructuralFeatures()
 				.get(1);
@@ -940,6 +1005,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getSemaphore() {
 		return semaphoreEClass;
 	}
@@ -949,6 +1015,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getSharedMemoryCommunication() {
 		return sharedMemoryCommunicationEClass;
 	}
@@ -958,6 +1025,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EReference getSharedMemoryCommunication_Semaphore() {
 		return (EReference) sharedMemoryCommunicationEClass
 				.getEStructuralFeatures().get(0);
@@ -968,6 +1036,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getConstantString() {
 		return constantStringEClass;
 	}
@@ -977,6 +1046,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EAttribute getConstantString_Value() {
 		return (EAttribute) constantStringEClass.getEStructuralFeatures()
 				.get(0);
@@ -987,6 +1057,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EClass getNullBuffer() {
 		return nullBufferEClass;
 	}
@@ -996,6 +1067,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EEnum getDirection() {
 		return directionEEnum;
 	}
@@ -1005,6 +1077,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EEnum getDelimiter() {
 		return delimiterEEnum;
 	}
@@ -1014,6 +1087,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EEnum getSpecialType() {
 		return specialTypeEEnum;
 	}
@@ -1023,6 +1097,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EEnum getFifoOperation() {
 		return fifoOperationEEnum;
 	}
@@ -1032,6 +1107,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EEnum getPortDirection() {
 		return portDirectionEEnum;
 	}
@@ -1041,6 +1117,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EDataType getrange() {
 		return rangeEDataType;
 	}
@@ -1050,6 +1127,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public CodegenFactory getCodegenFactory() {
 		return (CodegenFactory) getEFactoryInstance();
 	}

@@ -74,6 +74,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
+import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
@@ -165,8 +166,8 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 
 		final ScrolledForm form = mform.getForm();
 		FormToolkit toolkit = mform.getToolkit();
-		Section section = toolkit.createSection(form.getBody(), Section.TWISTIE
-				| Section.TITLE_BAR | Section.DESCRIPTION | Section.EXPANDED);
+		Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
+				| ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
 		section.setText(title);
 		section.setDescription(desc);
 		toolkit.createCompositeSeparator(section);
@@ -177,6 +178,7 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 		client.setLayout(layout);
 		section.setClient(client);
 		section.addExpansionListener(new ExpansionAdapter() {
+			@Override
 			public void expansionStateChanged(ExpansionEvent e) {
 				form.reflow(false);
 			}
@@ -223,6 +225,7 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 		column2.setText(Messages.getString("Variables.variableValueColumn"));
 
 		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
 			public void doubleClick(DoubleClickEvent e) {
 				labelProvider.handleDoubleClick((IStructuredSelection) e
 						.getSelection());
@@ -234,6 +237,7 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 
 		// Setting the column width
 		tablecps.addControlListener(new ControlAdapter() {
+			@Override
 			public void controlResized(ControlEvent e) {
 				Rectangle area = comp.getClientArea();
 				Point size = tref.computeSize(SWT.DEFAULT, SWT.DEFAULT);
@@ -285,6 +289,7 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 				IInputValidator validator = new IInputValidator() {
 
 					// No verification on data type name
+					@Override
 					public String isValid(String newText) {
 						if (currentGraph != null
 								&& currentGraph.getVariables().keySet()

@@ -55,6 +55,7 @@ public class EdgeTiming {
 		reset();
 	}
 
+	@Override
 	public EdgeTiming clone() {
 		EdgeTiming property = new EdgeTiming();
 		property.setCost(this.getCost());
@@ -65,6 +66,7 @@ public class EdgeTiming {
 		cost = UNAVAILABLE;
 	}
 
+	@Override
 	public String toString() {
 		return "cost: " + cost;
 	}

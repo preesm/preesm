@@ -193,7 +193,7 @@ public class ParameterDecorators {
 	 *         <code>null</code> if the {@link Parameter} have a valid expression.
 	 */
 	protected static IDecorator getExpressionDecorator(Parameter param, PictogramElement pe) {		
-		if(((Parameter)param).getExpression().evaluate().contains("Error")){
+		if(param.getExpression().evaluate().contains("Error")){
 			ImageDecorator imageRenderingDecorator = new ImageDecorator(
 					IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
 			imageRenderingDecorator.setMessage("Problems in parameter resolution");

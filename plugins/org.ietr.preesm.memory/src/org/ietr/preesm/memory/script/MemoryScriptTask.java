@@ -45,6 +45,7 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.DataType;
+import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.ietr.preesm.memory.allocation.MemoryAllocatorTask;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
@@ -62,7 +63,7 @@ public class MemoryScriptTask extends AbstractMemoryScriptTask {
 
 		// Retrieve the alignment param
 		String valueAlignment = parameters
-				.get(MemoryAllocatorTask.PARAM_ALIGNMENT);
+				.get(AbstractMemoryAllocatorTask.PARAM_ALIGNMENT);
 
 		// Retrieve the input graph
 		DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");

@@ -259,6 +259,7 @@ public enum SpecialType implements Enumerator {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public int getValue() {
 		return value;
 	}
@@ -268,6 +269,7 @@ public enum SpecialType implements Enumerator {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -277,6 +279,7 @@ public enum SpecialType implements Enumerator {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public String getLiteral() {
 		return literal;
 	}

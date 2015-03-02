@@ -110,7 +110,7 @@ public class MemExUpdaterEngine {
 							+ " ("
 							+ Math.round(100.00
 									* (before - memEx.edgeSet().size())
-									/ (double) before) + "%)");
+									/ before) + "%)");
 			System.out.print(density + ";");
 		}
 	}
@@ -139,7 +139,7 @@ public class MemExUpdaterEngine {
 							+ " ("
 							+ Math.round(100.00
 									* (before - memEx.edgeSet().size())
-									/ (double) before) + "%)");
+									/ before) + "%)");
 			System.out.println(density + ";");
 		}
 	

@@ -69,11 +69,13 @@ public abstract class AbstractCodeElement implements ICodeElement {
 		this.correspondingVertex = correspondingVertex;
 	}
 
+	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
 																					// self
 	}
 
+	@Override
 	public SDFAbstractVertex getCorrespondingVertex() {
 		return correspondingVertex;
 	}
@@ -97,6 +99,7 @@ public abstract class AbstractCodeElement implements ICodeElement {
 	/**
 	 * Displays pseudo-code for test
 	 */
+	@Override
 	public String toString() {
 
 		return getName();

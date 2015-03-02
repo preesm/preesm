@@ -234,7 +234,7 @@ public class ReconnectionDependencyFeature extends DefaultReconnectionFeature {
 				// Create a ConfigInputPort
 				newGetter = PiMMFactory.eINSTANCE.createConfigInputPort();
 				((Parameterizable) getterObject).getConfigInputPorts().add(
-						(ConfigInputPort) newGetter);
+						newGetter);
 			} else {
 				newGetter = (ConfigInputPort) getBusinessObjectForPictogramElement(context
 						.getConnection().getEnd());

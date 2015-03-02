@@ -107,6 +107,7 @@ public class EditorTools {
 	private static class SingleFileSelectionValidator implements
 			ISelectionStatusValidator {
 
+		@Override
 		public IStatus validate(Object[] selection) {
 			if (selection.length == 1
 					&& (selection[0] instanceof IFile || selection[0] instanceof IFolder)) {

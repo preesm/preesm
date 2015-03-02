@@ -117,6 +117,7 @@ public abstract class DataPortImpl extends PortImpl implements DataPort {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Expression getExpression() {
 		return expression;
 	}
@@ -141,6 +142,7 @@ public abstract class DataPortImpl extends PortImpl implements DataPort {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setExpression(Expression newExpression) {
 		if (newExpression != expression) {
 			NotificationChain msgs = null;
@@ -160,6 +162,7 @@ public abstract class DataPortImpl extends PortImpl implements DataPort {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public PortMemoryAnnotation getAnnotation() {
 		return annotation;
 	}
@@ -169,6 +172,7 @@ public abstract class DataPortImpl extends PortImpl implements DataPort {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setAnnotation(PortMemoryAnnotation newAnnotation) {
 		PortMemoryAnnotation oldAnnotation = annotation;
 		annotation = newAnnotation == null ? ANNOTATION_EDEFAULT : newAnnotation;

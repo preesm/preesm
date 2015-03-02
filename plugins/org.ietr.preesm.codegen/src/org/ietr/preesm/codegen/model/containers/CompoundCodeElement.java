@@ -378,7 +378,7 @@ public class CompoundCodeElement extends AbstractCodeContainer implements
 				.incomingEdgesOf(vertex)) {
 			ConstantExpression index = new ConstantExpression("", new DataType(
 					"int"),
-					((CodeGenSDFJoinVertex) vertex).getEdgeIndex(inEdge));
+					vertex.getEdgeIndex(inEdge));
 			String buffName = parentContainer.getBuffer(inEdge).getName();
 			IExpression expr = new BinaryExpression("%", new BinaryExpression(
 					"*", index, new ConstantExpression(inEdge.getCons()
@@ -414,7 +414,7 @@ public class CompoundCodeElement extends AbstractCodeContainer implements
 				.outgoingEdgesOf(vertex)) {
 			ConstantExpression index = new ConstantExpression("", new DataType(
 					"int"),
-					((CodeGenSDFForkVertex) vertex).getEdgeIndex(outEdge));
+					vertex.getEdgeIndex(outEdge));
 			String buffName = parentContainer.getBuffer(outEdge).getName();
 			IExpression expr = new BinaryExpression("%", new BinaryExpression(
 					"*", index, new ConstantExpression(outEdge.getProd()
@@ -432,6 +432,7 @@ public class CompoundCodeElement extends AbstractCodeContainer implements
 		return true;
 	}
 
+	@Override
 	public Buffer getBuffer(SDFEdge edge) {
 		if (localBuffers.get(edge) == null) {
 			return super.getBuffer(edge);
@@ -535,10 +536,12 @@ public class CompoundCodeElement extends AbstractCodeContainer implements
 		return correspondingVertex;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public AbstractBufferContainer getParentContainer() {
 		return parentContainer;
 	}

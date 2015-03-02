@@ -96,6 +96,7 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
 		}
 	}
 
+	@Override
 	public EdgeSchedType getEdgeSchedType() {
 		return EdgeSchedType.Switcher;
 	}

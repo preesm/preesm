@@ -1,6 +1,6 @@
 /*********************************************************
-Copyright or © or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
-Maxime Pelcat, Jean-François Nezan, Mickaël Raulet
+Copyright or ï¿½ or Copr. IETR/INSA: Matthieu Wipliez, Jonathan Piat,
+Maxime Pelcat, Jean-Franï¿½ois Nezan, Mickaï¿½l Raulet
 
 [mwipliez,jpiat,mpelcat,jnezan,mraulet]@insa-rennes.fr
 
@@ -210,6 +210,7 @@ public class PerformancePlotter extends ApplicationFrame {
 				reachableSpeedups);
 	}
 
+	@Override
 	public void windowClosing(WindowEvent event) {
 		if (event.equals(WindowEvent.WINDOW_CLOSING)) {
 

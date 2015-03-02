@@ -264,7 +264,7 @@ public class CodeGenSDFGraphFactory {
 							.getVertex(((CodeGenSDFFifoPushVertex) codeGenVertex)
 									.getEndReference().getName());
 					((CodeGenSDFFifoPushVertex) codeGenVertex)
-							.setEndReference((SDFInitVertex) initVertex);
+							.setEndReference(initVertex);
 
 					SDFEdge outEdge = (SDFEdge) output.outgoingEdgesOf(
 							initVertex).toArray()[0];

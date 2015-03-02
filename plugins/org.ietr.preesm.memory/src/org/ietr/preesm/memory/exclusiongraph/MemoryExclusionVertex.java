@@ -267,6 +267,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 * The comparison of two MemoryExclusionVertex is made according to their
 	 * weight
 	 */
+	@Override
 	public int compareTo(MemoryExclusionVertex o) {
 		return this.size - o.size;
 	}
@@ -297,6 +298,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 *            the object to compare.
 	 * @return true if the object is a similar vertex, false else.
 	 */
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof MemoryExclusionVertex) {
 			return (this.source.equals(((MemoryExclusionVertex) o).source) && this.sink
@@ -306,6 +308,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 		}
 	}
 
+	@Override
 	public MemoryExclusionVertex getClone() {
 		MemoryExclusionVertex copy;
 		copy = new MemoryExclusionVertex(this.source, this.sink, this.size);
@@ -338,6 +341,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	/**
 	 * @return the unique identifier of the vertex
 	 */
+	@Override
 	public int getIdentifier() {
 		return identifier;
 	}
@@ -359,6 +363,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	/**
 	 * @return the weight
 	 */
+	@Override
 	public Integer getWeight() {
 		return size;
 	}
@@ -367,6 +372,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 * Method added to enable the use of contains() method in
 	 * Set<MemoryExclusionVertex>
 	 */
+	@Override
 	public int hashCode() {
 		return (new String(sink + "=>" + source)).hashCode();
 	}
@@ -375,14 +381,17 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 * @param identifier
 	 *            the identifier to set
 	 */
+	@Override
 	public void setIdentifier(int identifier) {
 		this.identifier = identifier;
 	}
 
+	@Override
 	public void setWeight(Integer w) {
 		size = w.intValue();
 	}
 
+	@Override
 	public String toString() {
 		return source + "=>" + sink + ":" + size;
 	}

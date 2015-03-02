@@ -92,6 +92,7 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Dependency getIncomingDependency() {
 		if (incomingDependency != null && incomingDependency.eIsProxy()) {
 			InternalEObject oldIncomingDependency = (InternalEObject)incomingDependency;
@@ -131,6 +132,7 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setIncomingDependency(Dependency newIncomingDependency) {
 		if (newIncomingDependency != incomingDependency) {
 			NotificationChain msgs = null;

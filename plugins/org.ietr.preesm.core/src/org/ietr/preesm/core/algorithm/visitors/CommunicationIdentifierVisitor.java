@@ -103,7 +103,7 @@ public class CommunicationIdentifierVisitor implements
 		Iterator<DAGEdge> iterator = dag.edgeSet().iterator();
 
 		while (iterator.hasNext()) {
-			DAGEdge currentEdge = (DAGEdge) iterator.next();
+			DAGEdge currentEdge = iterator.next();
 			currentEdge.accept(this);
 		}
 	}

@@ -227,7 +227,7 @@ public class FastAlgorithm extends Observable {
 				|| System.currentTimeMillis() < fastStopTime) {
 
 			// Notifying display
-			iBest = (Long) bestSL;
+			iBest = bestSL;
 			setChanged();
 			notifyObservers(iBest);
 
@@ -264,7 +264,7 @@ public class FastAlgorithm extends Observable {
 
 				do {
 					nonBlockingIndex++;
-					currentvertex = (MapperDAGVertex) vertexiter.next();
+					currentvertex = vertexiter.next();
 					operatorList = simulator
 							.getCandidateOperators(currentvertex);
 				} while (operatorList.size() < 2 && nonBlockingIndex < 100);
@@ -345,7 +345,7 @@ public class FastAlgorithm extends Observable {
 
 			do {
 				nonBlockingIndex++;
-				fcpvertex = (MapperDAGVertex) iter.next();
+				fcpvertex = iter.next();
 				operatorList = simulator.getCandidateOperators(fcpvertex);
 			} while (operatorList.size() < 2 && nonBlockingIndex < 100);
 

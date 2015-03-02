@@ -83,6 +83,7 @@ public class SubBuffer extends Buffer {
 		this.index = index;
 	}
 
+	@Override
 	public int getAllocatedSize() {
 		if (getSize() == 0 && parentBuffer != null) {
 			return parentBuffer.getAllocatedSize();
@@ -91,10 +92,12 @@ public class SubBuffer extends Buffer {
 		}
 	}
 
+	@Override
 	public void setType(DataType type) {
 		this.getParentBuffer().setType(type);
 	}
 
+	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
 																					// self

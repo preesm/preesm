@@ -199,6 +199,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 		}
 	}
 
+	@Override
 	public EdgeSchedType getEdgeSchedType() {
 		return null;
 	}

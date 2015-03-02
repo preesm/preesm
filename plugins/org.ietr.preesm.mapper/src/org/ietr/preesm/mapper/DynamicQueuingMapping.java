@@ -134,7 +134,7 @@ public class DynamicQueuingMapping extends AbstractMapping {
 			v.setName("DelayManager");
 			v.setVersion("1.0");
 
-			Component component = (Component) ComponentFactory.eINSTANCE
+			Component component = ComponentFactory.eINSTANCE
 					.createOperator();
 			component.setVlnv(v);
 			architecture.getComponentHolder().getComponents().add(component);

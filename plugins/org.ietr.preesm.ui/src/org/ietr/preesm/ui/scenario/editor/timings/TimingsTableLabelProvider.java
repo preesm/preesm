@@ -240,6 +240,7 @@ public class TimingsTableLabelProvider implements ITableLabelProvider,
 
 	public void handleDoubleClick(IStructuredSelection selection) {
 		IInputValidator validator = new IInputValidator() {
+			@Override
 			public String isValid(String newText) {
 				String message = null;
 				// int time = 0;

@@ -60,6 +60,7 @@ public class ConstantExpression extends VariableExpression {
 		return value;
 	}
 
+	@Override
 	public String getName() {
 		return Integer.toString(value);
 	}

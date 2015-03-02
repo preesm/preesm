@@ -61,6 +61,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
+import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
@@ -118,8 +119,8 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 
 		section = managedForm.getToolkit().createSection(
 				managedForm.getForm().getBody(),
-				Section.TWISTIE | Section.TITLE_BAR | Section.DESCRIPTION
-						| Section.EXPANDED);
+				ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION
+						| ExpandableComposite.EXPANDED);
 
 		section.setText(Messages.getString("Parameters.title"));
 		section.setDescription(Messages.getString("Parameters.description"));
@@ -154,6 +155,7 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 			tableViewer.setLabelProvider(new PiParameterTableLabelProvider(
 					table));
 			tableViewer.setComparator(new ViewerComparator() {
+				@Override
 				public int compare(Viewer viewer, Object e1, Object e2) {
 					return ((ParameterValue) e1).getName().compareTo(
 							((ParameterValue) e2).getName());
@@ -168,6 +170,7 @@ public class PiParametersPage extends FormPage implements IPropertyListener {
 			tableViewer.getTable().setLayoutData(gd);
 
 			section.addPaintListener(new PaintListener() {
+				@Override
 				public void paintControl(PaintEvent e) {
 					try {
 						scenario.update(false, false);

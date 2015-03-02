@@ -77,6 +77,7 @@ public abstract class AbstractEdgeSched implements IEdgeSched {
 		return edgeSched;
 	}
 
+	@Override
 	public OrderManager getOrderManager() {
 		return orderManager;
 	}

@@ -122,6 +122,7 @@ public class GlobalAllocator implements IBufferAllocator {
 
 	}
 
+	@Override
 	public List<IBufferAllocator> getChildAllocators() {
 		return childAllocator;
 	}

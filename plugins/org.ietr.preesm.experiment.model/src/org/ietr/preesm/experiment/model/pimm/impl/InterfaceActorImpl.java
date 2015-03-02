@@ -177,6 +177,7 @@ public class InterfaceActorImpl extends AbstractActorImpl implements
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Port getGraphPort() {
 		if (graphPort != null && graphPort.eIsProxy()) {
 			InternalEObject oldGraphPort = (InternalEObject)graphPort;
@@ -193,6 +194,7 @@ public class InterfaceActorImpl extends AbstractActorImpl implements
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getKind() {
 		return kind;
 	}
@@ -201,6 +203,7 @@ public class InterfaceActorImpl extends AbstractActorImpl implements
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setGraphPort(Port newGraphPort) {
 		Port oldGraphPort = graphPort;
 		graphPort = newGraphPort;

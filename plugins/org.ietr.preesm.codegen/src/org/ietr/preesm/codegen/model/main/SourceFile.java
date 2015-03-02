@@ -98,6 +98,7 @@ public class SourceFile extends AbstractBufferContainer {
 	/**
 	 * Accepts a printer visitor
 	 */
+	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
 																					// self
@@ -204,6 +205,7 @@ public class SourceFile extends AbstractBufferContainer {
 	/**
 	 * Displays pseudo-code for test
 	 */
+	@Override
 	public String toString() {
 		String code = "";
 

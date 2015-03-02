@@ -71,6 +71,7 @@ public class HeapSectionAllocator extends VirtualHeapAllocator {
 		this.basePos = newBase;
 	}
 
+	@Override
 	public void setSize(int size) {
 		if (size > this.getSize()) {
 			this.getBuffer().setSize(size);
@@ -81,6 +82,7 @@ public class HeapSectionAllocator extends VirtualHeapAllocator {
 		}
 	}
 
+	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		/*
 		 * for(SubBufferAllocation allocToPrint : alloc.values()){

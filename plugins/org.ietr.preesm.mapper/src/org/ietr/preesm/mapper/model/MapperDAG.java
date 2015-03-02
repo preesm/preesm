@@ -124,7 +124,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
 	}
 
 	public void setScheduleCost(long scheduleLatency) {
-		this.getPropertyBean().setValue(SCHEDULE_COST, (Long) scheduleLatency);
+		this.getPropertyBean().setValue(SCHEDULE_COST, scheduleLatency);
 	}
 
 	public SDFGraph getReferenceSdfGraph() {
@@ -150,7 +150,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
 		Iterator<DAGVertex> iterV = this.vertexSet().iterator();
 		while (iterV.hasNext()) {
 			MapperDAGVertex currentVertex = (MapperDAGVertex) iterV.next();
-			currentVertex = ((MapperDAGVertex) currentVertex).clone();
+			currentVertex = currentVertex.clone();
 			newDAG.addVertex(currentVertex);
 		}
 

@@ -61,7 +61,7 @@ public class SpanLengthCalculator extends InfiniteHomogeneousAbc {
 
 		// The span corresponds to the final latency of an infinite homogeneous
 		// simulation
-		dag.getPropertyBean().setValue(DAG_SPAN, (Long) getFinalLatency());
+		dag.getPropertyBean().setValue(DAG_SPAN, getFinalLatency());
 	}
 
 	@Override

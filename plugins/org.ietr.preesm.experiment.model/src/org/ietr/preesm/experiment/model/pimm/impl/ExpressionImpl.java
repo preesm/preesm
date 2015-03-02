@@ -112,6 +112,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public String getString() {
 		return string;
 	}
@@ -121,6 +122,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setString(String newString) {
 		String oldString = string;
 		string = newString;
@@ -135,6 +137,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 	 * 
 	 * @return the result of the expression evaluated as an int.
 	 */
+	@Override
 	public String evaluate() {
 		String allExpression = getString();
 		Jep jep = new Jep();

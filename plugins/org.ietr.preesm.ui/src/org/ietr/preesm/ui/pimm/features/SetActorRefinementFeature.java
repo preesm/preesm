@@ -171,7 +171,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 				// Get all prototypes first (no filter)
 				Set<FunctionPrototype> allPrototypes = getPrototypes(file,
 						actor, PrototypeFilter.NONE);
-				allProtoArray = (FunctionPrototype[]) allPrototypes
+				allProtoArray = allPrototypes
 						.toArray(new FunctionPrototype[allPrototypes.size()]);
 
 				loopPrototypes = getPrototypes(file, actor,

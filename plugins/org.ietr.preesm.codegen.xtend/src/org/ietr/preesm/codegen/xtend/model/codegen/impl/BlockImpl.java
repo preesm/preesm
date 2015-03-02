@@ -151,6 +151,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EList<CodeElt> getCodeElts() {
 		if (codeElts == null) {
 			codeElts = new EObjectContainmentEList<CodeElt>(CodeElt.class,
@@ -164,6 +165,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EList<Variable> getDeclarations() {
 		if (declarations == null) {
 			declarations = new EObjectWithInverseResolvingEList.ManyInverse<Variable>(
@@ -178,6 +180,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -187,6 +190,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public void setName(String newName) {
 		String oldName = name;
 		name = newName;
@@ -200,6 +204,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 	 * 
 	 * @generated
 	 */
+	@Override
 	public EList<Variable> getDefinitions() {
 		if (definitions == null) {
 			definitions = new EObjectContainmentWithInverseEList<Variable>(

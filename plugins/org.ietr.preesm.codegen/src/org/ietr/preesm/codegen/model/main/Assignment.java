@@ -51,6 +51,7 @@ public class Assignment implements ICodeElement {
 		this.value = value;
 	}
 
+	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation);
 	}

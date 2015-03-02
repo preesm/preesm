@@ -79,7 +79,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
 		Logger logger = WorkflowLogger.getLogger();
 
 		if (depth == 0) {
-			outputs.put("SDF", (SDFGraph) algorithm.clone());
+			outputs.put("SDF", algorithm.clone());
 			logger.log(Level.INFO, "flattening depth = 0: no flattening");
 			return outputs;
 		}
@@ -101,7 +101,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
 						throw (new WorkflowException(e.getMessage()));
 					}
 					logger.log(Level.FINER, "flattening complete");
-					SDFGraph resultGraph = (SDFGraph) flatHier.getOutput();
+					SDFGraph resultGraph = flatHier.getOutput();
 					outputs.put("SDF", resultGraph);
 				} else {
 					throw (new WorkflowException(
@@ -113,7 +113,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
 		} else {
 			logger.log(Level.SEVERE,
 					"Inconsistent Hierarchy, graph can't be flattened");
-			outputs.put("SDF", (SDFGraph) algorithm.clone());
+			outputs.put("SDF", algorithm.clone());
 			throw (new WorkflowException(
 					"Inconsistent Hierarchy, graph can't be flattened"));
 		}

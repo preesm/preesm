@@ -162,6 +162,7 @@ public class MapperDAGVertex extends DAGVertex {
 		return false;
 	}
 
+	@Override
 	public String toString() {
 
 		String toString = "";
@@ -256,6 +257,7 @@ public class MapperDAGVertex extends DAGVertex {
 		return super.outgoingEdges();
 	}
 
+	@Override
 	public String getPropertyStringValue(String propertyName) {
 		if (propertyName.equals(ImplementationPropertyNames.Vertex_OperatorDef)) {
 			return getMapping().getEffectiveOperator().getComponent().getVlnv()

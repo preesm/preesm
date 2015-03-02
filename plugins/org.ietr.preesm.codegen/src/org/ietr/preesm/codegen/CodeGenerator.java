@@ -76,7 +76,7 @@ public class CodeGenerator {
 		// Generates and populates one source file per core
 		while (iterator.hasNext()) {
 
-			ComponentInstance currentOp = (ComponentInstance) iterator.next();
+			ComponentInstance currentOp = iterator.next();
 
 			SourceFile sourceFile = new SourceFile(currentOp.getInstanceName(),
 					currentOp, list);

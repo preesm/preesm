@@ -90,7 +90,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 				}
 				logger.log(Level.FINER, "HSDF transformation complete");
 
-				SDFGraph hsdf = (SDFGraph) toHsdf.getOutput();
+				SDFGraph hsdf = toHsdf.getOutput();
 				logger.log(Level.INFO, "HSDF with " + hsdf.vertexSet().size()
 						+ " vertices and " + hsdf.edgeSet().size() + " edges.");
 

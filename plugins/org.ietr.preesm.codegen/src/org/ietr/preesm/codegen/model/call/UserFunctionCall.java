@@ -219,6 +219,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 		}
 	}
 
+	@Override
 	public void accept(IAbstractPrinter printer, Object currentLocation) {
 		currentLocation = printer.visit(this, CodeZoneId.body, currentLocation); // Visit
 		// self
@@ -301,7 +302,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 		while (eIterator.hasNext()) {
 			SDFEdge edge = eIterator.next();
 
-			Buffer buf = getParentContainer().getBuffer((SDFEdge) edge);
+			Buffer buf = getParentContainer().getBuffer(edge);
 			addArgument(edge.getSource().getName() + "_to_"
 					+ edge.getTarget().getName(), buf);
 		}
@@ -322,6 +323,7 @@ public class UserFunctionCall extends AbstractCodeElement {
 	/**
 	 * Displays pseudo-code for test
 	 */
+	@Override
 	public String toString() {
 
 		String code = "";

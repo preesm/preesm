@@ -62,6 +62,7 @@ public class MapperVertexFactory extends ModelVertexFactory<DAGVertex> {
 		return instance;
 	}
 
+	@Override
 	public DAGVertex createVertex(String kind) {
 		DAGVertex result = new MapperDAGVertex();
 		result.setKind(kind);

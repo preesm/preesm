@@ -117,6 +117,7 @@ public class FunctionPrototypeImpl extends EObjectImpl implements FunctionProtot
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -126,6 +127,7 @@ public class FunctionPrototypeImpl extends EObjectImpl implements FunctionProtot
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setName(String newName) {
 		String oldName = name;
 		name = newName;
@@ -138,6 +140,7 @@ public class FunctionPrototypeImpl extends EObjectImpl implements FunctionProtot
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<FunctionParameter> getParameters() {
 		if (parameters == null) {
 			parameters = new EObjectResolvingEList<FunctionParameter>(FunctionParameter.class, this, PiMMPackage.FUNCTION_PROTOTYPE__PARAMETERS);
@@ -236,6 +239,7 @@ public class FunctionPrototypeImpl extends EObjectImpl implements FunctionProtot
 		v.visitFunctionPrototype(this);
 	}
 	
+	@Override
 	public String format() {
 		String result = this.getName() + "(";
 		boolean first = true;

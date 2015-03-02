@@ -76,6 +76,7 @@ public class VirtualHeapAllocator extends BufferAllocation implements
 		allocToPos = new HashMap<BufferAllocation, Integer>();
 	}
 
+	@Override
 	public HeapSectionAllocator openNewSection(
 			AbstractBufferContainer codeSection) {
 		currentSection = new HeapSectionAllocator(this, codeSection, currentPos);
@@ -89,6 +90,7 @@ public class VirtualHeapAllocator extends BufferAllocation implements
 		this.getBuffer().setSize(size);
 	}
 
+	@Override
 	public SubBuffer addBuffer(SDFEdge edge, String name, DataType type) {
 		int size = BufferToolBox.getBufferSize(edge);
 		int trueSize = type.getSize() * size;
@@ -102,10 +104,12 @@ public class VirtualHeapAllocator extends BufferAllocation implements
 		return newBuffer;
 	}
 
+	@Override
 	public int getSize() {
 		return this.getBuffer().getSize();
 	}
 
+	@Override
 	public Buffer getBuffer(SDFEdge edge) {
 		if (alloc.get(edge) != null) {
 			return alloc.get(edge).getBuffer();
