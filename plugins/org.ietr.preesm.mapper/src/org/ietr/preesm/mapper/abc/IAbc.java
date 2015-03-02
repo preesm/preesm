@@ -42,7 +42,6 @@ import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.scenario.PreesmScenario;
-import org.ietr.preesm.core.types.IMapperAbc;
 import org.ietr.preesm.mapper.abc.edgescheduling.EdgeSchedType;
 import org.ietr.preesm.mapper.abc.order.VertexOrderList;
 import org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched;
@@ -58,7 +57,7 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
  * 
  * @author mpelcat
  */
-public interface IAbc extends IMapperAbc {
+public interface IAbc {
 
 	/**
 	 * Gets the architecture and scenario

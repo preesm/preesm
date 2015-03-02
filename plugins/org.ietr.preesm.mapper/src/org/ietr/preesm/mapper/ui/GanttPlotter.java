@@ -73,8 +73,7 @@ import org.jfree.ui.RefineryUtilities;
  * 
  * @author mpelcat
  */
-public class GanttPlotter extends ApplicationFrame implements
-		IImplementationPlotter {
+public class GanttPlotter extends ApplicationFrame {
 
 	private static final long serialVersionUID = 1L;
 
