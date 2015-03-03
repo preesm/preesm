@@ -48,7 +48,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -185,12 +184,15 @@ public class ScenariosGenerator {
 		// Set algorithm and architecture
 		scenario.setAlgorithmURL(algoURL);
 		scenario.setArchitectureURL(archiURL);
+		// Get com nodes and cores names
+		List<String> coreIds = new ArrayList<String>(
+				DesignTools.getOperatorInstanceIds(archi));
+		List<String> comNodeIds = new ArrayList<String>(
+				DesignTools.getComNodeInstanceIds(archi));
 		// Set default values for constraints, timings and simulation parameters
-		for (ComponentInstance ci : archi.getComponentInstances()) {
-			String opId = ci.getInstanceName();
+		// for all different type of cores
+		for (String opId : DesignTools.getOperatorComponentIds(archi)) {
 			for (AbstractActor aa : algo.getAllVertices()) {
-				// Add constraint: aa can be run on ci
-				scenario.getConstraintGroupManager().addConstraint(opId, aa);
 				// Add timing: aa run on ci in 10000
 				scenario.getTimingManager().addTiming(
 						new Timing(opId, aa.getPath(), 10000));
@@ -199,13 +201,15 @@ public class ScenariosGenerator {
 			// actors)
 			scenario.getSimulationManager().addSpecialVertexOperatorId(opId);
 		}
+		for (String coreId : coreIds) {
+			for (AbstractActor aa : algo.getAllVertices()) {
+				// Add constraint: aa can be run on ci
+				scenario.getConstraintGroupManager().addConstraint(coreId, aa);
+			}
+		}
 		// Add a main core (first of the list)
-		List<String> coreIds = new ArrayList<String>(
-				DesignTools.getOperatorInstanceIds(archi));
 		scenario.getSimulationManager().setMainOperatorName(coreIds.get(0));
 		// Add a main com node (first of the list)
-		List<String> comNodeIds = new ArrayList<String>(
-				DesignTools.getComNodeInstanceIds(archi));
 		scenario.getSimulationManager().setMainComNodeName(comNodeIds.get(0));
 		// Add a average transfer size
 		scenario.getSimulationManager().setAverageDataSize(1000);
