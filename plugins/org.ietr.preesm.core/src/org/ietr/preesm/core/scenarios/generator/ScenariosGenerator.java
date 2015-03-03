@@ -51,6 +51,7 @@ import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.ScenarioUtils;
 import org.ietr.preesm.core.scenario.Timing;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.core.scenario.serialize.ScenarioWriter;
@@ -267,7 +268,7 @@ public class ScenariosGenerator {
 	private void saveScenarios(Set<PreesmScenario> scenarios,
 			IFolder scenarioDir) throws CoreException {
 		for (PreesmScenario scenario : scenarios) {
-			String scenarioName = getScenarioName(scenario);
+			String scenarioName = ScenarioUtils.getScenarioName(scenario);
 			IPath scenarioPath = new Path(scenarioName)
 					.addFileExtension("scenario");
 			IFile scenarioFile = scenarioDir.getFile(scenarioPath);
@@ -275,24 +276,6 @@ public class ScenariosGenerator {
 				scenarioFile.create(null, false, null);
 			saveScenario(scenario, scenarioFile);
 		}
-	}
-
-	/**
-	 * Util method generating a name for a given PreesmSceario from its
-	 * architecture and algorithm
-	 * 
-	 * @param scenario
-	 *            the PreesmScenario for which we need a name
-	 * @return
-	 */
-	public String getScenarioName(PreesmScenario scenario) {
-		IPath algoPath = new Path(scenario.getAlgorithmURL())
-				.removeFileExtension();
-		String algoName = algoPath.lastSegment();
-		IPath archiPath = new Path(scenario.getArchitectureURL())
-				.removeFileExtension();
-		String archiName = archiPath.lastSegment();
-		return algoName + "_" + archiName;
 	}
 
 	/**
