@@ -1197,6 +1197,25 @@
                menubarPath="org.ietr.preesm.pimm.checker.menu1/group1">
          </action>
       </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="org.ietr.preesm.ui.popup.ScenarioGeneratorPopup"
+            objectClass="org.eclipse.core.resources.IProject">
+         <menu
+               id="org.ietr.preesm.pimm.checker.menu1"
+               label="PREESM"
+               path="additions">
+            <separator
+                  name="group1">
+            </separator>
+         </menu>
+         <action
+               class="org.ietr.preesm.ui.pimm.checker.popup.actions.ScenariosGeneratorPopup"
+               id="org.ietr.preesm.ui.popup.ScenariosGenerator"
+               label="Scenarios Generator"
+               menubarPath="org.ietr.preesm.pimm.checker.menu1/group1">
+         </action>
+      </objectContribution>
    </extension>
 
 </plugin>
