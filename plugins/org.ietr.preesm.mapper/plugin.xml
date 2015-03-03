@@ -298,6 +298,10 @@
                   id="ABC"
                   object="org.ietr.preesm.mapper.abc.IAbc">
             </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
          </inputs>
       </task>
       <task
@@ -308,6 +312,10 @@
             <input
                   id="ABCs"
                   object="java.util.Set&lt;org.ietr.preesm.mapper.abc.IAbc&gt;">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
             </input>
          </inputs>
       </task>

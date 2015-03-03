@@ -48,6 +48,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.core.scenario.ScenarioUtils;
 import org.ietr.preesm.mapper.abc.IAbc;
 
 public class MultiStatsExporterTask extends AbstractTaskImplementation {
@@ -59,6 +61,7 @@ public class MultiStatsExporterTask extends AbstractTaskImplementation {
 
 		@SuppressWarnings("unchecked")
 		Set<IAbc> simulators = (Set<IAbc>) inputs.get(KEY_SDF_ABC_SET);
+		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
 		String folderPath = parameters.get("path");
 
 		// Get the root of the workspace
@@ -74,9 +77,10 @@ public class MultiStatsExporterTask extends AbstractTaskImplementation {
 		parent.mkdirs();
 
 		int i = 0;
+		String scenarioName = ScenarioUtils.getScenarioName(scenario);
 		for (IAbc abc : simulators) {
 			// Create a file from filePath
-			String filePath = "stats_" + i + ".pgantt";
+			String filePath = scenarioName + "_stats_" + i + ".pgantt";
 			File file = new File(parent, filePath);
 			i++;
 			// Generate the stats from the abc and write them in file
