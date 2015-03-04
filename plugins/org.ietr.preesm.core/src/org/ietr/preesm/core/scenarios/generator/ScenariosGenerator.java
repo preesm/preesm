@@ -38,6 +38,7 @@ package org.ietr.preesm.core.scenarios.generator;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -47,8 +48,12 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.architecture.slam.Design;
+import org.ietr.dftools.architecture.slam.SlamPackage;
+import org.ietr.dftools.architecture.slam.serialize.IPXACTResourceFactoryImpl;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.ScenarioUtils;
@@ -180,11 +185,23 @@ public class ScenariosGenerator {
 			throws InvalidModelException, CoreException {
 		// Create a new PreesmScenario
 		PreesmScenario scenario = new PreesmScenario();
-		Design archi = ScenarioParser.parseSlamDesign(archiURL);
-		PiGraph algo = ScenarioParser.getPiGraph(algoURL);
+		// Handle factory registry
+		Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE
+				.getExtensionToFactoryMap();
+		Object instance = extToFactoryMap.get("slam");
+		if (instance == null) {
+			instance = new IPXACTResourceFactoryImpl();
+			extToFactoryMap.put("slam", instance);
+		}
+		if (!EPackage.Registry.INSTANCE.containsKey(SlamPackage.eNS_URI)) {
+			EPackage.Registry.INSTANCE.put(SlamPackage.eNS_URI,
+					SlamPackage.eINSTANCE);
+		}
 		// Set algorithm and architecture
-		scenario.setAlgorithmURL(algoURL);
+		Design archi = ScenarioParser.parseSlamDesign(archiURL);
 		scenario.setArchitectureURL(archiURL);
+		PiGraph algo = ScenarioParser.getPiGraph(algoURL);
+		scenario.setAlgorithmURL(algoURL);		
 		// Get com nodes and cores names
 		List<String> coreIds = new ArrayList<String>(
 				DesignTools.getOperatorInstanceIds(archi));
