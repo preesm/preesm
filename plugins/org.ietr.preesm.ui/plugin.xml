@@ -1214,6 +1214,17 @@
                id="org.ietr.preesm.ui.popup.ScenariosGenerator"
                label="Scenarios Generator"
                menubarPath="org.ietr.preesm.pimm.checker.menu1/group1">
+            <enabledWhen>
+   <with variable="selection">
+      <iterate ifEmpty="false" operator="or">
+         <adapt type="org.eclipse.core.resources.IResource">
+            <test
+                  property="org.eclipse.core.resources.projectNature"
+                  value="org.ietr.preesm.core.ui.wizards.nature" />
+         </adapt>
+      </iterate>
+   </with>
+</enabledWhen>
          </action>
       </objectContribution>
    </extension>
