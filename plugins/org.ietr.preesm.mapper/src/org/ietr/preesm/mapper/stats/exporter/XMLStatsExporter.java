@@ -132,11 +132,11 @@ public class XMLStatsExporter {
 		append(statGen.getResultTime());
 		append("\"");
 		// Implementation number of cores
-		append(NLT + "impl_length=\"");
+		append(NLT + "impl_nbCores=\"");
 		append(statGen.getNbMainTypeOperators());
 		append("\"");
 		// Implementation number of used cores
-		append(NLT + TAB + "impl_length=\"");
+		append(NLT + TAB + "impl_nbUsedCores=\"");
 		append(statGen.getNbUsedOperators());
 		append("\"");
 		Set<ComponentInstance> opSet = DesignTools.getOperatorInstances(abc
