@@ -299,15 +299,15 @@ public class ScenariosGenerator {
 				scenario.getTimingManager().addTiming(
 						new Timing(opId, aa.getInfo(), 10000));
 			}
-			// Add special actors operator id (all cores can execute special
-			// actors)
-			scenario.getSimulationManager().addSpecialVertexOperatorId(opId);
 		}
 		for (String coreId : coreIds) {
 			for (SDFAbstractVertex aa : algo.vertexSet()) {
 				// Add constraint: aa can be run on ci
 				scenario.getConstraintGroupManager().addConstraint(coreId, aa);
 			}
+			// Add special actors operator id (all cores can execute special
+			// actors)
+			scenario.getSimulationManager().addSpecialVertexOperatorId(coreId);
 		}
 	}
 
