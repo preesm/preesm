@@ -96,7 +96,9 @@ public class Schedule {
 	 * Inserts a vertex after the given one
 	 */
 	public void insertAfter(MapperDAGVertex previous, MapperDAGVertex vertex) {
+		
 		if (!contains(vertex)) {
+			// Updating schedule busy time
 			if (vertex.getTiming().hasCost()) {
 				busyTime += vertex.getTiming().getCost();
 			}

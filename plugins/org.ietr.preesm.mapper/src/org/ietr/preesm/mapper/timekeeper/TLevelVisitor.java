@@ -38,8 +38,10 @@ package org.ietr.preesm.mapper.timekeeper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
+import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
@@ -49,6 +51,7 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.property.EdgeTiming;
 import org.ietr.preesm.mapper.model.property.VertexTiming;
 import org.ietr.preesm.mapper.tools.TopologicalDAGIterator;
+import org.jgrapht.alg.CycleDetector;
 
 /**
  * Visitor computing the TLevel of each actor firing
@@ -69,6 +72,17 @@ public class TLevelVisitor implements
 	}
 
 	/**
+	 * Method to detect bugs. Activate if there is some problem in the DAG (usually caused by cycles)
+	 */
+	private void detectCycle(MapperDAG dag) {
+		CycleDetector<DAGVertex, DAGEdge> cd = new CycleDetector<DAGVertex, DAGEdge>(dag);
+		if (cd.detectCycles()) {
+			System.out.println("cycle detected");
+			System.out.println("cycle " + cd.findCycles());
+		}
+	}
+
+	/**
 	 * Visiting a graph in topological order to assign t-levels
 	 */
 	@Override
@@ -77,31 +91,37 @@ public class TLevelVisitor implements
 		// starting from vertices without predecessors
 		TopologicalDAGIterator iterator = new TopologicalDAGIterator(dag);
 
-		// Recomputing all TLevels
-		if (dirtyVertices.isEmpty()) {
-			while (iterator.hasNext()) {
-				DAGVertex next = iterator.next();
-				try {
-					next.accept(this);
-				} catch (SDF4JException e) {
-					e.printStackTrace();
-				}
-			}
-		} else {
-			boolean dirty = false;
-			while (iterator.hasNext()) {
-				DAGVertex next = iterator.next();
-				if (!dirty) {
-					dirty |= dirtyVertices.contains(next);
-				}
-				if (dirty) {
+		// Activate to detect problems
+		// detectCycle(dag);
+
+		try {
+			// Recomputing all TLevels
+			if (dirtyVertices.isEmpty()) {
+				while (iterator.hasNext()) {
+					DAGVertex next = iterator.next();
 					try {
 						next.accept(this);
 					} catch (SDF4JException e) {
 						e.printStackTrace();
 					}
 				}
+			} else {
+				boolean dirty = false;
+				while (iterator.hasNext()) {
+					DAGVertex next = iterator.next();
+					dag.getPredecessorVerticesOf(next);
+					if (!dirty) {
+						dirty |= dirtyVertices.contains(next);
+					}
+					if (dirty) {
+						next.accept(this);
+					}
+				}
 			}
+		} catch (SDF4JException e) {
+			e.printStackTrace();
+		} catch (NoSuchElementException e) {
+			e.printStackTrace();
 		}
 	}
 

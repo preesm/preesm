@@ -42,6 +42,12 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.workflow.WorkflowException
 import org.ietr.dftools.workflow.elements.Workflow
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex
+import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
+import org.ietr.preesm.core.scenario.PreesmScenario
 
 /**
  * Repeating N times the same single rate IBSDF algorithm into a new IBSDF graph.
@@ -56,23 +62,108 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 	/**
 	 * Tag for storing the requested number of iterations
 	 */
-	val NB_IT = "nbIt";	
-	
+	val NB_IT = "nbIt";
+
 	/**
-	 * Mixing several iterations of a single graph
+	 * Adding precedence edges to take into account a hidden state in each actor
 	 */
-	def iterate(SDFGraph inputAlgorithm, int nbIt) {
-		// Generating a first graph clone
+	val SET_STATES = "setStates";
+
+	/**
+	 * Inserting mergedGraph into refGraph and adding optionally state edges of weight 1
+	 */
+	def merge(SDFGraph refGraph, SDFGraph mergedGraphIn, int index, boolean setStates) {
+
+		// Generating a graph clone to avoid concurrent modifications
+		var mergedGraph = mergedGraphIn.clone
+
+		for (SDFAbstractVertex vertex : mergedGraph.vertexSet) {
+			var mergedVertexName = vertex.getName
+			// Id is identical to all iterations, same as for srSDF transformation
+			vertex.setId(vertex.getId)
+			vertex.setName(vertex.getName + "_" + index)
+			refGraph.addVertex(vertex)
+
+			// If a state is introduced, a synthetic edge is put between 2 iterations of each actor
+			if (setStates) {
+				var current = refGraph.getVertex(mergedVertexName + "_" + index)
+				var previous = refGraph.getVertex(mergedVertexName + "_" + (index - 1))
+				if (previous != null && current != null) {
+					var newEdge = refGraph.addEdge(previous, current)
+					newEdge.setProd(new SDFIntEdgePropertyType(1));
+					newEdge.setCons(new SDFIntEdgePropertyType(1));
+
+					// Create a new source stateout port
+					var statein = new SDFSourceInterfaceVertex()
+					statein.setName("statein");
+					previous.addSource(statein);
+
+					// Create a new sink statein port
+					var stateout = new SDFSinkInterfaceVertex()
+					stateout.setName("stateout");
+					current.addSink(stateout);
+					newEdge.setSourceInterface(stateout)
+					newEdge.setTargetInterface(statein)
+				}
+			}
+		}
+
+		for (SDFEdge edge : mergedGraph.edgeSet) {
+			var source = mergedGraph.getEdgeSource(edge)
+			var target = mergedGraph.getEdgeTarget(edge)
+			var newEdge = refGraph.addEdge(source, target)
+			newEdge.setSourceInterface(edge.getSourceInterface())
+			newEdge.setTargetInterface(edge.getTargetInterface())
+			target.setInterfaceVertexExternalLink(newEdge, edge.getTargetInterface())
+			source.setInterfaceVertexExternalLink(newEdge, edge.getSourceInterface())
+
+			newEdge.setCons(edge.getCons().clone())
+			newEdge.setProd(edge.getProd().clone())
+			newEdge.setDelay(edge.getDelay().clone())
+
+		}
+
+		for (String propertyKey : mergedGraph.getPropertyBean().keys()) {
+			var property = mergedGraph.getPropertyBean().getValue(propertyKey);
+			refGraph.getPropertyBean().setValue(propertyKey, property);
+		}
+		return refGraph
+	}
+
+	/**
+	 * Mixing nbIt iterations of a single graph, adding a state in case makeStates = true
+	 */
+	def iterate(SDFGraph inputAlgorithm, int nbIt, boolean setStates, PreesmScenario scenario) {
+
 		var mainIteration = inputAlgorithm.clone
-		
-		// Incorporating new iterations
-		for (Integer i: 1..nbIt-1)  {
-			// Adding vertices of new_iteration to the ones of mainIteration, vertices are automatically renamed
-			mainIteration.fill(inputAlgorithm)
-    	}
+
+		if(nbIt > 1){
+			var groupId = 0
+			// setting first iteration with name "_0"
+			for (SDFAbstractVertex vertex : mainIteration.vertexSet) {
+				val id = vertex.getId
+				// Id is identical to all iterations, same as for srSDF transformation
+				vertex.setId(id);
+				vertex.setName(vertex.getName + "_0")
+				// Adding relative constraints to the scenario if present
+				if(scenario != null){
+					for(Integer i : 0 .. nbIt - 1){
+						scenario.relativeconstraintManager.addConstraint(id,groupId)
+					}
+				}
+				groupId++
+			}
+	
+			// Incorporating new iterations
+			for (Integer i : 1 .. nbIt - 1) {
+	
+				// Adding vertices of new_iteration to the ones of mainIteration, vertices are automatically renamed
+				mainIteration = merge(mainIteration, inputAlgorithm, i, setStates)
+			}
+		}
 
 		return mainIteration
-	
+
 	}
 
 	/**
@@ -82,8 +173,13 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 		String nodeName, Workflow workflow) throws WorkflowException {
 		val outMap = new HashMap<String, Object>
 		val inputAlgorithm = inputs.get("SDF") as SDFGraph
+		
+		// If we retrieve a scenario, relative constraints are added in the scenario
+		var scenario = inputs.get("scenario") as PreesmScenario
+		
 		val nbIt = Integer.valueOf(parameters.get(NB_IT))
-		val outputAlgorithm = iterate(inputAlgorithm, nbIt)
+		val setStates = Boolean.valueOf(parameters.get(SET_STATES))
+		val outputAlgorithm = iterate(inputAlgorithm, nbIt, setStates, scenario)
 		outMap.put("SDF", outputAlgorithm)
 		return outMap;
 	}
@@ -92,8 +188,9 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 	 * If no parameter is set, using default value
 	 */
 	override getDefaultParameters() {
-		val defaultParameters = new HashMap<String, String>
+		var defaultParameters = new HashMap<String, String>
 		defaultParameters.put(NB_IT, "1")
+		defaultParameters.put(SET_STATES, "true")
 		return defaultParameters
 	}
 
@@ -101,6 +198,6 @@ class IterateAlgorithm extends AbstractTaskImplementation {
 	 * Message displayed in the DFTools console
 	 */
 	override monitorMessage() '''
-    Iterating a single rate IBSDF «defaultParameters.get(NB_IT)» time(s).'''
+	Iterating a single rate IBSDF «defaultParameters.get(NB_IT)» time(s).'''
 
 }

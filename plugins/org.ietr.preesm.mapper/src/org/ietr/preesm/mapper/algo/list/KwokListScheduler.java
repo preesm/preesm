@@ -37,6 +37,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.mapper.algo.list;
 
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -78,7 +79,7 @@ public class KwokListScheduler {
 		vertex = dag.getMapperDAGVertex(vertex.getName());
 
 		// maps the vertex on the operator
-		simu.map(vertex, operator, true);
+		simu.map(vertex, operator, true, false);
 		simu.updateFinalCosts();
 
 		// check if the vertex is a source vertex with no predecessors
@@ -119,14 +120,27 @@ public class KwokListScheduler {
 
 			// Mapping forced by the user or the Fast algorithm
 			if (currentvertex.equals(fcpvertex)) {
-				archisimu.map(currentvertex, operatorfcp, true);
+				if(archisimu.isMapable(fcpvertex, operatorfcp, true)){
+					archisimu.map(currentvertex, operatorfcp, true, false);
+				}
+				else{
+					// If the group mapping enters in conflict with the fcp mapping, find a solution 
+					List<ComponentInstance> groupOperators = archisimu.getCandidateOperators(currentvertex, true);
+					if(!groupOperators.isEmpty()){
+						archisimu.map(currentvertex, groupOperators.get(0), true, false);
+					}
+					else{
+						logger.log(Level.SEVERE, "Found no operator for: "
+								+ currentvertex + ". Certainly a relative constraint problem.");
+					}
+				}
 			} else {
 
 				long time = Long.MAX_VALUE;
 				// Choose the operator
 
 				List<ComponentInstance> opList = archisimu
-						.getCandidateOperators(currentvertex);
+						.getCandidateOperators(currentvertex, true);
 				if (opList.size() == 1) {
 					chosenoperator = (ComponentInstance) opList.toArray()[0];
 				} else {
@@ -189,7 +203,7 @@ public class KwokListScheduler {
 				// -----------------End of the temp fix first half-----------------------------------
 
 				// Map on the chosen operator
-				archisimu.map(currentvertex, chosenoperator, true);
+				archisimu.map(currentvertex, chosenoperator, true, false);
 
 				int currentVertexRank = orderlist.indexOf(currentvertex);
 				if ((currentVertexRank % 100) == 0 && (fcpvertex == null)

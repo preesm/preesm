@@ -137,11 +137,11 @@ public class AddInvolvementVertexTransaction extends Transaction {
 			iVertex.getTiming().setCost(involvementTime);
 
 			if (isSender) {
-				iVertex.getMapping().setEffectiveOperator(
+				iVertex.setEffectiveOperator(
 						step.getSender());
 				((TransferVertex) currentTarget).setInvolvementVertex(iVertex);
 			} else {
-				iVertex.getMapping().setEffectiveOperator(
+				iVertex.setEffectiveOperator(
 						step.getReceiver());
 				((TransferVertex) currentSource).setInvolvementVertex(iVertex);
 			}

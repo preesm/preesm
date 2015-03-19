@@ -66,7 +66,6 @@ import org.ietr.preesm.mapper.abc.transaction.TransactionManager;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
-import org.ietr.preesm.mapper.model.property.VertexMapping;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
 
 /**
@@ -115,15 +114,15 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 
 			if (!(currentEdge instanceof PrecedenceEdge)
 					&& currentEdge.getInit().getDataSize() != 0) {
-				VertexMapping currentSourceProp = ((MapperDAGVertex) currentEdge
-						.getSource()).getMapping();
-				VertexMapping currentDestProp = ((MapperDAGVertex) currentEdge
-						.getTarget()).getMapping();
+				MapperDAGVertex currentSource = ((MapperDAGVertex) currentEdge
+						.getSource());
+				MapperDAGVertex currentDest = ((MapperDAGVertex) currentEdge
+						.getTarget());
 
-				if (currentSourceProp.hasEffectiveOperator()
-						&& currentDestProp.hasEffectiveOperator()) {
-					if (!currentSourceProp.getEffectiveOperator().equals(
-							currentDestProp.getEffectiveOperator())) {
+				if (currentSource.hasEffectiveOperator()
+						&& currentDest.hasEffectiveOperator()) {
+					if (!currentSource.getEffectiveOperator().equals(
+							currentDest.getEffectiveOperator())) {
 						// Adds several transfers for one edge depending on the
 						// route steps
 						Route route = calculator.getRoute(currentEdge);
@@ -180,15 +179,15 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 		for (DAGEdge edge : edges) {
 
 			if (!(edge instanceof PrecedenceEdge)) {
-				VertexMapping currentSourceProp = ((MapperDAGVertex) edge
-						.getSource()).getMapping();
-				VertexMapping currentDestProp = ((MapperDAGVertex) edge
-						.getTarget()).getMapping();
+				MapperDAGVertex currentSource = ((MapperDAGVertex) edge
+						.getSource());
+				MapperDAGVertex currentDest = ((MapperDAGVertex) edge
+						.getTarget());
 
-				if (currentSourceProp.hasEffectiveOperator()
-						&& currentDestProp.hasEffectiveOperator()) {
-					if (!currentSourceProp.getEffectiveOperator().equals(
-							currentDestProp.getEffectiveOperator())) {
+				if (currentSource.hasEffectiveOperator()
+						&& currentDest.hasEffectiveOperator()) {
+					if (!currentSource.getEffectiveOperator().equals(
+							currentDest.getEffectiveOperator())) {
 						MapperDAGEdge mapperEdge = (MapperDAGEdge) edge;
 						transferEdges.put(mapperEdge,
 								calculator.getRoute(mapperEdge));
@@ -230,21 +229,18 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 	@Override
 	public long evaluateTransferCost(MapperDAGEdge edge) {
 
-		VertexMapping sourceimp = ((MapperDAGVertex) edge
-				.getSource()).getMapping();
-		VertexMapping destimp = ((MapperDAGVertex) edge
-				.getTarget()).getMapping();
+		MapperDAGVertex source = ((MapperDAGVertex) edge.getSource());
+		MapperDAGVertex dest = ((MapperDAGVertex) edge.getTarget());
 
-		ComponentInstance sourceOp = sourceimp.getEffectiveOperator();
-		ComponentInstance destOp = destimp.getEffectiveOperator();
+		ComponentInstance sourceOp = source.getEffectiveOperator();
+		ComponentInstance destOp = dest.getEffectiveOperator();
 
 		long cost = 0;
 
 		// Retrieving the route
 		if (sourceOp != null && destOp != null) {
 			Route route = calculator.getRoute(sourceOp, destOp);
-			cost = route.evaluateTransferCost(edge.getInit()
-					.getDataSize());
+			cost = route.evaluateTransferCost(edge.getInit().getDataSize());
 		} else {
 			WorkflowLogger
 					.getLogger()

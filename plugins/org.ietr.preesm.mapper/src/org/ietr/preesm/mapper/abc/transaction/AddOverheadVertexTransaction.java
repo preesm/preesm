@@ -135,7 +135,7 @@ public class AddOverheadVertexTransaction extends Transaction {
 
 			implementation.addVertex(oVertex);
 			oVertex.getTiming().setCost(overheadTime);
-			oVertex.getMapping().setEffectiveOperator(
+			oVertex.setEffectiveOperator(
 					step.getSender());
 
 			newInEdge = (MapperDAGEdge) implementation.addEdge(currentSource,

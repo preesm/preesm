@@ -54,6 +54,7 @@ import org.ietr.preesm.core.scenario.serialize.ScenarioWriter;
 import org.ietr.preesm.ui.scenario.editor.codegen.CodegenPage;
 import org.ietr.preesm.ui.scenario.editor.constraints.ConstraintsPage;
 import org.ietr.preesm.ui.scenario.editor.parametervalues.PiParametersPage;
+import org.ietr.preesm.ui.scenario.editor.relativeconstraints.RelativeConstraintsPage;
 import org.ietr.preesm.ui.scenario.editor.simulation.SimulationPage;
 import org.ietr.preesm.ui.scenario.editor.timings.TimingsPage;
 import org.ietr.preesm.ui.scenario.editor.variables.VariablesPage;
@@ -123,9 +124,9 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements
 				"Constraints", "Constraints");
 		constraintsPage.addPropertyListener(this);
 		
-		/*IFormPage relativeConstraintsPage = new RelativeConstraintsPage(scenario, this,
+		IFormPage relativeConstraintsPage = new RelativeConstraintsPage(scenario, this,
 				"RelativeConstraints", "Relative Constraints");
-		relativeConstraintsPage.addPropertyListener(this);*/
+		relativeConstraintsPage.addPropertyListener(this);
 		IFormPage timingsPage = new TimingsPage(scenario, this, "Timings",
 				"Timings");
 		timingsPage.addPropertyListener(this);
@@ -145,7 +146,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements
 		try {
 			addPage(overviewPage);
 			addPage(constraintsPage);
-			//addPage(relativeConstraintsPage);
+			addPage(relativeConstraintsPage);
 			addPage(timingsPage);
 			addPage(simulationPage);
 			addPage(codegenPage);

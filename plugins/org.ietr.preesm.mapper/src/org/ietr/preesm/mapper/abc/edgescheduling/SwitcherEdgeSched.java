@@ -70,7 +70,7 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
 	public void schedule(TransferVertex vertex, MapperDAGVertex source,
 			MapperDAGVertex target) {
 
-		ComponentInstance component = vertex.getMapping()
+		ComponentInstance component = vertex
 				.getEffectiveComponent();
 		// intervalFinder.displayCurrentSchedule(vertex, source);
 		Interval largestInterval = intervalFinder.findLargestFreeInterval(

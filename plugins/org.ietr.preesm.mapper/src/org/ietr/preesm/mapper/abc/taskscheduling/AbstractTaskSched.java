@@ -60,4 +60,5 @@ public abstract class AbstractTaskSched {
 	}
 
 	public abstract void insertVertex(MapperDAGVertex vertex);
+
 }

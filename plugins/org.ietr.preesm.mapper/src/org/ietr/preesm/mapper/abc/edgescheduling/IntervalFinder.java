@@ -202,7 +202,7 @@ public class IntervalFinder {
 	public void displayCurrentSchedule(TransferVertex vertex,
 			MapperDAGVertex source) {
 
-		ComponentInstance component = vertex.getMapping()
+		ComponentInstance component = vertex
 				.getEffectiveComponent();
 		List<MapperDAGVertex> schedule = orderManager.getVertexList(component);
 
@@ -238,7 +238,7 @@ public class IntervalFinder {
 		int latePred = getLatestPredecessorIndex(vertex);
 		int earlySuc = getEarliestsuccessorIndex(vertex);
 
-		ComponentInstance op = vertex.getMapping()
+		ComponentInstance op = vertex
 				.getEffectiveOperator();
 		MapperDAGVertex source = (latePred == -1) ? null : orderManager
 				.get(latePred);
@@ -280,7 +280,7 @@ public class IntervalFinder {
 		int latePred = getLatestPredecessorIndex(vertex);
 		int earlySuc = getEarliestsuccessorIndex(vertex);
 
-		ComponentInstance op = vertex.getMapping()
+		ComponentInstance op = vertex
 				.getEffectiveOperator();
 		MapperDAGVertex source = (latePred == -1) ? null : orderManager
 				.get(latePred);

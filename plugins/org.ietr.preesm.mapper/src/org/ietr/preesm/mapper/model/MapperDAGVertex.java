@@ -42,6 +42,9 @@ import java.util.Set;
 
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
+import org.ietr.dftools.architecture.slam.ComponentInstance;
+import org.ietr.dftools.architecture.slam.component.Operator;
+import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.mapper.model.property.VertexInit;
 import org.ietr.preesm.mapper.model.property.VertexMapping;
@@ -59,6 +62,11 @@ import org.ietr.preesm.mapper.model.special.TransferVertex;
  */
 public class MapperDAGVertex extends DAGVertex {
 
+	/**
+	 * Operator to which the vertex has been affected by the mapping algorithm
+	 */
+	private ComponentInstance effectiveComponent;
+	
 	/**
 	 * Properties set when converting sdf to dag
 	 */
@@ -84,6 +92,7 @@ public class MapperDAGVertex extends DAGVertex {
 	public MapperDAGVertex() {
 
 		this("default", "default", null);
+		effectiveComponent = DesignTools.NO_COMPONENT_INSTANCE;
 	}
 
 	public MapperDAGVertex(String id, MapperDAG base) {
@@ -98,7 +107,7 @@ public class MapperDAGVertex extends DAGVertex {
 		this.setName(name);
 		this.getPropertyBean().setValue(INITIAL_PROPERTY, new VertexInit());
 		this.getInit().setParentVertex(this);
-
+		effectiveComponent = DesignTools.NO_COMPONENT_INSTANCE;
 	}
 
 	@Override
@@ -133,6 +142,7 @@ public class MapperDAGVertex extends DAGVertex {
 		}
 
 		result.setInit(this.getInit().clone(result));
+		result.setEffectiveComponent(getEffectiveComponent());
 
 		for (String propertyKey : this.getPropertyBean().keys()) {
 			Object property = this.getPropertyBean().getValue(propertyKey);
@@ -166,11 +176,10 @@ public class MapperDAGVertex extends DAGVertex {
 	public String toString() {
 
 		String toString = "";
-		if (this.getMapping().hasEffectiveComponent()) {
+		if (this.hasEffectiveComponent()) {
 			// If the vertex is mapped, displays its component and rank
 			toString = getName() + "(";
-			if (this.getMapping().getEffectiveComponent() != null)
-				toString += this.getMapping().getEffectiveComponent()
+			toString += this.getEffectiveComponent()
 						.toString();
 			if (this.getTiming() != null) {
 				//toString += "," + this.getTiming().getTotalOrder(this);
@@ -260,7 +269,7 @@ public class MapperDAGVertex extends DAGVertex {
 	@Override
 	public String getPropertyStringValue(String propertyName) {
 		if (propertyName.equals(ImplementationPropertyNames.Vertex_OperatorDef)) {
-			return getMapping().getEffectiveOperator().getComponent().getVlnv()
+			return getEffectiveOperator().getComponent().getVlnv()
 					.getName();
 		} else if (propertyName
 				.equals(ImplementationPropertyNames.Vertex_Available_Operators)) {
@@ -276,7 +285,7 @@ public class MapperDAGVertex extends DAGVertex {
 			return String.valueOf(this.getTiming().getTotalOrder(this));
 		} else if (propertyName
 				.equals(ImplementationPropertyNames.Vertex_Operator)) {
-			return this.getMapping().getEffectiveComponent().getInstanceName();
+			return this.getEffectiveComponent().getInstanceName();
 		}
 		return super.getPropertyStringValue(propertyName);
 	}
@@ -298,11 +307,44 @@ public class MapperDAGVertex extends DAGVertex {
 	}
 
 	/**
-	 * Mapping properties are store in the graph and possibly shared with other
-	 * vertices.
+	 * Mapping group is stored in the graph. It is a group of vertices sharing
+	 * mapping properties.
 	 */
 	public VertexMapping getMapping() {
-		return ((MapperDAG) getBase()).getMappings().getMapping(getName());
+			return ((MapperDAG) getBase()).getMappings().getMapping(getName());
 	}
 
+	/**
+	 * A computation vertex has an effective operator: the operator executing it.
+	 */
+	public ComponentInstance getEffectiveOperator() {
+		if (effectiveComponent != null
+				&& effectiveComponent.getComponent() instanceof Operator)
+			return effectiveComponent;
+		else
+			return DesignTools.NO_COMPONENT_INSTANCE;
+	}
+
+	public boolean hasEffectiveOperator() {
+		return getEffectiveOperator() != DesignTools.NO_COMPONENT_INSTANCE;
+	}
+
+	public void setEffectiveOperator(ComponentInstance effectiveOperator) {
+		this.effectiveComponent = effectiveOperator;
+	}
+
+	/**
+	 * Effective component is common to communication and computation vertices
+	 */
+	public ComponentInstance getEffectiveComponent() {
+		return effectiveComponent;
+	}
+
+	public boolean hasEffectiveComponent() {
+		return getEffectiveComponent() != DesignTools.NO_COMPONENT_INSTANCE;
+	}
+
+	public void setEffectiveComponent(ComponentInstance component) {
+		this.effectiveComponent = component;
+	}
 }

@@ -146,10 +146,16 @@ public class ImplementationCleaner {
 			adder.removePrecedenceEdge(vertex, next);
 		}
 
+		// System.out.println("tutu");
 		Set<DAGEdge> edges = implementation.getAllEdges(prev, next);
 
 		if ((prev != null && next != null)
 				&& (edges == null || edges.isEmpty())) {
+			// TODO: Remove, only for debug
+			if (prev.getEffectiveOperator().getInstanceName() != next
+					.getEffectiveOperator().getInstanceName()) {
+				System.out.println("wrong!!");
+			}
 			adder.addPrecedenceEdge(prev, next);
 		}
 

@@ -99,21 +99,27 @@ abstract public class GroupProperty implements Cloneable {
 			}
 		}
 	}
-
+	/**
+	 * Returns the number of actors sharing the same property
+	 */
 	public int getNumberOfVertices() {
 		return vertexIDs.size();
 	}
-
+	
 	/**
 	 * Gets the vertices corresponding to the group
 	 */
 	public List<MapperDAGVertex> getVertices(MapperDAG dag) {
 		List<MapperDAGVertex> vertices = new ArrayList<MapperDAGVertex>();
-
 		for (String id : vertexIDs) {
 			vertices.add((MapperDAGVertex) dag.getVertex(id));
 		}
-
+		
 		return vertices;
+	}
+
+	@Override
+	public String toString() {
+		return vertexIDs.toString();
 	}
 }

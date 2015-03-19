@@ -115,7 +115,7 @@ public class DynamicQueuingScheduler {
 			throws WorkflowException {
 
 		List<ComponentInstance> adequateOps = abc
-				.getCandidateOperators(currentvertex);
+				.getCandidateOperators(currentvertex, true);
 		long currentMinCost = Long.MAX_VALUE;
 		ComponentInstance currentMinOp = null;
 
@@ -166,7 +166,7 @@ public class DynamicQueuingScheduler {
 
 			// Mapping on operator with minimal final cost
 			if (currentMinOp != null) {
-				abc.map(currentvertex, currentMinOp, true);
+				abc.map(currentvertex, currentMinOp, true, false);
 			} else {
 				WorkflowLogger.getLogger().log(Level.SEVERE,
 						"No available operator for " + currentvertex);

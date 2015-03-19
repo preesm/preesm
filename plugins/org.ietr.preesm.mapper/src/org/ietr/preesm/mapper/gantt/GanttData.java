@@ -92,7 +92,7 @@ public class GanttData {
 		while (viterator.hasNext()) {
 			MapperDAGVertex currentVertex = (MapperDAGVertex) viterator.next();
 			ComponentInstance cmp = currentVertex
-					.getMapping().getEffectiveComponent();
+					.getEffectiveComponent();
 
 			if (cmp != DesignTools.NO_COMPONENT_INSTANCE) {
 				long startTime = currentVertex.getTiming()

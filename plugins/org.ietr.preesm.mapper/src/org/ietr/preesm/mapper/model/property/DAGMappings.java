@@ -41,10 +41,11 @@ import java.util.Set;
 
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+
 /**
  * MapperDAG stores mapping properties shared by several of its vertices that
- * have relative constraints. If the mapping of a vertex in the group is
- * modified, all mappings of the vertices in the group are modified.
+ * have relative constraints. If the mapping of a vertex in the group is modified,
+ * all mappings of the vertices in the group are modified.
  * 
  * @author mpelcat
  */
@@ -55,16 +56,16 @@ public class DAGMappings {
 	 * access).
 	 */
 	Map<String, VertexMapping> mappings = null;
-
 	public DAGMappings() {
 		super();
 		mappings = new HashMap<String, VertexMapping>();
 	}
 
+
 	public VertexMapping getMapping(String vertexId) {
 		return mappings.get(vertexId);
 	}
-
+	
 	/**
 	 * Associates vertices by making them share a created VertexMapping object
 	 */
@@ -74,7 +75,7 @@ public class DAGMappings {
 			put(v.getName(), newMapping);
 		}
 	}
-
+	
 	/**
 	 * Dedicates a created VertexMapping object to a single vertex
 	 */
@@ -82,7 +83,7 @@ public class DAGMappings {
 		VertexMapping newMapping = new VertexMapping();
 		put(vertex.getName(), newMapping);
 	}
-
+	
 	/**
 	 * Associating a vertex to an existing mapping
 	 */
@@ -99,13 +100,30 @@ public class DAGMappings {
 		mappings.remove(vertex.getName());
 	}
 
+	/**
+	 * Cloning the common mappings of vertices and ensuring that several vertices with same group share the same mapping object
+	 */
 	@Override
 	public Object clone() {
+		Map<VertexMapping,VertexMapping> relateOldAndNew = new HashMap<VertexMapping,VertexMapping>();
 		DAGMappings newMappings = new DAGMappings();
-		for (String s : mappings.keySet()) {
-			newMappings.put(s, mappings.get(s).clone());
+		for(String s : mappings.keySet()){
+			VertexMapping m = mappings.get(s);
+			if(relateOldAndNew.containsKey(m)){
+				newMappings.put(s,relateOldAndNew.get(m));
+			} else {
+				VertexMapping newM = mappings.get(s).clone();
+				relateOldAndNew.put(m, newM);
+				newMappings.put(s,newM);
+			}
 		}
 		return newMappings;
 	}
-
+	@Override
+	public String toString() {
+		return mappings.toString();
+	}
+	
+	
+	
 }
