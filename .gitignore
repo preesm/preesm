@@ -40,10 +40,17 @@ Thumbs.db
 #######################################
 bin/
 target/
-generated/
 xtend-gen/
 lib/
-DAG/
 /plugins/org.ietr.preesm.codegen.xtend/xtend-gen/
 *~
 *._trace
+
+# PREESM generated files #
+##########################
+*.layout
+generated/
+DAG/*.graphml
+stats/xml/
+stats/mat/algo/
+stats/mat/archi/
