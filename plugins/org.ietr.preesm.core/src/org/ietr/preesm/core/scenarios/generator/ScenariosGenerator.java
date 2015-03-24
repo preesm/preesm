@@ -294,14 +294,14 @@ public class ScenariosGenerator {
 		// Set default values for constraints, timings and simulation parameters
 		// for all different type of cores
 		for (String opId : DesignTools.getOperatorComponentIds(archi)) {
-			for (SDFAbstractVertex aa : algo.vertexSet()) {
+			for (SDFAbstractVertex aa : algo.getAllVertices()) {
 				// Add timing: aa run on ci in 10000
 				scenario.getTimingManager().addTiming(
 						new Timing(opId, aa.getInfo(), 10000));
 			}
 		}
 		for (String coreId : coreIds) {
-			for (SDFAbstractVertex aa : algo.vertexSet()) {
+			for (SDFAbstractVertex aa : algo.getAllVertices()) {
 				// Add constraint: aa can be run on ci
 				scenario.getConstraintGroupManager().addConstraint(coreId, aa);
 			}
