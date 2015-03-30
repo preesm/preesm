@@ -16,7 +16,6 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.ietr.preesm.utils.files,
- org.ietr.preesm.utils.log,
  org.ietr.preesm.utils.paths,
  org.ietr.preesm.utils.pimm.header.parser.cdt,
  org.ietr.preesm.utils.sdf,

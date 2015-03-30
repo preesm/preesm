@@ -62,7 +62,7 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.ietr.dftools.ui.workflow.tools.DFToolsWorkflowLogger;
 import org.ietr.dftools.workflow.AbstractWorkflowExecutor;
 import org.ietr.dftools.workflow.messages.WorkflowMessages;
-import org.ietr.preesm.utils.log.PreesmLogger;
+import org.ietr.dftools.workflow.tools.CLIWorkflowLogger;
 
 /**
  * IApplication to execute PREESM workflows through command line interface
@@ -97,8 +97,8 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 
 			String cliOpts = StringUtils.join((Object[]) context.getArguments()
 					.get(IApplicationContext.APPLICATION_ARGS), " ");
-			PreesmLogger.traceln("Starting workflows execution");
-			PreesmLogger.traceln("Command line arguments: " + cliOpts);
+			CLIWorkflowLogger.traceln("Starting workflows execution");
+			CLIWorkflowLogger.traceln("Command line arguments: " + cliOpts);
 
 			// parse the command line arguments
 			CommandLine line = parser.parse(options, (String[]) context
@@ -157,12 +157,12 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 				scenarioPaths.add(scenarioPath);
 			}
 
-			PreesmLogger.traceln("Launching workflows execution");
+			CLIWorkflowLogger.traceln("Launching workflows execution");
 			// Launch the execution of the workflos with the scenarios
 			DFToolsWorkflowLogger.runFromCLI();
 			for (String wPath : workflowPaths) {
 				for (String sPath : scenarioPaths) {
-					PreesmLogger.traceln("Launching execution of workflow: " + wPath + " with scenario: " + sPath);
+					CLIWorkflowLogger.traceln("Launching execution of workflow: " + wPath + " with scenario: " + sPath);
 					execute(wPath, sPath, null);
 				}
 			}
@@ -256,7 +256,7 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 	 */
 	@Override
 	protected void log(Level level, String msgKey, String... variables) {
-		PreesmLogger
+		CLIWorkflowLogger
 				.logln(level, WorkflowMessages.getString(msgKey, variables));
 	}
 }

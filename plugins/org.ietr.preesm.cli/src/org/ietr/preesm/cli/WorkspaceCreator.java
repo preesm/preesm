@@ -53,9 +53,9 @@ import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.ietr.dftools.workflow.tools.CLIWorkflowLogger;
 import org.ietr.preesm.ui.wizards.PreesmProjectNature;
 import org.ietr.preesm.utils.files.FilesManager;
-import org.ietr.preesm.utils.log.PreesmLogger;
 
 /**
  * This application take a folder path in argument and create a valid Eclipse
@@ -119,12 +119,12 @@ public class WorkspaceCreator implements IApplication {
 								description.getName());
 
 						if (project.exists()) {
-							PreesmLogger.traceln("Project already registered, "
+							CLIWorkflowLogger.traceln("Project already registered, "
 									+ "nothing to do: " + project.getName());
 						} else {
 							project.create(description, progressMonitor);
 							project.open(progressMonitor);
-							PreesmLogger.traceln("New project registered: "
+							CLIWorkflowLogger.traceln("New project registered: "
 									+ project.getName());
 						}
 					}
@@ -155,7 +155,7 @@ public class WorkspaceCreator implements IApplication {
 
 				final String path = FilesManager.sanitize(args[0]);
 				File searchPath = new File(path).getCanonicalFile();
-				PreesmLogger.traceln("Register projects from \""
+				CLIWorkflowLogger.traceln("Register projects from \""
 						+ searchPath.getAbsolutePath() + "\" to workspace \""
 						+ workspace.getRoot().getLocation() + "\"");
 				searchForProjects(searchPath);
@@ -170,19 +170,19 @@ public class WorkspaceCreator implements IApplication {
 				final IJobManager manager = Job.getJobManager();
 				int i = 0;
 				while (!manager.isIdle()) {
-					PreesmLogger.traceln("Waiting for completion of"
+					CLIWorkflowLogger.traceln("Waiting for completion of"
 							+ " currently running jobs - " + ++i);
 					Thread.sleep(500);
 				}
 
 			} catch (CoreException e) {
-				PreesmLogger.severeln(e.getMessage());
+				CLIWorkflowLogger.severeln(e.getMessage());
 				e.printStackTrace();
 			} catch (IOException e) {
-				PreesmLogger.severeln(e.getMessage());
+				CLIWorkflowLogger.severeln(e.getMessage());
 				e.printStackTrace();
 			} catch (InterruptedException e) {
-				PreesmLogger.severeln(e.getMessage());
+				CLIWorkflowLogger.severeln(e.getMessage());
 				e.printStackTrace();
 			} finally {
 				try {
@@ -192,12 +192,12 @@ public class WorkspaceCreator implements IApplication {
 					}
 					return IApplication.EXIT_OK;
 				} catch (CoreException e) {
-					PreesmLogger.severeln(e.getMessage());
+					CLIWorkflowLogger.severeln(e.getMessage());
 					e.printStackTrace();
 				}
 			}
 		} else {
-			PreesmLogger
+			CLIWorkflowLogger
 					.severeln("Please add the path to a directories containing projects.");
 		}
 

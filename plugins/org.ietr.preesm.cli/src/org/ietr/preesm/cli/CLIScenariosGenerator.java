@@ -16,8 +16,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.ietr.dftools.workflow.tools.CLIWorkflowLogger;
 import org.ietr.preesm.core.scenarios.generator.ScenariosGenerator;
-import org.ietr.preesm.utils.log.PreesmLogger;
 
 public class CLIScenariosGenerator implements
 		IApplication {
@@ -36,8 +36,8 @@ public class CLIScenariosGenerator implements
 
 			String cliOpts = StringUtils.join((Object[]) context.getArguments()
 					.get(IApplicationContext.APPLICATION_ARGS), " ");
-			PreesmLogger.traceln("Starting scenarios generation");
-			PreesmLogger.traceln("Command line arguments: " + cliOpts);
+			CLIWorkflowLogger.traceln("Starting scenarios generation");
+			CLIWorkflowLogger.traceln("Command line arguments: " + cliOpts);
 
 			// parse the command line arguments
 			CommandLine line = parser.parse(options, (String[]) context
