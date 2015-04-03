@@ -123,9 +123,9 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements
 		IFormPage constraintsPage = new ConstraintsPage(scenario, this,
 				"Constraints", "Constraints");
 		constraintsPage.addPropertyListener(this);
-		
-		IFormPage relativeConstraintsPage = new RelativeConstraintsPage(scenario, this,
-				"RelativeConstraints", "Relative Constraints");
+
+		IFormPage relativeConstraintsPage = new RelativeConstraintsPage(
+				scenario, this, "RelativeConstraints", "Relative Constraints");
 		relativeConstraintsPage.addPropertyListener(this);
 		IFormPage timingsPage = new TimingsPage(scenario, this, "Timings",
 				"Timings");
@@ -139,8 +139,8 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements
 		VariablesPage variablesPage = new VariablesPage(scenario, this,
 				"Variables", "Variables");
 		variablesPage.addPropertyListener(this);
-		
-		PiParametersPage paramPage = new PiParametersPage(scenario, this, "Parameters", "Parameters");
+		PiParametersPage paramPage = new PiParametersPage(scenario, this,
+				"Parameters", "Parameters");
 		paramPage.addPropertyListener(this);
 
 		try {

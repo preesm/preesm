@@ -383,7 +383,6 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 	private void comboDataInit(Combo combo) {
 
 		combo.removeAll();
-
 		for (String id : scenario.getOrderedOperatorIds()) {
 			combo.add(id);
 		}
