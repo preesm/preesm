@@ -40,7 +40,6 @@ import java.util.Map;
 
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
-import org.ietr.preesm.memory.allocation.MemoryAllocatorTask;
 
 public abstract class AbstractMemoryScriptTask extends AbstractTaskImplementation {
 

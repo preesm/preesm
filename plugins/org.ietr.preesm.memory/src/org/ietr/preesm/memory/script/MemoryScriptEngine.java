@@ -53,7 +53,6 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
-import org.ietr.preesm.memory.allocation.MemoryAllocatorTask;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
 public class MemoryScriptEngine {

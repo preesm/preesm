@@ -56,7 +56,6 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
-import org.ietr.preesm.memory.script.MemoryScriptEngine;
 
 /**
  * The purpose of this class is to process a {@link MemoryExclusionGraph MemEx}
