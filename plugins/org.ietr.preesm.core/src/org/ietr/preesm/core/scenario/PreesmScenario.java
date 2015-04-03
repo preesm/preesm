@@ -256,7 +256,8 @@ public class PreesmScenario {
 	}
 
 	public Set<String> getOperatorDefinitionIds() {
-		if (operatorDefinitionIds == null) operatorDefinitionIds = new HashSet<String>();
+		if (operatorDefinitionIds == null)
+			operatorDefinitionIds = new HashSet<String>();
 		return operatorDefinitionIds;
 	}
 
@@ -269,7 +270,8 @@ public class PreesmScenario {
 	}
 
 	public Set<String> getComNodeIds() {
-		if (comNodeIds == null) comNodeIds = new HashSet<String>();
+		if (comNodeIds == null)
+			comNodeIds = new HashSet<String>();
 		return comNodeIds;
 	}
 
@@ -296,6 +298,9 @@ public class PreesmScenario {
 
 	public void update(boolean algorithmChange, boolean architectureChange)
 			throws InvalidModelException, CoreException, FileNotFoundException {
+		// If the architecture changes, operator ids, operator defintion ids and
+		// com node ids are no more valid (they are extracted from the
+		// architecture)
 		if (architectureChange && architectureURL.endsWith(".slam")) {
 			Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE
 					.getExtensionToFactoryMap();
@@ -317,14 +322,15 @@ public class PreesmScenario {
 			getOperatorIds().addAll(DesignTools.getOperatorInstanceIds(design));
 
 			getOperatorDefinitionIds().clear();
-			getOperatorDefinitionIds().addAll(DesignTools
-					.getOperatorComponentIds(design));
-			
+			getOperatorDefinitionIds().addAll(
+					DesignTools.getOperatorComponentIds(design));
+
 			getComNodeIds().clear();
 			getComNodeIds().addAll(DesignTools.getComNodeInstanceIds(design));
 
 		}
-
+		// If the algorithm changes, parameters or variables are no more valid
+		// (they are set in the algorithm)
 		if (algorithmChange) {
 			if (isPISDFScenario()) {
 				parameterValueManager.updateWith(ScenarioParser
@@ -334,11 +340,12 @@ public class PreesmScenario {
 						.getSDFGraph(algorithmURL));
 			}
 		}
-		
-		if (algorithmChange || architectureChange) timingmanager.clear();
-
-		constraintgroupmanager.update();
-		
+		// If the algorithm or the architecture changes, timings and constraints
+		// are no more valid (they depends on both algo and archi)
+		if (algorithmChange || architectureChange) {
+			timingmanager.clear();
+			constraintgroupmanager.update();
+		}
 	}
 
 	public Map<String, SDFGraph> getDAGs2SDFs() {
