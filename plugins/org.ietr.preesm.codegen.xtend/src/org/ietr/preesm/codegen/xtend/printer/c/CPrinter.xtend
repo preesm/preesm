@@ -99,8 +99,8 @@ class CPrinter extends DefaultPrinter {
 	{offset = buffer.offset
 	 var b = buffer.container;
 	 while(b instanceof SubBuffer){
-	 	offset = offset + (b as SubBuffer).offset
-	  	b = (b as SubBuffer).container
+	 	offset = offset + b.offset
+	  	b = b.container
 	  }
 	 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.size»*«buffer.type»
 	'''
@@ -261,15 +261,15 @@ class CPrinter extends DefaultPrinter {
 		var totalOffsetOut = outOffset*output.typeSize
 		var bOutput = output
 		while (bOutput instanceof SubBuffer) {
-			totalOffsetOut = totalOffsetOut + (bOutput as SubBuffer).offset
-			bOutput = (bOutput as SubBuffer).container
+			totalOffsetOut = totalOffsetOut + bOutput.offset
+			bOutput = bOutput.container
 		}
 		
 		var totalOffsetIn = inOffset*input.typeSize
 		var bInput = input
 		while (bInput instanceof SubBuffer) {
-			totalOffsetIn = totalOffsetIn + (bInput as SubBuffer).offset
-			bInput = (bInput as SubBuffer).container
+			totalOffsetIn = totalOffsetIn + bInput.offset
+			bInput = bInput.container
 		}
 		
 		// If the Buffer and offsets are identical, or one buffer is null
@@ -325,5 +325,5 @@ class CPrinter extends DefaultPrinter {
 	override printSemaphoreDeclaration(Semaphore semaphore) '''
 	extern sem_t «semaphore.name»; 
 	'''
-	
+
 }

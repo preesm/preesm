@@ -408,15 +408,15 @@ class MergeableBroadcastRoundBufferHelper extends CPrinter {
 		var totalOffsetOut = outOffset
 		var bOutput = output
 		while (bOutput instanceof SubBuffer) {
-			totalOffsetOut = totalOffsetOut + (bOutput as SubBuffer).offset
-			bOutput = (bOutput as SubBuffer).container
+			totalOffsetOut = totalOffsetOut + bOutput.offset
+			bOutput = bOutput.container
 		}
 
 		var totalOffsetIn = inOffset
 		var bInput = input
 		while (bInput instanceof SubBuffer) {
-			totalOffsetIn = totalOffsetIn + (bInput as SubBuffer).offset
-			bInput = (bInput as SubBuffer).container
+			totalOffsetIn = totalOffsetIn + bInput.offset
+			bInput = bInput.container
 		}
 
 		// If the Buffer and offsets are identical, add them to the map of mergeable buffers
@@ -443,8 +443,8 @@ class MergeableBroadcastRoundBufferHelper extends CPrinter {
 			var totalOffsetRef = 0
 			var ref = inputs.get(i)
 			while (ref instanceof SubBuffer) {
-				totalOffsetRef = totalOffsetRef + (ref as SubBuffer).offset
-				ref = (ref as SubBuffer).container
+				totalOffsetRef = totalOffsetRef + ref.offset
+				ref = ref.container
 			}
 
 			val offRef = totalOffsetRef
@@ -453,8 +453,8 @@ class MergeableBroadcastRoundBufferHelper extends CPrinter {
 				var totalOffset = 0
 				var b = it
 				while (b instanceof SubBuffer) {
-					totalOffset = totalOffset + (b as SubBuffer).offset
-					b = (b as SubBuffer).container
+					totalOffset = totalOffset + b.offset
+					b = b.container
 				}
 				(totalOffset == offRef && b == r)
 			]
@@ -477,15 +477,15 @@ class MergeableBroadcastRoundBufferHelper extends CPrinter {
 			var totalOffsetOut = 0
 			var bOutput = call.outputBuffers.head
 			while (bOutput instanceof SubBuffer) {
-				totalOffsetOut = totalOffsetOut + (bOutput as SubBuffer).offset
-				bOutput = (bOutput as SubBuffer).container
+				totalOffsetOut = totalOffsetOut + bOutput.offset
+				bOutput = bOutput.container
 			}
 
 			var totalOffsetIn = 0
 			var bInput = call.inputBuffers.last
 			while (bInput instanceof SubBuffer) {
-				totalOffsetIn = totalOffsetIn + (bInput as SubBuffer).offset
-				bInput = (bInput as SubBuffer).container
+				totalOffsetIn = totalOffsetIn + bInput.offset
+				bInput = bInput.container
 			}
 
 			if (totalOffsetIn == totalOffsetOut && bInput == bOutput) {
