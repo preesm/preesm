@@ -42,7 +42,6 @@ import java.io.InputStream;
 
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
-import org.jgrapht.Graph;
 
 /**
  * This class provides a page for the save timings as excel sheet wizard.

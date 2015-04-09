@@ -68,7 +68,6 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
-import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.w3c.dom.Document;

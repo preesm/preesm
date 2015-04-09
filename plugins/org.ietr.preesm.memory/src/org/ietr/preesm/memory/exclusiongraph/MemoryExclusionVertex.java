@@ -38,12 +38,10 @@ package org.ietr.preesm.memory.exclusiongraph;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.ietr.dftools.algorithm.model.AbstractEdge;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
-import org.ietr.dftools.algorithm.model.PropertyBean;
 import org.ietr.dftools.algorithm.model.PropertyFactory;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.preesm.core.types.BufferAggregate;

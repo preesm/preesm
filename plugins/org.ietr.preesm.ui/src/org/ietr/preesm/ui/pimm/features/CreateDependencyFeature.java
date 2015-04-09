@@ -42,7 +42,6 @@ import org.eclipse.graphiti.features.context.impl.CustomContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateConnectionFeature;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;

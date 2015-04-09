@@ -45,7 +45,6 @@ import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.preesm.codegen.model.allocators.AllocationPolicy;
 import org.ietr.preesm.codegen.model.allocators.IBufferAllocator;
 import org.ietr.preesm.codegen.model.call.Variable;
-import org.ietr.preesm.codegen.model.expression.VariableExpression;
 import org.ietr.preesm.codegen.model.main.VariableAllocation;
 import org.ietr.preesm.codegen.model.printer.CodeZoneId;
 import org.ietr.preesm.codegen.model.printer.IAbstractPrinter;

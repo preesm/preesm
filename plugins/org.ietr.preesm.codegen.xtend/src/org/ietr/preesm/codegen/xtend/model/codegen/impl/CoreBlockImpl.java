@@ -41,7 +41,6 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock;
-import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;

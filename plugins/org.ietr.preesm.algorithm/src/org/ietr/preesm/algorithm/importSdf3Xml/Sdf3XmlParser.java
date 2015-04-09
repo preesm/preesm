@@ -35,7 +35,6 @@
  ******************************************************************************/
 package org.ietr.preesm.algorithm.importSdf3Xml;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;

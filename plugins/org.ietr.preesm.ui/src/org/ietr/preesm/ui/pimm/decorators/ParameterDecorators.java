@@ -42,7 +42,6 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.platform.IPlatformImageConstants;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
-import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.util.DependencyCycleDetector;
 import org.ietr.preesm.ui.pimm.diagram.PiMMImageProvider;

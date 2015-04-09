@@ -36,8 +36,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 package org.ietr.preesm.core.types;
 
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-
 /**
  * This class contains property bean names used to exchange vertex properties
  * between the mapper and the code generation plugins.

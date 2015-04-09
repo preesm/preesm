@@ -57,7 +57,6 @@ import org.ietr.dftools.algorithm.model.dag.edag.DAGEndVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGForkVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGInitVertex;
 import org.ietr.dftools.algorithm.model.dag.edag.DAGJoinVertex;
-import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFForkVertex;

@@ -37,7 +37,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.ui.scenario.editor.variables;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Locale;
 

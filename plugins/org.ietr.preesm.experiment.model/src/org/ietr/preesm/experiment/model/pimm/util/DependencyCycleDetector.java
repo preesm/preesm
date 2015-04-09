@@ -40,7 +40,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
-import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 

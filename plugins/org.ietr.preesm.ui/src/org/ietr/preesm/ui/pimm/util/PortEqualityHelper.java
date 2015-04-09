@@ -42,11 +42,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
-import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**

@@ -51,7 +51,6 @@ import org.ietr.preesm.codegen.model.buffer.SubBuffer;
 import org.ietr.preesm.codegen.model.buffer.SubBufferAllocation;
 import org.ietr.preesm.codegen.model.call.Variable;
 import org.ietr.preesm.codegen.model.expression.IExpression;
-import org.ietr.preesm.codegen.model.expression.VariableExpression;
 import org.ietr.preesm.codegen.model.main.ICodeElement;
 import org.ietr.preesm.codegen.model.main.LoopIndex;
 import org.ietr.preesm.codegen.model.main.VariableAllocation;

@@ -64,7 +64,6 @@ import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
-import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 import org.ietr.preesm.ui.pimm.features.SetPortMemoryAnnotationFeature;
 

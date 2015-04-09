@@ -37,7 +37,6 @@ package org.ietr.preesm.experiment.model.pimm.adapter;
 
 import java.util.List;
 
-import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;

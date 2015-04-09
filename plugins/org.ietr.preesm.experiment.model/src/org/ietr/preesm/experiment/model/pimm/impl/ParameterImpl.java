@@ -46,7 +46,6 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
@@ -55,7 +54,6 @@ import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.util.DependencyCycleDetector;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 /**

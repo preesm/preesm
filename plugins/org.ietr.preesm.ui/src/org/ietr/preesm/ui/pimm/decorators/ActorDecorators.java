@@ -50,7 +50,6 @@ import org.eclipse.graphiti.tb.ImageDecorator;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.ui.pimm.diagram.PiMMImageProvider;
 import org.ietr.preesm.ui.pimm.util.PortEqualityHelper;
 

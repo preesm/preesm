@@ -37,7 +37,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.mapper.algo.list;
 
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

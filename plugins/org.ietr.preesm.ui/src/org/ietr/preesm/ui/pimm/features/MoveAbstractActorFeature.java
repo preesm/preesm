@@ -52,7 +52,6 @@ import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaCreateService;
 import org.eclipse.graphiti.services.IPeLayoutService;
-import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**

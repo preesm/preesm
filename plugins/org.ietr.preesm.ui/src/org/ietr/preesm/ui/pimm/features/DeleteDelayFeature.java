@@ -46,7 +46,6 @@ import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
-import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 
 /**
