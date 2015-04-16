@@ -461,8 +461,8 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 		// Call the addEdge method on the current graph
 		append("\tgraph->connect(\n");
 
-		DataOutputPort src = f.getSourcePort();
-		DataInputPort snk = f.getTargetPort();
+		DataOutputPort srcPort = f.getSourcePort();
+		DataInputPort snkPort = f.getTargetPort();
 
 		int typeSize;
 		if (dataTypes.containsKey(f.getType())) {
@@ -477,23 +477,52 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 			typeSize = 1;
 		}
 
+		AbstractVertex srcActor = (AbstractVertex) srcPort.eContainer();
+		AbstractVertex snkActor = (AbstractVertex) snkPort.eContainer();
+		
+		String srcProd = srcPort.getExpression().getString();
+		String snkProd = snkPort.getExpression().getString();
+
+		
+		/* Change port name in prod/cons/delay */
+		for(ConfigInputPort cfgPort : srcActor.getConfigInputPorts()){
+			String paramName = ((Parameter)cfgPort.getIncomingDependency().getSetter()).getName();
+			srcProd = srcProd.replaceAll("\\b"+cfgPort.getName()+"\\b", paramName);
+		}
+
+		for(ConfigInputPort cfgPort : snkActor.getConfigInputPorts()){
+			String paramName = ((Parameter)cfgPort.getIncomingDependency().getSetter()).getName();
+			snkProd = snkProd.replaceAll("\\b"+cfgPort.getName()+"\\b", paramName);
+		}
+
+		String delay = "0";
+		if (f.getDelay() != null){
+			delay   = f.getDelay().getExpression().getString();
+			
+			for(ConfigInputPort cfgPort : f.getDelay().getConfigInputPorts()){
+				String paramName = ((Parameter)cfgPort.getIncomingDependency().getSetter()).getName();
+				delay   = delay.replaceAll("\\b"+cfgPort.getName()+"\\b", paramName);
+			}
+		}
+		
+
 		append("\t\t/*Src*/ "
-				+ CppNameGenerator.getVertexName((AbstractVertex) src
-						.eContainer()) + ", /*SrcPrt*/ " + portMap.get(src)
-				+ ", /*Prod*/ \"" + /* Type size */typeSize + "*("
-				+ src.getExpression().getString() + ")\",\n");
+				+ CppNameGenerator.getVertexName(srcActor) 
+				+ ", /*SrcPrt*/ " + portMap.get(srcPort)
+//				+ ", /*Prod*/ \"(" + srcProd + ")*sizeof(" + f.getType() + ")\",\n");
+				+ ", /*Prod*/ \"(" + srcProd + ")*" + typeSize + "\",\n");
 
 		append("\t\t/*Snk*/ "
-				+ CppNameGenerator.getVertexName((AbstractVertex) snk
-						.eContainer()) + ", /*SnkPrt*/ " + portMap.get(snk)
-				+ ", /*Cons*/ \"" + /* Type size */typeSize + "*("
-				+ snk.getExpression().getString() + ")\",\n");
+				+ CppNameGenerator.getVertexName(snkActor) 
+				+ ", /*SnkPrt*/ " + portMap.get(snkPort)
+//				+ ", /*Cons*/ \"(" + snkProd + ")*sizeof(" + f.getType() + ")\",\n");
+				+ ", /*Cons*/ \"(" + snkProd + ")*" + typeSize + "\",\n");
 
 		if (f.getDelay() != null)
-			append("\t\t/*Delay*/ \"" + /* Type size */typeSize + "*("
-					+ f.getDelay().getExpression().getString() + ")\",0);\n\n");
+//			append("\t\t/*Delay*/ \"(" + delay + ")*sizeof(" + f.getType() + ")\",0);\n\n");
+			append("\t\t/*Delay*/ \"(" + delay + ")*" + typeSize + "\",0);\n\n");
 		else
-			append("\t\t/*Delay*/ \"0\",0);\n\n");
+			append("\t\t/*Delay*/ \"0\",0);\n\n");			
 	}
 
 	/**
