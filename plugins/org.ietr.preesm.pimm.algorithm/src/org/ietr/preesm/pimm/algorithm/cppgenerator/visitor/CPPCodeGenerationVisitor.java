@@ -109,6 +109,8 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 	private Map<String, DataType> dataTypes;
 
 	private StringBuilder currentMethod;
+	private StringBuilder currentDependentParams;
+	
 	private PiGraph currentGraph;
 	private List<PiGraph> currentSubGraphs;
 
@@ -268,9 +270,12 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 
 		// Generating parameters
 		append("\n\t/* Parameters */\n");
+		currentDependentParams = new StringBuilder();
 		for (Parameter p : pg.getParameters()) {
 			p.accept(this);
 		}
+		currentMethod.append(currentDependentParams);
+		
 		// Generating vertices
 		append("\n\t/* Vertices */\n");
 		for (AbstractActor v : pg.getVertices()) {
@@ -498,25 +503,45 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 	public void visitParameter(Parameter p) {
 		String paramName = CppNameGenerator.getParameterName(p);
 
-		append("\tPiSDFParam *");
-		append(paramName);
 
 		if (!p.isLocallyStatic()) {
-			/* DYNAMIC */
-			append(" = graph->addDynamicParam(" + "\"" + p.getName() + "\""
-					+ ");\n");
+			if(p.getConfigInputPorts().size() == 1
+					&& ! (p.getConfigInputPorts().get(0).getIncomingDependency().getSetter() instanceof Parameter)){
+				/* DYNAMIC */
+				append("\tPiSDFParam *"
+						+ paramName
+						+ " = graph->addDynamicParam(" + "\"" + p.getName() + "\""
+						+ ");\n");				
+			}else{
+				/* DEPENDANT */
+				currentDependentParams.append(
+						"\tPiSDFParam *"
+						+ paramName
+						+ " = graph->addDependentParam(" + "\"" + p.getName() + "\", \""
+						+ p.getExpression().getString()
+						+ "\");\n");				
+			}
 		} else if (p.getGraphPort() instanceof ConfigInputPort) {
 			/* HERITED */
-			append(" = graph->addHeritedParam(" + "\"" + p.getName() + "\", "
+			append("\tPiSDFParam *"
+					+ paramName
+					+ " = graph->addHeritedParam(" + "\"" + p.getName() + "\", "
 					+ portMap.get(p.getGraphPort()) + ");\n");
 		} else if (p.getConfigInputPorts().isEmpty()) {
 			/* STATIC */
-			append(" = graph->addStaticParam(" + "\"" + p.getName() + "\", "
+			append("\tPiSDFParam *"
+					+ paramName
+					+ " = graph->addStaticParam(" + "\"" + p.getName() + "\", "
 					+ (int) Double.parseDouble(p.getExpression().evaluate())
 					+ ");\n");
 		} else {
 			/* DEPENDANT */
-			throw new UnsupportedOperationException();
+			currentDependentParams.append(
+					"\tPiSDFParam *"
+					+ paramName
+					+ " = graph->addDependentParam(" + "\"" + p.getName() + "\", \""
+					+ p.getExpression().getString()
+					+ "\");\n");
 		}
 	}
 
