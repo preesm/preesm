@@ -46,7 +46,7 @@ public final class CppNameGenerator {
 	}
 	
 	public static String getFunctionName(AbstractActor aa) {
-		return aa.getName();
+		return ((PiGraph)aa.eContainer()).getName() + "_" + aa.getName();
 	}
 
 	/**
