@@ -123,8 +123,9 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 			parameter.setIsConfigurationParameter(true);
 		}
 		parameter.setName(argumentName);
-		// Type of the argument is the whole string minus the name
-		parameter.setType(argument.replace(argumentName, ""));
+		// Type of the argument is the whole string minus the name 
+		// we use a regex to remove last occurrence of name
+		parameter.setType(argument.replaceAll("\\b"+argumentName+"\\b(?!.*\\b"+argumentName+"\\b)", ""));
 		
 		// If the argument declaration contains a direction, use it !
 		for(String s:segments){				
