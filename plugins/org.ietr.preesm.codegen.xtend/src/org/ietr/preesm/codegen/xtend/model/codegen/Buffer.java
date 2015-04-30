@@ -35,8 +35,6 @@
  */
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
-import java.util.Map;
-
 import org.eclipse.emf.common.util.EList;
 
 /**
