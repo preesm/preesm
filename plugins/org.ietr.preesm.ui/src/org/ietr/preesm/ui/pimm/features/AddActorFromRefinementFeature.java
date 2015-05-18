@@ -125,42 +125,46 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
 		PictogramElement pictElements[] = new PictogramElement[1];
 		pictElements[0] = getFeatureProvider()
 				.getAllPictogramElementsForBusinessObject(actors[0])[0];
-		
-		AbstractActor protoPort = actor.getRefinement().getAbstractActor();
-		// Process DataInputPorts
-		for (Port p : protoPort.getDataInputPorts()) {
-			AddDataInputPortFeature addFeature = new AddDataInputPortFeature(
-					getFeatureProvider());
-			ICustomContext portContext = new CustomContext(pictElements);
-			portContext.putProperty("name", p.getName());
-			addFeature.execute(portContext);			
-		}
-		
-		// Process DataOutputPorts
-		for (Port p : protoPort.getDataOutputPorts()) {
-			AddDataOutputPortFeature addFeature = new AddDataOutputPortFeature(
-					getFeatureProvider());
-			ICustomContext portContext = new CustomContext(pictElements);
-			portContext.putProperty("name", p.getName());
-			addFeature.execute(portContext);			
-		}
 
-		// Process ConfigInputPorts
-		for (Port p : protoPort.getConfigInputPorts()) {
-			AddConfigInputPortFeature addFeature = new AddConfigInputPortFeature(
-					getFeatureProvider());
-			ICustomContext portContext = new CustomContext(pictElements);
-			portContext.putProperty("name", p.getName());
-			addFeature.execute(portContext);			
-		}
-		
-		// Process ConfigOutputPorts
-		for (Port p : protoPort.getConfigOutputPorts()) {
-			AddConfigOutputPortFeature addFeature = new AddConfigOutputPortFeature(
-					getFeatureProvider());
-			ICustomContext portContext = new CustomContext(pictElements);
-			portContext.putProperty("name", p.getName());
-			addFeature.execute(portContext);			
+		AbstractActor protoPort = actor.getRefinement().getAbstractActor();
+		// protoPort is Null if actor creation was cancelled during refinement
+		// prototype selection
+		if (protoPort != null) {
+			// Process DataInputPorts
+			for (Port p : protoPort.getDataInputPorts()) {
+				AddDataInputPortFeature addFeature = new AddDataInputPortFeature(
+						getFeatureProvider());
+				ICustomContext portContext = new CustomContext(pictElements);
+				portContext.putProperty("name", p.getName());
+				addFeature.execute(portContext);
+			}
+
+			// Process DataOutputPorts
+			for (Port p : protoPort.getDataOutputPorts()) {
+				AddDataOutputPortFeature addFeature = new AddDataOutputPortFeature(
+						getFeatureProvider());
+				ICustomContext portContext = new CustomContext(pictElements);
+				portContext.putProperty("name", p.getName());
+				addFeature.execute(portContext);
+			}
+
+			// Process ConfigInputPorts
+			for (Port p : protoPort.getConfigInputPorts()) {
+				AddConfigInputPortFeature addFeature = new AddConfigInputPortFeature(
+						getFeatureProvider());
+				ICustomContext portContext = new CustomContext(pictElements);
+				portContext.putProperty("name", p.getName());
+				addFeature.execute(portContext);
+			}
+
+			// Process ConfigOutputPorts
+			for (Port p : protoPort.getConfigOutputPorts()) {
+				AddConfigOutputPortFeature addFeature = new AddConfigOutputPortFeature(
+						getFeatureProvider());
+				ICustomContext portContext = new CustomContext(pictElements);
+				portContext.putProperty("name", p.getName());
+				addFeature.execute(portContext);
+			}
 		}
 
 		return null;
