@@ -35,8 +35,15 @@
  ******************************************************************************/
 package org.ietr.preesm.ui.pimm.features;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.model.CoreModel;
@@ -246,6 +253,52 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 		Set<FunctionPrototype> result = new HashSet<FunctionPrototype>();
 
 		if (file != null) {
+
+			// Read the file (TODO Move this code in its own class)
+			try {
+				InputStream is = file.getContents();
+				byte buffer[] = new byte[1000];
+
+				int nbRead = 0;
+				String fileContent = "";
+				do {
+					nbRead = is.read(buffer);
+					fileContent = fileContent
+							+ (new String(buffer)).substring(0, nbRead);
+				} while (nbRead == 1000);
+
+				// Filter unwanted content
+				// Order of the filter is important !
+				// Comments must be removed before pre-processing commands and
+				// end of lines.
+
+				// Filter comments between /* */
+				Pattern pattern = Pattern.compile("(/\\*)(.*?)(\\*/)",
+						Pattern.DOTALL);
+				Matcher matcher = pattern.matcher(fileContent);
+				fileContent = matcher.replaceAll("");
+
+				// Filter comments between after //
+				pattern = Pattern.compile("(//)(.*?\\n)", Pattern.DOTALL);
+				matcher = pattern.matcher(fileContent);
+				fileContent = matcher.replaceAll("");
+
+				// Filter all pre-processing (
+				pattern = Pattern.compile(
+						"^\\s*#\\s*(([^\\\\]+?)((\\\\$[^\\\\]+?)*?$))",
+						Pattern.MULTILINE | Pattern.DOTALL);
+				matcher = pattern.matcher(fileContent);
+				fileContent = matcher.replaceAll("");
+
+				// Replace new lines and multiple spaces with a single space
+				pattern = Pattern.compile("\\s+", Pattern.MULTILINE);
+				matcher = pattern.matcher(fileContent);
+				fileContent = matcher.replaceAll(" ");
+			} catch (CoreException | IOException e) {
+				e.printStackTrace();
+			}
+
+			// With AST and CDT
 			ICElement element = CoreModel.getDefault().create(file);
 			ITranslationUnit tu = (ITranslationUnit) element;
 			try {
