@@ -47,15 +47,18 @@ import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Direction;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
+import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
  * Utility class containing method to extract prototypes from a C header file.
  * 
  * @author kdesnos
+ * @author cuy
  * 
  */
 public class HeaderParser {
@@ -113,7 +116,6 @@ public class HeaderParser {
 		// and the list of parameters
 		Pattern pattern = Pattern.compile("(.+?)\\s(\\S+?)\\s?\\((.*?)\\)");
 		for (String prototypeString : prototypes) {
-			System.out.println(prototypeString);
 			FunctionPrototype funcProto = PiMMFactory.eINSTANCE
 					.createFunctionPrototype();
 
@@ -159,10 +161,10 @@ public class HeaderParser {
 					if (matcher.group(3) == null) {
 						fp.setIsConfigurationParameter(true);
 					}
-
-					result.add(funcProto);
+					funcProto.getParameters().add(fp);
 				}
 			}
+			result.add(funcProto);
 		}
 		return result;
 	}
@@ -273,6 +275,202 @@ public class HeaderParser {
 					+ (new String(buffer)).substring(0, nbRead);
 		} while (nbRead == 1000);
 		return fileContent;
+	}
+
+	/**
+	 * Filters the prototypes obtained from the parsed file to keep only the
+	 * ones corresponding to the actor possible initialization
+	 * 
+	 * @param actor
+	 *            the AbstractActor which ports we use to filter prototypes
+	 * @return the set of FunctionPrototypes corresponding to actor
+	 *         initialization
+	 */
+	static public List<FunctionPrototype> filterInitPrototypesFor(
+			AbstractActor actor, List<FunctionPrototype> prototypes) {
+		List<FunctionPrototype> result = new ArrayList<FunctionPrototype>();
+
+		// For each function prototype proto
+		for (FunctionPrototype proto : prototypes) {
+			// proto matches the initialization of actor if:
+			// -it does not have more parameters than the actors configuration
+			// input ports
+			List<FunctionParameter> params = new ArrayList<FunctionParameter>(
+					proto.getParameters());
+			boolean matches = params.size() <= actor.getConfigInputPorts()
+					.size();
+			// -all function parameters of proto match a configuration input
+			// port of the actor (initialization function cannot read or write
+			// in fifo nor write on configuration output ports)
+			if (matches) {
+				for (FunctionParameter param : params) {
+					if (hasCorrespondingPort(param, actor.getConfigInputPorts())) {
+						param.setDirection(Direction.IN);
+						param.setIsConfigurationParameter(true);
+					} else {
+						matches = false;
+						break;
+					}
+				}
+			}
+
+			if (matches) {
+				result.add(proto);
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Filters the prototypes obtained from the parsed file to keep only the
+	 * ones corresponding to the actor signature (ports)
+	 * 
+	 * @param actor
+	 *            the AbstractActor which ports we use to filter prototypes
+	 * @return the set of FunctionPrototypes corresponding to actor
+	 */
+	public static List<FunctionPrototype> filterLoopPrototypesFor(
+			AbstractActor actor, List<FunctionPrototype> prototypes) {
+		List<FunctionPrototype> result = new ArrayList<FunctionPrototype>();
+
+		// For each function prototype proto
+		for (FunctionPrototype proto : prototypes) {
+			// proto matches the signature of actor if:
+			// -it does not have more parameters than the actors ports
+			ArrayList<FunctionParameter> params = new ArrayList<FunctionParameter>(
+					proto.getParameters());
+			boolean matches = params.size() <= (actor.getDataInputPorts()
+					.size()
+					+ actor.getDataOutputPorts().size()
+					+ actor.getConfigInputPorts().size() + actor
+					.getConfigOutputPorts().size());
+
+			// Check that all proto parameters can be matched with a port
+			List<Port> allPorts = new ArrayList<Port>();
+			allPorts.addAll(actor.getDataInputPorts());
+			allPorts.addAll(actor.getDataOutputPorts());
+			allPorts.addAll(actor.getConfigInputPorts());
+			allPorts.addAll(actor.getConfigOutputPorts());
+			for (FunctionParameter param : proto.getParameters()) {
+				matches &= hasCorrespondingPort(param, allPorts);
+			}
+
+			// -each of the data input and output ports of the actor matches one
+			// of the parameters of proto
+			if (matches) {
+				for (Port p : actor.getDataInputPorts()) {
+					FunctionParameter param = getCorrespondingFunctionParameter(
+							p, params);
+					if (param != null) {
+						param.setDirection(Direction.IN);
+						param.setIsConfigurationParameter(false);
+						params.remove(param);
+					} else {
+						matches = false;
+						break;
+					}
+				}
+			}
+			if (matches) {
+				for (Port p : actor.getDataOutputPorts()) {
+					FunctionParameter param = getCorrespondingFunctionParameter(
+							p, params);
+					if (param != null) {
+						param.setDirection(Direction.OUT);
+						param.setIsConfigurationParameter(false);
+						params.remove(param);
+					} else {
+						matches = false;
+						break;
+					}
+				}
+			}
+			// -each of the configuration output ports of the actor matches one
+			// of the parameters of proto
+			if (matches) {
+				for (Port p : actor.getConfigOutputPorts()) {
+					FunctionParameter param = getCorrespondingFunctionParameter(
+							p, params);
+					if (param != null) {
+						param.setDirection(Direction.OUT);
+						param.setIsConfigurationParameter(true);
+						params.remove(param);
+					} else {
+						matches = false;
+						break;
+					}
+				}
+			}
+			// -all other function parameters of proto match a configuration
+			// input port of the actor
+			if (matches) {
+				for (FunctionParameter param : params) {
+					if (hasCorrespondingPort(param, actor.getConfigInputPorts())) {
+						param.setDirection(Direction.IN);
+						param.setIsConfigurationParameter(true);
+					}
+				}
+			}
+			if (matches) {
+				result.add(proto);
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Filters the prototypes obtained from the parsed file to keep only the
+	 * ones corresponding to possible initializations.
+	 * 
+	 * @return the set of FunctionPrototypes corresponding to initialization
+	 */
+	static public List<FunctionPrototype> filterInitPrototypes(
+			List<FunctionPrototype> prototypes) {
+		List<FunctionPrototype> result = new ArrayList<FunctionPrototype>();
+
+		// For each function prototype proto check that the prototype has no
+		// input or output buffers (i.e. parameters with a pointer type)
+		for (FunctionPrototype proto : prototypes) {
+			List<FunctionParameter> params = new ArrayList<FunctionParameter>(
+					proto.getParameters());
+			boolean allParams = true;
+			for (FunctionParameter param : params) {
+				if (!param.getType().contains("*")) {
+					param.setDirection(Direction.IN);
+					param.setIsConfigurationParameter(true);
+				} else {
+					allParams = false;
+					break;
+				}
+			}
+
+			if (allParams) {
+				result.add(proto);
+			}
+		}
+
+		return result;
+	}
+
+	static private FunctionParameter getCorrespondingFunctionParameter(Port p,
+			List<FunctionParameter> params) {
+		for (FunctionParameter param : params) {
+			if (p.getName().equals(param.getName()))
+				return param;
+		}
+		return null;
+	}
+
+	static private boolean hasCorrespondingPort(FunctionParameter f,
+			List<? extends Port> ports) {
+		for (Port p : ports) {
+			if (p.getName().equals(f.getName())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

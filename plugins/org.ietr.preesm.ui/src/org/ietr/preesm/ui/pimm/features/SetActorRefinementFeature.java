@@ -39,13 +39,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
-import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.model.ICElement;
-import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
@@ -58,7 +53,6 @@ import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.ui.pimm.util.HeaderParser;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
-import org.ietr.preesm.utils.pimm.header.parser.cdt.ASTAndActorComparisonVisitor;
 
 /**
  * Custom Feature to set a new {@link Refinement} of an {@link Actor}
@@ -253,33 +247,19 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 		if (file != null) {
 			result = HeaderParser.parseHeader(file);
 
-			// System.out.println(result);
-			// With AST and CDT
-			ICElement element = CoreModel.getDefault().create(file);
-			ITranslationUnit tu = (ITranslationUnit) element;
-			try {
-				// Parse it
-				IASTTranslationUnit ast = tu.getAST();
-				ASTAndActorComparisonVisitor visitor = new ASTAndActorComparisonVisitor();
-				ast.accept(visitor);
-				// And extract from it the functions
-				// compatible with the current actor
-				switch (prototypeFilter) {
-				case INIT_ACTOR:
-					result = visitor.filterInitPrototypesFor(actor);
-					break;
-				case LOOP_ACTOR:
-					result = visitor.filterLoopPrototypesFor(actor);
-					break;
-				case INIT:
-					result = visitor.filterInitPrototypes();
-					break;
-				case NONE:
-					result = visitor.getPrototypes();
-					break;
-				}
-			} catch (CoreException e) {
-				e.printStackTrace();
+			switch (prototypeFilter) {
+			case INIT_ACTOR:
+				result = HeaderParser.filterInitPrototypesFor(actor, result);
+				break;
+			case LOOP_ACTOR:
+				result = HeaderParser.filterLoopPrototypesFor(actor, result);
+				break;
+			case INIT:
+				result = HeaderParser.filterInitPrototypes(result);
+				break;
+			case NONE:
+				// result = result;
+				break;
 			}
 		}
 		return result;
