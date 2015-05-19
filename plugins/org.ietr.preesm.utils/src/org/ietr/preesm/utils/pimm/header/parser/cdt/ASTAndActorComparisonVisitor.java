@@ -97,8 +97,9 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 		String argumentsString = summary.getArguments();
 		// Arguments are separated by commas
 		for (String argument : argumentsString.split(",")) {
-			if(!argument.isEmpty()){
-				proto.getParameters().add(createFunctionParameterFrom(argument));
+			if (!argument.isEmpty()) {
+				proto.getParameters()
+						.add(createFunctionParameterFrom(argument));
 			}
 		}
 
@@ -114,26 +115,29 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 		// The name of the argument is the last segment (others are the
 		// type)
 		String argumentName = segments[segments.length - 1];
-		// Separate parameters from data 
-		if (argumentName.startsWith("*") || (segments.length > 1 &&  segments[segments.length - 2].endsWith("*"))) {
-			// Following lines is useless if * is stuck to the end of the data 
+		// Separate parameters from data
+		if (argumentName.startsWith("*")
+				|| (segments.length > 1 && segments[segments.length - 2]
+						.endsWith("*"))) {
+			// Following lines is useless if * is stuck to the end of the data
 			// type as in "char* param" (but not as in char *param)
-			argumentName = argumentName.replace("*", ""); 
+			argumentName = argumentName.replace("*", "");
 		} else {
 			parameter.setIsConfigurationParameter(true);
 		}
 		parameter.setName(argumentName);
-		// Type of the argument is the whole string minus the name 
+		// Type of the argument is the whole string minus the name
 		// we use a regex to remove last occurrence of name
-		parameter.setType(argument.replaceAll("\\b"+argumentName+"\\b(?!.*\\b"+argumentName+"\\b)", ""));
-		
+		parameter.setType(argument.replaceAll("\\b" + argumentName
+				+ "\\b(?!.*\\b" + argumentName + "\\b)", ""));
+
 		// If the argument declaration contains a direction, use it !
-		for(String s:segments){				
-			if(s.equals("IN")){
+		for (String s : segments) {
+			if (s.equals("IN")) {
 				parameter.setDirection(Direction.IN);
 				break;
 			}
-			if(s.equals("OUT")){
+			if (s.equals("OUT")) {
 				parameter.setDirection(Direction.OUT);
 			}
 		}
@@ -149,14 +153,14 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 	 *            the AbstractActor which ports we use to filter prototypes
 	 * @return the set of FunctionPrototypes corresponding to actor
 	 */
-	public Set<FunctionPrototype> filterLoopPrototypesFor(AbstractActor actor) {
-		Set<FunctionPrototype> result = new HashSet<FunctionPrototype>();
+	public List<FunctionPrototype> filterLoopPrototypesFor(AbstractActor actor) {
+		List<FunctionPrototype> result = new ArrayList<FunctionPrototype>();
 
 		// For each function prototype proto
 		for (FunctionPrototype proto : this.prototypes) {
 			// proto matches the signature of actor if:
 			// -it does not have more parameters than the actors ports
-			Set<FunctionParameter> params = new HashSet<FunctionParameter>(
+			ArrayList<FunctionParameter> params = new ArrayList<FunctionParameter>(
 					proto.getParameters());
 			boolean matches = params.size() <= (actor.getDataInputPorts()
 					.size()
@@ -170,10 +174,10 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 			allPorts.addAll(actor.getDataOutputPorts());
 			allPorts.addAll(actor.getConfigInputPorts());
 			allPorts.addAll(actor.getConfigOutputPorts());
-			for(FunctionParameter param : proto.getParameters()){
+			for (FunctionParameter param : proto.getParameters()) {
 				matches &= hasCorrespondingPort(param, allPorts);
 			}
-			
+
 			// -each of the data input and output ports of the actor matches one
 			// of the parameters of proto
 			if (matches) {
@@ -247,15 +251,15 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 	 * @return the set of FunctionPrototypes corresponding to actor
 	 *         initialization
 	 */
-	public Set<FunctionPrototype> filterInitPrototypesFor(AbstractActor actor) {
-		Set<FunctionPrototype> result = new HashSet<FunctionPrototype>();
+	public List<FunctionPrototype> filterInitPrototypesFor(AbstractActor actor) {
+		List<FunctionPrototype> result = new ArrayList<FunctionPrototype>();
 
 		// For each function prototype proto
 		for (FunctionPrototype proto : this.prototypes) {
 			// proto matches the initialization of actor if:
 			// -it does not have more parameters than the actors configuration
 			// input ports
-			Set<FunctionParameter> params = new HashSet<FunctionParameter>(
+			List<FunctionParameter> params = new ArrayList<FunctionParameter>(
 					proto.getParameters());
 			boolean matches = params.size() <= actor.getConfigInputPorts()
 					.size();
@@ -288,13 +292,13 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 	 * 
 	 * @return the set of FunctionPrototypes corresponding to initialization
 	 */
-	public Set<FunctionPrototype> filterInitPrototypes() {
-		Set<FunctionPrototype> result = new HashSet<FunctionPrototype>();
+	public List<FunctionPrototype> filterInitPrototypes() {
+		List<FunctionPrototype> result = new ArrayList<FunctionPrototype>();
 
 		// For each function prototype proto check that the prototype has no
 		// input or output buffers (i.e. parameters with a pointer type)
 		for (FunctionPrototype proto : this.prototypes) {
-			Set<FunctionParameter> params = new HashSet<FunctionParameter>(
+			List<FunctionParameter> params = new ArrayList<FunctionParameter>(
 					proto.getParameters());
 			boolean allParams = true;
 			for (FunctionParameter param : params) {
@@ -316,7 +320,7 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 	}
 
 	private FunctionParameter getCorrespondingFunctionParameter(Port p,
-			Set<FunctionParameter> params) {
+			List<FunctionParameter> params) {
 		for (FunctionParameter param : params) {
 			if (p.getName().equals(param.getName()))
 				return param;
@@ -340,7 +344,7 @@ public class ASTAndActorComparisonVisitor extends ASTVisitor {
 	 * 
 	 * @return The parsed {@link FunctionPrototype}.
 	 */
-	public Set<FunctionPrototype> getPrototypes() {
-		return new HashSet<FunctionPrototype>(this.prototypes);
+	public List<FunctionPrototype> getPrototypes() {
+		return new ArrayList<FunctionPrototype>(this.prototypes);
 	}
 }

@@ -35,15 +35,9 @@
  ******************************************************************************/
 package org.ietr.preesm.ui.pimm.features;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.model.CoreModel;
@@ -58,12 +52,11 @@ import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.Actor;
-import org.ietr.preesm.experiment.model.pimm.Direction;
-import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
+import org.ietr.preesm.ui.pimm.util.HeaderParser;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 import org.ietr.preesm.utils.pimm.header.parser.cdt.ASTAndActorComparisonVisitor;
 
@@ -169,7 +162,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 			// If the file is a .h header
 			if (newFilePath.getFileExtension().equals("h")) {
 
-				Set<FunctionPrototype> loopPrototypes;
+				List<FunctionPrototype> loopPrototypes;
 				FunctionPrototype[] allProtoArray;
 				IFile file;
 
@@ -178,7 +171,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 						.getFile(newFilePath);
 
 				// Get all prototypes first (no filter)
-				Set<FunctionPrototype> allPrototypes = getPrototypes(file,
+				List<FunctionPrototype> allPrototypes = getPrototypes(file,
 						actor, PrototypeFilter.NONE);
 				allProtoArray = allPrototypes
 						.toArray(new FunctionPrototype[allPrototypes.size()]);
@@ -211,9 +204,9 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 							.selectFunction(loopProtoArray, allProtoArray,
 									title, message, true);
 
-					Set<FunctionPrototype> initPrototypes = getPrototypes(file,
-							actor, PrototypeFilter.INIT_ACTOR);
-					Set<FunctionPrototype> allInitPrototypes = getPrototypes(
+					List<FunctionPrototype> initPrototypes = getPrototypes(
+							file, actor, PrototypeFilter.INIT_ACTOR);
+					List<FunctionPrototype> allInitPrototypes = getPrototypes(
 							file, actor, PrototypeFilter.INIT);
 
 					FunctionPrototype initProto = null;
@@ -252,143 +245,15 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
 		} while (!validRefinement);
 	}
 
-	private Set<FunctionPrototype> getPrototypes(IFile file, Actor actor,
+	private List<FunctionPrototype> getPrototypes(IFile file, Actor actor,
 			PrototypeFilter prototypeFilter) {
-		Set<FunctionPrototype> result = new HashSet<FunctionPrototype>();
+
+		List<FunctionPrototype> result = null;
 
 		if (file != null) {
+			result = HeaderParser.parseHeader(file);
 
-			// Read the file (TODO Move this code in its own class)
-			try {
-				InputStream is = file.getContents();
-				byte buffer[] = new byte[1000];
-
-				int nbRead = 0;
-				String fileContent = "";
-				do {
-					nbRead = is.read(buffer);
-					fileContent = fileContent
-							+ (new String(buffer)).substring(0, nbRead);
-				} while (nbRead == 1000);
-
-				// Filter unwanted content
-				// Order of the filter is important !
-				// Comments must be removed before pre-processing commands and
-				// end of lines.
-
-				// Filter comments between /* */
-				Pattern pattern = Pattern.compile("(/\\*)(.*?)(\\*/)",
-						Pattern.DOTALL);
-				Matcher matcher = pattern.matcher(fileContent);
-				fileContent = matcher.replaceAll("");
-
-				// Filter comments between after //
-				pattern = Pattern.compile("(//)(.*?\\n)", Pattern.DOTALL);
-				matcher = pattern.matcher(fileContent);
-				fileContent = matcher.replaceAll("");
-
-				// Filter all pre-processing (
-				pattern = Pattern.compile(
-						"^\\s*#\\s*(([^\\\\]+?)((\\\\$[^\\\\]+?)*?$))",
-						Pattern.MULTILINE | Pattern.DOTALL);
-				matcher = pattern.matcher(fileContent);
-				fileContent = matcher.replaceAll("");
-
-				// Replace new lines and multiple spaces with a single space
-				pattern = Pattern.compile("\\s+", Pattern.MULTILINE);
-				matcher = pattern.matcher(fileContent);
-				fileContent = matcher.replaceAll(" ");
-
-				// Make sure there always is a space before and after each
-				// group of * this will ease type identification during
-				// prototype identification.
-				// 1. remove all spaces around "*"
-				pattern = Pattern.compile("\\s?\\*\\s?");
-				matcher = pattern.matcher(fileContent);
-				fileContent = matcher.replaceAll("*");
-				// 2. add space around each groupe of *
-				pattern = Pattern.compile(":?\\*+");
-				matcher = pattern.matcher(fileContent);
-				fileContent = matcher.replaceAll(" $0 ");
-
-				// Identify and isolate prototypes in the remaining code
-				// The remaining code is a single line containing only C code
-				// (enum, struct, prototypes, inline functions, ..)
-				pattern = Pattern.compile("[^;}](.*?\\(.*?\\))[;]");
-				matcher = pattern.matcher(fileContent);
-				List<String> prototypes = new ArrayList<String>();
-				boolean containsPrototype;
-				do {
-					containsPrototype = matcher.find();
-					if (containsPrototype) {
-						prototypes.add(matcher.group(1));
-					}
-				} while (containsPrototype);
-
-				// Create the FunctionPrototypes
-				Set<FunctionPrototype> res = new HashSet<FunctionPrototype>();
-				// Unique RegEx to separate the return type, the function name
-				// and the list of parameters
-				pattern = Pattern.compile("(.+?)\\s(\\S+?)\\s?\\((.*?)\\)");
-				for (String prototypeString : prototypes) {
-					System.out.println(prototypeString);
-					FunctionPrototype funcProto = PiMMFactory.eINSTANCE
-							.createFunctionPrototype();
-
-					// Get the name
-					matcher = pattern.matcher(prototypeString);
-					if (matcher.matches()) { // apply the matcher
-						funcProto.setName(matcher.group(2));
-					}
-
-					// Get the parameters (if any)
-					// A new array list must be created because the list
-					// returned by Arrays.asList cannot be modified (in
-					// particular, no element can be removed from it).
-					List<String> parameters = new ArrayList<String>(
-							Arrays.asList(matcher.group(3).split("\\s?,\\s?")));
-					// Remove empty match (is the function has no parameter)
-					parameters.remove("");
-					parameters.remove(" ");
-
-					Pattern paramPattern = Pattern
-							.compile("(IN|OUT)?([^\\*]+)(\\s\\**)?\\s(\\S+)");
-					// Procces parameters one by one
-					for (String param : parameters) {
-						FunctionParameter fp = PiMMFactory.eINSTANCE
-								.createFunctionParameter();
-						matcher = paramPattern.matcher(param);
-						boolean matched = matcher.matches();
-						if (matched) { // Apply the matcher (if possible)
-							// Get the parameter name
-							fp.setName(matcher.group(4));
-							// Get the parameter type
-							fp.setType(matcher.group(2));
-							// Check the direction (if any)
-							if (matcher.group(1) != null) {
-								if (matcher.group(1).equals("IN")) {
-									fp.setDirection(Direction.IN);
-
-								}
-								if (matcher.group(1).equals("OUT")) {
-									fp.setDirection(Direction.OUT);
-								}
-							}
-							if (matcher.group(3) == null) {
-								fp.setIsConfigurationParameter(true);
-							}
-
-							res.add(funcProto);
-						}
-					}
-				}
-
-				System.out.println(fileContent);
-
-			} catch (CoreException | IOException e) {
-				e.printStackTrace();
-			}
-
+			// System.out.println(result);
 			// With AST and CDT
 			ICElement element = CoreModel.getDefault().create(file);
 			ITranslationUnit tu = (ITranslationUnit) element;
