@@ -247,9 +247,11 @@ public class FunctionPrototypeImpl extends EObjectImpl implements FunctionProtot
 			if (first) {
 				first = false;
 			} else {
-				result += ",";
+				result += ", ";
 			}
-			result += p.getType() + p.getName();
+			result += p.getType();
+			result += (!p.isIsConfigurationParameter())? " * " : "";
+			result += " " +p.getName();
 		}
 		result += ")";
 		return result;
