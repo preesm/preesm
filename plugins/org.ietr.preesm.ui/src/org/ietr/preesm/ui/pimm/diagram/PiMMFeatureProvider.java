@@ -37,7 +37,6 @@ package org.ietr.preesm.ui.pimm.diagram;
 
 import java.util.ArrayList;
 
-import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.core.internal.resources.File;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IAddFeature;
@@ -222,8 +221,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 			return new AddDependencyFeature(this);
 		}
 		
-		if(context.getNewObject() instanceof File
-				|| context.getNewObject() instanceof ITranslationUnit){
+		if(context.getNewObject() instanceof File){
 			if(getBusinessObjectForPictogramElement(context.getTargetContainer()) instanceof Actor){
 				return new AddRefinementFeature(this);
 			}

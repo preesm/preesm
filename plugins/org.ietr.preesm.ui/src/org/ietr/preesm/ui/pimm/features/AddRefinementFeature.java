@@ -35,7 +35,6 @@
  ******************************************************************************/
 package org.ietr.preesm.ui.pimm.features;
 
-import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.core.internal.resources.File;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -61,16 +60,10 @@ public class AddRefinementFeature extends AbstractAddFeature {
 
 	@Override
 	public boolean canAdd(IAddContext context) {
-		if (!(context.getNewObject() instanceof File 
-				|| context.getNewObject() instanceof ITranslationUnit)) {
+		if (!(context.getNewObject() instanceof File)) {
 			return false;
 		} else {
-			String fileExtension;
-			if(context.getNewObject() instanceof File){
-				fileExtension = ((File) context.getNewObject()).getFileExtension();
-			}else{
-				fileExtension = ((ITranslationUnit) context.getNewObject()).getPath().getFileExtension();
-			}
+			String fileExtension = ((File) context.getNewObject()).getFileExtension();
 			
 			if (fileExtension.equals("pi") || fileExtension.equals("h")
 					|| fileExtension.equals("idl")) {
@@ -85,13 +78,8 @@ public class AddRefinementFeature extends AbstractAddFeature {
 		SetActorRefinementFeature setRefinementFeature = new SetActorRefinementFeature(
 				getFeatureProvider());
 
-		IPath newFilePath;
-		if(context.getNewObject() instanceof File){
-			newFilePath = ((File) context.getNewObject()).getFullPath();
-		}else{
-			newFilePath = ((ITranslationUnit) context.getNewObject()).getPath();
-		}
-	
+		IPath newFilePath = ((File) context.getNewObject()).getFullPath();
+			
 		Actor actor = (Actor) getBusinessObjectForPictogramElement(context
 				.getTargetContainer());
 

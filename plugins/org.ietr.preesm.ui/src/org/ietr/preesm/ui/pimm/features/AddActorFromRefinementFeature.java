@@ -35,7 +35,6 @@
  ******************************************************************************/
 package org.ietr.preesm.ui.pimm.features;
 
-import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -69,16 +68,11 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
 
 	@Override
 	public boolean canAdd(IAddContext context) {
-		if (!(context.getNewObject() instanceof IFile
-				|| context.getNewObject() instanceof ITranslationUnit)) {
+		if (!(context.getNewObject() instanceof IFile)) {
 			return false;
 		} else {
-			String fileExtension;
-			if(context.getNewObject() instanceof IFile){
-				fileExtension = ((IFile) context.getNewObject()).getFileExtension();
-			}else{
-				fileExtension = ((ITranslationUnit) context.getNewObject()).getPath().getFileExtension();
-			}
+			String fileExtension = ((IFile) context.getNewObject()).getFileExtension();
+			
 			
 			if (fileExtension.equals("pi") || fileExtension.equals("h")
 					|| fileExtension.equals("idl")) {
@@ -115,8 +109,8 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
 		IPath newFilePath;
 		if(context.getNewObject() instanceof IFile){
 			newFilePath = ((IFile) context.getNewObject()).getFullPath();
-		}else{
-			newFilePath = ((ITranslationUnit) context.getNewObject()).getPath();
+		} else {
+			return null;
 		}
 
 		setRefinementFeature.setActorRefinement(actor, newFilePath);
