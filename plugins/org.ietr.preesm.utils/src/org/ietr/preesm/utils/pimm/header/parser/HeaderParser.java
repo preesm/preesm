@@ -34,7 +34,7 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
 
-package org.ietr.preesm.ui.pimm.util;
+package org.ietr.preesm.utils.pimm.header.parser;
 
 import java.io.IOException;
 import java.io.InputStream;
