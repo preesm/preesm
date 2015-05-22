@@ -73,7 +73,6 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 		super(fp);
 	}
 
-
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void postMoveShape(IMoveShapeContext context) {
@@ -97,7 +96,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 
 			boolean isSrcMove = false;
 			if (!iConnections.isEmpty()) {
-				
+
 				connections
 						.addAll((Collection<? extends FreeFormConnection>) iConnections);
 				isSrcMove = false;
@@ -110,41 +109,68 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 			}
 
 			for (FreeFormConnection connection : connections) {
-				// Check wether the FIFO corresponding to the connection has a delay
-				Object fifo =  getBusinessObjectForPictogramElement(connection);
-				
-				// If the fifo has no delay, it remove a bendpoint if there are at least two
+				// Check wether the FIFO corresponding to the connection has a
+				// delay
+				Object fifo = getBusinessObjectForPictogramElement(connection);
+
+				// If the fifo has no delay, it remove a bendpoint if there are
+				// at least two
 				// if the fifo has a delay, remove a bendpoint (if any).
-				int nbBendpoints = (fifo != null && ((Fifo)fifo).getDelay() != null)? -1 : 0 ;
-				
-				// Remove the last or first Bendpoint (if any)
+				int nbBendpoints = (fifo != null && ((Fifo) fifo).getDelay() != null) ? -1
+						: 0;
+
+				// Check if the last or first Bendpoint exists.
+				// If so, move it with the same delta as the associated port.
+				// (but it will still be removed and recreated.)
+				boolean bendpointExists = false;
+				int bendpointX = -1, bendpointY = -1;
 				int index = connection.getBendpoints().size() - 1;
 				if (index > nbBendpoints && !isSrcMove) {
+					bendpointExists = true;
+					bendpointX = connection.getBendpoints().get(index).getX();
+					bendpointY = connection.getBendpoints().get(index).getY();
 					connection.getBendpoints().remove(index);
 				}
 				if (index > nbBendpoints && isSrcMove) {
+					bendpointExists = true;
+					bendpointX = connection.getBendpoints().get(0).getX();
+					bendpointY = connection.getBendpoints().get(0).getY();
 					connection.getBendpoints().remove(0);
 				}
 
-				// Add one bendpoints or two bendpoints if the connection
-				// originally had less than two bendpoints
+				// Add one bendpoints it didn't exist, move it otherwise
 				IPeLayoutService peLayoutService = Graphiti
 						.getPeLayoutService();
 				IGaCreateService createService = Graphiti.getGaCreateService();
 				int midHeight = anchor.getGraphicsAlgorithm().getHeight() / 2 - 1;
 
+				// Creation cases
 				if (isSrcMove) {
 					ILocation srcLoc = peLayoutService
 							.getLocationRelativeToDiagram(connection.getStart());
-					Point pSrc = createService.createPoint(srcLoc.getX() + 20,
-							srcLoc.getY() + midHeight);
+					Point pSrc = null;
+					if (!bendpointExists) {
+						pSrc = createService.createPoint(srcLoc.getX() + 20,
+								srcLoc.getY() + midHeight);
+					} else {
+						pSrc = createService.createPoint(
+								bendpointX + context.getDeltaX(), bendpointY
+										+ context.getDeltaY());
+					}
 					connection.getBendpoints().add(0, pSrc);
 				}
 				if (!isSrcMove) {
 					ILocation trgtLoc = peLayoutService
 							.getLocationRelativeToDiagram(connection.getEnd());
-					Point pTrgt = createService.createPoint(
-							trgtLoc.getX() - 20, trgtLoc.getY() + midHeight);
+					Point pTrgt = null;
+					if (!bendpointExists) {
+						pTrgt = createService.createPoint(trgtLoc.getX() - 20,
+								trgtLoc.getY() + midHeight);
+					} else {
+						pTrgt = createService.createPoint(
+								bendpointX + context.getDeltaX(), bendpointY
+										+ context.getDeltaY());
+					}
 					connection.getBendpoints().add(pTrgt);
 				}
 			}
