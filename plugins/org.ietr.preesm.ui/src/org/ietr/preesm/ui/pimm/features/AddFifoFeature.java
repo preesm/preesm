@@ -150,12 +150,23 @@ public class AddFifoFeature extends AbstractAddFeature {
 		// Call the move feature of the anchor owner to layout the connection
 		MoveAbstractActorFeature moveFeature = new MoveAbstractActorFeature(
 				getFeatureProvider());
+		// Move source
 		ContainerShape cs = (ContainerShape) connection.getStart()
 				.getReferencedGraphicsAlgorithm().getPictogramElement();
 		MoveShapeContext moveCtxt = new MoveShapeContext(cs);
 		moveCtxt.setDeltaX(0);
 		moveCtxt.setDeltaY(0);
 		ILocation csLoc = Graphiti.getPeLayoutService()
+				.getLocationRelativeToDiagram(cs);
+		moveCtxt.setLocation(csLoc.getX(), csLoc.getY());
+		moveFeature.moveShape(moveCtxt);
+		// Move target
+		cs = (ContainerShape) connection.getEnd()
+				.getReferencedGraphicsAlgorithm().getPictogramElement();
+		moveCtxt = new MoveShapeContext(cs);
+		moveCtxt.setDeltaX(0);
+		moveCtxt.setDeltaY(0);
+		csLoc = Graphiti.getPeLayoutService()
 				.getLocationRelativeToDiagram(cs);
 		moveCtxt.setLocation(csLoc.getX(), csLoc.getY());
 		moveFeature.moveShape(moveCtxt);

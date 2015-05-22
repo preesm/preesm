@@ -111,10 +111,10 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 			for (FreeFormConnection connection : connections) {
 				// Remove the last or first Bendpoint (if any)
 				int index = connection.getBendpoints().size() - 1;
-				if (index > -1 && !isSrcMove) {
+				if (index > 0 && !isSrcMove) {
 					connection.getBendpoints().remove(index);
 				}
-				if (index > -1 && isSrcMove) {
+				if (index > 0 && isSrcMove) {
 					connection.getBendpoints().remove(0);
 				}
 
