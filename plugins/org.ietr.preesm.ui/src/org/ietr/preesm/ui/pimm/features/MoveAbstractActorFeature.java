@@ -49,6 +49,8 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaCreateService;
 import org.eclipse.graphiti.services.IPeLayoutService;
@@ -63,6 +65,11 @@ import org.ietr.preesm.experiment.model.pimm.Port;
  */
 public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 
+	// List of the connections whose source and target are both moved by the
+	// current MoveAbstractActorFeature (if any).
+	List<FreeFormConnection> outDoubleConnections = new ArrayList<>();
+	List<FreeFormConnection> inDoubleConnections = new ArrayList<>();
+
 	/**
 	 * Default constructor for {@link MoveAbstractActorFeature}
 	 * 
@@ -71,6 +78,217 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 	 */
 	public MoveAbstractActorFeature(IFeatureProvider fp) {
 		super(fp);
+	}
+
+	/**
+	 * Move all bendpoints. Move bendpoints within a container shape. This code
+	 * is a copy from the protected function calling private methods in
+	 * {@link DefaultMoveShapeFeature}.
+	 * 
+	 * @param context
+	 *            the context
+	 */
+	protected void moveAllBendpoints(IMoveShapeContext context) {
+		Shape shapeToMove = context.getShape();
+
+		int x = context.getX();
+		int y = context.getY();
+
+		int deltaX = x - shapeToMove.getGraphicsAlgorithm().getX();
+		int deltaY = y - shapeToMove.getGraphicsAlgorithm().getY();
+
+		if (deltaX != 0 || deltaY != 0) {
+			List<FreeFormConnection> connectionList = new ArrayList<FreeFormConnection>();
+
+			FreeFormConnection[] containerConnections = calculateContainerConnections(context);
+			for (int i = 0; i < containerConnections.length; i++) {
+				FreeFormConnection cc = containerConnections[i];
+				if (!connectionList.contains(cc)) {
+					connectionList.add(cc);
+				}
+			}
+
+			FreeFormConnection[] connectedConnections = calculateConnectedConnections(context);
+			for (int i = 0; i < connectedConnections.length; i++) {
+				FreeFormConnection cc = connectedConnections[i];
+				if (!connectionList.contains(cc)) {
+					connectionList.add(cc);
+				}
+			}
+
+			for (FreeFormConnection conn : connectionList) {
+				moveAllBendpointsOnFFConnection((FreeFormConnection) conn,
+						deltaX, deltaY);
+			}
+
+			// Kdesnos addition: Store the connectionList to avoid moving them a
+			// second time in postMoveShape.
+			this.outDoubleConnections = connectionList;
+		}
+	}
+
+	/**
+	 * This code is a copy from the private method in
+	 * {@link DefaultMoveShapeFeature}.
+	 * 
+	 * @param connection
+	 * @param deltaX
+	 * @param deltaY
+	 */
+	private void moveAllBendpointsOnFFConnection(FreeFormConnection connection,
+			int deltaX, int deltaY) {
+		List<Point> points = connection.getBendpoints();
+		for (int i = 0; i < points.size(); i++) {
+			Point point = points.get(i);
+			int oldX = point.getX();
+			int oldY = point.getY();
+			points.set(
+					i,
+					Graphiti.getGaCreateService().createPoint(oldX + deltaX,
+							oldY + deltaY));
+		}
+	}
+
+	/**
+	 * This code is a copy from the private method in
+	 * {@link DefaultMoveShapeFeature}.
+	 * 
+	 * @param context
+	 * @return
+	 */
+	private FreeFormConnection[] calculateContainerConnections(
+			IMoveShapeContext context) {
+		FreeFormConnection[] ret = new FreeFormConnection[0];
+
+		if (!(context.getShape() instanceof ContainerShape)) {
+			return ret;
+		}
+
+		List<FreeFormConnection> retList = new ArrayList<FreeFormConnection>();
+
+		Shape shapeToMove = context.getShape();
+
+		int x = context.getX();
+		int y = context.getY();
+
+		int deltaX = x - shapeToMove.getGraphicsAlgorithm().getX();
+		int deltaY = y - shapeToMove.getGraphicsAlgorithm().getY();
+
+		if (deltaX != 0 || deltaY != 0) {
+
+			List<Anchor> anchorsFrom = getAnchors(shapeToMove);
+			List<Anchor> anchorsTo = new ArrayList<Anchor>(anchorsFrom);
+
+			for (Anchor anchorFrom : anchorsFrom) {
+
+				Collection<Connection> outgoingConnections = anchorFrom
+						.getOutgoingConnections();
+
+				for (Connection connection : outgoingConnections) {
+					for (Anchor anchorTo : anchorsTo) {
+
+						Collection<Connection> incomingConnections = anchorTo
+								.getIncomingConnections();
+						if (incomingConnections.contains(connection)) {
+							if (connection instanceof FreeFormConnection) {
+								retList.add((FreeFormConnection) connection);
+							}
+						}
+					}
+				}
+			}
+		}
+		return retList.toArray(ret);
+	}
+
+	/**
+	 * 
+	 * This code is a copy from the private method in
+	 * {@link DefaultMoveShapeFeature}.
+	 * 
+	 * @param context
+	 * @return
+	 */
+	@SuppressWarnings("deprecation")
+	private FreeFormConnection[] calculateConnectedConnections(
+			IMoveShapeContext context) {
+		List<FreeFormConnection> retList = new ArrayList<FreeFormConnection>();
+		Shape shapeToMove = context.getShape();
+
+		int x = context.getX();
+		int y = context.getY();
+
+		int deltaX = x - shapeToMove.getGraphicsAlgorithm().getX();
+		int deltaY = y - shapeToMove.getGraphicsAlgorithm().getY();
+
+		if (deltaX != 0 || deltaY != 0) {
+			List<Anchor> anchors = getAnchors(shapeToMove);
+
+			PictogramElement[] selectedPictogramElements = getDiagramEditor()
+					.getSelectedPictogramElements();
+			if (selectedPictogramElements != null) {
+				for (int i = 0; i < selectedPictogramElements.length; i++) {
+					PictogramElement selPe = selectedPictogramElements[i];
+					if (selPe instanceof Shape) {
+						Shape selShape = (Shape) selPe;
+						for (Anchor toAnchor : getAnchors(selShape)) {
+							EList<Connection> incomingConnections = toAnchor
+									.getIncomingConnections();
+							for (Connection inConn : incomingConnections) {
+								if (inConn instanceof FreeFormConnection) {
+									Anchor startAnchor = inConn.getStart();
+									if (anchors.contains(startAnchor)) {
+										retList.add((FreeFormConnection) inConn);
+									}
+								}
+							}
+						}
+						// Kdesnos addition : detect also connectedConnections
+						// ending at the current shape to avoid moving them
+						// twice in postMoveShape
+						for (Anchor toAnchor : getAnchors(selShape)) {
+							EList<Connection> outgoingConnections = toAnchor
+									.getOutgoingConnections();
+							for (Connection outConn : outgoingConnections) {
+								if (outConn instanceof FreeFormConnection) {
+									Anchor endAnchor = outConn.getEnd();
+									if (anchors.contains(endAnchor)) {
+										inDoubleConnections
+												.add((FreeFormConnection) outConn);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return retList.toArray(new FreeFormConnection[0]);
+	}
+
+	/**
+	 * This code is a copy from the private method in
+	 * {@link DefaultMoveShapeFeature}.
+	 * 
+	 * @param theShape
+	 * @return
+	 */
+	private List<Anchor> getAnchors(Shape theShape) {
+		List<Anchor> ret = new ArrayList<Anchor>();
+		ret.addAll(theShape.getAnchors());
+
+		if (theShape instanceof ContainerShape) {
+			ContainerShape containerShape = (ContainerShape) theShape;
+			List<Shape> children = containerShape.getChildren();
+			for (Shape shape : children) {
+				if (shape instanceof ContainerShape) {
+					ret.addAll(getAnchors((ContainerShape) shape));
+				} else {
+					ret.addAll(shape.getAnchors());
+				}
+			}
+		}
+		return ret;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -107,6 +325,12 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 						.addAll((Collection<? extends FreeFormConnection>) oConnections);
 				isSrcMove = true;
 			}
+
+			// Remove connections whose bendpoints were already moved by
+			// moveAllBendpoints call
+
+			connections.removeAll(outDoubleConnections);
+			connections.removeAll(inDoubleConnections);
 
 			for (FreeFormConnection connection : connections) {
 				// Check wether the FIFO corresponding to the connection has a
