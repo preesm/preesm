@@ -52,6 +52,7 @@ import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaCreateService;
 import org.eclipse.graphiti.services.IPeLayoutService;
+import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
@@ -109,12 +110,19 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 			}
 
 			for (FreeFormConnection connection : connections) {
+				// Check wether the FIFO corresponding to the connection has a delay
+				Object fifo =  getBusinessObjectForPictogramElement(connection);
+				
+				// If the fifo has no delay, it remove a bendpoint if there are at least two
+				// if the fifo has a delay, remove a bendpoint (if any).
+				int nbBendpoints = (fifo != null && ((Fifo)fifo).getDelay() != null)? -1 : 0 ;
+				
 				// Remove the last or first Bendpoint (if any)
 				int index = connection.getBendpoints().size() - 1;
-				if (index > 0 && !isSrcMove) {
+				if (index > nbBendpoints && !isSrcMove) {
 					connection.getBendpoints().remove(index);
 				}
-				if (index > 0 && isSrcMove) {
+				if (index > nbBendpoints && isSrcMove) {
 					connection.getBendpoints().remove(0);
 				}
 
