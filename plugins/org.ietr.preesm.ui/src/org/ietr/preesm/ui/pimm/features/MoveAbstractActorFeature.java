@@ -36,8 +36,11 @@
 package org.ietr.preesm.ui.pimm.features;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.graphiti.datatypes.ILocation;
@@ -54,6 +57,8 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaCreateService;
 import org.eclipse.graphiti.services.IPeLayoutService;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
@@ -69,6 +74,10 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 	// current MoveAbstractActorFeature (if any).
 	List<FreeFormConnection> outDoubleConnections = new ArrayList<>();
 	List<FreeFormConnection> inDoubleConnections = new ArrayList<>();
+
+	// List the delays that should be moved because both their fifo producer and
+	// consumers are selected to be moved.
+	Set<Delay> implicitlyMovedDelay = new HashSet<Delay>();
 
 	/**
 	 * Default constructor for {@link MoveAbstractActorFeature}
@@ -116,15 +125,209 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 				}
 			}
 
+			// kdesnos addition
+			FreeFormConnection[] connectedDelayedFifos = calculateConnectedDelayedFifos(context);
+			for (int i = 0; i < connectedDelayedFifos.length; i++) {
+				FreeFormConnection cc = connectedDelayedFifos[i];
+				if (connectionList.contains(cc)) {
+					connectionList.remove(cc);
+				}
+			}
+
 			for (FreeFormConnection conn : connectionList) {
 				moveAllBendpointsOnFFConnection((FreeFormConnection) conn,
 						deltaX, deltaY);
 			}
 
+			// Move implicitlyMovedDelays
+			for (Delay del : implicitlyMovedDelay) {
+				moveDelay(context, del);
+			}
+
 			// Kdesnos addition: Store the connectionList to avoid moving them a
 			// second time in postMoveShape.
-			this.outDoubleConnections = connectionList;
+			this.outDoubleConnections.addAll(connectionList);
 		}
+	}
+
+	/**
+	 * Move a {@link Delay} and all the bendpoints of the associated
+	 * {@link Fifo FIFOs} accorting to the given {@link IMoveShapeContext}.
+	 * 
+	 * @param context
+	 *            the {@link IMoveShapeContext} containing the deltaX and deltaY
+	 *            of the displacement
+	 * @param del
+	 *            the {@link Delay} whose associated graphical elements are to
+	 *            be moved.
+	 */
+	@SuppressWarnings("deprecation")
+	protected void moveDelay(IMoveShapeContext context, Delay del) {
+		// Get all delays with identical attributes (may not be the
+		// right delay is several delays have the same properties.)
+		List<PictogramElement> pes = Graphiti.getLinkService()
+				.getPictogramElements(getDiagram(), del);
+
+		// Check if the delay is selected in the graphical interface
+		PictogramElement[] selectedPictogramElements = getDiagramEditor()
+				.getSelectedPictogramElements();
+		List<PictogramElement> selectedPEs = new ArrayList<>(
+				Arrays.asList(selectedPictogramElements));
+
+		for (PictogramElement pe : pes) {
+			// Check that the pe is associated to the right delay (in
+			// the java Object sense, not equals() one)
+			Object delay = getBusinessObjectForPictogramElement(pe);
+			if (delay == del) {
+
+				if (pe.getGraphicsAlgorithm() != null) {
+					int oldX = pe.getGraphicsAlgorithm().getX();
+					int oldY = pe.getGraphicsAlgorithm().getY();
+					// Unless the delay is selected, move it
+					if (!selectedPEs.contains(pe)) {
+						pe.getGraphicsAlgorithm().setX(
+								oldX + context.getDeltaX());
+						pe.getGraphicsAlgorithm().setY(
+								oldY + context.getDeltaY());
+					}
+
+					// Move all bendpoints of the FIFO as well
+					List<PictogramElement> fifoPEs = new ArrayList<PictogramElement>();
+					List<Anchor> anchors = getAnchors((Shape) pe);
+					for (Anchor anchor : anchors) {
+						// Always move the incoming connection of the delay
+						// (even if the delay is selected.
+						fifoPEs.addAll(anchor.getIncomingConnections());
+						// Move the outgoing connection of the delay only if the
+						// delay itself is not selected
+						if (!selectedPEs.contains(pe))
+							fifoPEs.addAll(anchor.getOutgoingConnections());
+					}
+
+					for (PictogramElement fifoPE : fifoPEs) {
+						if (fifoPE instanceof FreeFormConnection) {
+							moveAllBendpointsOnFFConnection(
+									(FreeFormConnection) fifoPE,
+									context.getDeltaX(), context.getDeltaY());
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Find FIFOs with a delay and both sides connected to selected actors. Put
+	 * the {@link Delay} in {@link #implicitlyMovedDelay}.
+	 * 
+	 * @param context
+	 * @return
+	 */
+	@SuppressWarnings("deprecation")
+	private FreeFormConnection[] calculateConnectedDelayedFifos(
+			IMoveShapeContext context) {
+		List<FreeFormConnection> retList = new ArrayList<FreeFormConnection>();
+		Shape shapeToMove = context.getShape();
+
+		int x = context.getX();
+		int y = context.getY();
+
+		int deltaX = x - shapeToMove.getGraphicsAlgorithm().getX();
+		int deltaY = y - shapeToMove.getGraphicsAlgorithm().getY();
+
+		if (deltaX != 0 || deltaY != 0) {
+			List<Anchor> anchors = getAnchors(shapeToMove);
+
+			// Create a list of the corresponding Ports
+			List<Port> ports = new ArrayList<Port>();
+			for (Anchor anchor : anchors) {
+				Object bo = getBusinessObjectForPictogramElement(anchor);
+				if (bo instanceof Port) {
+					ports.add((Port) bo);
+				}
+			}
+
+			PictogramElement[] selectedPictogramElements = getDiagramEditor()
+					.getSelectedPictogramElements();
+			if (selectedPictogramElements != null) {
+				for (int i = 0; i < selectedPictogramElements.length; i++) {
+					PictogramElement selPe = selectedPictogramElements[i];
+					if (selPe instanceof Shape) {
+						Shape selShape = (Shape) selPe;
+						for (Anchor toAnchor : getAnchors(selShape)) {
+							EList<Connection> incomingConnections = toAnchor
+									.getIncomingConnections();
+							for (Connection inConn : incomingConnections) {
+								if (inConn instanceof FreeFormConnection) {
+									Object bo = getBusinessObjectForPictogramElement(inConn);
+									if (bo instanceof Fifo
+											&& ((Fifo) bo).getDelay() != null) {
+										Port srcPort = ((Fifo) bo)
+												.getSourcePort();
+										if (ports.contains(srcPort)) {
+											retList.add((FreeFormConnection) inConn);
+											Delay del = ((Fifo) bo).getDelay();
+											implicitlyMovedDelay.add(del);
+											// Add all the connection to the
+											// double connections lists
+											Fifo fifo = (Fifo) del.eContainer();
+											List<PictogramElement> fifoPEs = Graphiti
+													.getLinkService()
+													.getPictogramElements(
+															getDiagram(), fifo);
+											for (PictogramElement fifoPE : fifoPEs) {
+												if (fifoPE instanceof FreeFormConnection) {
+													outDoubleConnections
+															.add((FreeFormConnection) fifoPE);
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+						for (Anchor fromAnchor : getAnchors(selShape)) {
+							EList<Connection> outgoingConnections = fromAnchor
+									.getOutgoingConnections();
+							for (Connection outConn : outgoingConnections) {
+								if (outConn instanceof FreeFormConnection) {
+									Object bo = getBusinessObjectForPictogramElement(outConn);
+									if (bo instanceof Fifo
+											&& ((Fifo) bo).getDelay() != null) {
+										Port tgtPort = ((Fifo) bo)
+												.getTargetPort();
+										if (ports.contains(tgtPort)) {
+											retList.add((FreeFormConnection) outConn);
+											inDoubleConnections
+													.add((FreeFormConnection) outConn);
+											// Not adding delays to
+											// ImplicitlyMovedDelay is voluntary
+											// here. (Doing so would move them
+											// twice)
+											// Add all the connection to the
+											// double connections lists
+											Delay del = ((Fifo) bo).getDelay();
+											Fifo fifo = (Fifo) del.eContainer();
+											List<PictogramElement> fifoPEs = Graphiti
+													.getLinkService()
+													.getPictogramElements(
+															getDiagram(), fifo);
+											for (PictogramElement fifoPE : fifoPEs) {
+												if (fifoPE instanceof FreeFormConnection) {
+													outDoubleConnections
+															.add((FreeFormConnection) fifoPE);
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return retList.toArray(new FreeFormConnection[retList.size()]);
 	}
 
 	/**
