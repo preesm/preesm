@@ -59,6 +59,7 @@ import org.eclipse.graphiti.services.IGaCreateService;
 import org.eclipse.graphiti.services.IPeLayoutService;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Delay;
+import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
@@ -538,12 +539,14 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 			for (FreeFormConnection connection : connections) {
 				// Check wether the FIFO corresponding to the connection has a
 				// delay
-				Object fifo = getBusinessObjectForPictogramElement(connection);
+				Object fifoOrDependency = getBusinessObjectForPictogramElement(connection);
 
 				// If the fifo has no delay, it remove a bendpoint if there are
 				// at least two
 				// if the fifo has a delay, remove a bendpoint (if any).
-				int nbBendpoints = (fifo != null && ((Fifo) fifo).getDelay() != null) ? -1
+				int nbBendpoints = (fifoOrDependency != null
+						&& (fifoOrDependency instanceof Fifo && ((Fifo) fifoOrDependency)
+								.getDelay() != null) || fifoOrDependency instanceof Dependency) ? -1
 						: 0;
 
 				// Check if the last or first Bendpoint exists.
