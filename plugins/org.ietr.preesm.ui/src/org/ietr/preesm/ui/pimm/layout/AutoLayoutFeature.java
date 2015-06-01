@@ -35,10 +35,8 @@
  ******************************************************************************/
 package org.ietr.preesm.ui.pimm.layout;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -50,6 +48,8 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -74,6 +74,81 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		return true;
 	}
 
+	/**
+	 * Clear all the bendpoints of the {@link Fifo} and {@link Dependency} in
+	 * the diagram passed as a parameter.
+	 * 
+	 * @param diagram
+	 */
+	protected void clearBendpoints(Diagram diagram) {
+		for (Connection connection : diagram.getConnections()) {
+			((FreeFormConnection) connection).getBendpoints().clear();
+		}
+	}
+
+	/**
+	 * Create {@link List} of {@link List} of {@link AbstractActor} where each
+	 * innermost {@link List} is called a stage. An {@link AbstractActor} is put
+	 * in a stage only if all its predecessors (not considering feedbackFifos)
+	 * are already added to previous stages.
+	 * 
+	 * @param feedbackFifos
+	 *            {@link List} of {@link Fifo} that are ignored when scanning
+	 *            the predecessors of an actor.
+	 * @param actors
+	 *            {@link AbstractActor} to sort.
+	 * @param srcActors
+	 *            First stage of {@link Fifo}, given by the
+	 *            {@link #findSrcActors(List, List)}.
+	 * @return the stage by stage list of actors.
+	 */
+	protected List<List<AbstractActor>> createStages(List<Fifo> feedbackFifos,
+			List<AbstractActor> actors, final List<AbstractActor> srcActors) {
+		List<List<AbstractActor>> stages = new ArrayList<List<AbstractActor>>();
+
+		List<AbstractActor> processedActors = new ArrayList<AbstractActor>();
+		processedActors.addAll(srcActors);
+		List<AbstractActor> currentStage = srcActors;
+		stages.add(currentStage);
+		do {
+			Set<AbstractActor> nextStage = new LinkedHashSet<AbstractActor>();
+
+			// Find candidates for the next stage in successors of current one
+			for (AbstractActor actor : currentStage) {
+				for (DataOutputPort port : actor.getDataOutputPorts()) {
+					if (!feedbackFifos.contains(port.getOutgoingFifo())) {
+						nextStage.add((AbstractActor) port.getOutgoingFifo()
+								.getTargetPort().eContainer());
+					}
+				}
+			}
+
+			// Check if all predecessors of the candidates have already been
+			// added in a previous stages
+			Iterator<AbstractActor> iter = nextStage.iterator();
+			while (iter.hasNext()) {
+				AbstractActor actor = iter.next();
+				boolean hasUnstagedPredecessor = false;
+				for (DataInputPort port : actor.getDataInputPorts()) {
+					Fifo incomingFifo = port.getIncomingFifo();
+					hasUnstagedPredecessor |= !feedbackFifos
+							.contains(incomingFifo)
+							&& !processedActors.contains(incomingFifo
+									.getSourcePort().eContainer());
+				}
+				if (hasUnstagedPredecessor) {
+					iter.remove();
+				}
+			}
+
+			// Prepare next iteration
+			currentStage = new ArrayList<AbstractActor>(nextStage);
+			stages.add(currentStage);
+			processedActors.addAll(currentStage);
+		} while (processedActors.size() < actors.size());
+		return stages;
+	}
+
 	@Override
 	public void execute(ICustomContext context) {
 		System.out.println("Layout the diagram");
@@ -92,92 +167,6 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		// Step 4 - Layout feedback connections
 
 		// Step 5 - Layout Parameters and Dependencies
-	}
-
-	private void layoutActors(Diagram diagram) {
-		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(diagram);
-
-		if (!graph.getVertices().isEmpty()) {
-			// 1. Find all edges that must be ignored to have no cyclic datapath
-			List<Fifo> feedbackEdges = findFeedbackEdges(graph);
-
-			// 2. Sort in topological order (ignoring feedback FIFO)
-			List<AbstractActor> sortedActors = topologicalSort(graph,
-					feedbackEdges);
-
-			// 3. Layout actors according to the topological order
-			// An actor is placed below the previous one if it has no dependency
-			// with it, and in a new column otherwise.
-
-		}
-	}
-
-	private List<AbstractActor> topologicalSort(PiGraph graph,
-			List<Fifo> feedbackEdges) {
-		// 1. DFS with the first actor in alphabetical order as the seed
-		List<AbstractActor> actors = new ArrayList<AbstractActor>(
-				graph.getVertices());
-		actors.sort((a1, a2) -> a1.getName().compareTo(a2.getName()));
-		Set<AbstractActor> visitedActors = new HashSet<AbstractActor>();
-		Deque<AbstractActor> sortedActors = new ArrayDeque<AbstractActor>(
-				actors.size());
-
-		for (AbstractActor actor : actors) {
-			if (!sortedActors.contains(actor)) {
-				topologicalSortDFS(actor, sortedActors, feedbackEdges, visitedActors);
-			}
-		}
-
-		return null;
-	}
-
-	private void topologicalSortDFS(AbstractActor actor,
-			Deque<AbstractActor> sortedActors, List<Fifo> feedbackFifos, Set<AbstractActor> visitedActors) {
-		// Mark as visited
-		visitedActors.add(actor);
-		// Get successors (unless fifos are ignored)
-		final Set<AbstractActor> successors = new LinkedHashSet<AbstractActor>();
-		actor.getDataOutputPorts().forEach(
-				p -> {
-					if (!feedbackFifos.contains(p.getOutgoingFifo()))
-						successors.add((AbstractActor) p.getOutgoingFifo()
-								.getTargetPort().eContainer());
-				});
-		// Recursive call to the DFS method
-		for(AbstractActor successor : successors){
-			if(!visitedActors.contains(successor)){
-				topologicalSortDFS(successor, sortedActors, feedbackFifos, visitedActors);
-			}
-		}
-		sortedActors.addFirst(actor);
-	}
-
-	private List<Fifo> findFeedbackEdges(PiGraph graph) {
-		List<Fifo> feedbackEdges = new ArrayList<Fifo>();
-
-		// Search for cycles in the graph
-		boolean hasCycle = false;
-		FifoCycleDetector detector = new FifoCycleDetector(false);
-		do {
-			hasCycle = false;
-
-			// Find as many cycles as possible
-			detector.clear();
-			detector.addIgnoredFifos(feedbackEdges);
-			detector.doSwitch(graph);
-			List<List<AbstractActor>> cycles = detector.getCycles();
-
-			// Find the "feedback" fifo in each cycle
-			if (!cycles.isEmpty()) {
-				hasCycle = true;
-				// For each cycle find the feedback fifo(s).
-				for (List<AbstractActor> cycle : cycles) {
-					feedbackEdges.addAll(findCycleFeedbackFifos(cycle));
-				}
-			}
-		} while (hasCycle);
-
-		return feedbackEdges;
 	}
 
 	/**
@@ -225,16 +214,62 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		}
 	}
 
+	protected List<Fifo> findFeedbackFifos(PiGraph graph) {
+		List<Fifo> feedbackEdges = new ArrayList<Fifo>();
+
+		// Search for cycles in the graph
+		boolean hasCycle = false;
+		// fast search, find cycles one by one
+		FifoCycleDetector detector = new FifoCycleDetector(true);
+		do {
+			hasCycle = false;
+
+			// Find as many cycles as possible
+			detector.clear();
+			detector.addIgnoredFifos(feedbackEdges);
+			detector.doSwitch(graph);
+			List<List<AbstractActor>> cycles = detector.getCycles();
+
+			// Find the "feedback" fifo in each cycle
+			if (!cycles.isEmpty()) {
+				hasCycle = true;
+				// For each cycle find the feedback fifo(s).
+				for (List<AbstractActor> cycle : cycles) {
+					feedbackEdges.addAll(findCycleFeedbackFifos(cycle));
+				}
+			}
+		} while (hasCycle);
+
+		return feedbackEdges;
+	}
+
 	/**
-	 * Clear all the bendpoints of the {@link Fifo} and {@link Dependency} in
-	 * the diagram passed as a parameter.
+	 * Find {@link AbstractActor} without any predecessors. {@link Fifo} passed
+	 * as parameters are ignored.
 	 * 
-	 * @param diagram
+	 * @param feedbackFifos
+	 *            {@link List} of ignored {@link Fifo}.
+	 * @param actors
+	 *            {@link AbstractActor} containing source actors.
+	 * @return the list of {@link AbstractActor} that do not have any
+	 *         predecessors
 	 */
-	private void clearBendpoints(Diagram diagram) {
-		for (Connection connection : diagram.getConnections()) {
-			((FreeFormConnection) connection).getBendpoints().clear();
+	protected List<AbstractActor> findSrcActors(List<Fifo> feedbackFifos,
+			List<AbstractActor> actors) {
+		final List<AbstractActor> srcActors = new ArrayList<AbstractActor>();
+		for (AbstractActor actor : actors) {
+			boolean hasInputFifos = false;
+
+			for (DataInputPort port : actor.getDataInputPorts()) {
+				hasInputFifos |= !feedbackFifos
+						.contains(port.getIncomingFifo());
+			}
+
+			if (!hasInputFifos) {
+				srcActors.add(actor);
+			}
 		}
+		return srcActors;
 	}
 
 	@Override
@@ -245,5 +280,41 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	@Override
 	public boolean hasDoneChanges() {
 		return hasDoneChange;
+	}
+
+	protected void layoutActors(Diagram diagram) {
+		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(diagram);
+
+		if (!graph.getVertices().isEmpty()) {
+			// 1. Find all edges that must be ignored to have no cyclic datapath
+			List<Fifo> feedbackFifos = findFeedbackFifos(graph);
+
+			// 2. Sort stage by stage (ignoring feedback FIFO)
+			List<List<AbstractActor>> stagedActors = stageByStageSort(graph,
+					feedbackFifos);
+
+			// 3. Layout actors according to the topological order
+			// An actor is placed below the previous one if it has no dependency
+			// with it, and in a new column otherwise.
+
+		}
+	}
+
+	protected List<List<AbstractActor>> stageByStageSort(PiGraph graph,
+			List<Fifo> feedbackFifos) {
+		// 1. Sort actor in alphabetical order
+		List<AbstractActor> actors = new ArrayList<AbstractActor>(
+				graph.getVertices());
+		actors.sort((a1, a2) -> a1.getName().compareTo(a2.getName()));
+
+		// 2. Find source actors (actor without input non feedback FIFOs)
+		final List<AbstractActor> srcActors = findSrcActors(feedbackFifos,
+				actors);
+
+		// 3. BFS-style stage by stage construction
+		List<List<AbstractActor>> stages = createStages(feedbackFifos, actors,
+				srcActors);
+
+		return stages;
 	}
 }
