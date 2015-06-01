@@ -36,6 +36,7 @@
 package org.ietr.preesm.experiment.model.pimm.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -176,8 +177,9 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
 
 			// Visit all AbstractActor depending on the current one.
 			for (DataOutputPort port : actor.getDataOutputPorts()) {
-				if (port.getOutgoingFifo() != null) {
-					doSwitch(port.getOutgoingFifo().getTargetPort());
+				Fifo outgoingFifo = port.getOutgoingFifo();
+				if (outgoingFifo != null && !ignoredFifos.contains(outgoingFifo)) {
+					doSwitch(outgoingFifo.getTargetPort());
 				}
 
 				// If fast detection is activated and a cycle was detected, get
@@ -259,5 +261,9 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
 	 */
 	public boolean cyclesDetected() {
 		return cycles.size() > 0;
+	}
+
+	public void addIgnoredFifos(Collection<Fifo> fifos) {
+		ignoredFifos.addAll(fifos);		
 	}
 }

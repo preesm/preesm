@@ -35,9 +35,20 @@
  ******************************************************************************/
 package org.ietr.preesm.ui.pimm.layout;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
+import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.util.FifoCycleDetector;
 
 /**
  * {@link AbstractCustomFeature} automating the layout process for PiMM graphs.
@@ -61,14 +72,114 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	@Override
 	public void execute(ICustomContext context) {
 		System.out.println("Layout the diagram");
+		Diagram diagram = getDiagram();
+		hasDoneChange = true;
+
 		// Step 1 - Clear all bendpoints
-		
-		// Step 2 - Layout actors in precedence order 
+		clearBendpoints(diagram);
+
+		// Step 2 - Layout actors in precedence order
 		// (ignoring cycles / delayed FIFOs in cycles)
-		
+		layoutActors(diagram);
+
 		// Step 3 - Layout non-feedback connections
-		
+
 		// Step 4 - Layout feedback connections
+
+		// Step 5 - Layout Parameters and Dependencies
+	}
+
+	private void layoutActors(Diagram diagram) {
+		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(diagram);
+
+		// 1. Find all edges that must be ignored to have no cyclic datapath
+		List<Fifo> feedbackEdges = findFeedbackEdges(graph);
+
+	}
+
+	private List<Fifo> findFeedbackEdges(PiGraph graph) {
+		List<Fifo> feedbackEdges = new ArrayList<Fifo>();
+
+		// Search for cycles in the graph
+		boolean hasCycle = false;
+		FifoCycleDetector detector = new FifoCycleDetector(false);
+		do {
+			hasCycle = false;
+
+			// Find as many cycles as possible
+			detector.clear();
+			detector.addIgnoredFifos(feedbackEdges);
+			detector.doSwitch(graph);
+			List<List<AbstractActor>> cycles = detector.getCycles();
+
+			// Find the "feedback" fifo in each cycle
+			if (!cycles.isEmpty()) {
+				hasCycle = true;
+				// For each cycle find the feedback fifo(s).
+				for (List<AbstractActor> cycle : cycles) {
+					feedbackEdges.addAll(findCycleFeedbackFifos(cycle));
+				}
+			}
+		} while (hasCycle);
+
+		return feedbackEdges;
+	}
+
+	/**
+	 * @param cycle
+	 *            A list of {@link AbstractActor} forming a Cycle.
+	 */
+	protected List<Fifo> findCycleFeedbackFifos(List<AbstractActor> cycle) {
+		// Find the Fifos between each pair of actor of the cycle
+		List<List<Fifo>> cyclesFifos = new ArrayList<List<Fifo>>();
+		for (int i = 0; i < cycle.size(); i++) {
+			AbstractActor srcActor = cycle.get(i);
+			AbstractActor dstActor = cycle.get((i + 1) % cycle.size());
+
+			List<Fifo> outFifos = new ArrayList<Fifo>();
+			srcActor.getDataOutputPorts().forEach(
+					port -> {
+						if (port.getOutgoingFifo().getTargetPort().eContainer()
+								.equals(dstActor))
+							outFifos.add(port.getOutgoingFifo());
+					});
+			cyclesFifos.add(outFifos);
+		}
+
+		// Find a list of FIFO between a pair of actor with delays on all FIFOs
+		List<Fifo> feedbackFifos = null;
+		for (List<Fifo> cycleFifos : cyclesFifos) {
+			boolean hasDelays = true;
+			for (Fifo fifo : cycleFifos) {
+				hasDelays &= (fifo.getDelay() != null);
+			}
+
+			if (hasDelays) {
+				// Keep the shortest list of feedback delay
+				feedbackFifos = (feedbackFifos == null || feedbackFifos.size() > cycleFifos
+						.size()) ? cycleFifos : feedbackFifos;
+			}
+		}
+		if (feedbackFifos != null) {
+			return feedbackFifos;
+		} else {
+			// If no feedback fifo with delays were found. Select a list with a
+			// small number of fifos
+			cyclesFifos.sort((l1, l2) -> l1.size() - l2.size());
+			return cyclesFifos.get(0);
+		}
+	}
+
+	/**
+	 * Clear all the bendpoints of the {@link Fifo} and {@link Dependency} in
+	 * the diagram passed as a parameter.
+	 * 
+	 * @param diagram
+	 */
+	private void clearBendpoints(Diagram diagram) {
+		for (Connection connection : diagram.getConnections()) {
+			((FreeFormConnection) connection).getBendpoints().clear();
+		}
 	}
 
 	@Override
