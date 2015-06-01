@@ -35,8 +35,13 @@
  ******************************************************************************/
 package org.ietr.preesm.ui.pimm.layout;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
@@ -92,9 +97,59 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	private void layoutActors(Diagram diagram) {
 		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(diagram);
 
-		// 1. Find all edges that must be ignored to have no cyclic datapath
-		List<Fifo> feedbackEdges = findFeedbackEdges(graph);
+		if (!graph.getVertices().isEmpty()) {
+			// 1. Find all edges that must be ignored to have no cyclic datapath
+			List<Fifo> feedbackEdges = findFeedbackEdges(graph);
 
+			// 2. Sort in topological order (ignoring feedback FIFO)
+			List<AbstractActor> sortedActors = topologicalSort(graph,
+					feedbackEdges);
+
+			// 3. Layout actors according to the topological order
+			// An actor is placed below the previous one if it has no dependency
+			// with it, and in a new column otherwise.
+
+		}
+	}
+
+	private List<AbstractActor> topologicalSort(PiGraph graph,
+			List<Fifo> feedbackEdges) {
+		// 1. DFS with the first actor in alphabetical order as the seed
+		List<AbstractActor> actors = new ArrayList<AbstractActor>(
+				graph.getVertices());
+		actors.sort((a1, a2) -> a1.getName().compareTo(a2.getName()));
+		Set<AbstractActor> visitedActors = new HashSet<AbstractActor>();
+		Deque<AbstractActor> sortedActors = new ArrayDeque<AbstractActor>(
+				actors.size());
+
+		for (AbstractActor actor : actors) {
+			if (!sortedActors.contains(actor)) {
+				topologicalSortDFS(actor, sortedActors, feedbackEdges, visitedActors);
+			}
+		}
+
+		return null;
+	}
+
+	private void topologicalSortDFS(AbstractActor actor,
+			Deque<AbstractActor> sortedActors, List<Fifo> feedbackFifos, Set<AbstractActor> visitedActors) {
+		// Mark as visited
+		visitedActors.add(actor);
+		// Get successors (unless fifos are ignored)
+		final Set<AbstractActor> successors = new LinkedHashSet<AbstractActor>();
+		actor.getDataOutputPorts().forEach(
+				p -> {
+					if (!feedbackFifos.contains(p.getOutgoingFifo()))
+						successors.add((AbstractActor) p.getOutgoingFifo()
+								.getTargetPort().eContainer());
+				});
+		// Recursive call to the DFS method
+		for(AbstractActor successor : successors){
+			if(!visitedActors.contains(successor)){
+				topologicalSortDFS(successor, sortedActors, feedbackFifos, visitedActors);
+			}
+		}
+		sortedActors.addFirst(actor);
 	}
 
 	private List<Fifo> findFeedbackEdges(PiGraph graph) {
