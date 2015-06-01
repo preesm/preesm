@@ -38,10 +38,13 @@ package org.ietr.preesm.experiment.model.pimm.util;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
+import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 public class FifoCycleDetector extends PiMMSwitch<Void> {
@@ -59,14 +62,14 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
 	protected HashSet<AbstractActor> visited;
 
 	/**
-	 * List the {@link AbstractActor} that are currently being visited. If one of them is
-	 * met again, this means that there is a cycle.
+	 * List the {@link AbstractActor} that are currently being visited. If one
+	 * of them is met again, this means that there is a cycle.
 	 */
 	protected ArrayList<AbstractActor> branch;
 
 	/**
-	 * Stores all the {@link AbstractActor} cycles that were detected. Each element
-	 * of the {@link ArrayList} is an {@link ArrayList} containing
+	 * Stores all the {@link AbstractActor} cycles that were detected. Each
+	 * element of the {@link ArrayList} is an {@link ArrayList} containing
 	 * {@link AbstractActor} forming a cycle. <br>
 	 * <br>
 	 * <b> Not all cycles are detected by this algorithm ! </b><br>
@@ -74,6 +77,13 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
 	 * will be detected.
 	 */
 	protected List<List<AbstractActor>> cycles;
+
+	/**
+	 * List of {@link Fifo} that will not be considered as part of the
+	 * {@link PiGraph} when looking for cycles. This list is usefull when trying
+	 * to identify all cycles in a graph.
+	 */
+	protected Set<Fifo> ignoredFifos;
 
 	/**
 	 * Default constructor. Assume fast detection is true. (i.e. the detection
@@ -92,6 +102,7 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
 		visited = new HashSet<AbstractActor>();
 		branch = new ArrayList<AbstractActor>();
 		cycles = new ArrayList<List<AbstractActor>>();
+		ignoredFifos = new HashSet<Fifo>();
 	}
 
 	/**
@@ -131,7 +142,7 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
 
 		// Visit AbstractActor until they are all visited
 		ArrayList<AbstractActor> actors = new ArrayList<>(graph.getVertices());
-		while (actors.size() == 0) {
+		while (actors.size() != 0) {
 			doSwitch(actors.get(0));
 
 			// If fast detection is activated and a cycle was detected, get
@@ -151,7 +162,8 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
 	public Void caseAbstractActor(AbstractActor actor) {
 		// Visit the AbstractActor and its successors if it was not already done
 		if (!visited.contains(actor)) {
-			// Check if the AbstractActor is already in the branch (i.e. check if
+			// Check if the AbstractActor is already in the branch (i.e. check
+			// if
 			// there is a cycle)
 			if (branch.contains(actor)) {
 				// There is a cycle
@@ -162,10 +174,10 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
 			// Add the AbstractActor to the visited branch
 			branch.add(actor);
 
-			// Visit all AbstractActor influencing the current one.
-			for (DataInputPort port : actor.getDataInputPorts()) {
-				if (port.getIncomingFifo() != null) {
-					doSwitch(port.getIncomingFifo().getSourcePort());
+			// Visit all AbstractActor depending on the current one.
+			for (DataOutputPort port : actor.getDataOutputPorts()) {
+				if (port.getOutgoingFifo() != null) {
+					doSwitch(port.getOutgoingFifo().getTargetPort());
 				}
 
 				// If fast detection is activated and a cycle was detected, get
@@ -204,6 +216,34 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
 		cycles.clear();
 	}
 
+	/**
+	 * Add a {@link Fifo} to the {@link #ignoredFifos} {@link Set}.
+	 * 
+	 * @param fifo
+	 *            the {@link Fifo} to add.
+	 */
+	public void addIgnoredFifo(Fifo fifo) {
+		ignoredFifos.add(fifo);
+	}
+
+	/**
+	 * Remove a {@link Fifo} from the {@link #ignoredFifos} {@link Set}.
+	 * 
+	 * @param fifo
+	 *            the {@link Fifo} to remove.
+	 * @return result from the {@link Set#remove(Object)} operation.
+	 */
+	public boolean removeIgnoredFifo(Fifo fifo) {
+		return ignoredFifos.remove(fifo);
+	}
+
+	/**
+	 * Clear the {@link Set} of ignored {@link Fifo}.
+	 */
+	public void clearIgnoredFifos() {
+		ignoredFifos.clear();
+	}
+
 	public List<List<AbstractActor>> getCycles() {
 		return cycles;
 	}
@@ -212,7 +252,8 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
 	 * Retrieve the result of the visitor. This method should be called only
 	 * after the visitor was executed using
 	 * {@link FifoCycleDetector#doSwitch(org.eclipse.emf.ecore.EObject)
-	 * doSwitch(object)} method on a {@link AbstractActor} or on a {@link PiGraph}.
+	 * doSwitch(object)} method on a {@link AbstractActor} or on a
+	 * {@link PiGraph}.
 	 * 
 	 * @return true if cycles were detected, false else.
 	 */
