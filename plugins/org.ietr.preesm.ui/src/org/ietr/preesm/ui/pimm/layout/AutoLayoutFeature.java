@@ -41,12 +41,20 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
+import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
+import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
+import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.Shape;
+import org.eclipse.graphiti.services.Graphiti;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
@@ -54,6 +62,7 @@ import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.util.FifoCycleDetector;
+import org.ietr.preesm.ui.pimm.features.MoveAbstractActorFeature;
 
 /**
  * {@link AbstractCustomFeature} automating the layout process for PiMM graphs.
@@ -63,6 +72,10 @@ import org.ietr.preesm.experiment.model.pimm.util.FifoCycleDetector;
  */
 public class AutoLayoutFeature extends AbstractCustomFeature {
 
+	private static final int X_SPACE = 100;
+	private static final int Y_SPACE = 50;
+	protected static final int Y_INIT = 50;
+	protected static final int X_INIT = 50;
 	boolean hasDoneChange = false;
 
 	public AutoLayoutFeature(IFeatureProvider fp) {
@@ -294,9 +307,46 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 					feedbackFifos);
 
 			// 3. Layout actors according to the topological order
-			// An actor is placed below the previous one if it has no dependency
-			// with it, and in a new column otherwise.
+			int currentX = X_INIT;
+			for (List<AbstractActor> stage : stagedActors) {
+				int currentY = Y_INIT;
+				int maxX = 0;
+				for (AbstractActor actor : stage) {
+					// Get the PE
+					List<PictogramElement> pes = Graphiti.getLinkService()
+							.getPictogramElements(diagram, actor);
+					PictogramElement actorPE = null;
+					for (PictogramElement pe : pes) {
+						if (pe instanceof ContainerShape) {
+							actorPE = pe;
+							break;
+						}
+					}
 
+					if (actorPE == null) {
+						throw new RuntimeException(
+								"No PE was found for actor :" + actor.getName());
+					}
+
+					// Get the Graphics algorithm
+					GraphicsAlgorithm actorGA = actorPE.getGraphicsAlgorithm();
+					
+					// Move the actor
+					MoveAbstractActorFeature moveFeature = new MoveAbstractActorFeature(
+							getFeatureProvider());
+					MoveShapeContext moveContext = new MoveShapeContext((Shape) actorPE);
+					moveContext.setX(currentX);
+					moveContext.setY(currentY);
+					//ILocation csLoc = Graphiti.getPeLayoutService()
+					//		.getLocationRelativeToDiagram((Shape) actorPE);
+					//moveContext.setLocation(csLoc.getX(), csLoc.getY());
+					moveFeature.moveShape(moveContext);
+					
+					currentY += actorGA.getHeight() + Y_SPACE;
+					maxX = (maxX > actorGA.getWidth())? maxX : actorGA.getWidth(); 
+				}
+				currentX += maxX + X_SPACE;
+			}
 		}
 	}
 

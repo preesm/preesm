@@ -51,6 +51,7 @@ import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -61,6 +62,7 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
@@ -253,7 +255,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 			if (selectedPictogramElements != null) {
 				for (int i = 0; i < selectedPictogramElements.length; i++) {
 					PictogramElement selPe = selectedPictogramElements[i];
-					if (selPe instanceof Shape) {
+					if (selPe instanceof Shape && !(selPe instanceof Diagram)) {
 						Shape selShape = (Shape) selPe;
 						for (Anchor toAnchor : getAnchors(selShape)) {
 							EList<Connection> incomingConnections = toAnchor
@@ -433,7 +435,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 			if (selectedPictogramElements != null) {
 				for (int i = 0; i < selectedPictogramElements.length; i++) {
 					PictogramElement selPe = selectedPictogramElements[i];
-					if (selPe instanceof Shape) {
+					if (selPe instanceof Shape && !(selPe instanceof Diagram)) {
 						Shape selShape = (Shape) selPe;
 						for (Anchor toAnchor : getAnchors(selShape)) {
 							EList<Connection> incomingConnections = toAnchor
