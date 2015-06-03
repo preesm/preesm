@@ -41,13 +41,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
-import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -56,7 +54,9 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
@@ -74,7 +74,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
 	private static final int X_SPACE = 100;
 	private static final int Y_SPACE = 50;
-	protected static final int Y_INIT = 50;
+	protected static final int Y_INIT = 150;
 	protected static final int X_INIT = 50;
 	boolean hasDoneChange = false;
 
@@ -119,13 +119,35 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 			List<AbstractActor> actors, final List<AbstractActor> srcActors) {
 		List<List<AbstractActor>> stages = new ArrayList<List<AbstractActor>>();
 
+		//
 		List<AbstractActor> processedActors = new ArrayList<AbstractActor>();
 		processedActors.addAll(srcActors);
+		Set<AbstractActor> nextStage = new LinkedHashSet<AbstractActor>();
 		List<AbstractActor> currentStage = srcActors;
-		stages.add(currentStage);
-		do {
-			Set<AbstractActor> nextStage = new LinkedHashSet<AbstractActor>();
+		List<AbstractActor> dataOutputInterfaces = new ArrayList<AbstractActor>();
 
+		// Keep DataInputInterfaces for the first stage
+		Iterator<AbstractActor> iter = srcActors.iterator();
+		while (iter.hasNext()) {
+			AbstractActor actor = iter.next();
+			if (!(actor instanceof DataInputInterface)) {
+				iter.remove();
+				processedActors.remove(actor);
+				nextStage.add(actor);
+			}
+		}
+
+		// Check if there is any Interface in the first stage
+		if (currentStage.isEmpty()) {
+			currentStage = new ArrayList<AbstractActor>(nextStage);
+			processedActors.addAll(currentStage);
+			nextStage = new LinkedHashSet<AbstractActor>();
+		}
+
+		// Register first stage
+		stages.add(currentStage);
+
+		do {
 			// Find candidates for the next stage in successors of current one
 			for (AbstractActor actor : currentStage) {
 				for (DataOutputPort port : actor.getDataOutputPorts()) {
@@ -138,7 +160,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
 			// Check if all predecessors of the candidates have already been
 			// added in a previous stages
-			Iterator<AbstractActor> iter = nextStage.iterator();
+			iter = nextStage.iterator();
 			while (iter.hasNext()) {
 				AbstractActor actor = iter.next();
 				boolean hasUnstagedPredecessor = false;
@@ -151,6 +173,10 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 				}
 				if (hasUnstagedPredecessor) {
 					iter.remove();
+				} else if ((actor instanceof DataOutputInterface)) {
+					dataOutputInterfaces.add(actor);
+					processedActors.add(actor);
+					iter.remove();
 				}
 			}
 
@@ -158,7 +184,13 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 			currentStage = new ArrayList<AbstractActor>(nextStage);
 			stages.add(currentStage);
 			processedActors.addAll(currentStage);
+			nextStage = new LinkedHashSet<AbstractActor>();
 		} while (processedActors.size() < actors.size());
+		
+		if(! dataOutputInterfaces.isEmpty()) {
+			stages.add(dataOutputInterfaces);
+		}
+		
 		return stages;
 	}
 
@@ -330,20 +362,22 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
 					// Get the Graphics algorithm
 					GraphicsAlgorithm actorGA = actorPE.getGraphicsAlgorithm();
-					
+
 					// Move the actor
 					MoveAbstractActorFeature moveFeature = new MoveAbstractActorFeature(
 							getFeatureProvider());
-					MoveShapeContext moveContext = new MoveShapeContext((Shape) actorPE);
+					MoveShapeContext moveContext = new MoveShapeContext(
+							(Shape) actorPE);
 					moveContext.setX(currentX);
 					moveContext.setY(currentY);
-					//ILocation csLoc = Graphiti.getPeLayoutService()
-					//		.getLocationRelativeToDiagram((Shape) actorPE);
-					//moveContext.setLocation(csLoc.getX(), csLoc.getY());
+					// ILocation csLoc = Graphiti.getPeLayoutService()
+					// .getLocationRelativeToDiagram((Shape) actorPE);
+					// moveContext.setLocation(csLoc.getX(), csLoc.getY());
 					moveFeature.moveShape(moveContext);
-					
+
 					currentY += actorGA.getHeight() + Y_SPACE;
-					maxX = (maxX > actorGA.getWidth())? maxX : actorGA.getWidth(); 
+					maxX = (maxX > actorGA.getWidth()) ? maxX : actorGA
+							.getWidth();
 				}
 				currentX += maxX + X_SPACE;
 			}
