@@ -43,6 +43,8 @@ import java.util.Set;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
+import org.eclipse.graphiti.features.context.IDeleteContext;
+import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
@@ -62,6 +64,7 @@ import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.util.FifoCycleDetector;
+import org.ietr.preesm.ui.pimm.features.DeleteDelayFeature;
 import org.ietr.preesm.ui.pimm.features.MoveAbstractActorFeature;
 
 /**
@@ -77,6 +80,39 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	protected static final int Y_INIT = 150;
 	protected static final int X_INIT = 50;
 	boolean hasDoneChange = false;
+
+	/**
+	 * Actors sorted stage by stage.
+	 * {@link AutoLayoutFeature#stageByStageSort(PiGraph, List).}
+	 */
+	private List<List<AbstractActor>> stagedActors;
+
+	/**
+	 * Width of the stages once the have been layouted.
+	 */
+	private List<Range> stageWidth;
+
+	/**
+	 * For each stage, list of the Y coordinates starting a Y_SPACE gap between
+	 * two actors.
+	 */
+	private List<List<Range>> stagesGaps;
+
+	class Range {
+		int start;
+		int end;
+
+		public Range(int start, int end) {
+			this.start = start;
+			this.end = end;
+		}
+	}
+
+	/**
+	 * Feedback {@link Fifo} identified in a {@link PiGraph}. {@see
+	 * AutoLayoutFeature#findFeedbackFifos(PiGraph)}.
+	 */
+	private List<Fifo> feedbackFifos;
 
 	public AutoLayoutFeature(IFeatureProvider fp) {
 		super(fp);
@@ -186,11 +222,11 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 			processedActors.addAll(currentStage);
 			nextStage = new LinkedHashSet<AbstractActor>();
 		} while (processedActors.size() < actors.size());
-		
-		if(! dataOutputInterfaces.isEmpty()) {
+
+		if (!dataOutputInterfaces.isEmpty()) {
 			stages.add(dataOutputInterfaces);
 		}
-		
+
 		return stages;
 	}
 
@@ -207,11 +243,56 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		// (ignoring cycles / delayed FIFOs in cycles)
 		layoutActors(diagram);
 
-		// Step 3 - Layout non-feedback connections
+		// Step 3 - Layout fifo connections
+		layoutFifos(diagram);
 
-		// Step 4 - Layout feedback connections
+		// Step 4 - Layout Parameters and Dependencies
+	}
 
-		// Step 5 - Layout Parameters and Dependencies
+	protected void layoutFifos(Diagram diagram) {
+
+		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(diagram);
+
+		// 0. Disconnect all delays from FIFOs
+		List<Fifo> fifos = graph.getFifos();
+		for (Fifo fifo : fifos) {
+			if (fifo.getDelay() != null) {
+				// Get all delays with identical attributes (may not be the
+				// right delay is several delays have the same properties.)
+				List<PictogramElement> pes = Graphiti.getLinkService()
+						.getPictogramElements(diagram, fifo.getDelay());
+				PictogramElement pe = null;
+				for (PictogramElement p : pes) {
+					if (p instanceof ContainerShape
+							&& getBusinessObjectForPictogramElement(p) == fifo
+									.getDelay()) {
+						pe = p;
+					}
+				}
+				// if PE is still null.. something is deeply wrong with this
+				// graph !
+				if (pe == null) {
+					throw new RuntimeException(
+							"Pictogram element associated to delay of Fifo "
+									+ fifo.getId() + " could not be found.");
+				}
+
+				// Do the disconnection
+				DeleteDelayFeature df = new DeleteDelayFeature(
+						getFeatureProvider());
+				IDeleteContext dc = new DeleteContext(pe);
+				df.disconnectDelayFromFifo(dc);
+			}
+		}
+
+		
+		// 2. Reconnect Delays to non feedback fifos 
+
+		// 3. Layout feedback FIFOs
+		
+
+	}
+
 	}
 
 	/**
