@@ -285,6 +285,35 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 			}
 		}
 
+		// 1. Layout forward FIFOs
+		final List<Fifo> interStageFifos = new ArrayList<Fifo>();
+		for (int i = 0; i < stagedActors.size() - 1; i++) {
+			// Identify Fifo that do not stop at the next stage.
+			// (ignoring feedback Fifos)
+			List<AbstractActor> stageSrc = stagedActors.get(i);
+			List<AbstractActor> stageDst = stagedActors.get(i + 1);
+
+			// Get all outgoingFifos of current stage
+			final List<Fifo> outgoingFifos = new ArrayList<Fifo>();
+			stageSrc.forEach(a -> a.getDataOutputPorts().forEach(
+					p -> outgoingFifos.add(p.getOutgoingFifo())));
+
+			// Remove feedback fifos
+			outgoingFifos.removeAll(feedbackFifos);
+
+			// Add to interstage FIFOs
+			interStageFifos.addAll(outgoingFifos);
+
+			// Remove all FIFOs ending at next stage from the interstage Fifo
+			// list
+			interStageFifos.removeIf(f -> stageDst.contains(f.getTargetPort()
+					.eContainer()));
+
+			// Layout Fifos to reach the next stage without going over an actor
+			layoutInterStageFifos(interStageFifos, stageWidth.get(i + 1),
+					stagesGaps.get(i + 1));
+
+		}
 		
 		// 2. Reconnect Delays to non feedback fifos 
 
@@ -293,6 +322,13 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
 	}
 
+	protected void layoutInterStageFifos(List<Fifo> interStageFifos,
+			Range width, List<Range> gaps) {
+		// Process FIFOs one by one
+		for (Fifo fifo : interStageFifos) {
+			// Get freeform connection
+			// getP
+		}
 	}
 
 	/**
@@ -412,56 +448,76 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(diagram);
 
 		if (!graph.getVertices().isEmpty()) {
-			// 1. Find all edges that must be ignored to have no cyclic datapath
-			List<Fifo> feedbackFifos = findFeedbackFifos(graph);
+			feedbackFifos = findFeedbackFifos(graph);
 
 			// 2. Sort stage by stage (ignoring feedback FIFO)
-			List<List<AbstractActor>> stagedActors = stageByStageSort(graph,
-					feedbackFifos);
+			stagedActors = stageByStageSort(graph, feedbackFifos);
 
 			// 3. Layout actors according to the topological order
-			int currentX = X_INIT;
-			for (List<AbstractActor> stage : stagedActors) {
-				int currentY = Y_INIT;
-				int maxX = 0;
-				for (AbstractActor actor : stage) {
-					// Get the PE
-					List<PictogramElement> pes = Graphiti.getLinkService()
-							.getPictogramElements(diagram, actor);
-					PictogramElement actorPE = null;
-					for (PictogramElement pe : pes) {
-						if (pe instanceof ContainerShape) {
-							actorPE = pe;
-							break;
-						}
+			stageByStageLayout(diagram, stagedActors);
+		}
+	}
+
+	/**
+	 * @param diagram
+	 * @param stagedActors
+	 * @throws RuntimeException
+	 */
+	protected void stageByStageLayout(Diagram diagram,
+			List<List<AbstractActor>> stagedActors) throws RuntimeException {
+		// Init the stageGap and stageWidth attributes
+		stageWidth = new ArrayList<Range>();
+		stagesGaps = new ArrayList<List<Range>>();
+
+		int currentX = X_INIT;
+		for (List<AbstractActor> stage : stagedActors) {
+			List<Range> stageGaps = new ArrayList<Range>();
+			stagesGaps.add(stageGaps);
+			int currentY = Y_INIT;
+			int maxX = 0;
+			for (AbstractActor actor : stage) {
+				// Get the PE
+				List<PictogramElement> pes = Graphiti.getLinkService()
+						.getPictogramElements(diagram, actor);
+				PictogramElement actorPE = null;
+				for (PictogramElement pe : pes) {
+					if (pe instanceof ContainerShape) {
+						actorPE = pe;
+						break;
 					}
-
-					if (actorPE == null) {
-						throw new RuntimeException(
-								"No PE was found for actor :" + actor.getName());
-					}
-
-					// Get the Graphics algorithm
-					GraphicsAlgorithm actorGA = actorPE.getGraphicsAlgorithm();
-
-					// Move the actor
-					MoveAbstractActorFeature moveFeature = new MoveAbstractActorFeature(
-							getFeatureProvider());
-					MoveShapeContext moveContext = new MoveShapeContext(
-							(Shape) actorPE);
-					moveContext.setX(currentX);
-					moveContext.setY(currentY);
-					// ILocation csLoc = Graphiti.getPeLayoutService()
-					// .getLocationRelativeToDiagram((Shape) actorPE);
-					// moveContext.setLocation(csLoc.getX(), csLoc.getY());
-					moveFeature.moveShape(moveContext);
-
-					currentY += actorGA.getHeight() + Y_SPACE;
-					maxX = (maxX > actorGA.getWidth()) ? maxX : actorGA
-							.getWidth();
 				}
-				currentX += maxX + X_SPACE;
+
+				if (actorPE == null) {
+					throw new RuntimeException("No PE was found for actor :"
+							+ actor.getName());
+				}
+
+				// Get the Graphics algorithm
+				GraphicsAlgorithm actorGA = actorPE.getGraphicsAlgorithm();
+
+				// Move the actor
+				MoveAbstractActorFeature moveFeature = new MoveAbstractActorFeature(
+						getFeatureProvider());
+				MoveShapeContext moveContext = new MoveShapeContext(
+						(Shape) actorPE);
+				moveContext.setX(currentX);
+				moveContext.setY(currentY);
+				// ILocation csLoc = Graphiti.getPeLayoutService()
+				// .getLocationRelativeToDiagram((Shape) actorPE);
+				// moveContext.setLocation(csLoc.getX(), csLoc.getY());
+				moveFeature.moveShape(moveContext);
+
+				stageGaps
+						.add(new Range(currentY, actorGA.getHeight() + Y_SPACE));
+				currentY += actorGA.getHeight() + Y_SPACE;
+				maxX = (maxX > actorGA.getWidth()) ? maxX : actorGA.getWidth();
+
 			}
+			// last range of gap has no end
+			stageGaps.get(stageGaps.size() - 1).end = -1;
+			stageWidth.add(new Range(currentX, maxX + X_SPACE));
+			currentX += maxX + X_SPACE;
+
 		}
 	}
 
