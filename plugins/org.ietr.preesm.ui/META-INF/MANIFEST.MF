@@ -23,7 +23,7 @@ Require-Bundle: org.ietr.dftools.graphiti.ui,
  org.eclipse.text,
  org.ietr.preesm.utils,
  org.ietr.preesm.pimm.algorithm
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
 Export-Package: org.ietr.preesm.ui.console,
