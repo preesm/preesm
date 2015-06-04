@@ -36,8 +36,8 @@
 package org.ietr.preesm.ui.pimm.layout;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +51,6 @@ import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
-import org.eclipse.graphiti.mm.algorithms.styles.impl.PointImpl;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -79,7 +78,8 @@ import org.ietr.preesm.ui.pimm.features.MoveAbstractActorFeature;
  */
 public class AutoLayoutFeature extends AbstractCustomFeature {
 
-	private static final int X_SPACE = 100;
+	private static final int FIFO_SPACE = 7;
+	private static final int X_SPACE = 80;
 	private static final int Y_SPACE = 50;
 	protected static final int Y_INIT = 150;
 	protected static final int X_INIT = 50;
@@ -227,6 +227,12 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 			nextStage = new LinkedHashSet<AbstractActor>();
 		} while (processedActors.size() < actors.size());
 
+		// If the last stage is empty (if there were only dataOutputInterface)
+		// remove it
+		if (stages.get(stages.size() - 1).size() == 0) {
+			stages.remove(stages.size() - 1);
+		}
+
 		if (!dataOutputInterfaces.isEmpty()) {
 			stages.add(dataOutputInterfaces);
 		}
@@ -329,7 +335,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 			List<Fifo> interStageFifos, Range width, List<Range> gaps) {
 
 		// Find the FreeFormConnection of each FIFO
-		Map<Fifo, FreeFormConnection> fifoFfcMap = new HashMap<Fifo, FreeFormConnection>();
+		// LinkedHashMap to preserve order
+		Map<Fifo, FreeFormConnection> fifoFfcMap = new LinkedHashMap<Fifo, FreeFormConnection>();
 		for (Fifo fifo : interStageFifos) {
 			// Get freeform connection
 			List<PictogramElement> pes = Graphiti.getLinkService()
@@ -359,10 +366,29 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 			FreeFormConnection ffc = fifoFfcMap.get(fifo);
 			Point penultimate = ffc.getBendpoints().get(
 					ffc.getBendpoints().size() - 2);
-			
+
 			// Check Gaps one by one
-			for(Range range : gaps){
-				
+			Range matchedRange = null;
+			for (Range range : gaps) {
+				if ((range.start + FIFO_SPACE) <= penultimate.getY()
+						&& ((range.end - FIFO_SPACE) >= penultimate.getY() || range.end == -1)) {
+					matchedRange = range;
+					break;
+				}
+			}
+
+			if (matchedRange != null) {
+				// Create bendpoint
+				iter.remove();
+				ffc.getBendpoints()
+						.add(ffc.getBendpoints().size() - 1,
+								Graphiti.getGaCreateService()
+										.createPoint(
+												width.end
+														+ MoveAbstractActorFeature.BENDPOINT_SPACE,
+												penultimate.getY()));
+				// Update ranges of gaps
+				updateGaps(gaps, penultimate.getY(), matchedRange);
 			}
 		}
 
@@ -371,7 +397,6 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 			FreeFormConnection ffc = fifoFfcMap.get(fifo);
 			// Get last 2 bendpoints (Since all FIFOs where layouted when actors
 			// were moved, all FIFO have at least 2 bendpoints.)
-			List<Point> bendpoints = ffc.getBendpoints();
 			Point last = ffc.getBendpoints()
 					.get(ffc.getBendpoints().size() - 1);
 			Point penultimate = ffc.getBendpoints().get(
@@ -386,17 +411,64 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 							* (float) (last.getY() - penultimate.getY()))
 					+ penultimate.getY();
 
-			// ffc.getBendpoints().add(ffc.getBendpoints().size() - 1,
-			// Graphiti.getGaCreateService().createPoint(optimX, optimY));
-			// ffc.getBendpoints().add(
-			// ffc.getBendpoints().size() - 1,
-			// Graphiti.getGaCreateService().createPoint(
-			// width.end
-			// + MoveAbstractActorFeature.BENDPOINT_SPACE,
-			// optimY));
+			// Find the closest gap
+			Range closestGap = null;
+			int distance = Integer.MAX_VALUE;
+			boolean isTop = false; // closest to the top or the bottom of the
+									// range
+			for (Range range : gaps) {
+				int startDist = Math.abs(optimY - range.start);
+				int endDist = Math.abs(optimY - range.end);
 
-			// Find the closest actor gap, and add two bendpoints in it for the
-			// FIFO.
+				int minDist = (startDist < endDist) ? startDist : endDist;
+
+				if (minDist <= distance) {
+					closestGap = range;
+					distance = minDist;
+					isTop = (startDist < endDist);
+				}
+			}
+
+			// Make the Fifo go through this gap
+			int keptY = (isTop) ? closestGap.start + FIFO_SPACE
+					: closestGap.end - FIFO_SPACE;
+			ffc.getBendpoints().add(ffc.getBendpoints().size() - 1,
+					Graphiti.getGaCreateService().createPoint(optimX, keptY));
+			ffc.getBendpoints().add(
+					ffc.getBendpoints().size() - 1,
+					Graphiti.getGaCreateService().createPoint(
+							width.end
+									+ MoveAbstractActorFeature.BENDPOINT_SPACE,
+							keptY));
+
+			// Update Gaps
+			updateGaps(gaps, keptY, closestGap);
+
+		}
+	}
+
+	/**
+	 * Update a list of {@link Range} after a {@link Fifo} passing through this
+	 * gap at coordinate keptY was added.
+	 * 
+	 * @param gaps
+	 *            the {@link List} of {@link Range} to update.
+	 * @param keptY
+	 *            the Y coordinate of the {@link Fifo}
+	 * @param matchedRange
+	 *            the {@link Range} within which the {@link Fifo} is going
+	 *            through.
+	 */
+	protected void updateGaps(List<Range> gaps, int keptY, Range matchedRange) {
+		gaps.remove(matchedRange);
+		Range before = new Range(matchedRange.start, keptY - FIFO_SPACE);
+		if ((before.end - before.start) >= FIFO_SPACE * 2) {
+			gaps.add(before);
+		}
+
+		Range after = new Range(keptY + FIFO_SPACE, matchedRange.end);
+		if (((after.end - after.start) >= FIFO_SPACE * 2) || after.end == -1) {
+			gaps.add(after);
 		}
 	}
 
@@ -576,8 +648,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 				// moveContext.setLocation(csLoc.getX(), csLoc.getY());
 				moveFeature.moveShape(moveContext);
 
-				stageGaps
-						.add(new Range(currentY, actorGA.getHeight() + Y_SPACE));
+				stageGaps.add(new Range(currentY + actorGA.getHeight(),
+						currentY + actorGA.getHeight() + Y_SPACE));
 				currentY += actorGA.getHeight() + Y_SPACE;
 				maxX = (maxX > actorGA.getWidth()) ? maxX : actorGA.getWidth();
 

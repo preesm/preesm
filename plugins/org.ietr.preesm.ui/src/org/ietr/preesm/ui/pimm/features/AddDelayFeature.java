@@ -67,6 +67,8 @@ import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
  */
 public class AddDelayFeature extends AbstractCustomFeature {
 
+	public static final int DELAY_SIZE = 16;
+
 	/**
 	 * The default constructor for {@link AddDelayFeature}
 	 * 
@@ -141,8 +143,8 @@ public class AddDelayFeature extends AbstractCustomFeature {
 			ellipse.setForeground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
 			ellipse.setLineWidth(1);
 			ellipse.setLineVisible(false);
-			gaService.setLocationAndSize(ellipse, context.getX() - 8,
-					context.getY() - 8, 16, 16);
+			gaService.setLocationAndSize(ellipse, context.getX() - DELAY_SIZE/2,
+					context.getY() - DELAY_SIZE/2, DELAY_SIZE, DELAY_SIZE);
 		}
 		link(containerShape, delay);
 
