@@ -48,6 +48,7 @@ import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
+import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -310,24 +311,57 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 					.eContainer()));
 
 			// Layout Fifos to reach the next stage without going over an actor
-			layoutInterStageFifos(interStageFifos, stageWidth.get(i + 1),
-					stagesGaps.get(i + 1));
+			layoutInterStageFifos(diagram, interStageFifos,
+					stageWidth.get(i + 1), stagesGaps.get(i + 1));
 
 		}
-		
-		// 2. Reconnect Delays to non feedback fifos 
+
+		// 2. Reconnect Delays to non feedback fifos
 
 		// 3. Layout feedback FIFOs
-		
 
 	}
 
-	protected void layoutInterStageFifos(List<Fifo> interStageFifos,
-			Range width, List<Range> gaps) {
+	protected void layoutInterStageFifos(Diagram diagram,
+			List<Fifo> interStageFifos, Range width, List<Range> gaps) {
 		// Process FIFOs one by one
 		for (Fifo fifo : interStageFifos) {
 			// Get freeform connection
-			// getP
+			List<PictogramElement> pes = Graphiti.getLinkService()
+					.getPictogramElements(diagram, fifo);
+			FreeFormConnection ffc = null;
+			for (PictogramElement pe : pes) {
+				if (getBusinessObjectForPictogramElement(pe) == fifo
+						&& pe instanceof FreeFormConnection) {
+					ffc = (FreeFormConnection) pe;
+				}
+			}
+
+			// if PE is still null.. something is deeply wrong with this
+			// graph !
+			if (ffc == null) {
+				throw new RuntimeException("Pictogram element associated Fifo "
+						+ fifo.getId() + " could not be found.");
+			}
+
+			// Get last 2 bendpoints (Since all FIFOs where layouted when actors
+			// were moved, all FIFO have at least 2 bendpoints.)
+			List<Point> bendpoints = ffc.getBendpoints();
+			Point last = ffc.getBendpoints()
+					.get(ffc.getBendpoints().size() - 1);
+			Point penultimate = ffc.getBendpoints().get(
+					ffc.getBendpoints().size() - 2);
+
+			// Find the optimal place of added bendpoints (not considering
+			// actors)
+			int optimX = width.start - MoveAbstractActorFeature.BENDPOINT_SPACE;
+			int optimY = Math
+					.round(((float) (optimX - penultimate.getX()) / (float) (last
+							.getX() - penultimate.getX()))
+							* (float) (last.getY() - penultimate.getY()))
+					+ penultimate.getY();
+			// Find the closest actor gap, and add two bendpoints in it for the
+			// FIFO.
 		}
 	}
 
@@ -515,7 +549,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 			}
 			// last range of gap has no end
 			stageGaps.get(stageGaps.size() - 1).end = -1;
-			stageWidth.add(new Range(currentX, maxX + X_SPACE));
+			stageWidth.add(new Range(currentX, currentX + maxX));
 			currentX += maxX + X_SPACE;
 
 		}

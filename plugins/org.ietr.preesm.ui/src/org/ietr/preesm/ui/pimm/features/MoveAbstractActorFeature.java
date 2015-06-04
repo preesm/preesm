@@ -62,7 +62,6 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
 /**
@@ -73,6 +72,7 @@ import org.ietr.preesm.experiment.model.pimm.Port;
  */
 public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 
+	public static final int BENDPOINT_SPACE = 20;
 	// List of the connections whose source and target are both moved by the
 	// current MoveAbstractActorFeature (if any).
 	List<FreeFormConnection> outDoubleConnections = new ArrayList<>();
@@ -582,7 +582,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 							.getLocationRelativeToDiagram(connection.getStart());
 					Point pSrc = null;
 					if (!bendpointExists) {
-						pSrc = createService.createPoint(srcLoc.getX() + 20,
+						pSrc = createService.createPoint(srcLoc.getX() + BENDPOINT_SPACE,
 								srcLoc.getY() + midHeight);
 					} else {
 						pSrc = createService.createPoint(
@@ -596,7 +596,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 							.getLocationRelativeToDiagram(connection.getEnd());
 					Point pTrgt = null;
 					if (!bendpointExists) {
-						pTrgt = createService.createPoint(trgtLoc.getX() - 20,
+						pTrgt = createService.createPoint(trgtLoc.getX() - BENDPOINT_SPACE,
 								trgtLoc.getY() + midHeight);
 					} else {
 						pTrgt = createService.createPoint(
