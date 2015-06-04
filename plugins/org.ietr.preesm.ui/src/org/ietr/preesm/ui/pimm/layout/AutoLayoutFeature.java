@@ -36,9 +36,11 @@
 package org.ietr.preesm.ui.pimm.layout;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -49,6 +51,7 @@ import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
+import org.eclipse.graphiti.mm.algorithms.styles.impl.PointImpl;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -324,7 +327,9 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
 	protected void layoutInterStageFifos(Diagram diagram,
 			List<Fifo> interStageFifos, Range width, List<Range> gaps) {
-		// Process FIFOs one by one
+
+		// Find the FreeFormConnection of each FIFO
+		Map<Fifo, FreeFormConnection> fifoFfcMap = new HashMap<Fifo, FreeFormConnection>();
 		for (Fifo fifo : interStageFifos) {
 			// Get freeform connection
 			List<PictogramElement> pes = Graphiti.getLinkService()
@@ -343,7 +348,27 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 				throw new RuntimeException("Pictogram element associated Fifo "
 						+ fifo.getId() + " could not be found.");
 			}
+			fifoFfcMap.put(fifo, ffc);
+		}
 
+		// Check if any FIFO has a Gap right in front of it
+		List<Fifo> fifoToLayout = new ArrayList<Fifo>(fifoFfcMap.keySet());
+		Iterator<Fifo> iter = fifoToLayout.iterator();
+		while (iter.hasNext()) {
+			Fifo fifo = iter.next();
+			FreeFormConnection ffc = fifoFfcMap.get(fifo);
+			Point penultimate = ffc.getBendpoints().get(
+					ffc.getBendpoints().size() - 2);
+			
+			// Check Gaps one by one
+			for(Range range : gaps){
+				
+			}
+		}
+
+		// Layout remaining Fifo
+		for (Fifo fifo : fifoToLayout) {
+			FreeFormConnection ffc = fifoFfcMap.get(fifo);
 			// Get last 2 bendpoints (Since all FIFOs where layouted when actors
 			// were moved, all FIFO have at least 2 bendpoints.)
 			List<Point> bendpoints = ffc.getBendpoints();
@@ -360,6 +385,16 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 							.getX() - penultimate.getX()))
 							* (float) (last.getY() - penultimate.getY()))
 					+ penultimate.getY();
+
+			// ffc.getBendpoints().add(ffc.getBendpoints().size() - 1,
+			// Graphiti.getGaCreateService().createPoint(optimX, optimY));
+			// ffc.getBendpoints().add(
+			// ffc.getBendpoints().size() - 1,
+			// Graphiti.getGaCreateService().createPoint(
+			// width.end
+			// + MoveAbstractActorFeature.BENDPOINT_SPACE,
+			// optimY));
+
 			// Find the closest actor gap, and add two bendpoints in it for the
 			// FIFO.
 		}
