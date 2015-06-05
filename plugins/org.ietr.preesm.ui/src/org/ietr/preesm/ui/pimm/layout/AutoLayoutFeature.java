@@ -78,6 +78,7 @@ import org.ietr.preesm.ui.pimm.features.MoveAbstractActorFeature;
  */
 public class AutoLayoutFeature extends AbstractCustomFeature {
 
+	private static final int BENDPOINT_SPACE = MoveAbstractActorFeature.BENDPOINT_SPACE;
 	private static final int FIFO_SPACE = 7;
 	private static final int X_SPACE = 80;
 	private static final int Y_SPACE = 50;
@@ -109,6 +110,20 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		public Range(int start, int end) {
 			this.start = start;
 			this.end = end;
+		}
+
+		@Override
+		public String toString() {
+			return "[" + start + "," + end + "]";
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof Range) {
+				return (((Range) obj).start == this.start && ((Range) obj).end == this.end);
+			} else {
+				return false;
+			}
 		}
 	}
 
@@ -325,10 +340,100 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
 		}
 
-		// 2. Reconnect Delays to non feedback fifos
+		// 2. Layout feedback FIFOs
+		layoutFeedbackFifos(diagram, feedbackFifos, stagedActors, stagesGaps,
+				stageWidth);
 
-		// 3. Layout feedback FIFOs
+		// 3. Reconnect Delays to non feedback fifos
 
+	}
+
+	protected void layoutFeedbackFifos(Diagram diagram,
+			List<Fifo> feedbackFifos, List<List<AbstractActor>> stagedActors,
+			List<List<Range>> stagesGaps, List<Range> stageWidth) {
+		// Sort FIFOs according to the number of stages through which they're
+		// going
+		List<Fifo> sortedFifos = new ArrayList<Fifo>(feedbackFifos);
+		sortedFifos.sort((f1, f2) -> {
+			int srcStage1 = getStage((AbstractActor) f1.getSourcePort()
+					.eContainer(), stagedActors);
+			int dstStage1 = getStage((AbstractActor) f1.getTargetPort()
+					.eContainer(), stagedActors);
+
+			int srcStage2 = getStage((AbstractActor) f2.getSourcePort()
+					.eContainer(), stagedActors);
+			int dstStage2 = getStage((AbstractActor) f2.getTargetPort()
+					.eContainer(), stagedActors);
+
+			return Math.abs(srcStage1 - dstStage1)
+					- Math.abs(srcStage2 - dstStage2);
+		});
+
+		// Add new gap on top of all stages
+		for (List<Range> gaps : stagesGaps) {
+			gaps.add(new Range(0, X_INIT));
+		}
+
+		// Layout feedback FIFOs one by one, from short to long distances
+		for (Fifo fifo : sortedFifos) {
+			FreeFormConnection ffc = getFreeFormConnectionOfFifo(diagram, fifo);
+
+			int srcStage = getStage((AbstractActor) fifo.getSourcePort()
+					.eContainer(), stagedActors);
+			int dstStage = getStage((AbstractActor) fifo.getTargetPort()
+					.eContainer(), stagedActors);
+
+			// Do the layout for each stage
+			for (int stageIdx = srcStage; stageIdx >= dstStage; stageIdx--) {
+				// Find the closest gap to the feedback fifo
+				Point penultimate = ffc.getBendpoints().get(
+						ffc.getBendpoints().size() - 2);
+				Range closestGap = new Range(-1, -1);
+				boolean isTop = findClosestGap(stagesGaps.get(stageIdx),
+						penultimate.getY(), closestGap);
+
+				// Make the Fifo go through this gap
+				int keptY = (isTop) ? closestGap.start + FIFO_SPACE
+						: closestGap.end - FIFO_SPACE;
+				keptY = (closestGap.start + FIFO_SPACE <= penultimate.getY() && closestGap.end
+						- FIFO_SPACE >= penultimate.getY()) ? penultimate
+						.getY() : keptY;
+				if (keptY != penultimate.getY()) {
+					ffc.getBendpoints().add(
+							ffc.getBendpoints().size() - 1,
+							Graphiti.getGaCreateService().createPoint(
+									stageWidth.get(stageIdx).end
+											+ BENDPOINT_SPACE, keptY));
+				}
+				ffc.getBendpoints().add(
+						ffc.getBendpoints().size() - 1,
+						Graphiti.getGaCreateService().createPoint(
+								stageWidth.get(stageIdx).start
+										- BENDPOINT_SPACE, keptY));
+
+				// Update Gaps
+				updateGaps(stagesGaps.get(stageIdx), keptY, closestGap);
+			}
+		}
+	}
+
+	/**
+	 * Get the index of the stage to which the actor belongs.
+	 * 
+	 * @param actor
+	 *            The searched {@link AbstractActor}
+	 * @param stagedActors
+	 *            the stages
+	 * @return the index of the stage containing the actor.
+	 */
+	protected int getStage(AbstractActor actor,
+			List<List<AbstractActor>> stagedActors) {
+		for (int i = 0; i < stagedActors.size(); i++) {
+			if (stagedActors.get(i).contains(actor)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	protected void layoutInterStageFifos(Diagram diagram,
@@ -339,22 +444,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		Map<Fifo, FreeFormConnection> fifoFfcMap = new LinkedHashMap<Fifo, FreeFormConnection>();
 		for (Fifo fifo : interStageFifos) {
 			// Get freeform connection
-			List<PictogramElement> pes = Graphiti.getLinkService()
-					.getPictogramElements(diagram, fifo);
-			FreeFormConnection ffc = null;
-			for (PictogramElement pe : pes) {
-				if (getBusinessObjectForPictogramElement(pe) == fifo
-						&& pe instanceof FreeFormConnection) {
-					ffc = (FreeFormConnection) pe;
-				}
-			}
-
-			// if PE is still null.. something is deeply wrong with this
-			// graph !
-			if (ffc == null) {
-				throw new RuntimeException("Pictogram element associated Fifo "
-						+ fifo.getId() + " could not be found.");
-			}
+			FreeFormConnection ffc = getFreeFormConnectionOfFifo(diagram, fifo);
 			fifoFfcMap.put(fifo, ffc);
 		}
 
@@ -380,13 +470,11 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 			if (matchedRange != null) {
 				// Create bendpoint
 				iter.remove();
-				ffc.getBendpoints()
-						.add(ffc.getBendpoints().size() - 1,
-								Graphiti.getGaCreateService()
-										.createPoint(
-												width.end
-														+ MoveAbstractActorFeature.BENDPOINT_SPACE,
-												penultimate.getY()));
+				ffc.getBendpoints().add(
+						ffc.getBendpoints().size() - 1,
+						Graphiti.getGaCreateService()
+								.createPoint(width.end + BENDPOINT_SPACE,
+										penultimate.getY()));
 				// Update ranges of gaps
 				updateGaps(gaps, penultimate.getY(), matchedRange);
 			}
@@ -404,7 +492,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
 			// Find the optimal place of added bendpoints (not considering
 			// actors)
-			int optimX = width.start - MoveAbstractActorFeature.BENDPOINT_SPACE;
+			int optimX = width.start - BENDPOINT_SPACE;
 			int optimY = Math
 					.round(((float) (optimX - penultimate.getX()) / (float) (last
 							.getX() - penultimate.getX()))
@@ -412,22 +500,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 					+ penultimate.getY();
 
 			// Find the closest gap
-			Range closestGap = null;
-			int distance = Integer.MAX_VALUE;
-			boolean isTop = false; // closest to the top or the bottom of the
-									// range
-			for (Range range : gaps) {
-				int startDist = Math.abs(optimY - range.start);
-				int endDist = Math.abs(optimY - range.end);
-
-				int minDist = (startDist < endDist) ? startDist : endDist;
-
-				if (minDist <= distance) {
-					closestGap = range;
-					distance = minDist;
-					isTop = (startDist < endDist);
-				}
-			}
+			Range closestGap = new Range(-1, -1);
+			boolean isTop = findClosestGap(gaps, optimY, closestGap);
 
 			// Make the Fifo go through this gap
 			int keptY = (isTop) ? closestGap.start + FIFO_SPACE
@@ -437,14 +511,68 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 			ffc.getBendpoints().add(
 					ffc.getBendpoints().size() - 1,
 					Graphiti.getGaCreateService().createPoint(
-							width.end
-									+ MoveAbstractActorFeature.BENDPOINT_SPACE,
-							keptY));
+							width.end + BENDPOINT_SPACE, keptY));
 
 			// Update Gaps
 			updateGaps(gaps, keptY, closestGap);
-
 		}
+	}
+
+	/**
+	 * @param gaps
+	 * @param optimY
+	 * @param closestGap
+	 * @return Whether the given y Coordinate is closest to the top (
+	 *         <code>true</code>) or bottom (<code>false</code>) of the found
+	 *         closest Gap.
+	 */
+	protected boolean findClosestGap(List<Range> gaps, int optimY,
+			Range closestGap) {
+		boolean isTop = false; // closest to the top or the bottom of the
+								// range
+
+		int distance = Integer.MAX_VALUE;
+		for (Range range : gaps) {
+			int startDist = Math.abs(optimY - range.start);
+			int endDist = Math.abs(optimY - range.end);
+
+			int minDist = (startDist < endDist) ? startDist : endDist;
+
+			if (minDist <= distance) {
+				closestGap.start = range.start;
+				closestGap.end = range.end;
+				distance = minDist;
+				isTop = (startDist < endDist);
+			}
+		}
+		return isTop;
+	}
+
+	/**
+	 * @param diagram
+	 * @param fifo
+	 * @return
+	 * @throws RuntimeException
+	 */
+	protected FreeFormConnection getFreeFormConnectionOfFifo(Diagram diagram,
+			Fifo fifo) throws RuntimeException {
+		List<PictogramElement> pes = Graphiti.getLinkService()
+				.getPictogramElements(diagram, fifo);
+		FreeFormConnection ffc = null;
+		for (PictogramElement pe : pes) {
+			if (getBusinessObjectForPictogramElement(pe) == fifo
+					&& pe instanceof FreeFormConnection) {
+				ffc = (FreeFormConnection) pe;
+			}
+		}
+
+		// if PE is still null.. something is deeply wrong with this
+		// graph !
+		if (ffc == null) {
+			throw new RuntimeException("Pictogram element associated Fifo "
+					+ fifo.getId() + " could not be found.");
+		}
+		return ffc;
 	}
 
 	/**
