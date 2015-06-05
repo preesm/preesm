@@ -44,13 +44,16 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
+import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
+import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -67,6 +70,7 @@ import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.util.FifoCycleDetector;
+import org.ietr.preesm.ui.pimm.features.AddDelayFeature;
 import org.ietr.preesm.ui.pimm.features.DeleteDelayFeature;
 import org.ietr.preesm.ui.pimm.features.MoveAbstractActorFeature;
 
@@ -282,25 +286,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		List<Fifo> fifos = graph.getFifos();
 		for (Fifo fifo : fifos) {
 			if (fifo.getDelay() != null) {
-				// Get all delays with identical attributes (may not be the
-				// right delay is several delays have the same properties.)
-				List<PictogramElement> pes = Graphiti.getLinkService()
-						.getPictogramElements(diagram, fifo.getDelay());
-				PictogramElement pe = null;
-				for (PictogramElement p : pes) {
-					if (p instanceof ContainerShape
-							&& getBusinessObjectForPictogramElement(p) == fifo
-									.getDelay()) {
-						pe = p;
-					}
-				}
-				// if PE is still null.. something is deeply wrong with this
-				// graph !
-				if (pe == null) {
-					throw new RuntimeException(
-							"Pictogram element associated to delay of Fifo "
-									+ fifo.getId() + " could not be found.");
-				}
+				PictogramElement pe = getDelayPE(diagram, fifo);
 
 				// Do the disconnection
 				DeleteDelayFeature df = new DeleteDelayFeature(
@@ -344,8 +330,92 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		layoutFeedbackFifos(diagram, feedbackFifos, stagedActors, stagesGaps,
 				stageWidth);
 
-		// 3. Reconnect Delays to non feedback fifos
+		// 3. Reconnect Delays to fifos
+		for (Fifo fifo : fifos) {
+			if (fifo.getDelay() != null) {
+				FreeFormConnection ffc = getFreeFormConnectionOfFifo(diagram,
+						fifo);
+				// Find the position of the delay
+				int posX = 0;
+				int posY = 0;
+				int srcStage = getStage((AbstractActor) fifo.getSourcePort()
+						.eContainer(), stagedActors);
+				int dstStage = getStage((AbstractActor) fifo.getTargetPort()
+						.eContainer(), stagedActors);
+				// If there is only one stage
+				if (srcStage == dstStage) {
+					posX = (stageWidth.get(dstStage).end + stageWidth
+							.get(dstStage).start) / 2;
+				} else {
+					// If the fifo goes over more than one stage
+					int midFifo = (srcStage + dstStage) / 2;
+					posX = (stageWidth.get(midFifo).end + stageWidth
+							.get(midFifo + 1).start) / 2;
+				}
+				posX -= AddDelayFeature.DELAY_SIZE / 2;
+				// Find the Y position
+				// find the two closest bendpoints
+				List<Point> bPoints = new ArrayList<Point>(ffc.getBendpoints());
+				// Cannot be the first and last bendpoints (unless there is not
+				// 2 other bendpoints)
+				if (bPoints.size() > 3) {
+					bPoints.remove(bPoints.size() - 1);
+					bPoints.remove(0);
+				}
+				final int pX = posX;
+				bPoints.sort((p1, p2) -> {
+					return Math.abs(p1.getX() - pX) - Math.abs(p2.getX() - pX);
+				});
 
+				posY = ((bPoints.get(0).getY() + bPoints.get(1).getY()) - AddDelayFeature.DELAY_SIZE) / 2;
+
+				// Move the delay to this position
+				ContainerShape pe = (ContainerShape) getDelayPE(diagram, fifo);
+				pe.getGraphicsAlgorithm().setX(posX);
+				pe.getGraphicsAlgorithm().setY(posY);
+
+				// Do the connection
+
+				ChopboxAnchor cba = (ChopboxAnchor) pe.getAnchors().get(0);
+				AddDelayFeature ad = new AddDelayFeature(getFeatureProvider());
+				// Add the delaySize / 2 to compute distance of the center of
+				// the delay to the segments of the ffc
+				ad.connectDelayToFifo(ffc, fifo, pe, cba, posX
+						+ AddDelayFeature.DELAY_SIZE / 2, posY
+						+ AddDelayFeature.DELAY_SIZE / 2);
+
+			}
+		}
+	}
+
+	/**
+	 * @param diagram
+	 * @param fifo
+	 * @return
+	 * @throws RuntimeException
+	 */
+	protected ContainerShape getDelayPE(Diagram diagram, Fifo fifo)
+			throws RuntimeException {
+		// Get all delays with identical attributes (may not be the
+		// right delay is several delays have the same properties.)
+		List<PictogramElement> pes = Graphiti.getLinkService()
+				.getPictogramElements(diagram, fifo.getDelay());
+		PictogramElement pe = null;
+		for (PictogramElement p : pes) {
+			if (p instanceof ContainerShape
+					&& getBusinessObjectForPictogramElement(p) == fifo
+							.getDelay()) {
+				pe = p;
+			}
+		}
+		// if PE is still null.. something is deeply wrong with this
+		// graph !
+		if (pe == null) {
+			throw new RuntimeException(
+					"Pictogram element associated to delay of Fifo "
+							+ fifo.getId() + " could not be found.");
+		}
+		return (ContainerShape) pe;
 	}
 
 	protected void layoutFeedbackFifos(Diagram diagram,
