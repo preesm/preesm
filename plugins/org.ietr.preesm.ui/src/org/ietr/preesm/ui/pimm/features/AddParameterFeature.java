@@ -69,6 +69,8 @@ public class AddParameterFeature extends AbstractAddFeature {
 
 	public static final IColorConstant PARAMETER_BACKGROUND = new ColorConstant(
 			187, 218, 247);
+	
+	public static final int PARAM_HEIGHT = 40;
 
 	/**
 	 * Default constructor of the {@link AddParameterFeature}.
@@ -105,7 +107,7 @@ public class AddParameterFeature extends AbstractAddFeature {
 		Polygon house;
 		{
 			// Create a house shaped polygon
-			int xy[] = new int[] { 12, 0, 24, 26, 24, 40, 0, 40, 0, 26 };
+			int xy[] = new int[] { 12, 0, 24, 26, 24, PARAM_HEIGHT, 0, PARAM_HEIGHT, 0, 26 };
 			house = gaService.createPolygon(containerShape, xy);
 			
 			house.setBackground(manageColor(PARAMETER_BACKGROUND));

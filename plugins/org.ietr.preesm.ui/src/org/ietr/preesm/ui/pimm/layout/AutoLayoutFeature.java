@@ -36,6 +36,7 @@
 package org.ietr.preesm.ui.pimm.layout;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -46,14 +47,13 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
-import org.eclipse.graphiti.features.impl.AbstractMoveShapeFeature;
-import org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
@@ -74,12 +74,12 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
-import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.util.DependencyCycleDetector;
 import org.ietr.preesm.experiment.model.pimm.util.FifoCycleDetector;
 import org.ietr.preesm.ui.pimm.features.AddDelayFeature;
+import org.ietr.preesm.ui.pimm.features.AddParameterFeature;
 import org.ietr.preesm.ui.pimm.features.DeleteDelayFeature;
 import org.ietr.preesm.ui.pimm.features.MoveAbstractActorFeature;
 
@@ -118,9 +118,12 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	private static final int BENDPOINT_SPACE = MoveAbstractActorFeature.BENDPOINT_SPACE;
 	private static final int FIFO_SPACE = 7;
 	protected static final int X_INIT = 50;
-	private static final int X_SPACE = 80;
-	protected static final int Y_INIT = 200;
+	private static final int X_SPACE = 100;
+	private static final int X_SPACE_PARAM = X_SPACE / 2;
+	protected static final int Y_INIT = 250;
 	private static final int Y_SPACE = 50;
+	private static final int Y_SPACE_PARAM = 60;
+	private static final int DEPENDENCY_SPACE = 8;
 
 	/**
 	 * Feedback {@link Fifo} identified in a {@link PiGraph}. {@see
@@ -146,6 +149,13 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	 * Width of the stages once the have been layouted.
 	 */
 	private List<Range> stageWidth;
+
+	/**
+	 * Initial vertical position for parameters. (computed in
+	 * stageByStageParameterLayout).
+	 */
+	private int yParamInitPos;
+	private Map<Parameter, Integer> paramXPositions;
 
 	public AutoLayoutFeature(IFeatureProvider fp) {
 		super(fp);
@@ -356,10 +366,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		// Step 3 - Layout fifo connections
 		layoutFifos(diagram);
 
-		// Step 4 - Layout Parameters
+		// Step 4 - Layout Parameters and dependencies
 		layoutParameters(diagram);
-
-		// Step 5 - Layout Dependencies
 	}
 
 	/**
@@ -563,17 +571,17 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
 	/**
 	 * @param diagram
-	 * @param fifo
+	 * @param edge
 	 * @return
 	 * @throws RuntimeException
 	 */
-	protected FreeFormConnection getFreeFormConnectionOfFifo(Diagram diagram,
-			Fifo fifo) throws RuntimeException {
+	protected FreeFormConnection getFreeFormConnectionOfEdge(Diagram diagram,
+			EObject edge) throws RuntimeException {
 		List<PictogramElement> pes = Graphiti.getLinkService()
-				.getPictogramElements(diagram, fifo);
+				.getPictogramElements(diagram, edge);
 		FreeFormConnection ffc = null;
 		for (PictogramElement pe : pes) {
-			if (getBusinessObjectForPictogramElement(pe) == fifo
+			if (getBusinessObjectForPictogramElement(pe) == edge
 					&& pe instanceof FreeFormConnection) {
 				ffc = (FreeFormConnection) pe;
 			}
@@ -582,8 +590,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		// if PE is still null.. something is deeply wrong with this
 		// graph !
 		if (ffc == null) {
-			throw new RuntimeException("Pictogram element associated Fifo "
-					+ fifo.getId() + " could not be found.");
+			throw new RuntimeException("Pictogram element associated Edge "
+					+ edge + " could not be found.");
 		}
 		return ffc;
 	}
@@ -591,6 +599,39 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	@Override
 	public String getName() {
 		return "Layout Diagram";
+	}
+
+	/**
+	 * @param stagedParameters
+	 * @return
+	 */
+	protected List<Parameter> getParameterVerticalOrder(
+			List<List<Parameter>> stagedParameters) {
+		// Initialize the list with last stage
+		List<Parameter> paramVertOrder = new LinkedList<Parameter>(
+				stagedParameters.get(stagedParameters.size() - 1));
+		for (int stageIdx = stagedParameters.size() - 2; stageIdx >= 0; stageIdx--) {
+			for (Parameter param : stagedParameters.get(stageIdx)) {
+				// Find index of successors in paramVertOrder
+				int lastIdx = -1;
+				int firstIdx = -1;
+				for (Dependency dependency : param.getOutgoingDependencies()) {
+					Object getter = dependency.getGetter().eContainer();
+					if (getter instanceof Parameter) {
+						int paramOrder = paramVertOrder.indexOf(getter);
+						firstIdx = (firstIdx == -1 || paramOrder < firstIdx) ? paramOrder
+								: firstIdx;
+						lastIdx = (paramOrder > lastIdx) ? paramOrder : lastIdx;
+					}
+				}
+
+				// Insert in the middle of param indexes
+				lastIdx = (lastIdx == -1) ? 0 : lastIdx;
+				firstIdx = (firstIdx == -1) ? 0 : firstIdx;
+				paramVertOrder.add((lastIdx + firstIdx + 1) / 2, param);
+			}
+		}
+		return paramVertOrder;
 	}
 
 	@Override
@@ -610,6 +651,95 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 			// 3. Layout actors according to the topological order
 			stageByStageActorLayout(diagram, stagedActors);
 		}
+	}
+
+	protected void layoutDependencies(Diagram diagram,
+			List<List<Parameter>> stagedParameters,
+			List<Parameter> paramVertOrder) {
+
+		// Variable used for the straight horizontal dependencies used to
+		// distributes values to actors
+		int currentY = yParamInitPos + DEPENDENCY_SPACE;
+		int currentX = 0; //(DEPENDENCY_SPACE / 2) * paramVertOrder.size() ;
+		boolean currentYUsed = false;
+
+		// Process dependencies one by one, scanning the parameters
+		for (Parameter param : paramVertOrder) {
+
+			if (currentYUsed) {
+				currentY += DEPENDENCY_SPACE;
+				currentX += DEPENDENCY_SPACE / 2;
+				currentYUsed = false;
+			}
+
+			// Get the stage of the dependences setter
+			int setterStage = getParameterStage(stagedParameters, param);
+
+			for (Dependency dependency : param.getOutgoingDependencies()) {
+				// Get the polyline
+				FreeFormConnection ffc = getFreeFormConnectionOfEdge(diagram,
+						dependency);
+
+				// Get the type of the getter
+				EObject getter = dependency.getGetter().eContainer();
+				if (getter instanceof Parameter) {
+					// Get stage
+					int getterStage = getParameterStage(stagedParameters,
+							(Parameter) getter);
+					// layout only if getter is more than one stage away from
+					// setter
+					int xPosition = paramXPositions.get(param);
+					int yPosition = yParamInitPos
+							- (stagedParameters.size() - 1 - (getterStage - 1))
+							* Y_SPACE_PARAM;
+					Point bPoint = Graphiti.getGaCreateService().createPoint(
+							xPosition, yPosition);
+					ffc.getBendpoints().add(bPoint);
+
+				} else if (getter instanceof DataInputInterface
+						|| getter instanceof DataOutputInterface) {
+				} else if (getter instanceof AbstractActor) {
+					currentYUsed = true;
+					// Add a first point below the actor
+					int xPosition = paramXPositions.get(param);
+					Point bPoint = Graphiti.getGaCreateService().createPoint(
+							xPosition, currentY);
+					ffc.getBendpoints().add(0, bPoint);
+
+					// Retrieve the last bendpoint of the ffc (added when the
+					// actor was moved.)
+					Point lastBp = ffc.getBendpoints().get(
+							ffc.getBendpoints().size() - 1);
+					// Move it
+					lastBp.setX(lastBp.getX() - currentX);
+					// Add a new bendpoint on top of it
+					ffc.getBendpoints().add(
+							ffc.getBendpoints().size() - 1,
+							Graphiti.getGaCreateService().createPoint(
+									lastBp.getX(), currentY));
+
+				} else {
+					System.out.println(getter.getClass());
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param stagedParameters
+	 * @param param
+	 * @param setterStage
+	 * @return
+	 */
+	protected int getParameterStage(List<List<Parameter>> stagedParameters,
+			Parameter param) {
+		int setterStage = -1;
+		for (List<Parameter> stage : stagedParameters) {
+			if (stage.contains(param)) {
+				setterStage = stagedParameters.indexOf(stage);
+			}
+		}
+		return setterStage;
 	}
 
 	protected void layoutFeedbackFifos(Diagram diagram,
@@ -640,7 +770,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
 		// Layout feedback FIFOs one by one, from short to long distances
 		for (Fifo fifo : sortedFifos) {
-			FreeFormConnection ffc = getFreeFormConnectionOfFifo(diagram, fifo);
+			FreeFormConnection ffc = getFreeFormConnectionOfEdge(diagram, fifo);
 
 			int srcStage = getActorStage((AbstractActor) fifo.getSourcePort()
 					.eContainer(), stagedActors);
@@ -736,7 +866,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		// 3. Reconnect Delays to fifos
 		for (Fifo fifo : fifos) {
 			if (fifo.getDelay() != null) {
-				FreeFormConnection ffc = getFreeFormConnectionOfFifo(diagram,
+				FreeFormConnection ffc = getFreeFormConnectionOfEdge(diagram,
 						fifo);
 				// Find the position of the delay
 				int posX = 0;
@@ -799,7 +929,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		Map<Fifo, FreeFormConnection> fifoFfcMap = new LinkedHashMap<Fifo, FreeFormConnection>();
 		for (Fifo fifo : interStageFifos) {
 			// Get freeform connection
-			FreeFormConnection ffc = getFreeFormConnectionOfFifo(diagram, fifo);
+			FreeFormConnection ffc = getFreeFormConnectionOfEdge(diagram, fifo);
 			fifoFfcMap.put(fifo, ffc);
 		}
 
@@ -877,8 +1007,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		// Layout parameters in an inverted tree fashion (root at the top).
 		// Dependencies coming from configuration actors do not count.
 		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(diagram);
-		List<Parameter> params = new ArrayList<Parameter>(
-				graph.getParameters());
+		List<Parameter> params = new ArrayList<Parameter>(graph.getParameters());
 
 		// 1. Sort parameters alphabetically
 		params.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
@@ -892,8 +1021,11 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 				roots);
 
 		// 4. Stage by stage layout
-		stageByStageParameterLayout(diagram, stagedParameters);
+		List<Parameter> paramVertOrder = stageByStageParameterLayout(diagram,
+				stagedParameters);
 
+		// 5. Layout Parameters dependencies
+		layoutDependencies(diagram, stagedParameters, paramVertOrder);
 	}
 
 	/**
@@ -977,8 +1109,9 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		return stages;
 	}
 
-	protected void stageByStageParameterLayout(Diagram diagram,
+	protected List<Parameter> stageByStageParameterLayout(Diagram diagram,
 			List<List<Parameter>> stagedParameters) {
+		paramXPositions = new HashMap<Parameter, Integer>();
 
 		// 1. Sort the parameters so that each parameter has its own vertical
 		// line
@@ -990,9 +1123,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		int xPos = (stagedActors.size() > 1 && stagedActors.get(0).get(0) instanceof DataInputInterface) ? stageWidth
 				.get(1).start : X_INIT;
 
-		// Horizontal position of lowest param leaving enough space for
-		// dependencies to go through
-		final int yInitPos = Y_INIT - paramVertOrder.size() * FIFO_SPACE;
+		yParamInitPos = Y_INIT - paramVertOrder.size() * DEPENDENCY_SPACE;
 		for (Parameter param : paramVertOrder) {
 			// Get the PE
 			List<PictogramElement> pes = Graphiti.getLinkService()
@@ -1012,11 +1143,11 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
 			// Get the Graphics algorithm
 			GraphicsAlgorithm paramGA = paramPE.getGraphicsAlgorithm();
-			
+
 			// Param stage
 			int paramStage = -1;
 			for (int stage = 0; stage < stagedParameters.size(); stage++) {
-				if(stagedParameters.get(stage).contains(param)){
+				if (stagedParameters.get(stage).contains(param)) {
 					paramStage = stage;
 				}
 			}
@@ -1024,41 +1155,13 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 			// Move the parameter (Do not use the MoveShapeFeature as it would
 			// also mess up the dependencies
 			paramGA.setX(xPos);
-			paramGA.setY(yInitPos - (stagedParameters.size() - paramStage) * Y_SPACE);
-			xPos +=  paramGA.getWidth() + X_SPACE / 2;
+			paramGA.setY(yParamInitPos
+					- (stagedParameters.size() - 1 - paramStage)
+					* Y_SPACE_PARAM - AddParameterFeature.PARAM_HEIGHT);
+			paramXPositions.put(param, xPos + paramGA.getWidth() / 2);
+			xPos += paramGA.getWidth() + X_SPACE_PARAM;
 		}
-	}
 
-	/**
-	 * @param stagedParameters
-	 * @return
-	 */
-	protected List<Parameter> getParameterVerticalOrder(
-			List<List<Parameter>> stagedParameters) {
-		// Initialize the list with last stage
-		List<Parameter> paramVertOrder = new LinkedList<Parameter>(
-				stagedParameters.get(stagedParameters.size() - 1));
-		for (int stageIdx = stagedParameters.size() - 2; stageIdx >= 0; stageIdx--) {
-			for (Parameter param : stagedParameters.get(stageIdx)) {
-				// Find index of successors in paramVertOrder
-				int lastIdx = -1;
-				int firstIdx = -1;
-				for (Dependency dependency : param.getOutgoingDependencies()) {
-					Object getter = dependency.getGetter().eContainer();
-					if (getter instanceof Parameter) {
-						int paramOrder = paramVertOrder.indexOf(getter);
-						firstIdx = (firstIdx == -1 || paramOrder < firstIdx) ? paramOrder
-								: firstIdx;
-						lastIdx = (paramOrder > lastIdx) ? paramOrder : lastIdx;
-					}
-				}
-
-				// Insert in the middle of param indexes
-				lastIdx = (lastIdx == -1) ? 0 : lastIdx;
-				firstIdx = (firstIdx == -1) ? 0 : firstIdx;
-				paramVertOrder.add((lastIdx + firstIdx + 1) / 2, param);
-			}
-		}
 		return paramVertOrder;
 	}
 
