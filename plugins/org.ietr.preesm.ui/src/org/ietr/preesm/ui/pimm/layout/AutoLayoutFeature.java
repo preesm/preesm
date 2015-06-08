@@ -39,17 +39,21 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
+import org.eclipse.graphiti.features.impl.AbstractMoveShapeFeature;
+import org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
@@ -60,6 +64,8 @@ import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.ui.PlatformUI;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
@@ -68,8 +74,10 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.util.DependencyCycleDetector;
 import org.ietr.preesm.experiment.model.pimm.util.FifoCycleDetector;
 import org.ietr.preesm.ui.pimm.features.AddDelayFeature;
 import org.ietr.preesm.ui.pimm.features.DeleteDelayFeature;
@@ -106,11 +114,12 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 			return "[" + start + "," + end + "]";
 		}
 	}
+
 	private static final int BENDPOINT_SPACE = MoveAbstractActorFeature.BENDPOINT_SPACE;
 	private static final int FIFO_SPACE = 7;
 	protected static final int X_INIT = 50;
 	private static final int X_SPACE = 80;
-	protected static final int Y_INIT = 150;
+	protected static final int Y_INIT = 200;
 	private static final int Y_SPACE = 50;
 
 	/**
@@ -175,8 +184,9 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	 *            {@link #findSrcActors(List, List)}.
 	 * @return the stage by stage list of actors.
 	 */
-	protected List<List<AbstractActor>> createStages(List<Fifo> feedbackFifos,
-			List<AbstractActor> actors, final List<AbstractActor> srcActors) {
+	protected List<List<AbstractActor>> createActorStages(
+			List<Fifo> feedbackFifos, List<AbstractActor> actors,
+			final List<AbstractActor> srcActors) {
 		List<List<AbstractActor>> stages = new ArrayList<List<AbstractActor>>();
 
 		//
@@ -260,10 +270,80 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		return stages;
 	}
 
+	protected List<List<Parameter>> createParameterStages(
+			List<Parameter> params, List<Parameter> roots) {
+		// Initializations
+		List<List<Parameter>> stages = new ArrayList<List<Parameter>>();
+		List<Parameter> processedParams = new ArrayList<Parameter>(roots);
+		Set<Parameter> nextStage = new LinkedHashSet<Parameter>();
+		stages.add(roots);
+		List<Parameter> currentStage = roots;
+
+		do {
+			// Find candidates for the next stage in successors of current one
+			for (Parameter param : currentStage) {
+				for (Dependency dependency : param.getOutgoingDependencies()) {
+					if (dependency.getGetter().eContainer() instanceof Parameter) {
+						nextStage.add((Parameter) dependency.getGetter()
+								.eContainer());
+					}
+				}
+			}
+
+			// Check if all predecessors of the candidates have already been
+			// added in a previous stages
+			for (Iterator iter = nextStage.iterator(); iter.hasNext();) {
+				Parameter param = (Parameter) iter.next();
+
+				boolean hasUnstagedPredecessor = false;
+				for (ConfigInputPort port : param.getConfigInputPorts()) {
+					Dependency incomingDependency = port
+							.getIncomingDependency();
+					hasUnstagedPredecessor |= incomingDependency.getSetter() instanceof Parameter
+							&& !processedParams.contains(incomingDependency
+									.getSetter());
+				}
+				if (hasUnstagedPredecessor) {
+					iter.remove();
+				}
+			}
+
+			// Prepare next iteration
+			currentStage = new ArrayList<Parameter>(nextStage);
+			stages.add(currentStage);
+			processedParams.addAll(currentStage);
+			nextStage = new LinkedHashSet<Parameter>();
+		} while (processedParams.size() < params.size());
+
+		return stages;
+	}
+
 	@Override
 	public void execute(ICustomContext context) {
 		System.out.println("Layout the diagram");
 		Diagram diagram = getDiagram();
+
+		// Check if there are parameterization cycles in the graph.
+		// In such a case, do not layout !
+		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(diagram);
+		DependencyCycleDetector dcd = new DependencyCycleDetector();
+		dcd.doSwitch(graph);
+
+		if (dcd.cyclesDetected()) {
+			IStatus warning = new Status(
+					IStatus.ERROR,
+					"org.ietr.preesm.experiment",
+					1,
+					"This graph contains cyclic parameterization dependencies.\n"
+							+ "Remove these cycles before layouting the graph.",
+					null);
+			ErrorDialog.openError(PlatformUI.getWorkbench()
+					.getActiveWorkbenchWindow().getShell(), "Layout error",
+					null, warning);
+			return;
+
+		}
+
 		hasDoneChange = true;
 
 		// Step 1 - Clear all bendpoints
@@ -433,6 +513,25 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	}
 
 	/**
+	 * Get the index of the stage to which the actor belongs.
+	 * 
+	 * @param actor
+	 *            The searched {@link AbstractActor}
+	 * @param stagedActors
+	 *            the stages
+	 * @return the index of the stage containing the actor.
+	 */
+	protected int getActorStage(AbstractActor actor,
+			List<List<AbstractActor>> stagedActors) {
+		for (int i = 0; i < stagedActors.size(); i++) {
+			if (stagedActors.get(i).contains(actor)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	/**
 	 * @param diagram
 	 * @param fifo
 	 * @return
@@ -494,25 +593,6 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		return "Layout Diagram";
 	}
 
-	/**
-	 * Get the index of the stage to which the actor belongs.
-	 * 
-	 * @param actor
-	 *            The searched {@link AbstractActor}
-	 * @param stagedActors
-	 *            the stages
-	 * @return the index of the stage containing the actor.
-	 */
-	protected int getStage(AbstractActor actor,
-			List<List<AbstractActor>> stagedActors) {
-		for (int i = 0; i < stagedActors.size(); i++) {
-			if (stagedActors.get(i).contains(actor)) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
 	@Override
 	public boolean hasDoneChanges() {
 		return hasDoneChange;
@@ -525,10 +605,10 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 			feedbackFifos = findFeedbackFifos(graph);
 
 			// 2. Sort stage by stage (ignoring feedback FIFO)
-			stagedActors = stageByStageSort(graph, feedbackFifos);
+			stagedActors = stageByStageActorSort(graph, feedbackFifos);
 
 			// 3. Layout actors according to the topological order
-			stageByStageLayout(diagram, stagedActors);
+			stageByStageActorLayout(diagram, stagedActors);
 		}
 	}
 
@@ -539,14 +619,14 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		// going
 		List<Fifo> sortedFifos = new ArrayList<Fifo>(feedbackFifos);
 		sortedFifos.sort((f1, f2) -> {
-			int srcStage1 = getStage((AbstractActor) f1.getSourcePort()
+			int srcStage1 = getActorStage((AbstractActor) f1.getSourcePort()
 					.eContainer(), stagedActors);
-			int dstStage1 = getStage((AbstractActor) f1.getTargetPort()
+			int dstStage1 = getActorStage((AbstractActor) f1.getTargetPort()
 					.eContainer(), stagedActors);
 
-			int srcStage2 = getStage((AbstractActor) f2.getSourcePort()
+			int srcStage2 = getActorStage((AbstractActor) f2.getSourcePort()
 					.eContainer(), stagedActors);
-			int dstStage2 = getStage((AbstractActor) f2.getTargetPort()
+			int dstStage2 = getActorStage((AbstractActor) f2.getTargetPort()
 					.eContainer(), stagedActors);
 
 			return Math.abs(srcStage1 - dstStage1)
@@ -562,9 +642,9 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		for (Fifo fifo : sortedFifos) {
 			FreeFormConnection ffc = getFreeFormConnectionOfFifo(diagram, fifo);
 
-			int srcStage = getStage((AbstractActor) fifo.getSourcePort()
+			int srcStage = getActorStage((AbstractActor) fifo.getSourcePort()
 					.eContainer(), stagedActors);
-			int dstStage = getStage((AbstractActor) fifo.getTargetPort()
+			int dstStage = getActorStage((AbstractActor) fifo.getTargetPort()
 					.eContainer(), stagedActors);
 
 			// Do the layout for each stage
@@ -661,10 +741,10 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 				// Find the position of the delay
 				int posX = 0;
 				int posY = 0;
-				int srcStage = getStage((AbstractActor) fifo.getSourcePort()
-						.eContainer(), stagedActors);
-				int dstStage = getStage((AbstractActor) fifo.getTargetPort()
-						.eContainer(), stagedActors);
+				int srcStage = getActorStage((AbstractActor) fifo
+						.getSourcePort().eContainer(), stagedActors);
+				int dstStage = getActorStage((AbstractActor) fifo
+						.getTargetPort().eContainer(), stagedActors);
 				// If there is only one stage
 				if (srcStage == dstStage) {
 					posX = (stageWidth.get(dstStage).end + stageWidth
@@ -798,13 +878,21 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		// Dependencies coming from configuration actors do not count.
 		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(diagram);
 		List<Parameter> params = new ArrayList<Parameter>(
-				graph.getAllParameters());
+				graph.getParameters());
 
 		// 1. Sort parameters alphabetically
 		params.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
 
 		// 2. Find the root(s)
 		List<Parameter> roots = findRootParameters(graph, params);
+
+		// 3. Find the "stages" of the tree
+		// (i.e. parameters with equal distances to a their farthest root)
+		List<List<Parameter>> stagedParameters = createParameterStages(params,
+				roots);
+
+		// 4. Stage by stage layout
+		stageByStageParameterLayout(diagram, stagedParameters);
 
 	}
 
@@ -813,7 +901,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	 * @param stagedActors
 	 * @throws RuntimeException
 	 */
-	protected void stageByStageLayout(Diagram diagram,
+	protected void stageByStageActorLayout(Diagram diagram,
 			List<List<AbstractActor>> stagedActors) throws RuntimeException {
 		// Init the stageGap and stageWidth attributes
 		stageWidth = new ArrayList<Range>();
@@ -871,7 +959,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		}
 	}
 
-	protected List<List<AbstractActor>> stageByStageSort(PiGraph graph,
+	protected List<List<AbstractActor>> stageByStageActorSort(PiGraph graph,
 			List<Fifo> feedbackFifos) {
 		// 1. Sort actor in alphabetical order
 		List<AbstractActor> actors = new ArrayList<AbstractActor>(
@@ -883,10 +971,95 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 				actors);
 
 		// 3. BFS-style stage by stage construction
-		List<List<AbstractActor>> stages = createStages(feedbackFifos, actors,
-				srcActors);
+		List<List<AbstractActor>> stages = createActorStages(feedbackFifos,
+				actors, srcActors);
 
 		return stages;
+	}
+
+	protected void stageByStageParameterLayout(Diagram diagram,
+			List<List<Parameter>> stagedParameters) {
+
+		// 1. Sort the parameters so that each parameter has its own vertical
+		// line
+		List<Parameter> paramVertOrder = getParameterVerticalOrder(stagedParameters);
+
+		// 2. Move the parameters
+		// Vert position of first param is aligned with the first stage of
+		// actors.
+		int xPos = (stagedActors.size() > 1 && stagedActors.get(0).get(0) instanceof DataInputInterface) ? stageWidth
+				.get(1).start : X_INIT;
+
+		// Horizontal position of lowest param leaving enough space for
+		// dependencies to go through
+		final int yInitPos = Y_INIT - paramVertOrder.size() * FIFO_SPACE;
+		for (Parameter param : paramVertOrder) {
+			// Get the PE
+			List<PictogramElement> pes = Graphiti.getLinkService()
+					.getPictogramElements(diagram, param);
+			PictogramElement paramPE = null;
+			for (PictogramElement pe : pes) {
+				if (pe instanceof ContainerShape) {
+					paramPE = pe;
+					break;
+				}
+			}
+
+			if (paramPE == null) {
+				throw new RuntimeException("No PE was found for parameter :"
+						+ param.getName());
+			}
+
+			// Get the Graphics algorithm
+			GraphicsAlgorithm paramGA = paramPE.getGraphicsAlgorithm();
+			
+			// Param stage
+			int paramStage = -1;
+			for (int stage = 0; stage < stagedParameters.size(); stage++) {
+				if(stagedParameters.get(stage).contains(param)){
+					paramStage = stage;
+				}
+			}
+
+			// Move the parameter (Do not use the MoveShapeFeature as it would
+			// also mess up the dependencies
+			paramGA.setX(xPos);
+			paramGA.setY(yInitPos - (stagedParameters.size() - paramStage) * Y_SPACE);
+			xPos +=  paramGA.getWidth() + X_SPACE / 2;
+		}
+	}
+
+	/**
+	 * @param stagedParameters
+	 * @return
+	 */
+	protected List<Parameter> getParameterVerticalOrder(
+			List<List<Parameter>> stagedParameters) {
+		// Initialize the list with last stage
+		List<Parameter> paramVertOrder = new LinkedList<Parameter>(
+				stagedParameters.get(stagedParameters.size() - 1));
+		for (int stageIdx = stagedParameters.size() - 2; stageIdx >= 0; stageIdx--) {
+			for (Parameter param : stagedParameters.get(stageIdx)) {
+				// Find index of successors in paramVertOrder
+				int lastIdx = -1;
+				int firstIdx = -1;
+				for (Dependency dependency : param.getOutgoingDependencies()) {
+					Object getter = dependency.getGetter().eContainer();
+					if (getter instanceof Parameter) {
+						int paramOrder = paramVertOrder.indexOf(getter);
+						firstIdx = (firstIdx == -1 || paramOrder < firstIdx) ? paramOrder
+								: firstIdx;
+						lastIdx = (paramOrder > lastIdx) ? paramOrder : lastIdx;
+					}
+				}
+
+				// Insert in the middle of param indexes
+				lastIdx = (lastIdx == -1) ? 0 : lastIdx;
+				firstIdx = (firstIdx == -1) ? 0 : firstIdx;
+				paramVertOrder.add((lastIdx + firstIdx + 1) / 2, param);
+			}
+		}
+		return paramVertOrder;
 	}
 
 	/**
