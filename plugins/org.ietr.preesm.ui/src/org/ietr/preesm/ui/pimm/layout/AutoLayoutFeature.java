@@ -42,12 +42,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
-import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
@@ -62,12 +61,14 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.util.FifoCycleDetector;
 import org.ietr.preesm.ui.pimm.features.AddDelayFeature;
@@ -82,43 +83,13 @@ import org.ietr.preesm.ui.pimm.features.MoveAbstractActorFeature;
  */
 public class AutoLayoutFeature extends AbstractCustomFeature {
 
-	private static final int BENDPOINT_SPACE = MoveAbstractActorFeature.BENDPOINT_SPACE;
-	private static final int FIFO_SPACE = 7;
-	private static final int X_SPACE = 80;
-	private static final int Y_SPACE = 50;
-	protected static final int Y_INIT = 150;
-	protected static final int X_INIT = 50;
-	boolean hasDoneChange = false;
-
-	/**
-	 * Actors sorted stage by stage.
-	 * {@link AutoLayoutFeature#stageByStageSort(PiGraph, List).}
-	 */
-	private List<List<AbstractActor>> stagedActors;
-
-	/**
-	 * Width of the stages once the have been layouted.
-	 */
-	private List<Range> stageWidth;
-
-	/**
-	 * For each stage, list of the Y coordinates starting a Y_SPACE gap between
-	 * two actors.
-	 */
-	private List<List<Range>> stagesGaps;
-
 	class Range {
-		int start;
 		int end;
+		int start;
 
 		public Range(int start, int end) {
 			this.start = start;
 			this.end = end;
-		}
-
-		@Override
-		public String toString() {
-			return "[" + start + "," + end + "]";
 		}
 
 		@Override
@@ -129,13 +100,43 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 				return false;
 			}
 		}
+
+		@Override
+		public String toString() {
+			return "[" + start + "," + end + "]";
+		}
 	}
+	private static final int BENDPOINT_SPACE = MoveAbstractActorFeature.BENDPOINT_SPACE;
+	private static final int FIFO_SPACE = 7;
+	protected static final int X_INIT = 50;
+	private static final int X_SPACE = 80;
+	protected static final int Y_INIT = 150;
+	private static final int Y_SPACE = 50;
 
 	/**
 	 * Feedback {@link Fifo} identified in a {@link PiGraph}. {@see
 	 * AutoLayoutFeature#findFeedbackFifos(PiGraph)}.
 	 */
 	private List<Fifo> feedbackFifos;
+
+	boolean hasDoneChange = false;
+
+	/**
+	 * Actors sorted stage by stage.
+	 * {@link AutoLayoutFeature#stageByStageSort(PiGraph, List).}
+	 */
+	private List<List<AbstractActor>> stagedActors;
+
+	/**
+	 * For each stage, list of the Y coordinates starting a Y_SPACE gap between
+	 * two actors.
+	 */
+	private List<List<Range>> stagesGaps;
+
+	/**
+	 * Width of the stages once the have been layouted.
+	 */
+	private List<Range> stageWidth;
 
 	public AutoLayoutFeature(IFeatureProvider fp) {
 		super(fp);
@@ -275,7 +276,329 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		// Step 3 - Layout fifo connections
 		layoutFifos(diagram);
 
-		// Step 4 - Layout Parameters and Dependencies
+		// Step 4 - Layout Parameters
+		layoutParameters(diagram);
+
+		// Step 5 - Layout Dependencies
+	}
+
+	/**
+	 * @param gaps
+	 * @param optimY
+	 * @param closestGap
+	 * @return Whether the given y Coordinate is closest to the top (
+	 *         <code>true</code>) or bottom (<code>false</code>) of the found
+	 *         closest Gap.
+	 */
+	protected boolean findClosestGap(List<Range> gaps, int optimY,
+			Range closestGap) {
+		boolean isTop = false; // closest to the top or the bottom of the
+								// range
+
+		int distance = Integer.MAX_VALUE;
+		for (Range range : gaps) {
+			int startDist = Math.abs(optimY - range.start);
+			int endDist = Math.abs(optimY - range.end);
+
+			int minDist = (startDist < endDist) ? startDist : endDist;
+
+			if (minDist <= distance) {
+				closestGap.start = range.start;
+				closestGap.end = range.end;
+				distance = minDist;
+				isTop = (startDist < endDist);
+			}
+		}
+		return isTop;
+	}
+
+	/**
+	 * @param cycle
+	 *            A list of {@link AbstractActor} forming a Cycle.
+	 */
+	protected List<Fifo> findCycleFeedbackFifos(List<AbstractActor> cycle) {
+		// Find the Fifos between each pair of actor of the cycle
+		List<List<Fifo>> cyclesFifos = new ArrayList<List<Fifo>>();
+		for (int i = 0; i < cycle.size(); i++) {
+			AbstractActor srcActor = cycle.get(i);
+			AbstractActor dstActor = cycle.get((i + 1) % cycle.size());
+
+			List<Fifo> outFifos = new ArrayList<Fifo>();
+			srcActor.getDataOutputPorts().forEach(
+					port -> {
+						if (port.getOutgoingFifo().getTargetPort().eContainer()
+								.equals(dstActor))
+							outFifos.add(port.getOutgoingFifo());
+					});
+			cyclesFifos.add(outFifos);
+		}
+
+		// Find a list of FIFO between a pair of actor with delays on all FIFOs
+		List<Fifo> feedbackFifos = null;
+		for (List<Fifo> cycleFifos : cyclesFifos) {
+			boolean hasDelays = true;
+			for (Fifo fifo : cycleFifos) {
+				hasDelays &= (fifo.getDelay() != null);
+			}
+
+			if (hasDelays) {
+				// Keep the shortest list of feedback delay
+				feedbackFifos = (feedbackFifos == null || feedbackFifos.size() > cycleFifos
+						.size()) ? cycleFifos : feedbackFifos;
+			}
+		}
+		if (feedbackFifos != null) {
+			return feedbackFifos;
+		} else {
+			// If no feedback fifo with delays were found. Select a list with a
+			// small number of fifos
+			cyclesFifos.sort((l1, l2) -> l1.size() - l2.size());
+			return cyclesFifos.get(0);
+		}
+	}
+
+	protected List<Fifo> findFeedbackFifos(PiGraph graph) {
+		List<Fifo> feedbackEdges = new ArrayList<Fifo>();
+
+		// Search for cycles in the graph
+		boolean hasCycle = false;
+		// fast search, find cycles one by one
+		FifoCycleDetector detector = new FifoCycleDetector(true);
+		do {
+			hasCycle = false;
+
+			// Find as many cycles as possible
+			detector.clear();
+			detector.addIgnoredFifos(feedbackEdges);
+			detector.doSwitch(graph);
+			List<List<AbstractActor>> cycles = detector.getCycles();
+
+			// Find the "feedback" fifo in each cycle
+			if (!cycles.isEmpty()) {
+				hasCycle = true;
+				// For each cycle find the feedback fifo(s).
+				for (List<AbstractActor> cycle : cycles) {
+					feedbackEdges.addAll(findCycleFeedbackFifos(cycle));
+				}
+			}
+		} while (hasCycle);
+
+		return feedbackEdges;
+	}
+
+	protected List<Parameter> findRootParameters(PiGraph graph,
+			List<Parameter> params) {
+		List<Parameter> roots = new ArrayList<Parameter>();
+
+		for (Parameter p : params) {
+			boolean hasDependencies = false;
+			for (ConfigInputPort port : p.getConfigInputPorts()) {
+				hasDependencies |= port.getIncomingDependency().getSetter() instanceof Parameter;
+			}
+
+			if (!hasDependencies) {
+				roots.add(p);
+			}
+		}
+		return roots;
+	}
+
+	/**
+	 * Find {@link AbstractActor} without any predecessors. {@link Fifo} passed
+	 * as parameters are ignored.
+	 * 
+	 * @param feedbackFifos
+	 *            {@link List} of ignored {@link Fifo}.
+	 * @param actors
+	 *            {@link AbstractActor} containing source actors.
+	 * @return the list of {@link AbstractActor} that do not have any
+	 *         predecessors
+	 */
+	protected List<AbstractActor> findSrcActors(List<Fifo> feedbackFifos,
+			List<AbstractActor> actors) {
+		final List<AbstractActor> srcActors = new ArrayList<AbstractActor>();
+		for (AbstractActor actor : actors) {
+			boolean hasInputFifos = false;
+
+			for (DataInputPort port : actor.getDataInputPorts()) {
+				hasInputFifos |= !feedbackFifos
+						.contains(port.getIncomingFifo());
+			}
+
+			if (!hasInputFifos) {
+				srcActors.add(actor);
+			}
+		}
+		return srcActors;
+	}
+
+	/**
+	 * @param diagram
+	 * @param fifo
+	 * @return
+	 * @throws RuntimeException
+	 */
+	protected ContainerShape getDelayPE(Diagram diagram, Fifo fifo)
+			throws RuntimeException {
+		// Get all delays with identical attributes (may not be the
+		// right delay is several delays have the same properties.)
+		List<PictogramElement> pes = Graphiti.getLinkService()
+				.getPictogramElements(diagram, fifo.getDelay());
+		PictogramElement pe = null;
+		for (PictogramElement p : pes) {
+			if (p instanceof ContainerShape
+					&& getBusinessObjectForPictogramElement(p) == fifo
+							.getDelay()) {
+				pe = p;
+			}
+		}
+		// if PE is still null.. something is deeply wrong with this
+		// graph !
+		if (pe == null) {
+			throw new RuntimeException(
+					"Pictogram element associated to delay of Fifo "
+							+ fifo.getId() + " could not be found.");
+		}
+		return (ContainerShape) pe;
+	}
+
+	/**
+	 * @param diagram
+	 * @param fifo
+	 * @return
+	 * @throws RuntimeException
+	 */
+	protected FreeFormConnection getFreeFormConnectionOfFifo(Diagram diagram,
+			Fifo fifo) throws RuntimeException {
+		List<PictogramElement> pes = Graphiti.getLinkService()
+				.getPictogramElements(diagram, fifo);
+		FreeFormConnection ffc = null;
+		for (PictogramElement pe : pes) {
+			if (getBusinessObjectForPictogramElement(pe) == fifo
+					&& pe instanceof FreeFormConnection) {
+				ffc = (FreeFormConnection) pe;
+			}
+		}
+
+		// if PE is still null.. something is deeply wrong with this
+		// graph !
+		if (ffc == null) {
+			throw new RuntimeException("Pictogram element associated Fifo "
+					+ fifo.getId() + " could not be found.");
+		}
+		return ffc;
+	}
+
+	@Override
+	public String getName() {
+		return "Layout Diagram";
+	}
+
+	/**
+	 * Get the index of the stage to which the actor belongs.
+	 * 
+	 * @param actor
+	 *            The searched {@link AbstractActor}
+	 * @param stagedActors
+	 *            the stages
+	 * @return the index of the stage containing the actor.
+	 */
+	protected int getStage(AbstractActor actor,
+			List<List<AbstractActor>> stagedActors) {
+		for (int i = 0; i < stagedActors.size(); i++) {
+			if (stagedActors.get(i).contains(actor)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	@Override
+	public boolean hasDoneChanges() {
+		return hasDoneChange;
+	}
+
+	protected void layoutActors(Diagram diagram) {
+		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(diagram);
+
+		if (!graph.getVertices().isEmpty()) {
+			feedbackFifos = findFeedbackFifos(graph);
+
+			// 2. Sort stage by stage (ignoring feedback FIFO)
+			stagedActors = stageByStageSort(graph, feedbackFifos);
+
+			// 3. Layout actors according to the topological order
+			stageByStageLayout(diagram, stagedActors);
+		}
+	}
+
+	protected void layoutFeedbackFifos(Diagram diagram,
+			List<Fifo> feedbackFifos, List<List<AbstractActor>> stagedActors,
+			List<List<Range>> stagesGaps, List<Range> stageWidth) {
+		// Sort FIFOs according to the number of stages through which they're
+		// going
+		List<Fifo> sortedFifos = new ArrayList<Fifo>(feedbackFifos);
+		sortedFifos.sort((f1, f2) -> {
+			int srcStage1 = getStage((AbstractActor) f1.getSourcePort()
+					.eContainer(), stagedActors);
+			int dstStage1 = getStage((AbstractActor) f1.getTargetPort()
+					.eContainer(), stagedActors);
+
+			int srcStage2 = getStage((AbstractActor) f2.getSourcePort()
+					.eContainer(), stagedActors);
+			int dstStage2 = getStage((AbstractActor) f2.getTargetPort()
+					.eContainer(), stagedActors);
+
+			return Math.abs(srcStage1 - dstStage1)
+					- Math.abs(srcStage2 - dstStage2);
+		});
+
+		// Add new gap on top of all stages
+		for (List<Range> gaps : stagesGaps) {
+			gaps.add(new Range(0, X_INIT));
+		}
+
+		// Layout feedback FIFOs one by one, from short to long distances
+		for (Fifo fifo : sortedFifos) {
+			FreeFormConnection ffc = getFreeFormConnectionOfFifo(diagram, fifo);
+
+			int srcStage = getStage((AbstractActor) fifo.getSourcePort()
+					.eContainer(), stagedActors);
+			int dstStage = getStage((AbstractActor) fifo.getTargetPort()
+					.eContainer(), stagedActors);
+
+			// Do the layout for each stage
+			for (int stageIdx = srcStage; stageIdx >= dstStage; stageIdx--) {
+				// Find the closest gap to the feedback fifo
+				Point penultimate = ffc.getBendpoints().get(
+						ffc.getBendpoints().size() - 2);
+				Range closestGap = new Range(-1, -1);
+				boolean isTop = findClosestGap(stagesGaps.get(stageIdx),
+						penultimate.getY(), closestGap);
+
+				// Make the Fifo go through this gap
+				int keptY = (isTop) ? closestGap.start + FIFO_SPACE
+						: closestGap.end - FIFO_SPACE;
+				keptY = (closestGap.start + FIFO_SPACE <= penultimate.getY() && closestGap.end
+						- FIFO_SPACE >= penultimate.getY()) ? penultimate
+						.getY() : keptY;
+				if (keptY != penultimate.getY()) {
+					ffc.getBendpoints().add(
+							ffc.getBendpoints().size() - 1,
+							Graphiti.getGaCreateService().createPoint(
+									stageWidth.get(stageIdx).end
+											+ BENDPOINT_SPACE, keptY));
+				}
+				ffc.getBendpoints().add(
+						ffc.getBendpoints().size() - 1,
+						Graphiti.getGaCreateService().createPoint(
+								stageWidth.get(stageIdx).start
+										- BENDPOINT_SPACE, keptY));
+
+				// Update Gaps
+				updateGaps(stagesGaps.get(stageIdx), keptY, closestGap);
+			}
+		}
 	}
 
 	protected void layoutFifos(Diagram diagram) {
@@ -388,124 +711,6 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		}
 	}
 
-	/**
-	 * @param diagram
-	 * @param fifo
-	 * @return
-	 * @throws RuntimeException
-	 */
-	protected ContainerShape getDelayPE(Diagram diagram, Fifo fifo)
-			throws RuntimeException {
-		// Get all delays with identical attributes (may not be the
-		// right delay is several delays have the same properties.)
-		List<PictogramElement> pes = Graphiti.getLinkService()
-				.getPictogramElements(diagram, fifo.getDelay());
-		PictogramElement pe = null;
-		for (PictogramElement p : pes) {
-			if (p instanceof ContainerShape
-					&& getBusinessObjectForPictogramElement(p) == fifo
-							.getDelay()) {
-				pe = p;
-			}
-		}
-		// if PE is still null.. something is deeply wrong with this
-		// graph !
-		if (pe == null) {
-			throw new RuntimeException(
-					"Pictogram element associated to delay of Fifo "
-							+ fifo.getId() + " could not be found.");
-		}
-		return (ContainerShape) pe;
-	}
-
-	protected void layoutFeedbackFifos(Diagram diagram,
-			List<Fifo> feedbackFifos, List<List<AbstractActor>> stagedActors,
-			List<List<Range>> stagesGaps, List<Range> stageWidth) {
-		// Sort FIFOs according to the number of stages through which they're
-		// going
-		List<Fifo> sortedFifos = new ArrayList<Fifo>(feedbackFifos);
-		sortedFifos.sort((f1, f2) -> {
-			int srcStage1 = getStage((AbstractActor) f1.getSourcePort()
-					.eContainer(), stagedActors);
-			int dstStage1 = getStage((AbstractActor) f1.getTargetPort()
-					.eContainer(), stagedActors);
-
-			int srcStage2 = getStage((AbstractActor) f2.getSourcePort()
-					.eContainer(), stagedActors);
-			int dstStage2 = getStage((AbstractActor) f2.getTargetPort()
-					.eContainer(), stagedActors);
-
-			return Math.abs(srcStage1 - dstStage1)
-					- Math.abs(srcStage2 - dstStage2);
-		});
-
-		// Add new gap on top of all stages
-		for (List<Range> gaps : stagesGaps) {
-			gaps.add(new Range(0, X_INIT));
-		}
-
-		// Layout feedback FIFOs one by one, from short to long distances
-		for (Fifo fifo : sortedFifos) {
-			FreeFormConnection ffc = getFreeFormConnectionOfFifo(diagram, fifo);
-
-			int srcStage = getStage((AbstractActor) fifo.getSourcePort()
-					.eContainer(), stagedActors);
-			int dstStage = getStage((AbstractActor) fifo.getTargetPort()
-					.eContainer(), stagedActors);
-
-			// Do the layout for each stage
-			for (int stageIdx = srcStage; stageIdx >= dstStage; stageIdx--) {
-				// Find the closest gap to the feedback fifo
-				Point penultimate = ffc.getBendpoints().get(
-						ffc.getBendpoints().size() - 2);
-				Range closestGap = new Range(-1, -1);
-				boolean isTop = findClosestGap(stagesGaps.get(stageIdx),
-						penultimate.getY(), closestGap);
-
-				// Make the Fifo go through this gap
-				int keptY = (isTop) ? closestGap.start + FIFO_SPACE
-						: closestGap.end - FIFO_SPACE;
-				keptY = (closestGap.start + FIFO_SPACE <= penultimate.getY() && closestGap.end
-						- FIFO_SPACE >= penultimate.getY()) ? penultimate
-						.getY() : keptY;
-				if (keptY != penultimate.getY()) {
-					ffc.getBendpoints().add(
-							ffc.getBendpoints().size() - 1,
-							Graphiti.getGaCreateService().createPoint(
-									stageWidth.get(stageIdx).end
-											+ BENDPOINT_SPACE, keptY));
-				}
-				ffc.getBendpoints().add(
-						ffc.getBendpoints().size() - 1,
-						Graphiti.getGaCreateService().createPoint(
-								stageWidth.get(stageIdx).start
-										- BENDPOINT_SPACE, keptY));
-
-				// Update Gaps
-				updateGaps(stagesGaps.get(stageIdx), keptY, closestGap);
-			}
-		}
-	}
-
-	/**
-	 * Get the index of the stage to which the actor belongs.
-	 * 
-	 * @param actor
-	 *            The searched {@link AbstractActor}
-	 * @param stagedActors
-	 *            the stages
-	 * @return the index of the stage containing the actor.
-	 */
-	protected int getStage(AbstractActor actor,
-			List<List<AbstractActor>> stagedActors) {
-		for (int i = 0; i < stagedActors.size(); i++) {
-			if (stagedActors.get(i).contains(actor)) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
 	protected void layoutInterStageFifos(Diagram diagram,
 			List<Fifo> interStageFifos, Range width, List<Range> gaps) {
 
@@ -588,213 +793,19 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		}
 	}
 
-	/**
-	 * @param gaps
-	 * @param optimY
-	 * @param closestGap
-	 * @return Whether the given y Coordinate is closest to the top (
-	 *         <code>true</code>) or bottom (<code>false</code>) of the found
-	 *         closest Gap.
-	 */
-	protected boolean findClosestGap(List<Range> gaps, int optimY,
-			Range closestGap) {
-		boolean isTop = false; // closest to the top or the bottom of the
-								// range
-
-		int distance = Integer.MAX_VALUE;
-		for (Range range : gaps) {
-			int startDist = Math.abs(optimY - range.start);
-			int endDist = Math.abs(optimY - range.end);
-
-			int minDist = (startDist < endDist) ? startDist : endDist;
-
-			if (minDist <= distance) {
-				closestGap.start = range.start;
-				closestGap.end = range.end;
-				distance = minDist;
-				isTop = (startDist < endDist);
-			}
-		}
-		return isTop;
-	}
-
-	/**
-	 * @param diagram
-	 * @param fifo
-	 * @return
-	 * @throws RuntimeException
-	 */
-	protected FreeFormConnection getFreeFormConnectionOfFifo(Diagram diagram,
-			Fifo fifo) throws RuntimeException {
-		List<PictogramElement> pes = Graphiti.getLinkService()
-				.getPictogramElements(diagram, fifo);
-		FreeFormConnection ffc = null;
-		for (PictogramElement pe : pes) {
-			if (getBusinessObjectForPictogramElement(pe) == fifo
-					&& pe instanceof FreeFormConnection) {
-				ffc = (FreeFormConnection) pe;
-			}
-		}
-
-		// if PE is still null.. something is deeply wrong with this
-		// graph !
-		if (ffc == null) {
-			throw new RuntimeException("Pictogram element associated Fifo "
-					+ fifo.getId() + " could not be found.");
-		}
-		return ffc;
-	}
-
-	/**
-	 * Update a list of {@link Range} after a {@link Fifo} passing through this
-	 * gap at coordinate keptY was added.
-	 * 
-	 * @param gaps
-	 *            the {@link List} of {@link Range} to update.
-	 * @param keptY
-	 *            the Y coordinate of the {@link Fifo}
-	 * @param matchedRange
-	 *            the {@link Range} within which the {@link Fifo} is going
-	 *            through.
-	 */
-	protected void updateGaps(List<Range> gaps, int keptY, Range matchedRange) {
-		gaps.remove(matchedRange);
-		Range before = new Range(matchedRange.start, keptY - FIFO_SPACE);
-		if ((before.end - before.start) >= FIFO_SPACE * 2) {
-			gaps.add(before);
-		}
-
-		Range after = new Range(keptY + FIFO_SPACE, matchedRange.end);
-		if (((after.end - after.start) >= FIFO_SPACE * 2) || after.end == -1) {
-			gaps.add(after);
-		}
-	}
-
-	/**
-	 * @param cycle
-	 *            A list of {@link AbstractActor} forming a Cycle.
-	 */
-	protected List<Fifo> findCycleFeedbackFifos(List<AbstractActor> cycle) {
-		// Find the Fifos between each pair of actor of the cycle
-		List<List<Fifo>> cyclesFifos = new ArrayList<List<Fifo>>();
-		for (int i = 0; i < cycle.size(); i++) {
-			AbstractActor srcActor = cycle.get(i);
-			AbstractActor dstActor = cycle.get((i + 1) % cycle.size());
-
-			List<Fifo> outFifos = new ArrayList<Fifo>();
-			srcActor.getDataOutputPorts().forEach(
-					port -> {
-						if (port.getOutgoingFifo().getTargetPort().eContainer()
-								.equals(dstActor))
-							outFifos.add(port.getOutgoingFifo());
-					});
-			cyclesFifos.add(outFifos);
-		}
-
-		// Find a list of FIFO between a pair of actor with delays on all FIFOs
-		List<Fifo> feedbackFifos = null;
-		for (List<Fifo> cycleFifos : cyclesFifos) {
-			boolean hasDelays = true;
-			for (Fifo fifo : cycleFifos) {
-				hasDelays &= (fifo.getDelay() != null);
-			}
-
-			if (hasDelays) {
-				// Keep the shortest list of feedback delay
-				feedbackFifos = (feedbackFifos == null || feedbackFifos.size() > cycleFifos
-						.size()) ? cycleFifos : feedbackFifos;
-			}
-		}
-		if (feedbackFifos != null) {
-			return feedbackFifos;
-		} else {
-			// If no feedback fifo with delays were found. Select a list with a
-			// small number of fifos
-			cyclesFifos.sort((l1, l2) -> l1.size() - l2.size());
-			return cyclesFifos.get(0);
-		}
-	}
-
-	protected List<Fifo> findFeedbackFifos(PiGraph graph) {
-		List<Fifo> feedbackEdges = new ArrayList<Fifo>();
-
-		// Search for cycles in the graph
-		boolean hasCycle = false;
-		// fast search, find cycles one by one
-		FifoCycleDetector detector = new FifoCycleDetector(true);
-		do {
-			hasCycle = false;
-
-			// Find as many cycles as possible
-			detector.clear();
-			detector.addIgnoredFifos(feedbackEdges);
-			detector.doSwitch(graph);
-			List<List<AbstractActor>> cycles = detector.getCycles();
-
-			// Find the "feedback" fifo in each cycle
-			if (!cycles.isEmpty()) {
-				hasCycle = true;
-				// For each cycle find the feedback fifo(s).
-				for (List<AbstractActor> cycle : cycles) {
-					feedbackEdges.addAll(findCycleFeedbackFifos(cycle));
-				}
-			}
-		} while (hasCycle);
-
-		return feedbackEdges;
-	}
-
-	/**
-	 * Find {@link AbstractActor} without any predecessors. {@link Fifo} passed
-	 * as parameters are ignored.
-	 * 
-	 * @param feedbackFifos
-	 *            {@link List} of ignored {@link Fifo}.
-	 * @param actors
-	 *            {@link AbstractActor} containing source actors.
-	 * @return the list of {@link AbstractActor} that do not have any
-	 *         predecessors
-	 */
-	protected List<AbstractActor> findSrcActors(List<Fifo> feedbackFifos,
-			List<AbstractActor> actors) {
-		final List<AbstractActor> srcActors = new ArrayList<AbstractActor>();
-		for (AbstractActor actor : actors) {
-			boolean hasInputFifos = false;
-
-			for (DataInputPort port : actor.getDataInputPorts()) {
-				hasInputFifos |= !feedbackFifos
-						.contains(port.getIncomingFifo());
-			}
-
-			if (!hasInputFifos) {
-				srcActors.add(actor);
-			}
-		}
-		return srcActors;
-	}
-
-	@Override
-	public String getName() {
-		return "Layout Diagram";
-	}
-
-	@Override
-	public boolean hasDoneChanges() {
-		return hasDoneChange;
-	}
-
-	protected void layoutActors(Diagram diagram) {
+	protected void layoutParameters(Diagram diagram) {
+		// Layout parameters in an inverted tree fashion (root at the top).
+		// Dependencies coming from configuration actors do not count.
 		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(diagram);
+		List<Parameter> params = new ArrayList<Parameter>(
+				graph.getAllParameters());
 
-		if (!graph.getVertices().isEmpty()) {
-			feedbackFifos = findFeedbackFifos(graph);
+		// 1. Sort parameters alphabetically
+		params.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
 
-			// 2. Sort stage by stage (ignoring feedback FIFO)
-			stagedActors = stageByStageSort(graph, feedbackFifos);
+		// 2. Find the root(s)
+		List<Parameter> roots = findRootParameters(graph, params);
 
-			// 3. Layout actors according to the topological order
-			stageByStageLayout(diagram, stagedActors);
-		}
 	}
 
 	/**
@@ -876,5 +887,30 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 				srcActors);
 
 		return stages;
+	}
+
+	/**
+	 * Update a list of {@link Range} after a {@link Fifo} passing through this
+	 * gap at coordinate keptY was added.
+	 * 
+	 * @param gaps
+	 *            the {@link List} of {@link Range} to update.
+	 * @param keptY
+	 *            the Y coordinate of the {@link Fifo}
+	 * @param matchedRange
+	 *            the {@link Range} within which the {@link Fifo} is going
+	 *            through.
+	 */
+	protected void updateGaps(List<Range> gaps, int keptY, Range matchedRange) {
+		gaps.remove(matchedRange);
+		Range before = new Range(matchedRange.start, keptY - FIFO_SPACE);
+		if ((before.end - before.start) >= FIFO_SPACE * 2) {
+			gaps.add(before);
+		}
+
+		Range after = new Range(keptY + FIFO_SPACE, matchedRange.end);
+		if (((after.end - after.start) >= FIFO_SPACE * 2) || after.end == -1) {
+			gaps.add(after);
+		}
 	}
 }
