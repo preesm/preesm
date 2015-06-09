@@ -266,4 +266,53 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
 	public void addIgnoredFifos(Collection<Fifo> fifos) {
 		ignoredFifos.addAll(fifos);		
 	}
+
+	/**
+	 * Considering a {@link List} of {@link AbstractActor} forming a cyclic
+	 * data-path (cf. {@link FifoCycleDetector}), this method returns a
+	 * {@link List} of all {@link Fifo} involved in this cyclic data-path.
+	 * 
+	 * @param cycle
+	 *            A list of {@link AbstractActor} forming a Cycle.
+	 */
+	public static List<Fifo> findCycleFeedbackFifos(List<AbstractActor> cycle) {
+		// Find the Fifos between each pair of actor of the cycle
+		List<List<Fifo>> cyclesFifos = new ArrayList<List<Fifo>>();
+		for (int i = 0; i < cycle.size(); i++) {
+			AbstractActor srcActor = cycle.get(i);
+			AbstractActor dstActor = cycle.get((i + 1) % cycle.size());
+	
+			List<Fifo> outFifos = new ArrayList<Fifo>();
+			srcActor.getDataOutputPorts().forEach(
+					port -> {
+						if (port.getOutgoingFifo().getTargetPort().eContainer()
+								.equals(dstActor))
+							outFifos.add(port.getOutgoingFifo());
+					});
+			cyclesFifos.add(outFifos);
+		}
+	
+		// Find a list of FIFO between a pair of actor with delays on all FIFOs
+		List<Fifo> feedbackFifos = null;
+		for (List<Fifo> cycleFifos : cyclesFifos) {
+			boolean hasDelays = true;
+			for (Fifo fifo : cycleFifos) {
+				hasDelays &= (fifo.getDelay() != null);
+			}
+	
+			if (hasDelays) {
+				// Keep the shortest list of feedback delay
+				feedbackFifos = (feedbackFifos == null || feedbackFifos.size() > cycleFifos
+						.size()) ? cycleFifos : feedbackFifos;
+			}
+		}
+		if (feedbackFifos != null) {
+			return feedbackFifos;
+		} else {
+			// If no feedback fifo with delays were found. Select a list with a
+			// small number of fifos
+			cyclesFifos.sort((l1, l2) -> l1.size() - l2.size());
+			return cyclesFifos.get(0);
+		}
+	}
 }

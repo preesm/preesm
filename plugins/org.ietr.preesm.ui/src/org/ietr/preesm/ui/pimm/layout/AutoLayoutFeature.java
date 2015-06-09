@@ -58,7 +58,6 @@ import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
-import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
@@ -84,6 +83,7 @@ import org.ietr.preesm.ui.pimm.features.AddDelayFeature;
 import org.ietr.preesm.ui.pimm.features.AddParameterFeature;
 import org.ietr.preesm.ui.pimm.features.DeleteDelayFeature;
 import org.ietr.preesm.ui.pimm.features.MoveAbstractActorFeature;
+import org.ietr.preesm.ui.pimm.util.DiagramPiGraphLinkHelper;
 
 /**
  * {@link AbstractCustomFeature} automating the layout process for PiMM graphs.
@@ -166,18 +166,6 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	@Override
 	public boolean canExecute(ICustomContext context) {
 		return true;
-	}
-
-	/**
-	 * Clear all the bendpoints of the {@link Fifo} and {@link Dependency} in
-	 * the diagram passed as a parameter.
-	 * 
-	 * @param diagram
-	 */
-	protected void clearBendpoints(Diagram diagram) {
-		for (Connection connection : diagram.getConnections()) {
-			((FreeFormConnection) connection).getBendpoints().clear();
-		}
 	}
 
 	/**
@@ -374,7 +362,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		hasDoneChange = true;
 
 		// Step 1 - Clear all bendpoints
-		clearBendpoints(diagram);
+		DiagramPiGraphLinkHelper.clearBendpoints(diagram);
 
 		// Step 2 - Layout actors in precedence order
 		// (ignoring cycles / delayed FIFOs in cycles)
@@ -427,55 +415,6 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	}
 
 	/**
-	 * Considering a {@link List} of {@link AbstractActor} forming a cyclic
-	 * data-path (cf. {@link FifoCycleDetector}), this method returns a
-	 * {@link List} of all {@link Fifo} involved in this cyclic data-path.
-	 * 
-	 * @param cycle
-	 *            A list of {@link AbstractActor} forming a Cycle.
-	 */
-	protected List<Fifo> findCycleFeedbackFifos(List<AbstractActor> cycle) {
-		// Find the Fifos between each pair of actor of the cycle
-		List<List<Fifo>> cyclesFifos = new ArrayList<List<Fifo>>();
-		for (int i = 0; i < cycle.size(); i++) {
-			AbstractActor srcActor = cycle.get(i);
-			AbstractActor dstActor = cycle.get((i + 1) % cycle.size());
-
-			List<Fifo> outFifos = new ArrayList<Fifo>();
-			srcActor.getDataOutputPorts().forEach(
-					port -> {
-						if (port.getOutgoingFifo().getTargetPort().eContainer()
-								.equals(dstActor))
-							outFifos.add(port.getOutgoingFifo());
-					});
-			cyclesFifos.add(outFifos);
-		}
-
-		// Find a list of FIFO between a pair of actor with delays on all FIFOs
-		List<Fifo> feedbackFifos = null;
-		for (List<Fifo> cycleFifos : cyclesFifos) {
-			boolean hasDelays = true;
-			for (Fifo fifo : cycleFifos) {
-				hasDelays &= (fifo.getDelay() != null);
-			}
-
-			if (hasDelays) {
-				// Keep the shortest list of feedback delay
-				feedbackFifos = (feedbackFifos == null || feedbackFifos.size() > cycleFifos
-						.size()) ? cycleFifos : feedbackFifos;
-			}
-		}
-		if (feedbackFifos != null) {
-			return feedbackFifos;
-		} else {
-			// If no feedback fifo with delays were found. Select a list with a
-			// small number of fifos
-			cyclesFifos.sort((l1, l2) -> l1.size() - l2.size());
-			return cyclesFifos.get(0);
-		}
-	}
-
-	/**
 	 * This method identifies so-called feedback {@link Fifo} that, if removed,
 	 * break all cyclic data-paths from a graph.
 	 * 
@@ -504,7 +443,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 				hasCycle = true;
 				// For each cycle find the feedback fifo(s).
 				for (List<AbstractActor> cycle : cycles) {
-					feedbackEdges.addAll(findCycleFeedbackFifos(cycle));
+					feedbackEdges.addAll(FifoCycleDetector
+							.findCycleFeedbackFifos(cycle));
 				}
 			}
 		} while (hasCycle);
@@ -569,40 +509,6 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	}
 
 	/**
-	 * Retrieve the {@link PictogramElement} of the {@link Diagram}
-	 * corresponding to the given {@link AbstractActor}.
-	 * 
-	 * @param diagram
-	 *            the {@link Diagram} containing the {@link PictogramElement}
-	 * @param actor
-	 *            the {@link AbstractActor} whose {@link PictogramElement} is
-	 *            searched.
-	 * @return the {@link PictogramElement} of the {@link AbstractActor}.
-	 * @throws RuntimeException
-	 *             if no {@link PictogramElement} could be found in this
-	 *             {@link Diagram} for this {@link AbstractActor}.
-	 */
-	protected PictogramElement getActorPE(Diagram diagram, AbstractActor actor)
-			throws RuntimeException {
-		// Get the PE
-		List<PictogramElement> pes = Graphiti.getLinkService()
-				.getPictogramElements(diagram, actor);
-		PictogramElement actorPE = null;
-		for (PictogramElement pe : pes) {
-			if (pe instanceof ContainerShape) {
-				actorPE = pe;
-				break;
-			}
-		}
-
-		if (actorPE == null) {
-			throw new RuntimeException("No PE was found for actor :"
-					+ actor.getName());
-		}
-		return actorPE;
-	}
-
-	/**
 	 * Get the index of the stage to which the actor belongs.
 	 * 
 	 * @param actor
@@ -619,79 +525,6 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 			}
 		}
 		return -1;
-	}
-
-	/**
-	 * Retrieve the {@link PictogramElement} of the {@link Diagram}
-	 * corresponding to the given {@link Fifo}.
-	 * 
-	 * @param diagram
-	 *            the {@link Diagram} containing the {@link PictogramElement}
-	 * @param fifo
-	 *            the {@link Fifo} whose {@link PictogramElement} is searched.
-	 * @return the {@link PictogramElement} of the {@link Fifo}.
-	 * @throws RuntimeException
-	 *             if no {@link PictogramElement} could be found in this
-	 *             {@link Diagram} for this {@link Fifo}.
-	 */
-	protected ContainerShape getDelayPE(Diagram diagram, Fifo fifo)
-			throws RuntimeException {
-		// Get all delays with identical attributes (may not be the
-		// right delay is several delays have the same properties.)
-		List<PictogramElement> pes = Graphiti.getLinkService()
-				.getPictogramElements(diagram, fifo.getDelay());
-		PictogramElement pe = null;
-		for (PictogramElement p : pes) {
-			if (p instanceof ContainerShape
-					&& getBusinessObjectForPictogramElement(p) == fifo
-							.getDelay()) {
-				pe = p;
-			}
-		}
-		// if PE is still null.. something is deeply wrong with this
-		// graph !
-		if (pe == null) {
-			throw new RuntimeException(
-					"Pictogram element associated to delay of Fifo "
-							+ fifo.getId() + " could not be found.");
-		}
-		return (ContainerShape) pe;
-	}
-
-	/**
-	 * Get the {@link FreeFormConnection} associated to an edge of the
-	 * {@link Diagram}. The Edge can either be a {@link Fifo} or a
-	 * {@link Dependency}.
-	 * 
-	 * @param diagram
-	 *            the {@link Diagram} containing the edge.
-	 * @param edge
-	 *            the {@link Fifo} or the {@link Dependency} whose
-	 *            {@link FreeFormConnection} is searched.
-	 * @return the searched {@link FreeFormConnection}.
-	 * @throws RuntimeException
-	 *             if not {@link FreeFormConnection} could be found, a
-	 *             {@link RuntimeException} is thrown
-	 */
-	protected FreeFormConnection getFreeFormConnectionOfEdge(Diagram diagram,
-			EObject edge) throws RuntimeException {
-		List<PictogramElement> pes = Graphiti.getLinkService()
-				.getPictogramElements(diagram, edge);
-		FreeFormConnection ffc = null;
-		for (PictogramElement pe : pes) {
-			if (getBusinessObjectForPictogramElement(pe) == edge
-					&& pe instanceof FreeFormConnection) {
-				ffc = (FreeFormConnection) pe;
-			}
-		}
-
-		// if PE is still null.. something is deeply wrong with this
-		// graph !
-		if (ffc == null) {
-			throw new RuntimeException("Pictogram element associated Edge "
-					+ edge + " could not be found.");
-		}
-		return ffc;
 	}
 
 	@Override
@@ -827,7 +660,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 				processedDependencies.add(dependency);
 
 				// Get the polyline
-				FreeFormConnection ffc = getFreeFormConnectionOfEdge(diagram,
+				FreeFormConnection ffc = DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram,
 						dependency);
 
 				// Get the type of the getter
@@ -859,8 +692,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 							|| getter instanceof DataOutputInterface) {
 
 						// Get position of target
-						PictogramElement getterPE = getActorPE(diagram,
-								(AbstractActor) getter);
+						PictogramElement getterPE = DiagramPiGraphLinkHelper
+								.getActorPE(diagram, (AbstractActor) getter);
 
 						// Get the Graphics algorithm
 						GraphicsAlgorithm actorGA = getterPE
@@ -914,8 +747,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 						// (or the gap just before if the delay is a feedback
 						// delay
 						// of an actor)
-						PictogramElement delayPE = getDelayPE(diagram,
-								(Fifo) getter.eContainer());
+						PictogramElement delayPE = DiagramPiGraphLinkHelper
+								.getDelayPE(diagram, (Fifo) getter.eContainer());
 						GraphicsAlgorithm delayGA = delayPE
 								.getGraphicsAlgorithm();
 
@@ -971,7 +804,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 			currentYUsed = false;
 
 			// get the FFC
-			FreeFormConnection ffc = getFreeFormConnectionOfEdge(diagram,
+			FreeFormConnection ffc = DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram,
 					dependency);
 
 			// Get the first bendpoint and move it
@@ -1049,7 +882,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
 		// Layout feedback FIFOs one by one, from short to long distances
 		for (Fifo fifo : sortedFifos) {
-			FreeFormConnection ffc = getFreeFormConnectionOfEdge(diagram, fifo);
+			FreeFormConnection ffc = DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, fifo);
 
 			int srcStage = getActorStage((AbstractActor) fifo.getSourcePort()
 					.eContainer(), stagedActors);
@@ -1104,7 +937,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		List<Fifo> fifos = graph.getFifos();
 		for (Fifo fifo : fifos) {
 			if (fifo.getDelay() != null) {
-				PictogramElement pe = getDelayPE(diagram, fifo);
+				PictogramElement pe = DiagramPiGraphLinkHelper.getDelayPE(
+						diagram, fifo);
 
 				// Do the disconnection
 				DeleteDelayFeature df = new DeleteDelayFeature(
@@ -1151,7 +985,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		// 3. Reconnect Delays to fifos
 		for (Fifo fifo : fifos) {
 			if (fifo.getDelay() != null) {
-				FreeFormConnection ffc = getFreeFormConnectionOfEdge(diagram,
+				FreeFormConnection ffc = DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram,
 						fifo);
 				// Find the position of the delay
 				int posX = 0;
@@ -1188,7 +1022,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 				posY = ((bPoints.get(0).getY() + bPoints.get(1).getY()) - AddDelayFeature.DELAY_SIZE) / 2;
 
 				// Move the delay to this position
-				ContainerShape pe = (ContainerShape) getDelayPE(diagram, fifo);
+				ContainerShape pe = (ContainerShape) DiagramPiGraphLinkHelper
+						.getDelayPE(diagram, fifo);
 				pe.getGraphicsAlgorithm().setX(posX);
 				pe.getGraphicsAlgorithm().setY(posY);
 
@@ -1229,7 +1064,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		Map<Fifo, FreeFormConnection> fifoFfcMap = new LinkedHashMap<Fifo, FreeFormConnection>();
 		for (Fifo fifo : interStageFifos) {
 			// Get freeform connection
-			FreeFormConnection ffc = getFreeFormConnectionOfEdge(diagram, fifo);
+			FreeFormConnection ffc = DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, fifo);
 			fifoFfcMap.put(fifo, ffc);
 		}
 
@@ -1357,7 +1192,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 			int currentY = Y_INIT;
 			int maxX = 0;
 			for (AbstractActor actor : stage) {
-				PictogramElement actorPE = getActorPE(diagram, actor);
+				PictogramElement actorPE = DiagramPiGraphLinkHelper.getActorPE(
+						diagram, actor);
 
 				// Get the Graphics algorithm
 				GraphicsAlgorithm actorGA = actorPE.getGraphicsAlgorithm();

@@ -36,6 +36,7 @@
 package org.ietr.preesm.ui.pimm.features;
 
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
@@ -43,8 +44,14 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 
 /**
  * Custom feature to move up a port.
@@ -79,7 +86,7 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
 	@Override
 	public boolean canExecute(ICustomContext context) {
 		// allow move up if exactly one pictogram element
-		// representing a Port is selected 
+		// representing a Port is selected
 		// and it is not the first port
 		boolean ret = false;
 		PictogramElement[] pes = context.getPictogramElements();
@@ -88,27 +95,36 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
 			if (bo instanceof Port) {
 				Port port = (Port) bo;
 				if (port.eContainer() instanceof ExecutableActor) {
-					ExecutableActor actor = (ExecutableActor)(port.eContainer());
-					String kind = port.getKind();
-					if(kind.compareTo("input") == 0){
+					ExecutableActor actor = (ExecutableActor) (port
+							.eContainer());
+					switch (port.getKind()) {
+					case PiIdentifiers.DATA_INPUT_PORT:
 						ret = actor.getDataInputPorts().size() > 1;
-						ret = ret && actor.getDataInputPorts().indexOf(port) > 0;
-					}else if(kind.compareTo("output") == 0){
+						ret = ret
+								&& actor.getDataInputPorts().indexOf(port) > 0;
+						break;
+					case PiIdentifiers.DATA_OUTPUT_PORT:
 						ret = actor.getDataOutputPorts().size() > 1;
-						ret = ret && actor.getDataOutputPorts().indexOf(port) > 0;
-					}else if(kind.compareTo("cfg_input") == 0){
+						ret = ret
+								&& actor.getDataOutputPorts().indexOf(port) > 0;
+						break;
+					case PiIdentifiers.CONFIGURATION_INPUT_PORT:
 						ret = actor.getConfigInputPorts().size() > 1;
-						ret = ret && actor.getConfigInputPorts().indexOf(port) > 0;
-					}else if(kind.compareTo("cfg_output") == 0){
+						ret = ret
+								&& actor.getConfigInputPorts().indexOf(port) > 0;
+						break;
+					case PiIdentifiers.CONFIGURATION_OUPUT_PORT:
 						ret = actor.getConfigOutputPorts().size() > 1;
-						ret = ret && actor.getConfigOutputPorts().indexOf(port) > 0;
+						ret = ret
+								&& actor.getConfigOutputPorts().indexOf(port) > 0;
+						break;
 					}
 				}
 			}
 		}
 		return ret;
 	}
-	
+
 	protected boolean avoidNegativeCoordinates() {
 		return false;
 	}
@@ -120,72 +136,125 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
 		if (pes != null && pes.length == 1) {
 			Object bo = getBusinessObjectForPictogramElement(pes[0]);
 			if (bo instanceof Port) {
-				Port portToMoveUp, portToMoveDown;
-				int portToMoveUpIndex, portToMoveDownIndex;
+				Port portToMoveUp = null, portToMoveDown = null;
+				int portToMoveUpIndex = -1, portToMoveDownIndex = -1;
 				ExecutableActor actor;
-				
+
 				portToMoveUp = (Port) bo;
-				actor = (ExecutableActor)(portToMoveUp.eContainer());
+				actor = (ExecutableActor) (portToMoveUp.eContainer());
 				String portKind = portToMoveUp.getKind();
 
 				// Switch Port into Actor Object
-				if(portKind.compareTo("input") == 0){
-					portToMoveUpIndex = actor.getDataInputPorts().indexOf(portToMoveUp);
-					portToMoveDown = actor.getDataInputPorts().get(portToMoveUpIndex-1);
-				}else if(portKind.compareTo("output") == 0){
-					portToMoveUpIndex = actor.getDataOutputPorts().indexOf(portToMoveUp);
-					portToMoveDown = actor.getDataOutputPorts().get(portToMoveUpIndex-1);
-				}else if(portKind.compareTo("cfg_input") == 0){
-					portToMoveUpIndex = actor.getConfigInputPorts().indexOf(portToMoveUp);
-					portToMoveDown = actor.getConfigInputPorts().get(portToMoveUpIndex-1);
-				}else if(portKind.compareTo("cfg_output") == 0){
-					portToMoveUpIndex = actor.getConfigOutputPorts().indexOf(portToMoveUp);
-					portToMoveDown = actor.getConfigOutputPorts().get(portToMoveUpIndex-1);
-				}else{
-					return;
+				switch (portKind) {
+				case PiIdentifiers.DATA_INPUT_PORT:
+					portToMoveUpIndex = actor.getDataInputPorts().indexOf(
+							portToMoveUp);
+					portToMoveDown = actor.getDataInputPorts().get(
+							portToMoveUpIndex - 1);
+					break;
+				case PiIdentifiers.DATA_OUTPUT_PORT:
+					portToMoveUpIndex = actor.getDataOutputPorts().indexOf(
+							portToMoveUp);
+					portToMoveDown = actor.getDataOutputPorts().get(
+							portToMoveUpIndex - 1);
+					break;
+				case PiIdentifiers.CONFIGURATION_INPUT_PORT:
+					portToMoveUpIndex = actor.getConfigInputPorts().indexOf(
+							portToMoveUp);
+					portToMoveDown = actor.getConfigInputPorts().get(
+							portToMoveUpIndex - 1);
+					break;
+				case PiIdentifiers.CONFIGURATION_OUPUT_PORT:
+					portToMoveUpIndex = actor.getConfigOutputPorts().indexOf(
+							portToMoveUp);
+					portToMoveDown = actor.getConfigOutputPorts().get(
+							portToMoveUpIndex - 1);
+					break;
 				}
-				portToMoveDownIndex = portToMoveUpIndex-1;
-				
+				portToMoveDownIndex = portToMoveUpIndex - 1;
+
 				// Switch Graphical Elements
-				int anchorToMoveUpIndex, anchorToMoveDownIndex=-1;
-				ContainerShape CsActor = (ContainerShape) ((BoxRelativeAnchor) pes[0]).getReferencedGraphicsAlgorithm().getPictogramElement();
+				int anchorToMoveUpIndex, anchorToMoveDownIndex = -1;
+				ContainerShape CsActor = (ContainerShape) ((BoxRelativeAnchor) pes[0])
+						.getReferencedGraphicsAlgorithm().getPictogramElement();
 				EList<Anchor> anchors = CsActor.getAnchors();
-				
+
 				anchorToMoveUpIndex = anchors.indexOf(pes[0]);
-				
-				for(Anchor a : anchors){
-					if(a.getLink().getBusinessObjects().get(0).equals(portToMoveDown)){
-						anchorToMoveDownIndex = anchors.indexOf(a);					
+
+				for (Anchor a : anchors) {
+					if (a.getLink().getBusinessObjects().get(0)
+							.equals(portToMoveDown)) {
+						anchorToMoveDownIndex = anchors.indexOf(a);
 						break;
 					}
 				}
-				
-				if(anchorToMoveDownIndex == -1)
+
+				if (anchorToMoveDownIndex == -1)
 					return;
 
 				// Do Modifications
 				this.hasDoneChanges = true;
-				
-				if(portKind.compareTo("input") == 0){
-					actor.getDataInputPorts().move(portToMoveDownIndex, portToMoveUpIndex);
-				}else if(portKind.compareTo("output") == 0){
-					actor.getDataOutputPorts().move(portToMoveDownIndex, portToMoveUpIndex);
-				}else if(portKind.compareTo("cfg_input") == 0){
-					actor.getConfigInputPorts().move(portToMoveDownIndex, portToMoveUpIndex);
-				}else if(portKind.compareTo("cfg_output") == 0){
-					actor.getConfigOutputPorts().move(portToMoveDownIndex, portToMoveUpIndex);
+
+				switch (portKind) {
+				case PiIdentifiers.DATA_INPUT_PORT:
+					actor.getDataInputPorts().move(portToMoveDownIndex,
+							portToMoveUpIndex);
+					break;
+				case PiIdentifiers.DATA_OUTPUT_PORT:
+					actor.getDataOutputPorts().move(portToMoveDownIndex,
+							portToMoveUpIndex);
+					break;
+				case PiIdentifiers.CONFIGURATION_INPUT_PORT:
+					actor.getConfigInputPorts().move(portToMoveDownIndex,
+							portToMoveUpIndex);
+					break;
+				case PiIdentifiers.CONFIGURATION_OUPUT_PORT:
+					actor.getConfigOutputPorts().move(portToMoveDownIndex,
+							portToMoveUpIndex);
+					break;
 				}
 				anchors.move(anchorToMoveDownIndex, anchorToMoveUpIndex);
-				
-				
+
 				// Layout the Port
 				layoutPictogramElement(pes[0]);
 				updatePictogramElement(pes[0]);
 
-				// Layout the actor				
+				// Layout the actor
 				layoutPictogramElement(CsActor);
 				updatePictogramElement(CsActor);
+
+				// Layout the FIFOs / Dependencies connected to these ports (if
+				// any)
+				EObject edge = null;
+				switch (portToMoveUp.getKind()) {
+				case PiIdentifiers.DATA_INPUT_PORT:
+					edge = ((DataInputPort) portToMoveUp).getIncomingFifo();
+					break;
+
+				case PiIdentifiers.DATA_OUTPUT_PORT:
+					edge = ((DataOutputPort) portToMoveUp).getOutgoingFifo();
+					break;
+
+				case PiIdentifiers.CONFIGURATION_INPUT_PORT:
+					edge = ((ConfigInputPort) portToMoveUp)
+							.getIncomingDependency();
+					break;
+
+				case PiIdentifiers.CONFIGURATION_OUPUT_PORT:
+					EList<Dependency> outgoingDependencies = ((ConfigOutputPort) portToMoveUp)
+							.getOutgoingDependencies();
+					if (outgoingDependencies.size() > 0) {
+						edge = outgoingDependencies.get(0);
+					} else {
+						edge = null;
+					}
+					break;
+				}
 				
+				// If the port is connected to an edge
+				if(edge != null){
+					
+				}
 			}
 		}
 	}
