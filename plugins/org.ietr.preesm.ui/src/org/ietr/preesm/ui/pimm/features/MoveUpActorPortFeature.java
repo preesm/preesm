@@ -35,19 +35,25 @@
  ******************************************************************************/
 package org.ietr.preesm.ui.pimm.features;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.EObject;
+import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
+import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
+import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
+import org.eclipse.graphiti.services.Graphiti;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
-import org.ietr.preesm.experiment.model.pimm.DataInputPort;
-import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -57,6 +63,7 @@ import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
  * Custom feature to move up a port.
  * 
  * @author jheulot
+ * @author kdesnos
  * 
  */
 public class MoveUpActorPortFeature extends AbstractCustomFeature {
@@ -134,7 +141,8 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
 		// Re-check if only one element is selected
 		PictogramElement[] pes = context.getPictogramElements();
 		if (pes != null && pes.length == 1) {
-			Object bo = getBusinessObjectForPictogramElement(pes[0]);
+			PictogramElement anchorToMoveUp = pes[0];
+			Object bo = getBusinessObjectForPictogramElement(anchorToMoveUp);
 			if (bo instanceof Port) {
 				Port portToMoveUp = null, portToMoveDown = null;
 				int portToMoveUpIndex = -1, portToMoveDownIndex = -1;
@@ -173,24 +181,31 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
 				}
 				portToMoveDownIndex = portToMoveUpIndex - 1;
 
-				// Switch Graphical Elements
+				// Get Graphical Elements
 				int anchorToMoveUpIndex, anchorToMoveDownIndex = -1;
-				ContainerShape CsActor = (ContainerShape) ((BoxRelativeAnchor) pes[0])
+				ContainerShape csActor = (ContainerShape) ((BoxRelativeAnchor) anchorToMoveUp)
 						.getReferencedGraphicsAlgorithm().getPictogramElement();
-				EList<Anchor> anchors = CsActor.getAnchors();
+				EList<Anchor> anchors = csActor.getAnchors();
 
-				anchorToMoveUpIndex = anchors.indexOf(pes[0]);
-
+				anchorToMoveUpIndex = anchors.indexOf(anchorToMoveUp);
+				Anchor anchorToMoveDown = null;
 				for (Anchor a : anchors) {
 					if (a.getLink().getBusinessObjects().get(0)
 							.equals(portToMoveDown)) {
 						anchorToMoveDownIndex = anchors.indexOf(a);
+						anchorToMoveDown = a;
 						break;
 					}
 				}
 
 				if (anchorToMoveDownIndex == -1)
 					return;
+
+				// Get the FFC connected to these ports (if any)
+				List<Point> pointsToMoveUp = getPointToMove(
+						(Anchor) anchorToMoveUp, portToMoveUp);
+				List<Point> pointsToMoveDown = getPointToMove(anchorToMoveDown,
+						portToMoveDown);
 
 				// Do Modifications
 				this.hasDoneChanges = true;
@@ -216,47 +231,87 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
 				anchors.move(anchorToMoveDownIndex, anchorToMoveUpIndex);
 
 				// Layout the Port
-				layoutPictogramElement(pes[0]);
-				updatePictogramElement(pes[0]);
+				layoutPictogramElement(anchorToMoveUp);
+				updatePictogramElement(anchorToMoveUp);
 
 				// Layout the actor
-				layoutPictogramElement(CsActor);
-				updatePictogramElement(CsActor);
+				layoutPictogramElement(csActor);
+				updatePictogramElement(csActor);
 
-				// Layout the FIFOs / Dependencies connected to these ports (if
-				// any)
-				EObject edge = null;
-				switch (portToMoveUp.getKind()) {
-				case PiIdentifiers.DATA_INPUT_PORT:
-					edge = ((DataInputPort) portToMoveUp).getIncomingFifo();
-					break;
+				// Realign the ports to move
+				realignPoints((Anchor) anchorToMoveUp, pointsToMoveUp);
+				realignPoints(anchorToMoveDown, pointsToMoveDown);
+			}
+		}
+	}
 
-				case PiIdentifiers.DATA_OUTPUT_PORT:
-					edge = ((DataOutputPort) portToMoveUp).getOutgoingFifo();
-					break;
+	protected void realignPoints(Anchor anchor, List<Point> points) {
+		ILocation anchorLoc = Graphiti.getPeLayoutService()
+				.getLocationRelativeToDiagram(anchor);
+		int yPos = anchorLoc.getY() + anchor.getGraphicsAlgorithm().getHeight()
+				/ 2;
+		for (Point p : points) {
+			p.setY(yPos);
+		}
+	}
 
-				case PiIdentifiers.CONFIGURATION_INPUT_PORT:
-					edge = ((ConfigInputPort) portToMoveUp)
-							.getIncomingDependency();
-					break;
+	/**
+	 * @param anchor
+	 * @param portToMove
+	 * @return
+	 * @throws RuntimeException
+	 */
+	protected List<Point> getPointToMove(Anchor anchor, Port portToMove)
+			throws RuntimeException {
+		List<Connection> edges = new ArrayList<Connection>();
+		boolean fromStart = true;
+		switch (portToMove.getKind()) {
+		case PiIdentifiers.DATA_INPUT_PORT:
+			edges = anchor.getIncomingConnections();
+			fromStart = false;
+			break;
 
-				case PiIdentifiers.CONFIGURATION_OUPUT_PORT:
-					EList<Dependency> outgoingDependencies = ((ConfigOutputPort) portToMoveUp)
-							.getOutgoingDependencies();
-					if (outgoingDependencies.size() > 0) {
-						edge = outgoingDependencies.get(0);
-					} else {
-						edge = null;
-					}
+		case PiIdentifiers.DATA_OUTPUT_PORT:
+			edges = anchor.getOutgoingConnections();
+			fromStart = true;
+			break;
+
+		case PiIdentifiers.CONFIGURATION_INPUT_PORT:
+			edges = anchor.getIncomingConnections();
+			fromStart = false;
+			break;
+
+		case PiIdentifiers.CONFIGURATION_OUPUT_PORT:
+			EList<Dependency> outgoingDependencies = ((ConfigOutputPort) portToMove)
+					.getOutgoingDependencies();
+			fromStart = true;
+			if (outgoingDependencies.size() > 0) {
+				edges = anchor.getOutgoingConnections();
+			}
+			break;
+		}
+
+		// If the port is connected to edges
+		List<Point> pointsToMove = new ArrayList<Point>();
+		for (Connection edge : edges) {
+			LinkedList<Point> points = new LinkedList<Point>(
+					((FreeFormConnection) edge).getBendpoints());
+			Iterator<Point> iter = (fromStart) ? points.iterator() : points
+					.descendingIterator();
+			for (; iter.hasNext();) {
+				Point point = iter.next();
+				ILocation anchorLoc = Graphiti.getPeLayoutService()
+						.getLocationRelativeToDiagram(anchor);
+				int posY = anchorLoc.getY()
+						+ anchor.getGraphicsAlgorithm().getHeight() / 2;
+				if (((posY + 1) >= point.getY() && (posY - 1) <= point.getY())) {
+					pointsToMove.add(point);
+				} else {
 					break;
-				}
-				
-				// If the port is connected to an edge
-				if(edge != null){
-					
 				}
 			}
 		}
+		return pointsToMove;
 	}
 
 	@Override
