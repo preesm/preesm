@@ -35,7 +35,6 @@
  ******************************************************************************/
 package org.ietr.preesm.ui.pimm.layout;
 
-import java.nio.channels.GatheringByteChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -283,6 +282,20 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		return stages;
 	}
 
+	/**
+	 * Create {@link List} of {@link List} of {@link Parameter} where each
+	 * innermost {@link List} is called a stage. An {@link Parameter} is put in
+	 * a stage only if all its predecessors are already added to previous
+	 * stages.
+	 * 
+	 * @param params
+	 *            the {@link List} of {@link Parameter} to organize into stages.
+	 * @param roots
+	 *            the roots {@link Parameter} (i.e. parameters without
+	 *            predecessors).
+	 * @return the created {@link List} of stages where each stage is a
+	 *         {@link List} of {@link Parameter}.
+	 */
 	protected List<List<Parameter>> createParameterStages(
 			List<Parameter> params, List<Parameter> roots) {
 		// Initializations
@@ -375,9 +388,18 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	}
 
 	/**
+	 * Given a list of vertical gaps (i.e. a {@link List} of {@link Range}) and
+	 * a y-coordinate, this method finds the {@link Range} that is closest to
+	 * the given coordinate.
+	 * 
 	 * @param gaps
+	 *            the {@link List} of {@link Range}
 	 * @param optimY
+	 *            the searched y-coordinate
 	 * @param closestGap
+	 *            {@link Range} used as an output {@link Parameter}. Its
+	 *            attributes will be set to the start and end values of the
+	 *            closest gap found in the list.
 	 * @return Whether the given y Coordinate is closest to the top (
 	 *         <code>true</code>) or bottom (<code>false</code>) of the found
 	 *         closest Gap.
@@ -405,6 +427,10 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	}
 
 	/**
+	 * Considering a {@link List} of {@link AbstractActor} forming a cyclic
+	 * data-path (cf. {@link FifoCycleDetector}), this method returns a
+	 * {@link List} of all {@link Fifo} involved in this cyclic data-path.
+	 * 
 	 * @param cycle
 	 *            A list of {@link AbstractActor} forming a Cycle.
 	 */
@@ -449,6 +475,14 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		}
 	}
 
+	/**
+	 * This method identifies so-called feedback {@link Fifo} that, if removed,
+	 * break all cyclic data-paths from a graph.
+	 * 
+	 * @param graph
+	 *            the graph within which feedback {@link Fifo} are searched.
+	 * @return a {@link List} of {@link Fifo}
+	 */
 	protected List<Fifo> findFeedbackFifos(PiGraph graph) {
 		List<Fifo> feedbackEdges = new ArrayList<Fifo>();
 
@@ -478,8 +512,18 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		return feedbackEdges;
 	}
 
-	protected List<Parameter> findRootParameters(PiGraph graph,
-			List<Parameter> params) {
+	/**
+	 * Find {@link Parameter} of a graph that do no depend on other
+	 * {@link Parameter}. {@link Dependency} to Configuration
+	 * {@link AbstractActor} are not considered when searching for root
+	 * {@link Parameter}.
+	 * 
+	 * @param params
+	 *            the {@link List} of {@link Parameter} within which roots are
+	 *            searched.
+	 * @return the {@link List} of roots.
+	 */
+	protected List<Parameter> findRootParameters(List<Parameter> params) {
 		List<Parameter> roots = new ArrayList<Parameter>();
 
 		for (Parameter p : params) {
@@ -525,10 +569,18 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	}
 
 	/**
+	 * Retrieve the {@link PictogramElement} of the {@link Diagram}
+	 * corresponding to the given {@link AbstractActor}.
+	 * 
 	 * @param diagram
+	 *            the {@link Diagram} containing the {@link PictogramElement}
 	 * @param actor
-	 * @return
+	 *            the {@link AbstractActor} whose {@link PictogramElement} is
+	 *            searched.
+	 * @return the {@link PictogramElement} of the {@link AbstractActor}.
 	 * @throws RuntimeException
+	 *             if no {@link PictogramElement} could be found in this
+	 *             {@link Diagram} for this {@link AbstractActor}.
 	 */
 	protected PictogramElement getActorPE(Diagram diagram, AbstractActor actor)
 			throws RuntimeException {
@@ -570,10 +622,17 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	}
 
 	/**
+	 * Retrieve the {@link PictogramElement} of the {@link Diagram}
+	 * corresponding to the given {@link Fifo}.
+	 * 
 	 * @param diagram
+	 *            the {@link Diagram} containing the {@link PictogramElement}
 	 * @param fifo
-	 * @return
+	 *            the {@link Fifo} whose {@link PictogramElement} is searched.
+	 * @return the {@link PictogramElement} of the {@link Fifo}.
 	 * @throws RuntimeException
+	 *             if no {@link PictogramElement} could be found in this
+	 *             {@link Diagram} for this {@link Fifo}.
 	 */
 	protected ContainerShape getDelayPE(Diagram diagram, Fifo fifo)
 			throws RuntimeException {
@@ -600,10 +659,19 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	}
 
 	/**
+	 * Get the {@link FreeFormConnection} associated to an edge of the
+	 * {@link Diagram}. The Edge can either be a {@link Fifo} or a
+	 * {@link Dependency}.
+	 * 
 	 * @param diagram
+	 *            the {@link Diagram} containing the edge.
 	 * @param edge
-	 * @return
+	 *            the {@link Fifo} or the {@link Dependency} whose
+	 *            {@link FreeFormConnection} is searched.
+	 * @return the searched {@link FreeFormConnection}.
 	 * @throws RuntimeException
+	 *             if not {@link FreeFormConnection} could be found, a
+	 *             {@link RuntimeException} is thrown
 	 */
 	protected FreeFormConnection getFreeFormConnectionOfEdge(Diagram diagram,
 			EObject edge) throws RuntimeException {
@@ -632,10 +700,18 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	}
 
 	/**
+	 * Get the stage within which a {@link Parameter} was placed within a
+	 * {@link List} of stage. (cf.
+	 * {@link AutoLayoutFeature#createParameterStages(List, List)}).
+	 * 
 	 * @param stagedParameters
+	 *            the list of stages, as create by the
+	 *            {@link AutoLayoutFeature#createParameterStages(List, List)})
+	 *            method.
 	 * @param param
-	 * @param setterStage
-	 * @return
+	 *            the {@link Parameter} whose stage index is searched.
+	 * @return the index of the {@link Parameter} stage, or <code>-1</code> if
+	 *         the {@link Parameter} was not found in the given {@link List}.
 	 */
 	protected int getParameterStage(List<List<Parameter>> stagedParameters,
 			Parameter param) {
@@ -649,8 +725,17 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	}
 
 	/**
+	 * Sort the {@link Parameter} in the vertical order in which they will be
+	 * layouted. Each {@link Parameter} will have its own vertical column during
+	 * the layout process (but will share a stage with other parameters). This
+	 * method makes sure that the vertical order puts as close as possible to
+	 * each other parameters with dependencies.
+	 * 
 	 * @param stagedParameters
-	 * @return
+	 *            the {@link List} of stage produced by
+	 *            {@link #createParameterStages(List, List)}.
+	 * @return the {@link List} of {@link Parameter} sorted in their vertical
+	 *         order.
 	 */
 	protected List<Parameter> getParameterVerticalOrder(
 			List<List<Parameter>> stagedParameters) {
@@ -686,6 +771,12 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		return hasDoneChange;
 	}
 
+	/**
+	 * Layout the {@link AbstractActor} of a {@link Diagram}.
+	 * 
+	 * @param diagram
+	 *            the {@link Diagram} whose {@link AbstractActor} are layouted.
+	 */
 	protected void layoutActors(Diagram diagram) {
 		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(diagram);
 
@@ -700,6 +791,18 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		}
 	}
 
+	/**
+	 * Layout the {@link Dependency} of a {@link Diagram}.
+	 * 
+	 * @param diagram
+	 *            the {@link Diagram} whose {@link AbstractActor} are layouted.
+	 * @param stagedParameters
+	 *            stage of {@link Parameter}, as created by
+	 *            {@link #createParameterStages(List, List)}.
+	 * @param paramVertOrder
+	 *            {@link List} of {@link Parameter} in their vertical order, as
+	 *            sorted by {@link #getParameterVerticalOrder(List)}.
+	 */
 	protected void layoutDependencies(Diagram diagram,
 			List<List<Parameter>> stagedParameters,
 			List<Parameter> paramVertOrder) {
@@ -707,7 +810,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		// Variable used for the straight horizontal dependencies used to
 		// distributes values to actors
 		int currentY = yParamInitPos + DEPENDENCY_SPACE;
-		int currentX = 0; // (DEPENDENCY_SPACE / 2) * paramVertOrder.size() ;
+		int currentX = 0;
 		boolean currentYUsed = false;
 		List<Dependency> processedDependencies = new ArrayList<Dependency>();
 
@@ -901,6 +1004,23 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		}
 	}
 
+	/**
+	 * Layout the feedback {@link Fifo} of a {@link Diagram} (cf.
+	 * {@link #findFeedbackFifos(PiGraph)}).
+	 * 
+	 * @param diagram
+	 *            {@link Diagram} whose feedback {@link Fifo} are layouted.
+	 * @param feedbackFifos
+	 *            the {@link List} of feedback {@link Fifo} (cf.
+	 *            {@link #findFeedbackFifos(PiGraph)}).
+	 * @param stagedActors
+	 *            the {@link AbstractActor} of the {@link Diagram} sorted
+	 *            stage-by-stage.
+	 * @param stagesGaps
+	 *            the vertical gaps between {@link AbstractActor} in each stage.
+	 * @param stageWidth
+	 *            the horizontal width of each stage of {@link AbstractActor}
+	 */
 	protected void layoutFeedbackFifos(Diagram diagram,
 			List<Fifo> feedbackFifos, List<List<AbstractActor>> stagedActors,
 			List<List<Range>> stagesGaps, List<Range> stageWidth) {
@@ -970,6 +1090,12 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		}
 	}
 
+	/**
+	 * Layout the {@link Fifo} of a {@link Diagram}.
+	 * 
+	 * @param diagram
+	 *            the {@link Diagram} whose {@link Fifo} are layouted.
+	 */
 	protected void layoutFifos(Diagram diagram) {
 
 		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(diagram);
@@ -1080,6 +1206,21 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		}
 	}
 
+	/**
+	 * Layout {@link Fifo} spanning over multiple stages of
+	 * {@link AbstractActor}.
+	 * 
+	 * @param diagram
+	 *            {@link Diagram} containing the {@link Fifo}
+	 * @param interStageFifos
+	 *            {@link List} of {@link Fifo} to layout.
+	 * @param width
+	 *            the width of the current stage as a {@link Range} of
+	 *            x-coordinate.
+	 * @param gaps
+	 *            Vertical gaps for this stage of {@link AbstractActor} as a
+	 *            {@link List} of {@link Range} of y-coordinates.
+	 */
 	protected void layoutInterStageFifos(Diagram diagram,
 			List<Fifo> interStageFifos, Range width, List<Range> gaps) {
 
@@ -1162,6 +1303,12 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		}
 	}
 
+	/**
+	 * Layout the {@link Parameter} of a {@link Diagram}.
+	 * 
+	 * @param diagram
+	 *            the {@link Diagram} whose {@link Parameter} are layouted.
+	 */
 	protected void layoutParameters(Diagram diagram) {
 		// Layout parameters in an inverted tree fashion (root at the top).
 		// Dependencies coming from configuration actors do not count.
@@ -1172,7 +1319,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		params.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
 
 		// 2. Find the root(s)
-		List<Parameter> roots = findRootParameters(graph, params);
+		List<Parameter> roots = findRootParameters(params);
 
 		// 3. Find the "stages" of the tree
 		// (i.e. parameters with equal distances to a their farthest root)
@@ -1188,9 +1335,14 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	}
 
 	/**
+	 * Layout the {@link AbstractActor} of a {@link Diagram} in the
+	 * stage-by-stage fashion.
+	 * 
 	 * @param diagram
+	 *            {@link Diagram} whose {@link AbstractActor} are layouted.
 	 * @param stagedActors
-	 * @throws RuntimeException
+	 *            {@link List} of stages, where each stage is a {@link List} of
+	 *            {@link AbstractActor}.
 	 */
 	protected void stageByStageActorLayout(Diagram diagram,
 			List<List<AbstractActor>> stagedActors) throws RuntimeException {
@@ -1217,9 +1369,6 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 						(Shape) actorPE);
 				moveContext.setX(currentX);
 				moveContext.setY(currentY);
-				// ILocation csLoc = Graphiti.getPeLayoutService()
-				// .getLocationRelativeToDiagram((Shape) actorPE);
-				// moveContext.setLocation(csLoc.getX(), csLoc.getY());
 				moveFeature.moveShape(moveContext);
 
 				stageGaps.add(new Range(currentY + actorGA.getHeight(),
@@ -1236,6 +1385,19 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		}
 	}
 
+	/**
+	 * Create the stages of {@link AbstractActor}. An actor can be put in a
+	 * stage if all its predecessors have been put in previous stages.
+	 * 
+	 * @param graph
+	 *            the {@link PiGraph} whose {@link AbstractActor} are sorted
+	 *            into stages.
+	 * @param feedbackFifos
+	 *            the {@link Fifo} that must be ignored when considering
+	 *            predecessors of an {@link AbstractActor}
+	 * @return the {@link List} of stages, where eac stage is a {@link List} of
+	 *         {@link AbstractActor}.
+	 */
 	protected List<List<AbstractActor>> stageByStageActorSort(PiGraph graph,
 			List<Fifo> feedbackFifos) {
 		// 1. Sort actor in alphabetical order
@@ -1254,6 +1416,18 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 		return stages;
 	}
 
+	/**
+	 * Layout the stages of {@link Parameter}. Aparameter can be put in a stage
+	 * if all its predecessors have been put in previous stages.
+	 * 
+	 * @param diagram
+	 *            the {@link PiGraph} whose {@link Parameter} are layouted.
+	 * @param stagedParameters
+	 *            Stages of {@link Parameter} produced by the
+	 *            {@link #createParameterStages(List, List)} method.
+	 * @return the {@link Parameter} in their
+	 *         {@link #getParameterVerticalOrder(List)}.
+	 */
 	protected List<Parameter> stageByStageParameterLayout(Diagram diagram,
 			List<List<Parameter>> stagedParameters) {
 		paramXPositions = new HashMap<Parameter, Integer>();
