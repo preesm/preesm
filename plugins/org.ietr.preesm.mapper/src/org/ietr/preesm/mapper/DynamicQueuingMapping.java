@@ -79,11 +79,11 @@ import org.ietr.preesm.mapper.model.property.EdgeInit;
 import org.ietr.preesm.mapper.params.AbcParameters;
 
 /**
- * Plug-in class for dynamic queuing scheduling.
- * Dynamic queuing is a type of list scheduling that enables study
- * of multiple graph iterations.
+ * Plug-in class for dynamic queuing scheduling. Dynamic queuing is a type of
+ * list scheduling that enables study of multiple graph iterations.
  * 
  * @author mpelcat
+ * @author kdesnos (minor bugfix)
  */
 public class DynamicQueuingMapping extends AbstractMapping {
 
@@ -134,8 +134,7 @@ public class DynamicQueuingMapping extends AbstractMapping {
 			v.setName("DelayManager");
 			v.setVersion("1.0");
 
-			Component component = ComponentFactory.eINSTANCE
-					.createOperator();
+			Component component = ComponentFactory.eINSTANCE.createOperator();
 			component.setVlnv(v);
 			architecture.getComponentHolder().getComponents().add(component);
 			SlamFactory.eINSTANCE.createComponentInstance();
@@ -281,6 +280,10 @@ public class DynamicQueuingMapping extends AbstractMapping {
 		IAbc simu2 = AbstractAbc.getInstance(abcParameters, dag, architecture,
 				scenario);
 		simu2.setTaskScheduler(new SimpleTaskSched());
+
+		// kdesnos fix : Reset DAG, otherwise all actors are mapped on the same
+		// operator
+		simu2.resetDAG();
 
 		DynamicQueuingScheduler dynamicSched = new DynamicQueuingScheduler(
 				simu.getTotalOrder(), parameters);
