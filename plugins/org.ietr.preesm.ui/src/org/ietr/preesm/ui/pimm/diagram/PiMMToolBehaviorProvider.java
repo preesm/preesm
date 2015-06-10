@@ -43,6 +43,7 @@ import java.util.Map;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IDoubleClickContext;
+import org.eclipse.graphiti.features.context.impl.CustomContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
@@ -59,6 +60,8 @@ import org.ietr.preesm.ui.pimm.decorators.ActorDecorators;
 import org.ietr.preesm.ui.pimm.decorators.DelayDecorators;
 import org.ietr.preesm.ui.pimm.decorators.ParameterDecorators;
 import org.ietr.preesm.ui.pimm.decorators.PortDecorators;
+import org.ietr.preesm.ui.pimm.features.MoveDownActorPortFeature;
+import org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature;
 import org.ietr.preesm.ui.pimm.features.OpenRefinementFeature;
 
 /**
@@ -160,6 +163,21 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
 	 */
 	public void setToolTip(GraphicsAlgorithm ga, String toolTip) {
 		toolTips.put(ga, toolTip);
+	}
+
+	@Override
+	public ICustomFeature getCommandFeature(CustomContext context, String hint) {
+		PictogramElement[] pes = context.getPictogramElements();
+		if (pes.length > 0) {
+			switch (hint) {
+			case MoveUpActorPortFeature.HINT:
+				return new MoveUpActorPortFeature(getFeatureProvider());
+			case MoveDownActorPortFeature.HINT:
+				return new MoveDownActorPortFeature(getFeatureProvider());
+
+			}
+		}
+		return super.getCommandFeature(context, hint);
 	}
 
 }

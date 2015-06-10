@@ -56,6 +56,8 @@ import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 public class MoveDownActorPortFeature extends MoveUpActorPortFeature {
 
 	protected boolean hasDoneChanges = false;
+	
+	public final static String HINT = "down";
 
 	/**
 	 * Default Constructor
@@ -69,7 +71,7 @@ public class MoveDownActorPortFeature extends MoveUpActorPortFeature {
 
 	@Override
 	public String getName() {
-		return "Move down Port";
+		return "Move down Port\tCtrl+Down_Arrow";
 	}
 
 	@Override

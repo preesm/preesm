@@ -69,6 +69,8 @@ import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 public class MoveUpActorPortFeature extends AbstractCustomFeature {
 
 	protected boolean hasDoneChanges = false;
+	
+	public static final String HINT = "up";
 
 	/**
 	 * Default Constructor
@@ -82,13 +84,15 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
 
 	@Override
 	public String getName() {
-		return "Move up Port";
+		return "Move up Port\tCtrl+Up_Arrow";
 	}
 
 	@Override
 	public String getDescription() {
 		return "Move up the Port";
 	}
+	
+	
 
 	@Override
 	public boolean canExecute(ICustomContext context) {
