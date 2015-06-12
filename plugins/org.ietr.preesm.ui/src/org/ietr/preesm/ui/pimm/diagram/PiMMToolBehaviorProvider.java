@@ -63,6 +63,7 @@ import org.ietr.preesm.ui.pimm.decorators.PortDecorators;
 import org.ietr.preesm.ui.pimm.features.MoveDownActorPortFeature;
 import org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature;
 import org.ietr.preesm.ui.pimm.features.OpenRefinementFeature;
+import org.ietr.preesm.ui.pimm.layout.AutoLayoutFeature;
 
 /**
  * {@link IToolBehaviorProvider} for the {@link Diagram} with type
@@ -174,7 +175,8 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
 				return new MoveUpActorPortFeature(getFeatureProvider());
 			case MoveDownActorPortFeature.HINT:
 				return new MoveDownActorPortFeature(getFeatureProvider());
-
+			case AutoLayoutFeature.HINT:
+				return new AutoLayoutFeature(getFeatureProvider());
 			}
 		}
 		return super.getCommandFeature(context, hint);

@@ -126,6 +126,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 	protected static final int Y_INIT = 250;
 	private static final int Y_SPACE = 50;
 	private static final int Y_SPACE_PARAM = 60;
+	public static final String HINT = "layout";
 
 	/**
 	 * Feedback {@link Fifo} identified in a {@link PiGraph}. {@see
@@ -529,7 +530,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
 	@Override
 	public String getName() {
-		return "Layout Diagram";
+		return "Layout Diagram\tCtrl+Shift+F";
 	}
 
 	/**

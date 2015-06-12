@@ -1251,6 +1251,16 @@
                value="down">
          </parameter>
       </key>
+      <key
+            commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+            contextId="org.ietr.preesm.experiment.ui.pimm"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+F">
+         <parameter
+               id="org.eclipse.graphiti.ui.featureHint"
+               value="layout">
+         </parameter>
+      </key>
    </extension>
    <extension
          point="org.eclipse.ui.contexts">
