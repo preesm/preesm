@@ -72,27 +72,26 @@ public class ParameterDecorators {
 			PictogramElement pe) {
 
 		List<IDecorator> decorators = new ArrayList<IDecorator>();
-		
+
 		// Check if the parameter belongs to a cycle
 		IDecorator cycleDecorator = getCycleDecorators(parameter, pe);
 		if (cycleDecorator != null) {
 			decorators.add(cycleDecorator);
-		}
-
-
-		// Check if the parameter expression is correct
-		IDecorator expressionDecorator = getExpressionDecorator(parameter, pe);
-		if (expressionDecorator != null) {
-			decorators.add(expressionDecorator);
-		}else{
+		} else {
+			// Check if the parameter expression is correct
+			IDecorator expressionDecorator = getExpressionDecorator(parameter,
+					pe);
+			if (expressionDecorator != null) {
+				decorators.add(expressionDecorator);
+			}
 			// Check if the parameter is locally static if
-			IDecorator staticDecorator = getLocallyStaticDecorator(parameter, pe);
+			IDecorator staticDecorator = getLocallyStaticDecorator(parameter,
+					pe);
 			if (staticDecorator != null) {
 				decorators.add(staticDecorator);
 			}
 		}
-		
-		
+
 		IDecorator[] result = new IDecorator[decorators.size()];
 		decorators.toArray(result);
 
@@ -110,8 +109,8 @@ public class ParameterDecorators {
 	 * @return the {@link IDecorator} if the {@link Parameter#isLocallyStatic()}
 	 *         , else <code>null</code>.
 	 */
-	protected static IDecorator getLocallyStaticDecorator(
-			Parameter parameter, PictogramElement pe) {
+	protected static IDecorator getLocallyStaticDecorator(Parameter parameter,
+			PictogramElement pe) {
 		if (!parameter.isLocallyStatic()) {
 			ImageDecorator imageRenderingDecorator = new ImageDecorator(
 					PiMMImageProvider.IMG_WHITE_DOT_BLUE_LINE);
@@ -179,24 +178,28 @@ public class ParameterDecorators {
 		}
 		return null;
 	}
-	
+
 	/**
-	 * Get {@link IDecorator} indicating that the {@link Parameter} 
-	 * have a invalid expression
+	 * Get {@link IDecorator} indicating that the {@link Parameter} have a
+	 * invalid expression
 	 * 
 	 * @param param
 	 *            the {@link Parameter} to test
 	 * @param pe
 	 *            the {@link PictogramElement} of the tested {@link Parameter}
 	 * @return the {@link IDecorator} for the {@link Parameter} or
-	 *         <code>null</code> if the {@link Parameter} have a valid expression.
+	 *         <code>null</code> if the {@link Parameter} have a valid
+	 *         expression.
 	 */
-	protected static IDecorator getExpressionDecorator(Parameter param, PictogramElement pe) {		
-		if(param.getExpression().evaluate().contains("Error")){
+	protected static IDecorator getExpressionDecorator(Parameter param,
+			PictogramElement pe) {
+		if (param.getExpression().evaluate().contains("Error")) {
 			ImageDecorator imageRenderingDecorator = new ImageDecorator(
 					IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
-			imageRenderingDecorator.setMessage("Problems in parameter resolution");
-			imageRenderingDecorator.setX(pe.getGraphicsAlgorithm().getWidth()/2-8);
+			imageRenderingDecorator
+					.setMessage("Problems in parameter resolution");
+			imageRenderingDecorator
+					.setX(pe.getGraphicsAlgorithm().getWidth() / 2 - 8);
 			imageRenderingDecorator.setY(8);
 
 			return imageRenderingDecorator;

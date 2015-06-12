@@ -130,7 +130,7 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
 
 		// Visit parameters until they are all visited
 		ArrayList<Parameter> parameters = new ArrayList<>(graph.getParameters());
-		while (parameters.size() == 0) {
+		while (parameters.size() != 0) {
 			doSwitch(parameters.get(0));
 
 			// If fast detection is activated and a cycle was detected, get

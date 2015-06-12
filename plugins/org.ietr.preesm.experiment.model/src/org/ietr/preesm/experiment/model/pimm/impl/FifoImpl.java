@@ -56,11 +56,16 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getSourcePort <em>Source Port</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getTargetPort <em>Target Port</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getDelay <em>Delay</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getId <em>Id</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getType <em>Type</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getSourcePort
+ * <em>Source Port</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getTargetPort
+ * <em>Target Port</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getDelay <em>
+ * Delay</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getId <em>Id
+ * </em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.FifoImpl#getType <em>
+ * Type</em>}</li>
  * </ul>
  * </p>
  *
@@ -68,8 +73,9 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
  */
 public class FifoImpl extends EObjectImpl implements Fifo {
 	/**
-	 * The cached value of the '{@link #getSourcePort() <em>Source Port</em>}' reference.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * The cached value of the '{@link #getSourcePort() <em>Source Port</em>}'
+	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getSourcePort()
 	 * @generated
 	 * @ordered
@@ -77,8 +83,9 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	protected DataOutputPort sourcePort;
 
 	/**
-	 * The cached value of the '{@link #getTargetPort() <em>Target Port</em>}' reference.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * The cached value of the '{@link #getTargetPort() <em>Target Port</em>}'
+	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getTargetPort()
 	 * @generated
 	 * @ordered
@@ -86,9 +93,9 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	protected DataInputPort targetPort;
 
 	/**
-	 * The cached value of the '{@link #getDelay() <em>Delay</em>}' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The cached value of the '{@link #getDelay() <em>Delay</em>}' containment
+	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getDelay()
 	 * @generated
 	 * @ordered
@@ -96,9 +103,9 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	protected Delay delay;
 
 	/**
-	 * The default value of the '{@link #getId() <em>Id</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The default value of the '{@link #getId() <em>Id</em>}' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getId()
 	 * @generated
 	 * @ordered
@@ -107,8 +114,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 
 	/**
 	 * The default value of the '{@link #getType() <em>Type</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getType()
 	 * @generated
 	 * @ordered
@@ -117,8 +124,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 
 	/**
 	 * The cached value of the '{@link #getType() <em>Type</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getType()
 	 * @generated
 	 * @ordered
@@ -127,6 +134,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected FifoImpl() {
@@ -135,6 +143,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -144,16 +153,19 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public DataOutputPort getSourcePort() {
 		if (sourcePort != null && sourcePort.eIsProxy()) {
-			InternalEObject oldSourcePort = (InternalEObject)sourcePort;
-			sourcePort = (DataOutputPort)eResolveProxy(oldSourcePort);
+			InternalEObject oldSourcePort = (InternalEObject) sourcePort;
+			sourcePort = (DataOutputPort) eResolveProxy(oldSourcePort);
 			if (sourcePort != oldSourcePort) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.FIFO__SOURCE_PORT, oldSourcePort, sourcePort));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							PiMMPackage.FIFO__SOURCE_PORT, oldSourcePort,
+							sourcePort));
 			}
 		}
 		return sourcePort;
@@ -161,6 +173,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public DataOutputPort basicGetSourcePort() {
@@ -168,23 +181,29 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
-	public NotificationChain basicSetSourcePort(DataOutputPort newSourcePort, NotificationChain msgs) {
+	public NotificationChain basicSetSourcePort(DataOutputPort newSourcePort,
+			NotificationChain msgs) {
 		DataOutputPort oldSourcePort = sourcePort;
 		sourcePort = newSourcePort;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.FIFO__SOURCE_PORT, oldSourcePort, newSourcePort);
-			if (msgs == null) msgs = notification; else msgs.add(notification);
+			ENotificationImpl notification = new ENotificationImpl(this,
+					Notification.SET, PiMMPackage.FIFO__SOURCE_PORT,
+					oldSourcePort, newSourcePort);
+			if (msgs == null)
+				msgs = notification;
+			else
+				msgs.add(notification);
 		}
 		return msgs;
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -192,28 +211,36 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 		if (newSourcePort != sourcePort) {
 			NotificationChain msgs = null;
 			if (sourcePort != null)
-				msgs = ((InternalEObject)sourcePort).eInverseRemove(this, PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO, DataOutputPort.class, msgs);
+				msgs = ((InternalEObject) sourcePort).eInverseRemove(this,
+						PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO,
+						DataOutputPort.class, msgs);
 			if (newSourcePort != null)
-				msgs = ((InternalEObject)newSourcePort).eInverseAdd(this, PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO, DataOutputPort.class, msgs);
+				msgs = ((InternalEObject) newSourcePort).eInverseAdd(this,
+						PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO,
+						DataOutputPort.class, msgs);
 			msgs = basicSetSourcePort(newSourcePort, msgs);
-			if (msgs != null) msgs.dispatch();
-		}
-		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.FIFO__SOURCE_PORT, newSourcePort, newSourcePort));
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					PiMMPackage.FIFO__SOURCE_PORT, newSourcePort, newSourcePort));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public DataInputPort getTargetPort() {
 		if (targetPort != null && targetPort.eIsProxy()) {
-			InternalEObject oldTargetPort = (InternalEObject)targetPort;
-			targetPort = (DataInputPort)eResolveProxy(oldTargetPort);
+			InternalEObject oldTargetPort = (InternalEObject) targetPort;
+			targetPort = (DataInputPort) eResolveProxy(oldTargetPort);
 			if (targetPort != oldTargetPort) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.FIFO__TARGET_PORT, oldTargetPort, targetPort));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							PiMMPackage.FIFO__TARGET_PORT, oldTargetPort,
+							targetPort));
 			}
 		}
 		return targetPort;
@@ -221,6 +248,7 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public DataInputPort basicGetTargetPort() {
@@ -228,23 +256,29 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
-	public NotificationChain basicSetTargetPort(DataInputPort newTargetPort, NotificationChain msgs) {
+	public NotificationChain basicSetTargetPort(DataInputPort newTargetPort,
+			NotificationChain msgs) {
 		DataInputPort oldTargetPort = targetPort;
 		targetPort = newTargetPort;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.FIFO__TARGET_PORT, oldTargetPort, newTargetPort);
-			if (msgs == null) msgs = notification; else msgs.add(notification);
+			ENotificationImpl notification = new ENotificationImpl(this,
+					Notification.SET, PiMMPackage.FIFO__TARGET_PORT,
+					oldTargetPort, newTargetPort);
+			if (msgs == null)
+				msgs = notification;
+			else
+				msgs.add(notification);
 		}
 		return msgs;
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -252,19 +286,24 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 		if (newTargetPort != targetPort) {
 			NotificationChain msgs = null;
 			if (targetPort != null)
-				msgs = ((InternalEObject)targetPort).eInverseRemove(this, PiMMPackage.DATA_INPUT_PORT__INCOMING_FIFO, DataInputPort.class, msgs);
+				msgs = ((InternalEObject) targetPort).eInverseRemove(this,
+						PiMMPackage.DATA_INPUT_PORT__INCOMING_FIFO,
+						DataInputPort.class, msgs);
 			if (newTargetPort != null)
-				msgs = ((InternalEObject)newTargetPort).eInverseAdd(this, PiMMPackage.DATA_INPUT_PORT__INCOMING_FIFO, DataInputPort.class, msgs);
+				msgs = ((InternalEObject) newTargetPort).eInverseAdd(this,
+						PiMMPackage.DATA_INPUT_PORT__INCOMING_FIFO,
+						DataInputPort.class, msgs);
 			msgs = basicSetTargetPort(newTargetPort, msgs);
-			if (msgs != null) msgs.dispatch();
-		}
-		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.FIFO__TARGET_PORT, newTargetPort, newTargetPort));
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					PiMMPackage.FIFO__TARGET_PORT, newTargetPort, newTargetPort));
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -273,23 +312,29 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
-	public NotificationChain basicSetDelay(Delay newDelay, NotificationChain msgs) {
+	public NotificationChain basicSetDelay(Delay newDelay,
+			NotificationChain msgs) {
 		Delay oldDelay = delay;
 		delay = newDelay;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.FIFO__DELAY, oldDelay, newDelay);
-			if (msgs == null) msgs = notification; else msgs.add(notification);
+			ENotificationImpl notification = new ENotificationImpl(this,
+					Notification.SET, PiMMPackage.FIFO__DELAY, oldDelay,
+					newDelay);
+			if (msgs == null)
+				msgs = notification;
+			else
+				msgs.add(notification);
 		}
 		return msgs;
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -297,14 +342,19 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 		if (newDelay != delay) {
 			NotificationChain msgs = null;
 			if (delay != null)
-				msgs = ((InternalEObject)delay).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.FIFO__DELAY, null, msgs);
+				msgs = ((InternalEObject) delay).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - PiMMPackage.FIFO__DELAY, null,
+						msgs);
 			if (newDelay != null)
-				msgs = ((InternalEObject)newDelay).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.FIFO__DELAY, null, msgs);
+				msgs = ((InternalEObject) newDelay).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - PiMMPackage.FIFO__DELAY, null,
+						msgs);
 			msgs = basicSetDelay(newDelay, msgs);
-			if (msgs != null) msgs.dispatch();
-		}
-		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.FIFO__DELAY, newDelay, newDelay));
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					PiMMPackage.FIFO__DELAY, newDelay, newDelay));
 	}
 
 	/**
@@ -343,20 +393,21 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public boolean isSetId() {
-		// TODO: implement this method to return whether the 'Id' attribute is set
+		// TODO: implement this method to return whether the 'Id' attribute is
+		// set
 		// Ensure that you remove @generated or mark it @generated NOT
 		throw new UnsupportedOperationException();
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -365,8 +416,8 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -374,145 +425,172 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 		String oldType = type;
 		type = newType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.FIFO__TYPE, oldType, type));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					PiMMPackage.FIFO__TYPE, oldType, type));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd,
 			int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case PiMMPackage.FIFO__SOURCE_PORT:
-				if (sourcePort != null)
-					msgs = ((InternalEObject)sourcePort).eInverseRemove(this, PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO, DataOutputPort.class, msgs);
-				return basicSetSourcePort((DataOutputPort)otherEnd, msgs);
-			case PiMMPackage.FIFO__TARGET_PORT:
-				if (targetPort != null)
-					msgs = ((InternalEObject)targetPort).eInverseRemove(this, PiMMPackage.DATA_INPUT_PORT__INCOMING_FIFO, DataInputPort.class, msgs);
-				return basicSetTargetPort((DataInputPort)otherEnd, msgs);
+		case PiMMPackage.FIFO__SOURCE_PORT:
+			if (sourcePort != null)
+				msgs = ((InternalEObject) sourcePort).eInverseRemove(this,
+						PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO,
+						DataOutputPort.class, msgs);
+			return basicSetSourcePort((DataOutputPort) otherEnd, msgs);
+		case PiMMPackage.FIFO__TARGET_PORT:
+			if (targetPort != null)
+				msgs = ((InternalEObject) targetPort).eInverseRemove(this,
+						PiMMPackage.DATA_INPUT_PORT__INCOMING_FIFO,
+						DataInputPort.class, msgs);
+			return basicSetTargetPort((DataInputPort) otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd,
 			int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case PiMMPackage.FIFO__SOURCE_PORT:
-				return basicSetSourcePort(null, msgs);
-			case PiMMPackage.FIFO__TARGET_PORT:
-				return basicSetTargetPort(null, msgs);
-			case PiMMPackage.FIFO__DELAY:
-				return basicSetDelay(null, msgs);
+		case PiMMPackage.FIFO__SOURCE_PORT:
+			return basicSetSourcePort(null, msgs);
+		case PiMMPackage.FIFO__TARGET_PORT:
+			return basicSetTargetPort(null, msgs);
+		case PiMMPackage.FIFO__DELAY:
+			return basicSetDelay(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case PiMMPackage.FIFO__SOURCE_PORT:
-				if (resolve) return getSourcePort();
-				return basicGetSourcePort();
-			case PiMMPackage.FIFO__TARGET_PORT:
-				if (resolve) return getTargetPort();
-				return basicGetTargetPort();
-			case PiMMPackage.FIFO__DELAY:
-				return getDelay();
-			case PiMMPackage.FIFO__ID:
-				return getId();
-			case PiMMPackage.FIFO__TYPE:
-				return getType();
+		case PiMMPackage.FIFO__SOURCE_PORT:
+			if (resolve)
+				return getSourcePort();
+			return basicGetSourcePort();
+		case PiMMPackage.FIFO__TARGET_PORT:
+			if (resolve)
+				return getTargetPort();
+			return basicGetTargetPort();
+		case PiMMPackage.FIFO__DELAY:
+			return getDelay();
+		case PiMMPackage.FIFO__ID:
+			return getId();
+		case PiMMPackage.FIFO__TYPE:
+			return getType();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case PiMMPackage.FIFO__SOURCE_PORT:
-				setSourcePort((DataOutputPort)newValue);
-				return;
-			case PiMMPackage.FIFO__TARGET_PORT:
-				setTargetPort((DataInputPort)newValue);
-				return;
-			case PiMMPackage.FIFO__DELAY:
-				setDelay((Delay)newValue);
-				return;
-			case PiMMPackage.FIFO__TYPE:
-				setType((String)newValue);
-				return;
+		case PiMMPackage.FIFO__SOURCE_PORT:
+			setSourcePort((DataOutputPort) newValue);
+			return;
+		case PiMMPackage.FIFO__TARGET_PORT:
+			setTargetPort((DataInputPort) newValue);
+			return;
+		case PiMMPackage.FIFO__DELAY:
+			setDelay((Delay) newValue);
+			return;
+		case PiMMPackage.FIFO__TYPE:
+			setType((String) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case PiMMPackage.FIFO__SOURCE_PORT:
-				setSourcePort((DataOutputPort)null);
-				return;
-			case PiMMPackage.FIFO__TARGET_PORT:
-				setTargetPort((DataInputPort)null);
-				return;
-			case PiMMPackage.FIFO__DELAY:
-				setDelay((Delay)null);
-				return;
-			case PiMMPackage.FIFO__TYPE:
-				setType(TYPE_EDEFAULT);
-				return;
+		case PiMMPackage.FIFO__SOURCE_PORT:
+			setSourcePort((DataOutputPort) null);
+			return;
+		case PiMMPackage.FIFO__TARGET_PORT:
+			setTargetPort((DataInputPort) null);
+			return;
+		case PiMMPackage.FIFO__DELAY:
+			setDelay((Delay) null);
+			return;
+		case PiMMPackage.FIFO__TYPE:
+			setType(TYPE_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
+	 * Two {@link Fifo} are equals if they have the same {@link #getId()}
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Fifo) {
+			return getId().equals(((Fifo) obj).getId());
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case PiMMPackage.FIFO__SOURCE_PORT:
-				return sourcePort != null;
-			case PiMMPackage.FIFO__TARGET_PORT:
-				return targetPort != null;
-			case PiMMPackage.FIFO__DELAY:
-				return delay != null;
-			case PiMMPackage.FIFO__ID:
-				return isSetId();
-			case PiMMPackage.FIFO__TYPE:
-				return TYPE_EDEFAULT == null ? type != null : !TYPE_EDEFAULT.equals(type);
+		case PiMMPackage.FIFO__SOURCE_PORT:
+			return sourcePort != null;
+		case PiMMPackage.FIFO__TARGET_PORT:
+			return targetPort != null;
+		case PiMMPackage.FIFO__DELAY:
+			return delay != null;
+		case PiMMPackage.FIFO__ID:
+			return isSetId();
+		case PiMMPackage.FIFO__TYPE:
+			return TYPE_EDEFAULT == null ? type != null : !TYPE_EDEFAULT
+					.equals(type);
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy()) return super.toString();
+		if (eIsProxy())
+			return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (type: ");

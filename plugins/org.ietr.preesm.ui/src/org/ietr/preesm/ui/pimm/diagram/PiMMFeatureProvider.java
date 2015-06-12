@@ -154,6 +154,7 @@ import org.ietr.preesm.ui.pimm.features.UpdateAbstractVertexFeature;
 import org.ietr.preesm.ui.pimm.features.UpdateActorFeature;
 import org.ietr.preesm.ui.pimm.features.UpdateDiagramFeature;
 import org.ietr.preesm.ui.pimm.features.UpdatePortFeature;
+import org.ietr.preesm.ui.pimm.layout.AutoLayoutFeature;
 
 /**
  * {@link DefaultFeatureProvider} for the {@link Diagram} with type
@@ -266,6 +267,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 		if (obj instanceof PiGraph) {
 			features.add(new SetVisibleAllDependenciesFeature(this, true));
 			features.add(new SetVisibleAllDependenciesFeature(this, false));
+			features.add(new AutoLayoutFeature(this));
 		}
 
 		if (obj instanceof AbstractVertex) {

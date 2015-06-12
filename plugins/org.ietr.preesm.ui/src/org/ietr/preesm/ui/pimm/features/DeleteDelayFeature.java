@@ -71,6 +71,18 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
 		// Transform the two connections linked to the delay back into a single
 		// one. before deleting the delay.
 
+		disconnectDelayFromFifo(context);
+
+		// Super call to delete the dependencies linked to the delay
+		super.preDelete(context);
+	}
+
+	/**
+	 * @param context
+	 * @throws RuntimeException
+	 */
+	public void disconnectDelayFromFifo(IDeleteContext context)
+			throws RuntimeException {
 		// Retrieve the two connections
 		ContainerShape cs = (ContainerShape) context.getPictogramElement();
 		ChopboxAnchor cba = (ChopboxAnchor) cs.getAnchors().get(0);
@@ -104,9 +116,6 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
 			throw new RuntimeException(
 					"Could not delete Delay because a Connection could not be removed.");
 		}
-
-		// Super call to delete the dependencies linked to the delay
-		super.preDelete(context);
 	}
 
 }

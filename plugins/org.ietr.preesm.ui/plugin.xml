@@ -1064,9 +1064,10 @@
    <extension
          point="org.eclipse.graphiti.ui.diagramTypeProviders">
       <diagramTypeProvider
-            name="PiMM Diagram Type Provider"
             class="org.ietr.preesm.ui.pimm.diagram.PiMMDiagramTypeProvider"
-            id="org.ietr.preesm.experiment.ui.pimm.pimmDiagramTypeProvider">
+            context="org.ietr.preesm.experiment.ui.pimm"
+            id="org.ietr.preesm.experiment.ui.pimm.pimmDiagramTypeProvider"
+            name="PiMM Diagram Type Provider">
          <diagramType
                id="org.ietr.preesm.experiment.ui.pimm.pimmDiagramType">
          </diagramType>
@@ -1227,6 +1228,47 @@
 </enabledWhen>
          </action>
       </objectContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+            contextId="org.ietr.preesm.experiment.ui.pimm"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+ARROW_UP">
+         <parameter
+               id="org.eclipse.graphiti.ui.featureHint"
+               value="up">
+         </parameter>
+      </key>
+      <key
+            commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+            contextId="org.ietr.preesm.experiment.ui.pimm"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+ARROW_DOWN">
+         <parameter
+               id="org.eclipse.graphiti.ui.featureHint"
+               value="down">
+         </parameter>
+      </key>
+      <key
+            commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+            contextId="org.ietr.preesm.experiment.ui.pimm"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+F">
+         <parameter
+               id="org.eclipse.graphiti.ui.featureHint"
+               value="layout">
+         </parameter>
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            id="org.ietr.preesm.experiment.ui.pimm"
+            name="PiMM editor context"
+            parentId="org.eclipse.graphiti.ui.diagramEditor">
+      </context>
    </extension>
 
 </plugin>

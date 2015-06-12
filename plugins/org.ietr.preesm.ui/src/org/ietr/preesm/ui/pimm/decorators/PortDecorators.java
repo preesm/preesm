@@ -41,12 +41,15 @@ import java.util.List;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.platform.IPlatformImageConstants;
+import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
+import org.ietr.preesm.experiment.model.pimm.util.DependencyCycleDetector;
 
 /**
  * Class providing methods to retrieve the {@link IDecorator} of a {@link Port}
@@ -69,11 +72,15 @@ public class PortDecorators {
 	public static IDecorator[] getDecorators(Port port, PictogramElement pe) {
 
 		List<IDecorator> decorators = new ArrayList<IDecorator>();
-
-		// Check if the actor is a configuration actor
-		IDecorator portDecorator = getPortExpressionDecorator(port, pe);
-		if (portDecorator != null) {
-			decorators.add(portDecorator);
+		DependencyCycleDetector detector = new DependencyCycleDetector();
+		PiGraph graph = (PiGraph) port.eContainer().eContainer();
+		detector.doSwitch(graph);
+		if(! detector.cyclesDetected()){
+			// Check if the actor is a configuration actor
+			IDecorator portDecorator = getPortExpressionDecorator(port, pe);
+			if (portDecorator != null) {
+				decorators.add(portDecorator);
+			}
 		}
 
 		IDecorator[] result = new IDecorator[decorators.size()];
