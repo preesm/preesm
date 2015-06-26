@@ -45,7 +45,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.transformations.IbsdfFlattener;
 import org.ietr.dftools.algorithm.model.sdf.visitors.ConsistencyChecker;
-import org.ietr.dftools.algorithm.model.sdf.visitors.SDFHierarchyFlattening;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.algorithm.model.visitors.VisitorOutput;
 import org.ietr.dftools.workflow.WorkflowException;
@@ -92,19 +91,19 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
 			logger.log(Level.FINER,
 					"flattening application " + algorithm.getName()
 							+ " at level " + depth);
-			SDFHierarchyFlattening flatHier = new SDFHierarchyFlattening();
+
 			IbsdfFlattener flattener = new IbsdfFlattener(algorithm,depth);
 			VisitorOutput.setLogger(logger);
 			try {
 				if (algorithm.validateModel(WorkflowLogger.getLogger())) {
 					try {
 						flattener.flattenGraph();
-						flatHier.flattenGraph(algorithm, depth);
+						
 					} catch (SDF4JException e) {
 						throw (new WorkflowException(e.getMessage()));
 					}
 					logger.log(Level.FINER, "flattening complete");
-					SDFGraph resultGraph = flatHier.getOutput();
+					SDFGraph resultGraph = flattener.getFlattenedGraph();//flatHier.getOutput();
 					outputs.put("SDF", resultGraph);
 				} else {
 					throw (new WorkflowException(
