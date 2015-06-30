@@ -36,12 +36,14 @@ knowledge of the CeCILL-B license and that you accept its terms.
 
 package org.ietr.preesm.codegen.model.printer;
 
+import java.io.ByteArrayInputStream;
 import java.util.Iterator;
 import java.util.logging.Level;
 
 import javax.xml.transform.TransformerConfigurationException;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -105,8 +107,12 @@ public class GenericPrinter {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IFile iFile = workspace.getRoot().getFile(path);
 		try {
+			IFolder iFolder = workspace.getRoot().getFolder(path);
+			if(!iFolder.exists()){
+				iFolder.create(false, true, new NullProgressMonitor());
+			}
 			if (!iFile.exists()) {
-				iFile.create(null, false, new NullProgressMonitor());
+				iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
 			}
 		} catch (CoreException e1) {
 			e1.printStackTrace();

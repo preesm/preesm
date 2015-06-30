@@ -43,6 +43,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -170,11 +171,17 @@ public class MemoryScriptEngine {
 
 		// Create a resource
 		scenario.getCodegenManager().getCodegenDirectory();
+		
 
 		IFile iFile = workspace.getRoot().getFile(new Path(codegenPath + log + ".txt"));
 		try {
 			if (!iFile.exists()) {
-				iFile.create(null, false, new NullProgressMonitor());
+				IFolder iFolder = workspace.getRoot().getFolder(new Path(codegenPath));
+				if(!iFolder.exists()){
+					iFolder.create(false, true, new NullProgressMonitor());
+				}
+				
+				iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
 			}
 			iFile.setContents(new ByteArrayInputStream(sr.getLog().toString()
 					.getBytes()), true, false, new NullProgressMonitor());

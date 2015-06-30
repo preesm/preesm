@@ -230,8 +230,12 @@ public class CodegenEngine {
 				IFile iFile = workspace.getRoot().getFile(
 						new Path(codegenPath + b.getName() + extension));
 				try {
+					IFolder iFolder = workspace.getRoot().getFolder(new Path(codegenPath));
+					if(!iFolder.exists()){
+						iFolder.create(false, true, new NullProgressMonitor());
+					}
 					if (!iFile.exists()) {
-						iFile.create(null, false, new NullProgressMonitor());
+						iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
 					}
 					iFile.setContents(new ByteArrayInputStream(printer
 							.doSwitch(b).toString().getBytes()), true, false,
@@ -248,8 +252,12 @@ public class CodegenEngine {
 				IFile iFile = workspace.getRoot().getFile(
 						new Path(codegenPath + entry.getKey()));
 				try {
+					IFolder iFolder = workspace.getRoot().getFolder(new Path(codegenPath));
+					if(!iFolder.exists()){
+						iFolder.create(false, true, new NullProgressMonitor());
+					}
 					if (!iFile.exists()) {
-						iFile.create(null, false, new NullProgressMonitor());
+						iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
 					}
 					iFile.setContents(new ByteArrayInputStream(entry.getValue()
 							.toString().getBytes()), true, false,
