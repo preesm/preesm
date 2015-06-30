@@ -38,6 +38,7 @@ package org.ietr.preesm.pimm.algorithm.pimm2sdf.visitor;
 import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
+import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
@@ -79,6 +80,11 @@ public class StaticPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
 			for (Fifo f : pg.getFifos()) {
 				f.accept(this);
 			}
+			
+			// Make sure all ports of special actors are indexed and ordered
+			// both in top and sub graphes
+			SpecialActorPortsIndexer.addIndexes(result);
+			SpecialActorPortsIndexer.sortIndexedPorts(result);
 		}
 		// If result != null, pg is not the first PiGraph we encounter, it is a
 		// subgraph

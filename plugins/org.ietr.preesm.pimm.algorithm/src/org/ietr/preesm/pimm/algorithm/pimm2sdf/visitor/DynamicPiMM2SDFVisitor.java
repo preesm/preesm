@@ -46,6 +46,7 @@ import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
+import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
 import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
@@ -122,6 +123,11 @@ public class DynamicPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
 			// their corresponding SDFAbstractVertex created by single rate
 			// transformation
 			visitDuplicatesOfSubgraphs(toHsdf.getMatchCopies(), execution);
+
+			// Make sure all ports of special actors are indexed and ordered
+			// both in top and sub graphes
+			SpecialActorPortsIndexer.addIndexes(result);
+			SpecialActorPortsIndexer.sortIndexedPorts(result);
 		}
 
 		// Otherwise (if pg is not the first PiGraph we encounter during this
