@@ -46,6 +46,7 @@ import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.algorithm.model.parameters.VariableSet;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.implement.AbstractScenarioImplementation;
@@ -90,8 +91,13 @@ public class AlgorithmAndArchitectureScenarioNode extends
 		try {
 			scenario = scenarioParser.parseXmlFile(file);
 			String url = scenario.getAlgorithmURL();
-			if (scenario.isIBSDFScenario())
+			if (scenario.isIBSDFScenario()) {
+				// Parse the graph
 				sdfAlgorithm = ScenarioParser.getSDFGraph(url);
+				// Add indexes to all its special actor ports
+				SpecialActorPortsIndexer.addIndexes(sdfAlgorithm);
+				SpecialActorPortsIndexer.sortIndexedPorts(sdfAlgorithm);
+			}
 			else if (scenario.isPISDFScenario())
 				piAlgorithm = ScenarioParser.getPiGraph(url);
 		} catch (FileNotFoundException | InvalidModelException | CoreException e) {
