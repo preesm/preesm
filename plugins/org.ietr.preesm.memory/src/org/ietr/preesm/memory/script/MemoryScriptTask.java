@@ -93,4 +93,13 @@ public class MemoryScriptTask extends AbstractMemoryScriptTask {
 		outputs.put("MemEx", meg);
 		return outputs;
 	}
+
+	/**
+	 * This method must be overridden, otherwise, the workflow validator does
+	 * not find it.
+	 */
+	@Override
+	public Map<String, String> getDefaultParameters() {
+		return super.getDefaultParameters();
+	}
 }
