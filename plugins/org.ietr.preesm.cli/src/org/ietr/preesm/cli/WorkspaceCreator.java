@@ -119,14 +119,17 @@ public class WorkspaceCreator implements IApplication {
 								description.getName());
 
 						if (project.exists()) {
-							CLIWorkflowLogger.traceln("Project already registered, "
-									+ "nothing to do: " + project.getName());
-						} else {
-							project.create(description, progressMonitor);
-							project.open(progressMonitor);
-							CLIWorkflowLogger.traceln("New project registered: "
-									+ project.getName());
+							project.delete(false, progressMonitor);
+							CLIWorkflowLogger
+									.traceln("A project named "
+											+ project.getName()
+											+ " is already registered, "
+											+ "deleting previous project from Workspace: ");
 						}
+						project.create(description, progressMonitor);
+						project.open(progressMonitor);
+						CLIWorkflowLogger.traceln("New project registered: "
+								+ project.getName());
 					}
 				}
 			}
