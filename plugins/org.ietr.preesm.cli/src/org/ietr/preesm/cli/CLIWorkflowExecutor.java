@@ -61,6 +61,7 @@ import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.ietr.dftools.ui.workflow.tools.DFToolsWorkflowLogger;
 import org.ietr.dftools.workflow.AbstractWorkflowExecutor;
+import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.messages.WorkflowMessages;
 import org.ietr.dftools.workflow.tools.CLIWorkflowLogger;
 
@@ -162,8 +163,16 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 			DFToolsWorkflowLogger.runFromCLI();
 			for (String wPath : workflowPaths) {
 				for (String sPath : scenarioPaths) {
-					CLIWorkflowLogger.traceln("Launching execution of workflow: " + wPath + " with scenario: " + sPath);
-					execute(wPath, sPath, null);
+					CLIWorkflowLogger
+							.traceln("Launching execution of workflow: "
+									+ wPath + " with scenario: " + sPath);
+					if (!execute(wPath, sPath, null)) {
+						throw new WorkflowException(
+								"Workflow "
+										+ wPath
+										+ " did not complete its execution normally with scenario "
+										+ sPath + ".");
+					}
 				}
 			}
 
@@ -256,7 +265,7 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 	 */
 	@Override
 	protected void log(Level level, String msgKey, String... variables) {
-		CLIWorkflowLogger
-				.logln(level, WorkflowMessages.getString(msgKey, variables));
+		CLIWorkflowLogger.logln(level,
+				WorkflowMessages.getString(msgKey, variables));
 	}
 }
