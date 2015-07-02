@@ -38,6 +38,7 @@ package org.ietr.preesm.mapper.ui.stats;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
@@ -45,6 +46,7 @@ import org.eclipse.ui.PlatformUI;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.mapper.abc.IAbc;
 
@@ -66,9 +68,18 @@ public class StatEditorTransform extends AbstractTaskImplementation {
 
 		IEditorInput input = new StatEditorInput(abc, scenario, parameters);
 
-		// Run statistic editor
-		PlatformUI.getWorkbench().getDisplay()
-				.asyncExec(new EditorRunnable(input));
+		// Check if the workflow is running in command line mode
+		try {
+			// Run statistic editor
+			PlatformUI.getWorkbench().getDisplay()
+					.asyncExec(new EditorRunnable(input));
+		} catch (IllegalStateException e) {
+			WorkflowLogger
+					.getLogger()
+					.log(Level.WARNING,
+							"Gantt display is impossible in this context."
+									+ " Ignore this warning if you are running the command line version of Preesm.");
+		}
 
 		return new HashMap<String, Object>();
 	}
