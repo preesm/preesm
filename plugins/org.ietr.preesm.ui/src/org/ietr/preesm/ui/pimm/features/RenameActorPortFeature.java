@@ -54,6 +54,8 @@ import org.ietr.preesm.ui.pimm.util.PiMMUtil;
  * 
  */
 public class RenameActorPortFeature extends AbstractCustomFeature {
+	
+	public static final String HINT = "rename";
 
 	protected boolean hasDoneChanges = false;
 
@@ -69,7 +71,7 @@ public class RenameActorPortFeature extends AbstractCustomFeature {
 
 	@Override
 	public String getName() {
-		return "Rename Port";
+		return "Rename Port\tF2";
 	}
 
 	@Override

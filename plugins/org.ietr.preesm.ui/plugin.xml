@@ -1261,6 +1261,16 @@
                value="layout">
          </parameter>
       </key>
+      <key
+            commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+            contextId="org.ietr.preesm.experiment.ui.pimm"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="F2">
+         <parameter
+               id="org.eclipse.graphiti.ui.featureHint"
+               value="rename">
+         </parameter>
+      </key>
    </extension>
    <extension
          point="org.eclipse.ui.contexts">

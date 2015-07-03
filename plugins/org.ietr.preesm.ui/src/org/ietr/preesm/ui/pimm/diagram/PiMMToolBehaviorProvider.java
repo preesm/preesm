@@ -49,8 +49,10 @@ import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.tb.DefaultToolBehaviorProvider;
 import org.eclipse.graphiti.tb.IDecorator;
+import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
@@ -63,6 +65,8 @@ import org.ietr.preesm.ui.pimm.decorators.PortDecorators;
 import org.ietr.preesm.ui.pimm.features.MoveDownActorPortFeature;
 import org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature;
 import org.ietr.preesm.ui.pimm.features.OpenRefinementFeature;
+import org.ietr.preesm.ui.pimm.features.RenameAbstractVertexFeature;
+import org.ietr.preesm.ui.pimm.features.RenameActorPortFeature;
 import org.ietr.preesm.ui.pimm.layout.AutoLayoutFeature;
 
 /**
@@ -177,6 +181,15 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
 				return new MoveDownActorPortFeature(getFeatureProvider());
 			case AutoLayoutFeature.HINT:
 				return new AutoLayoutFeature(getFeatureProvider());
+			case RenameActorPortFeature.HINT:
+				Object obj = Graphiti.getLinkService()
+						.getBusinessObjectForLinkedPictogramElement(pes[0]);
+				if (obj instanceof Port) {
+					return new RenameActorPortFeature(getFeatureProvider());
+				}
+				if (obj instanceof AbstractVertex) {
+					return new RenameAbstractVertexFeature(getFeatureProvider());
+				}
 			}
 		}
 		return super.getCommandFeature(context, hint);

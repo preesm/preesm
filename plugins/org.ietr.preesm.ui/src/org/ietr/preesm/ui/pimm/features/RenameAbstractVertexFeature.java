@@ -66,7 +66,7 @@ public class RenameAbstractVertexFeature extends AbstractCustomFeature {
 
 	@Override
 	public String getName() {
-		return "Rename";
+		return "Rename\tF2";
 	}
 
 	@Override
