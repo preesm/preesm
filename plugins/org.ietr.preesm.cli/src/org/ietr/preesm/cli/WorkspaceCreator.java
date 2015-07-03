@@ -119,7 +119,7 @@ public class WorkspaceCreator implements IApplication {
 								description.getName());
 
 						if (project.exists()) {
-							project.delete(false, progressMonitor);
+							project.close(progressMonitor);;
 							CLIWorkflowLogger
 									.traceln("A project named "
 											+ project.getName()
