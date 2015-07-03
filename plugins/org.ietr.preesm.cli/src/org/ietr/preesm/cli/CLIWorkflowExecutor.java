@@ -114,6 +114,9 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
 			IWorkspaceRoot root = workspace.getRoot();
 			project = root.getProject(new Path(projectName).lastSegment());
+			
+			// Refresh the project
+			project.refreshLocal(IResource.DEPTH_INFINITE, null);
 
 			// Handle options
 			String workflowPath = line.getOptionValue('w');
