@@ -383,14 +383,6 @@ public class TimingsPage extends FormPage implements IPropertyListener {
 		gd.heightHint = 400;
 		gd.widthHint = 400;
 		tablecps.setLayoutData(gd);
-
-		// Tree is refreshed in case of algorithm modifications
-		parent.addPaintListener(new PaintListener() {
-			@Override
-			public void paintControl(PaintEvent e) {
-				tableViewer.refresh();
-			}
-		});
 	}
 
 	/**

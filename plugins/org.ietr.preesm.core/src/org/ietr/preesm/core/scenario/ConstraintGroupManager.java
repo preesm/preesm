@@ -40,6 +40,7 @@ import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.preesm.core.scenario.serialize.ExcelConstraintsParser;
@@ -208,7 +209,7 @@ public class ConstraintGroupManager {
 	}
 
 	public void importConstraints(PreesmScenario currentScenario)
-			throws InvalidModelException, FileNotFoundException {
+			throws InvalidModelException, FileNotFoundException, CoreException {
 		if (!excelFileURL.isEmpty() && currentScenario != null) {
 			ExcelConstraintsParser parser = new ExcelConstraintsParser(
 					currentScenario);

@@ -38,6 +38,7 @@ package org.ietr.preesm.ui.scenario.editor.constraints;
 
 import java.io.FileNotFoundException;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -267,7 +268,7 @@ public class ConstraintsPage extends FormPage implements IPropertyListener {
 		toolkit.paintBordersFor(client);
 	}
 
-	private void importData(Text text) throws InvalidModelException,FileNotFoundException {
+	private void importData(Text text) throws InvalidModelException,FileNotFoundException, CoreException {
 
 		scenario.getConstraintGroupManager().setExcelFileURL(text.getText());
 		scenario.getConstraintGroupManager().importConstraints(scenario);

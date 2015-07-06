@@ -58,6 +58,9 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
+import org.ietr.preesm.experiment.model.pimm.AbstractActor;
+import org.ietr.preesm.experiment.model.pimm.Actor;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
 /**
  * Importing constraints in a scenario from an excel file. The existing timings
@@ -76,23 +79,27 @@ public class ExcelConstraintsParser {
 	}
 
 	public void parse(String url, Set<String> allOperatorIds)
-			throws InvalidModelException, FileNotFoundException {
+			throws InvalidModelException, FileNotFoundException, CoreException {
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
 		Activator.updateWorkspace();
 
-		SDFGraph currentGraph = ScenarioParser.getSDFGraph(scenario
-				.getAlgorithmURL());
+		SDFGraph currentIBSDFGraph = null;
+		PiGraph currentPiGraph = null;
+
+		if (scenario.isIBSDFScenario())
+			currentIBSDFGraph = ScenarioParser.getSDFGraph(scenario.getAlgorithmURL());
+
+		else if (scenario.isPISDFScenario())
+			currentPiGraph = ScenarioParser.getPiGraph(scenario.getAlgorithmURL());
 
 		Path path = new Path(url);
 		IFile file = workspace.getRoot().getFile(path);
 
 		scenario.getConstraintGroupManager().removeAll();
-		WorkflowLogger
-				.getLogger()
-				.log(Level.INFO,
-						"Importing constraints from an excel sheet. Previously defined constraints are discarded.");
+		WorkflowLogger.getLogger().log(Level.INFO,
+				"Importing constraints from an excel sheet. Previously defined constraints are discarded.");
 
 		try {
 			Workbook w = Workbook.getWorkbook(file.getContents());
@@ -102,13 +109,22 @@ public class ExcelConstraintsParser {
 			Set<String> missingVertices = new HashSet<String>();
 			Set<String> missingOperators = new HashSet<String>();
 
-			for (SDFAbstractVertex vertex : currentGraph
-					.getHierarchicalVertexSet()) {
+			if (scenario.isIBSDFScenario()) {
+				for (SDFAbstractVertex vertex : currentIBSDFGraph.getHierarchicalVertexSet()) {
 
-				if (vertex.getKind().equalsIgnoreCase("vertex")) {
-					for (String operatorId : allOperatorIds) {
-						checkOpConstraint(w, operatorId, vertex,
-								missingVertices, missingOperators);
+					if (vertex.getKind().equalsIgnoreCase("vertex")) {
+						for (String operatorId : allOperatorIds) {
+							checkOpIBSDFConstraint(w, operatorId, vertex, missingVertices, missingOperators);
+						}
+					}
+				}
+			} else if (scenario.isPISDFScenario()) {
+				for (AbstractActor vertex : currentPiGraph.getAllVertices()) {
+
+					if (vertex instanceof Actor) {
+						for (String operatorId : allOperatorIds) {
+							checkOpPiConstraint(w, operatorId, (Actor) vertex, missingVertices, missingOperators);
+						}
 					}
 				}
 			}
@@ -121,8 +137,7 @@ public class ExcelConstraintsParser {
 	/**
 	 * Importing constraints from component names
 	 */
-	private void checkOpConstraint(Workbook w, String operatorId,
-			SDFAbstractVertex vertex, Set<String> missingVertices,
+	private void checkOpPiConstraint(Workbook w, String operatorId, Actor vertex, Set<String> missingVertices,
 			Set<String> missingOperators) {
 		String vertexName = vertex.getName();
 
@@ -131,46 +146,78 @@ public class ExcelConstraintsParser {
 			Cell operatorCell = w.getSheet(0).findCell(operatorId);
 
 			if (vertexCell != null && operatorCell != null) {
-				Cell timingCell = w.getSheet(0).getCell(
-						operatorCell.getColumn(), vertexCell.getRow());
+				Cell timingCell = w.getSheet(0).getCell(operatorCell.getColumn(), vertexCell.getRow());
 
 				if (timingCell.getType().equals(CellType.NUMBER)
 						|| timingCell.getType().equals(CellType.NUMBER_FORMULA)) {
 
-					scenario.getConstraintGroupManager().addConstraint(
-							operatorId, vertex);
+					scenario.getConstraintGroupManager().addConstraint(operatorId, vertex);
 
-					WorkflowLogger.getLogger().log(
-							Level.FINE,
-							"Importing constraint: {" + operatorId + ","
-									+ vertex + ",yes}");
+					WorkflowLogger.getLogger().log(Level.FINE,
+							"Importing constraint: {" + operatorId + "," + vertex + ",yes}");
 
 				} else {
-					WorkflowLogger.getLogger().log(
-							Level.FINE,
-							"Importing constraint: {" + operatorId + ","
-									+ vertex + ",no}");
+					WorkflowLogger.getLogger().log(Level.FINE,
+							"Importing constraint: {" + operatorId + "," + vertex + ",no}");
+				}
+			} else {
+				if (vertexCell == null && !missingVertices.contains(vertexName)) {
+					if (vertex.getRefinement() != null) {
+						WorkflowLogger.getLogger().log(Level.WARNING,
+								"No line found in excel sheet for hierarchical vertex: " + vertexName);
+					} else {
+						WorkflowLogger.getLogger().log(Level.SEVERE,
+								"No line found in excel sheet for atomic vertex: " + vertexName);
+					}
+					missingVertices.add(vertexName);
+				} else if (operatorCell == null && !missingOperators.contains(operatorId)) {
+					WorkflowLogger.getLogger().log(Level.SEVERE,
+							"No column found in excel sheet for operator: " + operatorId);
+					missingOperators.add(operatorId);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Importing constraints from component names
+	 */
+	private void checkOpIBSDFConstraint(Workbook w, String operatorId, SDFAbstractVertex vertex,
+			Set<String> missingVertices, Set<String> missingOperators) {
+		String vertexName = vertex.getName();
+
+		if (!operatorId.isEmpty() && !vertexName.isEmpty()) {
+			Cell vertexCell = w.getSheet(0).findCell(vertexName);
+			Cell operatorCell = w.getSheet(0).findCell(operatorId);
+
+			if (vertexCell != null && operatorCell != null) {
+				Cell timingCell = w.getSheet(0).getCell(operatorCell.getColumn(), vertexCell.getRow());
+
+				if (timingCell.getType().equals(CellType.NUMBER)
+						|| timingCell.getType().equals(CellType.NUMBER_FORMULA)) {
+
+					scenario.getConstraintGroupManager().addConstraint(operatorId, vertex);
+
+					WorkflowLogger.getLogger().log(Level.FINE,
+							"Importing constraint: {" + operatorId + "," + vertex + ",yes}");
+
+				} else {
+					WorkflowLogger.getLogger().log(Level.FINE,
+							"Importing constraint: {" + operatorId + "," + vertex + ",no}");
 				}
 			} else {
 				if (vertexCell == null && !missingVertices.contains(vertexName)) {
 					if (vertex.getGraphDescription() != null) {
-						WorkflowLogger.getLogger().log(
-								Level.WARNING,
-								"No line found in excel sheet for hierarchical vertex: "
-										+ vertexName);
+						WorkflowLogger.getLogger().log(Level.WARNING,
+								"No line found in excel sheet for hierarchical vertex: " + vertexName);
 					} else {
-						WorkflowLogger.getLogger().log(
-								Level.SEVERE,
-								"No line found in excel sheet for atomic vertex: "
-										+ vertexName);
+						WorkflowLogger.getLogger().log(Level.SEVERE,
+								"No line found in excel sheet for atomic vertex: " + vertexName);
 					}
 					missingVertices.add(vertexName);
-				} else if (operatorCell == null
-						&& !missingOperators.contains(operatorId)) {
-					WorkflowLogger.getLogger().log(
-							Level.SEVERE,
-							"No column found in excel sheet for operator: "
-									+ operatorId);
+				} else if (operatorCell == null && !missingOperators.contains(operatorId)) {
+					WorkflowLogger.getLogger().log(Level.SEVERE,
+							"No column found in excel sheet for operator: " + operatorId);
 					missingOperators.add(operatorId);
 				}
 			}

@@ -265,7 +265,7 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 				| GridData.FILL_VERTICAL));
 
 		// Tree is refreshed in case of algorithm modifications
-		parent.addPaintListener(new PaintListener() {
+/*		parent.addPaintListener(new PaintListener() {
 
 			@Override
 			public void paintControl(PaintEvent e) {
@@ -273,7 +273,7 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 
 			}
 
-		});
+		});*/
 
 		// Adding the new data type on click on add button
 		addButton.addSelectionListener(new SelectionAdapter() {

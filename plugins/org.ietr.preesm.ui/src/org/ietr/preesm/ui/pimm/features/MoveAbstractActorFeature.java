@@ -164,7 +164,6 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 	 *            the {@link Delay} whose associated graphical elements are to
 	 *            be moved.
 	 */
-	@SuppressWarnings("deprecation")
 	protected void moveDelay(IMoveShapeContext context, Delay del) {
 		// Get all delays with identical attributes (may not be the
 		// right delay is several delays have the same properties.)
@@ -226,7 +225,6 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 	 * @param context
 	 * @return
 	 */
-	@SuppressWarnings("deprecation")
 	private FreeFormConnection[] calculateConnectedDelayedFifos(
 			IMoveShapeContext context) {
 		List<FreeFormConnection> retList = new ArrayList<FreeFormConnection>();
@@ -415,7 +413,6 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 	 * @param context
 	 * @return
 	 */
-	@SuppressWarnings("deprecation")
 	private FreeFormConnection[] calculateConnectedConnections(
 			IMoveShapeContext context) {
 		List<FreeFormConnection> retList = new ArrayList<FreeFormConnection>();

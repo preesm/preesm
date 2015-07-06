@@ -239,17 +239,6 @@ public class RelativeConstraintsPage extends FormPage implements IPropertyListen
 		tableViewer.setInput(scenario);
 		tablecps.setLayoutData(new GridData(GridData.FILL_HORIZONTAL
 				| GridData.FILL_VERTICAL));
-
-		// Tree is refreshed in case of algorithm modifications
-		parent.addPaintListener(new PaintListener() {
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				tableViewer.refresh();
-
-			}
-
-		});
 	}
 
 	/**
