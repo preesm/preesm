@@ -33,7 +33,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
  *********************************************************/
-package org.ietr.preesm.algorithm.exportSdf3Xml;
+package org.ietr.preesm.algorithm.exportPromela;
 
 import java.io.File;
 
@@ -47,15 +47,21 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
-public class SDF3ExporterEngine {
-	public void printSDFGraphToSDF3File(SDFGraph sdf, PreesmScenario scenario, Design architecture, IPath path) {
-		// Create the exporter
-		Sdf3Printer exporter = new Sdf3Printer(sdf, scenario, architecture);
+/**
+ * 
+ * @author kdesnos
+ *
+ */
+public class PromelaExporterEngine {
+
+	public void printSDFGraphToPromelaFile(SDFGraph sdf, PreesmScenario scenario, Design archi, IPath path) {
+		/// Create the exporter
+		PromelaPrinter exporter = new PromelaPrinter(sdf, scenario, archi);
 
 		try {
 			if (path.getFileExtension() == null
-					|| !path.getFileExtension().equals("xml")) {
-				path = path.addFileExtension("xml");
+					|| !path.getFileExtension().equals("pml")) {
+				path = path.addFileExtension("pml");
 			}
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
 			IFile iFile = workspace.getRoot().getFile(path);
@@ -71,4 +77,5 @@ public class SDF3ExporterEngine {
 			e.printStackTrace();
 		}
 	}
+
 }
