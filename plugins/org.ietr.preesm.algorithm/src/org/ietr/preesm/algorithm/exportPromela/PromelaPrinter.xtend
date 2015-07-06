@@ -35,14 +35,15 @@
  *********************************************************/
 package org.ietr.preesm.algorithm.exportPromela
 
-import org.ietr.dftools.algorithm.model.sdf.SDFGraph
-import org.ietr.dftools.architecture.slam.Design
-import org.ietr.preesm.core.scenario.PreesmScenario
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
+import java.util.List
 import org.eclipse.xtend.lib.annotations.Accessors
-import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge
+import org.ietr.dftools.algorithm.model.sdf.SDFGraph
+import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
 
 /**
  * Printer used to generate a Promela program as specified in : <br>
@@ -66,25 +67,31 @@ class PromelaPrinter {
 	val SDFGraph sdf
 
 	/**
-	 * The {@link PreesmScenario} used to obtain timing and mapping properties
-	 * for the actors of the printed {@link SDFGraph}.
+	 * List of the edges of the graph.
+	 * This list has a constant order, which is needed to make sure that the 
+	 * index used to access a FIFO in the generated code will always be the
+	 * same. 
 	 */
-	@Accessors
-	val PreesmScenario scenario
-
-	/**
-	 * The {@link Design architecture model} on which the printed {@link 
-	 * SDFGraph} is mapped.
-	 */
-	@Accessors
-	val Design archi
-
-	@FinalFieldsConstructor
-	new() {
+	 @Accessors
+	 val List<SDFEdge> fifos
+	 
+	new(SDFGraph sdf) {
+		this.sdf = sdf
+		this.fifos = sdf.edgeSet.toList
 	}
 
 	/**
-	 * Print the 
+	 * Computes the Greatest Common Divisor of two numbers.
+	 */
+	static def int gcd(int a, int b) {
+		if(b == 0) return a
+		return gcd(b, a % b)
+	}
+
+	/** 
+	 * Write the result of a call to the {@link #print()} method in the given {@link File} 
+	 * 
+	 * @param file the File where to print the code. 
 	 */
 	def write(File file) {
 		try {
@@ -97,8 +104,67 @@ class PromelaPrinter {
 		}
 	}
 
-	def print() {
-		'''file'''
-	}
+	/**
+	 * Main method to print the {@link SDFGraph} in the Promela format.
+	 * 
+	 * @return the {@link CharSequence} containing the PML representation of 
+	 * the graph.
+	 */
+	def print() '''
+		#define UPDATE(c) if :: ch[c]>sz[c] -> sz[c] = ch[c] :: else fi
+		#define PRODUCE(c,n) ch[c] = ch[c] + n; UPDATE(c)
+		#define CONSUME(c,n) ch[c] = ch[c] - n
+		#define WAIT(c,n) ch[c]>=n
+		#define BOUND «fifos.fold(0,[
+			res, fifo | res + fifo.prod.intValue 
+			+ fifo.cons.intValue - gcd(fifo.prod.intValue,fifo.cons.intValue) 
+			+ (fifo.delay?:new SDFIntEdgePropertyType(0)).intValue % gcd(fifo.prod.intValue,fifo.cons.intValue) 
+		])» // Initialized with the sum of prod + cons - gcd(prod,cons) + delay % gcd(prod,cons)
+		#define SUM «FOR i : 0 .. fifos.size - 1 SEPARATOR " + "»ch[«i»]«ENDFOR»
+		#define t (SUM>BOUND)
+		
+		ltl P1 { <> (SUM>BOUND) }
+		
+		int ch[«fifos.size»]; int sz[«fifos.size»];
+		
+		«FOR actor : sdf.vertexSet»
+			«actor.print»
+		«ENDFOR»
+		
+		init {
+			atomic {
+				«FOR actor : sdf.vertexSet»
+				run «actor.name»();
+				«ENDFOR»
+			}
+		}		
+	'''
+
+	/**
+	 * Print an {@link SDFAbstractVertex} of the graph.
+	 * 
+	 * @param actor
+	 * 	the printed {@link SDFAbstractVertex}.
+	 * 
+	 * @return the {@link CharSequence} containing the PML code for the
+	 * actor and its ports in the Promela format.
+	 */
+	def print(SDFAbstractVertex actor) '''
+		proctype «actor.name»(){
+			do
+			:: atomic {
+				«FOR input : sdf.incomingEdgesOf(actor)»
+					WAIT(«fifos.indexOf(input)», «input.cons.intValue») ->
+				«ENDFOR»
+				«FOR input : sdf.incomingEdgesOf(actor)»
+					CONSUME(«fifos.indexOf(input)», «input.cons.intValue»);
+				«ENDFOR»
+				«FOR output : sdf.outgoingEdgesOf(actor)»
+					PRODUCE(«fifos.indexOf(output)», «output.prod.intValue»);
+				«ENDFOR»
+			}
+			od
+		}
+	'''
 
 }

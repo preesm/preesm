@@ -43,11 +43,9 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
-import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
-import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.utils.paths.PathTools;
 
 /**
@@ -67,15 +65,14 @@ public class MultiPromelaExporter extends AbstractTaskImplementation {
 		// Retrieve the inputs
 		@SuppressWarnings("unchecked")
 		Set<SDFGraph> sdfs = (Set<SDFGraph>) inputs.get(KEY_SDF_GRAPHS_SET);
-		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
-		Design archi = (Design) inputs.get(KEY_ARCHITECTURE);
+		
 		// Locate the output file
 		String sPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
 		IPath path = new Path(sPath);
 
 		for (SDFGraph sdf : sdfs) {
 			PromelaExporterEngine engine = new PromelaExporterEngine();
-			engine.printSDFGraphToPromelaFile(sdf, scenario, archi, path);
+			engine.printSDFGraphToPromelaFile(sdf, path);
 		}
 
 		return new HashMap<String, Object>();
