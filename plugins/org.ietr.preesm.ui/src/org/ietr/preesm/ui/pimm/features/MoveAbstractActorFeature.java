@@ -172,7 +172,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 				.getPictogramElements(getDiagram(), del);
 
 		// Check if the delay is selected in the graphical interface
-		PictogramElement[] selectedPictogramElements = getDiagramEditor()
+		PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer()
 				.getSelectedPictogramElements();
 		List<PictogramElement> selectedPEs = new ArrayList<>(
 				Arrays.asList(selectedPictogramElements));
@@ -250,7 +250,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 				}
 			}
 
-			PictogramElement[] selectedPictogramElements = getDiagramEditor()
+			PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer()
 					.getSelectedPictogramElements();
 			if (selectedPictogramElements != null) {
 				for (int i = 0; i < selectedPictogramElements.length; i++) {
@@ -430,7 +430,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature {
 		if (deltaX != 0 || deltaY != 0) {
 			List<Anchor> anchors = getAnchors(shapeToMove);
 
-			PictogramElement[] selectedPictogramElements = getDiagramEditor()
+			PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer()
 					.getSelectedPictogramElements();
 			if (selectedPictogramElements != null) {
 				for (int i = 0; i < selectedPictogramElements.length; i++) {

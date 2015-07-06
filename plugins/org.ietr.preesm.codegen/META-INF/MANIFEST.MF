@@ -12,7 +12,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.ietr.dftools.architecture;bundle-version="0.0.1",
  org.ietr.dftools.algorithm;bundle-version="0.0.1",
  org.ietr.preesm.utils
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: lib/JFlex.jar,
  lib/logkit-1.2.jar,
  .,

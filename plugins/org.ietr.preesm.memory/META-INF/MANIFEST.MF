@@ -17,7 +17,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.ietr.preesm.utils
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: IETR/INSA Rennes
 Bundle-ClassPath: lib/bsh-2.1.7.jar,.
 Export-Package: org.ietr.preesm.memory.allocation,
