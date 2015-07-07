@@ -55,8 +55,6 @@ import org.ietr.preesm.utils.paths.PathTools;
  *
  */
 public class MultiPromelaExporter extends AbstractTaskImplementation {
-	static final public String PARAM_PATH = "path";
-	static final public String VALUE_PATH_DEFAULT = "./Code/Promela/graph.pml";
 
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -65,14 +63,20 @@ public class MultiPromelaExporter extends AbstractTaskImplementation {
 		// Retrieve the inputs
 		@SuppressWarnings("unchecked")
 		Set<SDFGraph> sdfs = (Set<SDFGraph>) inputs.get(KEY_SDF_GRAPHS_SET);
-		
+
+		String paramFifo = (String) parameters.get(PromelaExporter.PARAM_FIFO_POLICY);
+		boolean fifoShared = paramFifo.equalsIgnoreCase(PromelaExporter.VALUE_FIFO_SHARED);
+
+		String paramActor = (String) parameters.get(PromelaExporter.PARAM_ACTOR_POLICY);
+		boolean synchronousActor = Boolean.parseBoolean(paramActor);
+
 		// Locate the output file
 		String sPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
 		IPath path = new Path(sPath);
 
 		for (SDFGraph sdf : sdfs) {
 			PromelaExporterEngine engine = new PromelaExporterEngine();
-			engine.printSDFGraphToPromelaFile(sdf, path);
+			engine.printSDFGraphToPromelaFile(sdf, path, fifoShared, synchronousActor);
 		}
 
 		return new HashMap<String, Object>();
@@ -81,7 +85,9 @@ public class MultiPromelaExporter extends AbstractTaskImplementation {
 	@Override
 	public Map<String, String> getDefaultParameters() {
 		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put(PARAM_PATH, VALUE_PATH_DEFAULT);
+		parameters.put(PromelaExporter.PARAM_PATH, PromelaExporter.VALUE_PATH_DEFAULT);
+		parameters.put(PromelaExporter.PARAM_FIFO_POLICY, PromelaExporter.VALUE_FIFO_DEFAULT);
+		parameters.put(PromelaExporter.PARAM_ACTOR_POLICY, PromelaExporter.VALUE_ACTOR_DEFAULT);
 		return parameters;
 	}
 

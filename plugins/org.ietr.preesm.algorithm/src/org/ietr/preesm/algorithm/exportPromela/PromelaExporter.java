@@ -64,18 +64,33 @@ public class PromelaExporter extends AbstractTaskImplementation {
 	static final public String PARAM_PATH = "path";
 	static final public String VALUE_PATH_DEFAULT = "./Code/Promela/graph.pml";
 
+	static final public String PARAM_FIFO_POLICY = "FIFO allocation policy";
+	static final public String VALUE_FIFO_DEFAULT = "Separated or Shared";
+	static final public String VALUE_FIFO_SEPARATED = "Separated";
+	static final public String VALUE_FIFO_SHARED = "Shared";
+
+	static final public String PARAM_ACTOR_POLICY = "Synchronous production/consumption";
+	static final public String VALUE_TRUE = "True";
+	static final public String VALUE_FALSE = "False";
+	static final public String VALUE_ACTOR_DEFAULT = VALUE_TRUE;
+
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
 			IProgressMonitor monitor, String nodeName, Workflow workflow) throws WorkflowException {
 		// Retrieve the inputs
 		SDFGraph sdf = (SDFGraph) inputs.get(KEY_SDF_GRAPH);
+		String paramFifo = (String) parameters.get(PARAM_FIFO_POLICY);
+		boolean fifoShared = paramFifo.equalsIgnoreCase(VALUE_FIFO_SHARED);
+
+		String paramActor = (String) parameters.get(PARAM_ACTOR_POLICY);
+		boolean synchronousActor = Boolean.parseBoolean(paramActor);
 
 		// Locate the output file
 		String sPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
 		IPath path = new Path(sPath);
 
 		PromelaExporterEngine engine = new PromelaExporterEngine();
-		engine.printSDFGraphToPromelaFile(sdf, path);
+		engine.printSDFGraphToPromelaFile(sdf, path, fifoShared, synchronousActor);
 
 		return new HashMap<String, Object>();
 	}
@@ -84,6 +99,8 @@ public class PromelaExporter extends AbstractTaskImplementation {
 	public Map<String, String> getDefaultParameters() {
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put(PARAM_PATH, VALUE_PATH_DEFAULT);
+		parameters.put(PARAM_FIFO_POLICY, VALUE_FIFO_DEFAULT);
+		parameters.put(PARAM_ACTOR_POLICY, VALUE_ACTOR_DEFAULT);
 		return parameters;
 	}
 

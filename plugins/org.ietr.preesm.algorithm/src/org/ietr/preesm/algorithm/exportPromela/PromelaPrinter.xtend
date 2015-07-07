@@ -44,6 +44,8 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
+import java.util.Map
+import java.util.Date
 
 /**
  * Printer used to generate a Promela program as specified in : <br>
@@ -72,12 +74,39 @@ class PromelaPrinter {
 	 * index used to access a FIFO in the generated code will always be the
 	 * same. 
 	 */
-	 @Accessors
-	 val List<SDFEdge> fifos
-	 
+	@Accessors
+	val List<SDFEdge> fifos
+
+	/**
+	 * Stores the GCD of all fifos
+	 * GCD is computed with the number of token produces, consumed and delayed 
+	 * on the fifo.
+	 */
+	@Accessors
+	val Map<SDFEdge, Integer> fifoGCDs
+
+	/**
+	 * Specify whether the FIFOs are to be allocated in dedicated separate 
+	 * spaces, or are sharing memory.
+	 */
+	@Accessors
+	var boolean fifoSharedAlloc = false
+
+	/**
+	 * Specify whether the production and consumption of tokens are to be
+	 * considered as sychronous (i.e. if the occur virtually simultaneously
+	 * or if they occur one after the other during the firing of an actor).
+	 * 
+	 */
+	@Accessors
+	var boolean synchronousActor = true
+
 	new(SDFGraph sdf) {
 		this.sdf = sdf
 		this.fifos = sdf.edgeSet.toList
+		fifoGCDs = fifos.toInvertedMap [
+			it.prod.intValue.gcd(it.cons.intValue).gcd((it.delay ?: new SDFIntEdgePropertyType(0)).intValue)
+		]
 	}
 
 	/**
@@ -111,16 +140,19 @@ class PromelaPrinter {
 	 * the graph.
 	 */
 	def print() '''
+		// Printed from «sdf.name» 
+		// at «new Date»
+		
 		#define UPDATE(c) if :: ch[c]>sz[c] -> sz[c] = ch[c] :: else fi
 		#define PRODUCE(c,n) ch[c] = ch[c] + n; UPDATE(c)
 		#define CONSUME(c,n) ch[c] = ch[c] - n
 		#define WAIT(c,n) ch[c]>=n
 		#define BOUND «fifos.fold(0,[
 			res, fifo | res + fifo.prod.intValue 
-			+ fifo.cons.intValue - gcd(fifo.prod.intValue,fifo.cons.intValue) 
-			+ (fifo.delay?:new SDFIntEdgePropertyType(0)).intValue % gcd(fifo.prod.intValue,fifo.cons.intValue) 
-		])» // Initialized with the sum of prod + cons - gcd(prod,cons) + delay % gcd(prod,cons)
-		#define SUM «FOR i : 0 .. fifos.size - 1 SEPARATOR " + "»ch[«i»]«ENDFOR»
+			+ fifo.cons.intValue - fifoGCDs.get(fifo) 
+			+ (fifo.delay?:new SDFIntEdgePropertyType(0)).intValue % fifoGCDs.get(fifo) 
+		])» // Initialized with the sum of prod + cons - gcd(prod,cons,delay) + delay % gcd(prod,cons,delay)
+		#define SUM «FOR fifo : fifos SEPARATOR " + "»«if(fifoSharedAlloc)"ch" else "sz"»[«fifos.indexOf(fifo)»]*«fifoGCDs.get(fifo)»«ENDFOR»
 		#define t (SUM>BOUND)
 		
 		ltl P1 { <> (SUM>BOUND) }
@@ -133,8 +165,12 @@ class PromelaPrinter {
 		
 		init {
 			atomic {
+				«FOR fifo : fifos.filter[it.delay != null && it.delay.intValue>0]»
+					PRODUCE(«fifos.indexOf(fifo)», «fifo.delay.intValue / fifoGCDs.get(fifo)»);
+				«ENDFOR»
+				
 				«FOR actor : sdf.vertexSet»
-				run «actor.name»();
+					run «actor.name»();
 				«ENDFOR»
 			}
 		}		
@@ -151,17 +187,29 @@ class PromelaPrinter {
 	 */
 	def print(SDFAbstractVertex actor) '''
 		proctype «actor.name»(){
+			«val isMultistateActor = !synchronousActor && sdf.incomingEdgesOf(actor).size !=0 && sdf.outgoingEdgesOf(actor).size !=0»
+			«IF isMultistateActor »
+			bool executing = false;
+			«ENDIF»
 			do
 			:: atomic {
+				«IF isMultistateActor»!executing ->«ENDIF»
 				«FOR input : sdf.incomingEdgesOf(actor)»
-					WAIT(«fifos.indexOf(input)», «input.cons.intValue») ->
-				«ENDFOR»
-				«FOR input : sdf.incomingEdgesOf(actor)»
-					CONSUME(«fifos.indexOf(input)», «input.cons.intValue»);
+					WAIT(«fifos.indexOf(input)», «input.cons.intValue / fifoGCDs.get(input)») ->
 				«ENDFOR»
 				«FOR output : sdf.outgoingEdgesOf(actor)»
-					PRODUCE(«fifos.indexOf(output)», «output.prod.intValue»);
+					PRODUCE(«fifos.indexOf(output)», «output.prod.intValue / fifoGCDs.get(output)»);
 				«ENDFOR»
+				«IF isMultistateActor»executing = true;«ENDIF»
+			«IF !synchronousActor && sdf.outgoingEdgesOf(actor).size != 0 && sdf.incomingEdgesOf(actor).size != 0»
+			}
+			:: atomic {	
+			«ENDIF»
+				«IF isMultistateActor»executing ->«ENDIF»
+				«FOR input : sdf.incomingEdgesOf(actor)»
+					CONSUME(«fifos.indexOf(input)», «input.cons.intValue / fifoGCDs.get(input)»);
+				«ENDFOR»
+				«IF isMultistateActor»executing = false;«ENDIF»
 			}
 			od
 		}

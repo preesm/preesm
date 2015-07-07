@@ -52,13 +52,14 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
  */
 public class PromelaExporterEngine {
 
-	public void printSDFGraphToPromelaFile(SDFGraph sdf, IPath path) {
+	public void printSDFGraphToPromelaFile(SDFGraph sdf, IPath path, boolean fifoShared, boolean synchronousActor) {
 		/// Create the exporter
 		PromelaPrinter exporter = new PromelaPrinter(sdf);
+		exporter.setFifoSharedAlloc(fifoShared);
+		exporter.setSynchronousActor(synchronousActor);
 
 		try {
-			if (path.getFileExtension() == null
-					|| !path.getFileExtension().equals("pml")) {
+			if (path.getFileExtension() == null || !path.getFileExtension().equals("pml")) {
 				path = path.addFileExtension("pml");
 			}
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
