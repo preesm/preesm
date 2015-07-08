@@ -177,6 +177,9 @@ class PromelaPrinter {
 		ltl P1 { <> (SUM>BOUND) }
 		
 		int ch[«fifos.size»]; int sz[«fifos.size»];
+		«IF !synchronousActor»
+		bool inProgress = false;
+		«ENDIF»
 		
 		«FOR actor : sdf.vertexSet»
 			«actor.print»
@@ -213,24 +216,26 @@ class PromelaPrinter {
 				bool executing = false;
 			«ENDIF»
 			do
-			:: atomic {
-				«IF isMultistateActor»!executing ->«ENDIF»
-				«FOR input : sdf.incomingEdgesOf(actor)»
-					WAIT(«fifos.indexOf(input)», «input.cons.intValue / fifoGCDs.get(input)») ->
-				«ENDFOR»
+			:: d_step {
+				«IF isMultistateActor»!inProgress && !executing &&«ENDIF»
+				«FOR input : sdf.incomingEdgesOf(actor) SEPARATOR " && \n" AFTER "->\n"»WAIT(«fifos.indexOf(input)», «input.cons.intValue / fifoGCDs.get(input)»)«ENDFOR»
+				«IF isMultistateActor»inProgress=true;«ENDIF»
 				«FOR output : sdf.outgoingEdgesOf(actor)»
 					PRODUCE(«fifos.indexOf(output)», «output.prod.intValue / fifoGCDs.get(output)»);
 				«ENDFOR»
 				«IF isMultistateActor»executing = true;«ENDIF»
-			«IF !synchronousActor && sdf.outgoingEdgesOf(actor).size != 0 && sdf.incomingEdgesOf(actor).size != 0»
-				}
-				:: atomic {	
+			«IF isMultistateActor»
+			}
+			:: d_step {	
 			«ENDIF»
-			«IF isMultistateActor»executing ->«ENDIF»
-			«FOR input : sdf.incomingEdgesOf(actor)»
-				CONSUME(«fifos.indexOf(input)», «input.cons.intValue / fifoGCDs.get(input)»);
-			«ENDFOR»
-			«IF isMultistateActor»executing = false;«ENDIF»
+				«IF isMultistateActor»
+					executing ->
+					inProgress = false;
+				«ENDIF»
+				«FOR input : sdf.incomingEdgesOf(actor)»
+					CONSUME(«fifos.indexOf(input)», «input.cons.intValue / fifoGCDs.get(input)»);
+				«ENDFOR»
+				«IF isMultistateActor»executing = false;«ENDIF»
 			}
 			od
 		}
