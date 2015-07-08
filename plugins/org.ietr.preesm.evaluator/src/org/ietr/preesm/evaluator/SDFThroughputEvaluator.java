@@ -6,11 +6,13 @@ import java.util.Map;
 
 import org.gnu.glpk.*;
 import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
-import org.ietr.dftools.algorithm.model.IInterface;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
+import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
 /**
@@ -49,7 +51,7 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 		} else {
 			System.out.println("No periodic schedule for this graph.");
 		}
-		System.out.println("Time : "+(System.nanoTime() - startTime)/Math.pow(10, 9));
+		System.out.println("Time LP : "+(System.nanoTime() - startTime)/Math.pow(10, 9));
 		return throughput;
 	}
 
@@ -101,21 +103,22 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 		n = 1; 
 		for (SDFAbstractVertex vertex : sdf.vertexSet()) {
 			k = 1; 
-			for (IInterface port : vertex.getInterfaces()) {
-				r = edges.indexOf(vertex.getAssociatedEdge(port));
-				if (port.getDirection().toString() == "Input") {
-					// check that the edge does not loop on the actor
-					if (edges.get(r).getSource() != vertex) {
-						GLPK.intArray_setitem(ind, k, r+1);
-						GLPK.doubleArray_setitem(val, k, 1.0);
-						k++;
-					}
-				} else {
-					if (edges.get(r).getTarget() != vertex) {
-						GLPK.intArray_setitem(ind, k, r+1);
-						GLPK.doubleArray_setitem(val, k, -1.0);
-						k++;
-					}
+			for (SDFInterfaceVertex in : vertex.getSources()) {
+				r = edges.indexOf(vertex.getAssociatedEdge(in));
+				// check that the edge does not loop on the actor
+				// (if that is the case, the variable is ignored in the constraint)
+				if (edges.get(r).getSource() != vertex) {
+					GLPK.intArray_setitem(ind, k, r+1);
+					GLPK.doubleArray_setitem(val, k, 1.0);
+					k++;
+				}
+			}
+			for (SDFInterfaceVertex out : vertex.getSinks()) {
+				r = edges.indexOf(vertex.getAssociatedEdge(out));
+				if (edges.get(r).getTarget() != vertex) {
+					GLPK.intArray_setitem(ind, k, r+1);
+					GLPK.doubleArray_setitem(val, k, -1.0);
+					k++;
 				}
 			}
 			GLPK.glp_set_mat_row(prob, n, k-1, ind, val);
@@ -148,6 +151,7 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 		double period = GLPK.glp_get_obj_val(prob);
 		GLPK.glp_delete_prob(prob);
 		GLPK.glp_free_env();
+		System.out.println(period);
 		return period;
 	}
 	
@@ -172,16 +176,15 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 			v.put(vertex, Double.POSITIVE_INFINITY); 
 			
 			// Add the edge looping on the actor
-			// Edge is actually added to the graph, because simpler
 			SDFEdge loop = input.addEdge(vertex, vertex);
-			/*SDFSourceInterfaceVertex in = new SDFSourceInterfaceVertex();
-			in.setName(vertex.getName()+"loopIn");
-			SDFSourceInterfaceVertex out = new SDFSourceInterfaceVertex();
-			in.setName(vertex.getName()+"loopOut");
+			SDFSourceInterfaceVertex in = new SDFSourceInterfaceVertex();
+			in.setName(vertex.getName()+"In");
+			SDFSinkInterfaceVertex out = new SDFSinkInterfaceVertex();
+			out.setName(vertex.getName()+"Out");
 			vertex.addSource(in);
 			vertex.addSink(out);
 			loop.setSourceInterface(out);
-			loop.setTargetInterface(in);*/
+			loop.setTargetInterface(in);
 			AbstractEdgePropertyType<?> x;
 			if (vertex.getSources().size() != 0) {
 				x = ((SDFEdge) vertex.getAssociatedEdge(vertex.getSources().get(0))).getCons();
