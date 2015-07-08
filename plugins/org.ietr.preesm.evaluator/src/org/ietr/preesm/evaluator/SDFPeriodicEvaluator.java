@@ -67,7 +67,8 @@ public class SDFPeriodicEvaluator extends AbstractTaskImplementation {
 				// if SDF -> linear program for periodic schedule
 				scheduler = new SDFThroughputEvaluator();
 			}
-			scheduler.launch(NormSDF, scenario);
+			scheduler.scenar = scenario;
+			scheduler.launch(NormSDF);
 		} catch (InvalidExpressionException e) {
 			e.printStackTrace();
 		}

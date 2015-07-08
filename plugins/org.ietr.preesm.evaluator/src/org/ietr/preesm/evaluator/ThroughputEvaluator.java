@@ -9,8 +9,9 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 
 public abstract class ThroughputEvaluator {
 	
+	public PreesmScenario scenar;
 	
-	public abstract double launch(SDFGraph inputGraph, PreesmScenario scenario) throws InvalidExpressionException;
+	public abstract double launch(SDFGraph inputGraph) throws InvalidExpressionException;
 	
 	
 	/**

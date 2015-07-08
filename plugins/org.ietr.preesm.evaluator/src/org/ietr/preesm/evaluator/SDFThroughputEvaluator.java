@@ -13,7 +13,6 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.ietr.preesm.core.scenario.PreesmScenario;
 
 /**
  * Class used to compute the optimal periodic schedule and the throughput
@@ -33,7 +32,7 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 	 * @return the throughput on the optimal periodic schedule
 	 * @throws InvalidExpressionException
 	 */
-	public double launch(SDFGraph inputGraph, PreesmScenario scenario) throws InvalidExpressionException {
+	public double launch(SDFGraph inputGraph) throws InvalidExpressionException {
 		
 		double period;
 		double throughput = 0;
@@ -45,7 +44,7 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 		
 		if (periodic_schedule) {
 			// Find the cycle with L/H max (using linear program)
-			period = period_computation(inputGraph, scenario);
+			period = period_computation(inputGraph);
 			// Deduce throughput of the schedule
 			throughput = throughput_computation(period, inputGraph);
 		} else {
@@ -62,7 +61,7 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 	 * 
 	 * @return the optimal normalized period
 	 */
-	private double period_computation(SDFGraph sdf, PreesmScenario scenar) throws InvalidExpressionException {
+	private double period_computation(SDFGraph sdf) throws InvalidExpressionException {
 		// Map to associate each edge with an index
 		ArrayList<SDFEdge> edges = new ArrayList<SDFEdge>(sdf.edgeSet());
 		double H;

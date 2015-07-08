@@ -30,7 +30,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 	 * periodic schedule (if it exists) of a given graph under the given scenario
 	 * 
 	 */
-	public double launch(SDFGraph inputGraph, PreesmScenario scenario) throws InvalidExpressionException {
+	public double launch(SDFGraph inputGraph) throws InvalidExpressionException {
 		//TODO Step 1 : compute K_min = max {K_g forall g in G}
 		double Kmin = 0;
 		double K = 0;
@@ -88,12 +88,16 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 		HashMap<String,Double> v = new HashMap<String,Double>();
 		// Contains the results of the shortest paths
 		HashMap<String, HashMap<String,Double>> dist = new HashMap<String, HashMap<String,Double>>();
+		double H,L;
 		
 		// Value all arcs of this level with L - K * H
 		for (SDFEdge edge : g.edgeSet()) {
-				e.put(edge, ((double)(edge.getDelay().getValue())
-						+ SDFMathD.gcd((double)(edge.getCons().getValue()), (double)(edge.getProd().getValue()))
-						- (double)(edge.getCons().getValue())));
+			L = scenar.getTimingManager().getTimingOrDefault(edge.getSource().getId(), "x86").getTime();
+			H = (double)(edge.getDelay().getValue())
+				+ SDFMathD.gcd((double)(edge.getCons().getValue()), (double)(edge.getProd().getValue()))
+				- (double)(edge.getCons().getValue());
+			
+			e.put(edge, L - K*H);
 		}		
 		
 		// We need a copy of the set of vertices, since we will add vertices in the original set 
