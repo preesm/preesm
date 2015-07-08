@@ -37,7 +37,7 @@ IGraphVisitor<SDFGraph, SDFAbstractVertex, SDFEdge>{
 	 * more convenient to do the normalization (32 bits may not be enough).
 	 */
 	private void prepareNorm(SDFGraph g) {
-		// Use long instead of int for all edges
+		// Use double instead of int for all edges
 		try {
 			for (SDFEdge edge : g.edgeSet()) {	
 				edge.setProd(new SDFDoubleEdgePropertyType((double)(edge.getProd().intValue())));

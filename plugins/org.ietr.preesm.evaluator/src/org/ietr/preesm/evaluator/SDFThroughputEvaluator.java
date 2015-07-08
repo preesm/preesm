@@ -1,7 +1,6 @@
 package org.ietr.preesm.evaluator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +20,7 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
  * @author blaunay
  * 
  */
-public class SDFThroughputEvaluator  {
+public class SDFThroughputEvaluator extends ThroughputEvaluator{
 
 	/**
 	 * Computes the throughput on the optimal periodic schedule (if it exists) of a
@@ -45,33 +44,13 @@ public class SDFThroughputEvaluator  {
 		if (periodic_schedule) {
 			// Find the cycle with L/H max (using linear program)
 			period = period_computation(inputGraph, scenario);
-			System.out.println("Period : "+period);
 			// Deduce throughput of the schedule
 			throughput = throughput_computation(period, inputGraph);
-			System.out.println("Throughput : "+throughput);
 		} else {
 			System.out.println("No periodic schedule for this graph.");
 		}
 		System.out.println("Time : "+(System.nanoTime() - startTime)/Math.pow(10, 9));
 		return throughput;
-	}
-	
-	
-	/**
-	 * Returns the maximum throughput of the graph given its optimal normalized period.
-	 */
-	private double throughput_computation(double period, SDFGraph sdf) {
-		// Get the period of each actor, to deduce their throughput
-		double[] throughputs = new double[sdf.vertexSet().size()];
-		int i = 0;
-		for (SDFAbstractVertex vertex : sdf.vertexSet()) {
-			throughputs[i] =  1/(period *(double)(((SDFEdge) vertex.getAssociatedEdge(vertex.getInterfaces().get(0)))
-					.getProd().getValue()));
-			i++;	
-		}
-		// The minimal throughput is the throughput of the schedule
-		Arrays.sort(throughputs);
-		return throughputs[0];
 	}
 
 	
