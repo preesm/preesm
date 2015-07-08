@@ -46,6 +46,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.utils.paths.PathTools;
 
 /**
@@ -63,6 +64,7 @@ public class MultiPromelaExporter extends AbstractTaskImplementation {
 		// Retrieve the inputs
 		@SuppressWarnings("unchecked")
 		Set<SDFGraph> sdfs = (Set<SDFGraph>) inputs.get(KEY_SDF_GRAPHS_SET);
+		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
 
 		String paramFifo = (String) parameters.get(PromelaExporter.PARAM_FIFO_POLICY);
 		boolean fifoShared = paramFifo.equalsIgnoreCase(PromelaExporter.VALUE_FIFO_SHARED);
@@ -76,7 +78,7 @@ public class MultiPromelaExporter extends AbstractTaskImplementation {
 
 		for (SDFGraph sdf : sdfs) {
 			PromelaExporterEngine engine = new PromelaExporterEngine();
-			engine.printSDFGraphToPromelaFile(sdf, path, fifoShared, synchronousActor);
+			engine.printSDFGraphToPromelaFile(sdf, scenario, path, fifoShared, synchronousActor);
 		}
 
 		return new HashMap<String, Object>();

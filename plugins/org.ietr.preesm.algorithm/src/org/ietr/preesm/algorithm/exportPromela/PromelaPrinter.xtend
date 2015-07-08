@@ -38,14 +38,15 @@ package org.ietr.preesm.algorithm.exportPromela
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
+import java.util.Date
 import java.util.List
+import java.util.Map
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph
 import org.ietr.dftools.algorithm.model.sdf.types.SDFIntEdgePropertyType
-import java.util.Map
-import java.util.Date
+import org.ietr.preesm.core.scenario.PreesmScenario
 
 /**
  * Printer used to generate a Promela program as specified in : <br>
@@ -69,6 +70,13 @@ class PromelaPrinter {
 	val SDFGraph sdf
 
 	/**
+	 * The {@link PreesmScenario} used to obtain data type sizes
+	 * for the FIFOs of the printed {@link SDFGraph}.
+	 */
+	@Accessors
+	val PreesmScenario scenario
+
+	/**
 	 * List of the edges of the graph.
 	 * This list has a constant order, which is needed to make sure that the 
 	 * index used to access a FIFO in the generated code will always be the
@@ -86,6 +94,13 @@ class PromelaPrinter {
 	val Map<SDFEdge, Integer> fifoGCDs
 
 	/**
+	 * Stores the data type size of all fifos
+	 * Data type size is retrieved from the scenario
+	 */
+	@Accessors
+	val Map<SDFEdge, Integer> fifoDataSizes
+
+	/**
 	 * Specify whether the FIFOs are to be allocated in dedicated separate 
 	 * spaces, or are sharing memory.
 	 */
@@ -101,11 +116,15 @@ class PromelaPrinter {
 	@Accessors
 	var boolean synchronousActor = true
 
-	new(SDFGraph sdf) {
+	new(SDFGraph sdf, PreesmScenario scenario) {
 		this.sdf = sdf
+		this.scenario = scenario
 		this.fifos = sdf.edgeSet.toList
 		fifoGCDs = fifos.toInvertedMap [
 			it.prod.intValue.gcd(it.cons.intValue).gcd((it.delay ?: new SDFIntEdgePropertyType(0)).intValue)
+		]
+		fifoDataSizes = fifos.toInvertedMap [
+			scenario.simulationManager.getDataTypeSizeOrDefault(it.dataType.toString)
 		]
 	}
 
@@ -148,11 +167,11 @@ class PromelaPrinter {
 		#define CONSUME(c,n) ch[c] = ch[c] - n
 		#define WAIT(c,n) ch[c]>=n
 		#define BOUND «fifos.fold(0,[
-			res, fifo | res + fifo.prod.intValue 
+			res, fifo | res + (fifo.prod.intValue 
 			+ fifo.cons.intValue - fifoGCDs.get(fifo) 
-			+ (fifo.delay?:new SDFIntEdgePropertyType(0)).intValue % fifoGCDs.get(fifo) 
+			+ (fifo.delay?:new SDFIntEdgePropertyType(0)).intValue % fifoGCDs.get(fifo))*fifoDataSizes.get(fifo) 
 		])» // Initialized with the sum of prod + cons - gcd(prod,cons,delay) + delay % gcd(prod,cons,delay)
-		#define SUM «FOR fifo : fifos SEPARATOR " + "»«if(fifoSharedAlloc)"ch" else "sz"»[«fifos.indexOf(fifo)»]*«fifoGCDs.get(fifo)»«ENDFOR»
+		#define SUM «FOR fifo : fifos SEPARATOR " + "»«if(fifoSharedAlloc)"ch" else "sz"»[«fifos.indexOf(fifo)»]*«fifoGCDs.get(fifo)»*«fifoDataSizes.get(fifo)»«ENDFOR»
 		#define t (SUM>BOUND)
 		
 		ltl P1 { <> (SUM>BOUND) }
@@ -185,11 +204,13 @@ class PromelaPrinter {
 	 * @return the {@link CharSequence} containing the PML code for the
 	 * actor and its ports in the Promela format.
 	 */
-	def print(SDFAbstractVertex actor) '''
+	def print(
+		SDFAbstractVertex actor
+	) '''
 		proctype «actor.name»(){
 			«val isMultistateActor = !synchronousActor && sdf.incomingEdgesOf(actor).size !=0 && sdf.outgoingEdgesOf(actor).size !=0»
 			«IF isMultistateActor »
-			bool executing = false;
+				bool executing = false;
 			«ENDIF»
 			do
 			:: atomic {
@@ -202,14 +223,14 @@ class PromelaPrinter {
 				«ENDFOR»
 				«IF isMultistateActor»executing = true;«ENDIF»
 			«IF !synchronousActor && sdf.outgoingEdgesOf(actor).size != 0 && sdf.incomingEdgesOf(actor).size != 0»
-			}
-			:: atomic {	
+				}
+				:: atomic {	
 			«ENDIF»
-				«IF isMultistateActor»executing ->«ENDIF»
-				«FOR input : sdf.incomingEdgesOf(actor)»
-					CONSUME(«fifos.indexOf(input)», «input.cons.intValue / fifoGCDs.get(input)»);
-				«ENDFOR»
-				«IF isMultistateActor»executing = false;«ENDIF»
+			«IF isMultistateActor»executing ->«ENDIF»
+			«FOR input : sdf.incomingEdgesOf(actor)»
+				CONSUME(«fifos.indexOf(input)», «input.cons.intValue / fifoGCDs.get(input)»);
+			«ENDFOR»
+			«IF isMultistateActor»executing = false;«ENDIF»
 			}
 			od
 		}

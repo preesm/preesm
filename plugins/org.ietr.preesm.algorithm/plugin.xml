@@ -260,6 +260,10 @@
                   id="SDF"
                   object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
             </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
+            </input>
          </inputs>
       </task>
       <task
@@ -270,6 +274,10 @@
             <input
                   id="SDFs"
                   object="java.util.Set&lt;org.ietr.dftools.algorithm.model.sdf.SDFGraph&gt;">
+            </input>
+            <input
+                  id="scenario"
+                  object="org.ietr.preesm.core.scenario.PreesmScenario">
             </input>
          </inputs>
       </task>

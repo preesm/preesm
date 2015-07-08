@@ -44,6 +44,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.preesm.core.scenario.PreesmScenario;
 
 /**
  * 
@@ -52,9 +53,10 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
  */
 public class PromelaExporterEngine {
 
-	public void printSDFGraphToPromelaFile(SDFGraph sdf, IPath path, boolean fifoShared, boolean synchronousActor) {
+	public void printSDFGraphToPromelaFile(SDFGraph sdf, PreesmScenario scenario, IPath path, boolean fifoShared,
+			boolean synchronousActor) {
 		/// Create the exporter
-		PromelaPrinter exporter = new PromelaPrinter(sdf);
+		PromelaPrinter exporter = new PromelaPrinter(sdf, scenario);
 		exporter.setFifoSharedAlloc(fifoShared);
 		exporter.setSynchronousActor(synchronousActor);
 
