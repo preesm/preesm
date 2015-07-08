@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Evaluator
+Bundle-SymbolicName: org.ietr.preesm.evaluator;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.ietr.preesm.evaluator.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.ietr.dftools.workflow,
+ org.ietr.dftools.algorithm,
+ org.jgrapht,
+ org.ietr.preesm.core
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: lib/glpk-java-1.0.31.jar,
+ .
+Export-Package: org.ietr.preesm.evaluator
