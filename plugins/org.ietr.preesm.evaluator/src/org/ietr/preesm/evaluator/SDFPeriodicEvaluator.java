@@ -61,7 +61,7 @@ public class SDFPeriodicEvaluator extends AbstractTaskImplementation {
 			ThroughputEvaluator scheduler;
 			if (hierarchical) {
 				//TODO remove liveness ?
-				System.out.println("Liveness : "+(is_alive(NormSDF) != null));
+				//System.out.println("Liveness : "+(is_alive(NormSDF) != null));
 				scheduler = new IBSDFThroughputEvaluator();
 			} else {
 				// if SDF -> linear program for periodic schedule

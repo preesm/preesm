@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
@@ -14,7 +15,6 @@ import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
-import org.ietr.preesm.core.scenario.PreesmScenario;
 
 /**
  * Class used to search for the optimal periodic schedule and its throughput
@@ -32,12 +32,14 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 	 */
 	public double launch(SDFGraph inputGraph) throws InvalidExpressionException {
 		//TODO Step 1 : compute K_min = max {K_g forall g in G}
-		double Kmin = 0;
+		double Kmin = 100;
 		double K = 0;
 		double eps = 0.01;	// precision of the solution
 		
+		System.out.println("Valid period : "+test_period(Kmin, inputGraph));
+		
 		// Step 2 : Test if k_min a valid period for the graph test_period(K_min,G)
-		if (test_period(Kmin, inputGraph)) {
+		/*if (test_period(Kmin, inputGraph)) {
 			K = Kmin;			
 		} else {			
 			// Step 3 : Find a value for K_max
@@ -58,7 +60,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 					K = Kmax;
 				}
 			}
-		}
+		}*/
 		return throughput_computation(K, inputGraph);
 	}
 
@@ -67,15 +69,10 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 		return (negative_circuit(G,K) != null);
 	}
 	
-	
-	/*TODO
-	 * Add looping edges on all the actors before valuation
-	 * Add looping edges on the interfaces (replace by actors ? meh)
-	 */
-	
+		
 	/**
 	 * Checks that the given graph (containing several levels of hierarchy) does not
-	 * contain negative circuits once its edges values by L-KH, which is the condition 
+	 * contain any positive circuits once its edges values by L-KH, which is the condition 
 	 * for it to have a periodic schedule of normalized period K.
 	 * 
 	 * @return null if the condition not respected
@@ -89,6 +86,31 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 		// Contains the results of the shortest paths
 		HashMap<String, HashMap<String,Double>> dist = new HashMap<String, HashMap<String,Double>>();
 		double H,L;
+		AbstractEdgePropertyType<?> E_in;
+		AbstractEdgePropertyType<?> E_out;
+		
+		// Add looping edges on actors
+		for (SDFAbstractVertex vertex : g.vertexSet()) {
+			if (!(vertex.getGraphDescription() != null
+					&& vertex.getGraphDescription() instanceof SDFGraph)) {
+				SDFEdge loop = g.addEdge(vertex, vertex);
+				SDFSourceInterfaceVertex in = new SDFSourceInterfaceVertex();
+				in.setName(vertex.getName()+"In");
+				SDFSinkInterfaceVertex out = new SDFSinkInterfaceVertex();
+				out.setName(vertex.getName()+"Out");
+				AbstractEdgePropertyType<?> x;
+				if (vertex.getSources().size() != 0) {
+					x = ((SDFEdge) vertex.getAssociatedEdge(vertex.getSources().get(0))).getCons();
+				} else {
+					x = ((SDFEdge) vertex.getAssociatedEdge(vertex.getSinks().get(0))).getProd();
+				}
+				vertex.addSource(in);
+				vertex.addSink(out);
+				loop.setSourceInterface(out);
+				loop.setTargetInterface(in);
+				loop.setDelay(x); loop.setCons(x); loop.setProd(x);
+			}
+		}
 		
 		// Value all arcs of this level with L - K * H
 		for (SDFEdge edge : g.edgeSet()) {
@@ -97,8 +119,8 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 				+ SDFMathD.gcd((double)(edge.getCons().getValue()), (double)(edge.getProd().getValue()))
 				- (double)(edge.getCons().getValue());
 			
-			e.put(edge, L - K*H);
-		}		
+			e.put(edge, -(L - K*H));
+		}
 		
 		// We need a copy of the set of vertices, since we will add vertices in the original set 
 		// while going through its elements
@@ -130,6 +152,10 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 						SDFEdge EdgeToIn = g.addEdge(vertex.getAssociatedEdge(vertex.getInterface(input)).getSource(), VertexIn);
 						EdgeToIn.setSourceInterface(vertex.getAssociatedEdge(vertex.getInterface(input)).getSourceInterface());
 						EdgeToIn.setTargetInterface(inPortIN);
+					// Put the correct rates on the new edge
+						E_in = ((SDFEdge) vertex.getAssociatedEdge(vertex.getSources().get(0))).getCons();
+						E_out = ((SDFEdge) vertex.getAssociatedEdge(vertex.getSources().get(0))).getProd();
+						EdgeToIn.setCons(E_out); EdgeToIn.setProd(E_in);
 					// Put it on the list for the BellmanFord algo, remove the ancient one
 						e.put(EdgeToIn, e.get(vertex.getAssociatedEdge(vertex.getInterface(input))));
 						e.remove(vertex.getAssociatedEdge(vertex.getInterface(input)));
@@ -148,6 +174,11 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 								g.addVertex(VertexOut);
 							// Create the edge going from the node out
 								SDFEdge EdgeFromOut = g.addEdge(VertexOut, vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget());
+							// Put the correct rates on the new edge
+								E_in = ((SDFEdge) vertex.getAssociatedEdge(vertex.getSinks().get(0))).getProd();
+								E_out = ((SDFEdge) vertex.getAssociatedEdge(vertex.getSinks().get(0))).getCons();
+								EdgeFromOut.setCons(E_out); EdgeFromOut.setProd(E_in);
+								
 								EdgeFromOut.setSourceInterface(VertexOut.getSink("out"));
 								EdgeFromOut.setTargetInterface(vertex.getAssociatedEdge(vertex.getInterface(output)).getTargetInterface());
 							// Put it on the list for the BellmanFord algo, remove the ancient one
@@ -156,6 +187,10 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 							} 
 						// Create the edge linking the new in and out
 							SDFEdge EdgeInOut = g.addEdge(VertexIn, VertexOut);
+						// Put the correct rates on the new edge
+							E_in = ((SDFEdge) vertex.getAssociatedEdge(vertex.getSources().get(0))).getCons();
+							E_out = ((SDFEdge) vertex.getAssociatedEdge(vertex.getSinks().get(0))).getProd();
+							EdgeInOut.setCons(E_out); EdgeInOut.setProd(E_in);
 						// port of origin of this edge
 							SDFSinkInterfaceVertex outPortIN = new SDFSinkInterfaceVertex();
 							outPortIN.setName(output);
@@ -213,7 +248,6 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 			for (Map.Entry<SDFEdge, Double> entry : e.entrySet()) {
 				if (v.get(entry.getKey().getSource().getName())+entry.getValue() < v.get(entry.getKey().getTarget().getName())) {
 					// Cycle of negative weight found, condition not respected -> graph not alive
-					System.out.println("Negative cycle found in graph "+g+" "+(v.get(entry.getKey().getSource().getName())+entry.getValue()));
 					return null;
 				}
 			}

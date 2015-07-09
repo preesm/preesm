@@ -29,10 +29,10 @@ public abstract class ThroughputEvaluator {
 			} else {
 				// throughput actor = 1/(K*Z)
 				if (vertex.getInterfaces().get(0) instanceof SDFSourceInterfaceVertex){
-					tmp = 1/(period *(double)(((SDFEdge) vertex.getAssociatedEdge(vertex.getInterfaces().get(0)))
+					tmp = 1.0/(period *(double)(((SDFEdge) vertex.getAssociatedEdge(vertex.getInterfaces().get(0)))
 							.getCons().getValue()));
 				} else {
-					tmp = 1/(period *(double)(((SDFEdge) vertex.getAssociatedEdge(vertex.getInterfaces().get(0)))
+					tmp = 1.0/(period *(double)(((SDFEdge) vertex.getAssociatedEdge(vertex.getInterfaces().get(0)))
 							.getProd().getValue()));
 				}
 			}

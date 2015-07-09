@@ -180,16 +180,16 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 			in.setName(vertex.getName()+"In");
 			SDFSinkInterfaceVertex out = new SDFSinkInterfaceVertex();
 			out.setName(vertex.getName()+"Out");
-			vertex.addSource(in);
-			vertex.addSink(out);
-			loop.setSourceInterface(out);
-			loop.setTargetInterface(in);
 			AbstractEdgePropertyType<?> x;
 			if (vertex.getSources().size() != 0) {
 				x = ((SDFEdge) vertex.getAssociatedEdge(vertex.getSources().get(0))).getCons();
 			} else {
 				x = ((SDFEdge) vertex.getAssociatedEdge(vertex.getSinks().get(0))).getProd();
 			}
+			vertex.addSource(in);
+			vertex.addSink(out);
+			loop.setSourceInterface(out);
+			loop.setTargetInterface(in);
 			loop.setDelay(x); loop.setCons(x); loop.setProd(x);
 			e.put(loop, (double)(loop.getDelay().getValue()));
 		}
