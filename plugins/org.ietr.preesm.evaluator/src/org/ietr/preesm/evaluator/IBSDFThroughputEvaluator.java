@@ -26,28 +26,27 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 	
 	/**
-	 * Computes (so not necessarily optimally) the throughput on the optimal
+	 * Computes (not necessarily optimally) the throughput on the optimal
 	 * periodic schedule (if it exists) of a given graph under the given scenario
 	 * 
 	 */
 	public double launch(SDFGraph inputGraph) throws InvalidExpressionException {
-		//TODO Step 1 : compute K_min = max {K_g forall g in G}
-		double Kmin = 100;
+		
+		double  Kmin = starting_period(inputGraph);
+		Kmin = 100;
 		double K = 0;
 		double eps = 0.01;	// precision of the solution
 		
-		System.out.println("Valid period : "+test_period(Kmin, inputGraph));
-		
-		// Step 2 : Test if k_min a valid period for the graph test_period(K_min,G)
-		/*if (test_period(Kmin, inputGraph)) {
+		// Step 2 : Test if k_min a valid period for the graph
+		if (test_period(Kmin, inputGraph)) {
 			K = Kmin;			
-		} else {			
+		} else {		
 			// Step 3 : Find a value for K_max
-			double Kmax = 50 * Kmin; //TODO tune the coeffs
+			double Kmax = 50 * Kmin; 						//TODO tune the coeffs
 			// increase Kmax until it is a valid period
 			while (!test_period(Kmax, inputGraph)) {
 				Kmin = Kmax; 
-				Kmax *= 5;  //TODO tune the coeffs
+				Kmax *= 3;  								//TODO tune the coeffs
 			}
 			K = Kmax;
 			// Step 4 : Improve (minimize) K
@@ -60,13 +59,27 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 					K = Kmax;
 				}
 			}
-		}*/
+		}
 		return throughput_computation(K, inputGraph);
 	}
 
+	/**
+	 * Computes a lower bound on the optimal normalized period,
+	 * helpful to get the algorithm started
+	 */
+	private double starting_period(SDFGraph inputGraph) {
+		//TODO
+		return 0;
+	}
+
 	
-	private boolean test_period(double K, SDFGraph G) {
-		return (negative_circuit(G,K) != null);
+	/**
+	 * Tests if the given period is a valid one for a periodic schedule
+	 * for the actors of the graph
+	 */
+	private boolean test_period(double K, SDFGraph inputGraph) {
+		SDFGraph G = inputGraph.clone();
+		return (positive_circuit(G,K) != null);
 	}
 	
 		
@@ -77,7 +90,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 	 * 
 	 * @return null if the condition not respected
 	 */
-	private HashMap<String, HashMap<String, Double>> negative_circuit(SDFGraph g, double K) {
+	private HashMap<String, HashMap<String, Double>> positive_circuit(SDFGraph g, double K) {
 		
 		// The set of edges that will be used to compute shortest paths
 		HashMap<SDFEdge,Double> e = new HashMap<SDFEdge,Double>(g.edgeSet().size());
@@ -131,7 +144,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 					&& vertex.getGraphDescription() instanceof SDFGraph) {
 				
 				// compute shortest paths between its in/out ports
-				dist = negative_circuit((SDFGraph) vertex.getGraphDescription(), K);
+				dist = positive_circuit((SDFGraph) vertex.getGraphDescription(), K);
 				
 				// if null, then subgraph not alive, so the whole graph is not.
 				if (dist == null)
