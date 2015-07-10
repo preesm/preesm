@@ -43,11 +43,11 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 			K = Kmin;			
 		} else {		
 			// Step 3 : Find a value for K_max
-			double Kmax = 10 * Kmin; 						//TODO tune the coeffs
+			double Kmax = 10 * Kmin; 
 			// increase Kmax until it is a valid period
 			while (!test_period(Kmax, inputGraph)) {
 				Kmin = Kmax; 
-				Kmax *= 3;  								//TODO tune the coeffs
+				Kmax *= 3;  	
 			}
 			K = Kmax;
 			// Step 4 : Improve (minimize) K
@@ -61,7 +61,6 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 				}
 			}
 		}
-		System.out.println(K);
 		return K;
 	}
 
@@ -313,6 +312,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 	 * 
 	 * @return null if the graph is not alive
 	 */
+	@SuppressWarnings("unused")
 	private HashMap<String, HashMap<String, Double>> is_alive(SDFGraph g) {
 		
 		// The set of edges that will be used to compute shortest paths

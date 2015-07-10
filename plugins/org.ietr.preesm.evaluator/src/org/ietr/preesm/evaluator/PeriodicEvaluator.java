@@ -20,7 +20,7 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
  * @author blaunay
  * 
  */
-public class SDFPeriodicEvaluator extends AbstractTaskImplementation {
+public class PeriodicEvaluator extends AbstractTaskImplementation {
 
 	
 	@Override
@@ -30,7 +30,7 @@ public class SDFPeriodicEvaluator extends AbstractTaskImplementation {
 		
 		// chrono start
 		double startTime = System.nanoTime();
-		double period;
+		double period, throughput = 0;
 		
 		// Retrieve the input dataflow and the scenario
 		SDFGraph inputGraph = (SDFGraph) inputs.get("SDF");
@@ -56,7 +56,6 @@ public class SDFPeriodicEvaluator extends AbstractTaskImplementation {
 			// if IBSDF -> hierarchical algorithm
 			ThroughputEvaluator scheduler;
 			if (hierarchical) {
-				//TODO remove liveness ?
 				//System.out.println("Liveness : "+(is_alive(NormSDF) != null));
 				scheduler = new IBSDFThroughputEvaluator();
 			} else {
@@ -65,15 +64,16 @@ public class SDFPeriodicEvaluator extends AbstractTaskImplementation {
 			}
 			scheduler.scenar = scenario;
 			period = scheduler.launch(NormSDF);
-			scheduler.throughput_computation(period, inputGraph);
+			throughput = scheduler.throughput_computation(period, inputGraph);
 		} catch (InvalidExpressionException e) {
 			e.printStackTrace();
 		}
 		
 		Map<String, Object> outputs = new HashMap<String, Object>(); 		
-		// TODO Normalized graph in the outputs NOT NECESSARY
-		// TODO put the throughput in the outputs
+		// Normalized graph in the outputs 
 		outputs.put("SDF", NormSDF);
+		// Throughput in the outputs
+		outputs.put("Throughput", throughput);
 		
 		System.out.println("Time : "+(System.nanoTime() - startTime)/Math.pow(10, 9)+" s");
 		return outputs;

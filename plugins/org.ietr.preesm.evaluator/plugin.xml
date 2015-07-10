@@ -22,6 +22,10 @@
                   id="SDF"
                   object="org.ietr.dftools.algorithm.model.sdf.SDFGraph">
             </output>
+            <output
+                  id="Throughput"
+                  object="java.lang.Double">
+            </output>
          </outputs>
       </task>
    </extension>
