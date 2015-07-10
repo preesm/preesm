@@ -31,9 +31,9 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 	 * 
 	 */
 	public double launch(SDFGraph inputGraph) throws InvalidExpressionException {
-		
-		double  Kmin = starting_period(inputGraph);
-		Kmin = 100;
+		SDFGraph sdf = inputGraph.clone();
+		// Find a lower bound on the minimal period
+		double  Kmin = starting_period(sdf);
 		double K = 0;
 		double eps = 0.01;	// precision of the solution
 		
@@ -42,7 +42,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 			K = Kmin;			
 		} else {		
 			// Step 3 : Find a value for K_max
-			double Kmax = 50 * Kmin; 						//TODO tune the coeffs
+			double Kmax = 10 * Kmin; 						//TODO tune the coeffs
 			// increase Kmax until it is a valid period
 			while (!test_period(Kmax, inputGraph)) {
 				Kmin = Kmax; 
@@ -60,16 +60,34 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 				}
 			}
 		}
-		return throughput_computation(K, inputGraph);
+		return K;
 	}
 
 	/**
 	 * Computes a lower bound on the optimal normalized period,
 	 * helpful to get the algorithm started
+	 * @throws InvalidExpressionException 
 	 */
-	private double starting_period(SDFGraph inputGraph) {
-		//TODO
-		return 0;
+	private double starting_period(SDFGraph inputGraph) throws InvalidExpressionException {
+		boolean hierarchical = false;
+		double K;
+		double Kmax = 0;
+		for (SDFAbstractVertex vertex : inputGraph.vertexSet()) {
+			if (vertex.getGraphDescription() != null && vertex.getGraphDescription() instanceof SDFGraph) {
+				K = starting_period((SDFGraph) vertex.getGraphDescription());
+				if (K > Kmax)
+					Kmax = K;
+				hierarchical = true;
+			}
+		}
+		// we are in a graph without sublevels of hierarchy,
+		// compute the optimal period of this graph
+		if (!hierarchical) {
+			ThroughputEvaluator eval = new SDFThroughputEvaluator();
+			eval.scenar = this.scenar;
+			Kmax = eval.launch(inputGraph);
+		}
+		return Kmax;
 	}
 
 	
@@ -127,7 +145,12 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 		
 		// Value all arcs of this level with L - K * H
 		for (SDFEdge edge : g.edgeSet()) {
-			L = scenar.getTimingManager().getTimingOrDefault(edge.getSource().getId(), "x86").getTime();
+			if (edge.getSource() instanceof SDFSourceInterfaceVertex || (edge.getSource().getGraphDescription() != null
+					&& edge.getSource().getGraphDescription() instanceof SDFGraph)){
+				L = 0;
+			} else
+				L = scenar.getTimingManager().getTimingOrDefault(edge.getSource().getId(), "x86").getTime();
+			
 			H = (double)(edge.getDelay().getValue())
 				+ SDFMathD.gcd((double)(edge.getCons().getValue()), (double)(edge.getProd().getValue()))
 				- (double)(edge.getCons().getValue());

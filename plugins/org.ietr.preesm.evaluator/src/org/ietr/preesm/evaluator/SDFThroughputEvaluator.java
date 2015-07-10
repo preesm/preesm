@@ -29,15 +29,14 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 	 * 
 	 * @param inputGraph the normalized graph
 	 * @param scenario 
-	 * @return the throughput on the optimal periodic schedule
+	 * @return the period of the optimal periodic schedule
 	 * @throws InvalidExpressionException
 	 */
 	public double launch(SDFGraph inputGraph) throws InvalidExpressionException {
 		
 		double period;
-		double throughput = 0;
 		
-		long startTime = System.nanoTime();
+		//long startTime = System.nanoTime();
 		
 		// Check condition of existence of a periodic schedule (Bellman Ford)
 		boolean periodic_schedule = has_periodic_schedule(inputGraph);
@@ -46,12 +45,12 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 			// Find the cycle with L/H max (using linear program)
 			period = period_computation(inputGraph);
 			// Deduce throughput of the schedule
-			throughput = throughput_computation(period, inputGraph);
 		} else {
 			System.out.println("No periodic schedule for this graph.");
+			return 0;
 		}
-		System.out.println("Time LP : "+(System.nanoTime() - startTime)/Math.pow(10, 9));
-		return throughput;
+		//System.out.println("Time LP : "+(System.nanoTime() - startTime)/Math.pow(10, 9));
+		return period;
 	}
 
 	
@@ -86,7 +85,10 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 			// Continuous variables
 			GLPK.glp_set_col_kind(prob, j, GLPK.GLP_CV);
 			// Retrieve timing of the actor (coef in obj function)
-			L = scenar.getTimingManager().getTimingOrDefault(edges.get(j-1).getTarget().getId(), "x86").getTime();
+			if (edges.get(j-1).getSource() instanceof SDFSourceInterfaceVertex)
+				L = 0;
+			else
+				L = scenar.getTimingManager().getTimingOrDefault(edges.get(j-1).getTarget().getId(), "x86").getTime();
 			GLPK.glp_set_obj_coef(prob, j, L);
 		}
 		
@@ -150,7 +152,6 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 		double period = GLPK.glp_get_obj_val(prob);
 		GLPK.glp_delete_prob(prob);
 		GLPK.glp_free_env();
-		System.out.println(period);
 		return period;
 	}
 	

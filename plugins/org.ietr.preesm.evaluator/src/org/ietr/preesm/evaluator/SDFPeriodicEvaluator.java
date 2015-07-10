@@ -34,7 +34,8 @@ public class SDFPeriodicEvaluator extends AbstractTaskImplementation {
 			String nodeName, Workflow workflow) throws WorkflowException {
 		
 		// chrono start
-		double startTime = System.nanoTime(); 
+		double startTime = System.nanoTime();
+		double period;
 		
 		// Retrieve the input dataflow and the scenario
 		SDFGraph inputGraph = (SDFGraph) inputs.get("SDF");
@@ -68,7 +69,8 @@ public class SDFPeriodicEvaluator extends AbstractTaskImplementation {
 				scheduler = new SDFThroughputEvaluator();
 			}
 			scheduler.scenar = scenario;
-			scheduler.launch(NormSDF);
+			period = scheduler.launch(NormSDF);
+			scheduler.throughput_computation(period, inputGraph);
 		} catch (InvalidExpressionException e) {
 			e.printStackTrace();
 		}
@@ -219,7 +221,7 @@ public class SDFPeriodicEvaluator extends AbstractTaskImplementation {
 			for (Map.Entry<SDFEdge, Double> entry : e.entrySet()) {
 				if (v.get(entry.getKey().getSource().getName())+entry.getValue() < v.get(entry.getKey().getTarget().getName())) {
 					// Cycle of negative weight found, condition not respected -> graph not alive
-					System.out.println("Negative cycle found in graph "+g+" "+(v.get(entry.getKey().getSource().getName())+entry.getValue()));
+					//System.out.println("Negative cycle found in graph "+g+" "+(v.get(entry.getKey().getSource().getName())+entry.getValue()));
 					return null;
 				}
 			}
