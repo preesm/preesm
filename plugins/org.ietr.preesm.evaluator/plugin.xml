@@ -6,7 +6,7 @@
       <task
             id="org.ietr.preesm.evaluator.PeriodicEvaluator"
             name="Periodic Schedule Evaluation"
-            type="org.ietr.preesm.evaluator.SDFPeriodicEvaluator">
+            type="org.ietr.preesm.evaluator.PeriodicEvaluator">
          <inputs>
             <input
                   id="SDF"

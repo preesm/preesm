@@ -15,7 +15,7 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 
 /**
  * Class used to compute the optimal periodic schedule and its throughput
- * for a given IBSDF
+ * for a given SDF or IBSDF
  * 
  * @author blaunay
  * 
