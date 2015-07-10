@@ -67,7 +67,7 @@
 							<goal>compile</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${project.build.directory}/xtend-gen</outputDirectory>
+							<outputDirectory>xtend-gen</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
