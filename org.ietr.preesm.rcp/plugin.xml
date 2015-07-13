@@ -8,12 +8,20 @@
             name="Preesm"
             application="org.eclipse.ui.ide.workbench">
          <property
-               name="applicationCSS"
-               value="platform:/plugin/org.ietr.preesm.rcp/css/default.css">
-         </property>
-         <property
                name="appName"
                value="Preesm">
+         </property>
+         <property
+               name="windowImages"
+               value="icons/preesmLogo.png">
+         </property>
+         <property
+               name="startupProgressRect"
+               value="5,275,445,15">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
          </property>
       </product>
    </extension>
