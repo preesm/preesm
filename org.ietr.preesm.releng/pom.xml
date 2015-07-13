@@ -19,6 +19,14 @@
 		</repository>  
 	</repositories> 
 	
+	<dependencies>
+	<dependency>
+	<groupId>org.antlr</groupId>
+	<artifactId>antlr4-runtime</artifactId>
+	<version>4.3</version>
+</dependency>
+	
+	</dependencies>
 	<build>  
 		<plugins>  
 			<plugin>  
@@ -39,23 +47,47 @@
 						    <ws>gtk</ws>  
 						    <arch>x86</arch>  
 					    </environment>  
-			            <environment>
-			              	<os>win32</os>
-			             	<ws>win32</ws>
-			              	<arch>x86</arch>
-			            </environment>
-			            <environment>
-			              	<os>win32</os>
-			              	<ws>win32</ws>
-			              	<arch>x86_64</arch>
-			            </environment>
-			            <environment>
-			              	<os>macosx</os>
-			              	<ws>cocoa</ws>
-			              	<arch>x86_64</arch>
-			            </environment>
+					    <environment>  
+						    <os>win32</os>  
+						    <ws>win32</ws>  
+						    <arch>x86_64</arch>  
+					    </environment>  
+					    <environment>  
+						    <os>win32</os>  
+						    <ws>win32</ws>  
+						    <arch>x86</arch>  
+					    </environment>  
 				    </environments>  
 			   </configuration>  
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+				    <environments>  
+					    <environment>  
+						    <os>linux</os>  
+						    <ws>gtk</ws>  
+						    <arch>x86_64</arch>  
+					    </environment>  
+					    <environment>  
+						    <os>linux</os>  
+						    <ws>gtk</ws>  
+						    <arch>x86</arch>  
+					    </environment>  
+					    <environment>  
+						    <os>win32</os>  
+						    <ws>win32</ws>  
+						    <arch>x86_64</arch>  
+					    </environment>  
+					    <environment>  
+						    <os>win32</os>  
+						    <ws>win32</ws>  
+						    <arch>x86</arch>  
+					    </environment>  
+				    </environments> 
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.eclipse.xtend</groupId>
@@ -116,5 +148,11 @@
 		<module>../plugins/org.ietr.preesm.pimm.algorithm</module>
 		<module>../plugins/org.ietr.preesm.ui</module>
 		<module>../plugins/org.ietr.preesm.utils</module>
+		
+		
+		
+		<module>../org.ietr.preesm.rcp</module>
+		<module>../org.ietr.preesm.product</module>
 	</modules>
+	
 </project>
