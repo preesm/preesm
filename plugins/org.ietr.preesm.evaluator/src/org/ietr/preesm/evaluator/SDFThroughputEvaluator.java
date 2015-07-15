@@ -35,21 +35,19 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 	public double launch(SDFGraph inputGraph) throws InvalidExpressionException {
 		
 		double period;
-		
-		//long startTime = System.nanoTime();
+		SDFGraph sdf = inputGraph.clone();
 		
 		// Check condition of existence of a periodic schedule (Bellman Ford)
-		boolean periodic_schedule = has_periodic_schedule(inputGraph);
+		boolean periodic_schedule = has_periodic_schedule(sdf);
 		
 		if (periodic_schedule) {
 			// Find the cycle with L/H max (using linear program)
-			period = period_computation(inputGraph);
+			period = period_computation(sdf);
 			// Deduce throughput of the schedule
 		} else {
 			System.out.println("No periodic schedule for this graph.");
 			return 0;
 		}
-		//System.out.println("Time LP : "+(System.nanoTime() - startTime)/Math.pow(10, 9));
 		return period;
 	}
 

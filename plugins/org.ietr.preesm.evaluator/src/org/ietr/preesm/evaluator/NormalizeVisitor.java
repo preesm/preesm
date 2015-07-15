@@ -136,44 +136,6 @@ IGraphVisitor<SDFGraph, SDFAbstractVertex, SDFEdge>{
 		}
 		return M;
 	}
-	
-	
-	/*
-	// used to remove broadcasts from the graph (not necessary to evaluate liveness)
-	 private void removeBroadcast(SDFGraph g) {
-		ArrayList<SDFAbstractVertex> toRemove = new ArrayList<SDFAbstractVertex>();
-		SDFInterfaceVertex out;
-		for (SDFAbstractVertex vertex : g.vertexSet()) {
-			if (vertex.getKind() == "Broadcast") {
-				toRemove.add(vertex);
-				// The incoming edge of the broadcast
-				SDFEdge previous_in = vertex.getAssociatedEdge(vertex.getSources().get(0));
-				// Broadcast replaced by its number of outgoing edges
-				for (int i=0; i<vertex.getSinks().size(); i++) {
-					out = vertex.getSinks().get(i);
-					SDFEdge newEdge = g.addEdge(previous_in.getSource(), vertex.getAssociatedEdge(out).getTarget());
-					newEdge.setProd(previous_in.getProd());
-					newEdge.setCons(previous_in.getCons());
-					newEdge.setDelay(previous_in.getDelay());
-					SDFSinkInterfaceVertex outPort = new SDFSinkInterfaceVertex();
-					outPort.setName(vertex.getAssociatedEdge(out).getTarget().getName()+i);
-					previous_in.getSource().addSink(outPort);
-					newEdge.setSourceInterface(outPort);
-					newEdge.setTargetInterface(vertex.getAssociatedEdge(out).getTargetInterface());
-				}
-				SDFAbstractVertex s = previous_in.getSource();
-				g.removeEdge(previous_in);
-				s.removeSink(previous_in);
-				System.out.println(previous_in.getSourceInterface().getName());
-			}
-		}
-		// Remove effectively all the broadcasts
-		//for (SDFAbstractVertex vertex : toRemove)
-			//g.removeVertex(vertex);
-		for (SDFAbstractVertex vertex : g.vertexSet()) {
-			System.out.println(vertex+" "+vertex.getInterfaces().size());
-		}
-	}*/
 
 	
 	/**
@@ -228,30 +190,5 @@ IGraphVisitor<SDFGraph, SDFAbstractVertex, SDFEdge>{
 	
 	@Override
 	public void visit(SDFAbstractVertex sdfVertex) throws SDF4JException {
-	}
-	
-	
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Normalization for non hierarchical SDF (more efficient if the graph doesnot use hierarchy)
-/*
-	int lcm = 1;
-	int coeff;
-	try {
-		for (SDFEdge edge : outputGraph.edgeSet())
-			lcm = SDFMath.lcm(lcm, (edge.getProd().intValue() * edge.getSource().getNbRepeatAsInteger()));
-		
-		for (SDFEdge edge : outputGraph.edgeSet()) {
-			coeff = (lcm/edge.getSource().getNbRepeatAsInteger())/edge.getProd().intValue();
-			edge.setProd(new SDFIntEdgePropertyType(coeff * edge.getProd().intValue()));
-			edge.setDelay(new SDFIntEdgePropertyType(coeff * edge.getDelay().intValue()));
-			edge.setCons(new SDFIntEdgePropertyType(coeff * edge.getCons().intValue()));
-		}
-	} catch (InvalidExpressionException e) {
-		// Auto-generated catch block
-		e.printStackTrace();
-	}
-*/
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	
+	}	
 }

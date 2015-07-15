@@ -75,7 +75,7 @@ public class PeriodicEvaluator extends AbstractTaskImplementation {
 		// Throughput in the outputs
 		outputs.put("Throughput", throughput);
 		
-		System.out.println("Time : "+(System.nanoTime() - startTime)/Math.pow(10, 9)+" s");
+		System.out.println((System.nanoTime() - startTime)/Math.pow(10, 9));
 		return outputs;
 	}
 	
