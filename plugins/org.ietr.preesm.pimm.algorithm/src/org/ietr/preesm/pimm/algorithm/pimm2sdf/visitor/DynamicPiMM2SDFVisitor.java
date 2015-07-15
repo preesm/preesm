@@ -46,6 +46,7 @@ import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
+import org.ietr.dftools.algorithm.model.sdf.transformations.IbsdfFlattener;
 import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsIndexer;
 import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
@@ -95,6 +96,7 @@ public class DynamicPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
 			parameters2GraphVariables(pg, result);
 
 			// Visit each of the vertices of pg with the values set
+			// (Subgraphs of vertices will be visited)
 			for (AbstractActor aa : pg.getVertices()) {
 				aa.accept(this);
 			}
@@ -102,7 +104,20 @@ public class DynamicPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
 			for (Fifo f : pg.getFifos()) {
 				f.accept(this);
 			}
+			
+			// Add indexes to the ports of special actor
+			// (Must be done before HSDF transfo...)
+			SpecialActorPortsIndexer.addIndexes(result);
+			
+			// Before the HSDF transfo, add roundbuffers and broadcast where 
+			// needed
+			IbsdfFlattener.addInterfaceSubstitutes(result);
 
+			// TODO This HSDF transfo is an overkill !
+			// Only Actor with subgraph implementing a reconfigurable
+			// behavior should be duplicated here, there is no need to
+			// apply the whole HSDF transfo here.
+			
 			// Pass the currentSDFGraph in Single Rate which will result in
 			// duplicating the SDFAbstractVertices when needed
 			ToHSDFVisitor toHsdf = new ToHSDFVisitor();
@@ -126,12 +141,13 @@ public class DynamicPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
 
 			// Make sure all ports of special actors are indexed and ordered
 			// both in top and sub graphes
-			SpecialActorPortsIndexer.addIndexes(result);
 			SpecialActorPortsIndexer.sortIndexedPorts(result);
 		}
 
 		// Otherwise (if pg is not the first PiGraph we encounter during this
 		// visit), we need to visit separately pg later
+		// This else will be met when an actor of a visited PiGraph is
+		// a hierarrchical actor, the visited graph is thus a subgraph
 		else {
 			SDFVertex v = new SDFVertex();
 			piVx2SDFVx.put(pg, v);
