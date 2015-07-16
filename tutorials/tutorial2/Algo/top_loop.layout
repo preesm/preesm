@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<layout>
-   <vertices>
-      <vertex id="Read_YUV" x="57" y="184"/>
-      <vertex id="display_pic_orig" x="217" y="181"/>
-   </vertices>
-</layout>

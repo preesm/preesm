@@ -1,6 +1,0 @@
-module Circular6 {
-	typedef long parameter ;
-    interface loop{
-         void circular6(in char i1,out char o1, in parameter size);
-    };
-}; 

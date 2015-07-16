@@ -1,6 +1,0 @@
-module Actuator {
-	typedef long parameter ;
-	interface loop {
-		 void actuator( in char i1, in char i2, in char i3, in parameter size);
-	};
-};
