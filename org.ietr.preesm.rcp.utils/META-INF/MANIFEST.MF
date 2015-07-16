@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: RCP Utils
+Bundle-SymbolicName: org.ietr.preesm.rcp.utils;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: IETR/INSA Rennes
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipse.ui.workbench
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: org.eclipse.debug.ui,
+ org.eclipse.ui.internal.ide

@@ -24,9 +24,10 @@
 	<groupId>org.antlr</groupId>
 	<artifactId>antlr4-runtime</artifactId>
 	<version>4.3</version>
-</dependency>
-	
+</dependency>	
 	</dependencies>
+	
+	
 	<build>  
 		<plugins>  
 			<plugin>  
@@ -42,6 +43,7 @@
 						    <ws>gtk</ws>  
 						    <arch>x86_64</arch>  
 					    </environment>  
+					    <!--  
 					    <environment>  
 						    <os>linux</os>  
 						    <ws>gtk</ws>  
@@ -56,7 +58,7 @@
 						    <os>win32</os>  
 						    <ws>win32</ws>  
 						    <arch>x86</arch>  
-					    </environment>  
+					    </environment>  -->
 				    </environments>  
 			   </configuration>  
 			</plugin>
@@ -70,7 +72,7 @@
 						    <os>linux</os>  
 						    <ws>gtk</ws>  
 						    <arch>x86_64</arch>  
-					    </environment>  
+					    </environment>  <!-- 
 					    <environment>  
 						    <os>linux</os>  
 						    <ws>gtk</ws>  
@@ -85,7 +87,7 @@
 						    <os>win32</os>  
 						    <ws>win32</ws>  
 						    <arch>x86</arch>  
-					    </environment>  
+					    </environment>  -->
 				    </environments> 
 				</configuration>
 			</plugin>
@@ -151,8 +153,8 @@
 		
 		
 		
-		<module>../org.ietr.preesm.rcp</module>
 		<module>../org.ietr.preesm.product</module>
+		<module>../org.ietr.preesm.rcp.utils</module>
 	</modules>
 	
 </project>

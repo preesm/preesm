@@ -1,35 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Preesm" uid="Preesm" id="org.ietr.preesm.rcp.product" application="org.eclipse.ui.ide.workbench" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="true">
-
+<product name="Preesm" uid="Preesm" id="org.ietr.preesm.rcp.utils.product" application="org.ietr.preesm.rcp.utils.application" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
-      <programArgs>-clearPersistedState
+      <programArgs>-clearPersistedState -debug
       </programArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
    </launcherArgs>
 
-   <windowImages i256="/org.ietr.preesm.rcp/icons/preesmLogo.png"/>
+   <windowImages i16="icons/preesmLogo_16x16.bmp" i32="icons/preesmLogo_32x32.bmp" i48="icons/preesmLogo_48x48.bmp" i64="icons/preesmLogo_64x64.bmp" i128="icons/preesmLogo_128x128.bmp" i256="icons/preesmLogo_256x256.bmp"/>
 
    <splash
-      location="org.ietr.preesm.rcp"
-      startupProgressRect="5,275,445,15" />
+      location="org.ietr.preesm.rcp.utils"
+      startupProgressRect="5,275,445,15"
+      startupMessageRect="7,252,445,20"
+      startupForegroundColor="000000" />
    <launcher>
+      <linux icon="icons/preesmLogo_256x256.xpm"/>
       <solaris/>
-      <win useIco="false">
+      <win useIco="true">
+         <ico path="icons/preesmLogo.ico"/>
          <bmp/>
       </win>
    </launcher>
 
-
    <vm>
    </vm>
-
 
    <plugins>
       <plugin id="com.google.guava"/>
@@ -188,7 +189,7 @@
       <plugin id="org.ietr.preesm.mapper"/>
       <plugin id="org.ietr.preesm.memory"/>
       <plugin id="org.ietr.preesm.pimm.algorithm"/>
-      <plugin id="org.ietr.preesm.rcp"/>
+      <plugin id="org.ietr.preesm.rcp.utils"/>
       <plugin id="org.ietr.preesm.ui"/>
       <plugin id="org.ietr.preesm.utils"/>
       <plugin id="org.jgrapht"/>
