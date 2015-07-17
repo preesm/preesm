@@ -129,7 +129,7 @@
             </input>
             <input
                   id="DAGsAndMemExs"
-                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+                  object="java.util.Map">
             </input>
          </inputs>
       </task>

@@ -134,13 +134,13 @@
             </input>
             <input
                   id="DAGs"
-                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph&gt;">
+                  object="java.util.Set">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAGsAndMemExs"
-                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+                  object="java.util.Map">
             </output>
          </outputs>
       </task>
@@ -151,13 +151,13 @@
          <inputs>
             <input
                   id="DAGsAndMemExs"
-                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+                  object="java.util.Map">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAGsAndMemExs"
-                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+                  object="java.util.Map">
             </output>
          </outputs>
       </task>
@@ -168,13 +168,13 @@
          <inputs>
             <input
                   id="DAGsAndMemExs"
-                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+                  object="java.util.Map">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAGsAndMemExs"
-                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+                  object="java.util.Map">
             </output>
          </outputs>
       </task>
@@ -185,20 +185,20 @@
          <inputs>
             <input
                   id="DAGsAndMemExs"
-                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+                  object="java.util.Map">
             </input>
          </inputs>
          <outputs>
             <output
                   id="DAGsAndMemExs"
-                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+                  object="java.util.Map">
             </output>
             <output
                   id="maxBounds"
-                  object="java.util.Set&lt;java.lang.Integer&gt;"></output>
+                  object="java.util.Set"></output>
             <output
                   id="minBounds"
-                  object="java.util.Set&lt;java.lang.Integer&gt;">
+                  object="java.util.Set">
             </output>
          </outputs>
       </task>
@@ -209,7 +209,7 @@
          <inputs>
             <input
                   id="DAGsAndMemExs"
-                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+                  object="java.util.Map">
             </input>
             <input
                   id="scenario"
@@ -219,7 +219,7 @@
          <outputs>
             <output
                   id="DAGsAndMemExs"
-                  object="java.util.Map&lt;DirectedAcyclicGraph, MemoryExclusionGraph&gt;">
+                  object="java.util.Map">
             </output>
          </outputs>
       </task>

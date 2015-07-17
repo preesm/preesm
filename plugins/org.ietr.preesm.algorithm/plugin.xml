@@ -143,7 +143,7 @@
          <inputs>
             <input
                   id="SDFs"
-                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.sdf.SDFGraph&gt;">
+                  object="java.util.Set">
             </input>
          </inputs>
       </task>
@@ -154,13 +154,13 @@
          <inputs>
             <input
                   id="SDFs"
-                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.sdf.SDFGraph&gt;">
+                  object="java.util.Set">
             </input>
          </inputs>
          <outputs>
             <output
                   id="SDFs"
-                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.sdf.SDFGraph&gt;">
+                  object="java.util.Set">
             </output>
          </outputs>
       </task>
@@ -171,13 +171,13 @@
          <inputs>
             <input
                   id="SDFs"
-                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.sdf.SDFGraph&gt;">
+                  object="java.util.Set">
             </input>
          </inputs>
          <outputs>
             <output
                   id="SDFs"
-                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.sdf.SDFGraph&gt;">
+                  object="java.util.Set">
             </output>
          </outputs>
       </task>
@@ -192,7 +192,7 @@
             </input>
             <input
                   id="SDFs"
-                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.sdf.SDFGraph&gt;">
+                  object="java.util.Set">
             </input>
             <input
                   id="architecture"
@@ -241,13 +241,13 @@
          <inputs>
             <input
                   id="SDFs"
-                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.sdf.SDFGraph&gt;">
+                  object="java.util.Set">
             </input>
          </inputs>
          <outputs>
             <output
                   id="SDFs"
-                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.sdf.SDFGraph&gt;">
+                  object="java.util.Set">
             </output>
          </outputs>
       </task>
@@ -273,7 +273,7 @@
          <inputs>
             <input
                   id="SDFs"
-                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.sdf.SDFGraph&gt;">
+                  object="java.util.Set">
             </input>
             <input
                   id="scenario"

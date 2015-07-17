@@ -20,16 +20,7 @@ Bundle-ClassPath: lib/JFlex.jar,
  lib/antlr-3.3-complete.jar,
  lib/ST-4.0.4.jar
 Bundle-Vendor: IETR/INSA Rennes
-Export-Package: org.ietr.preesm.codegen,
+Export-Package: org.ietr.preesm.codegen, 
  org.ietr.preesm.codegen.idl,
  org.ietr.preesm.codegen.model,
- org.ietr.preesm.codegen.model.allocators,
- org.ietr.preesm.codegen.model.buffer,
- org.ietr.preesm.codegen.model.call,
- org.ietr.preesm.codegen.model.com,
- org.ietr.preesm.codegen.model.containers,
- org.ietr.preesm.codegen.model.expression,
- org.ietr.preesm.codegen.model.factories,
- org.ietr.preesm.codegen.model.main,
- org.ietr.preesm.codegen.model.printer,
- org.ietr.preesm.codegen.model.threads
+ org.ietr.preesm.codegen.model.containers

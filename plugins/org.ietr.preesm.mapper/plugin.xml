@@ -241,7 +241,7 @@
          <inputs>
             <input
                   id="SDFs"
-                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.sdf.SDFGraph&gt;">
+                  object="java.util.Set">
             </input>
             <input
                   id="scenario"
@@ -255,11 +255,11 @@
          <outputs>
             <output
                   id="DAGs"
-                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph&gt;">
+                  object="java.util.Set">
             </output>
             <output
                   id="ABCs"
-                  object="java.util.Set&lt;org.ietr.preesm.mapper.abc.IAbc&gt;">
+                  object="java.util.Set">
             </output>
          </outputs>
       </task>
@@ -274,7 +274,7 @@
             </input>
             <input
                   id="ABCs"
-                  object="java.util.Set&lt;org.ietr.preesm.mapper.abc.IAbc&gt;">
+                  object="java.util.Set">
             </input>
          </inputs>
       </task>
@@ -285,7 +285,7 @@
          <inputs>
             <input
                   id="DAGs"
-                  object="java.util.Set&lt;org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph&gt;">
+                  object="java.util.Set">
             </input>
          </inputs>
       </task>
@@ -311,7 +311,7 @@
          <inputs>
             <input
                   id="ABCs"
-                  object="java.util.Set&lt;org.ietr.preesm.mapper.abc.IAbc&gt;">
+                  object="java.util.Set">
             </input>
             <input
                   id="scenario"
