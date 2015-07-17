@@ -35,13 +35,12 @@
  ******************************************************************************/
 package org.ietr.preesm.ui.pimm.checker.popup.actions;
 
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeSelection;
-import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
 import org.ietr.preesm.core.scenarios.generator.ScenariosGenerator;
 import org.ietr.preesm.ui.Activator;
 import org.ietr.preesm.ui.wizards.PreesmProjectNature;
@@ -53,10 +52,10 @@ import org.ietr.preesm.ui.wizards.PreesmProjectNature;
  * @author cguy
  *
  */
-public class ScenariosGeneratorPopup implements IObjectActionDelegate {
+public class ScenariosGeneratorPopup extends AbstractHandler {
 
 	@Override
-	public void run(IAction action) {
+	public Object execute(ExecutionEvent event) throws ExecutionException {
 		ScenariosGenerator generator = new ScenariosGenerator();
 		try {
 			// Get the selected IProject
@@ -72,14 +71,6 @@ public class ScenariosGeneratorPopup implements IObjectActionDelegate {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
-
-	@Override
-	public void selectionChanged(IAction action, ISelection selection) {
-	}
-
-	@Override
-	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
-	}
-
 }

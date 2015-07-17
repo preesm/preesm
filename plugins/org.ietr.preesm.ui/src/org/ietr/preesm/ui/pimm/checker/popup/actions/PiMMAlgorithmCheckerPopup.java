@@ -35,16 +35,14 @@
  ******************************************************************************/
 package org.ietr.preesm.ui.pimm.checker.popup.actions;
 
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IActionDelegate;
-import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.pimm.algorithm.checker.PiMMAlgorithmChecker;
@@ -56,7 +54,7 @@ import org.ietr.preesm.ui.Activator;
  * @author cguy
  * 
  */
-public class PiMMAlgorithmCheckerPopup implements IObjectActionDelegate {
+public class PiMMAlgorithmCheckerPopup extends AbstractHandler {
 
 	private Shell shell;
 
@@ -67,19 +65,8 @@ public class PiMMAlgorithmCheckerPopup implements IObjectActionDelegate {
 		super();
 	}
 
-	/**
-	 * @see IObjectActionDelegate#setActivePart(IAction, IWorkbenchPart)
-	 */
 	@Override
-	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
-		shell = targetPart.getSite().getShell();
-	}
-
-	/**
-	 * @see IActionDelegate#run(IAction)
-	 */
-	@Override
-	public void run(IAction action) {
+	public Object execute(ExecutionEvent event) throws ExecutionException {
 		PiMMAlgorithmChecker checker = new PiMMAlgorithmChecker();
 		try {
 
@@ -107,14 +94,7 @@ public class PiMMAlgorithmCheckerPopup implements IObjectActionDelegate {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-	}
-
-	/**
-	 * @see IActionDelegate#selectionChanged(IAction, ISelection)
-	 */
-	@Override
-	public void selectionChanged(IAction action, ISelection selection) {
+		return null;
 	}
 
 }
