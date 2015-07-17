@@ -109,49 +109,32 @@
 	</build>  
 	<modules>
 		<module>../../graphiti/plugins/org.jgrapht</module>
+		<module>../../graphiti/plugins/org.ietr.dftools.graphiti.model</module>
+		<module>../../graphiti/plugins/org.ietr.dftools.graphiti.ui</module>
+		<module>../../graphiti/org.ietr.dftools.graphiti.feature</module>
 		
-		<module>
-			../../graphiti/plugins/org.ietr.dftools.graphiti.model
-		</module>
-		<module>
-			../../graphiti/plugins/org.ietr.dftools.graphiti.ui
-		</module>
-		<module>
-			../../graphiti/org.ietr.dftools.graphiti.feature
-		</module>
-		<module>
-			../../dftools/eclipse/plugins/org.ietr.dftools.algorithm
-		</module>
-		<module>
-			../../dftools/eclipse/plugins/org.ietr.dftools.architecture
-		</module>
-		<module>
-			../../dftools/eclipse/plugins/org.ietr.dftools.architecture.ui
-		</module>
+		<module>../../dftools/eclipse/plugins/org.ietr.dftools.algorithm</module>
+		<module>../../dftools/eclipse/plugins/org.ietr.dftools.architecture</module>
+		<module>../../dftools/eclipse/plugins/org.ietr.dftools.architecture.ui</module>
+		<module>../../dftools/eclipse/plugins/org.ietr.dftools.ui</module>
+		<module>../../dftools/eclipse/plugins/org.ietr.dftools.workflow</module>
 		<module>../../dftools/eclipse/org.ietr.dftools.feature</module>
-		<module>
-			../../dftools/eclipse/plugins/org.ietr.dftools.ui
-		</module>
-		<module>
-			../../dftools/eclipse/plugins/org.ietr.dftools.workflow
-		</module>
+			
 		<module>../plugins/org.ietr.preesm.algorithm</module>
 		<module>../plugins/org.ietr.preesm.archi</module>
 		<module>../plugins/org.ietr.preesm.cli</module>
 		<module>../plugins/org.ietr.preesm.codegen</module>
 		<module>../plugins/org.ietr.preesm.codegen.xtend</module>
-		<module>../org.ietr.preesm.complete.site</module>
 		<module>../plugins/org.ietr.preesm.core</module>
 		<module>../plugins/org.ietr.preesm.experiment.model</module>
-		<module>../org.ietr.preesm.feature</module>
 		<module>../plugins/org.ietr.preesm.mapper</module>
 		<module>../plugins/org.ietr.preesm.memory</module>
 		<module>../plugins/org.ietr.preesm.pimm.algorithm</module>
 		<module>../plugins/org.ietr.preesm.ui</module>
 		<module>../plugins/org.ietr.preesm.utils</module>
-		
-		
-		
+				
+		<module>../org.ietr.preesm.feature</module>
+		<module>../org.ietr.preesm.complete.site</module>		
 		<module>../org.ietr.preesm.product</module>
 		<module>../org.ietr.preesm.rcp.utils</module>
 	</modules>
