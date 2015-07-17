@@ -118,7 +118,7 @@ public class StatEditorInput implements IEditorInput {
 		return "Implementation";
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Object getAdapter(Class adapter) {
 		return null;

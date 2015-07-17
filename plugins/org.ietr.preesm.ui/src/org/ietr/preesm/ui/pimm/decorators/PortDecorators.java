@@ -41,7 +41,6 @@ import java.util.List;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.platform.IPlatformImageConstants;
-import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;

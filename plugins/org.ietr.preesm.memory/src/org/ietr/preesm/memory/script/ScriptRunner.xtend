@@ -132,8 +132,9 @@ class ScriptRunner {
 	package val List<List<Buffer>> bufferGroups = newArrayList
 
 	@Accessors CharSequence log = ''''''
-
-	static public final boolean printTodo = false
+	
+	@Accessors
+	public final boolean printTodo
 
 	public boolean generateLog = true
 
@@ -1400,6 +1401,7 @@ class ScriptRunner {
 
 	new(int alignment) {
 		this.alignment = alignment
+		printTodo = false
 	}
 
 	/**

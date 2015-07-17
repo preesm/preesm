@@ -94,7 +94,7 @@ public class GanttEditorInput implements IEditorInput {
 		return name;
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Object getAdapter(Class adapter) {
 		return null;

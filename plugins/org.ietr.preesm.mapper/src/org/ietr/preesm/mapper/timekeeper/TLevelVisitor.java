@@ -74,6 +74,7 @@ public class TLevelVisitor implements
 	/**
 	 * Method to detect bugs. Activate if there is some problem in the DAG (usually caused by cycles)
 	 */
+	@SuppressWarnings("unused")
 	private void detectCycle(MapperDAG dag) {
 		CycleDetector<DAGVertex, DAGEdge> cd = new CycleDetector<DAGVertex, DAGEdge>(dag);
 		if (cd.detectCycles()) {
