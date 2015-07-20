@@ -62,6 +62,8 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
+import org.ietr.preesm.experiment.model.pimm.HRefinement;
+import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.ui.pimm.features.ClearActorMemoryScriptFeature;
 import org.ietr.preesm.ui.pimm.features.ClearActorRefinementFeature;
 import org.ietr.preesm.ui.pimm.features.OpenMemoryScriptFeature;
@@ -75,16 +77,17 @@ import org.ietr.preesm.ui.pimm.features.SetActorRefinementFeature;
  * @author jheulot
  * 
  */
-public class ActorPropertiesSection extends GFPropertySection implements
-		ITabbedPropertyConstants {
+public class ActorPropertiesSection extends GFPropertySection implements ITabbedPropertyConstants {
 
 	/**
 	 * Items of the {@link ActorPropertiesSection}
 	 */
+	private Composite composite;
 	private CLabel lblName;
 	private Text txtNameObj;
 	private CLabel lblRefinement;
 	private CLabel lblRefinementObj;
+	private CLabel lblRefinementView;
 
 	private Button butRefinementClear;
 	private Button butRefinementEdit;
@@ -97,16 +100,16 @@ public class ActorPropertiesSection extends GFPropertySection implements
 	private Button butMemoryScriptEdit;
 	private Button butMemoryScriptOpen;
 
-	private final int FIRST_COLUMN_WIDTH = 150;
+	private final int FIRST_COLUMN_WIDTH = 100;
 
 	@Override
-	public void createControls(Composite parent,
-			TabbedPropertySheetPage tabbedPropertySheetPage) {
+	public void createControls(Composite parent, TabbedPropertySheetPage tabbedPropertySheetPage) {
 
 		super.createControls(parent, tabbedPropertySheetPage);
 
 		TabbedPropertySheetWidgetFactory factory = getWidgetFactory();
-		Composite composite = factory.createFlatFormComposite(parent);
+		composite = factory.createFlatFormComposite(parent);
+
 		FormData data;
 
 		/**** NAME ****/
@@ -127,9 +130,26 @@ public class ActorPropertiesSection extends GFPropertySection implements
 		 * Refinement
 		 */
 
+		createRefinementControl(factory, composite);
+
+		/**
+		 * Memory script
+		 */
+		createMemoryScriptControl(factory, composite);
+	}
+
+	/**
+	 * Create the part responsible for editing the refinement of the actor.
+	 * 
+	 * @param factory
+	 * @param composite
+	 * @return
+	 */
+	protected void createRefinementControl(TabbedPropertySheetWidgetFactory factory, Composite composite) {
+
 		/*** Clear Button ***/
 		butRefinementClear = factory.createButton(composite, "Clear", SWT.PUSH);
-		data = new FormData();
+		FormData data = new FormData();
 		data.left = new FormAttachment(100, -100);
 		data.right = new FormAttachment(100, 0);
 		data.top = new FormAttachment(txtNameObj);
@@ -167,8 +187,18 @@ public class ActorPropertiesSection extends GFPropertySection implements
 		data = new FormData();
 		data.left = new FormAttachment(0, 0);
 		data.right = new FormAttachment(lblRefinementObj, -HSPACE);
-		data.top = new FormAttachment(lblName);
+		data.top = new FormAttachment(txtNameObj);
 		lblRefinement.setLayoutData(data);
+
+		/**** Refinement view ****/
+		lblRefinementView = factory.createCLabel(composite, "loop: \n init:");
+		data = new FormData();
+		data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
+		data.right = new FormAttachment(100, 0);
+		data.top = new FormAttachment(lblRefinement);
+		data.height = 30;
+		lblRefinementView.setLayoutData(data);
+		lblRefinementView.setEnabled(true);
 
 		/*** Clear Button Listener ***/
 		butRefinementClear.addSelectionListener(new SelectionListener() {
@@ -178,20 +208,16 @@ public class ActorPropertiesSection extends GFPropertySection implements
 				pes[0] = getSelectedPictogramElement();
 
 				CustomContext context = new CustomContext(pes);
-				ICustomFeature[] clearRefinementFeature = getDiagramTypeProvider()
-						.getFeatureProvider().getCustomFeatures(context);
+				ICustomFeature[] clearRefinementFeature = getDiagramTypeProvider().getFeatureProvider()
+						.getCustomFeatures(context);
 
 				for (ICustomFeature feature : clearRefinementFeature) {
 					if (feature instanceof ClearActorRefinementFeature) {
-						getDiagramTypeProvider().getDiagramBehavior()
-								.executeFeature(feature, context);
-						LayoutContext contextLayout = new LayoutContext(
-								getSelectedPictogramElement());
-						ILayoutFeature layoutFeature = getDiagramTypeProvider()
-								.getFeatureProvider().getLayoutFeature(
-										contextLayout);
-						getDiagramTypeProvider().getDiagramBehavior()
-								.executeFeature(layoutFeature, contextLayout);
+						getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
+						LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
+						ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+								.getLayoutFeature(contextLayout);
+						getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
 					}
 				}
 
@@ -212,20 +238,16 @@ public class ActorPropertiesSection extends GFPropertySection implements
 				pes[0] = getSelectedPictogramElement();
 
 				CustomContext context = new CustomContext(pes);
-				ICustomFeature[] setRefinementFeature = getDiagramTypeProvider()
-						.getFeatureProvider().getCustomFeatures(context);
+				ICustomFeature[] setRefinementFeature = getDiagramTypeProvider().getFeatureProvider()
+						.getCustomFeatures(context);
 
 				for (ICustomFeature feature : setRefinementFeature) {
 					if (feature instanceof SetActorRefinementFeature) {
-						getDiagramTypeProvider().getDiagramBehavior()
-								.executeFeature(feature, context);
-						LayoutContext contextLayout = new LayoutContext(
-								getSelectedPictogramElement());
-						ILayoutFeature layoutFeature = getDiagramTypeProvider()
-								.getFeatureProvider().getLayoutFeature(
-										contextLayout);
-						getDiagramTypeProvider().getDiagramBehavior()
-								.executeFeature(layoutFeature, contextLayout);
+						getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
+						LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
+						ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+								.getLayoutFeature(contextLayout);
+						getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
 					}
 				}
 
@@ -246,20 +268,16 @@ public class ActorPropertiesSection extends GFPropertySection implements
 				pes[0] = getSelectedPictogramElement();
 
 				CustomContext context = new CustomContext(pes);
-				ICustomFeature[] openRefinementFeature = getDiagramTypeProvider()
-						.getFeatureProvider().getCustomFeatures(context);
+				ICustomFeature[] openRefinementFeature = getDiagramTypeProvider().getFeatureProvider()
+						.getCustomFeatures(context);
 
 				for (ICustomFeature feature : openRefinementFeature) {
 					if (feature instanceof OpenRefinementFeature) {
-						getDiagramTypeProvider().getDiagramBehavior()
-								.executeFeature(feature, context);
-						LayoutContext contextLayout = new LayoutContext(
-								getSelectedPictogramElement());
-						ILayoutFeature layoutFeature = getDiagramTypeProvider()
-								.getFeatureProvider().getLayoutFeature(
-										contextLayout);
-						getDiagramTypeProvider().getDiagramBehavior()
-								.executeFeature(layoutFeature, contextLayout);
+						getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
+						LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
+						ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+								.getLayoutFeature(contextLayout);
+						getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
 					}
 				}
 
@@ -280,8 +298,7 @@ public class ActorPropertiesSection extends GFPropertySection implements
 			public void modifyText(ModifyEvent e) {
 				PictogramElement pe = getSelectedPictogramElement();
 				if (pe != null) {
-					EObject bo = Graphiti.getLinkService()
-							.getBusinessObjectForLinkedPictogramElement(pe);
+					EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
 					if (bo == null)
 						return;
 
@@ -289,29 +306,21 @@ public class ActorPropertiesSection extends GFPropertySection implements
 						ExecutableActor actor = (ExecutableActor) bo;
 						if (txtNameObj.getText().compareTo(actor.getName()) != 0) {
 							setNewName(actor, txtNameObj.getText());
-							getDiagramTypeProvider().getDiagramBehavior()
-									.refreshContent();
+							getDiagramTypeProvider().getDiagramBehavior().refreshContent();
 						}
-					}// end Actor
+					} // end Actor
 				}
 			}
 		});
-
-		/**
-		 * Memory script
-		 */
-		createMemoryScriptControl(data, factory, composite);
 	}
 
-	private void createMemoryScriptControl(FormData data,
-			TabbedPropertySheetWidgetFactory factory, Composite composite) {
+	protected void createMemoryScriptControl(TabbedPropertySheetWidgetFactory factory, Composite composite) {
 		/*** Clear Button ***/
-		butMemoryScriptClear = factory.createButton(composite, "Clear",
-				SWT.PUSH);
-		data = new FormData();
+		butMemoryScriptClear = factory.createButton(composite, "Clear", SWT.PUSH);
+		FormData data = new FormData();
 		data.left = new FormAttachment(100, -100);
 		data.right = new FormAttachment(100, 0);
-		data.top = new FormAttachment(butRefinementClear);
+		data.top = new FormAttachment(lblRefinementView);
 		butMemoryScriptClear.setLayoutData(data);
 		butMemoryScriptClear.setEnabled(true);
 
@@ -320,7 +329,7 @@ public class ActorPropertiesSection extends GFPropertySection implements
 		data = new FormData();
 		data.left = new FormAttachment(100, -205);
 		data.right = new FormAttachment(100, -105);
-		data.top = new FormAttachment(butRefinementEdit);
+		data.top = new FormAttachment(lblRefinementView);
 		butMemoryScriptEdit.setLayoutData(data);
 		butMemoryScriptEdit.setEnabled(true);
 
@@ -329,7 +338,7 @@ public class ActorPropertiesSection extends GFPropertySection implements
 		data = new FormData();
 		data.left = new FormAttachment(100, -310);
 		data.right = new FormAttachment(100, -210);
-		data.top = new FormAttachment(butRefinementOpen);
+		data.top = new FormAttachment(lblRefinementView);
 		butMemoryScriptOpen.setLayoutData(data);
 		butMemoryScriptOpen.setEnabled(true);
 
@@ -338,7 +347,7 @@ public class ActorPropertiesSection extends GFPropertySection implements
 		data = new FormData();
 		data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
 		data.right = new FormAttachment(butMemoryScriptEdit, 0);
-		data.top = new FormAttachment(lblRefinementObj);
+		data.top = new FormAttachment(lblRefinementView);
 		lblMemoryScriptObj.setLayoutData(data);
 		lblMemoryScriptObj.setEnabled(true);
 
@@ -346,7 +355,7 @@ public class ActorPropertiesSection extends GFPropertySection implements
 		data = new FormData();
 		data.left = new FormAttachment(0, 0);
 		data.right = new FormAttachment(lblMemoryScriptObj, -HSPACE);
-		data.top = new FormAttachment(lblRefinement);
+		data.top = new FormAttachment(lblRefinementView);
 		lblMemoryScript.setLayoutData(data);
 
 		/*** Clear Button Listener ***/
@@ -357,20 +366,16 @@ public class ActorPropertiesSection extends GFPropertySection implements
 				pes[0] = getSelectedPictogramElement();
 
 				CustomContext context = new CustomContext(pes);
-				ICustomFeature[] clearMemoryScriptFeature = getDiagramTypeProvider()
-						.getFeatureProvider().getCustomFeatures(context);
+				ICustomFeature[] clearMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider()
+						.getCustomFeatures(context);
 
 				for (ICustomFeature feature : clearMemoryScriptFeature) {
 					if (feature instanceof ClearActorMemoryScriptFeature) {
-						getDiagramTypeProvider().getDiagramBehavior()
-								.executeFeature(feature, context);
-						LayoutContext contextLayout = new LayoutContext(
-								getSelectedPictogramElement());
-						ILayoutFeature layoutFeature = getDiagramTypeProvider()
-								.getFeatureProvider().getLayoutFeature(
-										contextLayout);
-						getDiagramTypeProvider().getDiagramBehavior()
-								.executeFeature(layoutFeature, contextLayout);
+						getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
+						LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
+						ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+								.getLayoutFeature(contextLayout);
+						getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
 					}
 				}
 
@@ -391,20 +396,16 @@ public class ActorPropertiesSection extends GFPropertySection implements
 				pes[0] = getSelectedPictogramElement();
 
 				CustomContext context = new CustomContext(pes);
-				ICustomFeature[] setMemoryScriptFeature = getDiagramTypeProvider()
-						.getFeatureProvider().getCustomFeatures(context);
+				ICustomFeature[] setMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider()
+						.getCustomFeatures(context);
 
 				for (ICustomFeature feature : setMemoryScriptFeature) {
 					if (feature instanceof SetActorMemoryScriptFeature) {
-						getDiagramTypeProvider().getDiagramBehavior()
-								.executeFeature(feature, context);
-						LayoutContext contextLayout = new LayoutContext(
-								getSelectedPictogramElement());
-						ILayoutFeature layoutFeature = getDiagramTypeProvider()
-								.getFeatureProvider().getLayoutFeature(
-										contextLayout);
-						getDiagramTypeProvider().getDiagramBehavior()
-								.executeFeature(layoutFeature, contextLayout);
+						getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
+						LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
+						ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+								.getLayoutFeature(contextLayout);
+						getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
 					}
 				}
 
@@ -425,20 +426,16 @@ public class ActorPropertiesSection extends GFPropertySection implements
 				pes[0] = getSelectedPictogramElement();
 
 				CustomContext context = new CustomContext(pes);
-				ICustomFeature[] openMemoryScriptFeature = getDiagramTypeProvider()
-						.getFeatureProvider().getCustomFeatures(context);
+				ICustomFeature[] openMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider()
+						.getCustomFeatures(context);
 
 				for (ICustomFeature feature : openMemoryScriptFeature) {
 					if (feature instanceof OpenMemoryScriptFeature) {
-						getDiagramTypeProvider().getDiagramBehavior()
-								.executeFeature(feature, context);
-						LayoutContext contextLayout = new LayoutContext(
-								getSelectedPictogramElement());
-						ILayoutFeature layoutFeature = getDiagramTypeProvider()
-								.getFeatureProvider().getLayoutFeature(
-										contextLayout);
-						getDiagramTypeProvider().getDiagramBehavior()
-								.executeFeature(layoutFeature, contextLayout);
+						getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
+						LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
+						ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+								.getLayoutFeature(contextLayout);
+						getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
 					}
 				}
 
@@ -462,16 +459,14 @@ public class ActorPropertiesSection extends GFPropertySection implements
 	 *            String value
 	 */
 	private void setNewName(final ExecutableActor actor, final String value) {
-		TransactionalEditingDomain editingDomain = getDiagramTypeProvider()
-				.getDiagramBehavior().getEditingDomain();
-		editingDomain.getCommandStack().execute(
-				new RecordingCommand(editingDomain) {
+		TransactionalEditingDomain editingDomain = getDiagramTypeProvider().getDiagramBehavior().getEditingDomain();
+		editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
 
-					@Override
-					protected void doExecute() {
-						actor.setName(value);
-					}
-				});
+			@Override
+			protected void doExecute() {
+				actor.setName(value);
+			}
+		});
 	}
 
 	@Override
@@ -479,35 +474,53 @@ public class ActorPropertiesSection extends GFPropertySection implements
 		PictogramElement pe = getSelectedPictogramElement();
 
 		if (pe != null) {
-			Object bo = Graphiti.getLinkService()
-					.getBusinessObjectForLinkedPictogramElement(pe);
+			Object bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
 			if (bo == null)
 				return;
 
 			if (bo instanceof ExecutableActor) {
 				ExecutableActor exexcutableActor = (ExecutableActor) bo;
 				txtNameObj.setEnabled(false);
-				if (exexcutableActor.getName() == null
-						&& txtNameObj.getText() != "") {
+				if (exexcutableActor.getName() == null && txtNameObj.getText() != "") {
 					txtNameObj.setText("");
-				} else if (txtNameObj.getText().compareTo(
-						exexcutableActor.getName()) != 0) {
+				} else if (txtNameObj.getText().compareTo(exexcutableActor.getName()) != 0) {
 					txtNameObj.setText(exexcutableActor.getName());
 				}
 				txtNameObj.setEnabled(true);
 
 				if (bo instanceof Actor) {
 					Actor actor = (Actor) bo;
-					if (actor.getRefinement().getFilePath() == null) {
+					Refinement refinement = actor.getRefinement();
+					if (refinement.getFilePath() == null) {
 						lblRefinementObj.setText("(none)");
+						lblRefinementView.setText("(none)");
 						butRefinementClear.setEnabled(false);
 						butRefinementEdit.setEnabled(true);
 						butRefinementOpen.setEnabled(false);
 					} else {
-						IPath path = actor.getRefinement().getFilePath();
+						IPath path = refinement.getFilePath();
 						String text = path.lastSegment();
-
 						lblRefinementObj.setText(text);
+
+						String view = "";
+
+						if (refinement instanceof HRefinement) {
+							String tooltip = "";
+							// Max length
+							int maxLength = (int) ((composite.getBounds().width - FIRST_COLUMN_WIDTH) * 0.17);
+							maxLength = Math.max(maxLength, 40);
+							String loop = "loop: " + ((HRefinement) refinement).getLoopPrototype().format();
+							view += (loop.length() <= maxLength) ? loop : loop.substring(0, maxLength) + "...";
+							tooltip = loop;
+							if (((HRefinement) refinement).getInitPrototype() != null) {
+								String init = "\ninit: " + ((HRefinement) refinement).getInitPrototype().format();
+								view += (init.length() <= maxLength) ? init : init.substring(0, maxLength) + "...";
+								;
+								tooltip += init;
+							}
+							lblRefinementView.setToolTipText(tooltip);
+						}
+						lblRefinementView.setText(view);
 						butRefinementClear.setEnabled(true);
 						butRefinementEdit.setEnabled(true);
 						butRefinementOpen.setEnabled(true);
@@ -529,6 +542,7 @@ public class ActorPropertiesSection extends GFPropertySection implements
 					}
 					lblRefinement.setVisible(true);
 					lblRefinementObj.setVisible(true);
+					lblRefinementView.setVisible(true);
 					butRefinementClear.setVisible(true);
 					butRefinementEdit.setVisible(true);
 					butRefinementOpen.setVisible(true);
@@ -540,6 +554,7 @@ public class ActorPropertiesSection extends GFPropertySection implements
 				} else {
 					lblRefinement.setVisible(false);
 					lblRefinementObj.setVisible(false);
+					lblRefinementView.setVisible(false);
 					butRefinementClear.setVisible(false);
 					butRefinementEdit.setVisible(false);
 					butRefinementOpen.setVisible(false);
@@ -550,7 +565,7 @@ public class ActorPropertiesSection extends GFPropertySection implements
 					butMemoryScriptOpen.setVisible(false);
 				}
 
-			}// end ExecutableActor
+			} // end ExecutableActor
 
 		}
 	}
