@@ -42,8 +42,12 @@
       <plugin id="javax.xml"/>
       <plugin id="org.antlr.runtime" version="3.2.0.v201101311130"/>
       <plugin id="org.apache.batik.css"/>
+      <plugin id="org.apache.batik.dom"/>
+      <plugin id="org.apache.batik.ext.awt"/>
+      <plugin id="org.apache.batik.svggen"/>
       <plugin id="org.apache.batik.util"/>
       <plugin id="org.apache.batik.util.gui"/>
+      <plugin id="org.apache.batik.xml"/>
       <plugin id="org.apache.commons.cli"/>
       <plugin id="org.apache.commons.jxpath"/>
       <plugin id="org.apache.commons.lang"/>
@@ -132,6 +136,7 @@
       <plugin id="org.eclipse.equinox.util"/>
       <plugin id="org.eclipse.gef"/>
       <plugin id="org.eclipse.graphiti"/>
+      <plugin id="org.eclipse.graphiti.export.batik"/>
       <plugin id="org.eclipse.graphiti.mm"/>
       <plugin id="org.eclipse.graphiti.ui"/>
       <plugin id="org.eclipse.help"/>
