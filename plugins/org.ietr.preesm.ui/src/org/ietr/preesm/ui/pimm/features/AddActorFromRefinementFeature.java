@@ -112,7 +112,7 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
 		} else {
 			return null;
 		}
-
+		setRefinementFeature.setShowOnlyValidPrototypes(false);
 		setRefinementFeature.setActorRefinement(actor, newFilePath);
 
 		// 3- Create all ports corresponding to the refinement.

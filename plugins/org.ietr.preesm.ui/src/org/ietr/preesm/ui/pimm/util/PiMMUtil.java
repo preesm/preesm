@@ -91,12 +91,11 @@ public class PiMMUtil {
 	 *            an input validator, or <code>null</code> if none
 	 * @return the string, or <code>null</code> if user cancels
 	 */
-	public static String askString(String dialogTitle, String dialogMessage,
-			String initialValue, IInputValidator validator) {
+	public static String askString(String dialogTitle, String dialogMessage, String initialValue,
+			IInputValidator validator) {
 		String ret = null;
 		Shell shell = getShell();
-		InputDialog inputDialog = new InputDialog(shell, dialogTitle,
-				dialogMessage, initialValue, validator);
+		InputDialog inputDialog = new InputDialog(shell, dialogTitle, dialogMessage, initialValue, validator);
 		int retDialog = inputDialog.open();
 		if (retDialog == Window.OK) {
 			ret = inputDialog.getValue();
@@ -116,8 +115,7 @@ public class PiMMUtil {
 	 * @return the string, or <code>null</code> if user cancels
 	 */
 	@Deprecated
-	public static IPath askRefinement(String dialogTitle, String dialogMessage,
-			IInputValidator validator) {
+	public static IPath askRefinement(String dialogTitle, String dialogMessage, IInputValidator validator) {
 		Shell shell = getShell();
 
 		// For now, authorized refinements are other PiGraphs (.pi files) and
@@ -126,13 +124,10 @@ public class PiMMUtil {
 		fileExtensions.add("pi");
 		fileExtensions.add("idl");
 		fileExtensions.add("h");
-		FileContentProvider contentProvider = new FileContentProvider(
-				fileExtensions);
+		FileContentProvider contentProvider = new FileContentProvider(fileExtensions);
 
-		ElementTreeSelectionDialog inputDialog = new ElementTreeSelectionDialog(
-				shell,
-				WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(),
-				contentProvider);
+		ElementTreeSelectionDialog inputDialog = new ElementTreeSelectionDialog(shell,
+				WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(), contentProvider);
 		inputDialog.setAllowMultiple(false);
 		inputDialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
 		inputDialog.setMessage(dialogMessage);
@@ -146,18 +141,15 @@ public class PiMMUtil {
 		}
 		return null;
 	}
-	
-	public static IPath askFile(String dialogTitle, String dialogMessage,
-			IInputValidator validator, Set<String> fileExtensions) {
+
+	public static IPath askFile(String dialogTitle, String dialogMessage, IInputValidator validator,
+			Set<String> fileExtensions) {
 		Shell shell = getShell();
-		
-		FileContentProvider contentProvider = new FileContentProvider(
-				fileExtensions);
 
-		ElementTreeSelectionDialog inputDialog = new ElementTreeSelectionDialog(
-				shell,
-				WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(),
-				contentProvider);
+		FileContentProvider contentProvider = new FileContentProvider(fileExtensions);
+
+		ElementTreeSelectionDialog inputDialog = new ElementTreeSelectionDialog(shell,
+				WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider(), contentProvider);
 		inputDialog.setAllowMultiple(false);
 		inputDialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
 		inputDialog.setMessage(dialogMessage);
@@ -171,37 +163,33 @@ public class PiMMUtil {
 		return null;
 	}
 
-	public static FunctionPrototype selectFunction(
-			final FunctionPrototype[] prototypes,
-			final FunctionPrototype[] allProtoArray, String title,
-			String message, boolean mandatorySelection) {
-		ElementListSelectionDialog dialog = new ElementListSelectionDialog(
-				getShell(), new LabelProvider() {
-					
-					@Override
-					public String getText(Object element) {
-						if (element != null
-								&& element instanceof FunctionPrototype)
-							return ((FunctionPrototype) element).format();
-						else
-							return "";
-					}
-				}) {
-			
+	public static FunctionPrototype selectFunction(final FunctionPrototype[] prototypes,
+			final FunctionPrototype[] allProtoArray, String title, String message, boolean showOnlyValidPrototypes) {
+		ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), new LabelProvider() {
+
+			@Override
+			public String getText(Object element) {
+				if (element != null && element instanceof FunctionPrototype)
+					return ((FunctionPrototype) element).format();
+				else
+					return "";
+			}
+		}) {
+
 			final FunctionPrototype[] filteredPrototypes = prototypes;
 			final FunctionPrototype[] allPrototypes = allProtoArray;
-			
-			protected void switchDisplayedPrototypes(boolean filtered){
-				if(filtered){
+
+			protected void switchDisplayedPrototypes(boolean filtered) {
+				if (filtered) {
 					setListElements(filteredPrototypes);
 				} else {
 					setListElements(allPrototypes);
 				}
-				
+
 				// Trick to force an update
 				setFilter(getFilter());
 			}
-			
+
 			@Override
 			protected Control createDialogArea(Composite parent) {
 				Composite composite = (Composite) super.createDialogArea(parent);
@@ -210,28 +198,33 @@ public class PiMMUtil {
 				data.grabExcessHorizontalSpace = true;
 				data.horizontalAlignment = GridData.FILL;
 				data.verticalAlignment = GridData.BEGINNING;
-				// Checkbox check = new Checkbox("Show only functions with corresponding ports.", true);
+				// Checkbox check = new Checkbox("Show only functions with
+				// corresponding ports.", true);
 				Button check = new Button(composite, SWT.CHECK);
 				check.setText("Show only functions with corresponding ports.");
-				check.setSelection(true);
-				
+				check.setSelection(showOnlyValidPrototypes);
+
 				SelectionListener listener = new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
-						boolean newState = ((Button)e.getSource()).getSelection();
+						boolean newState = ((Button) e.getSource()).getSelection();
 						switchDisplayedPrototypes(newState);
 					}
 				};
-				
+
 				check.addSelectionListener(listener);
-				
+
 				return composite;
 			}
 		};
 
 		dialog.setTitle(title);
 		dialog.setMessage(message);
-		dialog.setElements(prototypes);
+		if (showOnlyValidPrototypes) {
+			dialog.setElements(prototypes);
+		} else {
+			dialog.setElements(allProtoArray);
+		}
 
 		int retDialog = dialog.open();
 		if (retDialog == Window.OK) {
@@ -254,10 +247,9 @@ public class PiMMUtil {
 	 * @param message
 	 *            the message to put in the tooltip
 	 */
-	public static void setToolTip(IFeatureProvider fp, GraphicsAlgorithm ga,
-			IDiagramBehavior iDiagramEditor, String message) {
-		IToolBehaviorProvider behaviorProvider = fp.getDiagramTypeProvider()
-				.getCurrentToolBehaviorProvider();
+	public static void setToolTip(IFeatureProvider fp, GraphicsAlgorithm ga, IDiagramBehavior iDiagramEditor,
+			String message) {
+		IToolBehaviorProvider behaviorProvider = fp.getDiagramTypeProvider().getCurrentToolBehaviorProvider();
 		((PiMMToolBehaviorProvider) behaviorProvider).setToolTip(ga, message);
 
 		iDiagramEditor.refresh();

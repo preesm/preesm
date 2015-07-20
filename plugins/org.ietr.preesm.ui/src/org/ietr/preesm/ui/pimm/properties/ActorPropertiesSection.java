@@ -509,9 +509,11 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 							// Max length
 							int maxLength = (int) ((composite.getBounds().width - FIRST_COLUMN_WIDTH) * 0.17);
 							maxLength = Math.max(maxLength, 40);
-							String loop = "loop: " + ((HRefinement) refinement).getLoopPrototype().format();
-							view += (loop.length() <= maxLength) ? loop : loop.substring(0, maxLength) + "...";
-							tooltip = loop;
+							if (((HRefinement) refinement).getLoopPrototype() != null) {
+								String loop = "loop: " + ((HRefinement) refinement).getLoopPrototype().format();
+								view += (loop.length() <= maxLength) ? loop : loop.substring(0, maxLength) + "...";
+								tooltip = loop;
+							}
 							if (((HRefinement) refinement).getInitPrototype() != null) {
 								String init = "\ninit: " + ((HRefinement) refinement).getInitPrototype().format();
 								view += (init.length() <= maxLength) ? init : init.substring(0, maxLength) + "...";
