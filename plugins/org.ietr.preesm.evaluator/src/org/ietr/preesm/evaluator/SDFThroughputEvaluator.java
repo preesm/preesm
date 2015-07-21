@@ -3,6 +3,7 @@ package org.ietr.preesm.evaluator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.gnu.glpk.*;
 import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
@@ -13,6 +14,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
 /**
  * Class used to compute the optimal periodic schedule and the throughput
@@ -45,7 +47,7 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 			period = period_computation(sdf);
 			// Deduce throughput of the schedule
 		} else {
-			System.out.println("No periodic schedule for this graph.");
+			WorkflowLogger.getLogger().log(Level.SEVERE,"No periodic schedule for this graph");
 			return 0;
 		}
 		return period;

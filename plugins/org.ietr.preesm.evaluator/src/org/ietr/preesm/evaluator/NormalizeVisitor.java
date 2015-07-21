@@ -125,7 +125,6 @@ IGraphVisitor<SDFGraph, SDFAbstractVertex, SDFEdge>{
 						in = (double) edge.getProd().getValue();
 						edge.setProd(new SDFDoubleEdgePropertyType(M/edge.getSource().getNbRepeatAsInteger()));
 						edge.setCons(new SDFDoubleEdgePropertyType(M/edge.getTarget().getNbRepeatAsInteger()));
-						//System.out.println((double)edge.getProd().getValue()+" / "+(double)in+" = "+((double)edge.getProd().getValue()/(double)in));
 						edge.setDelay(new SDFDoubleEdgePropertyType(((double)edge.getProd().getValue()/in)*(double)(edge.getDelay().getValue())));
 					}
 				}

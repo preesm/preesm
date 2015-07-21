@@ -34,7 +34,6 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 		SDFGraph sdf = inputGraph.clone();
 		// Find a lower bound on the minimal period
 		double  Kmin = starting_period(sdf);
-		System.out.println("first "+Kmin);
 		double K = 0;
 		double eps = 0.01;	// precision of the solution
 		
@@ -442,7 +441,6 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 			// Check for negative cycle
 			for (Map.Entry<SDFEdge, Double> entry : e.entrySet()) {
 				if (v.get(entry.getKey().getSource().getName())+entry.getValue() < v.get(entry.getKey().getTarget().getName())) {
-					//System.out.println("Negative cycle found in graph "+g+" "+(v.get(entry.getKey().getSource().getName())+entry.getValue()));
 					return null;
 				}
 			}

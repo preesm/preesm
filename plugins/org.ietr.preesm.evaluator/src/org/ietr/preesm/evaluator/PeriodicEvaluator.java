@@ -1,8 +1,10 @@
 package org.ietr.preesm.evaluator;
 
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
 import java.util.*;
+import java.util.logging.Level;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
@@ -37,6 +39,7 @@ public class PeriodicEvaluator extends AbstractTaskImplementation {
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario"); 
 		
 		// Normalize the graph (for each actor, ins=outs)
+		WorkflowLogger.getLogger().log(Level.INFO, "Normalization");
 		NormalizeVisitor normalize = new NormalizeVisitor();
 		try {
 			inputGraph.accept(normalize);
@@ -44,6 +47,7 @@ public class PeriodicEvaluator extends AbstractTaskImplementation {
 			throw (new WorkflowException("The graph cannot be normalized"));
 		}
 		SDFGraph NormSDF = (SDFGraph) normalize.getOutput();
+		WorkflowLogger.getLogger().log(Level.INFO, "Normalization finished");
 		
 		// Find out if graph hierarchic (IBSDF) or not
 		boolean hierarchical = false;
@@ -56,12 +60,12 @@ public class PeriodicEvaluator extends AbstractTaskImplementation {
 			// if IBSDF -> hierarchical algorithm
 			ThroughputEvaluator scheduler;
 			if (hierarchical) {
-				//System.out.println("Liveness : "+(is_alive(NormSDF) != null));
 				scheduler = new IBSDFThroughputEvaluator();
 			} else {
 				// if SDF -> linear program for periodic schedule
 				scheduler = new SDFThroughputEvaluator();
 			}
+			WorkflowLogger.getLogger().log(Level.INFO, "Computation of the optimal periodic schedule");
 			scheduler.scenar = scenario;
 			period = scheduler.launch(NormSDF);
 			throughput = scheduler.throughput_computation(period, inputGraph);
