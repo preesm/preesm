@@ -14,4 +14,5 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/glpk-java-1.0.31.jar,
  .
 Export-Package: org.ietr.preesm.evaluator
-Import-Package: org.ietr.preesm.algorithm.importSdf3Xml
+Import-Package: org.ietr.preesm.algorithm.exportXml,
+ org.ietr.preesm.algorithm.importSdf3Xml
