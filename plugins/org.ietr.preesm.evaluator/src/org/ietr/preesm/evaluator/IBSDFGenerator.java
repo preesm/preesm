@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import org.ietr.dftools.algorithm.exporter.GMLSDFExporter;
+import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
 import org.ietr.dftools.algorithm.model.sdf.*;
 import org.ietr.dftools.algorithm.model.sdf.esdf.*;
 import org.ietr.preesm.algorithm.importSdf3Xml.Sdf3XmlParser;
@@ -16,6 +17,7 @@ public class IBSDFGenerator {
 	
 	// Parameters
 	public int nbactors;
+	public Random rand;
 	
 	// Set of graphs
 	public ArrayList<SDFGraph> graphSet;
@@ -23,6 +25,7 @@ public class IBSDFGenerator {
 	public IBSDFGenerator(int n) {
 		graphSet = new ArrayList<SDFGraph>();
 		nbactors = n;
+		rand = new Random();
 	}
 	
 	
@@ -34,7 +37,6 @@ public class IBSDFGenerator {
 	private void graphSet_gen() throws IOException, InterruptedException {
 		int remaining_actors = nbactors;
 		int randomNum;
-		Random rand = new Random();
 		Process p;
 		p = Runtime.getRuntime().exec(new String[]{"sh", "-c", "rm -f /home/blaunay/Bureau/turbine-master/turbine/IBgen/*"});
 		p.waitFor();
@@ -69,7 +71,6 @@ public class IBSDFGenerator {
 	 * @return list of vertices
 	 */
 	private ArrayList<SDFAbstractVertex> randomVertices(SDFGraph G, int nb) {
-		Random rand = new Random();
 		int tmp = rand.nextInt((G.vertexSet().size()));
 		ArrayList<SDFAbstractVertex> vertices = new ArrayList<SDFAbstractVertex>(G.vertexSet());
 		ArrayList<SDFAbstractVertex> verticestoreturn = new ArrayList<SDFAbstractVertex>();
@@ -78,6 +79,7 @@ public class IBSDFGenerator {
 			while (vertices.get(tmp) instanceof SDFInterfaceVertex)
 				tmp = rand.nextInt((G.vertexSet().size()));
 			verticestoreturn.add(vertices.get(tmp));
+			tmp = rand.nextInt((G.vertexSet().size()));
 		}
 		return verticestoreturn;
 	}
@@ -95,35 +97,36 @@ public class IBSDFGenerator {
 		int nbsinks = v.getSinks().size();
 		// we need nbsources+nbsinks vertices to connect to the interfaces
 		ArrayList<SDFAbstractVertex> toconnect = randomVertices(g, nbsources+nbsinks);
+		AbstractEdgePropertyType<?> E_in;
+		
+		System.out.println(toconnect);
 		
 		// Add the necessary interfaces and edges connecting them to the graph
 		for (int i=0; i<nbsources; i++) {
-			SDFSourceInterfaceVertex s = new SDFSourceInterfaceVertex();
-			s.setName(v.getSources().get(i).getName());
-			s.setId(v.getSources().get(i).getId());
-			g.addVertex(s);
-			v.addSource(s);
+			g.addVertex(v.getSources().get(i));
 			SDFSourceInterfaceVertex inPort = new SDFSourceInterfaceVertex();
-			inPort.setName("from"+s.getName());
+			inPort.setName("from"+v.getSources().get(i).getName());
 			toconnect.get(i).addSource(inPort);
-			SDFEdge newEdge = g.addEdge(s, toconnect.get(i));
-			newEdge.setSourceInterface(s);
+			SDFEdge newEdge = g.addEdge(v.getSources().get(i), toconnect.get(i));
+			newEdge.setSourceInterface(v.getSources().get(i));
 			newEdge.setTargetInterface(inPort);
-			//TODO put the rates
+			//TODO check if the rates are correct
+			E_in = v.getAssociatedEdge(v.getSources().get(i)).getCons();
+			newEdge.setProd(E_in);
+			newEdge.setCons(E_in);
 		}
 		for (int i=0; i<nbsinks; i++) {
-			SDFSinkInterfaceVertex s = new SDFSinkInterfaceVertex();
-			s.setName(v.getSinks().get(i).getName());
-			s.setId(v.getSinks().get(i).getId());
-			g.addVertex(s);
-			v.addSink(s);
+			g.addVertex(v.getSinks().get(i));
 			SDFSinkInterfaceVertex outPort = new SDFSinkInterfaceVertex();
-			outPort.setName("to"+s.getName());
+			outPort.setName("to"+v.getSinks().get(i).getName());
 			toconnect.get(i+nbsources).addSource(outPort);
-			SDFEdge newEdge = g.addEdge(toconnect.get(i+nbsources),s);
+			SDFEdge newEdge = g.addEdge(toconnect.get(i+nbsources),v.getSinks().get(i));
 			newEdge.setSourceInterface(outPort);
-			newEdge.setTargetInterface(s);
-			//TODO put the rates
+			newEdge.setTargetInterface(v.getSinks().get(i));
+			//TODO check if the rates are correct
+			E_in = v.getAssociatedEdge(v.getSinks().get(i)).getProd();
+			newEdge.setProd(E_in);
+			newEdge.setCons(E_in);
 		}
 		
 		//TODO pour chaque interface d'entrée
@@ -147,7 +150,6 @@ public class IBSDFGenerator {
 	
 	private void hierarchize() throws IOException, InterruptedException {
 		int remaining_graphs, current,r;
-		Random rand = new Random();
 		// index of current graph
 		current = 0;
 		remaining_graphs = graphSet.size()-1;
