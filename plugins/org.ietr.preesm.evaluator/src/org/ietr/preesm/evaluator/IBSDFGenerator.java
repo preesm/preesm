@@ -20,7 +20,7 @@ public class IBSDFGenerator {
 	// Set of graphs
 	public ArrayList<SDFGraph> graphSet;
 	
-	public IBSDFGenerator(int n, int d) {
+	public IBSDFGenerator(int n) {
 		graphSet = new ArrayList<SDFGraph>();
 		nbactors = n;
 	}
@@ -63,24 +63,28 @@ public class IBSDFGenerator {
 	
 	
 	/**
-	 * Pick randomly nb vertices in the graph G
+	 * Picks randomly nb vertices in the graph G
 	 * @param G
 	 * @param nb
 	 * @return list of vertices
 	 */
 	private ArrayList<SDFAbstractVertex> randomVertices(SDFGraph G, int nb) {
 		Random rand = new Random();
+		int tmp = rand.nextInt((G.vertexSet().size()));
 		ArrayList<SDFAbstractVertex> vertices = new ArrayList<SDFAbstractVertex>(G.vertexSet());
 		ArrayList<SDFAbstractVertex> verticestoreturn = new ArrayList<SDFAbstractVertex>();
-		for(int i=0; i<nb; i++) 
-			verticestoreturn.add(vertices.get(rand.nextInt((G.vertexSet().size()-1) + 1)));
-		
+		for (int i=0; i<nb; i++) {
+			// make sure we dont choose interface vertices
+			while (vertices.get(tmp) instanceof SDFInterfaceVertex)
+				tmp = rand.nextInt((G.vertexSet().size()));
+			verticestoreturn.add(vertices.get(tmp));
+		}
 		return verticestoreturn;
 	}
 	
 	
 	/**
-	 * Insert the graph g in the vertex v by adding corresponding interfaces
+	 * Inserts the graph g in the vertex v by adding corresponding interfaces
 	 * and ensuring the liveness of the whole graph
 	 * @param g
 	 * @param v
@@ -128,24 +132,45 @@ public class IBSDFGenerator {
 			// add -longueur tokens sur les arcs du +court chemin de façon random
 	}
 	
-	//rand.nextInt((max - min) + 1) + min
+	
+	/**
+	 * Counts the number of actors of a graph g (without the possible interfaces)
+	 */
+	private int nbActors(SDFGraph g) {
+		int cpt = 0;
+		for (SDFAbstractVertex v : g.vertexSet())
+			if (!(v instanceof SDFInterfaceVertex))
+				cpt++;
+		return cpt;
+	}
+	
 	
 	private void hierarchize() throws IOException, InterruptedException {
 		int remaining_graphs, current,r;
 		Random rand = new Random();
-		// graphe de reference
+		// index of current graph
 		current = 0;
 		remaining_graphs = graphSet.size()-1;
+		ArrayList<SDFAbstractVertex> selectedVertices = new ArrayList<SDFAbstractVertex>();
+		SDFAbstractVertex tmp;
+		
 		while (remaining_graphs > 0) {
-			// pick r < remaining_graphs
-			r = rand.nextInt(remaining_graphs)+1;
-			// insert the r next graphs in random vertices of top
-			for (int i=1; i<=r; i++) {
-				insert(graphSet.get(current+i),randomVertices(graphSet.get(current), 1).get(0));
-				//TODO make sure vertex not already picked before
+			// pick r < remaining_graphs and r < nbacteurs
+			r = rand.nextInt(Math.min(remaining_graphs,nbActors(graphSet.get(current))))+1;
+			// insert the r next graphs in random vertices of the current graph
+			while (selectedVertices.size() < r) {
+				tmp = randomVertices(graphSet.get(current), 1).get(0);
+				while (selectedVertices.contains(tmp))
+					tmp = randomVertices(graphSet.get(current), 1).get(0);
+				selectedVertices.add(tmp);
 			}
+			for (int i=1; i<=r; i++) {
+				insert(graphSet.get(current+i),selectedVertices.get(i-1));
+			}
+			selectedVertices.clear();
+			
 			remaining_graphs -= r;
-			// top = premier graphe parmi les r
+			// new current graph is the next graph not yet considered
 			current += r; 
 		}
 		
@@ -156,16 +181,16 @@ public class IBSDFGenerator {
 		}
 		
 		// Export the graph
-		/*GMLSDFExporter exporter = new GMLSDFExporter();
+		GMLSDFExporter exporter = new GMLSDFExporter();
 		Process p = Runtime.getRuntime().exec(new String[]{"sh", "-c", "rm -f /home/blaunay/Bureau/turbine-master/turbine/IBSDF/*"});
 		p.waitFor();
-		exporter.export(graphSet.get(0), "/home/blaunay/Bureau/turbine-master/turbine/IBSDF/top.graphml");*/
+		exporter.export(graphSet.get(0), "/home/blaunay/Bureau/turbine-master/turbine/IBSDF/top.graphml");
 	}
 	
 	
 	public static void main(String [] args) throws IOException, InterruptedException
 	{
-		IBSDFGenerator x = new IBSDFGenerator(25, 2);
+		IBSDFGenerator x = new IBSDFGenerator(25);
 		x.graphSet_gen();
 		x.hierarchize();
 	}
