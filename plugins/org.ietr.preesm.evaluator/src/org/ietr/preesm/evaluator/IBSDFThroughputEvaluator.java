@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.ietr.dftools.algorithm.exporter.GMLSDFExporter;
 import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
@@ -32,6 +33,8 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 	 */
 	public double launch(SDFGraph inputGraph) throws InvalidExpressionException {
 		SDFGraph sdf = inputGraph.clone();
+		is_alive(sdf);/*
+		
 		// Find a lower bound on the minimal period
 		double  Kmin = starting_period(sdf);
 		double K = 0;
@@ -60,7 +63,8 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 				}
 			}
 		}
-		return K;
+		return K;*/
+		return 0;
 	}
 
 	/**
@@ -176,7 +180,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 				// Create new nodes corresponding to the interfaces
 					for (String input : dist.keySet()) {
 					// Create a new vertex for each new input interface
-						SDFVertex VertexIn = new SDFVertex();
+						SDFAbstractVertex VertexIn = new SDFVertex();
 						VertexIn.setName(input);
 					// Create a new port for the incoming edge
 						SDFSourceInterfaceVertex inPortIN = new SDFSourceInterfaceVertex();
@@ -198,7 +202,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 						
 						// New node for each output interface
 						for (String output : dist.get(input).keySet()) {
-							SDFVertex VertexOut = (SDFVertex) g.getVertex(output);
+							SDFAbstractVertex VertexOut = g.getVertex(output);
 							if (VertexOut == null) {
 							// Create vertex out only if it does not exist already
 								VertexOut = new SDFVertex();
@@ -210,13 +214,14 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 								g.addVertex(VertexOut);
 							// Create the edge going from the node out
 								SDFEdge EdgeFromOut = g.addEdge(VertexOut, vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget());
+								EdgeFromOut.setTargetInterface(vertex.getAssociatedEdge(vertex.getInterface(output)).getTargetInterface());
+								
 							// Put the correct rates on the new edge
 								E_in = ((SDFEdge) vertex.getAssociatedEdge(vertex.getSinks().get(0))).getProd();
 								E_out = ((SDFEdge) vertex.getAssociatedEdge(vertex.getSinks().get(0))).getCons();
 								EdgeFromOut.setCons(E_out); EdgeFromOut.setProd(E_in);
 								
-								EdgeFromOut.setSourceInterface(VertexOut.getSink("out"));
-								EdgeFromOut.setTargetInterface(vertex.getAssociatedEdge(vertex.getInterface(output)).getTargetInterface());
+								EdgeFromOut.setSourceInterface(outPortOUT);
 							// Put it on the list for the BellmanFord algo, remove the ancient one
 								e.put(EdgeFromOut, 	e.get(vertex.getAssociatedEdge(vertex.getInterface(output))));
 								e.remove(vertex.getAssociatedEdge(vertex.getInterface(output)));
@@ -312,7 +317,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 	 * @return null if the graph is not alive
 	 */
 	@SuppressWarnings("unused")
-	private HashMap<String, HashMap<String, Double>> is_alive(SDFGraph g) {
+	public HashMap<String, HashMap<String, Double>> is_alive(SDFGraph g) {
 		
 		// The set of edges that will be used to compute shortest paths
 		HashMap<SDFEdge,Double> e = new HashMap<SDFEdge,Double>(g.edgeSet().size());
@@ -365,7 +370,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 						
 						// New node for each output interface
 						for (String output : dist.get(input).keySet()) {
-							SDFVertex VertexOut = (SDFVertex) g.getVertex(output);
+							SDFAbstractVertex VertexOut =  g.getVertex(output);
 							if (VertexOut == null) {
 							// Create vertex out only if it does not exist already
 								VertexOut = new SDFVertex();
@@ -377,8 +382,8 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 								g.addVertex(VertexOut);
 							// Create the edge going from the node out
 								SDFEdge EdgeFromOut = g.addEdge(VertexOut, vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget());
-								EdgeFromOut.setSourceInterface(VertexOut.getSink("out"));
 								EdgeFromOut.setTargetInterface(vertex.getAssociatedEdge(vertex.getInterface(output)).getTargetInterface());
+								EdgeFromOut.setSourceInterface(VertexOut.getSink("out"));
 							// Put it on the list for the BellmanFord algo, remove the ancient one
 								e.put(EdgeFromOut, 	e.get(vertex.getAssociatedEdge(vertex.getInterface(output))));
 								e.remove(vertex.getAssociatedEdge(vertex.getInterface(output)));
@@ -401,6 +406,17 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 							v.put(VertexIn.getName(),  Double.POSITIVE_INFINITY);
 							v.put(VertexOut.getName(),  Double.POSITIVE_INFINITY);
 						}
+						// check if the incoming edge loops on the actor
+						if (vertex.getAssociatedEdge(vertex.getInterface(input)).getSource() == vertex) {
+							System.out.println("gniis");
+							System.out.println(VertexIn.getAssociatedEdge(VertexIn.getInterface("in")).getSource());
+							System.out.println(g.getVertex(VertexIn.getAssociatedEdge(VertexIn.getInterface("in")).getSourceInterface().getName()));
+							SDFEdge loop = g.addEdge(VertexIn, g.getVertex(VertexIn.getAssociatedEdge(VertexIn.getInterface("in")).getSourceInterface().getName()));
+							loop.setTargetInterface(VertexIn.getInterface("in"));
+							loop.setSourceInterface(g.getVertex(VertexIn.getAssociatedEdge(VertexIn.getInterface("in")).getSourceInterface().getName()).getInterface("out"));
+							e.put(loop, e.get(vertex.getAssociatedEdge(vertex.getInterface(input))));
+							e.remove(vertex.getAssociatedEdge(vertex.getInterface(input)));
+						}
 					}
 				}
 				// Remove the hierarchical actor from the graph
@@ -420,18 +436,24 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 			// pick a random source node
 			origin = new ArrayList<SDFAbstractVertex>();
 			origin.add(g.vertexSet().iterator().next());
+			GMLSDFExporter exporter = new GMLSDFExporter();
+			exporter.export(g, "/home/blaunay/Bureau/turbine-master/turbine/IBSDF/bellman.graphml");
+			System.out.println(g.vertexSet());
+			for (SDFEdge ed : g.edgeSet()) {
+				System.out.println(ed.getSource()+" "+ed.getTarget());
+			}
+
 		} else {
 			// otherwise, source nodes of the shortest paths to compute are all the input interfaces
 			origin = new ArrayList<SDFAbstractVertex>(new ArrayList<SDFInterfaceVertex>(g.getParentVertex().getSources()));
 		}
-		
+
 		// BellmanFord from each input
 		for (SDFAbstractVertex input : origin) {
 			// Source node for the shortest path
 			v.put(input.getName(), (double) 0);
-			
 			// Relaxation
-			for (int i=1; i<=v.size()-1; i++) {
+			for (int i=0; i<v.size(); i++) {
 				for (Map.Entry<SDFEdge, Double> entry : e.entrySet()) {
 					if (v.get(entry.getKey().getSource().getName()) + entry.getValue() < v.get(entry.getKey().getTarget().getName())) {
 						v.put(entry.getKey().getTarget().getName(), v.get(entry.getKey().getSource().getName())+entry.getValue());

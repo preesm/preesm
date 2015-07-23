@@ -170,7 +170,6 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 		}
 
 		// Initialization : source.dist = 0, v.dist = infinity
-		// We do not care which vertex is the source
 		for (SDFAbstractVertex vertex : input.vertexSet())	{
 			// v.dist = infinity
 			v.put(vertex, Double.POSITIVE_INFINITY); 
@@ -182,6 +181,8 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 			SDFSinkInterfaceVertex out = new SDFSinkInterfaceVertex();
 			out.setName(vertex.getName()+"Out");
 			AbstractEdgePropertyType<?> x;
+			System.out.println(vertex);
+			System.out.println(vertex.getSources()+" "+vertex.getSinks());
 			if (vertex.getSources().size() != 0) {
 				x = ((SDFEdge) vertex.getAssociatedEdge(vertex.getSources().get(0))).getCons();
 			} else {
