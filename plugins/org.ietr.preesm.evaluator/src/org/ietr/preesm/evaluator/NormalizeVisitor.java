@@ -45,7 +45,6 @@ IGraphVisitor<SDFGraph, SDFAbstractVertex, SDFEdge>{
 				edge.setCons(new SDFDoubleEdgePropertyType((double)(edge.getCons().intValue())));
 			}
 		} catch (InvalidExpressionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// Apply the same to the lower levels of hierarchy

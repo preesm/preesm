@@ -138,11 +138,6 @@ public class IBSDFGenerator {
 			newEdge.setProd(E_in);
 			newEdge.setCons(E_in);
 		}
-		
-		//TODO pour chaque interface d'entrée
-		// bellman ford retournant longueur et edges du + court chemin
-		// pour les interfaces de sortie tq longeur < 0
-			// add -longueur tokens sur les arcs du +court chemin de façon random
 	}
 	
 	
@@ -190,16 +185,13 @@ public class IBSDFGenerator {
 			current += r; 
 		}
 		
-		//TODO remove
+		/* Simple display of the structure of the graph (useless) 
 		for (int i=0; i<graphSet.size(); i++) {
 			System.out.println(i);
-			//for (SDFEdge e : graphSet.get(i).edgeSet())
-				//System.out.println(e.getSourceInterface() +" - "+e.getTargetInterface());
-			//System.out.println(graphSet.get(i).vertexSet());
 			if (graphSet.get(i).getParentVertex() != null)
 				System.out.println(graphSet.get(i).getName()+" - "+graphSet.get(i).getParentVertex().getBase().getName()+"("+graphSet.get(i).getParentVertex().getName()+")");
-		}
-		System.out.println("---------------");
+		}*/
+		
 		// Export the graph
 		GMLSDFExporter exporter = new GMLSDFExporter();
 		Process p = Runtime.getRuntime().exec(new String[]{"sh", "-c", "rm -f /home/blaunay/Bureau/turbine-master/turbine/IBSDF/*"});
@@ -216,7 +208,7 @@ public class IBSDFGenerator {
 	
 	public static void main(String [] args) throws IOException, InterruptedException, SDF4JException
 	{
-		IBSDFGenerator x = new IBSDFGenerator(4);
+		IBSDFGenerator x = new IBSDFGenerator(45);
 		x.graphSet_gen();
 		x.hierarchize();
 	}

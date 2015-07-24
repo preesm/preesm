@@ -33,21 +33,21 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 	 */
 	public double launch(SDFGraph inputGraph) throws InvalidExpressionException {
 		SDFGraph sdf = inputGraph.clone();
-		is_alive(sdf);/*
 		
 		// Find a lower bound on the minimal period
-		double  Kmin = starting_period(sdf);
-		double K = 0;
+		double Kmin = starting_period(sdf);
+		double K = 0; 
+		
 		double eps = 0.01;	// precision of the solution
 		
 		// Step 2 : Test if k_min a valid period for the graph
-		if (test_period(Kmin, inputGraph)) {
+		if (test_period(Kmin, inputGraph) != null) {
 			K = Kmin;			
 		} else {		
 			// Step 3 : Find a value for K_max
 			double Kmax = 10 * Kmin; 
 			// increase Kmax until it is a valid period
-			while (!test_period(Kmax, inputGraph)) {
+			while (test_period(Kmax, inputGraph) == null) {
 				Kmin = Kmax; 
 				Kmax *= 3;  	
 			}
@@ -55,7 +55,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 			// Step 4 : Improve (minimize) K
 			while (Kmax - Kmin > eps) {
 				K = (Kmax + Kmin) / 2;
-				if (test_period(K, inputGraph))
+				if (test_period(K, inputGraph) != null)
 					Kmax = K; // continue to search on the interval [Kmin,K]
 				else {
 					Kmin = K; // continue to search on the interval [K,Kmax]
@@ -63,8 +63,8 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 				}
 			}
 		}
-		return K;*/
-		return 0;
+		System.out.println("K = "+K);
+		return K;
 	}
 
 	/**
@@ -93,26 +93,35 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 		}
 		return Kmax;
 	}
-
-	
-	/**
-	 * Tests if the given period is a valid one for a periodic schedule
-	 * for the actors of the graph
-	 */
-	private boolean test_period(double K, SDFGraph inputGraph) {
-		SDFGraph G = inputGraph.clone();
-		return (positive_circuit(G,K) != null);
-	}
 	
 		
 	/**
-	 * Checks that the given graph (containing several levels of hierarchy) does not
-	 * contain any positive circuits once its edges values by L-KH, which is the condition 
-	 * for it to have a periodic schedule of normalized period K.
+	 * Tests if the given period is a valid one for a periodic schedule
+	 * for the actors of the graph
 	 * 
 	 * @return null if the condition not respected
 	 */
-	private HashMap<String, HashMap<String, Double>> positive_circuit(SDFGraph g, double K) {
+	private HashMap<String, HashMap<String, Double>> test_period(double K, SDFGraph sdf) {
+		SDFGraph g = sdf.clone();
+		// to fix the interfaces cloning problem
+		if (sdf.getParentVertex() != null) {
+			for (SDFAbstractVertex ve : g.vertexSet()) {
+				if (ve instanceof SDFSourceInterfaceVertex) {
+					if (ve.getSinks().size() == 0) {
+						SDFSinkInterfaceVertex si = new SDFSinkInterfaceVertex();
+						si.setName(sdf.getVertex(ve.getName()).getSinks().get(0).getName());
+						ve.addSink(si);
+					}
+				}
+				if (ve instanceof SDFSinkInterfaceVertex) {
+					if (ve.getSources().size() == 0) {
+						SDFSourceInterfaceVertex so = new SDFSourceInterfaceVertex();
+						so.setName(sdf.getVertex(ve.getName()).getSources().get(0).getName());
+						ve.addSource(so);
+					}
+				}
+			}
+		}
 		
 		// The set of edges that will be used to compute shortest paths
 		HashMap<SDFEdge,Double> e = new HashMap<SDFEdge,Double>(g.edgeSet().size());
@@ -171,7 +180,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 					&& vertex.getGraphDescription() instanceof SDFGraph) {
 				
 				// compute shortest paths between its in/out ports
-				dist = positive_circuit((SDFGraph) vertex.getGraphDescription(), K);
+				dist = test_period(K, (SDFGraph) vertex.getGraphDescription());
 				
 				// if null, then subgraph not alive, so the whole graph is not.
 				if (dist == null)
@@ -198,7 +207,6 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 						EdgeToIn.setCons(E_out); EdgeToIn.setProd(E_in);
 					// Put it on the list for the BellmanFord algo, remove the ancient one
 						e.put(EdgeToIn, e.get(vertex.getAssociatedEdge(vertex.getInterface(input))));
-						e.remove(vertex.getAssociatedEdge(vertex.getInterface(input)));
 						
 						// New node for each output interface
 						for (String output : dist.get(input).keySet()) {
@@ -212,19 +220,20 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 								outPortOUT.setName("out");
 								VertexOut.addSink(outPortOUT);
 								g.addVertex(VertexOut);
-							// Create the edge going from the node out
-								SDFEdge EdgeFromOut = g.addEdge(VertexOut, vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget());
-								EdgeFromOut.setTargetInterface(vertex.getAssociatedEdge(vertex.getInterface(output)).getTargetInterface());
-								
-							// Put the correct rates on the new edge
-								E_in = ((SDFEdge) vertex.getAssociatedEdge(vertex.getSinks().get(0))).getProd();
-								E_out = ((SDFEdge) vertex.getAssociatedEdge(vertex.getSinks().get(0))).getCons();
-								EdgeFromOut.setCons(E_out); EdgeFromOut.setProd(E_in);
-								
-								EdgeFromOut.setSourceInterface(outPortOUT);
-							// Put it on the list for the BellmanFord algo, remove the ancient one
-								e.put(EdgeFromOut, 	e.get(vertex.getAssociatedEdge(vertex.getInterface(output))));
-								e.remove(vertex.getAssociatedEdge(vertex.getInterface(output)));
+							// Create the edge going from the node out if it does not loop
+								if (vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget() != vertex) {
+									SDFEdge EdgeFromOut = g.addEdge(VertexOut, vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget());
+									EdgeFromOut.setTargetInterface(vertex.getAssociatedEdge(vertex.getInterface(output)).getTargetInterface());
+									
+								// Put the correct rates on the new edge
+									E_in = ((SDFEdge) vertex.getAssociatedEdge(vertex.getSinks().get(0))).getProd();
+									E_out = ((SDFEdge) vertex.getAssociatedEdge(vertex.getSinks().get(0))).getCons();
+									EdgeFromOut.setCons(E_out); EdgeFromOut.setProd(E_in);
+									
+									EdgeFromOut.setSourceInterface(outPortOUT);
+								// Put it on the list for the BellmanFord algo, remove the ancient one
+									e.put(EdgeFromOut, 	e.get(vertex.getAssociatedEdge(vertex.getInterface(output))));
+								}
 							} 
 						// Create the edge linking the new in and out
 							SDFEdge EdgeInOut = g.addEdge(VertexIn, VertexOut);
@@ -245,12 +254,25 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 						// new edge to use for BellmanFord
 							e.put(EdgeInOut, dist.get(input).get(output));
 						// new vertices to consider for BellmanFord
-							v.put(VertexIn.getName(),  Double.POSITIVE_INFINITY);
 							v.put(VertexOut.getName(),  Double.POSITIVE_INFINITY);
+						}
+						v.put(VertexIn.getName(),  Double.POSITIVE_INFINITY);
+						// check if the incoming edge loops on the actor
+						if (vertex.getAssociatedEdge(vertex.getInterface(input)).getSource() == vertex) {
+							SDFEdge loop = g.addEdge(g.getVertex(VertexIn.getAssociatedEdge(VertexIn.getInterface("in")).getSourceInterface().getName()), VertexIn);
+							loop.setTargetInterface(VertexIn.getInterface("in"));
+							loop.setSourceInterface(g.getVertex(VertexIn.getAssociatedEdge(VertexIn.getInterface("in")).getSourceInterface().getName()).getInterface("out"));
+							e.put(loop, e.get(EdgeToIn));
+							e.remove(EdgeToIn);
 						}
 					}
 				}
 				// Remove the hierarchical actor from the graph
+				// Remove the hierarchical actor from the graph
+				for (SDFInterfaceVertex inter : vertex.getSources())
+					e.remove(vertex.getAssociatedEdge(inter));
+				for (SDFInterfaceVertex inter : vertex.getSinks())
+					e.remove(vertex.getAssociatedEdge(inter));
 				g.removeVertex(vertex);
 			} else {
 				// not a hierarchical actor
@@ -316,7 +338,6 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 	 * 
 	 * @return null if the graph is not alive
 	 */
-	@SuppressWarnings("unused")
 	public HashMap<String, HashMap<String, Double>> is_alive(SDFGraph g) {
 		
 		// The set of edges that will be used to compute shortest paths
@@ -364,9 +385,8 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 						SDFEdge EdgeToIn = g.addEdge(vertex.getAssociatedEdge(vertex.getInterface(input)).getSource(), VertexIn);
 						EdgeToIn.setSourceInterface(vertex.getAssociatedEdge(vertex.getInterface(input)).getSourceInterface());
 						EdgeToIn.setTargetInterface(inPortIN);
-					// Put it on the list for the BellmanFord algo, remove the ancient one
+					// Put it on the list for the BellmanFord algo
 						e.put(EdgeToIn, e.get(vertex.getAssociatedEdge(vertex.getInterface(input))));
-						e.remove(vertex.getAssociatedEdge(vertex.getInterface(input)));
 						
 						// New node for each output interface
 						for (String output : dist.get(input).keySet()) {
@@ -381,12 +401,13 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 								VertexOut.addSink(outPortOUT);
 								g.addVertex(VertexOut);
 							// Create the edge going from the node out
-								SDFEdge EdgeFromOut = g.addEdge(VertexOut, vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget());
-								EdgeFromOut.setTargetInterface(vertex.getAssociatedEdge(vertex.getInterface(output)).getTargetInterface());
-								EdgeFromOut.setSourceInterface(VertexOut.getSink("out"));
-							// Put it on the list for the BellmanFord algo, remove the ancient one
-								e.put(EdgeFromOut, 	e.get(vertex.getAssociatedEdge(vertex.getInterface(output))));
-								e.remove(vertex.getAssociatedEdge(vertex.getInterface(output)));
+								if(vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget() != vertex) {
+									SDFEdge EdgeFromOut = g.addEdge(VertexOut, vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget());
+									EdgeFromOut.setTargetInterface(vertex.getAssociatedEdge(vertex.getInterface(output)).getTargetInterface());
+									EdgeFromOut.setSourceInterface(VertexOut.getSink("out"));
+								// Put it on the list for the BellmanFord algo, remove the ancient one
+									e.put(EdgeFromOut, 	e.get(vertex.getAssociatedEdge(vertex.getInterface(output))));
+								}
 							} 
 						// Create the edge linking the new in and out
 							SDFEdge EdgeInOut = g.addEdge(VertexIn, VertexOut);
@@ -403,23 +424,24 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 						// new edge to use for BellmanFord
 							e.put(EdgeInOut, dist.get(input).get(output));
 						// new vertices to consider for BellmanFord
-							v.put(VertexIn.getName(),  Double.POSITIVE_INFINITY);
 							v.put(VertexOut.getName(),  Double.POSITIVE_INFINITY);
 						}
+						v.put(VertexIn.getName(),  Double.POSITIVE_INFINITY);
 						// check if the incoming edge loops on the actor
 						if (vertex.getAssociatedEdge(vertex.getInterface(input)).getSource() == vertex) {
-							System.out.println("gniis");
-							System.out.println(VertexIn.getAssociatedEdge(VertexIn.getInterface("in")).getSource());
-							System.out.println(g.getVertex(VertexIn.getAssociatedEdge(VertexIn.getInterface("in")).getSourceInterface().getName()));
-							SDFEdge loop = g.addEdge(VertexIn, g.getVertex(VertexIn.getAssociatedEdge(VertexIn.getInterface("in")).getSourceInterface().getName()));
+							SDFEdge loop = g.addEdge(g.getVertex(VertexIn.getAssociatedEdge(VertexIn.getInterface("in")).getSourceInterface().getName()), VertexIn);
 							loop.setTargetInterface(VertexIn.getInterface("in"));
 							loop.setSourceInterface(g.getVertex(VertexIn.getAssociatedEdge(VertexIn.getInterface("in")).getSourceInterface().getName()).getInterface("out"));
-							e.put(loop, e.get(vertex.getAssociatedEdge(vertex.getInterface(input))));
-							e.remove(vertex.getAssociatedEdge(vertex.getInterface(input)));
+							e.put(loop, e.get(EdgeToIn));
+							e.remove(EdgeToIn);
 						}
 					}
 				}
 				// Remove the hierarchical actor from the graph
+				for (SDFInterfaceVertex inter : vertex.getSources())
+					e.remove(vertex.getAssociatedEdge(inter));
+				for (SDFInterfaceVertex inter : vertex.getSinks())
+					e.remove(vertex.getAssociatedEdge(inter));
 				g.removeVertex(vertex);
 			} else {
 				// not a hierarchical actor
@@ -438,11 +460,6 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 			origin.add(g.vertexSet().iterator().next());
 			GMLSDFExporter exporter = new GMLSDFExporter();
 			exporter.export(g, "/home/blaunay/Bureau/turbine-master/turbine/IBSDF/bellman.graphml");
-			System.out.println(g.vertexSet());
-			for (SDFEdge ed : g.edgeSet()) {
-				System.out.println(ed.getSource()+" "+ed.getTarget());
-			}
-
 		} else {
 			// otherwise, source nodes of the shortest paths to compute are all the input interfaces
 			origin = new ArrayList<SDFAbstractVertex>(new ArrayList<SDFInterfaceVertex>(g.getParentVertex().getSources()));

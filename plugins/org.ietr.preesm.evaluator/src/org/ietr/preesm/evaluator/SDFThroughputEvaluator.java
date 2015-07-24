@@ -39,6 +39,25 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 		double period;
 		SDFGraph sdf = inputGraph.clone();
 		
+		// to fix the interfaces cloning problem
+		if (inputGraph.getParentVertex() != null) {
+			for (SDFAbstractVertex ve : sdf.vertexSet()) {
+				if (ve instanceof SDFSourceInterfaceVertex) {
+					if (ve.getSinks().size() == 0) {
+						SDFSinkInterfaceVertex si = new SDFSinkInterfaceVertex();
+						si.setName(inputGraph.getVertex(ve.getName()).getSinks().get(0).getName());
+						ve.addSink(si);
+					}
+				}
+				if (ve instanceof SDFSinkInterfaceVertex) {
+					if (ve.getSources().size() == 0) {
+						SDFSourceInterfaceVertex so = new SDFSourceInterfaceVertex();
+						so.setName(inputGraph.getVertex(ve.getName()).getSources().get(0).getName());
+						ve.addSource(so);
+					}
+				}
+			}
+		}
 		// Check condition of existence of a periodic schedule (Bellman Ford)
 		boolean periodic_schedule = has_periodic_schedule(sdf);
 		
@@ -157,7 +176,7 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 	
 	
 	/**
-	 * Checks if a periodic schedule can be computed for the given graph.
+	 * Checks if a periodic schedule can be computed for the given SDF graph.
 	 */
 	private boolean has_periodic_schedule(SDFGraph input) {
 		HashMap<SDFAbstractVertex,Double> v = new HashMap<SDFAbstractVertex,Double>();
@@ -181,8 +200,6 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 			SDFSinkInterfaceVertex out = new SDFSinkInterfaceVertex();
 			out.setName(vertex.getName()+"Out");
 			AbstractEdgePropertyType<?> x;
-			System.out.println(vertex);
-			System.out.println(vertex.getSources()+" "+vertex.getSinks());
 			if (vertex.getSources().size() != 0) {
 				x = ((SDFEdge) vertex.getAssociatedEdge(vertex.getSources().get(0))).getCons();
 			} else {
@@ -196,7 +213,7 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 			e.put(loop, (double)(loop.getDelay().getValue()));
 		}
 		// source.dist = 0
-		v.put(input.vertexSet().iterator().next(), (double)0);
+		v.put(input.vertexSet().iterator().next(), (double) 0);
 		
 		// Relax all the edges
 		for (int i=1; i<=v.size()-1; i++) {
