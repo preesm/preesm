@@ -14,6 +14,13 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.*;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.preesm.algorithm.importSdf3Xml.Sdf3XmlParser;
 
+/**
+ * Generator of hierarchical graphs (IBSDF) from alive SDF graphs generated
+ * with Turbine, the only parameter to give is the number of actors.
+ * Used independently from the throughput evaluator
+ * @author blaunay
+ *
+ */
 public class IBSDFGenerator {
 	
 	// Parameters
@@ -26,12 +33,12 @@ public class IBSDFGenerator {
 	public IBSDFGenerator(int n) {
 		graphSet = new ArrayList<SDFGraph>();
 		nbactors = n;
-		rand = new Random(42);
+		rand = new Random();
 	}
 	
 	
 	/**
-	 * Generates randomly a set of SDF graphs (with Turbine) which will be used to construct an IBSDF graph
+	 * Generates randomly a set of SDF graphs which will be used to construct an IBSDF graph
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
@@ -120,6 +127,7 @@ public class IBSDFGenerator {
 			newEdge.setProd(E_in);
 			newEdge.setCons(E_in);
 		}
+		// Add the sink interfaces
 		for (int i=0; i<nbsinks; i++) {
 			g.addVertex(v.getSinks().get(i));
 			
@@ -153,6 +161,12 @@ public class IBSDFGenerator {
 	}
 	
 	
+	/**
+	 * Constructs randomly a hierarchical graph from the SDF graphs in the set.
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws SDF4JException
+	 */
 	private void hierarchize() throws IOException, InterruptedException, SDF4JException {
 		int remaining_graphs, current, r, chosengraph;
 		// index of current graph
@@ -198,6 +212,7 @@ public class IBSDFGenerator {
 		p.waitFor();
 		exporter.export(graphSet.get(0), "/home/blaunay/Bureau/turbine-master/turbine/IBSDF/top.graphml");
 		
+		// Check that there is no problem while normalizing and evaluating the liveness
 		IBSDFThroughputEvaluator liveness = new IBSDFThroughputEvaluator();
 		NormalizeVisitor normalize = new NormalizeVisitor();
 		graphSet.get(0).accept(normalize);
@@ -206,6 +221,13 @@ public class IBSDFGenerator {
 	}
 	
 	
+	/**
+	 * Main method for tests
+	 * @param args
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws SDF4JException
+	 */
 	public static void main(String [] args) throws IOException, InterruptedException, SDF4JException
 	{
 		IBSDFGenerator x = new IBSDFGenerator(45);

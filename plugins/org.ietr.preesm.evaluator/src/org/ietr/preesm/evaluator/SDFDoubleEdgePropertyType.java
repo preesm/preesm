@@ -7,7 +7,7 @@ import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
 public class SDFDoubleEdgePropertyType extends AbstractEdgePropertyType<Double>  {
 
 	/**
-	 * Creates a new SDFDefaultEdgePropertyType with the given Long value
+	 * Creates a new SDFDefaultEdgePropertyType with the given double value
 	 * 
 	 * @param val
 	 *            The Long value of this SDFDefaultEdgePropertyType

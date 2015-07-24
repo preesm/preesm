@@ -18,7 +18,7 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
 /**
  * Class used to compute the optimal periodic schedule and the throughput
- * of a non hierarchical graph (SDF or flattened IBSDF)
+ * of a non hierarchical graph (SDF or already flattened IBSDF)
  * 
  * @author blaunay
  * 
@@ -212,6 +212,7 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 			loop.setDelay(x); loop.setCons(x); loop.setProd(x);
 			e.put(loop, (double)(loop.getDelay().getValue()));
 		}
+		// launch a Bellman Ford algorithm
 		// source.dist = 0
 		v.put(input.vertexSet().iterator().next(), (double) 0);
 		

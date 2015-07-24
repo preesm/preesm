@@ -1,10 +1,10 @@
 package org.ietr.preesm.evaluator;
 
-//TODO To put inside SDFMath once finished
+//TODO To remove and put the functions inside SDFMath once finished
 public class SDFMathD {
 	
 	/**
-	 * Computes the GCD of two doubles
+	 * Computes the GCD of two double
 	 */
 	public static double gcd(double a, double b) {
 		if (a < b)
@@ -16,7 +16,7 @@ public class SDFMathD {
 	}
 	
 	/**
-	 * Computes the lcm of two doubles
+	 * Computes the LCM of two double
 	 */
 	public static double lcm(double a, double b) {
 		return (a/gcd(a,b)) * b;

@@ -10,6 +10,11 @@ import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.visitors.IGraphVisitor;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 
+/**
+ * Visitor used to normalize a graph, hierarchical (IBSDF) or not (SDF)
+ * @author blaunay
+ *
+ */
 public class NormalizeVisitor implements
 IGraphVisitor<SDFGraph, SDFAbstractVertex, SDFEdge>{
 	

@@ -19,7 +19,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 
 /**
  * Class used to search for the optimal periodic schedule and its throughput
- * for a given IBSDF
+ * for a given hierarchical graph IBSDF
  * 
  * @author blaunay
  * 
@@ -63,7 +63,6 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 				}
 			}
 		}
-		System.out.println("K = "+K);
 		return K;
 	}
 

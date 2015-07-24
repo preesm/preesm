@@ -17,7 +17,8 @@ import org.ietr.preesm.core.scenario.PreesmScenario;
 
 /**
  * Class used to compute the optimal periodic schedule and its throughput
- * for a given SDF or IBSDF
+ * for a given SDF or IBSDF, returns the throughput and the graph normalized
+ * (such that for each actor, prod and cons rates are the same)
  * 
  * @author blaunay
  * 

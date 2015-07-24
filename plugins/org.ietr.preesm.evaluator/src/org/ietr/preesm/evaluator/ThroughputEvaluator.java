@@ -7,10 +7,21 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
+/**
+ * Class used to evaluate the throughput of a SDF or IBSDF graph on its optimal periodic schedule
+ * @author blaunay
+ *
+ */
 public abstract class ThroughputEvaluator {
 	
 	public PreesmScenario scenar;
 	
+	/**
+	 * Launches the evaluation of the throughput
+	 * @param inputGraph the graph to evaluate
+	 * @return
+	 * @throws InvalidExpressionException
+	 */
 	public abstract double launch(SDFGraph inputGraph) throws InvalidExpressionException;
 	
 	
