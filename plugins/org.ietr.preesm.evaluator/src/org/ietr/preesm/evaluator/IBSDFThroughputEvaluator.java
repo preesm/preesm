@@ -457,8 +457,6 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 			// pick a random source node
 			origin = new ArrayList<SDFAbstractVertex>();
 			origin.add(g.vertexSet().iterator().next());
-			GMLSDFExporter exporter = new GMLSDFExporter();
-			exporter.export(g, "/home/blaunay/Bureau/turbine-master/turbine/IBSDF/bellman.graphml");
 		} else {
 			// otherwise, source nodes of the shortest paths to compute are all the input interfaces
 			origin = new ArrayList<SDFAbstractVertex>(new ArrayList<SDFInterfaceVertex>(g.getParentVertex().getSources()));

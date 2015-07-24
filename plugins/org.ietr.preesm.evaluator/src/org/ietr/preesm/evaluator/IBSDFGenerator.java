@@ -9,6 +9,7 @@ import java.util.Random;
 
 import org.ietr.dftools.algorithm.exporter.GMLSDFExporter;
 import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
+import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.*;
 import org.ietr.dftools.algorithm.model.sdf.esdf.*;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
@@ -166,8 +167,9 @@ public class IBSDFGenerator {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 * @throws SDF4JException
+	 * @throws InvalidExpressionException 
 	 */
-	private void hierarchize() throws IOException, InterruptedException, SDF4JException {
+	private void hierarchize() throws IOException, InterruptedException, SDF4JException, InvalidExpressionException {
 		int remaining_graphs, current, r, chosengraph;
 		// index of current graph
 		current = 0;
@@ -213,10 +215,10 @@ public class IBSDFGenerator {
 		exporter.export(graphSet.get(0), "/home/blaunay/Bureau/turbine-master/turbine/IBSDF/top.graphml");
 		
 		// Check that there is no problem while normalizing and evaluating the liveness
-		IBSDFThroughputEvaluator liveness = new IBSDFThroughputEvaluator();
+		IBSDFThroughputEvaluator eval = new IBSDFThroughputEvaluator();
 		NormalizeVisitor normalize = new NormalizeVisitor();
 		graphSet.get(0).accept(normalize);
-		System.out.println(liveness.is_alive((SDFGraph) normalize.getOutput()) != null);
+		System.out.println(eval.is_alive((SDFGraph) normalize.getOutput()) != null);
 		
 	}
 	
@@ -227,10 +229,11 @@ public class IBSDFGenerator {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 * @throws SDF4JException
+	 * @throws InvalidExpressionException 
 	 */
-	public static void main(String [] args) throws IOException, InterruptedException, SDF4JException
+	public static void main(String [] args) throws IOException, InterruptedException, SDF4JException, InvalidExpressionException
 	{
-		IBSDFGenerator x = new IBSDFGenerator(45);
+		IBSDFGenerator x = new IBSDFGenerator(500);
 		x.graphSet_gen();
 		x.hierarchize();
 	}
