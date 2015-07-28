@@ -17,8 +17,8 @@ import org.ietr.preesm.algorithm.importSdf3Xml.Sdf3XmlParser;
 
 /**
  * Generator of hierarchical graphs (IBSDF) from alive SDF graphs generated
- * with Turbine, the only parameter to give is the number of actors.
- * Used independently from the throughput evaluator
+ * with <a href="https://github.com/bbodin/turbine/">Turbine</a>, the only parameter to give is the number of actors.
+ * Used independently from the throughput evaluator to create instances for test
  * @author blaunay
  *
  */
@@ -27,6 +27,8 @@ public class IBSDFGenerator {
 	// Parameters
 	public int nbactors;
 	public Random rand;
+	// change the path according to where Turbine is placed, and create folders IBgen and IBSDF in this directory
+	public final String path = "/home/blaunay/Bureau/turbine-master/turbine/";
 	
 	// Set of graphs
 	public ArrayList<SDFGraph> graphSet;
@@ -47,7 +49,7 @@ public class IBSDFGenerator {
 		int remaining_actors = nbactors;
 		int randomNum;
 		Process p;
-		p = Runtime.getRuntime().exec(new String[]{"sh", "-c", "rm -f /home/blaunay/Bureau/turbine-master/turbine/IBgen/*"});
+		p = Runtime.getRuntime().exec(new String[]{"sh", "-c", "rm -f "+path+"IBgen/*"});
 		p.waitFor();
 		while (remaining_actors > 0) {
 			// draw a random number for the graph size (no graph with 1 actor)
@@ -57,13 +59,12 @@ public class IBSDFGenerator {
 		    remaining_actors -= randomNum;
 		    
 		    // Generation of the graph
-		    p = Runtime.getRuntime().exec(new String[]{
-		    		"/home/blaunay/Bureau/turbine-master/turbine/test.py",
+		    p = Runtime.getRuntime().exec(new String[]{	path+"SDFGenerator.py",
 		    		Integer.toString(randomNum),Integer.toString(graphSet.size())});
 		    p.waitFor();
 			
 		    // Import it in PREESM
-		    File file = new File("/home/blaunay/Bureau/turbine-master/turbine/IBgen/"+String.valueOf(graphSet.size())+".sdf3");
+		    File file = new File(path+"IBgen/"+String.valueOf(graphSet.size())+".sdf3");
 			InputStream iStream = new FileInputStream(file);
 			Sdf3XmlParser importer = new Sdf3XmlParser();
 			SDFGraph G = importer.parse(iStream); 
@@ -169,7 +170,7 @@ public class IBSDFGenerator {
 	 * @throws SDF4JException
 	 * @throws InvalidExpressionException 
 	 */
-	private void hierarchize() throws IOException, InterruptedException, SDF4JException, InvalidExpressionException {
+	private boolean hierarchize() throws IOException, InterruptedException, SDF4JException, InvalidExpressionException {
 		int remaining_graphs, current, r, chosengraph;
 		// index of current graph
 		current = 0;
@@ -178,12 +179,12 @@ public class IBSDFGenerator {
 		SDFAbstractVertex tmp;
 		
 		while (remaining_graphs > 0) {
-			// pick r < remaining_graphs and r < nbacteurs
-			r = rand.nextInt(Math.min(remaining_graphs,nbActors(graphSet.get(current))))+1;
+			// chose randomly a graph among those already treated to insert the graphs
+			chosengraph = rand.nextInt(current+1);
+			// pick r < remaining_graphs and r < nbacteurs, r = nb graphs to be inserted in chosen graph
+			r = rand.nextInt(Math.min(remaining_graphs,nbActors(graphSet.get(chosengraph))))+1;
 			// insert the r next graphs in random vertices of the current graph
 			while (selectedVertices.size() < r) {
-				// chose randomly a graph among those already treated
-				chosengraph = rand.nextInt(current+1);
 				tmp = randomVertices(graphSet.get(chosengraph), 1).get(0);
 				while (selectedVertices.contains(tmp)) {
 					chosengraph = rand.nextInt(current+1);
@@ -201,24 +202,24 @@ public class IBSDFGenerator {
 			current += r; 
 		}
 		
-		/* Simple display of the structure of the graph (useless) 
+		// Simple display of the structure of the graph (useless) 
 		for (int i=0; i<graphSet.size(); i++) {
 			System.out.println(i);
 			if (graphSet.get(i).getParentVertex() != null)
 				System.out.println(graphSet.get(i).getName()+" - "+graphSet.get(i).getParentVertex().getBase().getName()+"("+graphSet.get(i).getParentVertex().getName()+")");
-		}*/
+		}
 		
 		// Export the graph
 		GMLSDFExporter exporter = new GMLSDFExporter();
-		Process p = Runtime.getRuntime().exec(new String[]{"sh", "-c", "rm -f /home/blaunay/Bureau/turbine-master/turbine/IBSDF/*"});
+		Process p = Runtime.getRuntime().exec(new String[]{"sh", "-c", "rm -f "+path+"IBSDF/*"});
 		p.waitFor();
-		exporter.export(graphSet.get(0), "/home/blaunay/Bureau/turbine-master/turbine/IBSDF/top.graphml");
+		exporter.export(graphSet.get(0), path+"IBSDF/top.graphml");
 		
-		// Check that there is no problem while normalizing and evaluating the liveness
+		// Check that there is no problem if we normalize and evaluate the liveness
 		IBSDFThroughputEvaluator eval = new IBSDFThroughputEvaluator();
 		NormalizeVisitor normalize = new NormalizeVisitor();
 		graphSet.get(0).accept(normalize);
-		System.out.println(eval.is_alive((SDFGraph) normalize.getOutput()) != null);
+		return eval.is_alive((SDFGraph) normalize.getOutput()) != null;
 		
 	}
 	
@@ -233,8 +234,11 @@ public class IBSDFGenerator {
 	 */
 	public static void main(String [] args) throws IOException, InterruptedException, SDF4JException, InvalidExpressionException
 	{
-		IBSDFGenerator x = new IBSDFGenerator(500);
-		x.graphSet_gen();
-		x.hierarchize();
+		boolean alive = false;
+		while (!alive) {
+			IBSDFGenerator x = new IBSDFGenerator(10);
+			x.graphSet_gen();
+			alive = x.hierarchize();
+		}
 	}
 }
