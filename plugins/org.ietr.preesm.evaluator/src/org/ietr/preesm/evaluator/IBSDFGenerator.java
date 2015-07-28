@@ -171,7 +171,7 @@ public class IBSDFGenerator {
 	 * @throws InvalidExpressionException 
 	 */
 	private boolean hierarchize() throws IOException, InterruptedException, SDF4JException, InvalidExpressionException {
-		int remaining_graphs, current, r, chosengraph;
+		int remaining_graphs, current, r;
 		// index of current graph
 		current = 0;
 		remaining_graphs = graphSet.size()-1;
@@ -179,19 +179,16 @@ public class IBSDFGenerator {
 		SDFAbstractVertex tmp;
 		
 		while (remaining_graphs > 0) {
-			// chose randomly a graph among those already treated to insert the graphs
-			chosengraph = rand.nextInt(current+1);
-			// pick r < remaining_graphs and r < nbacteurs, r = nb graphs to be inserted in chosen graph
-			r = rand.nextInt(Math.min(remaining_graphs,nbActors(graphSet.get(chosengraph))))+1;
-			// insert the r next graphs in random vertices of the current graph
+			// pick r < remaining_graphs and r < nbacteurs
+			r = rand.nextInt(Math.min(remaining_graphs,nbActors(graphSet.get(current)))+1);
+			// choose r vertices in the current graph
 			while (selectedVertices.size() < r) {
-				tmp = randomVertices(graphSet.get(chosengraph), 1).get(0);
-				while (selectedVertices.contains(tmp)) {
-					chosengraph = rand.nextInt(current+1);
-					tmp = randomVertices(graphSet.get(chosengraph), 1).get(0);
-				}
+				tmp = randomVertices(graphSet.get(current), 1).get(0);
+				while (selectedVertices.contains(tmp)) 
+					tmp = randomVertices(graphSet.get(current), 1).get(0);
 				selectedVertices.add(tmp);
 			}
+			// insert the r graph in the r vertices
 			for (int i=1; i<=r; i++) {
 				insert(graphSet.get(current+i),selectedVertices.get(i-1));
 			}
