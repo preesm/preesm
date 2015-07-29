@@ -231,11 +231,19 @@ public class IBSDFGenerator {
 	 */
 	public static void main(String [] args) throws IOException, InterruptedException, SDF4JException, InvalidExpressionException
 	{
-		boolean alive = false;
-		while (!alive) {
-			IBSDFGenerator x = new IBSDFGenerator(10);
+		int i = 1100;
+		Process p1,p2;
+		while (i <= 3000) {
+			IBSDFGenerator x = new IBSDFGenerator(i);
 			x.graphSet_gen();
-			alive = x.hierarchize();
+			if (x.hierarchize()) {
+				p1 = Runtime.getRuntime().exec(new String[]{"mkdir","/home/blaunay/Bureau/IBSDF/"+Integer.toString(i)});
+				p1.waitFor();
+				p2 = Runtime.getRuntime().exec(new String[]{"sh", "-c", "cp /home/blaunay/Bureau/turbine-master/turbine/IBSDF/* /home/blaunay/Bureau/IBSDF/"+Integer.toString(i)});
+				p2.waitFor();
+				i += 100;
+			}
 		}
+		
 	}
 }

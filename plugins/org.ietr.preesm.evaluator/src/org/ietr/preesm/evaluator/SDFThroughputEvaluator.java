@@ -39,25 +39,6 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 		double period;
 		SDFGraph sdf = inputGraph.clone();
 		
-		// to fix the interfaces cloning problem
-		if (inputGraph.getParentVertex() != null) {
-			for (SDFAbstractVertex ve : sdf.vertexSet()) {
-				if (ve instanceof SDFSourceInterfaceVertex) {
-					if (ve.getSinks().size() == 0) {
-						SDFSinkInterfaceVertex si = new SDFSinkInterfaceVertex();
-						si.setName(inputGraph.getVertex(ve.getName()).getSinks().get(0).getName());
-						ve.addSink(si);
-					}
-				}
-				if (ve instanceof SDFSinkInterfaceVertex) {
-					if (ve.getSources().size() == 0) {
-						SDFSourceInterfaceVertex so = new SDFSourceInterfaceVertex();
-						so.setName(inputGraph.getVertex(ve.getName()).getSources().get(0).getName());
-						ve.addSource(so);
-					}
-				}
-			}
-		}
 		// Check condition of existence of a periodic schedule (Bellman Ford)
 		boolean periodic_schedule = has_periodic_schedule(sdf);
 		
@@ -187,7 +168,7 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 			e.put(edge, (double)(edge.getDelay().getValue()) + SDFMathD.gcd((double)(edge.getProd().getValue()),(double)(edge.getCons().getValue()))
 						- (double)(edge.getCons().getValue()));
 		}
-
+		
 		// Initialization : source.dist = 0, v.dist = infinity
 		for (SDFAbstractVertex vertex : input.vertexSet())	{
 			// v.dist = infinity

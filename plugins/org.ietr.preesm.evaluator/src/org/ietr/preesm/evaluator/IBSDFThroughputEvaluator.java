@@ -31,10 +31,9 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 	 * 
 	 */
 	public double launch(SDFGraph inputGraph) throws InvalidExpressionException {
-		SDFGraph sdf = inputGraph.clone();
 		
 		// Find a lower bound on the minimal period
-		double Kmin = starting_period(sdf);
+		double Kmin = starting_period(inputGraph);
 		double K = 0; 
 		
 		double eps = 0.01;	// precision of the solution
@@ -101,25 +100,6 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 	 */
 	private HashMap<String, HashMap<String, Double>> test_period(double K, SDFGraph sdf) {
 		SDFGraph g = sdf.clone();
-		// to fix the interfaces cloning problem
-		if (sdf.getParentVertex() != null) {
-			for (SDFAbstractVertex ve : g.vertexSet()) {
-				if (ve instanceof SDFSourceInterfaceVertex) {
-					if (ve.getSinks().size() == 0) {
-						SDFSinkInterfaceVertex si = new SDFSinkInterfaceVertex();
-						si.setName(sdf.getVertex(ve.getName()).getSinks().get(0).getName());
-						ve.addSink(si);
-					}
-				}
-				if (ve instanceof SDFSinkInterfaceVertex) {
-					if (ve.getSources().size() == 0) {
-						SDFSourceInterfaceVertex so = new SDFSourceInterfaceVertex();
-						so.setName(sdf.getVertex(ve.getName()).getSources().get(0).getName());
-						ve.addSource(so);
-					}
-				}
-			}
-		}
 		
 		// The set of edges that will be used to compute shortest paths
 		HashMap<SDFEdge,Double> e = new HashMap<SDFEdge,Double>(g.edgeSet().size());
