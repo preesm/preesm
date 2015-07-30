@@ -34,7 +34,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 	 */
 	public double launch(SDFGraph inputGraph) throws InvalidExpressionException {
 		
-		// Find a lower bound on the minimal period
+		// Find a lower bound on the minimal period by inspecting the bottom levels
 		double Kmin = starting_period(inputGraph);
 		double K = 0; 
 		
@@ -57,7 +57,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 				}
 			}
 			
-			//adjust the precision
+			// adjust the precision
 			eps = Kmax/Math.pow(10,6);
 			K = Kmax;
 			// Step 4 : Improve (minimize) K
@@ -84,6 +84,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 		double K;
 		double Kmax = 0;
 		for (SDFAbstractVertex vertex : inputGraph.vertexSet()) {
+			// if hierarchical vertex, go check its subgraph
 			if (vertex.getGraphDescription() != null && vertex.getGraphDescription() instanceof SDFGraph) {
 				K = starting_period((SDFGraph) vertex.getGraphDescription());
 				if (K > Kmax)

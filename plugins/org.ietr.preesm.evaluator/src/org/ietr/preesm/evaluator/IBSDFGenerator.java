@@ -28,7 +28,7 @@ public class IBSDFGenerator {
 	public int nbactors;
 	public Random rand;
 	// change the path according to where Turbine is placed, and create folders IBgen and IBSDF in this directory
-	public final String path = "/home/baptiste/Bureau/turbine-master/turbine/";
+	public final String path = "/home/blaunay/Bureau/turbine-master/turbine/";
 	
 	// Set of graphs
 	public ArrayList<SDFGraph> graphSet;
@@ -215,7 +215,7 @@ public class IBSDFGenerator {
 	
 	
 	/**
-	 * Main method for tests
+	 * Main method for tests and generate IBSDF graphs
 	 * @param args
 	 * @throws IOException
 	 * @throws InterruptedException
@@ -224,20 +224,10 @@ public class IBSDFGenerator {
 	 */
 	public static void main(String [] args) throws IOException, InterruptedException, SDF4JException, InvalidExpressionException
 	{
-		// Generate IBSDF from 50 to 500 actors respecting the liveness condition
-		int i = 50;
-		Process p1,p2;
-		while (i <= 500) {
-			IBSDFGenerator x = new IBSDFGenerator(i);
-			x.graphSet_gen();
-			if (x.hierarchize()) {
-				p1 = Runtime.getRuntime().exec(new String[]{"mkdir","/home/baptiste/Bureau/IBSDF/"+Integer.toString(i)});
-				p1.waitFor();
-				p2 = Runtime.getRuntime().exec(new String[]{"sh", "-c", "cp /home/baptiste/Bureau/turbine-master/turbine/IBSDF/* /home/baptiste/Bureau/IBSDF/"+Integer.toString(i)});
-				p2.waitFor();
-				i += 50;
-			}
-		}
+		// Generate IBSDF of 50 actors
+		IBSDFGenerator x = new IBSDFGenerator(50);
+		x.graphSet_gen();
+		x.hierarchize();
 		
 	}
 }
