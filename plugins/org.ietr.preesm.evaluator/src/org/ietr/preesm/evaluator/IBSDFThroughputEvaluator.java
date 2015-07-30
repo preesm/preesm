@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
@@ -15,6 +16,7 @@ import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
 /**
  * Class used to search for the optimal periodic schedule and its throughput
@@ -36,7 +38,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 		double Kmin = starting_period(inputGraph);
 		double K = 0; 
 		
-		double eps = 0.01;	// precision of the solution
+		double eps = 0.1;	// precision of the solution
 		
 		// Step 2 : Test if k_min a valid period for the graph
 		if (test_period(Kmin, inputGraph) != null) {
@@ -47,15 +49,23 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 			// increase Kmax until it is a valid period
 			while (test_period(Kmax, inputGraph) == null) {
 				Kmin = Kmax; 
-				Kmax *= 3;  	
+				Kmax *= 10;
+				// avoid infinite loop if there is no periodic schedule
+				if (Kmax >= Double.MAX_VALUE/10) {
+					WorkflowLogger.getLogger().log(Level.SEVERE,"No periodic schedule for this graph");
+					return 0;
+				}
 			}
+			
+			//adjust the precision
+			eps = Kmax/Math.pow(10,6);
 			K = Kmax;
 			// Step 4 : Improve (minimize) K
-			while (Kmax - Kmin > eps) {
+			while (Math.abs(Kmax - Kmin) > eps) {
 				K = (Kmax + Kmin) / 2;
-				if (test_period(K, inputGraph) != null)
+				if (test_period(K, inputGraph) != null) {
 					Kmax = K; // continue to search on the interval [Kmin,K]
-				else {
+				} else {
 					Kmin = K; // continue to search on the interval [K,Kmax]
 					K = Kmax;
 				}
@@ -82,7 +92,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 			}
 		}
 		// we are in a graph without sublevels of hierarchy,
-		// compute the optimal period of this graph
+		// compute the optimal period of this graph with the method for SDF
 		if (!hierarchical) {
 			ThroughputEvaluator eval = new SDFThroughputEvaluator();
 			eval.scenar = this.scenar;
@@ -314,7 +324,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator{
 	 * Checks if the given graph (containing several levels of hierarchy) respects
 	 * the condition of liveness. Recursive function.
 	 * 
-	 * @return null if the graph is not alive
+	 * @return null only if the graph does not respect the condition
 	 */
 	public HashMap<String, HashMap<String, Double>> is_alive(SDFGraph g) {
 		

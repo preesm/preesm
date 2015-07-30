@@ -45,5 +45,4 @@ public class SDFDoubleEdgePropertyType extends AbstractEdgePropertyType<Double> 
 	public Double getValue() {
 		return value;
 	}
-	
 }

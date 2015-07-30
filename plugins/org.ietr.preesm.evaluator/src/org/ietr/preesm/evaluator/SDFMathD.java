@@ -4,7 +4,7 @@ package org.ietr.preesm.evaluator;
 public class SDFMathD {
 	
 	/**
-	 * Computes the GCD of two double
+	 * Computes the Greatest common divisor of two double
 	 */
 	public static double gcd(double a, double b) {
 		if (a < b)
@@ -16,7 +16,7 @@ public class SDFMathD {
 	}
 	
 	/**
-	 * Computes the LCM of two double
+	 * Computes the Lowest Common Multiple of two double
 	 */
 	public static double lcm(double a, double b) {
 		return (a/gcd(a,b)) * b;

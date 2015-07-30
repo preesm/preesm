@@ -16,7 +16,7 @@ import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
 /**
- * Class used to compute the optimal periodic schedule and its throughput
+ * Main class used to compute the optimal periodic schedule and its throughput
  * for a given SDF or IBSDF, returns the throughput and the graph normalized
  * (such that for each actor, prod and cons rates are the same)
  * 
@@ -31,8 +31,6 @@ public class PeriodicEvaluator extends AbstractTaskImplementation {
 			Map<String, String> parameters, IProgressMonitor monitor,
 			String nodeName, Workflow workflow) throws WorkflowException {
 		
-		// chrono start
-		double startTime = System.nanoTime();
 		double period, throughput = 0;
 		
 		// Retrieve the input dataflow and the scenario
@@ -80,7 +78,6 @@ public class PeriodicEvaluator extends AbstractTaskImplementation {
 		// Throughput in the outputs
 		outputs.put("Throughput", throughput);
 		
-		System.out.println((System.nanoTime() - startTime)/Math.pow(10, 9));
 		return outputs;
 	}
 	

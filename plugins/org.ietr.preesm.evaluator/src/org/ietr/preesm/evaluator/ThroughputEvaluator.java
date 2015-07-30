@@ -26,7 +26,8 @@ public abstract class ThroughputEvaluator {
 	
 	
 	/**
-	 * Returns the throughput of the graph given its optimal normalized period.
+	 * Returns the throughput of the graph given its optimal normalized period,
+	 * the throughput is the minimal throughput of an actor of the graph.
 	 */
 	protected double throughput_computation(double period, SDFGraph sdf) {
 		double min_throughput = Double.MAX_VALUE;

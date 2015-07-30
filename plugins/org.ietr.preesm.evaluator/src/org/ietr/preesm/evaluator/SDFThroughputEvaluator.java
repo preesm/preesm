@@ -47,7 +47,7 @@ public class SDFThroughputEvaluator extends ThroughputEvaluator{
 			period = period_computation(sdf);
 			// Deduce throughput of the schedule
 		} else {
-			WorkflowLogger.getLogger().log(Level.SEVERE,"No periodic schedule for this graph");
+			WorkflowLogger.getLogger().log(Level.SEVERE,"No periodic schedule for this graph ");
 			return 0;
 		}
 		return period;

@@ -28,7 +28,7 @@ IGraphVisitor<SDFGraph, SDFAbstractVertex, SDFEdge>{
 		
 		outputGraph = sdf;
 			
-		//change values on the edges from int to long before normalization
+		//change values on the edges from int to double before normalization
 		prepareNorm(outputGraph);
 		// Normalization bottom->up
 		normalizeup(outputGraph);
@@ -38,8 +38,8 @@ IGraphVisitor<SDFGraph, SDFAbstractVertex, SDFEdge>{
 		
 	
 	/**
-	 * Converts all the data on the edges of the given graph from int to long, which is
-	 * more convenient to do the normalization (32 bits may not be enough).
+	 * Converts all the data on the edges of the given graph from int to double, which is
+	 * more convenient to do the normalization (32 bits may not be enough for some lcm).
 	 */
 	private void prepareNorm(SDFGraph g) {
 		// Use double instead of int for all edges
