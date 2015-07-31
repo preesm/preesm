@@ -41,6 +41,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -265,16 +266,11 @@ public class HeaderParser {
 	 */
 	protected static String readFileContent(IFile file) throws CoreException,
 			IOException {
-		InputStream is = file.getContents();
-		byte buffer[] = new byte[1000];
-		int nbRead = 0;
-		String fileContent = "";
-		do {
-			nbRead = is.read(buffer);
-			fileContent = fileContent
-					+ (new String(buffer)).substring(0, nbRead);
-		} while (nbRead == 1000);
-		return fileContent;
+		String fileString = null;
+	    try (Scanner scanner = new Scanner(file.getContents())) {
+	    	fileString = scanner.useDelimiter("\\A").next();
+	    }	    
+		return fileString;
 	}
 
 	/**
