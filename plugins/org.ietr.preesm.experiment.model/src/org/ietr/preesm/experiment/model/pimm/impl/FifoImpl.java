@@ -553,7 +553,11 @@ public class FifoImpl extends EObjectImpl implements Fifo {
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Fifo) {
-			return getId().equals(((Fifo) obj).getId());
+			try {
+				return getId().equals(((Fifo) obj).getId());
+			} catch(RuntimeException e){
+				return super.equals(obj);
+			}
 		} else {
 			return false;
 		}
