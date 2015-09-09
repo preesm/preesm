@@ -129,7 +129,19 @@ public class PiSDFCodeGenerator{
 					constraints.get(aa).add(core);
 				}
 			}
-		}			
+		}	
+		
+		// Add Default timings if needed
+		for (AbstractActor aa : actorsByNames.values()) {
+			if (!timings.containsKey(aa)) {
+				timings.put(aa, new HashMap<String, String>());
+			}
+			for(String coreType : coreTypesIds.keySet()){
+				if(!timings.get(aa).containsKey(coreType)){
+					timings.get(aa).put(coreType, "100");	
+				}
+			}
+		}	
 	}
 	
 	public String generateHeaderCode(PiGraph pg) {
