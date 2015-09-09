@@ -149,6 +149,10 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 
 	@Override
 	public void execute(ICustomContext context) {
+		execute(context, "newPort");
+	}
+	
+	public void execute(ICustomContext context, String portName) {
 		// Re-check if only one element is selected
 		PictogramElement[] pes = context.getPictogramElements();
 		if (pes != null && pes.length == 1) {
@@ -162,9 +166,6 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 			IGaService gaService = Graphiti.getGaService();
 			// Get the actor
 			ExecutableActor actor = (ExecutableActor) getBusinessObjectForPictogramElement(containerShape);
-
-			// Ask the name of the new port
-			String portName = "newPort";
 
 			// If a name was given in the property, bypass the dialog box
 			Object nameProperty = context.getProperty(NAME_PROPERTY);

@@ -246,7 +246,12 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 					if (addPortFeature != null) {
 						CustomContext targetContext = new CustomContext(
 								new PictogramElement[] { targetPe });
-						addPortFeature.execute(targetContext);
+						// If Src is a Parameter (or config inputPort), give it as default port name
+						if(setter instanceof Parameter)
+							addPortFeature.execute(targetContext, ((Parameter)setter).getName());
+						else
+							addPortFeature.execute(targetContext);							
+						
 						getterAnchor = addPortFeature.getCreatedAnchor();
 						getter = addPortFeature.getCreatedPort();
 					}
