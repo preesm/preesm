@@ -124,6 +124,23 @@
          </outputs>
       </task>
       <task
+            id="org.ietr.preesm.memory.distributed.Mapper"
+            name="Memory Exclusion Graph Mapper"
+            type="org.ietr.preesm.memory.distributed.Mapper">
+         <inputs>
+            <input
+                  id="MemEx"
+                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="MemExes"
+                  object="java.util.Map">
+            </output>
+         </outputs>
+      </task>
+      <task
             id="org.ietr.preesm.experiment.memory.MultiMemoryExclusionGraphBuilder"
             name="Multi Memory Exclusion Graph Builder"
             type="org.ietr.preesm.memory.multiSDFTasks.MultiMemoryExclusionGraphBuilder">
