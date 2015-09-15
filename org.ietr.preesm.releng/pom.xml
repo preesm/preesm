@@ -126,6 +126,7 @@
 		<module>../plugins/org.ietr.preesm.codegen</module>
 		<module>../plugins/org.ietr.preesm.codegen.xtend</module>
 		<module>../plugins/org.ietr.preesm.core</module>
+		<module>../plugins/org.ietr.preesm.evaluator</module>
 		<module>../plugins/org.ietr.preesm.experiment.model</module>
 		<module>../plugins/org.ietr.preesm.mapper</module>
 		<module>../plugins/org.ietr.preesm.memory</module>
