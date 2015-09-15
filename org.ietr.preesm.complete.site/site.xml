@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.ietr.dftools.graphiti.feature_1.3.15.201509141415.jar" id="org.ietr.dftools.graphiti.feature" version="1.3.15.201509141415">
+   <feature url="features/org.ietr.dftools.graphiti.feature_1.3.15.qualifier.jar" id="org.ietr.dftools.graphiti.feature" version="1.3.15.qualifier">
       <category name="Graphiti"/>
    </feature>
-   <feature url="features/org.ietr.dftools.feature_1.1.6.201509141415.jar" id="org.ietr.dftools.feature" version="1.1.6.201509141415">
+   <feature url="features/org.ietr.dftools.feature_1.1.6.qualifier.jar" id="org.ietr.dftools.feature" version="1.1.6.qualifier">
       <category name="DFTools"/>
    </feature>
-   <feature url="features/org.ietr.preesm.feature_2.2.1.201509141415.jar" id="org.ietr.preesm.feature" version="2.2.1.201509141415">
+   <feature url="features/org.ietr.preesm.feature_2.2.1.qualifier.jar" id="org.ietr.preesm.feature" version="2.2.1.qualifier">
       <category name="PREESM"/>
    </feature>
    <category-def name="PREESM" label="PREESM">
