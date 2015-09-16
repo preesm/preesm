@@ -204,14 +204,6 @@
             name="LayoutFileFilter"
             visibleInUI="true">
       </commonFilter>
-      <commonFilter
-            activeByDefault="true"
-            class="org.ietr.preesm.ui.pimm.filter.ProjectExplorerPiFilter"
-            description="Filters the *.pi files"
-            id="org.ietr.preesm.experiment.pifilefilter"
-            name="PiFileFilter"
-            visibleInUI="true">
-      </commonFilter>
    </extension>
    <extension
          id="org.ietr.preesm.ui.projectexplorerviewer"
