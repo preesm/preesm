@@ -1,2 +1,0 @@
-// RGB2Gray script
-i_rgb.byteMatchWith(0,o_gray,size*4-size*3, size*3);

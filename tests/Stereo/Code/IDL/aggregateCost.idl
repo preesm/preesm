@@ -1,7 +1,0 @@
-
-module aggregateCost {
-	typedef long parameter ;
-	interface loop {
-		void aggregateCost (in parameter height , in parameter width, in parameter nbIterations, in float disparityError, in long offsets, in float hWeights, in float vWeights, out float aggregatedDisparity);
-	} ;
-} ;

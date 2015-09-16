@@ -1,7 +1,0 @@
-
-module disparitySelect {
-	typedef long parameter ;
-	interface loop {
-		void disparitySelect (in parameter height , in parameter width, in parameter nbDisparities, in parameter scale, in parameter minDisparity, in char disparity, in float aggregatedDisparity, in float bestCostFeed, in long currentResult, out long result, out float backBestCost);
-	} ;
-} ;

@@ -1,7 +1,0 @@
-
-module costConstruction {
-	typedef long parameter ;
-	interface loop {
-		void costConstruction (in parameter height , in parameter width, in parameter truncValue, in char disparity, in float grayL, in float grayR, in char cenL, in char cenR, out float disparityError);
-	} ;
-} ;

@@ -1,7 +1,0 @@
-
-module computeWeights {
-	typedef long parameter ;
-	interface loop {
-		void computeWeights (in parameter height , in parameter width, in parameter horOrVert, in long offset, in char rgbL, out float weights);
-	} ;
-} ;

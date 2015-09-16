@@ -1,7 +1,0 @@
-
-module readPPM {
-	typedef long parameter ;
-	interface loop {
-		void writePPM (in parameter height , in parameter width, in char pixels);
-	} ;
-} ;

@@ -1,7 +1,0 @@
-
-module medianFilter {
-	typedef long parameter ;
-	interface loop {
-		void medianFilter (in parameter height , in parameter width, in parameter topDownBorderSize, in char rawDisparity, out char filteredDisparity);
-	} ;
-} ;
