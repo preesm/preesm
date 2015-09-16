@@ -1,3 +1,9 @@
+## Release version 2.2.2 
+*2015.09.16 - Preesm: 2.2.2*
+
+### Bug fix
+Remove the *.pi filter plugin from the package explorer
+
 ## Release version 2.2.1 
 *2015.09.14 - Preesm: 2.2.1, Graphiti: 1.3.15, DFTools 1.1.6* 
 
