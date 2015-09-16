@@ -82,17 +82,6 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 	}
 
 	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put(PARAM_VERBOSE, VALUE_TRUE_FALSE_DEFAULT);
-		parameters.put(PARAM_ALLOCATORS, VALUE_ALLOCATORS_DEFAULT);
-		parameters.put(PARAM_XFIT_ORDER, VALUE_XFIT_ORDER_DEFAULT);
-		parameters.put(PARAM_NB_SHUFFLE, VALUE_NB_SHUFFLE_DEFAULT);
-		parameters.put(PARAM_ALIGNMENT, VALUE_ALIGNEMENT_DEFAULT);
-		return parameters;
-	}
-
-	@Override
 	public String monitorMessage() {
 		return "Allocating MemEx";
 	}
