@@ -37,20 +37,21 @@ package org.ietr.preesm.memory.allocation;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
+import org.ietr.preesm.memory.distributed.Distributor;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 
 public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 
 	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+	public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
+			IProgressMonitor monitor, String nodeName, Workflow workflow) throws WorkflowException {
 		this.init(parameters);
 
 		// Retrieve the input of the task
@@ -58,9 +59,24 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 
 		// Prepare the MEG with the alignment
 		MemoryAllocator.alignSubBuffers(memEx, alignment);
-		
+
 		// Create several MEGs according to the selected distribution policy
 		// Each created MEG corresponds to a single memory bank
+		// Log the distribution policy used
+		if (verbose && !valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)) {
+			logger.log(Level.INFO, "Split MEG with " + valueDistribution + " policy");
+		}
+		Map<String, MemoryExclusionGraph> megs = Distributor.distributeMeg(valueDistribution, memEx);
+		// Log results
+		if (verbose && !valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)) {
+			logger.log(Level.INFO, "Created " + megs.keySet().size() + " MemExes");
+			for (Entry<String, MemoryExclusionGraph> entry : megs.entrySet()) {
+				double density = entry.getValue().edgeSet().size()
+						/ (entry.getValue().vertexSet().size() * (entry.getValue().vertexSet().size() - 1) / 2.0);
+				logger.log(Level.INFO, "Memex(" + entry.getKey() + "): " + entry.getValue().vertexSet().size()
+						+ " vertices, density=" + density);
+			}
+		}
 
 		createAllocators(memEx);
 
@@ -83,7 +99,7 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 		output.put("MemEx", memEx);
 		return output;
 	}
-	
+
 	@Override
 	public Map<String, String> getDefaultParameters() {
 		// This useless method must be copied here because inheritance link

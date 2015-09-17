@@ -124,6 +124,11 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
 
 		verbose = valueVerbose.equals(VALUE_TRUE);
 
+		// Correct default distribution policy
+		if (valueDistribution.equals(VALUE_DISTRIBUTION_DEFAULT)) {
+			valueDistribution = VALUE_DISTRIBUTION_SHARED_ONLY;
+		}
+
 		// Retrieve the alignment param
 		valueAlignment = parameters.get(PARAM_ALIGNMENT);
 
