@@ -36,24 +36,18 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.memory.distributed;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
-import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
-import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 
 /**
  * Workflow element taking the architecture a Scheduled DAG and a its
@@ -96,7 +90,7 @@ public class MapperTask extends AbstractTaskImplementation {
 
 		// Create output
 		Map<String, MemoryExclusionGraph> memExes;
-		memExes = distributeMeg(valuePolicy, memEx);
+		memExes = Distributor.distributeMeg(valuePolicy, memEx);
 
 		// Log results
 		if (verbose) {
@@ -115,108 +109,6 @@ public class MapperTask extends AbstractTaskImplementation {
 		return output;
 	}
 
-	/**
-	 * @param valuePolicy
-	 * @param memEx
-	 * @return
-	 * @throws RuntimeException
-	 */
-	public Map<String, MemoryExclusionGraph> distributeMeg(String valuePolicy, MemoryExclusionGraph memEx)
-			throws RuntimeException {
-		Map<String, MemoryExclusionGraph> memExes;
-		memExes = new HashMap<String, MemoryExclusionGraph>();
-
-		// Generate output
-
-		// Each entry of this map associate a memory to the set
-		// of vertices of its MemEx. This map will be differently
-		// depending on the policy chosen.
-		Map<String, HashSet<MemoryExclusionVertex>> memExesVerticesSet;
-		memExesVerticesSet = new HashMap<String, HashSet<MemoryExclusionVertex>>();
-
-		// PE_Specific_and_shared
-		if (valuePolicy.equals(AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED)
-				|| valuePolicy.equals(AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT)) {
-			// scan the vertices of the input MemEx
-			for (MemoryExclusionVertex memExVertex : memEx.vertexSet()) {
-				String memory = "Shared";
-
-				// If dag edge source and target are mapped to the same
-				// component
-				if (memExVertex.getEdge() != null) {
-					// If source and target are mapped to te same core
-					if (memExVertex.getEdge().getSource().getPropertyBean().getValue("Operator")
-							.equals(memExVertex.getEdge().getTarget().getPropertyBean().getValue("Operator"))) {
-						ComponentInstance component;
-						DAGVertex dagVertex = memExVertex.getEdge().getSource();
-						component = (ComponentInstance) dagVertex.getPropertyBean().getValue("Operator");
-						memory = component.getInstanceName();
-					} // Else => Shared memory
-				} else {
-					// The MObject is not associated to a DAGEdge
-					// It is either a FIFO_head/body or working memory
-					// For now these mobjects are put in shared memory
-				}
-
-				HashSet<MemoryExclusionVertex> verticesSet = memExesVerticesSet.get(memory);
-				if (verticesSet == null) {
-					// If the component is not yet in the map, add it
-					verticesSet = new HashSet<MemoryExclusionVertex>();
-					memExesVerticesSet.put(memory, verticesSet);
-				}
-
-				// Add the memEx Vertex to the set of vertex of the
-				// component
-				verticesSet.add(memExVertex);
-			}
-		}
-
-		// PE_Specific_only
-		if (valuePolicy.equals(AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY)) {
-			// scan the vertices of the input MemEx
-			for (MemoryExclusionVertex memExVertex : memEx.vertexSet()) {
-
-				// For source then sink of DAG edge corresponding to the memex
-				// vertex
-				for (int i = 0; i < 2; i++) {
-					// Retrieve the component on which the DAG Vertex is mapped
-					ComponentInstance component;
-					DAGEdge edge = memExVertex.getEdge();
-					if (edge == null) {
-						throw new RuntimeException("Feedback fifos not yet supported wit this policy.");
-					}
-					DAGVertex dagVertex = (i == 0) ? edge.getSource() : edge.getTarget();
-
-					component = (ComponentInstance) dagVertex.getPropertyBean().getValue("Operator");
-
-					HashSet<MemoryExclusionVertex> verticesSet = memExesVerticesSet.get(component.getInstanceName());
-					if (verticesSet == null) {
-						// If the component is not yet in the map, add it
-						verticesSet = new HashSet<MemoryExclusionVertex>();
-						memExesVerticesSet.put(component.getInstanceName(), verticesSet);
-					}
-
-					// Add the memEx Vertex to the set of vertex of the
-					// component
-					verticesSet.add(memExVertex);
-				}
-			}
-		}
-
-		// Create Memory Specific MemEx using their verticesSet
-		for (String memory : memExesVerticesSet.keySet()) {
-			// Clone the input exclusion graph
-			MemoryExclusionGraph copiedMemEx = (MemoryExclusionGraph) memEx.clone();
-			// Obtain the list of vertices to remove from it
-			Set<MemoryExclusionVertex> verticesToRemove = new HashSet<MemoryExclusionVertex>(copiedMemEx.vertexSet());
-			verticesToRemove.removeAll(memExesVerticesSet.get(memory));
-			// Remove them
-			copiedMemEx.removeAllVertices(verticesToRemove);
-			// Save the MemEx
-			memExes.put(memory, copiedMemEx);
-		}
-		return memExes;
-	}
 
 	@Override
 	public Map<String, String> getDefaultParameters() {
