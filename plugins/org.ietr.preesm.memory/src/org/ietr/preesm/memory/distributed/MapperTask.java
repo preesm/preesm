@@ -61,7 +61,7 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
  * @author kdesnos
  * 
  */
-public class Mapper extends AbstractTaskImplementation {
+public class MapperTask extends AbstractTaskImplementation {
 
 	static final public String PARAM_VERBOSE = "Verbose";
 	static final public String VALUE_VERBOSE_DEFAULT = "? C {True, False}";

@@ -58,6 +58,9 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 
 		// Prepare the MEG with the alignment
 		MemoryAllocator.alignSubBuffers(memEx, alignment);
+		
+		// Create several MEGs according to the selected distribution policy
+		// Each created MEG corresponds to a single memory bank
 
 		createAllocators(memEx);
 
@@ -79,6 +82,13 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 		Map<String, Object> output = new HashMap<String, Object>();
 		output.put("MemEx", memEx);
 		return output;
+	}
+	
+	@Override
+	public Map<String, String> getDefaultParameters() {
+		// This useless method must be copied here because inheritance link
+		// does not work when getting the parameter lists.
+		return super.getDefaultParameters();
 	}
 
 	@Override

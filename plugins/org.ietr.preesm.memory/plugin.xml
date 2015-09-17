@@ -124,9 +124,9 @@
          </outputs>
       </task>
       <task
-            id="org.ietr.preesm.memory.distributed.Mapper"
+            id="org.ietr.preesm.memory.distributed.MapperTask"
             name="Memory Exclusion Graph Mapper"
-            type="org.ietr.preesm.memory.distributed.Mapper">
+            type="org.ietr.preesm.memory.distributed.MapperTask">
          <inputs>
             <input
                   id="MemEx"

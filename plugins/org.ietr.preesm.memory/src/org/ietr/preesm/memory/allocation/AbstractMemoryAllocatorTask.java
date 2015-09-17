@@ -95,6 +95,7 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
 	protected String valueAllocators;
 	protected String valueXFitOrder;
 	protected String valueNbShuffle;
+	protected String valueDistribution;
 	protected boolean verbose;
 	protected String valueAlignment;
 	protected int alignment;
@@ -102,12 +103,24 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
 	protected List<Order> ordering;
 	protected List<MemoryAllocator> allocators;
 
+	/**
+	 * This method retrieves the value of task parameters from the workflow and
+	 * stores them in local protected attributes. Some parameter {@link String}
+	 * are also interpreted by this method (eg. {@link #verbose},
+	 * {@link #allocators}).
+	 * 
+	 * @param parameters
+	 *            the parameter {@link Map} given to the
+	 *            {@link #execute(Map, Map, org.eclipse.core.runtime.IProgressMonitor, String, org.ietr.dftools.workflow.elements.Workflow)
+	 *            execute()} method.
+	 */
 	protected void init(Map<String, String> parameters) {
 		// Retrieve parameters from workflow
 		valueVerbose = parameters.get(PARAM_VERBOSE);
 		valueAllocators = parameters.get(PARAM_ALLOCATORS);
 		valueXFitOrder = parameters.get(PARAM_XFIT_ORDER);
 		valueNbShuffle = parameters.get(PARAM_NB_SHUFFLE);
+		valueDistribution = parameters.get(PARAM_DISTRIBUTION_POLICY);
 
 		verbose = valueVerbose.equals(VALUE_TRUE);
 
@@ -154,6 +167,15 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
 
 	}
 
+	/**
+	 * Based on allocators specified in the task parameters, and stored in the
+	 * {@link #allocators} attribute, this method instantiate the
+	 * {@link MemoryAllocator} that are to be executed on the given
+	 * {@link MemoryExclusionGraph MEG}.
+	 * 
+	 * @param memEx
+	 *            the {@link MemoryExclusionGraph MEG} to allocate.
+	 */
 	protected void createAllocators(MemoryExclusionGraph memEx) {
 		// Create all allocators
 		allocators = new ArrayList<MemoryAllocator>();
@@ -241,7 +263,7 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
 
 		logger.log(Level.INFO, log);
 	}
-	
+
 	@Override
 	public Map<String, String> getDefaultParameters() {
 		Map<String, String> parameters = new HashMap<String, String>();

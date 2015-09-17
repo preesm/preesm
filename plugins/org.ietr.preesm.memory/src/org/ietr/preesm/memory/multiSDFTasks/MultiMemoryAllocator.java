@@ -89,6 +89,14 @@ public class MultiMemoryAllocator extends AbstractMemoryAllocatorTask {
 		output.put(KEY_DAG_AND_MEM_EX_MAP, dagsAndMemExs);
 		return output;
 	}
+	
+	@Override
+	public Map<String, String> getDefaultParameters() {
+		// This useless method must be copied here because inheritance link
+		// does not work when getting the parameter lists.
+		return super.getDefaultParameters();
+	}
+
 
 	@Override
 	public String monitorMessage() {
