@@ -130,6 +130,15 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	public static final String HOST_SIZE = "host_size";
 
 	/**
+	 * Property associated to {@link MemoryExclusionVertex} that are divided as
+	 * a result of the application of memory scripts. The object associated to
+	 * this property is a {@link List} of {@link MemoryExclusionVertex} that
+	 * corresponds to the {@link MemoryExclusionVertex} in which the parts of
+	 * the divided {@link MemoryExclusionVertex} will be merged.
+	 */
+	public static final String DIVIDED_PARTS_HOSTS = "divided_parts_hosts";
+
+	/**
 	 * Default value put in the {@link #memoryBanks} in
 	 * {@link MemoryExclusionVertex} constructors.
 	 */

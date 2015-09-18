@@ -252,7 +252,8 @@ class Range {
 	 * 	The {@link List} of {@link Range} to update.
 	 * 
 	 * @param newRange
-	 *   The new {@link Range} to add.
+	 *   The new {@link Range} to add. <b> BEWARE: This range may be modified
+	 * 	 during the call to this method.</b>
 	 * 
 	 * @return the updated newRange {@link Range}. 
 	 */

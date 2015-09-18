@@ -1791,12 +1791,35 @@ class ScriptRunner {
 					val remoteRange = entry.value.value.intersection(translatedLocalRange)
 					if (remoteRange != translatedLocalRange) {
 
-						// Should always be the case
+						// Should never be the case
 						throw new RuntimeException("Unexpected error !")
 					}
 					mObjRoots.add(rootMObj -> (localRange -> remoteRange))
 				]
-
+				
+				// If the mObj is a divided buffer
+				if(rootBuffers.size > 1) {
+					// Identify and all source and destination buffers in which
+					// parts of the divided buffer are merged and store this 
+					// information in the mObject properties.
+					// => This information will be used when allocating a 
+					// mObject in distributed memory to make sure that the 
+					// divided buffer remains accessible everywhere it is 
+					// needed, and otherwise forbid its division.
+					val sourceAndDestBuffers = new ArrayList<Buffer>
+					
+					// buffers in which the divided buffer is mapped
+					sourceAndDestBuffers += rootBuffers.values.map[it.key].toSet
+					// buffers mapped in the divided buffer
+					sourceAndDestBuffers += buffers.filter[it.appliedMatches.values.map[it.key].exists[it == buffer]]
+					
+					// Find corresponding mObjects
+					var srcAndDestMObj = sourceAndDestBuffers.map[bufferAndMObjectMap.get(it)]
+					
+					// Save this list in the attributes of the divided buffer
+					mObj.setPropertyValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS,srcAndDestMObj)			
+				}
+				
 				// Sort mObjRoots in order of contiguous ranges
 				mObjRoots.sortInplaceBy[it.value.key.start]
 			}
