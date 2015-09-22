@@ -35,6 +35,9 @@
  ******************************************************************************/
 package org.ietr.preesm.pimm.algorithm.checker;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
@@ -47,13 +50,15 @@ import org.ietr.preesm.pimm.algorithm.checker.structure.RefinementChecker;
  * messages from their result.
  * 
  * @author cguy
+ * @author kdesnos
  * 
  */
 public class PiMMAlgorithmChecker {
 
-	private StringBuffer okMsg;
-	private StringBuffer errorMsg;
-	private StringBuffer warningMsg;
+	private PiGraph graph;
+	private List<String> errorMsgs;
+	private List<String> warningMsgs;
+
 	private boolean errors;
 	private boolean warnings;
 
@@ -65,15 +70,10 @@ public class PiMMAlgorithmChecker {
 	 * @return true if no problem have been detected in graph, false otherwise
 	 */
 	public boolean checkGraph(PiGraph graph) {
-		okMsg = new StringBuffer();
-		errorMsg = new StringBuffer();
-		warningMsg = new StringBuffer();
-		okMsg.append("Validation of graph " + graph.getName()
-				+ " did not detect any problems.");
-		errorMsg.append("Validation of graph " + graph.getName()
-				+ " raised the following errors:\n");
-		warningMsg.append("Validation of graph " + graph.getName()
-				+ " raised the following warnings:\n");
+		this.graph = graph;
+		errorMsgs = new ArrayList<String>();
+		warningMsgs = new ArrayList<String>();
+
 		errors = false;
 		warnings = false;
 
@@ -87,42 +87,30 @@ public class PiMMAlgorithmChecker {
 		FifoChecker fifoChecker = new FifoChecker();
 		if (!fifoChecker.checkFifos(graph)) {
 			errors = !fifoChecker.getFifoWithOneZeroRate().isEmpty();
-			warnings = !fifoChecker.getFifoWithVoidType().isEmpty()
-					|| !fifoChecker.getFifoWithZeroRates().isEmpty();
+			warnings = !fifoChecker.getFifoWithVoidType().isEmpty() || !fifoChecker.getFifoWithZeroRates().isEmpty();
 			for (Fifo f : fifoChecker.getFifoWithOneZeroRate()) {
-				String srcActorPath = ((AbstractActor) f.getSourcePort()
-						.eContainer()).getPath();
-				String tgtActorPath = ((AbstractActor) f.getTargetPort()
-						.eContainer()).getPath();
-				errorMsg.append("-Fifo between actors "
-						+ srcActorPath
-						+ " and "
-						+ tgtActorPath
+				String srcActorPath = ((AbstractActor) f.getSourcePort().eContainer()).getName() + "."
+						+ f.getSourcePort().getName();
+				String tgtActorPath = ((AbstractActor) f.getTargetPort().eContainer()).getName() + "."
+						+ f.getTargetPort().getName();
+				errorMsgs.add("Fifo between actors " + srcActorPath + " and " + tgtActorPath
 						+ " has invalid rates (one equals 0 but not the other).\n");
 			}
 			for (Fifo f : fifoChecker.getFifoWithVoidType()) {
-				String srcActorPath = ((AbstractActor) f.getSourcePort()
-						.eContainer()).getPath();
-				String tgtActorPath = ((AbstractActor) f.getTargetPort()
-						.eContainer()).getPath();
-				warningMsg
-						.append("-Fifo between actors "
-								+ srcActorPath
-								+ " and "
-								+ tgtActorPath
-								+ " has type \"void\" (this is not supported by code generation).\n");
+				String srcActorPath = ((AbstractActor) f.getSourcePort().eContainer()).getName() + "."
+						+ f.getSourcePort().getName();
+				String tgtActorPath = ((AbstractActor) f.getTargetPort().eContainer()).getName() + "."
+						+ f.getTargetPort().getName();
+				warningMsgs.add("Fifo between actors " + srcActorPath + " and " + tgtActorPath
+						+ " has type \"void\" (this is not supported by code generation).\n");
 			}
 			for (Fifo f : fifoChecker.getFifoWithZeroRates()) {
-				String srcActorPath = ((AbstractActor) f.getSourcePort()
-						.eContainer()).getPath();
-				String tgtActorPath = ((AbstractActor) f.getTargetPort()
-						.eContainer()).getPath();
-				warningMsg
-						.append("-Fifo between actors "
-								+ srcActorPath
-								+ " and "
-								+ tgtActorPath
-								+ " has rates equal to 0 (you may have forgotten to set them).\n");
+				String srcActorPath = ((AbstractActor) f.getSourcePort().eContainer()).getName() + "."
+						+ f.getSourcePort().getName();
+				String tgtActorPath = ((AbstractActor) f.getTargetPort().eContainer()).getName() + "."
+						+ f.getTargetPort().getName();
+				warningMsgs.add("Fifo between actors " + srcActorPath + " and " + tgtActorPath
+						+ " has rates equal to 0 (you may have forgotten to set them).\n");
 			}
 		}
 	}
@@ -132,32 +120,53 @@ public class PiMMAlgorithmChecker {
 		if (!refinementChecker.checkRefinements(graph)) {
 			errors = true;
 			for (Actor a : refinementChecker.getActorsWithoutRefinement()) {
-				errorMsg.append("-Actor " + a.getPath()
-						+ " does not have a refinement.\n");
+				errorMsgs.add("Actor " + a.getPath() + " does not have a refinement.\n");
 			}
-			for (Actor a : refinementChecker
-					.getActorsWithInvalidExtensionRefinement()) {
-				errorMsg.append("-Refinement "
-						+ a.getRefinement().getFilePath() + " of Actor "
-						+ a.getPath()
+			for (Actor a : refinementChecker.getActorsWithInvalidExtensionRefinement()) {
+				errorMsgs.add("Refinement " + a.getRefinement().getFilePath() + " of Actor " + a.getPath()
 						+ " does not have a valid extension (.h or .idl).\n");
 			}
-			for (Actor a : refinementChecker
-					.getActorsWithNonExistingRefinement()) {
-				errorMsg.append("-Refinement  "
-						+ a.getRefinement().getFilePath() + " of Actor "
-						+ a.getPath()
+			for (Actor a : refinementChecker.getActorsWithNonExistingRefinement()) {
+				errorMsgs.add("Refinement  " + a.getRefinement().getFilePath() + " of Actor " + a.getPath()
 						+ " does not reference an existing file.\n");
 			}
 		}
 	}
 
-	public StringBuffer getErrorMsg() {
-		return errorMsg;
+	public String getErrorMsg() {
+		String result = "Validation of graph " + graph.getName() + " raised the following errors:\n";
+		for (String msg : errorMsgs) {
+			result += "- " + msg;
+		}
+		return result;
 	}
 
-	public StringBuffer getWarningMsg() {
-		return warningMsg;
+	/**
+	 * @return the errorMsgs
+	 */
+	public List<String> getErrorMsgs() {
+		return errorMsgs;
+	}
+
+	public String getOkMsg() {
+		String result = "Validation of graph " + graph.getName() + " raised no error or warning:\n";
+
+		return result;
+	}
+
+	public String getWarningMsg() {
+		String result = "Validation of graph " + graph.getName() + " raised the following warnings:\n";
+		for (String msg : warningMsgs) {
+			result += "- " + msg;
+		}
+		return result;
+	}
+
+	/**
+	 * @return the warningMsgs
+	 */
+	public List<String> getWarningMsgs() {
+		return warningMsgs;
 	}
 
 	public boolean isErrors() {
@@ -168,7 +177,4 @@ public class PiMMAlgorithmChecker {
 		return warnings;
 	}
 
-	public StringBuffer getOkMsg() {
-		return okMsg;
-	}
 }

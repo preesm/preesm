@@ -24,7 +24,8 @@ Require-Bundle: org.ietr.dftools.graphiti.ui,
  org.eclipse.ltk.core.refactoring,
  org.eclipse.text,
  org.ietr.preesm.utils,
- org.ietr.preesm.pimm.algorithm
+ org.ietr.preesm.pimm.algorithm,
+ org.eclipse.emf.edit.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
