@@ -39,10 +39,17 @@ package org.ietr.preesm.memory.distributed
 import java.util.HashMap
 import java.util.HashSet
 import java.util.Map
+import java.util.Set
+import org.ietr.dftools.algorithm.model.dag.DAGEdge
 import org.ietr.dftools.architecture.slam.ComponentInstance
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex
+
+import static extension org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask.*
+import java.util.List
+import org.ietr.preesm.memory.script.Range
+import java.util.ArrayList
 
 /**
  * This class contains all the code responsible for splitting a {@link 
@@ -85,27 +92,32 @@ class Distributor {
 	 * 		<li>if an unknown distribution policy is selected.</li>
 	 * 		</ul>
 	 */
-	static def Map<String, MemoryExclusionGraph> distributeMeg(String valuePolicy,
-		MemoryExclusionGraph memEx) throws RuntimeException {
+	static def Map<String, MemoryExclusionGraph> distributeMeg(String valuePolicy, MemoryExclusionGraph memEx) throws RuntimeException {
 		var Map<String, MemoryExclusionGraph> memExes
 		memExes = new HashMap<String, MemoryExclusionGraph>
+
+		// Split merged buffers if a distributed policy
+		// is used
+		if(valuePolicy == VALUE_DISTRIBUTION_MIXED || valuePolicy == VALUE_DISTRIBUTION_DISTRIBUTED_ONLY) {
+			splitMergedBuffers(valuePolicy, memEx)
+		}
 
 		// Generate output
 		// Each entry of this map associate a memory to the set
 		// of vertices of its MemEx. This map will be differently
 		// depending on the policy chosen.
 		var memExesVerticesSet = switch valuePolicy {
-			case AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED:
+			case VALUE_DISTRIBUTION_MIXED:
 				distributeMegMixed(memEx)
-			case AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY:
+			case VALUE_DISTRIBUTION_DISTRIBUTED_ONLY:
 				distributeMegDistributedOnly(memEx)
-			case AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY,
-			case AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT:
+			case VALUE_DISTRIBUTION_SHARED_ONLY,
+			case VALUE_DISTRIBUTION_DEFAULT:
 				distributeMegSharedOnly(memEx)
 			default:
 				throw new RuntimeException(
-					"Unexpected distribution policy: " + valuePolicy + ".\n Allowed values are " +
-						AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT)
+					"Unexpected distribution policy: " + valuePolicy + ".\n Allowed values are " + VALUE_DISTRIBUTION_DEFAULT
+				)
 		}
 
 		// Create Memory Specific MemEx using their verticesSet
@@ -121,6 +133,78 @@ class Distributor {
 			memExes.put(memory, copiedMemEx)
 		}
 		return memExes
+	}
+
+	/**
+	 * Finds the {@link MemoryExclusionVertex} in the given {@link 
+	 * MemoryExclusionGraph} that result from a merge operation of the memory 
+	 * scripts, and split them into several memory objects according to the 
+	 * selected distribution policy (see {@link AbstractMemoryAllocatorTask} 
+	 * parameters).<br>
+	 * <b>This method modifies the {@link MemoryExclusionGraph} passed as a 
+	 * parameter.</b>
+	 * @param policy 
+	 * 			{@link String} of the distribution policy selected (see {@link 
+	 * 			AbstractMemoryAllocatorTask} parameters).
+	 * @param meg
+	 * 			{@link MemoryExclusionGraph} whose {@link 
+	 * 			MemoryExclusionVertex} are processed. This graph will be 
+	 * 			modified by the method.
+	 * 			
+	 */
+	protected def static splitMergedBuffers(String policy, MemoryExclusionGraph meg) {
+		// Get the list of host Mobjects
+		var hosts = meg.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>
+
+		// Exit method if no host Mobjects can be found in this MEG
+		if(hosts == null || hosts.empty) {
+			return
+		}
+
+		// Iterate over the Host MObjects of the MEG 
+		for (entry : hosts.entrySet) {
+			// Create a group of MObject for each memory similarly to what is done 
+			// in distributeMeg method.		
+			// Map storing the groups of Mobjs
+			val mobjByBank = new HashMap<String, Set<MemoryExclusionVertex>>
+
+			// Iteration List including the host Mobj
+			for (mobj : #[entry.key] + entry.value) {
+				switch (policy) {
+					case VALUE_DISTRIBUTION_MIXED:
+						findMObjBankMixed(mobj, mobjByBank)
+					case VALUE_DISTRIBUTION_DISTRIBUTED_ONLY:
+						findMObjBankDistributedOnly(mobj, mobjByBank)
+					default:
+						throw new RuntimeException(policy + " is not a valid distribution policy to split a MEG." + " Contact Preesm developers.")
+				}
+			}
+
+			// For each bank, create as many hosts as the number of
+			// non-contiguous ranges formed by the memory objects falling
+			// into this memory bank.
+			for (bankEntry : mobjByBank.entrySet) {
+				// Iterate over Mobjects to build the range(s) of this memory 
+				// bank (all ranges are relative to the host mObj)
+				var List<Range> rangesInBank = new ArrayList
+				for (mobj : bankEntry.value) {
+					val rangesInHost = mobj.getPropertyBean.getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
+					// Process non-divided buffers 
+					if(rangesInHost.size == 1) {
+						// add the range covered by this buffer to the
+						// rangesInBank (use a clone because the range will be 
+						// modified during call to the union method
+						Range.union(rangesInBank,rangesInHost.get(0).value.value.clone as Range); 
+					} else {
+						// Divided buffers:
+						throw new RuntimeException("LA : Identifier les sourc et DST > cf mkdown")
+					}
+				}
+				
+				
+				println(bankEntry+"-->"+rangesInBank)
+			}
+		}
 	}
 
 	/**
@@ -158,39 +242,56 @@ class Distributor {
 	 * 		   associated {@link HashSet subsets} of {@link MemoryExclusionVertex}. 
 	 */
 	protected def static distributeMegDistributedOnly(MemoryExclusionGraph memEx) {
-		val memExesVerticesSet = new HashMap<String, HashSet<MemoryExclusionVertex>>
+		val memExesVerticesSet = new HashMap<String, Set<MemoryExclusionVertex>>
 		for (MemoryExclusionVertex memExVertex : memEx.vertexSet) {
 
 			// For source then sink of DAG edge corresponding to the memex
 			// vertex
-			for (var i = 0; i < 2; i++) {
-				// Retrieve the component on which the DAG Vertex is mapped
-				var ComponentInstance component
-				var edge = memExVertex.edge
-				if (edge == null) {
-					throw new RuntimeException("Feedback fifos not yet supported wit this policy.")
-				}
-				var dagVertex = if (i == 0) {
-						edge.source
-					} else {
-						edge.target
-					}
-
-				component = dagVertex.propertyBean.getValue("Operator") as ComponentInstance
-
-				var verticesSet = memExesVerticesSet.get(component.instanceName)
-				if (verticesSet == null) {
-					// If the component is not yet in the map, add it
-					verticesSet = new HashSet<MemoryExclusionVertex>
-					memExesVerticesSet.put(component.instanceName, verticesSet)
-				}
-
-				// Add the memEx Vertex to the set of vertex of the
-				// component
-				verticesSet.add(memExVertex)
-			}
+			findMObjBankDistributedOnly(memExVertex, memExesVerticesSet)
 		}
 		return memExesVerticesSet
+	}
+
+	/**
+	 * The purpose of this method is to find the bank associated to a given 
+	 * {@link MemoryExclusionVertex} according to the DISTRIBUTED_ONLY 
+	 * distribution policy. The mObj is put in the {@link Map} passed as a 
+	 * parameter where keys are the names of the memory banks and values are 
+	 * the {@link Set} of associated {@link MemoryExclusionVertex}.
+	 * 
+	 * @param mObj
+	 * 			The {@link MemoryExclusionVertex} whose memory banks are 
+	 * 			identified.
+	 * @param mObjByBank
+	 * 			The {@link Map} in which results of this method are put.
+	 */
+	protected def static findMObjBankDistributedOnly(MemoryExclusionVertex mObj, Map<String, Set<MemoryExclusionVertex>> mObjByBank) {
+		for (var i = 0; i < 2; i++) {
+			// Retrieve the component on which the DAG Vertex is mapped
+			var ComponentInstance component
+			var edge = mObj.edge
+			if(edge == null) {
+				throw new RuntimeException("Feedback fifos not yet supported wit this policy.")
+			}
+			var dagVertex = if(i == 0) {
+					edge.source
+				} else {
+					edge.target
+				}
+
+			component = dagVertex.propertyBean.getValue("Operator") as ComponentInstance
+
+			var verticesSet = mObjByBank.get(component.instanceName)
+			if(verticesSet == null) {
+				// If the component is not yet in the map, add it
+				verticesSet = new HashSet<MemoryExclusionVertex>
+				mObjByBank.put(component.instanceName, verticesSet)
+			}
+
+			// Add the memEx Vertex to the set of vertex of the
+			// component
+			verticesSet.add(mObj)
+		}
 	}
 
 	/**
@@ -210,38 +311,54 @@ class Distributor {
 	 * 		   associated {@link HashSet subsets} of {@link MemoryExclusionVertex}. 
 	 */
 	protected def static distributeMegMixed(MemoryExclusionGraph memEx) {
-		val memExesVerticesSet = new HashMap<String, HashSet<MemoryExclusionVertex>>
+		val memExesVerticesSet = new HashMap<String, Set<MemoryExclusionVertex>>
 		for (MemoryExclusionVertex memExVertex : memEx.vertexSet) {
-			var memory = "Shared"
-
-			// If dag edge source and target are mapped to the same
-			// component
-			if (memExVertex.edge != null) {
-				// If source and target are mapped to te same core
-				if (memExVertex.edge.source.propertyBean.getValue("Operator") ==
-					memExVertex.edge.target.propertyBean.getValue("Operator")) {
-					var ComponentInstance component
-					var dagVertex = memExVertex.edge.source
-					component = dagVertex.propertyBean.getValue("Operator") as ComponentInstance
-					memory = component.instanceName
-				} // Else => Shared memory
-			} else {
-				// The MObject is not associated to a DAGEdge
-				// It is either a FIFO_head/body or working memory
-				// For now these mobjects are put in shared memory
-			}
-
-			var HashSet<MemoryExclusionVertex> verticesSet = memExesVerticesSet.get(memory)
-			if (verticesSet == null) {
-				// If the component is not yet in the map, add it
-				verticesSet = new HashSet<MemoryExclusionVertex>
-				memExesVerticesSet.put(memory, verticesSet)
-			}
-
-			// Add the memEx Vertex to the set of vertex of the
-			// component
-			verticesSet.add(memExVertex)
+			Distributor.findMObjBankMixed(memExVertex, memExesVerticesSet)
 		}
 		return memExesVerticesSet
+	}
+
+	/**
+	 * The purpose of this method is to find the bank associated to a given 
+	 * {@link MemoryExclusionVertex} according to the MIXED distribution 
+	 * policy. The mObj is put in the {@link Map} passed as a parameter where
+	 * keys are the names of the memory banks and values are the {@link Set} 
+	 * of associated {@link MemoryExclusionVertex}.
+	 * 
+	 * @param mObj
+	 * 			The {@link MemoryExclusionVertex} whose memory banks are 
+	 * 			identified.
+	 * @param mObjByBank
+	 * 			The {@link Map} in which results of this method are put.
+	 */
+	protected def static findMObjBankMixed(MemoryExclusionVertex mObj, Map<String, Set<MemoryExclusionVertex>> mObjByBank) {
+		var memory = "Shared"
+
+		// If dag edge source and target are mapped to the same
+		// component
+		if(mObj.edge != null) {
+			// If source and target are mapped to te same core
+			if(mObj.edge.source.propertyBean.getValue("Operator") == mObj.edge.target.propertyBean.getValue("Operator")) {
+				var ComponentInstance component
+				var dagVertex = mObj.edge.source
+				component = dagVertex.propertyBean.getValue("Operator") as ComponentInstance
+				memory = component.instanceName
+			} // Else => Shared memory
+		} else {
+			// The MObject is not associated to a DAGEdge
+			// It is either a FIFO_head/body or working memory
+			// For now these mobjects are put in shared memory
+		}
+
+		var verticesSet = mObjByBank.get(memory)
+		if(verticesSet == null) {
+			// If the component is not yet in the map, add it
+			verticesSet = new HashSet<MemoryExclusionVertex>
+			mObjByBank.put(memory, verticesSet)
+		}
+
+		// Add the memEx Vertex to the set of vertex of the
+		// component
+		verticesSet.add(mObj)
 	}
 }
