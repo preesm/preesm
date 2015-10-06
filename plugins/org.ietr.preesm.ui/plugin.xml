@@ -28,6 +28,14 @@
             id="org.ietr.preesm.experiment.ui.pimm.editor"
             name="PiMM Editor">
       </editor>
+      <editor
+            class="org.ietr.preesm.ui.pimm.diagram.PiMMDiagramEditor"
+            default="false"
+            extensions="diagram"
+            icon="icons/pi.gif"
+            id="org.ietr.preesm.ui.pimm.editor.diagram"
+            name="PiMM Diagram Editor">
+      </editor>
    </extension>
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
