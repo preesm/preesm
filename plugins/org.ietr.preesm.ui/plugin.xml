@@ -30,6 +30,7 @@
       </editor>
       <editor
             class="org.ietr.preesm.ui.pimm.diagram.PiMMDiagramEditor"
+            contributorClass="org.eclipse.graphiti.ui.editor.DiagramEditorActionBarContributor"
             default="true"
             extensions="diagram"
             icon="icons/pi.gif"
