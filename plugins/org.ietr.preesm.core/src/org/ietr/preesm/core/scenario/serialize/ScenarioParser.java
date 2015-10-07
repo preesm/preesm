@@ -116,8 +116,7 @@ public class ScenarioParser {
 	/**
 	 * Retrieves the DOM document
 	 */
-	public PreesmScenario parseXmlFile(IFile file)
-			throws InvalidModelException, FileNotFoundException, CoreException {
+	public PreesmScenario parseXmlFile(IFile file) throws InvalidModelException, FileNotFoundException, CoreException {
 		// get the factory
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -237,16 +236,13 @@ public class ScenarioParser {
 
 		switch (type) {
 		case "INDEPENDENT":
-		case "STATIC": // Retro-compatibility		
-			scenario.getParameterValueManager().addIndependentParameterValue(
-					currentParameter, stringValue, parent);
+		case "STATIC": // Retro-compatibility
+			scenario.getParameterValueManager().addIndependentParameterValue(currentParameter, stringValue, parent);
 			break;
 		case "ACTOR_DEPENDENT":
 		case "DYNAMIC": // Retro-compatibility
-			if (stringValue.charAt(0) == '['
-					&& stringValue.charAt(stringValue.length() - 1) == ']') {
-				stringValue = stringValue
-						.substring(1, stringValue.length() - 1);
+			if (stringValue.charAt(0) == '[' && stringValue.charAt(stringValue.length() - 1) == ']') {
+				stringValue = stringValue.substring(1, stringValue.length() - 1);
 				String[] values = stringValue.split(",");
 
 				Set<Integer> newValues = new HashSet<Integer>();
@@ -258,9 +254,8 @@ public class ScenarioParser {
 				} catch (NumberFormatException e) {
 					// TODO: Do smthg?
 				}
-				scenario.getParameterValueManager()
-						.addActorDependentParameterValue(currentParameter, newValues,
-								parent);
+				scenario.getParameterValueManager().addActorDependentParameterValue(currentParameter, newValues,
+						parent);
 			}
 			break;
 		case "PARAMETER_DEPENDENT":
@@ -272,13 +267,11 @@ public class ScenarioParser {
 					inputParameters.add(input.getName());
 				}
 			}
-			scenario.getParameterValueManager()
-					.addParameterDependentParameterValue(currentParameter, stringValue,
-							inputParameters, parent);
+			scenario.getParameterValueManager().addParameterDependentParameterValue(currentParameter, stringValue,
+					inputParameters, parent);
 			break;
 		default:
-			throw new RuntimeException("Unknown Parameter type: " + type
-					+ " for Parameter: " + name);
+			throw new RuntimeException("Unknown Parameter type: " + type + " for Parameter: " + name);
 		}
 
 		return currentParameter;
@@ -326,8 +319,7 @@ public class ScenarioParser {
 					group = -1;
 				}
 
-				scenario.getRelativeconstraintManager().addConstraint(
-						vertexpath, group);
+				scenario.getRelativeconstraintManager().addConstraint(vertexpath, group);
 			}
 
 		}
@@ -375,15 +367,13 @@ public class ScenarioParser {
 				String content = elt.getTextContent();
 				switch (type) {
 				case "mainCore":
-					scenario.getSimulationManager()
-							.setMainOperatorName(content);
+					scenario.getSimulationManager().setMainOperatorName(content);
 					break;
 				case "mainComNode":
 					scenario.getSimulationManager().setMainComNodeName(content);
 					break;
 				case "averageDataSize":
-					scenario.getSimulationManager().setAverageDataSize(
-							Long.valueOf(content));
+					scenario.getSimulationManager().setAverageDataSize(Long.valueOf(content));
 					break;
 				case "dataTypes":
 					parseDataTypes(elt);
@@ -392,8 +382,7 @@ public class ScenarioParser {
 					parseSpecialVertexOperators(elt);
 					break;
 				case "numberOfTopExecutions":
-					scenario.getSimulationManager().setNumberOfTopExecutions(
-							Integer.parseInt(content));
+					scenario.getSimulationManager().setNumberOfTopExecutions(Integer.parseInt(content));
 					break;
 				}
 			}
@@ -419,8 +408,7 @@ public class ScenarioParser {
 					String size = elt.getAttribute("size");
 
 					if (!name.isEmpty() && !size.isEmpty()) {
-						DataType dataType = new DataType(name,
-								Integer.parseInt(size));
+						DataType dataType = new DataType(name, Integer.parseInt(size));
 						scenario.getSimulationManager().putDataType(dataType);
 					}
 				}
@@ -446,8 +434,7 @@ public class ScenarioParser {
 					String path = elt.getAttribute("path");
 
 					if (path != null) {
-						scenario.getSimulationManager()
-								.addSpecialVertexOperatorId(path);
+						scenario.getSimulationManager().addSpecialVertexOperatorId(path);
 					}
 				}
 			}
@@ -459,12 +446,10 @@ public class ScenarioParser {
 		 * It is not possible to remove all operators from special vertex
 		 * executors: if no operator is selected, all of them are!!
 		 */
-		if (scenario.getSimulationManager().getSpecialVertexOperatorIds()
-				.isEmpty()
+		if (scenario.getSimulationManager().getSpecialVertexOperatorIds().isEmpty()
 				&& scenario.getOperatorIds() != null) {
 			for (String opId : scenario.getOperatorIds()) {
-				scenario.getSimulationManager()
-						.addSpecialVertexOperatorId(opId);
+				scenario.getSimulationManager().addSpecialVertexOperatorId(opId);
 			}
 		}
 	}
@@ -472,8 +457,7 @@ public class ScenarioParser {
 	/**
 	 * Parses the archi and algo files and retrieves the file contents
 	 */
-	private void parseFileNames(Element filesElt) throws InvalidModelException,
-			FileNotFoundException, CoreException {
+	private void parseFileNames(Element filesElt) throws InvalidModelException, FileNotFoundException, CoreException {
 
 		Node node = filesElt.getFirstChild();
 
@@ -512,16 +496,11 @@ public class ScenarioParser {
 	 */
 	private void initializeArchitectureInformation(String url) {
 		if (url.contains(".design")) {
-			WorkflowLogger
-					.getLogger()
-					.log(Level.SEVERE,
-							"SLAM architecture 1.0 is no more supported. Use .slam architecture files.");
+			WorkflowLogger.getLogger().log(Level.SEVERE,
+					"SLAM architecture 1.0 is no more supported. Use .slam architecture files.");
 		} else if (url.contains(".slam")) {
-			WorkflowLogger.getLogger().log(Level.WARNING,
-					"You are using SLAM architecture 2.0.");
 
-			Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE
-					.getExtensionToFactoryMap();
+			Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
 			Object instance = extToFactoryMap.get("slam");
 			if (instance == null) {
 				instance = new IPXACTResourceFactoryImpl();
@@ -529,8 +508,7 @@ public class ScenarioParser {
 			}
 
 			if (!EPackage.Registry.INSTANCE.containsKey(SlamPackage.eNS_URI)) {
-				EPackage.Registry.INSTANCE.put(SlamPackage.eNS_URI,
-						SlamPackage.eINSTANCE);
+				EPackage.Registry.INSTANCE.put(SlamPackage.eNS_URI, SlamPackage.eINSTANCE);
 			}
 
 			// Extract the root object from the resource.
@@ -538,8 +516,7 @@ public class ScenarioParser {
 
 			scenario.setOperatorIds(DesignTools.getOperatorInstanceIds(design));
 			scenario.setComNodeIds(DesignTools.getComNodeInstanceIds(design));
-			scenario.setOperatorDefinitionIds(DesignTools
-					.getOperatorComponentIds(design));
+			scenario.setOperatorDefinitionIds(DesignTools.getOperatorComponentIds(design));
 		}
 	}
 
@@ -548,31 +525,26 @@ public class ScenarioParser {
 		ResourceSet resourceSet = new ResourceSetImpl();
 
 		Path relativePath = new Path(url);
-		IFile file = ResourcesPlugin.getWorkspace().getRoot()
-				.getFile(relativePath);
+		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
 		String completePath = file.getLocation().toString();
 
 		// resourceSet.
-		Resource resource = resourceSet.getResource(
-				URI.createFileURI(completePath), true);
+		Resource resource = resourceSet.getResource(URI.createFileURI(completePath), true);
 		// Extract the root object from the resource.
 		Design design = (Design) resource.getContents().get(0);
 
 		return design;
 	}
 
-	public static SDFGraph getSDFGraph(String path)
-			throws InvalidModelException, FileNotFoundException {
+	public static SDFGraph getSDFGraph(String path) throws InvalidModelException, FileNotFoundException {
 		SDFGraph algorithm = null;
 		GMLSDFImporter importer = new GMLSDFImporter();
 
 		Path relativePath = new Path(path);
-		IFile file = ResourcesPlugin.getWorkspace().getRoot()
-				.getFile(relativePath);
+		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
 
 		try {
-			algorithm = importer.parse(new File(file.getLocation()
-					.toOSString()));
+			algorithm = importer.parse(new File(file.getLocation().toOSString()));
 
 			addVertexPathProperties(algorithm, "");
 		} catch (InvalidModelException e) {
@@ -592,14 +564,12 @@ public class ScenarioParser {
 	 * @throws InvalidModelException
 	 * @throws CoreException
 	 */
-	public static PiGraph getPiGraph(String url) throws InvalidModelException,
-			CoreException {
+	public static PiGraph getPiGraph(String url) throws InvalidModelException, CoreException {
 		PiGraph pigraph = null;
 		ResourceSet resourceSet = new ResourceSetImpl();
 
 		URI uri = URI.createPlatformResourceURI(url, true);
-		if (uri.fileExtension() == null
-				|| !uri.fileExtension().contentEquals("pi"))
+		if (uri.fileExtension() == null || !uri.fileExtension().contentEquals("pi"))
 			return null;
 		Resource ressource = resourceSet.getResource(uri, true);
 		pigraph = (PiGraph) (ressource.getContents().get(0));
@@ -614,16 +584,14 @@ public class ScenarioParser {
 	 * Adding an information that keeps the path of each vertex relative to the
 	 * hierarchy
 	 */
-	private static void addVertexPathProperties(SDFGraph algorithm,
-			String currentPath) {
+	private static void addVertexPathProperties(SDFGraph algorithm, String currentPath) {
 
 		for (SDFAbstractVertex vertex : algorithm.vertexSet()) {
 			String newPath = currentPath + vertex.getName();
 			vertex.setInfo(newPath);
 			newPath += "/";
 			if (vertex.getGraphDescription() != null) {
-				addVertexPathProperties(
-						(SDFGraph) vertex.getGraphDescription(), newPath);
+				addVertexPathProperties((SDFGraph) vertex.getGraphDescription(), newPath);
 			}
 		}
 	}
@@ -671,8 +639,7 @@ public class ScenarioParser {
 					if (type.equals("task")) {
 						if (getActorFromPath(name) != null)
 							cg.addActorPath(name);
-					} else if (type.equals("operator")
-							&& scenario.getOperatorIds() != null) {
+					} else if (type.equals("operator") && scenario.getOperatorIds() != null) {
 						if (scenario.getOperatorIds().contains(name))
 							cg.addOperatorId(name);
 					}
@@ -742,9 +709,7 @@ public class ScenarioParser {
 				else
 					actorName = vertexpath;
 
-				if (actorName != null
-						&& scenario.getOperatorDefinitionIds().contains(
-								opdefname)) {
+				if (actorName != null && scenario.getOperatorDefinitionIds().contains(opdefname)) {
 					if (isEvaluated) {
 						timing = new Timing(opdefname, actorName, time);
 					} else {
@@ -799,8 +764,7 @@ public class ScenarioParser {
 	 * Retrieves one memcopy speed composed of integer setup time and
 	 * timeperunit
 	 */
-	private void retrieveMemcpySpeed(TimingManager timingManager,
-			Element timingElt) {
+	private void retrieveMemcpySpeed(TimingManager timingManager, Element timingElt) {
 
 		if (algoSDF != null || algoPi != null) {
 
@@ -820,10 +784,8 @@ public class ScenarioParser {
 					timePerUnit = -1;
 				}
 
-				if (scenario.getOperatorDefinitionIds().contains(opdefname)
-						&& setupTime >= 0 && timePerUnit >= 0) {
-					MemCopySpeed speed = new MemCopySpeed(opdefname, setupTime,
-							timePerUnit);
+				if (scenario.getOperatorDefinitionIds().contains(opdefname) && setupTime >= 0 && timePerUnit >= 0) {
+					MemCopySpeed speed = new MemCopySpeed(opdefname, setupTime, timePerUnit);
 					timingManager.putMemcpySpeed(speed);
 				}
 			}
