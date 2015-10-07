@@ -35,16 +35,10 @@
  ******************************************************************************/
 package org.ietr.preesm.ui.pimm.diagram;
 
-import org.eclipse.emf.common.util.BasicDiagnostic;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.edit.ui.util.EditUIMarkerHelper;
 import org.eclipse.graphiti.dt.AbstractDiagramTypeProvider;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
-import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.experiment.model.pimm.serialize.PiResourceImpl;
-import org.ietr.preesm.pimm.algorithm.checker.PiMMAlgorithmChecker;
 
 /**
  * The {@link IDiagramTypeProvider} for the PiMM diagram type
@@ -64,43 +58,6 @@ public class PiMMDiagramTypeProvider extends AbstractDiagramTypeProvider {
 	public PiMMDiagramTypeProvider() {
 		super();
 		setFeatureProvider(new PiMMFeatureProvider(this));
-	}
-
-	@Override
-	public void resourcesSaved(Diagram diagram, Resource[] savedResources) {
-
-		// Check for errors before saving
-		PiMMAlgorithmChecker checker = new PiMMAlgorithmChecker();
-
-		// Get the PiGraph resource
-		PiResourceImpl resource = (savedResources[0] instanceof PiResourceImpl) ? (PiResourceImpl) savedResources[0]
-				: null;
-		resource = (resource == null && savedResources.length > 1 && savedResources[1] instanceof PiResourceImpl)
-				? (PiResourceImpl) savedResources[1] : resource;
-		try {
-			if (resource != null && !checker.checkGraph((PiGraph) resource.getContents().get(0))) {
-				EditUIMarkerHelper helper = new EditUIMarkerHelper();
-
-				// Warnings
-				for (String msg : checker.getWarningMsgs()) {
-					BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.WARNING, null, 0,
-							msg, new Object[] { resource });
-					helper.createMarkers(d);
-				}
-
-				// Errors
-				for (String msg : checker.getErrorMsgs()) {
-					BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.ERROR, "ICI", 0, msg,
-							new Object[] { resource });
-					helper.createMarkers(d);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		// TODO Auto-generated method stub
-		super.resourcesSaved(diagram, savedResources);
 	}
 
 	@Override

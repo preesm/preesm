@@ -36,30 +36,206 @@
 
 package org.ietr.preesm.ui.pimm.diagram;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.ui.MarkerHelper;
+import org.eclipse.emf.common.util.BasicDiagnostic;
+import org.eclipse.emf.common.util.Diagnostic;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.util.EContentAdapter;
+import org.eclipse.emf.edit.ui.util.EditUIMarkerHelper;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.ui.editor.DefaultMarkerBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramBehavior;
+import org.eclipse.graphiti.ui.internal.GraphitiUIPlugin;
+import org.eclipse.graphiti.ui.internal.T;
+import org.eclipse.swt.widgets.Display;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
+import org.ietr.preesm.experiment.model.pimm.serialize.PiResourceImpl;
+import org.ietr.preesm.pimm.algorithm.checker.PiMMAlgorithmChecker;
 
 /**
- * Class inheriting from the {@link DefaultMarkerBehavior}. This class was created to
- * define a custom {@link DefaultMarkerBehavior} that does not reset problems
- * related to graphs on startup of the editor.
+ * Class inheriting from the {@link DefaultMarkerBehavior}. This class was
+ * created to define a custom {@link DefaultMarkerBehavior} that does not reset
+ * problems related to graphs on startup of the editor.
  * 
  * @author kdesnos
  *
  */
+@SuppressWarnings("restriction")
 public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
 
+	/**
+	 * Map to store the diagnostic associated with a resource.
+	 */
+	protected Map<Resource, Diagnostic> resourceToDiagnosticMap = new LinkedHashMap<Resource, Diagnostic>();
+	
+
+	/**
+	 * The marker helper instance is responsible for creating workspace resource
+	 * markers presented in Eclipse's Problems View.
+	 */
+	private MarkerHelper markerHelper = new EditUIMarkerHelper();
+
+	/**
+	 * Controls whether the problem indication should be updated.
+	 */
+	protected boolean updateProblemIndication = true;
+
+	/**
+	 * Default constructor
+	 * 
+	 * @param diagramBehavior
+	 */
 	public PiMMMarkerBehavior(DiagramBehavior diagramBehavior) {
 		super(diagramBehavior);
 	}
 
 	@Override
 	public void initialize() {
-		// TODO Auto-generated method stub
+		diagramBehavior.getResourceSet().eAdapters().add(pimmAdapter);
 		super.initialize();
-		disableProblemIndicationUpdate();
+		super.disableProblemIndicationUpdate();
+	}
+
+	@Override
+	public void enableProblemIndicationUpdate() {
+		updateProblemIndication = true;
+		super.enableProblemIndicationUpdate();
+		refreshProblemIndication();
+	}
+
+	@Override
+	public void disableProblemIndicationUpdate() {
+		updateProblemIndication = false;
+		super.disableProblemIndicationUpdate();
+	}
+
+	public Diagnostic checkPiResourceProblems(Resource resource, Exception exception) {
+		// Check for errors before saving
+		PiMMAlgorithmChecker checker = new PiMMAlgorithmChecker();
+
+		// Get the PiGraph resource
+		if (resource instanceof PiResourceImpl) {
+			BasicDiagnostic result = new BasicDiagnostic();
+			try {
+				if (resource != null && !checker.checkGraph((PiGraph) resource.getContents().get(0))) {
+					// Warnings
+					for (String msg : checker.getWarningMsgs()) {
+						BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.WARNING, null, 0,
+								msg, new Object[] { resource });
+						result.add(d);
+					}
+
+					// Errors
+					for (String msg : checker.getErrorMsgs()) {
+						BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.ERROR, "122", 0,
+								msg, new Object[] { resource });
+						result.add(d);
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return result;
+		}
+
+		return Diagnostic.OK_INSTANCE;
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		resourceToDiagnosticMap.clear();
+		resourceToDiagnosticMap = null;
 	}
 	
-	
+	/**
+	 * Updates the problems indication markers in the editor. The default
+	 * implementation used an EMF {@link BasicDiagnostic} to do the checks and
+	 * {@link EditUIMarkerHelper} to check and set markers for {@link EObject}s.
+	 * 
+	 * Method copied from {@link DefaultMarkerBehavior} (because it is a private method)
+	 */
+	void refreshProblemIndication() {
+		if (diagramBehavior == null) {
+			// Already disposed
+			return;
+		}
+		TransactionalEditingDomain editingDomain = diagramBehavior.getEditingDomain();
+		if (updateProblemIndication && editingDomain != null) {
+			ResourceSet resourceSet = editingDomain.getResourceSet();
+			final BasicDiagnostic diagnostic = new BasicDiagnostic(Diagnostic.OK, GraphitiUIPlugin.PLUGIN_ID, 0, null,
+					new Object[] { resourceSet });
+			for (final Diagnostic childDiagnostic : resourceToDiagnosticMap.values()) {
+				if (childDiagnostic.getSeverity() != Diagnostic.OK) {
+					diagnostic.add(childDiagnostic);
+				}
+			}
+			if (markerHelper.hasMarkers(resourceSet)) {
+				markerHelper.deleteMarkers(resourceSet);
+			}
+			if (diagnostic.getSeverity() != Diagnostic.OK) {
+				try {
+					markerHelper.createMarkers(diagnostic);
+					T.racer().info(diagnostic.toString());
+				} catch (final CoreException exception) {
+					T.racer().error(exception.getMessage(), exception);
+				}
+			}
+		}
+	}
 
+	/**
+	 * Adapter used to update the problem indication when resources are demanded
+	 * loaded.
+	 * 
+	 * Class adapted from {@link DefaultMarkerBehavior} (because it is a private class)
+	 */
+	protected EContentAdapter pimmAdapter = new EContentAdapter() {
+		@Override
+		public void notifyChanged(Notification notification) {
+			if (notification.getNotifier() instanceof PiResourceImpl) {
+				switch (notification.getFeatureID(Resource.class)) {
+				case Resource.RESOURCE__IS_LOADED:
+				case Resource.RESOURCE__IS_MODIFIED: {
+					final Resource resource = (Resource) notification.getNotifier();
+					final Diagnostic diagnostic = checkPiResourceProblems(resource, null);
+					if (diagnostic.getSeverity() != Diagnostic.OK) {
+						resourceToDiagnosticMap.put(resource, diagnostic);
+					} else {
+						resourceToDiagnosticMap.remove(resource);
+					}
+
+					if (updateProblemIndication) {
+						Display.getDefault().asyncExec(new Runnable() {
+							public void run() {
+								refreshProblemIndication();
+							}
+						});
+					}
+					break;
+				}
+				}
+			} else {
+				super.notifyChanged(notification);
+			}
+		}
+
+		@Override
+		protected void setTarget(Resource target) {
+			basicSetTarget(target);
+		}
+
+		@Override
+		protected void unsetTarget(Resource target) {
+			basicUnsetTarget(target);
+		}
+
+	};
 }
