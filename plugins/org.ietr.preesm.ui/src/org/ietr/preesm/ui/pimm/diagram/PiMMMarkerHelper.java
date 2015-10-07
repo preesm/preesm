@@ -33,48 +33,40 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-
 package org.ietr.preesm.ui.pimm.diagram;
 
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.ui.editor.DefaultMarkerBehavior;
-import org.eclipse.graphiti.ui.editor.DiagramBehavior;
-import org.eclipse.graphiti.ui.editor.DiagramEditor;
-import org.eclipse.ui.IPageLayout;
-import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.ide.IGotoMarker;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.emf.common.ui.MarkerHelper;
+import org.eclipse.emf.common.util.Diagnostic;
+import org.eclipse.emf.edit.ui.util.EditUIMarkerHelper;
 
 /**
- * Class inheriting from the {@link DiagramEditor}. This class was created to
- * define a custom {@link DefaultMarkerBehavior} that does not reset problems
- * related to graphs on startup of the editor.
+ * The purpose of this custom {@link MarkerHelper} is to associate a new
+ * attribute to the {@link IMarker} created in the {@link PiMMDiagramEditor}.
+ * This attribute contains a {@link String} corresponding to the uriFragment
+ * that can be used to access the pictogram element to which the marker is
+ * associated.
  * 
  * @author kdesnos
  *
  */
-public class PiMMDiagramEditor extends DiagramEditor implements IGotoMarker {
-	@Override
-	protected DiagramBehavior createDiagramBehavior() {
-		return new PiMMDiagramBehavior(this);
-	}
+public class PiMMMarkerHelper extends EditUIMarkerHelper {
+
+	/**
+	 * This {@link IMarker} attribute contains a {@link String} corresponding to
+	 * the uriFragment that can be used to access the pictogram element to which
+	 * the marker is associated.
+	 */
+	public static final String DIAGRAM_URI = "Diagram_URI";
 
 	@Override
-	public void gotoMarker(IMarker marker) {
-		// Find the pictogram element associated to the marker
-		String uriFragment = marker.getAttribute(PiMMMarkerHelper.DIAGRAM_URI, null);
-		if (uriFragment == null)
-			return;
-		EObject object = getDiagramTypeProvider().getDiagram().eResource().getEObject(uriFragment);
-		if (object == null || !(object instanceof PictogramElement))
-			return;
-		selectPictogramElements(new PictogramElement[] { (PictogramElement) object });
+	protected void adjustMarker(IMarker marker, Diagnostic diagnostic, Diagnostic parentDiagnostic)
+			throws CoreException {
 
-		// Open the property view
-		IViewPart propSheet = getWorkbenchPart().getSite().getPage().findView(IPageLayout.ID_PROP_SHEET);
-		if (propSheet != null) {
-			getWorkbenchPart().getSite().getPage().bringToTop(propSheet);
+		super.adjustMarker(marker, diagnostic, parentDiagnostic);
+		if (diagnostic.getData().size() == 2) {
+			marker.setAttribute(DIAGRAM_URI, (diagnostic.getData().get(1)));
 		}
 	}
 }

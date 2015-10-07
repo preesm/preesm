@@ -37,7 +37,9 @@
 package org.ietr.preesm.ui.pimm.diagram;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.notify.Notification;
@@ -50,6 +52,9 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.emf.edit.ui.util.EditUIMarkerHelper;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DefaultMarkerBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramBehavior;
 import org.eclipse.graphiti.ui.internal.GraphitiUIPlugin;
@@ -58,6 +63,7 @@ import org.eclipse.swt.widgets.Display;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.serialize.PiResourceImpl;
 import org.ietr.preesm.pimm.algorithm.checker.PiMMAlgorithmChecker;
+import org.ietr.preesm.ui.Activator;
 
 /**
  * Class inheriting from the {@link DefaultMarkerBehavior}. This class was
@@ -74,13 +80,12 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
 	 * Map to store the diagnostic associated with a resource.
 	 */
 	protected Map<Resource, Diagnostic> resourceToDiagnosticMap = new LinkedHashMap<Resource, Diagnostic>();
-	
 
 	/**
 	 * The marker helper instance is responsible for creating workspace resource
 	 * markers presented in Eclipse's Problems View.
 	 */
-	private MarkerHelper markerHelper = new EditUIMarkerHelper();
+	private MarkerHelper markerHelper = new PiMMMarkerHelper();
 
 	/**
 	 * Controls whether the problem indication should be updated.
@@ -124,18 +129,41 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
 		if (resource instanceof PiResourceImpl) {
 			BasicDiagnostic result = new BasicDiagnostic();
 			try {
+				Diagram diagram = diagramBehavior.getDiagramContainer().getDiagramTypeProvider().getDiagram();
 				if (resource != null && !checker.checkGraph((PiGraph) resource.getContents().get(0))) {
 					// Warnings
-					for (String msg : checker.getWarningMsgs()) {
-						BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.WARNING, null, 0,
-								msg, new Object[] { resource });
+					for (Entry<String, EObject> msgs : checker.getWarningMsgs().entrySet()) {
+						String msg = msgs.getKey();
+						// Diagnostic for .pi file, removed for simplicity
+						//
+						// BasicDiagnostic d = new
+						// BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.WARNING,
+						// Activator.PLUGIN_ID, 0, msg, new Object[] {
+						// msgs.getValue() });
+						// result.add(d);
+						List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram,
+								msgs.getValue());						
+						String uriFragment = ((EObject) pes.get(0)).eResource().getURIFragment(pes.get(0));
+						BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.WARNING,
+								Activator.PLUGIN_ID, 0, msg, new Object[] { pes.get(0), uriFragment });
+
 						result.add(d);
 					}
 
 					// Errors
-					for (String msg : checker.getErrorMsgs()) {
-						BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.ERROR, "122", 0,
-								msg, new Object[] { resource });
+					for (Entry<String, EObject> msgs : checker.getErrorMsgs().entrySet()) {
+						String msg = msgs.getKey();
+						// Diagnostic for .pi file, removed for simplicity
+						//
+						// BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.ERROR,
+						//		Activator.PLUGIN_ID, 0, msg, new Object[] { resource });
+						// result.add(d);
+						List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram,
+								msgs.getValue());	
+						String uriFragment = ((EObject) pes.get(0)).eResource().getURIFragment(pes.get(0));
+						BasicDiagnostic d = new BasicDiagnostic(org.eclipse.emf.common.util.Diagnostic.ERROR,
+								Activator.PLUGIN_ID, 0, msg, new Object[] { pes.get(0), uriFragment });
+
 						result.add(d);
 					}
 				}
@@ -154,13 +182,14 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
 		resourceToDiagnosticMap.clear();
 		resourceToDiagnosticMap = null;
 	}
-	
+
 	/**
 	 * Updates the problems indication markers in the editor. The default
 	 * implementation used an EMF {@link BasicDiagnostic} to do the checks and
 	 * {@link EditUIMarkerHelper} to check and set markers for {@link EObject}s.
 	 * 
-	 * Method copied from {@link DefaultMarkerBehavior} (because it is a private method)
+	 * Method copied from {@link DefaultMarkerBehavior} (because it is a private
+	 * method)
 	 */
 	void refreshProblemIndication() {
 		if (diagramBehavior == null) {
@@ -195,7 +224,8 @@ public class PiMMMarkerBehavior extends DefaultMarkerBehavior {
 	 * Adapter used to update the problem indication when resources are demanded
 	 * loaded.
 	 * 
-	 * Class adapted from {@link DefaultMarkerBehavior} (because it is a private class)
+	 * Class adapted from {@link DefaultMarkerBehavior} (because it is a private
+	 * class)
 	 */
 	protected EContentAdapter pimmAdapter = new EContentAdapter() {
 		@Override

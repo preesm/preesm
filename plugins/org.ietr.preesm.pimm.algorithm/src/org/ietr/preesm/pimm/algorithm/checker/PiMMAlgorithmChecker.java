@@ -35,9 +35,10 @@
  ******************************************************************************/
 package org.ietr.preesm.pimm.algorithm.checker;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.eclipse.emf.ecore.EObject;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
@@ -56,8 +57,8 @@ import org.ietr.preesm.pimm.algorithm.checker.structure.RefinementChecker;
 public class PiMMAlgorithmChecker {
 
 	private PiGraph graph;
-	private List<String> errorMsgs;
-	private List<String> warningMsgs;
+	private Map<String, EObject> errorMsgs;
+	private Map<String, EObject> warningMsgs;
 
 	private boolean errors;
 	private boolean warnings;
@@ -71,8 +72,8 @@ public class PiMMAlgorithmChecker {
 	 */
 	public boolean checkGraph(PiGraph graph) {
 		this.graph = graph;
-		errorMsgs = new ArrayList<String>();
-		warningMsgs = new ArrayList<String>();
+		errorMsgs = new HashMap<String, EObject>();
+		warningMsgs = new HashMap<String, EObject>();
 
 		errors = false;
 		warnings = false;
@@ -93,24 +94,24 @@ public class PiMMAlgorithmChecker {
 						+ f.getSourcePort().getName();
 				String tgtActorPath = ((AbstractActor) f.getTargetPort().eContainer()).getName() + "."
 						+ f.getTargetPort().getName();
-				errorMsgs.add("Fifo between actors " + srcActorPath + " and " + tgtActorPath
-						+ " has invalid rates (one equals 0 but not the other).\n");
+				errorMsgs.put("Fifo between actors " + srcActorPath + " and " + tgtActorPath
+						+ " has invalid rates (one equals 0 but not the other).\n", f);
 			}
 			for (Fifo f : fifoChecker.getFifoWithVoidType()) {
 				String srcActorPath = ((AbstractActor) f.getSourcePort().eContainer()).getName() + "."
 						+ f.getSourcePort().getName();
 				String tgtActorPath = ((AbstractActor) f.getTargetPort().eContainer()).getName() + "."
 						+ f.getTargetPort().getName();
-				warningMsgs.add("Fifo between actors " + srcActorPath + " and " + tgtActorPath
-						+ " has type \"void\" (this is not supported by code generation).\n");
+				warningMsgs.put("Fifo between actors " + srcActorPath + " and " + tgtActorPath
+						+ " has type \"void\" (this is not supported by code generation).\n", f);
 			}
 			for (Fifo f : fifoChecker.getFifoWithZeroRates()) {
 				String srcActorPath = ((AbstractActor) f.getSourcePort().eContainer()).getName() + "."
 						+ f.getSourcePort().getName();
 				String tgtActorPath = ((AbstractActor) f.getTargetPort().eContainer()).getName() + "."
 						+ f.getTargetPort().getName();
-				warningMsgs.add("Fifo between actors " + srcActorPath + " and " + tgtActorPath
-						+ " has rates equal to 0 (you may have forgotten to set them).\n");
+				warningMsgs.put("Fifo between actors " + srcActorPath + " and " + tgtActorPath
+						+ " has rates equal to 0 (you may have forgotten to set them).\n", f);
 			}
 		}
 	}
@@ -120,31 +121,31 @@ public class PiMMAlgorithmChecker {
 		if (!refinementChecker.checkRefinements(graph)) {
 			errors = true;
 			for (Actor a : refinementChecker.getActorsWithoutRefinement()) {
-				errorMsgs.add("Actor " + a.getPath() + " does not have a refinement.\n");
+				errorMsgs.put("Actor " + a.getPath() + " does not have a refinement.\n", a);
 			}
 			for (Actor a : refinementChecker.getActorsWithInvalidExtensionRefinement()) {
-				errorMsgs.add("Refinement " + a.getRefinement().getFilePath() + " of Actor " + a.getPath()
-						+ " does not have a valid extension (.h or .idl).\n");
+				errorMsgs.put("Refinement " + a.getRefinement().getFilePath() + " of Actor " + a.getPath()
+						+ " does not have a valid extension (.h or .idl).\n", a);
 			}
 			for (Actor a : refinementChecker.getActorsWithNonExistingRefinement()) {
-				errorMsgs.add("Refinement  " + a.getRefinement().getFilePath() + " of Actor " + a.getPath()
-						+ " does not reference an existing file.\n");
+				errorMsgs.put("Refinement  " + a.getRefinement().getFilePath() + " of Actor " + a.getPath()
+						+ " does not reference an existing file.\n", a);
 			}
 		}
 	}
 
 	public String getErrorMsg() {
 		String result = "Validation of graph " + graph.getName() + " raised the following errors:\n";
-		for (String msg : errorMsgs) {
+		for (String msg : errorMsgs.keySet()) {
 			result += "- " + msg;
 		}
 		return result;
 	}
 
 	/**
-	 * @return the errorMsgs
+	 * @return the errorMsgs and the associated {@link EObject}
 	 */
-	public List<String> getErrorMsgs() {
+	public Map<String, EObject> getErrorMsgs() {
 		return errorMsgs;
 	}
 
@@ -156,16 +157,16 @@ public class PiMMAlgorithmChecker {
 
 	public String getWarningMsg() {
 		String result = "Validation of graph " + graph.getName() + " raised the following warnings:\n";
-		for (String msg : warningMsgs) {
+		for (String msg : warningMsgs.keySet()) {
 			result += "- " + msg;
 		}
 		return result;
 	}
 
 	/**
-	 * @return the warningMsgs
+	 * @return the warningMsgs and the associated {@link EObject}
 	 */
-	public List<String> getWarningMsgs() {
+	public Map<String, EObject> getWarningMsgs() {
 		return warningMsgs;
 	}
 
