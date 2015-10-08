@@ -128,6 +128,8 @@ public class RenameActorPortFeature extends AbstractCustomFeature {
 							.getReferencedGraphicsAlgorithm();
 					layoutPictogramElement(bra.getPictogramElement());
 					updatePictogramElement(bra.getPictogramElement());
+					
+					getFeatureProvider().getDiagramTypeProvider().getDiagramBehavior().refresh();
 				}
 			}
 		}
