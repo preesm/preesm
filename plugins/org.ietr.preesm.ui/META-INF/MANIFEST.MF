@@ -25,7 +25,11 @@ Require-Bundle: org.ietr.dftools.graphiti.ui,
  org.eclipse.text,
  org.ietr.preesm.utils,
  org.ietr.preesm.pimm.algorithm,
- org.eclipse.emf.edit.ui
+ org.eclipse.emf.edit.ui,
+ com.google.guava,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.xtend.lib,
+ org.eclipse.xtend.lib.macro
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: global
@@ -40,3 +44,4 @@ Export-Package: org.ietr.preesm.ui.console,
  org.ietr.preesm.ui.scenario.editor.timings,
  org.ietr.preesm.ui.scenario.editor.variables,
  org.ietr.preesm.ui.wizards
+

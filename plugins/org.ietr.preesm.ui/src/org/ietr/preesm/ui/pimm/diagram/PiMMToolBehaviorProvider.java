@@ -48,6 +48,7 @@ import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.tb.DefaultToolBehaviorProvider;
@@ -57,10 +58,12 @@ import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.ui.pimm.decorators.ActorDecorators;
 import org.ietr.preesm.ui.pimm.decorators.DelayDecorators;
 import org.ietr.preesm.ui.pimm.decorators.ParameterDecorators;
+import org.ietr.preesm.ui.pimm.decorators.PiMMDecoratorAdapter;
 import org.ietr.preesm.ui.pimm.decorators.PortDecorators;
 import org.ietr.preesm.ui.pimm.features.MoveDownActorPortFeature;
 import org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature;
@@ -84,6 +87,8 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
 	 */
 	protected Map<GraphicsAlgorithm, String> toolTips;
 
+	protected PiMMDecoratorAdapter decoratorAdapter;
+
 	/**
 	 * The default constructor of {@link PiMMToolBehaviorProvider}.
 	 * 
@@ -93,56 +98,74 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
 	public PiMMToolBehaviorProvider(IDiagramTypeProvider diagramTypeProvider) {
 		super(diagramTypeProvider);
 		toolTips = new HashMap<GraphicsAlgorithm, String>();
+		decoratorAdapter = new PiMMDecoratorAdapter(diagramTypeProvider);
 	}
 
 	@Override
 	public IDecorator[] getDecorators(PictogramElement pe) {
-		IFeatureProvider featureProvider = getFeatureProvider();
-		Object bo = featureProvider.getBusinessObjectForPictogramElement(pe);
 
-		if (bo instanceof ExecutableActor) {
-			// Add decorators for each ports of the actor
-			List<IDecorator> decorators = new ArrayList<IDecorator>();
-			for (Anchor a : ((ContainerShape) pe).getAnchors()) {
-				for (Object pbo : a.getLink().getBusinessObjects()) {
-					if (pbo instanceof Port) {
-						for (IDecorator d : PortDecorators.getDecorators(
-								(Port) pbo, a)) {
-							decorators.add(d);
+		IFeatureProvider featureProvider = getFeatureProvider();
+		Diagram diagram = (Diagram) pe.eResource().getContents().get(0);
+		Object bo = featureProvider.getBusinessObjectForPictogramElement(pe);
+		PiGraph piGraph = (PiGraph) featureProvider.getBusinessObjectForPictogramElement(diagram);
+		if (!piGraph.eAdapters().contains(decoratorAdapter)) {
+			piGraph.eAdapters().add(decoratorAdapter);
+		}
+
+		if (decoratorAdapter.getPesAndDecorators().containsKey(pe)) {
+			System.out.println("GotIt");
+			return decoratorAdapter.getPesAndDecorators().get(pe);
+		} else {
+			System.out.println("Again");
+			IDecorator[] result = null;
+			if (bo instanceof ExecutableActor) {
+				// Add decorators for each ports of the actor
+				List<IDecorator> decorators = new ArrayList<IDecorator>();
+				for (Anchor a : ((ContainerShape) pe).getAnchors()) {
+					for (Object pbo : a.getLink().getBusinessObjects()) {
+						if (pbo instanceof Port) {
+							for (IDecorator d : PortDecorators.getDecorators((Port) pbo, a)) {
+								decorators.add(d);
+							}
 						}
 					}
 				}
-			}
 
-			if (bo instanceof Actor) {
-				// Add decorators to the actor itself
-				for (IDecorator d : ActorDecorators.getDecorators((Actor) bo,
-						pe)) {
-					decorators.add(d);
+				if (bo instanceof Actor) {
+					// Add decorators to the actor itself
+					for (IDecorator d : ActorDecorators.getDecorators((Actor) bo, pe)) {
+						decorators.add(d);
+					}
 				}
+
+				result = new IDecorator[decorators.size()];
+				decorators.toArray(result);
+				decoratorAdapter.getPesAndDecorators().put(pe, result);
 			}
 
-			IDecorator[] result = new IDecorator[decorators.size()];
-			decorators.toArray(result);
+			if (bo instanceof Parameter && !((Parameter) bo).isConfigurationInterface()) {
+
+				result = ParameterDecorators.getDecorators((Parameter) bo, pe);
+				decoratorAdapter.getPesAndDecorators().put(pe, result);
+			}
+
+			if (bo instanceof Delay) {
+				result = DelayDecorators.getDecorators((Delay) bo, pe);
+				decoratorAdapter.getPesAndDecorators().put(pe, result);
+			}
+
+			if (result == null) {
+				result = super.getDecorators(pe);
+			}
+			
+			decoratorAdapter.getPesAndDecorators().put(pe, result);
 			return result;
 		}
-
-		if (bo instanceof Parameter
-				&& !((Parameter) bo).isConfigurationInterface()) {
-			return ParameterDecorators.getDecorators((Parameter) bo, pe);
-		}
-
-		if (bo instanceof Delay) {
-			return DelayDecorators.getDecorators((Delay) bo, pe);
-		}
-
-		return super.getDecorators(pe);
 	}
 
 	@Override
 	public ICustomFeature getDoubleClickFeature(IDoubleClickContext context) {
-		ICustomFeature customFeature = new OpenRefinementFeature(
-				getFeatureProvider());
+		ICustomFeature customFeature = new OpenRefinementFeature(getFeatureProvider());
 
 		// canExecute() tests especially if the context contains a Actor with a
 		// valid refinement
@@ -182,8 +205,7 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
 			case AutoLayoutFeature.HINT:
 				return new AutoLayoutFeature(getFeatureProvider());
 			case RenameActorPortFeature.HINT:
-				Object obj = Graphiti.getLinkService()
-						.getBusinessObjectForLinkedPictogramElement(pes[0]);
+				Object obj = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pes[0]);
 				if (obj instanceof Port) {
 					return new RenameActorPortFeature(getFeatureProvider());
 				}
