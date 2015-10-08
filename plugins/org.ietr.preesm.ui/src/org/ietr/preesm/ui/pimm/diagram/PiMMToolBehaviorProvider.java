@@ -99,24 +99,24 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
 		super(diagramTypeProvider);
 		toolTips = new HashMap<GraphicsAlgorithm, String>();
 		decoratorAdapter = new PiMMDecoratorAdapter(diagramTypeProvider);
+		
+		IFeatureProvider featureProvider = getFeatureProvider();
+		Diagram diagram = featureProvider.getDiagramTypeProvider().getDiagram();
+		PiGraph piGraph = (PiGraph) featureProvider.getBusinessObjectForPictogramElement(diagram);
+		if (!piGraph.eAdapters().contains(decoratorAdapter)) {
+			piGraph.eAdapters().add(decoratorAdapter);
+		}
 	}
 
 	@Override
 	public IDecorator[] getDecorators(PictogramElement pe) {
 
 		IFeatureProvider featureProvider = getFeatureProvider();
-		Diagram diagram = (Diagram) pe.eResource().getContents().get(0);
-		Object bo = featureProvider.getBusinessObjectForPictogramElement(pe);
-		PiGraph piGraph = (PiGraph) featureProvider.getBusinessObjectForPictogramElement(diagram);
-		if (!piGraph.eAdapters().contains(decoratorAdapter)) {
-			piGraph.eAdapters().add(decoratorAdapter);
-		}
-
-		if (decoratorAdapter.getPesAndDecorators().containsKey(pe)) {
-			System.out.println("GotIt");
-			return decoratorAdapter.getPesAndDecorators().get(pe);
-		} else {
-			System.out.println("Again");
+		IDecorator[] existingDecorators = decoratorAdapter.getPesAndDecorators().get(pe);
+		if (existingDecorators != null) {
+			return existingDecorators;
+		} else {			
+			Object bo = featureProvider.getBusinessObjectForPictogramElement(pe);
 			IDecorator[] result = null;
 			if (bo instanceof ExecutableActor) {
 				// Add decorators for each ports of the actor
@@ -157,7 +157,7 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
 			if (result == null) {
 				result = super.getDecorators(pe);
 			}
-			
+
 			decoratorAdapter.getPesAndDecorators().put(pe, result);
 			return result;
 		}
