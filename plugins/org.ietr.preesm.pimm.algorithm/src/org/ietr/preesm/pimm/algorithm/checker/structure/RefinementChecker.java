@@ -122,7 +122,7 @@ public class RefinementChecker {
 	private boolean checkRefinementExtension(Actor a) {
 		IPath path = a.getRefinement().getFilePath();
 		String fileExtension = path.getFileExtension();
-		if (!fileExtension.equals("h") && !fileExtension.equals("idl")) {
+		if (!fileExtension.equals("h") && !fileExtension.equals("idl") && !fileExtension.equals("pi")) {
 			// File pointed by the refinement of a does not have a valid
 			// extension
 			actorsWithInvalidExtensionRefinement.add(a);

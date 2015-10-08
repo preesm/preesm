@@ -125,7 +125,7 @@ public class PiMMAlgorithmChecker {
 			}
 			for (Actor a : refinementChecker.getActorsWithInvalidExtensionRefinement()) {
 				errorMsgs.put("Refinement " + a.getRefinement().getFilePath() + " of Actor " + a.getPath()
-						+ " does not have a valid extension (.h or .idl).\n", a);
+						+ " does not have a valid extension (.h, .idl, or .pi).\n", a);
 			}
 			for (Actor a : refinementChecker.getActorsWithNonExistingRefinement()) {
 				errorMsgs.put("Refinement  " + a.getRefinement().getFilePath() + " of Actor " + a.getPath()
