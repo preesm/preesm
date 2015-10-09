@@ -36,8 +36,10 @@
 
 package org.ietr.preesm.memory.distributed
 
+import java.util.ArrayList
 import java.util.HashMap
 import java.util.HashSet
+import java.util.List
 import java.util.Map
 import java.util.Set
 import org.ietr.dftools.algorithm.model.dag.DAGEdge
@@ -45,11 +47,10 @@ import org.ietr.dftools.architecture.slam.ComponentInstance
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex
+import org.ietr.preesm.memory.script.Range
 
 import static extension org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask.*
-import java.util.List
-import org.ietr.preesm.memory.script.Range
-import java.util.ArrayList
+import static extension org.ietr.preesm.memory.script.Range.*
 
 /**
  * This class contains all the code responsible for splitting a {@link 
@@ -153,8 +154,9 @@ class Distributor {
 	 * 			
 	 */
 	protected def static splitMergedBuffers(String policy, MemoryExclusionGraph meg) {
-		// Get the list of host Mobjects
-		var hosts = meg.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>
+		// Get the map of host Mobjects
+		// (A copy of the map is used because the original map will be modified during iterations)
+		var hosts = (meg.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) //.immutableCopy
 
 		// Exit method if no host Mobjects can be found in this MEG
 		if(hosts == null || hosts.empty) {
@@ -179,6 +181,14 @@ class Distributor {
 						throw new RuntimeException(policy + " is not a valid distribution policy to split a MEG." + " Contact Preesm developers.")
 				}
 			}
+			
+			// Create the reverse bankByMobj map
+			val bankByMobj = new HashMap<MemoryExclusionVertex,String>
+			mobjByBank.forEach[bank, mobjs| mobjs.forEach[bankByMobj.put(it,bank)]]
+			
+			// Set of all the divided memory objects that can not be divided
+			// because they are matched in several banks.
+			val mObjsToUndivide = newHashSet 
 
 			// For each bank, create as many hosts as the number of
 			// non-contiguous ranges formed by the memory objects falling
@@ -186,7 +196,7 @@ class Distributor {
 			for (bankEntry : mobjByBank.entrySet) {
 				// Iterate over Mobjects to build the range(s) of this memory 
 				// bank (all ranges are relative to the host mObj)
-				var List<Range> rangesInBank = new ArrayList
+				val List<Range> rangesInBank = new ArrayList
 				for (mobj : bankEntry.value) {
 					val rangesInHost = mobj.getPropertyBean.getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
 					// Process non-divided buffers 
@@ -194,15 +204,70 @@ class Distributor {
 						// add the range covered by this buffer to the
 						// rangesInBank (use a clone because the range will be 
 						// modified during call to the union method
-						Range.union(rangesInBank,rangesInHost.get(0).value.value.clone as Range); 
+						rangesInBank.union(rangesInHost.get(0).value.value.clone as Range); 
 					} else {
-						// Divided buffers:
-						throw new RuntimeException("LA : Identifier les sourc et DST > cf mkdown")
+						// Divided buffers: 
+						// Check if all parts of the MObj were allocated in the same memory bank
+						// i.e. check if source and dest memory objects are 
+						// all stored in the same memory bank
+						val dividedPartsHosts = mobj.propertyBean.getValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS) as List<MemoryExclusionVertex>
+						val partsHostsSet = dividedPartsHosts.map[bankByMobj.get(it)].toSet
+						if(partsHostsSet.size == 1 && partsHostsSet.get(0).equals(bankEntry.key)){
+							// All hosts were allocated in the same bank
+							// And this bank is the current bankEntry
+							// The split is maintained, and rangesInHost must be updated
+							// (use a clone because the range will be 
+							// modified during call to the union method)
+							rangesInHost.forEach[range | rangesInBank.union(range.value.value.clone as Range)]
+						} else {
+							// Not all hosts were allocated in the same bank
+							// The mObj cannot be splitted
+							// => It must be restored to its original size in 
+							// the graph
+							mObjsToUndivide.add(mobj)				
+						}
+						println(rangesInHost)
 					}
 				}
 				
+				// Create a memory object for each range in the bank
+				print("\n"+bankEntry.key+"-->")
+				for(rangeInBank : rangesInBank){
+					// 1. Get the list of mObjects in this range
+					// 2. Select the first object as the new host
+					// 3. Update the MEG
+				}
+			}
+			
+			// Process the mObjects to "undivide".
+			for(mObj : mObjsToUndivide){
+				// Remove the Mobject from the MEG HOST_MEM_OBJ property
+				val hostMemObjProp = meg.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>
+				hostMemObjProp.forEach[hostMObj, hostedMobjs| hostedMobjs.remove(mObj)]
 				
-				println(bankEntry+"-->"+rangesInBank)
+				// Add the mobj back to the Meg
+				meg.addVertex(mObj)
+				
+				// Restore original exclusions of the mobj
+				val adjacentMObjs = mObj.propertyBean.getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP) as List<MemoryExclusionVertex>
+				for(adjacentMObj : adjacentMObjs){
+					// Check if the adjacent mObj is already in the graph
+					if(meg.vertexSet.contains(adjacentMObj)) {
+						// the adjacent mObj is already in the graph
+						// Add the exclusion back
+						meg.addEdge(mObj,adjacentMObj)
+					} else {
+						// The adjacent mObj is not in the graph
+						// It must be merged within a host 
+						// (or several host in case of a division)
+						hostMemObjProp.forEach[
+							hostMObj, hostedMObjs |
+							if (hostedMObjs.contains(adjacentMObj)) {
+								meg.addEdge(mObj, hostMObj)
+							}
+						]
+					}
+				}
 			}
 		}
 	}
