@@ -37,8 +37,12 @@
  */
 package org.ietr.preesm.pimm.algorithm.cppgenerator.visitor;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -51,6 +55,7 @@ import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.HRefinement;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.pimm.algorithm.cppgenerator.utils.CppNameGenerator;
@@ -163,7 +168,22 @@ public class PiSDFCodeGenerator{
 		append("\n");
 
 		/* Declare Fcts */
-		append("PiSDFGraph* init_"+pg.getName()+"(Archi* archi, Stack* stack);\n");
+		append("PiSDFGraph* init_"+pg.getName()+"(Archi* archi, Stack* stack");
+		List<Parameter> l = new LinkedList<Parameter>();
+		l.addAll(pg.getAllParameters());
+		Collections.sort(l, new Comparator<Parameter>() {
+			@Override
+	        public int compare(Parameter p1, Parameter p2){
+	            return  p1.getName().compareTo(p2.getName());
+	        }
+		});
+		for(Parameter p : l){
+			if(p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()){
+				append(", Param " + p.getName() + " = " + ((int) Double.parseDouble(p.getExpression().evaluate())));
+			}
+		}
+		append(");\n");	
+		
 		append("void free_"+pg.getName()+"(PiSDFGraph* top, Stack* stack);\n");
 		append("\n");
 		
@@ -305,7 +325,24 @@ public class PiSDFCodeGenerator{
 		append(" */\n");
 		
 		// The method does not return anything and is named top
-		append("PiSDFGraph* init_"+pg.getName()+"(Archi* archi, Stack* stack){\n");
+		append("PiSDFGraph* init_"+pg.getName()+"(Archi* archi, Stack* stack");		
+		
+		StringBuilder params = new StringBuilder();
+		List<Parameter> l = new LinkedList<Parameter>();
+		l.addAll(pg.getAllParameters());
+		Collections.sort(l, new Comparator<Parameter>() {
+			@Override
+	        public int compare(Parameter p1, Parameter p2){
+	            return  p1.getName().compareTo(p2.getName());
+	        }
+		});
+		for(Parameter p : l){
+			if(p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()){
+				params.append(", " + p.getName());
+				append(", Param " + p.getName());
+			}
+		}
+		append("){\n");
 		
 		// Create a top graph and a top vertex
 		append("\tPiSDFGraph* top = CREATE(stack, PiSDFGraph)(\n"
@@ -320,7 +357,7 @@ public class PiSDFCodeGenerator{
 		
 		append("\ttop->addHierVertex(\n"
 				+ "\t\t/*Name*/     \"top\",\n"
-				+ "\t\t/*Graph*/    " + sgName + "(archi, stack),\n"
+				+ "\t\t/*Graph*/    " + sgName + "(archi, stack" + params.toString() + "),\n"
 				+ "\t\t/*InputIf*/  0,\n"
 				+ "\t\t/*OutputIf*/ 0,\n"
 				+ "\t\t/*Params*/   0);\n\n");
