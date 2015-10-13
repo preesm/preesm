@@ -131,6 +131,7 @@ import org.ietr.preesm.ui.pimm.features.DeleteDependencyFeature;
 import org.ietr.preesm.ui.pimm.features.DeleteFifoFeature;
 import org.ietr.preesm.ui.pimm.features.DeleteParameterizableFeature;
 import org.ietr.preesm.ui.pimm.features.DirectEditingAbstractActorNameFeature;
+import org.ietr.preesm.ui.pimm.features.ExportSVGFeature;
 import org.ietr.preesm.ui.pimm.features.LayoutActorFeature;
 import org.ietr.preesm.ui.pimm.features.LayoutInterfaceFeature;
 import org.ietr.preesm.ui.pimm.features.LayoutParameterFeature;
@@ -268,6 +269,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 			features.add(new SetVisibleAllDependenciesFeature(this, true));
 			features.add(new SetVisibleAllDependenciesFeature(this, false));
 			features.add(new AutoLayoutFeature(this));
+			features.add(new ExportSVGFeature(this));
 		}
 
 		if (obj instanceof AbstractVertex) {
