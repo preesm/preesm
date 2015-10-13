@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,6 +19,9 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -34,6 +39,10 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
@@ -51,49 +60,14 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
+import org.ietr.preesm.ui.pimm.util.PiMMUtil;
+import org.ietr.preesm.ui.scenario.editor.EditorTools.FileContentProvider;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class ExportSVGFeature extends AbstractCustomFeature {
-
 	protected IFeatureProvider fp;
-
-	protected static class Point{
-		public int x;
-		public int y;
-		public Point(int x, int y){
-			this.x = x;
-			this.y = y;
-		}
-	}
 	
-	Font getFont(Port p){
-		PictogramElement[] copPes = fp.getAllPictogramElementsForBusinessObject(p);
-		for (GraphicsAlgorithm ga : copPes[0].getGraphicsAlgorithm()
-				.getGraphicsAlgorithmChildren()) {
-			if (ga instanceof Text) {
-				return ((Text) ga).getFont();
-			}
-		}
-		return null;
-	}
-	
-	Text getNameText(AbstractVertex aa){
-		// Retrieve the shape and the graphic algorithm
-		PictogramElement[] actorPes = fp.getAllPictogramElementsForBusinessObject(aa);
-		
-		ContainerShape containerShape = (ContainerShape) actorPes[0];
-		EList<Shape> childrenShapes = containerShape.getChildren();
-				
-		for (Shape shape : childrenShapes) {
-			GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
-			// The name should be the only children with type text
-			if (child instanceof Text) {
-				return (Text)child;
-			}
-		}
-		return null;
-	}
 	Font getFont(AbstractVertex aa){
 		// Retrieve the shape and the graphic algorithm
 		PictogramElement[] actorPes = fp.getAllPictogramElementsForBusinessObject(aa);
@@ -161,8 +135,6 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 	        el.setAttribute("y", ""+(t.getY()+t.getHeight()));
 			break;
 		case ALIGNMENT_CENTER:
-//			el.setAttribute("alignment-baseline", "hanging");
-//			el.setAttribute("dominant-baseline", "central");
 	        el.setAttribute("y", ""+(t.getY()+t.getHeight()/2+t.getFont().getSize()/2-2));
 			break;
 		case ALIGNMENT_TOP:
@@ -211,39 +183,7 @@ public class ExportSVGFeature extends AbstractCustomFeature {
         if(f.isItalic())
             e.setAttribute("font-style", "italic");		        	
 	}
-	
-//	protected static int computeTextWidth(String str, int fontSize){
-//		AffineTransform af = new AffineTransform();     
-//		FontRenderContext fr = new FontRenderContext(af,true,true);     
-//		Font f = new Font("Helvetica", Font.PLAIN, fontSize);
-//		return (int) f.getStringBounds(str, fr).getWidth();
-//	}
-	
-//	protected static int computeActorWidth(ExecutableActor ea){
-//		int width;
-//		
-//		/* Compute Actor Width */
-//		int widthLeftPort = 0, widthRightPort = 0, widthName = 0;
-//		for(ConfigInputPort cip : ea.getConfigInputPorts()){
-//			widthLeftPort = java.lang.Math.max(computeTextWidth(cip.getName(), 14), widthLeftPort);
-//		}
-//		for(ConfigOutputPort cop : ea.getConfigOutputPorts()){
-//			widthRightPort = java.lang.Math.max(computeTextWidth(cop.getName(), 14), widthRightPort);
-//		}
-//		for(DataInputPort dip : ea.getDataInputPorts()){
-//			widthLeftPort = java.lang.Math.max(computeTextWidth(dip.getName(), 14), widthLeftPort);
-//		}
-//		for(DataOutputPort dop : ea.getDataOutputPorts()){
-//			widthRightPort = java.lang.Math.max(computeTextWidth(dop.getName(), 14), widthRightPort);
-//		}
-//		
-//		widthName = computeTextWidth(ea.getName(), 14);
-//		width = java.lang.Math.max(widthLeftPort+widthRightPort, widthName) + 30;
-//		if(width % 2 == 1) width++;
-//
-//		return width;
-//	}
-	
+		
 	protected static int computeActorHeight(ExecutableActor ea){
 		int height;
 		
@@ -290,7 +230,6 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 		try {
 			builder = dbf.newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return;
 		}
@@ -356,7 +295,6 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 		try {
 			tf = TransformerFactory.newInstance().newTransformer();
 		} catch (TransformerConfigurationException | TransformerFactoryConfigurationError e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return;
 		}
@@ -364,156 +302,27 @@ public class ExportSVGFeature extends AbstractCustomFeature {
         tf.setOutputProperty(OutputKeys.INDENT, "yes");
         tf.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 
+        /* Ask SVG File Location */
+        Set<String> fileExtensions = new HashSet<String>();
+        fileExtensions.add("*.svg");
+        IPath path = PiMMUtil.askSaveFile("Choose the exported SVG file", fileExtensions);
+        
+        if(path == null) return;
      		
-        File svgFile = new File("/home/jheulot/tmp/test.svg");
+        File svgFile = new File(path.toOSString());
         Writer out;
 		try {
 			out = new FileWriter(svgFile);
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			return;
 		}
         try {
 			tf.transform(new DOMSource(doc), new StreamResult(out));
 		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return;
 		}
-	}
-	
-	public class getConnectionPointSwitch extends PiMMSwitch<Point>{
-		public getConnectionPointSwitch(){
-		}
-		
-//		public Point caseParameter(Parameter p) {
-//			int x, y, width;
-//			
-//			PictogramElement[] paramPes = fp.getAllPictogramElementsForBusinessObject(p);
-//			if (paramPes == null) return null;
-//			
-//			x = paramPes[0].getGraphicsAlgorithm().getX();
-//			y = paramPes[0].getGraphicsAlgorithm().getY();
-//			
-//			AffineTransform af = new AffineTransform();     
-//			FontRenderContext fr = new FontRenderContext(af,true,true);     
-//			Font f = new Font("Helvetica", Font.PLAIN, 14);
-//			width = (int) f.getStringBounds(p.getName(), fr).getWidth() + 20;
-//			
-//			if(width % 2 == 1) width++;
-//			
-//			return new Point(x+width/2,y+40);
-//		}
-//		
-//		public Point caseDataInputInterface(DataInputInterface dii) {
-//			PictogramElement[] diiPes = fp.getAllPictogramElementsForBusinessObject(dii);
-//			if (diiPes == null) return null;
-//			
-//			int x = diiPes[0].getGraphicsAlgorithm().getX();
-//			int y = diiPes[0].getGraphicsAlgorithm().getY();
-//			
-//			return new Point(x+16,y+8);
-//		}
-//		
-//		public Point caseDataOutputInterface(DataOutputInterface doi) {
-//			PictogramElement[] doiPes = fp.getAllPictogramElementsForBusinessObject(doi);
-//			if (doiPes == null) return null;
-//			
-//			int x = doiPes[0].getGraphicsAlgorithm().getX();
-//			int y = doiPes[0].getGraphicsAlgorithm().getY();
-//			
-//			return new Point(x,y+8);
-//		}
-//		
-//		public Point caseConfigInputInterface(ConfigInputInterface cii) {
-//			PictogramElement[] ciiPes = fp.getAllPictogramElementsForBusinessObject(cii);
-//			if (ciiPes == null) return null;
-//			
-//			int x = ciiPes[0].getGraphicsAlgorithm().getX();
-//			int y = ciiPes[0].getGraphicsAlgorithm().getY();
-//			
-//			return new Point(x+8,y+16);
-//		}
-//		
-//		public Point caseConfigOutputInterface(ConfigOutputInterface coi) {
-//			PictogramElement[] coiPes = fp.getAllPictogramElementsForBusinessObject(coi);
-//			if (coiPes == null) return null;
-//			
-//			int x = coiPes[0].getGraphicsAlgorithm().getX();
-//			int y = coiPes[0].getGraphicsAlgorithm().getY();
-//			
-//			return new Point(x,y+8);
-//		}
-//
-//		public Point caseDataInputPort(DataInputPort dip) {			
-//			ExecutableActor ea = (ExecutableActor)dip.eContainer();
-//			PictogramElement[] eaPes = fp.getAllPictogramElementsForBusinessObject(ea);
-//			if (eaPes == null) return null;
-//			
-//			int nConfig = java.lang.Math.max(
-//					ea.getConfigInputPorts().size(),
-//					ea.getConfigOutputPorts().size());
-//			
-//			int portIx = ea.getDataInputPorts().indexOf(dip);
-//			
-//			int xActor = eaPes[0].getGraphicsAlgorithm().getX();
-//			int yActor = eaPes[0].getGraphicsAlgorithm().getY();
-//			
-//			return new Point(xActor,yActor+25+(nConfig+portIx)*15);
-//		}
-//
-//		public Point caseDataOutputPort(DataOutputPort dop) {			
-//			ExecutableActor ea = (ExecutableActor)dop.eContainer();
-//			PictogramElement[] eaPes = fp.getAllPictogramElementsForBusinessObject(ea);
-//			if (eaPes == null) return null;
-//			
-//			/* Compute Actor Width */
-//			int widthActor = computeActorWidth(ea);
-//			
-//			int nConfig = java.lang.Math.max(
-//					ea.getConfigInputPorts().size(),
-//					ea.getConfigOutputPorts().size());
-//			
-//			int portIx = ea.getDataOutputPorts().indexOf(dop);
-//			
-//			int xActor = eaPes[0].getGraphicsAlgorithm().getX();
-//			int yActor = eaPes[0].getGraphicsAlgorithm().getY();
-//			
-//			return new Point(xActor+widthActor,yActor+25+(nConfig+portIx)*15);
-//		}
-//
-//		public Point caseConfigInputPort(ConfigInputPort cip) {		
-//			if(cip.eContainer() instanceof Parameter)
-//				return caseParameter((Parameter)cip.eContainer());
-//			
-//			ExecutableActor ea = (ExecutableActor)cip.eContainer();
-//			PictogramElement[] eaPes = fp.getAllPictogramElementsForBusinessObject(ea);
-//			if (eaPes == null) return null;
-//			
-//			int portIx = ea.getConfigInputPorts().indexOf(cip);
-//			
-//			int xActor = eaPes[0].getGraphicsAlgorithm().getX();
-//			int yActor = eaPes[0].getGraphicsAlgorithm().getY();
-//			
-//			return new Point(xActor,yActor+25+(portIx)*15);
-//		}
-//
-//		public Point caseConfigOutputPort(ConfigOutputPort cop) {			
-//			ExecutableActor ea = (ExecutableActor)cop.eContainer();
-//			PictogramElement[] eaPes = fp.getAllPictogramElementsForBusinessObject(ea);
-//			if (eaPes == null) return null;
-//			
-//			/* Compute Actor Width */
-//			int widthActor = computeActorWidth(ea);
-//			
-//			int portIx = ea.getConfigOutputPorts().indexOf(cop);
-//			
-//			int xActor = eaPes[0].getGraphicsAlgorithm().getX();
-//			int yActor = eaPes[0].getGraphicsAlgorithm().getY();
-//			
-//			return new Point(xActor+widthActor,yActor+25+(portIx)*15);
-//		}
 	}
 	
 	public class SVGRExporterSwitch extends PiMMSwitch<Integer>{
