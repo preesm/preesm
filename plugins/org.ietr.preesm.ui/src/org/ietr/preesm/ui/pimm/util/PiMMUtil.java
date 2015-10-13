@@ -41,6 +41,7 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.platform.IDiagramBehavior;
@@ -57,10 +58,12 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
+import org.eclipse.ui.dialogs.FileSelectionDialog;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.ui.pimm.diagram.PiMMToolBehaviorProvider;
@@ -159,6 +162,21 @@ public class PiMMUtil {
 		if (retDialog == Window.OK) {
 			IFile file = (IFile) (inputDialog.getResult()[0]);
 			return file.getFullPath();
+		}
+		return null;
+	}
+	
+	public static IPath askSaveFile(String dialogText, Set<String> fileExtensions) {
+		Shell shell = getShell();
+
+		FileDialog inputDialog = new FileDialog(shell, SWT.SAVE);
+		inputDialog.setText(dialogText);
+		inputDialog.setOverwrite(true);
+		inputDialog.setFilterExtensions(fileExtensions.toArray(new String[fileExtensions.size()]));
+		
+		String retDialog = inputDialog.open();
+		if (retDialog != null) {
+			return new Path(retDialog);
 		}
 		return null;
 	}
