@@ -66,7 +66,7 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 		if (verbose && !valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)) {
 			logger.log(Level.INFO, "Split MEG with " + valueDistribution + " policy");
 		}
-		Map<String, MemoryExclusionGraph> megs = Distributor.distributeMeg(valueDistribution, memEx);
+		Map<String, MemoryExclusionGraph> megs = Distributor.distributeMeg(valueDistribution, memEx, alignment);
 		// Log results
 		if (verbose && !valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)) {
 			logger.log(Level.INFO, "Created " + megs.keySet().size() + " MemExes");

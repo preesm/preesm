@@ -387,7 +387,7 @@ class Range {
 	override toString() '''[«getStart»..«getEnd»['''
 
 	override equals(Object o) {
-		if (o.class != Range) {
+		if (o == null || o.class != Range) {
 			false
 		} else {
 			this.getStart == (o as Range).getStart && this.getEnd == (o as Range).getEnd

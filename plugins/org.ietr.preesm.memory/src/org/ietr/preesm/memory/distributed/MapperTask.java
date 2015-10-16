@@ -90,7 +90,7 @@ public class MapperTask extends AbstractTaskImplementation {
 
 		// Create output
 		Map<String, MemoryExclusionGraph> memExes;
-		memExes = Distributor.distributeMeg(valuePolicy, memEx);
+		memExes = Distributor.distributeMeg(valuePolicy, memEx, -1);
 
 		// Log results
 		if (verbose) {

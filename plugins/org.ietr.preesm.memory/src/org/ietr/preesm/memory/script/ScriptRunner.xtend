@@ -1400,7 +1400,9 @@ class ScriptRunner {
 	}
 
 	new(int alignment) {
-		this.alignment = alignment
+		// kdesnos: Data alignment is supposed to be equivalent
+		// to no alignment from the script POV. (not 100% sure of this)
+		this.alignment = if(alignment <= 0) -1 else alignment
 		printTodo = false
 	}
 
