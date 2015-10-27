@@ -1731,6 +1731,11 @@ class ScriptRunner {
 
 						// Make sure that index aligned in the buffer are in 
 						// fact aligned
+						// NB: at this point, the minIndex of the buffer is
+						// either 0 or a negative number (if buffer were
+						// matched before the range of real tokens of the 
+						// host). This division is here to make sure that
+						// index 0 of the host buffer is still aligned !
 						((buffer.minIndex / alignment) - 1) * alignment
 					}
 				mObj.setWeight(buffer.maxIndex - minIndex)
