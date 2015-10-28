@@ -735,6 +735,91 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 	}
 
 	/**
+	 * Remove a {@link MemoryExclusionVertex} from the
+	 * {@link MemoryExclusionGraph}. Contrary to
+	 * {@link #removeVertex(MemoryExclusionVertex)}, this method scans the
+	 * properties and attributes of the {@link MemoryExclusionGraph} to remove
+	 * all reference to the removed {@link MemoryExclusionVertex}.<br>
+	 * <br>
+	 * Properties and attributes affected by this method are:
+	 * <ul>
+	 * <li>List of vertices</li>
+	 * <li>List of edges</li>
+	 * <li>{@link #adjacentVerticesBackup}</li>
+	 * <li>{@link #dagVerticesInSchedulingOrder}</li>
+	 * <li>{@link #HOST_MEMORY_OBJECT_PROPERTY} property}</li>
+	 * <li>{@link MemoryExclusionVertex#ADJACENT_VERTICES_BACKUP} property of
+	 * {@link MemoryExclusionVertex vertices}</li>
+	 * </ul>
+	 * 
+	 * @param vertex
+	 *            the {@link MemoryExclusionVertex} removed from the graph.
+	 */
+	public void deepRemoveVertex(MemoryExclusionVertex vertex) {
+		List<MemoryExclusionVertex> list = new ArrayList<MemoryExclusionVertex>();
+		list.add(vertex);
+		// Calls the list removing code to avoid duplicating the method code.
+		deepRemoveAllVertices(list);
+	}
+
+	/**
+	 * {@link #deepRemoveVertex(MemoryExclusionVertex)} for a {@link Collection}
+	 * of {@link MemoryExclusionVertex}.
+	 * 
+	 * @param vertices
+	 *            the {@link Collection} of {@link MemoryExclusionVertex}
+	 *            removed from the graph.
+	 */
+	public void deepRemoveAllVertices(Collection<? extends MemoryExclusionVertex> vertices) {
+
+		// List of vertices
+		// List of edges
+		// adjacentVerticesBackup
+		this.removeAllVertices(vertices);
+
+		// dagVerticesInSchedulingOrder
+		for (MemoryExclusionVertex vertex : vertices) {
+			DAGEdge dagEdge = vertex.getEdge();
+			if (dagEdge != null) {
+				dagVerticesInSchedulingOrder.remove(dagEdge);
+			}
+		}
+
+		// HOST_MEMORY_OBJECT_PROPERTY property
+		@SuppressWarnings("unchecked")
+		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) this
+				.getPropertyBean().getValue(HOST_MEMORY_OBJECT_PROPERTY);
+
+		hosts.keySet().removeAll(vertices); // Changes to the KeySet are applied
+											// to the map
+		hosts.forEach((host, hosted) -> {
+			if (hosted.removeAll(vertices))
+				// List of hosted mObjects should never be impacted by
+				// the remove operation. (in the context of Distributor call)
+				// indeed, deeply removed vertices correspond to vertices
+				// belonging to other memory banks, hence if a hosted Mobj
+				// belong to a list, and this Mobj is to be removed, then the
+				// host Mobj for this hosted Mobj is mandatorily associated to
+				// another bank, and has been removed in the previous lines of
+				// the code.
+				throw new RuntimeException("A hosted Memory Object was removed (but its host was not).");
+		});
+
+		// ADJACENT_VERTICES_BACKUP property vertices
+		Set<MemoryExclusionVertex> verticesWithAdjacentVerticesBackup = new HashSet<MemoryExclusionVertex>();
+		verticesWithAdjacentVerticesBackup.addAll(hosts.keySet());
+		for (Set<MemoryExclusionVertex> hosted : hosts.values()) {
+			verticesWithAdjacentVerticesBackup.addAll(hosted);
+		}
+		for (MemoryExclusionVertex vertex : verticesWithAdjacentVerticesBackup) {
+			@SuppressWarnings("unchecked")
+			List<MemoryExclusionVertex> adjacentVerticesBackup = (List<MemoryExclusionVertex>) vertex.getPropertyBean()
+					.getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
+			adjacentVerticesBackup.removeAll(vertices);
+		}
+	}
+
+	/**
 	 * This method is used to access all the neighbors of a given vertex.
 	 * 
 	 * @param vertex
