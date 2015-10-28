@@ -129,12 +129,12 @@ class Distributor {
 		// Create Memory Specific MemEx using their verticesSet
 		for (String memory : memExesVerticesSet.keySet) {
 			// Clone the input exclusion graph
-			var copiedMemEx = memEx.clone as MemoryExclusionGraph
+			var copiedMemEx = memEx.deepClone 
 			// Obtain the list of vertices to remove from it
 			var verticesToRemove = new HashSet<MemoryExclusionVertex>(copiedMemEx.vertexSet)
 			verticesToRemove.removeAll(memExesVerticesSet.get(memory))
 			// Remove them
-			copiedMemEx.removeAllVertices(verticesToRemove)
+			copiedMemEx.deepRemoveAllVertices(verticesToRemove)
 			// Save the MemEx
 			memExes.put(memory, copiedMemEx)
 		}
