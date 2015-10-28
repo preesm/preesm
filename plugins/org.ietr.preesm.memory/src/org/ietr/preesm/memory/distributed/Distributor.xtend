@@ -249,7 +249,6 @@ class Distributor {
 								// the graph
 								mObjsToUndivide.add(mobj)
 							}
-							println(rangesInHost)
 						}
 					}
 
@@ -257,7 +256,6 @@ class Distributor {
 					// mObjsToUndivide are not part of these memory objects
 					val mObjInCurrentBank = mobjByBank.get(bankEntry.key)
 					mObjInCurrentBank.removeAll(mObjsToUndivide)
-					println(bankEntry.key + "===>")
 					for (currentRange : rangesInBank) {
 						// 1. Get the list of mObjects falling in this range
 						val mObjInCurrentRange = new ArrayList<MemoryExclusionVertex>
@@ -285,7 +283,6 @@ class Distributor {
 							}
 						}
 
-						println(currentRange + "----->" + mObjInCurrentRange)
 						// 2. Select the first object as the new host 
 						// (cannot be a divided mObject as divided mObjects were 
 						// always added at the end of the list)
@@ -337,7 +334,6 @@ class Distributor {
 							// update the real token range property by translating
 							// ranges to the current range referential
 							val mObjRanges = mObj.propertyBean.getValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
-							print(minIndex + ":" + mObjRanges + "====>")
 							val mObjNewRanges = mObjRanges.map [ mObjRangePair |
 								// Check if the current mObjRangePair overlaps with
 								// the current range. 
@@ -360,7 +356,6 @@ class Distributor {
 							// Save property and update hostMObjSet
 							mObj.propertyBean.setValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, mObjNewRanges)
 							hostMObjSet.add(mObj)
-							println(mObjNewRanges)
 						}
 					}
 				}
