@@ -210,10 +210,12 @@ class Distributor {
 				// Remove information of the current host from the MEG
 				// This is safe since a copy of the hosts is used for iteration
 				hosts.remove(entry.key)
+				meg.removeVertex(entry.key)
 
 				// For each bank, create as many hosts as the number of
 				// non-contiguous ranges formed by the memory objects falling
 				// into this memory bank.
+				val newHostsMObjs = new HashSet<MemoryExclusionVertex>
 				for (bankEntry : mobjByBank.entrySet) {
 					// Iterate over Mobjects to build the range(s) of this memory 
 					// bank (all ranges are relative to the host mObj)
@@ -287,19 +289,13 @@ class Distributor {
 						// 2. Select the first object as the new host 
 						// (cannot be a divided mObject as divided mObjects were 
 						// always added at the end of the list)
-						val newHostMobj = if(mObjInCurrentRange.contains(entry.key)) {
-								// if the mObj currently used as a host is part of this
-								// range, use it
-								entry.key
-							} else {
-								// Else select the first (there always is a first, 
-								// otherwise, launching an exception is done.) 
-								mObjInCurrentRange.get(0)
-							}
+						val newHostMobj = mObjInCurrentRange.get(0)
+						newHostsMObjs.add(newHostMobj)
 
 						// 3. Give the new host the right size
 						// (pay attention to alignment)
 						// Get aligned min index range
+						val newHostOldRange = newHostMobj.propertyBean.getValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
 						val minIndex = if(currentRange.start == 0 || alignment <= 0) {
 								currentRange.start
 							} else {
@@ -307,7 +303,6 @@ class Distributor {
 								// fact aligned.
 								// This goal is here to make sure that
 								// index 0 of the new host buffer is aligned !
-								val newHostOldRange = newHostMobj.propertyBean.getValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
 								val newHostOldStart = newHostOldRange.get(0).value.value.start; // .value.value
 								// If the result of te modulo is not null, unaligned 
 								// corresponds to the number of "extra" bytes making
@@ -324,6 +319,13 @@ class Distributor {
 									currentRange.start - (alignment - unaligned)
 							}
 						newHostMobj.setWeight(currentRange.end - minIndex)
+						
+						// Update newHostMobj realTokenRange property
+						val newHostRealTokenRange = newHostOldRange.get(0).value.key
+						val newHostActualRealTokenRange = newHostOldRange.get(0).value.value.translate(-minIndex)
+						val ranges = newArrayList
+						ranges.add(newHostMobj -> (newHostRealTokenRange -> newHostActualRealTokenRange))
+						newHostMobj.setPropertyValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, ranges)
 
 						// Add the mobj to the meg host list
 						val hostMObjSet = newHashSet
@@ -354,46 +356,90 @@ class Distributor {
 									mObjRangePair
 								}
 							]
-							
+
 							// Save property and update hostMObjSet
 							mObj.propertyBean.setValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, mObjNewRanges)
 							hostMObjSet.add(mObj)
 							println(mObjNewRanges)
 						}
-						
-						// 5. Put the host in the MEG
-						throw new RuntimeException("Back to work here!")
 					}
+				}
+
+				// Add the new host MObjects to the MEG
+				// and add exclusion of the host
+				for (newHostMobj : newHostsMObjs) {
+					// Add new host to the MEG
+					meg.addVertex(newHostMobj)
+					// Add exclusions
+					restoreExclusions(meg, newHostMobj)
 				}
 
 				// Process the mObjects to "undivide".
 				for (mObj : mObjsToUndivide) {
 					// Remove the Mobject from the MEG HOST_MEM_OBJ property
-					val hostMemObjProp = meg.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>
-					hostMemObjProp.forEach[hostMObj, hostedMobjs|hostedMobjs.remove(mObj)]
-
+					// Already done when host are removed from HOST_MEM_OBJ in previous loop
+					// val hostMemObjProp = meg.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>
+					// hostMemObjProp.forEach[hostMObj, hostedMobjs|hostedMobjs.remove(mObj)]
 					// Add the mobj back to the Meg
 					meg.addVertex(mObj)
 
 					// Restore original exclusions of the mobj
-					val adjacentMObjs = mObj.propertyBean.getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP) as List<MemoryExclusionVertex>
-					for (adjacentMObj : adjacentMObjs) {
-						// Check if the adjacent mObj is already in the graph
-						if(meg.vertexSet.contains(adjacentMObj)) {
-							// the adjacent mObj is already in the graph
-							// Add the exclusion back
-							meg.addEdge(mObj, adjacentMObj)
-						} else {
-							// The adjacent mObj is not in the graph
-							// It must be merged within a host 
-							// (or several host in case of a division)
-							hostMemObjProp.forEach [ hostMObj, hostedMObjs |
-								if(hostedMObjs.contains(adjacentMObj)) {
-									meg.addEdge(mObj, hostMObj)
-								}
-							]
+					restoreExclusions(meg, mObj)
+				}
+			}
+		}
+	}
+
+	/**
+	 * Restore exclusions in the {@link MemoryExclusionGraph MEG} for the given
+	 * {@link MemoryExclusionVertex}, (and its hosted
+	 * {@link MemoryExclusionVertex}, if any).
+	 * </br></br>
+	 * <b>Method called by {@link #splitMergedBuffers(String, MemoryExclusionGraph, int)} only.</b>
+	 * 
+	 * @param meg
+	 *            the {@link MemoryExclusionGraph} to which the exclusion are to
+	 *            be added.
+	 * @param mObj
+	 *            the {@link MemoryExclusionVertex} whose exclusions are
+	 *            restored (may be a host vertex).
+	 */
+	protected def static restoreExclusions(MemoryExclusionGraph meg, MemoryExclusionVertex mObj) {
+		// Get the hosts property of the MEG
+		val hosts = (meg.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>)
+
+		// iteration over the host and its hosted vertices, if any
+		val mObjAndHostedMObjs = #{mObj} + (hosts.get(mObj) ?: #{})
+
+		for (curentMObj : mObjAndHostedMObjs) {
+			val adjacentMObjs = curentMObj.propertyBean.getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP) as List<MemoryExclusionVertex>
+			for (adjacentMObj : adjacentMObjs) {
+				// Check if the adjacent mObj is already in the graph
+				if(adjacentMObj != mObj // No self-exclusion 
+				&& meg.vertexSet.contains(adjacentMObj)) {
+					// the adjacent mObj is already in the graph
+					// Add the exclusion back
+					meg.addEdge(mObj, adjacentMObj)
+				} else {
+					// Happens if adjacentMObj is:
+					// - a hosted MObj
+					// - a mobjToUndivide (not yet added back to the graph)
+					// The adjacent mObj is not in the graph
+					// It must be merged within a host 
+					// (or several host in case of a division)
+					hosts.forEach [ hostMObj, hostedMObjs |
+						if(hostMObj != mObj // No self-exclusion 
+						&& hostedMObjs.contains(adjacentMObj) // Does the tested host contain the adjacentMObj
+						&& meg.containsVertex(hostMObj) // If hostMobj was already added to the MEG
+						// && !meg.containsEdge(mObj,hostMObj) // Exclusion does not already exists
+						) {
+							meg.addEdge(mObj, hostMObj)
 						}
-					}
+					]
+				// If the adjacent mObj was not yet added back to the MEG, 
+				// this forEach will have no impact, but edges will be
+				// created on processing of this adjacent mObjs in  
+				// a following iteration of the current for loop.
 				}
 			}
 		}
