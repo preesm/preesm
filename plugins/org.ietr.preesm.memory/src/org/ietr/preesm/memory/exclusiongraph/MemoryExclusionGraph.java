@@ -720,12 +720,14 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 		@SuppressWarnings("unchecked")
 		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostMemoryObjectProperty = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) this
 				.getPropertyBean().getValue(HOST_MEMORY_OBJECT_PROPERTY);
+		
 		if (hostMemoryObjectProperty != null) {
 			Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> propertyCopy = new HashMap<MemoryExclusionVertex, Set<MemoryExclusionVertex>>(
 					hostMemoryObjectProperty);
 			propertyCopy.replaceAll((host, hosted) -> {
 				return new HashSet<MemoryExclusionVertex>(hosted);
 			});
+			this.setPropertyValue(HOST_MEMORY_OBJECT_PROPERTY, propertyCopy);
 		}
 
 		// Deep copy of DagVertexInSchedulingOrder
