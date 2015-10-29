@@ -211,6 +211,7 @@ class Distributor {
 				// This is safe since a copy of the hosts is used for iteration
 				hosts.remove(entry.key)
 				meg.removeVertex(entry.key)
+				println("restore mObj weight")
 
 				// For each bank, create as many hosts as the number of
 				// non-contiguous ranges formed by the memory objects falling
@@ -251,11 +252,13 @@ class Distributor {
 							}
 						}
 					}
-
-					// Create a memory object for each range in the bank
+					
+					// Find the list of mObjs falling in each range
+					// Store the result in the rangesInBankAndMObjs map
 					// mObjsToUndivide are not part of these memory objects
 					val mObjInCurrentBank = mobjByBank.get(bankEntry.key)
 					mObjInCurrentBank.removeAll(mObjsToUndivide)
+					val Map<Range,List<MemoryExclusionVertex>> rangesInBankAndMObjs = newHashMap
 					for (currentRange : rangesInBank) {
 						// 1. Get the list of mObjects falling in this range
 						val mObjInCurrentRange = new ArrayList<MemoryExclusionVertex>
@@ -282,14 +285,21 @@ class Distributor {
 								}
 							}
 						}
+						rangesInBankAndMObjs.put(currentRange,mObjInCurrentRange)
+					}
 
-						// 2. Select the first object as the new host 
+					// Create a memory object for each range in the bank
+					for (currentRangeAndMobjs : rangesInBankAndMObjs.entrySet) {
+						val currentRange = currentRangeAndMobjs.key
+						val mObjInCurrentRange = currentRangeAndMobjs.value
+
+						// 1. Select the first object as the new host 
 						// (cannot be a divided mObject as divided mObjects were 
 						// always added at the end of the list)
 						val newHostMobj = mObjInCurrentRange.get(0)
 						newHostsMObjs.add(newHostMobj)
 
-						// 3. Give the new host the right size
+						// 2. Give the new host the right size
 						// (pay attention to alignment)
 						// Get aligned min index range
 						val newHostOldRange = newHostMobj.propertyBean.getValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
@@ -328,13 +338,16 @@ class Distributor {
 						val hostMObjSet = newHashSet
 						hosts.put(newHostMobj, hostMObjSet)
 
-						// 4. Add all hosted mObjects to the list
+						// 3. Add all hosted mObjects to the list
 						// and set their properties
-						for (mObj : mObjInCurrentRange) {
+						// (exclude first mObj from iteration, as it is the 
+						// new host)
+						for (mObj : mObjInCurrentRange.tail) {
 							// update the real token range property by translating
 							// ranges to the current range referential
 							val mObjRanges = mObj.propertyBean.getValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
-							val mObjNewRanges = mObjRanges.map [ mObjRangePair |
+							val mObjNewRanges = newArrayList 
+							for(mObjRangePair : mObjRanges){
 								// Check if the current mObjRangePair overlaps with
 								// the current range. 
 								// Always OK for undivided buffers
@@ -345,13 +358,13 @@ class Distributor {
 								if(mObjRangePair.value.value.hasOverlap(currentRange)) {
 									// case for Undivided buffer and divided 
 									// range falling into the current range
-									newHostMobj -> (mObjRangePair.value.key -> mObjRangePair.value.value.translate(-minIndex) )
+									mObjNewRanges.add(newHostMobj -> (mObjRangePair.value.key -> mObjRangePair.value.value.translate(-minIndex-newHostActualRealTokenRange.start) ))
 								} else {
 									// Case for divided range not falling into 
 									// the current range
-									mObjRangePair
+									mObjNewRanges.add(mObjRangePair)
 								}
-							]
+							}
 
 							// Save property and update hostMObjSet
 							mObj.propertyBean.setValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, mObjNewRanges)
