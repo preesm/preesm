@@ -720,7 +720,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 		@SuppressWarnings("unchecked")
 		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostMemoryObjectProperty = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) this
 				.getPropertyBean().getValue(HOST_MEMORY_OBJECT_PROPERTY);
-		
+
 		if (hostMemoryObjectProperty != null) {
 			Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> propertyCopy = new HashMap<MemoryExclusionVertex, Set<MemoryExclusionVertex>>(
 					hostMemoryObjectProperty);
@@ -1190,6 +1190,40 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 	@Override
 	public void setPropertyValue(String propertyName, Object value) {
 		this.getPropertyBean().setValue(propertyName, value);
+	}
+
+	/**
+	 * Returns the total number of {@link MemoryExclusionVertex} in the
+	 * {@link MemoryExclusionGraph} including these merged as a result of a
+	 * buffer merging operation, and stored in the
+	 * {@value #HOST_MEMORY_OBJECT_PROPERTY} property.
+	 * 
+	 * @return
+	 */
+	public int getTotalNumberOfVertices() {
+		return getTotalSetOfVertices().size();
+	}
+
+	/**
+	 * Returns the {@link Set} of all {@link MemoryExclusionVertex} in the
+	 * {@link MemoryExclusionGraph}, including these merged as a result of a
+	 * buffer merging operation, and stored in the
+	 * {@value #HOST_MEMORY_OBJECT_PROPERTY} property.
+	 * 
+	 * @return
+	 */
+	public Set<MemoryExclusionVertex> getTotalSetOfVertices() {
+		Set<MemoryExclusionVertex> allVertices = new HashSet<MemoryExclusionVertex>(this.vertexSet());
+		@SuppressWarnings("unchecked")
+		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) this
+				.getPropertyBean().getValue(HOST_MEMORY_OBJECT_PROPERTY);
+		if (hosts != null) {
+			hosts.forEach((host, hosted) -> {
+				allVertices.addAll(hosted);
+			});
+		}
+
+		return allVertices;
 	}
 
 	/**
