@@ -50,6 +50,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.ietr.dftools.algorithm.iterators.DAGIterator;
 import org.ietr.dftools.algorithm.model.CloneableProperty;
 import org.ietr.dftools.algorithm.model.PropertyBean;
@@ -66,6 +67,7 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
+import org.ietr.preesm.memory.script.Range;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
@@ -682,6 +684,8 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 	 * <li>Deep copy (object is duplicated):</li>
 	 * <ul>
 	 * <li>List of Vertices (List of MemoryExclusionVertex)</li>
+	 * <li>MemoryExclusionVertex</li>
+	 * <li>Property of MemoryExclusionVertex</li>
 	 * <li>List of exclusions</li>
 	 * <li>{@link #adjacentVerticesBackup}</li>
 	 * <li>{@link #properties propertyBean} (but not all properties are deeply
@@ -691,7 +695,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 	 * </ul>
 	 * <li>Shallow copy (reference to the object is copied):</li>
 	 * <ul>
-	 * <li>MemoryExclusionVertex</li>
 	 * <li>{@link #SOURCE_DAG} property</li>
 	 * <li>{@link #verticesPredecessors} list</li>
 	 * </ul>
@@ -701,34 +704,34 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 	 */
 	public MemoryExclusionGraph deepClone() {
 		// Shallow copy with clone
-		// Handle shallow copy of attributes and deep copy of vertices and
-		// exclusion lists
-		MemoryExclusionGraph result = (MemoryExclusionGraph) this.clone();
+		// Handle shallow copy of attributes and deep copy of lists of vertices
+		// and
+		// exclusion
+		MemoryExclusionGraph result = new MemoryExclusionGraph();
 
-		// Deep copy AdjacentVerticesBackup
-		result.adjacentVerticesBackup = new HashMap<MemoryExclusionVertex, HashSet<MemoryExclusionVertex>>(
-				this.adjacentVerticesBackup); // Shallow copy of the values
-		result.adjacentVerticesBackup.replaceAll((mObj, neighbors) -> {
-			return new HashSet<MemoryExclusionVertex>(neighbors);
-		}); // Deep copy of the values (the Set, not the mObjects in the set)
-
-		// Deep copy of propertyBean (with shallow copy of its content)
-		result.properties = new PropertyBean();
-		result.copyProperties(this);
-
-		// Deep copy of HOST_MEMORY_OBJECT_PROPERTY property
-		@SuppressWarnings("unchecked")
-		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostMemoryObjectProperty = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) this
-				.getPropertyBean().getValue(HOST_MEMORY_OBJECT_PROPERTY);
-
-		if (hostMemoryObjectProperty != null) {
-			Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> propertyCopy = new HashMap<MemoryExclusionVertex, Set<MemoryExclusionVertex>>(
-					hostMemoryObjectProperty);
-			propertyCopy.replaceAll((host, hosted) -> {
-				return new HashSet<MemoryExclusionVertex>(hosted);
-			});
-			this.setPropertyValue(HOST_MEMORY_OBJECT_PROPERTY, propertyCopy);
+		// Deep copy of all MObj (including merged ones)
+		// Keep a record of the old and new mObj
+		Map<MemoryExclusionVertex, MemoryExclusionVertex> mObjMap = new HashMap<MemoryExclusionVertex, MemoryExclusionVertex>();
+		for (MemoryExclusionVertex vertex : this.getTotalSetOfVertices()) {
+			MemoryExclusionVertex vertexClone = vertex.getClone();
+			mObjMap.put(vertex, vertexClone);
 		}
+
+		// Add mObjs to the graph (except merged ones)
+		for (MemoryExclusionVertex vertex : this.vertexSet()) {
+			result.addVertex(mObjMap.get(vertex));
+		}
+
+		// Copy exclusions
+		for (DefaultEdge edge : this.edgeSet()) {
+			result.addEdge(this.getEdgeSource(edge), this.getEdgeTarget(edge));
+		}
+
+		// Deep copy of mObj properties
+		deepCloneVerticesProperties(mObjMap);
+
+		// Deep copy of propertyBean
+		deepCloneMegProperties(result, mObjMap);
 
 		// Deep copy of DagVertexInSchedulingOrder
 		result.dagVerticesInSchedulingOrder = new ArrayList<DAGVertex>(this.dagVerticesInSchedulingOrder);
@@ -737,31 +740,184 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 	}
 
 	/**
-	 * Remove a {@link MemoryExclusionVertex} from the
-	 * {@link MemoryExclusionGraph}. Contrary to
-	 * {@link #removeVertex(MemoryExclusionVertex)}, this method scans the
-	 * properties and attributes of the {@link MemoryExclusionGraph} to remove
-	 * all reference to the removed {@link MemoryExclusionVertex}.<br>
-	 * <br>
-	 * Properties and attributes affected by this method are:
-	 * <ul>
-	 * <li>List of vertices</li>
-	 * <li>List of edges</li>
-	 * <li>{@link #adjacentVerticesBackup}</li>
-	 * <li>{@link #dagVerticesInSchedulingOrder}</li>
-	 * <li>{@link #HOST_MEMORY_OBJECT_PROPERTY} property}</li>
-	 * <li>{@link MemoryExclusionVertex#ADJACENT_VERTICES_BACKUP} property of
-	 * {@link MemoryExclusionVertex vertices}</li>
-	 * </ul>
+	 * This method clones the {@link PropertyBean} of the current
+	 * {@link MemoryExclusionGraph} into the clone {@link MemoryExclusionGraph}
+	 * passed as a parameter. The mObjMap parameter is used to make properties
+	 * of the clone reference only cloned {@link MemoryExclusionVertex} (and not
+	 * {@link MemoryExclusionVertex} of the original
+	 * {@link MemoryExclusionGraph}).
 	 * 
-	 * @param vertex
-	 *            the {@link MemoryExclusionVertex} removed from the graph.
+	 * @param result
+	 *            The clone {@link MemoryExclusionGraph} created in the
+	 *            {@link #deepClone()} method.
+	 * @param mObjMap
+	 *            <code>Map<MemoryExclusionVertex,MemoryExclusionVertex></code>
+	 *            associating original {@link MemoryExclusionVertex} of the
+	 *            current {@link MemoryExclusionGraph} to their clone.
 	 */
-	public void deepRemoveVertex(MemoryExclusionVertex vertex) {
-		List<MemoryExclusionVertex> list = new ArrayList<MemoryExclusionVertex>();
-		list.add(vertex);
-		// Calls the list removing code to avoid duplicating the method code.
-		deepRemoveAllVertices(list);
+	protected void deepCloneMegProperties(MemoryExclusionGraph result,
+			Map<MemoryExclusionVertex, MemoryExclusionVertex> mObjMap) {
+		// DAG_EDGE_ALLOCATION
+		@SuppressWarnings("unchecked")
+		Map<DAGEdge, Integer> dagEdgeAlloc = (Map<DAGEdge, Integer>) this.getPropertyBean()
+				.getValue(DAG_EDGE_ALLOCATION);
+		if (dagEdgeAlloc != null) {
+			Map<DAGEdge, Integer> dagEdgeAllocCopy = new HashMap<DAGEdge, Integer>(dagEdgeAlloc);
+			result.setPropertyValue(DAG_EDGE_ALLOCATION, dagEdgeAllocCopy);
+		}
+
+		// DAG_FIFO_ALLOCATION
+		@SuppressWarnings("unchecked")
+		Map<MemoryExclusionVertex, Integer> dagFifoAlloc = (Map<MemoryExclusionVertex, Integer>) this.getPropertyBean()
+				.getValue(DAG_FIFO_ALLOCATION);
+		if (dagFifoAlloc != null) {
+			Map<MemoryExclusionVertex, Integer> dagFifoAllocCopy = new HashMap<MemoryExclusionVertex, Integer>();
+			for (Entry<MemoryExclusionVertex, Integer> fifoAlloc : dagFifoAlloc.entrySet()) {
+				dagFifoAllocCopy.put(mObjMap.get(fifoAlloc.getKey()), fifoAlloc.getValue());
+			}
+			result.setPropertyValue(DAG_FIFO_ALLOCATION, dagFifoAllocCopy);
+		}
+
+		// WORKING_MEM_ALLOCATION
+		@SuppressWarnings("unchecked")
+		Map<MemoryExclusionVertex, Integer> wMemAlloc = (Map<MemoryExclusionVertex, Integer>) this.getPropertyBean()
+				.getValue(WORKING_MEM_ALLOCATION);
+		if (wMemAlloc != null) {
+			Map<MemoryExclusionVertex, Integer> wMemAllocCopy = new HashMap<MemoryExclusionVertex, Integer>();
+			for (Entry<MemoryExclusionVertex, Integer> wMem : wMemAlloc.entrySet()) {
+				wMemAllocCopy.put(mObjMap.get(wMem.getKey()), wMem.getValue());
+			}
+			result.setPropertyValue(WORKING_MEM_ALLOCATION, wMemAllocCopy);
+		}
+
+		// SOURCE_DAG
+		if (this.getPropertyBean().getValue(SOURCE_DAG) != null) {
+			result.setPropertyValue(SOURCE_DAG, this.getPropertyBean().getValue(SOURCE_DAG));
+		}
+
+		// ALLOCATED_MEMORY_SIZE
+		if (this.getPropertyBean().getValue(ALLOCATED_MEMORY_SIZE) != null) {
+			result.setPropertyValue(ALLOCATED_MEMORY_SIZE, this.getPropertyBean().getValue(ALLOCATED_MEMORY_SIZE));
+		}
+
+		// HOST_MEMORY_OBJECT_PROPERTY property
+		@SuppressWarnings("unchecked")
+		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostMemoryObject = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) this
+				.getPropertyBean().getValue(HOST_MEMORY_OBJECT_PROPERTY);
+		if (hostMemoryObject != null) {
+			Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostMemoryObjectCopy = new HashMap<MemoryExclusionVertex, Set<MemoryExclusionVertex>>();
+			for (Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> host : hostMemoryObject.entrySet()) {
+				Set<MemoryExclusionVertex> hostedCopy = new HashSet<MemoryExclusionVertex>();
+				for (MemoryExclusionVertex hosted : host.getValue()) {
+					hostedCopy.add(mObjMap.get(hosted));
+				}
+				hostMemoryObjectCopy.put(mObjMap.get(host.getKey()), hostedCopy);
+			}
+			result.setPropertyValue(HOST_MEMORY_OBJECT_PROPERTY, hostMemoryObjectCopy);
+		}
+	}
+
+	/**
+	 * This method create a deep copy of the properties of the
+	 * {@link MemoryExclusionVertex} cloned in the {@link #deepClone()} method.
+	 * <br>
+	 * Keys of the mObjMap parameter are the original
+	 * {@link MemoryExclusionVertex} whose properties are to be cloned, and
+	 * values of the map are the corresponding {@link MemoryExclusionVertex}
+	 * clones. Cloned properties are:
+	 * <ul>
+	 * <li>{@link MemoryExclusionVertex#MEMORY_OFFSET_PROPERTY}</li>
+	 * <li>{@link MemoryExclusionVertex#REAL_TOKEN_RANGE_PROPERTY}</li>
+	 * <li>{@link MemoryExclusionVertex#FAKE_MOBJECT}</li>
+	 * <li>{@link MemoryExclusionVertex#ADJACENT_VERTICES_BACKUP}</li>
+	 * <li>{@link MemoryExclusionVertex#EMPTY_SPACE_BEFORE}</li>
+	 * <li>{@link MemoryExclusionVertex#HOST_SIZE}</li>
+	 * <li>{@link MemoryExclusionVertex#DIVIDED_PARTS_HOSTS}</li>
+	 * </ul>
+	 * All cloned properties referencing {@link MemoryExclusionVertex} are
+	 * referencing {@link MemoryExclusionVertex} of the mObjMap values (i.e. the
+	 * cloned {@link MemoryExclusionVertex}).
+	 * 
+	 * @param mObjMap
+	 *            <code>Map<MemoryExclusionVertex,MemoryExclusionVertex></code>
+	 *            associating original {@link MemoryExclusionVertex} of the
+	 *            current {@link MemoryExclusionGraph} to their clone.
+	 */
+	protected void deepCloneVerticesProperties(Map<MemoryExclusionVertex, MemoryExclusionVertex> mObjMap) {
+		for (Entry<MemoryExclusionVertex, MemoryExclusionVertex> entry : mObjMap.entrySet()) {
+			MemoryExclusionVertex vertex = entry.getKey();
+			MemoryExclusionVertex vertexClone = entry.getValue();
+
+			// MEMORY_OFFSET_PROPERTY
+			Integer memOffset = (Integer) vertex.getPropertyBean()
+					.getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
+			if (memOffset != null) {
+				vertexClone.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, memOffset);
+			}
+
+			// REAL_TOKEN_RANGE_PROPERTY
+			@SuppressWarnings("unchecked")
+			List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realTokenRange = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) vertex
+					.getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+			if (realTokenRange != null) {
+				List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realTokenRangeCopy = new ArrayList<Pair<MemoryExclusionVertex, Pair<Range, Range>>>();
+				for (Pair<MemoryExclusionVertex, Pair<Range, Range>> pair : realTokenRange) {
+					realTokenRangeCopy.add(Pair.of(mObjMap.get(pair.getKey()), Pair
+							.of((Range) pair.getValue().getKey().clone(), (Range) pair.getValue().getValue().clone())));
+				}
+				vertexClone.setPropertyValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY, realTokenRangeCopy);
+			}
+
+			// FAKE_MOBJECT
+			@SuppressWarnings("unchecked")
+			List<MemoryExclusionVertex> fakeMobject = (List<MemoryExclusionVertex>) vertex.getPropertyBean()
+					.getValue(MemoryExclusionVertex.FAKE_MOBJECT);
+			if (fakeMobject != null) {
+				List<MemoryExclusionVertex> fakeMobjectCopy = new ArrayList<MemoryExclusionVertex>();
+				for (MemoryExclusionVertex fakeMobj : fakeMobject) {
+					fakeMobjectCopy.add(mObjMap.get(fakeMobj));
+				}
+				vertexClone.setPropertyValue(MemoryExclusionVertex.FAKE_MOBJECT, fakeMobjectCopy);
+			}
+
+			// ADJACENT_VERTICES_BACKUP
+			@SuppressWarnings("unchecked")
+			List<MemoryExclusionVertex> adjacentVerticesBackup = (List<MemoryExclusionVertex>) vertex.getPropertyBean()
+					.getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
+			if (adjacentVerticesBackup != null) {
+				List<MemoryExclusionVertex> adjacentVerticesBackupCopy = new ArrayList<MemoryExclusionVertex>();
+				for (MemoryExclusionVertex adjacentVertex : adjacentVerticesBackup) {
+					adjacentVerticesBackupCopy.add(mObjMap.get(adjacentVertex));
+				}
+				vertexClone.setPropertyValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP,
+						adjacentVerticesBackupCopy);
+			}
+
+			// EMPTY_SPACE_BEFORE
+			Integer emptySpaceBefore = (Integer) vertex.getPropertyBean()
+					.getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
+			if (emptySpaceBefore != null) {
+				vertexClone.setPropertyValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE, emptySpaceBefore);
+			}
+
+			// HOST_SIZE
+			Integer hostSize = (Integer) vertex.getPropertyBean().getValue(MemoryExclusionVertex.HOST_SIZE);
+			if (hostSize != null) {
+				vertexClone.setPropertyValue(MemoryExclusionVertex.HOST_SIZE, hostSize);
+			}
+
+			// DIVIDED_PARTS_HOSTS
+			@SuppressWarnings("unchecked")
+			List<MemoryExclusionVertex> dividedPartHosts = (List<MemoryExclusionVertex>) vertex.getPropertyBean()
+					.getValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS);
+			if (dividedPartHosts != null) {
+				List<MemoryExclusionVertex> dividedPartHostCopy = new ArrayList<MemoryExclusionVertex>();
+				for (MemoryExclusionVertex host : dividedPartHosts) {
+					dividedPartHostCopy.add(mObjMap.get(host));
+				}
+				vertexClone.setPropertyValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS, dividedPartHostCopy);
+			}
+		}
 	}
 
 	/**
@@ -819,6 +975,34 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 					.getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
 			adjacentVerticesBackup.removeAll(vertices);
 		}
+	}
+
+	/**
+	 * Remove a {@link MemoryExclusionVertex} from the
+	 * {@link MemoryExclusionGraph}. Contrary to
+	 * {@link #removeVertex(MemoryExclusionVertex)}, this method scans the
+	 * properties and attributes of the {@link MemoryExclusionGraph} to remove
+	 * all reference to the removed {@link MemoryExclusionVertex}.<br>
+	 * <br>
+	 * Properties and attributes affected by this method are:
+	 * <ul>
+	 * <li>List of vertices</li>
+	 * <li>List of edges</li>
+	 * <li>{@link #adjacentVerticesBackup}</li>
+	 * <li>{@link #dagVerticesInSchedulingOrder}</li>
+	 * <li>{@link #HOST_MEMORY_OBJECT_PROPERTY} property}</li>
+	 * <li>{@link MemoryExclusionVertex#ADJACENT_VERTICES_BACKUP} property of
+	 * {@link MemoryExclusionVertex vertices}</li>
+	 * </ul>
+	 * 
+	 * @param vertex
+	 *            the {@link MemoryExclusionVertex} removed from the graph.
+	 */
+	public void deepRemoveVertex(MemoryExclusionVertex vertex) {
+		List<MemoryExclusionVertex> list = new ArrayList<MemoryExclusionVertex>();
+		list.add(vertex);
+		// Calls the list removing code to avoid duplicating the method code.
+		deepRemoveAllVertices(list);
 	}
 
 	/**
@@ -1072,6 +1256,40 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 	}
 
 	/**
+	 * Returns the total number of {@link MemoryExclusionVertex} in the
+	 * {@link MemoryExclusionGraph} including these merged as a result of a
+	 * buffer merging operation, and stored in the
+	 * {@value #HOST_MEMORY_OBJECT_PROPERTY} property.
+	 * 
+	 * @return
+	 */
+	public int getTotalNumberOfVertices() {
+		return getTotalSetOfVertices().size();
+	}
+
+	/**
+	 * Returns the {@link Set} of all {@link MemoryExclusionVertex} in the
+	 * {@link MemoryExclusionGraph}, including these merged as a result of a
+	 * buffer merging operation, and stored in the
+	 * {@value #HOST_MEMORY_OBJECT_PROPERTY} property.
+	 * 
+	 * @return
+	 */
+	public Set<MemoryExclusionVertex> getTotalSetOfVertices() {
+		Set<MemoryExclusionVertex> allVertices = new HashSet<MemoryExclusionVertex>(this.vertexSet());
+		@SuppressWarnings("unchecked")
+		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) this
+				.getPropertyBean().getValue(HOST_MEMORY_OBJECT_PROPERTY);
+		if (hosts != null) {
+			hosts.forEach((host, hosted) -> {
+				allVertices.addAll(hosted);
+			});
+		}
+
+		return allVertices;
+	}
+
+	/**
 	 * This method returns the local copy of the {@link MemoryExclusionVertex}
 	 * that is {@link MemoryExclusionVertex}{@link #equals(Object)} to the
 	 * {@link MemoryExclusionVertex} passed as a parameter.
@@ -1190,40 +1408,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 	@Override
 	public void setPropertyValue(String propertyName, Object value) {
 		this.getPropertyBean().setValue(propertyName, value);
-	}
-
-	/**
-	 * Returns the total number of {@link MemoryExclusionVertex} in the
-	 * {@link MemoryExclusionGraph} including these merged as a result of a
-	 * buffer merging operation, and stored in the
-	 * {@value #HOST_MEMORY_OBJECT_PROPERTY} property.
-	 * 
-	 * @return
-	 */
-	public int getTotalNumberOfVertices() {
-		return getTotalSetOfVertices().size();
-	}
-
-	/**
-	 * Returns the {@link Set} of all {@link MemoryExclusionVertex} in the
-	 * {@link MemoryExclusionGraph}, including these merged as a result of a
-	 * buffer merging operation, and stored in the
-	 * {@value #HOST_MEMORY_OBJECT_PROPERTY} property.
-	 * 
-	 * @return
-	 */
-	public Set<MemoryExclusionVertex> getTotalSetOfVertices() {
-		Set<MemoryExclusionVertex> allVertices = new HashSet<MemoryExclusionVertex>(this.vertexSet());
-		@SuppressWarnings("unchecked")
-		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) this
-				.getPropertyBean().getValue(HOST_MEMORY_OBJECT_PROPERTY);
-		if (hosts != null) {
-			hosts.forEach((host, hosted) -> {
-				allVertices.addAll(hosted);
-			});
-		}
-
-		return allVertices;
 	}
 
 	/**
