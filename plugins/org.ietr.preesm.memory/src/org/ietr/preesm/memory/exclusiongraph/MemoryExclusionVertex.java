@@ -78,6 +78,13 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 * and {@link Pair}. Each {@link Pair} corresponds to a {@link Range} of
 	 * real tokens of the memory object and their position in the actual
 	 * {@link MemoryExclusionVertex} (i.e. the key of the first {@link Pair}).
+	 * <br>
+	 * For the host memory object, this property gives the position of the range
+	 * of bytes of the host within the memory allocated for it.<br>
+	 * For hosted memory object, this property gives the position of the
+	 * range(s) of bytes of the hosted memory object relatively to the position
+	 * of the 0 index of the host memory object within the memory allocated for
+	 * it.
 	 */
 	public static final String REAL_TOKEN_RANGE_PROPERTY = "real_token_range";
 
