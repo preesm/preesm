@@ -211,7 +211,8 @@ class Distributor {
 				// This is safe since a copy of the hosts is used for iteration
 				hosts.remove(entry.key)
 				meg.removeVertex(entry.key)
-				println("restore mObj weight")
+				val realRange = (entry.key.propertyBean.getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex,Pair<Range,Range>>>).get(0).value.key
+				entry.key.weight = realRange.length
 
 				// For each bank, create as many hosts as the number of
 				// non-contiguous ranges formed by the memory objects falling
