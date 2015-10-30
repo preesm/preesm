@@ -129,7 +129,7 @@ class Distributor {
 		// Create Memory Specific MemEx using their verticesSet
 		for (String memory : memExesVerticesSet.keySet) {
 			// Clone the input exclusion graph
-			var copiedMemEx = memEx.deepClone 
+			var copiedMemEx = memEx.deepClone
 			// Obtain the list of vertices to remove from it
 			var verticesToRemove = new HashSet<MemoryExclusionVertex>(copiedMemEx.vertexSet)
 			verticesToRemove.removeAll(memExesVerticesSet.get(memory))
@@ -211,8 +211,11 @@ class Distributor {
 				// This is safe since a copy of the hosts is used for iteration
 				hosts.remove(entry.key)
 				meg.removeVertex(entry.key)
-				val realRange = (entry.key.propertyBean.getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex,Pair<Range,Range>>>).get(0).value.key
+				val realRange = (entry.key.propertyBean.getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>).get(0).value.value
 				entry.key.weight = realRange.length
+
+				// Put the real range in the same referential as other ranges (cf REAL_TOKEN_RANGE_PROPERTY comments)
+				realRange.translate(-realRange.start)
 
 				// For each bank, create as many hosts as the number of
 				// non-contiguous ranges formed by the memory objects falling
@@ -253,13 +256,13 @@ class Distributor {
 							}
 						}
 					}
-					
+
 					// Find the list of mObjs falling in each range
 					// Store the result in the rangesInBankAndMObjs map
 					// mObjsToUndivide are not part of these memory objects
 					val mObjInCurrentBank = mobjByBank.get(bankEntry.key)
 					mObjInCurrentBank.removeAll(mObjsToUndivide)
-					val Map<Range,List<MemoryExclusionVertex>> rangesInBankAndMObjs = newHashMap
+					val Map<Range, List<MemoryExclusionVertex>> rangesInBankAndMObjs = newHashMap
 					for (currentRange : rangesInBank) {
 						// 1. Get the list of mObjects falling in this range
 						val mObjInCurrentRange = new ArrayList<MemoryExclusionVertex>
@@ -286,7 +289,7 @@ class Distributor {
 								}
 							}
 						}
-						rangesInBankAndMObjs.put(currentRange,mObjInCurrentRange)
+						rangesInBankAndMObjs.put(currentRange, mObjInCurrentRange)
 					}
 
 					// Create a memory object for each range in the bank
@@ -304,7 +307,7 @@ class Distributor {
 						// (pay attention to alignment)
 						// Get aligned min index range
 						val newHostOldRange = newHostMobj.propertyBean.getValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
-						val minIndex = if( alignment <= 0) {
+						val minIndex = if(alignment <= 0) {
 								currentRange.start
 							} else {
 								// Make sure that index aligned in the buffer are in 
@@ -327,7 +330,7 @@ class Distributor {
 									currentRange.start - (alignment - unaligned)
 							}
 						newHostMobj.setWeight(currentRange.end - minIndex)
-						
+
 						// Update newHostMobj realTokenRange property
 						val newHostRealTokenRange = newHostOldRange.get(0).value.key
 						val newHostActualRealTokenRange = newHostOldRange.get(0).value.value.translate(-minIndex)
@@ -347,8 +350,8 @@ class Distributor {
 							// update the real token range property by translating
 							// ranges to the current range referential
 							val mObjRanges = mObj.propertyBean.getValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
-							val mObjNewRanges = newArrayList 
-							for(mObjRangePair : mObjRanges){
+							val mObjNewRanges = newArrayList
+							for (mObjRangePair : mObjRanges) {
 								// Check if the current mObjRangePair overlaps with
 								// the current range. 
 								// Always OK for undivided buffers
@@ -359,7 +362,7 @@ class Distributor {
 								if(mObjRangePair.value.value.hasOverlap(currentRange)) {
 									// case for Undivided buffer and divided 
 									// range falling into the current range
-									mObjNewRanges.add(newHostMobj -> (mObjRangePair.value.key -> mObjRangePair.value.value.translate(-minIndex-newHostActualRealTokenRange.start) ))
+									mObjNewRanges.add(newHostMobj -> (mObjRangePair.value.key -> mObjRangePair.value.value.translate(-minIndex - newHostActualRealTokenRange.start) ))
 								} else {
 									// Case for divided range not falling into 
 									// the current range
