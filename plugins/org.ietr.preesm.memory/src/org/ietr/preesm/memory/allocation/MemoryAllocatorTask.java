@@ -60,13 +60,19 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 		// Prepare the MEG with the alignment
 		MemoryAllocator.alignSubBuffers(memEx, alignment);
 
+		// Get total number of vertices before distribution
+		int nbVerticesBeforeDistribution = memEx.getTotalNumberOfVertices();
+
 		// Create several MEGs according to the selected distribution policy
 		// Each created MEG corresponds to a single memory bank
 		// Log the distribution policy used
 		if (verbose && !valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)) {
 			logger.log(Level.INFO, "Split MEG with " + valueDistribution + " policy");
 		}
+		
+		// Do the distribution
 		Map<String, MemoryExclusionGraph> megs = Distributor.distributeMeg(valueDistribution, memEx, alignment);
+		
 		// Log results
 		if (verbose && !valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)) {
 			logger.log(Level.INFO, "Created " + megs.keySet().size() + " MemExes");
@@ -74,8 +80,24 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 				double density = entry.getValue().edgeSet().size()
 						/ (entry.getValue().vertexSet().size() * (entry.getValue().vertexSet().size() - 1) / 2.0);
 				logger.log(Level.INFO, "Memex(" + entry.getKey() + "): " + entry.getValue().vertexSet().size()
-						+ " vertices, density=" + density);
+						+ " vertices, density=" + density + ":: " + entry.getValue().getTotalSetOfVertices());
 			}
+		}
+
+		// Get total number of vertices before distribution
+		int nbVerticesAfterDistribution = memEx.getTotalNumberOfVertices();
+		final int nbVerticesInMegs[] = { 0 };
+		megs.forEach((bank, meg) -> {
+			nbVerticesInMegs[0] += meg.getTotalNumberOfVertices();
+		});
+
+		// Check that the total number of vertices is unchanged
+		if (!valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)
+				&& (nbVerticesBeforeDistribution != nbVerticesAfterDistribution
+						|| nbVerticesBeforeDistribution != nbVerticesInMegs[0])) {
+			logger.log(Level.SEVERE,
+					"Problem in the MEG distribution, some memory objects were lost during the distribution.\n"
+							+ "Contact Preesm developers to solve this issue.");
 		}
 
 		createAllocators(memEx);
