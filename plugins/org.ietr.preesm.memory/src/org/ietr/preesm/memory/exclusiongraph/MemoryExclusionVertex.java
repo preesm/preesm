@@ -40,7 +40,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 
 import org.eclipse.xtext.util.Pair;
 import org.ietr.dftools.algorithm.model.AbstractEdge;
@@ -139,12 +138,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	public static final String DIVIDED_PARTS_HOSTS = "divided_parts_hosts";
 
 	/**
-	 * Default value put in the {@link #memoryBanks} in
-	 * {@link MemoryExclusionVertex} constructors.
-	 */
-	public static final String DEFAULT_MEMORY_BANK = "shared";
-
-	/**
 	 * This Map is used as a reference of dataTypes size when creating an vertex
 	 * from a DAGEdge
 	 */
@@ -196,16 +189,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 * edge in the dag, i.e. a transfer between actors)
 	 */
 	private DAGEdge edge;
-
-	/**
-	 * {@link TreeSet} of the memory banks in which the current
-	 * {@link MemoryExclusionVertex} is to be allocated. <br>
-	 * <br>
-	 * Each memory bank is identified by its unique identifier stored as a
-	 * {@link String}. This property is initialized with a default
-	 * {@link TreeSet} containing a single memory "shared".
-	 */
-	private TreeSet<String> memoryBanks;
 
 	/**
 	 * {@link MemoryExclusionVertex} property associated to a {@link List} of
@@ -266,10 +249,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 		}
 
 		this.edge = inputEdge;
-
-		// Initialize the memory banks attribute
-		memoryBanks = new TreeSet<String>();
-		memoryBanks.add(DEFAULT_MEMORY_BANK);
 	}
 
 	/**
@@ -287,10 +266,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 		sink = sinkTask;
 		size = sizeMem;
 		explodeImplode = "";
-
-		// Initialize the memory banks attribute
-		memoryBanks = new TreeSet<String>();
-		memoryBanks.add(DEFAULT_MEMORY_BANK);
 	}
 
 	@Override
@@ -350,6 +325,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 		copy = new MemoryExclusionVertex(this.source, this.sink, this.size);
 		copy.setIdentifier(getIdentifier());
 		copy.edge = this.edge;
+		copy.explodeImplode = this.explodeImplode;
 		return copy;
 	}
 
@@ -380,16 +356,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	@Override
 	public int getIdentifier() {
 		return identifier;
-	}
-
-	/**
-	 * Accessor for the {@link #memoryBanks} of the current
-	 * {@link MemoryExclusionVertex}.
-	 * 
-	 * @return a reference to te {@link TreeSet} attribute.
-	 */
-	public TreeSet<String> getMemoryBanks() {
-		return memoryBanks;
 	}
 
 	/**
@@ -435,18 +401,6 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	@Override
 	public void setWeight(Integer w) {
 		size = w.intValue();
-	}
-
-	/**
-	 * Setter for the {@link #memoryBanks} attribute of the current
-	 * {@link MemoryExclusionVertex}.
-	 * 
-	 * @param memoryBanks
-	 *            the new {@link TreeSet} used as the {@link #memoryBanks}
-	 *            attribute.
-	 */
-	public void setMemoryBanks(TreeSet<String> memoryBanks) {
-		this.memoryBanks = memoryBanks;
 	}
 
 	@Override
