@@ -304,7 +304,7 @@ class Distributor {
 						// (pay attention to alignment)
 						// Get aligned min index range
 						val newHostOldRange = newHostMobj.propertyBean.getValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
-						val minIndex = if(currentRange.start == 0 || alignment <= 0) {
+						val minIndex = if( alignment <= 0) {
 								currentRange.start
 							} else {
 								// Make sure that index aligned in the buffer are in 
