@@ -93,8 +93,8 @@
          </inputs>
          <outputs>
             <output
-                  id="MemEx"
-                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+                  id="MEGs"
+                  object="java.util.Map">
             </output>
          </outputs>
       </task>

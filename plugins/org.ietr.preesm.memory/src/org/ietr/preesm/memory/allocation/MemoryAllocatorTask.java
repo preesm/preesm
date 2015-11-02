@@ -100,22 +100,27 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 							+ "Contact Preesm developers to solve this issue.");
 		}
 
-		createAllocators(memEx);
+		for(Entry<String,MemoryExclusionGraph> entry : megs.entrySet()) {
+			
+			String memoryBank = entry.getKey();
+			MemoryExclusionGraph meg = entry.getValue();
+			
+			createAllocators(meg);
+			
+			if (verbose) {
+				logger.log(Level.INFO, "Heat up MemEx for " + memoryBank +" memory bank." );
+			}
+			for (MemoryExclusionVertex vertex : meg.vertexSet()) {
+				meg.getAdjacentVertexOf(vertex);
+			}
 
-		// Heat up the neighborsBackup
-		if (verbose) {
-			logger.log(Level.INFO, "Heat up MemEx");
-		}
-		for (MemoryExclusionVertex vertex : memEx.vertexSet()) {
-			memEx.getAdjacentVertexOf(vertex);
-		}
-
-		for (MemoryAllocator allocator : allocators) {
-			this.allocateWith(allocator);
+			for (MemoryAllocator allocator : allocators) {
+				this.allocateWith(allocator);
+			}
 		}
 
 		Map<String, Object> output = new HashMap<String, Object>();
-		output.put("MemEx", memEx);
+		output.put("MEGs", megs);
 		return output;
 	}
 
