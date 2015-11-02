@@ -86,12 +86,6 @@ public class MemExUpdaterEngine {
 		if (verbose) {
 			logger.log(Level.INFO,
 					"Memory exclusion graph : start updating with schedule");
-
-			System.out.print(memEx.vertexSet().size()
-					+ ";"
-					+ memEx.edgeSet().size()
-					/ (memEx.vertexSet().size()
-							* (memEx.vertexSet().size() - 1) / 2.0) + ";");
 		}
 		
 		memEx.updateWithSchedule(localDAG);
@@ -111,7 +105,6 @@ public class MemExUpdaterEngine {
 							+ Math.round(100.00
 									* (before - memEx.edgeSet().size())
 									/ before) + "%)");
-			System.out.print(density + ";");
 		}
 	}
 	
@@ -140,7 +133,6 @@ public class MemExUpdaterEngine {
 							+ Math.round(100.00
 									* (before - memEx.edgeSet().size())
 									/ before) + "%)");
-			System.out.println(density + ";");
 		}
 	
 	}
