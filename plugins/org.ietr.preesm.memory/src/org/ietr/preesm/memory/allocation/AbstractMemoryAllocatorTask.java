@@ -214,7 +214,7 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
 		}
 	}
 
-	protected void allocateWith(MemoryAllocator allocator, StringBuilder csv) throws WorkflowException {
+	protected void allocateWith(MemoryAllocator allocator) throws WorkflowException {
 		long tStart, tFinish;
 		String sAllocator = allocator.getClass().getSimpleName();
 		if (allocator instanceof OrderedAllocator) {
@@ -249,20 +249,19 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
 					+ " unaligned memory objects. The allocator is not working.\n" + allocator.checkAlignment());
 		}
 
-		csv.append("" + allocator.getMemorySize() + ";" + (tFinish - tStart) + ";");
 		String log = sAllocator + " allocates " + allocator.getMemorySize() + "mem. units in " + (tFinish - tStart)
 				+ " ms.";
 
 		if (allocator instanceof OrderedAllocator && ((OrderedAllocator) allocator).getOrder() == Order.SHUFFLE) {
 			((OrderedAllocator) allocator).setPolicy(Policy.worst);
 			log += " worst: " + allocator.getMemorySize();
-			csv.append(allocator.getMemorySize() + ";");
+			
 			((OrderedAllocator) allocator).setPolicy(Policy.mediane);
 			log += "(med: " + allocator.getMemorySize();
-			csv.append(allocator.getMemorySize() + ";");
+			
 			((OrderedAllocator) allocator).setPolicy(Policy.average);
 			log += " avg: " + allocator.getMemorySize() + ")";
-			csv.append(allocator.getMemorySize() + ";");
+			
 			((OrderedAllocator) allocator).setPolicy(Policy.best);
 		}
 

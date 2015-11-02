@@ -76,13 +76,9 @@ public class MultiMemoryAllocator extends AbstractMemoryAllocatorTask {
 				memEx.getAdjacentVertexOf(vertex);
 			}
 
-			StringBuilder csv = new StringBuilder();
-
 			for (MemoryAllocator allocator : allocators) {
-				this.allocateWith(allocator, csv);
+				this.allocateWith(allocator);
 			}
-
-			System.out.println(csv);
 		}
 
 		Map<String, Object> output = new HashMap<String, Object>();
