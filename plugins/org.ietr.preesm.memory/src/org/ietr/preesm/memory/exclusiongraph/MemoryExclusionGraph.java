@@ -833,6 +833,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 	 * <li>{@link MemoryExclusionVertex#EMPTY_SPACE_BEFORE}</li>
 	 * <li>{@link MemoryExclusionVertex#HOST_SIZE}</li>
 	 * <li>{@link MemoryExclusionVertex#DIVIDED_PARTS_HOSTS}</li>
+	 * <li>{@link MemoryExclusionVertex#TYPE_SIZE}</li>
 	 * </ul>
 	 * All cloned properties referencing {@link MemoryExclusionVertex} are
 	 * referencing {@link MemoryExclusionVertex} of the mObjMap values (i.e. the
@@ -916,6 +917,12 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 					dividedPartHostCopy.add(mObjMap.get(host));
 				}
 				vertexClone.setPropertyValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS, dividedPartHostCopy);
+			}
+			
+			// TYPE_SIZE
+			Integer typeSize = (Integer) vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
+			if (typeSize != null) {
+				vertexClone.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE, typeSize);
 			}
 		}
 	}
