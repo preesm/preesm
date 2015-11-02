@@ -110,7 +110,6 @@ public class TLevelVisitor implements
 				boolean dirty = false;
 				while (iterator.hasNext()) {
 					DAGVertex next = iterator.next();
-					dag.getPredecessorVerticesOf(next);
 					if (!dirty) {
 						dirty |= dirtyVertices.contains(next);
 					}
