@@ -164,11 +164,11 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 	private HashMap<String, HashSet<MemoryExclusionVertex>> verticesPredecessors;
 
 	/**
-	 * {@link DirectedAcyclicGraph DAG} {@link DAGVertex vertices} in the
-	 * scheduling order retrieved in
-	 * {@link #updateWithSchedule(DirectedAcyclicGraph)}.
+	 * {@link MemoryExclusionVertex} of the {@link MemoryExclusionGraph} in the
+	 * scheduling order retrieved in the
+	 * {@link #updateWithSchedule(DirectedAcyclicGraph)} method.
 	 */
-	protected List<DAGVertex> dagVerticesInSchedulingOrder = null;
+	protected List<MemoryExclusionVertex> memExVerticesInSchedulingOrder = null;
 
 	/**
 	 * The {@link PropertyBean} that stores the properties of the
@@ -733,8 +733,12 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 		// Deep copy of propertyBean
 		deepCloneMegProperties(result, mObjMap);
 
-		// Deep copy of DagVertexInSchedulingOrder
-		result.dagVerticesInSchedulingOrder = new ArrayList<DAGVertex>(this.dagVerticesInSchedulingOrder);
+		// Deep copy of memExVerticesInSchedulingOrder
+		result.memExVerticesInSchedulingOrder = new ArrayList<MemoryExclusionVertex>(
+				this.memExVerticesInSchedulingOrder);
+		result.memExVerticesInSchedulingOrder.replaceAll(mObj -> {
+			return mObjMap.get(mObj);
+		});
 
 		return result;
 	}
@@ -918,7 +922,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 				}
 				vertexClone.setPropertyValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS, dividedPartHostCopy);
 			}
-			
+
 			// TYPE_SIZE
 			Integer typeSize = (Integer) vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
 			if (typeSize != null) {
@@ -942,13 +946,8 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 		// adjacentVerticesBackup
 		this.removeAllVertices(vertices);
 
-		// dagVerticesInSchedulingOrder
-		for (MemoryExclusionVertex vertex : vertices) {
-			DAGEdge dagEdge = vertex.getEdge();
-			if (dagEdge != null) {
-				dagVerticesInSchedulingOrder.remove(dagEdge);
-			}
-		}
+		// memExVerticesInSchedulingOrder
+		memExVerticesInSchedulingOrder.removeAll(vertices);
 
 		// HOST_MEMORY_OBJECT_PROPERTY property
 		@SuppressWarnings("unchecked")
@@ -996,7 +995,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 	 * <li>List of vertices</li>
 	 * <li>List of edges</li>
 	 * <li>{@link #adjacentVerticesBackup}</li>
-	 * <li>{@link #dagVerticesInSchedulingOrder}</li>
+	 * <li>{@link #memExVerticesInSchedulingOrder}</li>
 	 * <li>{@link #HOST_MEMORY_OBJECT_PROPERTY} property}</li>
 	 * <li>{@link MemoryExclusionVertex#ADJACENT_VERTICES_BACKUP} property of
 	 * {@link MemoryExclusionVertex vertices}</li>
@@ -1106,16 +1105,16 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 	}
 
 	/**
-	 * @return the {@link #dagVerticesInSchedulingOrder} or <code>null</code> if
-	 *         the {@link MemoryExclusionGraph MemEx} was not
-	 *         {@link #updateWithSchedule(DirectedAcyclicGraph) updated with a
-	 *         schedule}
+	 * @return a copy of the {@link #memExVerticesInSchedulingOrder} or
+	 *         <code>null</code> if the {@link MemoryExclusionGraph MemEx} was
+	 *         not {@link #updateWithSchedule(DirectedAcyclicGraph) updated with
+	 *         a schedule}
 	 */
-	public List<DAGVertex> getDagVerticesInSchedulingOrder() {
-		if (dagVerticesInSchedulingOrder == null) {
+	public List<MemoryExclusionVertex> getMemExVerticesInSchedulingOrder() {
+		if (memExVerticesInSchedulingOrder == null) {
 			return null;
 		} else {
-			return new ArrayList<DAGVertex>(dagVerticesInSchedulingOrder);
+			return new ArrayList<MemoryExclusionVertex>(memExVerticesInSchedulingOrder);
 		}
 	}
 
@@ -1699,7 +1698,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 		ArrayList<Integer> schedulingOrders = new ArrayList<Integer>(verticesMap.keySet());
 		Collections.sort(schedulingOrders);
 
-		dagVerticesInSchedulingOrder = new ArrayList<DAGVertex>();
+		List<DAGVertex> dagVerticesInSchedulingOrder = new ArrayList<DAGVertex>();
 
 		// Update the buffer exclusions
 		// Scan the vertices in scheduling order
@@ -1801,5 +1800,47 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
 		// Update the fifo exclusions
 		updateFIFOMemObjectWithSchedule(dag);
+
+		// Save memory object "scheduling" order
+		memExVerticesInSchedulingOrder = new ArrayList<MemoryExclusionVertex>();
+		// Copy the set of graph vertices (as a list to speedup search in
+		// remaining code)
+		List<MemoryExclusionVertex> memExVertices = new ArrayList<MemoryExclusionVertex>(this.vertexSet());
+		/** Begin by putting all FIFO related Memory objects (if any) */
+		for (MemoryExclusionVertex vertex : this.vertexSet()) {
+			if (vertex.getSource().startsWith("FIFO_Head_") || vertex.getSource().startsWith("FIFO_Body_")) {
+				memExVerticesInSchedulingOrder.add(vertex);
+			}
+		}
+
+		for (DAGVertex vertex : dagVerticesInSchedulingOrder) {
+			/** 1- Retrieve the Working Memory MemEx Vertex (if any) */
+			{
+				// Re-create the working memory exclusion vertex (weight does
+				// not matter to find the vertex in the Memex)
+				MemoryExclusionVertex wMemVertex = new MemoryExclusionVertex(vertex.getName(), vertex.getName(), 0);
+				int index;
+				if ((index = memExVertices.indexOf(wMemVertex)) != -1) {
+					// The working memory exists
+					memExVerticesInSchedulingOrder.add(memExVertices.get(index));
+				}
+			}
+
+			/** 2- Retrieve the MemEx Vertices of outgoing edges (if any) */
+			{
+				for (DAGEdge outgoingEdge : vertex.outgoingEdges()) {
+					if (outgoingEdge.getTarget().getPropertyBean().getValue("vertexType").toString().equals("task")) {
+						MemoryExclusionVertex edgeVertex = new MemoryExclusionVertex(outgoingEdge);
+						int index;
+						if ((index = memExVertices.indexOf(edgeVertex)) != -1) {
+							// The working memory exists
+							memExVerticesInSchedulingOrder.add(memExVertices.get(index));
+						} else {
+							throw new RuntimeException("Missing MemEx Vertex: " + edgeVertex);
+						}
+					}
+				}
+			}
+		}
 	}
 }
