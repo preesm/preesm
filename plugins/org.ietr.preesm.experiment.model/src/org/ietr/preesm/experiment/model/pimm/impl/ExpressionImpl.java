@@ -177,8 +177,17 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 
 			jep.parse(allExpression);
 
-			String evaluation = jep.evaluate().toString();
-
+			Object result = jep.evaluate();
+			String evaluation;
+			
+			/* Display an Integer as it:
+			 *  1 instead of 1.0 
+			 *  (Useful to parse them then) */
+			if(result instanceof Double && (Double)result % 1 == 0){
+				evaluation = Integer.toString((int)(double)result);
+			}else{
+				evaluation = result.toString();
+			}				
 			return evaluation;
 
 		} catch (ParseException e) {
