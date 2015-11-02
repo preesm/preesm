@@ -126,12 +126,24 @@ class Distributor {
 				)
 		}
 
+		// Update the memExexVerticesSet to include hosted mObjects
+		// (splitMergedBuffers ensured that all mObjects hosted by another do 
+		// fall in the same memory bank)
+		val hosts = memEx.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>
+		for (entry : memExesVerticesSet.entrySet) {
+			// Filter: Get hosts falling in this bank
+			// Values: Get the hosted sets of these hosts
+			// Flatten: create an iterable of these hosted sets
+			// addAll: Add these memory objects to the entry sets of mObject 
+			entry.value.addAll(hosts.filter[host, hosted|entry.value.contains(host)].values.flatten)
+		}
+
 		// Create Memory Specific MemEx using their verticesSet
 		for (String memory : memExesVerticesSet.keySet) {
 			// Clone the input exclusion graph
 			var copiedMemEx = memEx.deepClone
-			// Obtain the list of vertices to remove from it
-			var verticesToRemove = new HashSet<MemoryExclusionVertex>(copiedMemEx.vertexSet)
+			// Obtain the list of vertices to remove from it (including hosted vertices)
+			var verticesToRemove = new HashSet<MemoryExclusionVertex>(copiedMemEx.totalSetOfVertices)
 			verticesToRemove.removeAll(memExesVerticesSet.get(memory))
 			// Remove them
 			copiedMemEx.deepRemoveAllVertices(verticesToRemove)
