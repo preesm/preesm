@@ -838,6 +838,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 	 * <li>{@link MemoryExclusionVertex#HOST_SIZE}</li>
 	 * <li>{@link MemoryExclusionVertex#DIVIDED_PARTS_HOSTS}</li>
 	 * <li>{@link MemoryExclusionVertex#TYPE_SIZE}</li>
+	 * <li>{@link MemoryExclusionVertex#INTER_BUFFER_SPACES}</li>
 	 * </ul>
 	 * All cloned properties referencing {@link MemoryExclusionVertex} are
 	 * referencing {@link MemoryExclusionVertex} of the mObjMap values (i.e. the
@@ -927,6 +928,15 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 			Integer typeSize = (Integer) vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
 			if (typeSize != null) {
 				vertexClone.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE, typeSize);
+			}
+
+			// INTER_BUFFER_SPACES
+			@SuppressWarnings("unchecked")
+			List<Integer> interBufferSpaces = (List<Integer>) vertex.getPropertyBean()
+					.getValue(MemoryExclusionVertex.INTER_BUFFER_SPACES);
+			if (interBufferSpaces != null) {
+				vertexClone.setPropertyValue(MemoryExclusionVertex.INTER_BUFFER_SPACES,
+						new ArrayList<Integer>(interBufferSpaces));
 			}
 		}
 	}

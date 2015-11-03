@@ -22,7 +22,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.ietr.preesm.codegen.xtend.model.codegen,
  org.ietr.preesm.codegen.xtend.model.codegen.impl,
  org.ietr.preesm.codegen.xtend.model.codegen.util,
- org.ietr.preesm.codegen.xtend.multiSDFTasks,
  org.ietr.preesm.codegen.xtend.task
 Bundle-Version: 2.2.2.qualifier
 
