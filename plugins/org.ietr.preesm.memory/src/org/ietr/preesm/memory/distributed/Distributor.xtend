@@ -343,48 +343,61 @@ class Distributor {
 							}
 						newHostMobj.setWeight(currentRange.end - minIndex)
 
-						// Update newHostMobj realTokenRange property
-						val newHostRealTokenRange = newHostOldRange.get(0).value.key
-						val newHostActualRealTokenRange = newHostOldRange.get(0).value.value.translate(-minIndex)
-						val ranges = newArrayList
-						ranges.add(newHostMobj -> (newHostRealTokenRange -> newHostActualRealTokenRange))
-						newHostMobj.setPropertyValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, ranges)
+						if(mObjInCurrentRange.size <= 1) {
+							// The new host Mobj does not host any other MObj
+							// last code was still applied to make sure that 
+							// the mObject has the right size (although it 
+							// will never be larger than its original weight
+							// and never by misaligned as it does not not 
+							// host anything) 
+							newHostMobj.propertyBean.removeProperty(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY)
+						} else {
+							// The remaining processing should only be applied if 
+							// the mObject is not alone in its range and does 
+							// actually host other mObjects
+							// Update newHostMobj realTokenRange property
+							val newHostRealTokenRange = newHostOldRange.get(0).value.key
+							val newHostActualRealTokenRange = newHostOldRange.get(0).value.value.translate(-minIndex)
+							val ranges = newArrayList
+							ranges.add(newHostMobj -> (newHostRealTokenRange -> newHostActualRealTokenRange))
+							newHostMobj.setPropertyValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, ranges)
 
-						// Add the mobj to the meg host list
-						val hostMObjSet = newHashSet
-						hosts.put(newHostMobj, hostMObjSet)
+							// Add the mobj to the meg hosts list
+							val hostMObjSet = newHashSet
+							hosts.put(newHostMobj, hostMObjSet)
 
-						// 3. Add all hosted mObjects to the list
-						// and set their properties
-						// (exclude first mObj from iteration, as it is the 
-						// new host)
-						for (mObj : mObjInCurrentRange.tail) {
-							// update the real token range property by translating
-							// ranges to the current range referential
-							val mObjRanges = mObj.propertyBean.getValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
-							val mObjNewRanges = newArrayList
-							for (mObjRangePair : mObjRanges) {
-								// Check if the current mObjRangePair overlaps with
-								// the current range. 
-								// Always OK for undivided buffers
-								// If a divided buffer is mapped into several 
-								// hosts, this code makes sure that each mapped 
-								// ranged is updated only when the corresponding 
-								// range is processed.
-								if(mObjRangePair.value.value.hasOverlap(currentRange)) {
-									// case for Undivided buffer and divided 
-									// range falling into the current range
-									mObjNewRanges.add(newHostMobj -> (mObjRangePair.value.key -> mObjRangePair.value.value.translate(-minIndex - newHostActualRealTokenRange.start) ))
-								} else {
-									// Case for divided range not falling into 
-									// the current range
-									mObjNewRanges.add(mObjRangePair)
+							// 3. Add all hosted mObjects to the list
+							// and set their properties
+							// (exclude first mObj from iteration, as it is the 
+							// new host)
+							for (mObj : mObjInCurrentRange.tail) {
+								// update the real token range property by translating
+								// ranges to the current range referential
+								val mObjRanges = mObj.propertyBean.getValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
+								val mObjNewRanges = newArrayList
+								for (mObjRangePair : mObjRanges) {
+									// Check if the current mObjRangePair overlaps with
+									// the current range. 
+									// Always OK for undivided buffers
+									// If a divided buffer is mapped into several 
+									// hosts, this code makes sure that each mapped 
+									// ranged is updated only when the corresponding 
+									// range is processed.
+									if(mObjRangePair.value.value.hasOverlap(currentRange)) {
+										// case for Undivided buffer and divided 
+										// range falling into the current range
+										mObjNewRanges.add(newHostMobj -> (mObjRangePair.value.key -> mObjRangePair.value.value.translate(-minIndex - newHostActualRealTokenRange.start) ))
+									} else {
+										// Case for divided range not falling into 
+										// the current range
+										mObjNewRanges.add(mObjRangePair)
+									}
 								}
-							}
 
-							// Save property and update hostMObjSet
-							mObj.propertyBean.setValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, mObjNewRanges)
-							hostMObjSet.add(mObj)
+								// Save property and update hostMObjSet
+								mObj.propertyBean.setValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, mObjNewRanges)
+								hostMObjSet.add(mObj)
+							}
 						}
 					}
 				}
