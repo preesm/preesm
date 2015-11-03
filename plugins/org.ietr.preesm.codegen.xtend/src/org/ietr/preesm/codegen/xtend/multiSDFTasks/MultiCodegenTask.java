@@ -81,15 +81,15 @@ public class MultiCodegenTask extends AbstractTaskImplementation {
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 		Design archi = (Design) inputs.get("architecture");
 		@SuppressWarnings("unchecked")
-		Map<DirectedAcyclicGraph, MemoryExclusionGraph> dagsAndMemExs = (Map<DirectedAcyclicGraph, MemoryExclusionGraph>) inputs
+		Map<DirectedAcyclicGraph, Map<String, MemoryExclusionGraph>> dagsAndMemExs = (Map<DirectedAcyclicGraph, Map<String,MemoryExclusionGraph>>) inputs
 				.get(KEY_DAG_AND_MEM_EX_MAP);
 
 		for (DirectedAcyclicGraph dag : dagsAndMemExs.keySet()) {
-			MemoryExclusionGraph memEx = dagsAndMemExs.get(dag);
+			Map<String, MemoryExclusionGraph> megs = dagsAndMemExs.get(dag);
 
 			// Generate intermediate model
 			CodegenModelGenerator generator = new CodegenModelGenerator(archi,
-					dag, memEx, scenario, workflow);
+					dag, megs, scenario, workflow);
 
 			List<Block> codeBlocks = new ArrayList<>(generator.generate());
 

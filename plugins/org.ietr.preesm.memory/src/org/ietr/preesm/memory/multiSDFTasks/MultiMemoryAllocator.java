@@ -37,6 +37,7 @@ package org.ietr.preesm.memory.multiSDFTasks;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -45,6 +46,7 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.ietr.preesm.memory.allocation.MemoryAllocator;
+import org.ietr.preesm.memory.distributed.Distributor;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 
@@ -60,26 +62,68 @@ public class MultiMemoryAllocator extends AbstractMemoryAllocatorTask {
 		Map<DirectedAcyclicGraph, MemoryExclusionGraph> dagsAndMemExs = (Map<DirectedAcyclicGraph, MemoryExclusionGraph>) inputs
 				.get(KEY_DAG_AND_MEM_EX_MAP);
 
-		for (DirectedAcyclicGraph dag : dagsAndMemExs.keySet()) {
+		for (DirectedAcyclicGraph dag : dagsAndMemExs.keySet()) {// Prepare the MEG with the alignment
 			MemoryExclusionGraph memEx = dagsAndMemExs.get(dag);
-
-			// Prepare the MEG with the alignment
 			MemoryAllocator.alignSubBuffers(memEx, alignment);
 
-			createAllocators(memEx);
+			// Get total number of vertices before distribution
+			int nbVerticesBeforeDistribution = memEx.getTotalNumberOfVertices();
 
-			// Heat up the neighborsBackup
-			if (verbose) {
-				logger.log(Level.INFO, "Heat up MemEx");
+			// Create several MEGs according to the selected distribution policy
+			// Each created MEG corresponds to a single memory bank
+			// Log the distribution policy used
+			if (verbose && !valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)) {
+				logger.log(Level.INFO, "Split MEG with " + valueDistribution + " policy");
 			}
-			for (MemoryExclusionVertex vertex : memEx.vertexSet()) {
-				memEx.getAdjacentVertexOf(vertex);
+			
+			// Do the distribution
+			Map<String, MemoryExclusionGraph> megs = Distributor.distributeMeg(valueDistribution, memEx, alignment);
+			
+			// Log results
+			if (verbose && !valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)) {
+				logger.log(Level.INFO, "Created " + megs.keySet().size() + " MemExes");
+				for (Entry<String, MemoryExclusionGraph> entry : megs.entrySet()) {
+					double density = entry.getValue().edgeSet().size()
+							/ (entry.getValue().vertexSet().size() * (entry.getValue().vertexSet().size() - 1) / 2.0);
+					logger.log(Level.INFO, "Memex(" + entry.getKey() + "): " + entry.getValue().vertexSet().size()
+							+ " vertices, density=" + density + ":: " + entry.getValue().getTotalSetOfVertices());
+				}
 			}
 
-			for (MemoryAllocator allocator : allocators) {
-				this.allocateWith(allocator);
+			// Get total number of vertices before distribution
+			int nbVerticesAfterDistribution = memEx.getTotalNumberOfVertices();
+			final int nbVerticesInMegs[] = { 0 };
+			megs.forEach((bank, meg) -> {
+				nbVerticesInMegs[0] += meg.getTotalNumberOfVertices();
+			});
+
+			// Check that the total number of vertices is unchanged
+			if (!valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)
+					&& (nbVerticesBeforeDistribution != nbVerticesAfterDistribution
+							|| nbVerticesBeforeDistribution != nbVerticesInMegs[0])) {
+				logger.log(Level.SEVERE,
+						"Problem in the MEG distribution, some memory objects were lost during the distribution.\n"
+								+ "Contact Preesm developers to solve this issue.");
 			}
-		}
+
+			for(Entry<String,MemoryExclusionGraph> entry : megs.entrySet()) {
+				
+				String memoryBank = entry.getKey();
+				MemoryExclusionGraph meg = entry.getValue();
+				
+				createAllocators(meg);
+				
+				if (verbose) {
+					logger.log(Level.INFO, "Heat up MemEx for " + memoryBank +" memory bank." );
+				}
+				for (MemoryExclusionVertex vertex : meg.vertexSet()) {
+					meg.getAdjacentVertexOf(vertex);
+				}
+
+				for (MemoryAllocator allocator : allocators) {
+					this.allocateWith(allocator);
+				}
+			}}
 
 		Map<String, Object> output = new HashMap<String, Object>();
 		output.put(KEY_DAG_AND_MEM_EX_MAP, dagsAndMemExs);

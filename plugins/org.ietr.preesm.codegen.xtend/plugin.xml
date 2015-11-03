@@ -97,8 +97,8 @@
             type="org.ietr.preesm.codegen.xtend.task.CodegenTask">
          <inputs>
             <input
-                  id="MemEx"
-                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+                  id="MEGs"
+                  object="java.util.Map">
             </input>
             <input
                   id="architecture"
