@@ -165,7 +165,7 @@ class C6678CPrinter extends CPrinter {
 	def printCacheCoherency(Call call)'''
 		«IF call.parameters.size > 0»
 			«FOR i :  0 .. call.parameters.size - 1»
-				«IF call.parameterDirections.get(i) == PortDirection.INPUT && !(call.parameters.get(i) instanceof NullBuffer)»
+				«IF call.parameterDirections.get(i) == PortDirection.INPUT && !((call.parameters.get(i) as Buffer).local)  && !(call.parameters.get(i) instanceof NullBuffer)»
 					«IF (call.parameters.get(i) as Buffer).mergedRange != null»
 						«FOR range : (call.parameters.get(i) as Buffer).mergedRange»
 							cache_wb(((char*)«call.parameters.get(i).doSwitch») + «range.start», «range.length»);
@@ -188,7 +188,8 @@ class C6678CPrinter extends CPrinter {
 		// Then a writeback is needed for the output to make sure that when a consumer
 		// finish its execution and invalidate the buffer, if another consumer of the same 
 		// merged buffer is executed on the same core, its data will still be valid
-		if (result.empty) {
+		// Unless the buffer is in a local memory
+		if (result.empty && !input.local) {
 			if (!(input instanceof NullBuffer)) {
 				result = '''cache_wb(«input.doSwitch», «input.size»*sizeof(«input.type»));'''
 			} else {

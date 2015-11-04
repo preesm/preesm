@@ -733,18 +733,23 @@ public class CodegenModelGenerator {
 			Buffer mainBuffer = entry.getValue();
 
 			// Identify the corresponding operator block.
+			// (also find out if the Buffer is local (i.e. not shared between
+			// several CoreBlock)
 			CoreBlock correspondingOperatorBlock = null;
+			final boolean isLocal;
 			{
-
 				final String correspondingOperatorID;
+
 				if (memoryBank.equals("Shared")) {
 					// If the memory bank is shared, let the main operator
 					// declare the Buffer.
 					correspondingOperatorID = scenario.getSimulationManager().getMainOperatorName();
+					isLocal = false;
 				} else {
 					// else, the operator corresponding to the memory bank will
 					// do the work
 					correspondingOperatorID = memoryBank;
+					isLocal = true;
 				}
 
 				// Find the block
@@ -757,7 +762,7 @@ public class CodegenModelGenerator {
 
 			// Recursively set the creator for the current Buffer and all its
 			// subBuffer
-			recusriveSetBufferCreator(mainBuffer, correspondingOperatorBlock);
+			recusriveSetBufferCreator(mainBuffer, correspondingOperatorBlock, isLocal);
 
 			ECollections.sort(correspondingOperatorBlock.getDefinitions(), new Comparator<Variable>() {
 
@@ -2169,14 +2174,18 @@ public class CodegenModelGenerator {
 	 *            The {@link Buffer} whose creator is to be set.
 	 * @param correspondingOperatorBlock
 	 *            The creator {@link Block}.
+	 * @param isLocal
+	 *            boolean used to set the {@link Buffer#isLocal()} property of
+	 *            all {@link Buffer}
 	 */
-	private void recusriveSetBufferCreator(Buffer buffer, CoreBlock correspondingOperatorBlock) {
+	private void recusriveSetBufferCreator(Buffer buffer, CoreBlock correspondingOperatorBlock, boolean isLocal) {
 		// Set the creator for the current buffer
 		buffer.setCreator(correspondingOperatorBlock);
+		buffer.setLocal(isLocal);
 
 		// Do the same recursively for all its children subbuffers
 		for (SubBuffer subBuffer : buffer.getChildrens()) {
-			recusriveSetBufferCreator(subBuffer, correspondingOperatorBlock);
+			recusriveSetBufferCreator(subBuffer, correspondingOperatorBlock, isLocal);
 		}
 	}
 
