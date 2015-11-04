@@ -249,19 +249,33 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
 					+ " unaligned memory objects. The allocator is not working.\n" + allocator.checkAlignment());
 		}
 
-		String log = sAllocator + " allocates " + allocator.getMemorySize() + "mem. units in " + (tFinish - tStart)
-				+ " ms.";
+		String unit = "bytes";
+		float size = allocator.getMemorySize();
+		if (size > 1024) {
+			size /= 1024.0;
+			unit = "kBytes";
+			if (size > 1024) {
+				size /= 1024.0;
+				unit = "MBytes";
+				if (size > 1024) {
+					size /= 1024.0;
+					unit = "GBytes";
+				}
+			}
+		}
+
+		String log = sAllocator + " allocates " + size + " " + unit + " in " + (tFinish - tStart) + " ms.";
 
 		if (allocator instanceof OrderedAllocator && ((OrderedAllocator) allocator).getOrder() == Order.SHUFFLE) {
 			((OrderedAllocator) allocator).setPolicy(Policy.worst);
 			log += " worst: " + allocator.getMemorySize();
-			
+
 			((OrderedAllocator) allocator).setPolicy(Policy.mediane);
 			log += "(med: " + allocator.getMemorySize();
-			
+
 			((OrderedAllocator) allocator).setPolicy(Policy.average);
 			log += " avg: " + allocator.getMemorySize() + ")";
-			
+
 			((OrderedAllocator) allocator).setPolicy(Policy.best);
 		}
 
