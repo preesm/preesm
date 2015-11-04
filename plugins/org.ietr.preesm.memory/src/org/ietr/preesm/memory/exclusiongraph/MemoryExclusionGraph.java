@@ -964,21 +964,27 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) this
 				.getPropertyBean().getValue(HOST_MEMORY_OBJECT_PROPERTY);
 
-		hosts.keySet().removeAll(vertices); // Changes to the KeySet are applied
-											// to the map
-		hosts.forEach((host, hosted) -> {
-			if (hosted.removeAll(vertices))
-				// List of hosted mObjects should never be impacted by
-				// the remove operation. (in the context of Distributor call)
-				// indeed, deeply removed vertices correspond to vertices
-				// belonging to other memory banks, hence if a hosted Mobj
-				// belong to a list, and this Mobj is to be removed, then the
-				// host Mobj for this hosted Mobj is mandatorily associated to
-				// another bank, and has been removed in the previous lines of
-				// the code.
-				throw new RuntimeException("A hosted Memory Object was removed (but its host was not).");
-		});
-
+		if (hosts != null) {
+			hosts.keySet().removeAll(vertices); // Changes to the KeySet are
+												// applied
+												// to the map
+			hosts.forEach((host, hosted) -> {
+				if (hosted.removeAll(vertices))
+					// List of hosted mObjects should never be impacted by
+					// the remove operation. (in the context of Distributor
+					// call)
+					// indeed, deeply removed vertices correspond to vertices
+					// belonging to other memory banks, hence if a hosted Mobj
+					// belong to a list, and this Mobj is to be removed, then
+					// the
+					// host Mobj for this hosted Mobj is mandatorily associated
+					// to
+					// another bank, and has been removed in the previous lines
+					// of
+					// the code.
+					throw new RuntimeException("A hosted Memory Object was removed (but its host was not).");
+			});
+		
 		// ADJACENT_VERTICES_BACKUP property vertices
 		Set<MemoryExclusionVertex> verticesWithAdjacentVerticesBackup = new HashSet<MemoryExclusionVertex>();
 		verticesWithAdjacentVerticesBackup.addAll(hosts.keySet());
@@ -990,6 +996,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 			List<MemoryExclusionVertex> adjacentVerticesBackup = (List<MemoryExclusionVertex>) vertex.getPropertyBean()
 					.getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
 			adjacentVerticesBackup.removeAll(vertices);
+			}
 		}
 	}
 
