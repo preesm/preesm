@@ -75,6 +75,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
+import org.ietr.preesm.memory.script.Range;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Package</b>. <!--
@@ -322,13 +323,12 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 */
 	public static CodegenPackage init() {
 		if (isInited)
-			return (CodegenPackage) EPackage.Registry.INSTANCE
-					.getEPackage(CodegenPackage.eNS_URI);
+			return (CodegenPackage) EPackage.Registry.INSTANCE.getEPackage(CodegenPackage.eNS_URI);
 
 		// Obtain or create and register package
 		CodegenPackageImpl theCodegenPackage = (CodegenPackageImpl) (EPackage.Registry.INSTANCE
-				.get(eNS_URI) instanceof CodegenPackageImpl ? EPackage.Registry.INSTANCE
-				.get(eNS_URI) : new CodegenPackageImpl());
+				.get(eNS_URI) instanceof CodegenPackageImpl ? EPackage.Registry.INSTANCE.get(eNS_URI)
+						: new CodegenPackageImpl());
 
 		isInited = true;
 
@@ -342,8 +342,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		theCodegenPackage.freeze();
 
 		// Update the registry and return the package
-		EPackage.Registry.INSTANCE.put(CodegenPackage.eNS_URI,
-				theCodegenPackage);
+		EPackage.Registry.INSTANCE.put(CodegenPackage.eNS_URI, theCodegenPackage);
 		return theCodegenPackage;
 	}
 
@@ -562,6 +561,15 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * 
 	 * @generated
 	 */
+	public EAttribute getBuffer_Local() {
+		return (EAttribute) bufferEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
 	@Override
 	public EClass getSubBuffer() {
 		return subBufferEClass;
@@ -744,8 +752,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 */
 	@Override
 	public EReference getCommunication_SendReserve() {
-		return (EReference) communicationEClass.getEStructuralFeatures()
-				.get(10);
+		return (EReference) communicationEClass.getEStructuralFeatures().get(10);
 	}
 
 	/**
@@ -985,8 +992,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 */
 	@Override
 	public EAttribute getCommunicationNode_Name() {
-		return (EAttribute) communicationNodeEClass.getEStructuralFeatures()
-				.get(0);
+		return (EAttribute) communicationNodeEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -996,8 +1002,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 */
 	@Override
 	public EAttribute getCommunicationNode_Type() {
-		return (EAttribute) communicationNodeEClass.getEStructuralFeatures()
-				.get(1);
+		return (EAttribute) communicationNodeEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -1027,8 +1032,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 */
 	@Override
 	public EReference getSharedMemoryCommunication_Semaphore() {
-		return (EReference) sharedMemoryCommunicationEClass
-				.getEStructuralFeatures().get(0);
+		return (EReference) sharedMemoryCommunicationEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -1048,8 +1052,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 */
 	@Override
 	public EAttribute getConstantString_Value() {
-		return (EAttribute) constantStringEClass.getEStructuralFeatures()
-				.get(0);
+		return (EAttribute) constantStringEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -1177,6 +1180,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		createEReference(bufferEClass, BUFFER__CHILDRENS);
 		createEAttribute(bufferEClass, BUFFER__TYPE_SIZE);
 		createEAttribute(bufferEClass, BUFFER__MERGED_RANGE);
+		createEAttribute(bufferEClass, BUFFER__LOCAL);
 
 		subBufferEClass = createEClass(SUB_BUFFER);
 		createEReference(subBufferEClass, SUB_BUFFER__CONTAINER);
@@ -1238,8 +1242,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		semaphoreEClass = createEClass(SEMAPHORE);
 
 		sharedMemoryCommunicationEClass = createEClass(SHARED_MEMORY_COMMUNICATION);
-		createEReference(sharedMemoryCommunicationEClass,
-				SHARED_MEMORY_COMMUNICATION__SEMAPHORE);
+		createEReference(sharedMemoryCommunicationEClass, SHARED_MEMORY_COMMUNICATION__SEMAPHORE);
 
 		constantStringEClass = createEClass(CONSTANT_STRING);
 		createEAttribute(constantStringEClass, CONSTANT_STRING__VALUE);
@@ -1302,339 +1305,235 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		specialCallEClass.getESuperTypes().add(this.getCall());
 		fifoCallEClass.getESuperTypes().add(this.getCall());
 		semaphoreEClass.getESuperTypes().add(this.getVariable());
-		sharedMemoryCommunicationEClass.getESuperTypes().add(
-				this.getCommunication());
+		sharedMemoryCommunicationEClass.getESuperTypes().add(this.getCommunication());
 		constantStringEClass.getESuperTypes().add(this.getVariable());
 		nullBufferEClass.getESuperTypes().add(this.getSubBuffer());
 
 		// Initialize classes and features; add operations and parameters
-		initEClass(blockEClass, Block.class, "Block", !IS_ABSTRACT,
-				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getBlock_CodeElts(), this.getCodeElt(), null,
-				"codeElts", null, 0, -1, Block.class, !IS_TRANSIENT,
-				!IS_VOLATILE, !IS_CHANGEABLE, IS_COMPOSITE,
-				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
-		initEReference(getBlock_Declarations(), this.getVariable(),
-				this.getVariable_Users(), "declarations", null, 0, -1,
-				Block.class, !IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE,
-				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEAttribute(getBlock_Name(), ecorePackage.getEString(), "name",
-				null, 0, 1, Block.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
-		initEReference(getBlock_Definitions(), this.getVariable(),
-				this.getVariable_Creator(), "definitions", null, 0, -1,
-				Block.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
-				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-
-		initEClass(codeEltEClass, CodeElt.class, "CodeElt", IS_ABSTRACT,
-				IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-
-		initEClass(callEClass, Call.class, "Call", IS_ABSTRACT, !IS_INTERFACE,
-				IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getCall_Parameters(), this.getVariable(), null,
-				"parameters", null, 0, -1, Call.class, !IS_TRANSIENT,
-				!IS_VOLATILE, !IS_CHANGEABLE, !IS_COMPOSITE,
-				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
-		initEAttribute(getCall_Name(), ecorePackage.getEString(), "name", null,
-				1, 1, Call.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
-				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getCall_EReference0(), this.getCall(), null,
-				"EReference0", null, 0, 1, Call.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+		initEClass(blockEClass, Block.class, "Block", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getBlock_CodeElts(), this.getCodeElt(), null, "codeElts", null, 0, -1, Block.class,
+				!IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getBlock_Declarations(), this.getVariable(), this.getVariable_Users(), "declarations", null, 0,
+				-1, Block.class, !IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getCall_ParameterDirections(), this.getPortDirection(),
-				"parameterDirections", null, 0, -1, Call.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
-				!IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getBlock_Name(), ecorePackage.getEString(), "name", null, 0, 1, Block.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getBlock_Definitions(), this.getVariable(), this.getVariable_Creator(), "definitions", null, 0,
+				-1, Block.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		EOperation op = addEOperation(callEClass, null, "addParameter", 0, 1,
-				IS_UNIQUE, IS_ORDERED);
-		addEParameter(op, this.getVariable(), "variable", 0, 1, IS_UNIQUE,
-				IS_ORDERED);
-		addEParameter(op, this.getPortDirection(), "direction", 0, 1,
-				IS_UNIQUE, IS_ORDERED);
+		initEClass(codeEltEClass, CodeElt.class, "CodeElt", IS_ABSTRACT, IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
-		op = addEOperation(callEClass, null, "removeParameter", 0, 1,
-				IS_UNIQUE, IS_ORDERED);
-		addEParameter(op, this.getVariable(), "variable", 0, 1, IS_UNIQUE,
+		initEClass(callEClass, Call.class, "Call", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getCall_Parameters(), this.getVariable(), null, "parameters", null, 0, -1, Call.class,
+				!IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getCall_Name(), ecorePackage.getEString(), "name", null, 1, 1, Call.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCall_EReference0(), this.getCall(), null, "EReference0", null, 0, 1, Call.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getCall_ParameterDirections(), this.getPortDirection(), "parameterDirections", null, 0, -1,
+				Call.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED,
 				IS_ORDERED);
 
-		initEClass(variableEClass, Variable.class, "Variable", IS_ABSTRACT,
-				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getVariable_Name(), ecorePackage.getEString(), "name",
-				null, 1, 1, Variable.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_UNSETTABLE, IS_ID, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
-		initEAttribute(getVariable_Type(), ecorePackage.getEString(), "type",
-				null, 1, 1, Variable.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
-		initEReference(getVariable_Creator(), this.getBlock(),
-				this.getBlock_Definitions(), "creator", null, 0, 1,
-				Variable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
-				!IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEReference(getVariable_Users(), this.getBlock(),
-				this.getBlock_Declarations(), "users", null, 1, -1,
-				Variable.class, !IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE,
-				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
+		EOperation op = addEOperation(callEClass, null, "addParameter", 0, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, this.getVariable(), "variable", 0, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, this.getPortDirection(), "direction", 0, 1, IS_UNIQUE, IS_ORDERED);
 
-		initEClass(bufferEClass, Buffer.class, "Buffer", !IS_ABSTRACT,
-				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getBuffer_Size(), ecorePackage.getEInt(), "size", null,
-				1, 1, Buffer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
-				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getBuffer_Childrens(), this.getSubBuffer(),
-				this.getSubBuffer_Container(), "childrens", null, 0, -1,
-				Buffer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
-				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEAttribute(getBuffer_TypeSize(), ecorePackage.getEInt(),
-				"typeSize", null, 1, 1, Buffer.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
+		op = addEOperation(callEClass, null, "removeParameter", 0, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, this.getVariable(), "variable", 0, 1, IS_UNIQUE, IS_ORDERED);
+
+		initEClass(variableEClass, Variable.class, "Variable", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getVariable_Name(), ecorePackage.getEString(), "name", null, 1, 1, Variable.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getVariable_Type(), ecorePackage.getEString(), "type", null, 1, 1, Variable.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getVariable_Creator(), this.getBlock(), this.getBlock_Definitions(), "creator", null, 0, 1,
+				Variable.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getVariable_Users(), this.getBlock(), this.getBlock_Declarations(), "users", null, 1, -1,
+				Variable.class, !IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(bufferEClass, Buffer.class, "Buffer", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getBuffer_Size(), ecorePackage.getEInt(), "size", null, 1, 1, Buffer.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getBuffer_Childrens(), this.getSubBuffer(), this.getSubBuffer_Container(), "childrens", null, 0,
+				-1, Buffer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getBuffer_TypeSize(), ecorePackage.getEInt(), "typeSize", null, 1, 1, Buffer.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		EGenericType g1 = createEGenericType(ecorePackage.getEEList());
 		EGenericType g2 = createEGenericType(this.getrange());
 		g1.getETypeArguments().add(g2);
-		initEAttribute(getBuffer_MergedRange(), g1, "mergedRange", null, 0, 1,
-				Buffer.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
-				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getBuffer_MergedRange(), g1, "mergedRange", null, 0, 1, Buffer.class, IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getBuffer_Local(), ecorePackage.getEBoolean(), "local", "false", 0, 1, Buffer.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(subBufferEClass, SubBuffer.class, "SubBuffer", !IS_ABSTRACT,
-				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getSubBuffer_Container(), this.getBuffer(),
-				this.getBuffer_Childrens(), "container", null, 1, 1,
-				SubBuffer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
-				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEAttribute(getSubBuffer_Offset(), ecorePackage.getEInt(), "offset",
-				null, 1, 1, SubBuffer.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
-
-		initEClass(constantEClass, Constant.class, "Constant", !IS_ABSTRACT,
-				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getConstant_Value(), ecorePackage.getELong(), "value",
-				null, 1, 1, Constant.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
-
-		initEClass(functionCallEClass, FunctionCall.class, "FunctionCall",
-				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getFunctionCall_ActorName(), ecorePackage.getEString(),
-				"actorName", null, 1, 1, FunctionCall.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-
-		initEClass(communicationEClass, Communication.class, "Communication",
-				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getCommunication_Direction(), this.getDirection(),
-				"direction", null, 1, 1, Communication.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEAttribute(getCommunication_Delimiter(), this.getDelimiter(),
-				"delimiter", null, 1, 1, Communication.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEReference(getCommunication_Data(), this.getBuffer(), null, "data",
-				null, 1, 1, Communication.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getCommunication_SendStart(), this.getCommunication(),
-				null, "sendStart", null, 0, 1, Communication.class,
-				IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
-				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
-		initEReference(getCommunication_SendEnd(), this.getCommunication(),
-				null, "sendEnd", null, 0, 1, Communication.class, IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getCommunication_ReceiveStart(),
-				this.getCommunication(), null, "receiveStart", null, 0, 1,
-				Communication.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
-				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEReference(getCommunication_ReceiveEnd(), this.getCommunication(),
-				null, "receiveEnd", null, 0, 1, Communication.class,
-				IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
-				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
-		initEAttribute(getCommunication_Id(), ecorePackage.getEInt(), "id",
-				null, 1, 1, Communication.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
-		initEReference(getCommunication_Nodes(), this.getCommunicationNode(),
-				null, "nodes", null, 1, -1, Communication.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getCommunication_ReceiveRelease(),
-				this.getCommunication(), null, "receiveRelease", null, 0, 1,
-				Communication.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
-				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEReference(getCommunication_SendReserve(), this.getCommunication(),
-				null, "sendReserve", null, 0, 1, Communication.class,
-				IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
-				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
-
-		addEOperation(communicationEClass, this.getCoreBlock(),
-				"getCoreContainer", 1, 1, IS_UNIQUE, IS_ORDERED);
-
-		initEClass(coreBlockEClass, CoreBlock.class, "CoreBlock", !IS_ABSTRACT,
-				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getCoreBlock_LoopBlock(), this.getLoopBlock(), null,
-				"loopBlock", null, 1, 1, CoreBlock.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getCoreBlock_InitBlock(), this.getCallBlock(), null,
-				"initBlock", null, 1, 1, CoreBlock.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getCoreBlock_CoreType(), ecorePackage.getEString(),
-				"coreType", null, 1, 1, CoreBlock.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-
-		initEClass(actorBlockEClass, ActorBlock.class, "ActorBlock",
-				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getActorBlock_LoopBlock(), this.getLoopBlock(), null,
-				"loopBlock", null, 1, 1, ActorBlock.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getActorBlock_InitBlock(), this.getCallBlock(), null,
-				"initBlock", null, 1, 1, ActorBlock.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
-		initEClass(loopBlockEClass, LoopBlock.class, "LoopBlock", !IS_ABSTRACT,
-				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-
-		initEClass(actorCallEClass, ActorCall.class, "ActorCall", !IS_ABSTRACT,
-				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-
-		initEClass(callBlockEClass, CallBlock.class, "CallBlock", !IS_ABSTRACT,
-				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-
-		initEClass(specialCallEClass, SpecialCall.class, "SpecialCall",
-				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getSpecialCall_Type(), this.getSpecialType(), "type",
-				null, 1, 1, SpecialCall.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
-		initEReference(getSpecialCall_InputBuffers(), this.getBuffer(), null,
-				"inputBuffers", null, 1, -1, SpecialCall.class, !IS_TRANSIENT,
-				!IS_VOLATILE, !IS_CHANGEABLE, !IS_COMPOSITE,
-				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
-		initEReference(getSpecialCall_OutputBuffers(), this.getBuffer(), null,
-				"outputBuffers", null, 1, -1, SpecialCall.class, !IS_TRANSIENT,
-				!IS_VOLATILE, !IS_CHANGEABLE, !IS_COMPOSITE,
-				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
-
-		addEOperation(specialCallEClass, ecorePackage.getEBoolean(), "isFork",
-				0, 1, IS_UNIQUE, IS_ORDERED);
-
-		addEOperation(specialCallEClass, ecorePackage.getEBoolean(), "isJoin",
-				0, 1, IS_UNIQUE, IS_ORDERED);
-
-		addEOperation(specialCallEClass, ecorePackage.getEBoolean(),
-				"isBroadcast", 0, 1, IS_UNIQUE, IS_ORDERED);
-
-		addEOperation(specialCallEClass, ecorePackage.getEBoolean(),
-				"isRoundBuffer", 0, 1, IS_UNIQUE, IS_ORDERED);
-
-		op = addEOperation(specialCallEClass, null, "addInputBuffer", 0, 1,
-				IS_UNIQUE, IS_ORDERED);
-		addEParameter(op, this.getBuffer(), "buffer", 0, 1, IS_UNIQUE,
-				IS_ORDERED);
-
-		op = addEOperation(specialCallEClass, null, "addOutputBuffer", 0, 1,
-				IS_UNIQUE, IS_ORDERED);
-		addEParameter(op, this.getBuffer(), "buffer", 0, 1, IS_UNIQUE,
-				IS_ORDERED);
-
-		op = addEOperation(specialCallEClass, null, "removeInputBuffer", 0, 1,
-				IS_UNIQUE, IS_ORDERED);
-		addEParameter(op, this.getBuffer(), "buffer", 0, 1, IS_UNIQUE,
-				IS_ORDERED);
-
-		op = addEOperation(specialCallEClass, null, "removeOutputBuffer", 0, 1,
-				IS_UNIQUE, IS_ORDERED);
-		addEParameter(op, this.getBuffer(), "buffer", 0, 1, IS_UNIQUE,
-				IS_ORDERED);
-
-		initEClass(fifoCallEClass, FifoCall.class, "FifoCall", !IS_ABSTRACT,
-				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getFifoCall_Operation(), this.getFifoOperation(),
-				"operation", null, 1, 1, FifoCall.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEReference(getFifoCall_FifoHead(), this.getFifoCall(), null,
-				"fifoHead", null, 0, 1, FifoCall.class, IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getFifoCall_FifoTail(), this.getFifoCall(), null,
-				"fifoTail", null, 0, 1, FifoCall.class, IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getFifoCall_HeadBuffer(), this.getBuffer(), null,
-				"headBuffer", null, 0, 1, FifoCall.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getFifoCall_BodyBuffer(), this.getBuffer(), null,
-				"bodyBuffer", null, 0, 1, FifoCall.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
-		initEClass(commentableEClass, Commentable.class, "Commentable",
-				IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getCommentable_Comment(), ecorePackage.getEString(),
-				"comment", null, 0, 1, Commentable.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-
-		initEClass(communicationNodeEClass, CommunicationNode.class,
-				"CommunicationNode", !IS_ABSTRACT, !IS_INTERFACE,
+		initEClass(subBufferEClass, SubBuffer.class, "SubBuffer", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getCommunicationNode_Name(), ecorePackage.getEString(),
-				"name", null, 1, 1, CommunicationNode.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEAttribute(getCommunicationNode_Type(), ecorePackage.getEString(),
-				"type", null, 1, 1, CommunicationNode.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+		initEReference(getSubBuffer_Container(), this.getBuffer(), this.getBuffer_Childrens(), "container", null, 1, 1,
+				SubBuffer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getSubBuffer_Offset(), ecorePackage.getEInt(), "offset", null, 1, 1, SubBuffer.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(constantEClass, Constant.class, "Constant", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getConstant_Value(), ecorePackage.getELong(), "value", null, 1, 1, Constant.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(functionCallEClass, FunctionCall.class, "FunctionCall", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getFunctionCall_ActorName(), ecorePackage.getEString(), "actorName", null, 1, 1,
+				FunctionCall.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
 
-		initEClass(semaphoreEClass, Semaphore.class, "Semaphore", !IS_ABSTRACT,
-				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-
-		initEClass(sharedMemoryCommunicationEClass,
-				SharedMemoryCommunication.class, "SharedMemoryCommunication",
-				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getSharedMemoryCommunication_Semaphore(),
-				this.getSemaphore(), null, "semaphore", null, 1, 1,
-				SharedMemoryCommunication.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+		initEClass(communicationEClass, Communication.class, "Communication", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getCommunication_Direction(), this.getDirection(), "direction", null, 1, 1, Communication.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getCommunication_Delimiter(), this.getDelimiter(), "delimiter", null, 1, 1, Communication.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCommunication_Data(), this.getBuffer(), null, "data", null, 1, 1, Communication.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCommunication_SendStart(), this.getCommunication(), null, "sendStart", null, 0, 1,
+				Communication.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCommunication_SendEnd(), this.getCommunication(), null, "sendEnd", null, 0, 1,
+				Communication.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCommunication_ReceiveStart(), this.getCommunication(), null, "receiveStart", null, 0, 1,
+				Communication.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCommunication_ReceiveEnd(), this.getCommunication(), null, "receiveEnd", null, 0, 1,
+				Communication.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getCommunication_Id(), ecorePackage.getEInt(), "id", null, 1, 1, Communication.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCommunication_Nodes(), this.getCommunicationNode(), null, "nodes", null, 1, -1,
+				Communication.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCommunication_ReceiveRelease(), this.getCommunication(), null, "receiveRelease", null, 0, 1,
+				Communication.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCommunication_SendReserve(), this.getCommunication(), null, "sendReserve", null, 0, 1,
+				Communication.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(constantStringEClass, ConstantString.class,
-				"ConstantString", !IS_ABSTRACT, !IS_INTERFACE,
+		addEOperation(communicationEClass, this.getCoreBlock(), "getCoreContainer", 1, 1, IS_UNIQUE, IS_ORDERED);
+
+		initEClass(coreBlockEClass, CoreBlock.class, "CoreBlock", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getConstantString_Value(), ecorePackage.getEString(),
-				"value", null, 1, 1, ConstantString.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+		initEReference(getCoreBlock_LoopBlock(), this.getLoopBlock(), null, "loopBlock", null, 1, 1, CoreBlock.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCoreBlock_InitBlock(), this.getCallBlock(), null, "initBlock", null, 1, 1, CoreBlock.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getCoreBlock_CoreType(), ecorePackage.getEString(), "coreType", null, 1, 1, CoreBlock.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(actorBlockEClass, ActorBlock.class, "ActorBlock", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getActorBlock_LoopBlock(), this.getLoopBlock(), null, "loopBlock", null, 1, 1, ActorBlock.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getActorBlock_InitBlock(), this.getCallBlock(), null, "initBlock", null, 1, 1, ActorBlock.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(loopBlockEClass, LoopBlock.class, "LoopBlock", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(actorCallEClass, ActorCall.class, "ActorCall", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(callBlockEClass, CallBlock.class, "CallBlock", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(specialCallEClass, SpecialCall.class, "SpecialCall", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getSpecialCall_Type(), this.getSpecialType(), "type", null, 1, 1, SpecialCall.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getSpecialCall_InputBuffers(), this.getBuffer(), null, "inputBuffers", null, 1, -1,
+				SpecialCall.class, !IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getSpecialCall_OutputBuffers(), this.getBuffer(), null, "outputBuffers", null, 1, -1,
+				SpecialCall.class, !IS_TRANSIENT, !IS_VOLATILE, !IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		addEOperation(specialCallEClass, ecorePackage.getEBoolean(), "isFork", 0, 1, IS_UNIQUE, IS_ORDERED);
+
+		addEOperation(specialCallEClass, ecorePackage.getEBoolean(), "isJoin", 0, 1, IS_UNIQUE, IS_ORDERED);
+
+		addEOperation(specialCallEClass, ecorePackage.getEBoolean(), "isBroadcast", 0, 1, IS_UNIQUE, IS_ORDERED);
+
+		addEOperation(specialCallEClass, ecorePackage.getEBoolean(), "isRoundBuffer", 0, 1, IS_UNIQUE, IS_ORDERED);
+
+		op = addEOperation(specialCallEClass, null, "addInputBuffer", 0, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, this.getBuffer(), "buffer", 0, 1, IS_UNIQUE, IS_ORDERED);
+
+		op = addEOperation(specialCallEClass, null, "addOutputBuffer", 0, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, this.getBuffer(), "buffer", 0, 1, IS_UNIQUE, IS_ORDERED);
+
+		op = addEOperation(specialCallEClass, null, "removeInputBuffer", 0, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, this.getBuffer(), "buffer", 0, 1, IS_UNIQUE, IS_ORDERED);
+
+		op = addEOperation(specialCallEClass, null, "removeOutputBuffer", 0, 1, IS_UNIQUE, IS_ORDERED);
+		addEParameter(op, this.getBuffer(), "buffer", 0, 1, IS_UNIQUE, IS_ORDERED);
+
+		initEClass(fifoCallEClass, FifoCall.class, "FifoCall", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getFifoCall_Operation(), this.getFifoOperation(), "operation", null, 1, 1, FifoCall.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getFifoCall_FifoHead(), this.getFifoCall(), null, "fifoHead", null, 0, 1, FifoCall.class,
+				IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+		initEReference(getFifoCall_FifoTail(), this.getFifoCall(), null, "fifoTail", null, 0, 1, FifoCall.class,
+				IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+		initEReference(getFifoCall_HeadBuffer(), this.getBuffer(), null, "headBuffer", null, 0, 1, FifoCall.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getFifoCall_BodyBuffer(), this.getBuffer(), null, "bodyBuffer", null, 0, 1, FifoCall.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(commentableEClass, Commentable.class, "Commentable", IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getCommentable_Comment(), ecorePackage.getEString(), "comment", null, 0, 1, Commentable.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(communicationNodeEClass, CommunicationNode.class, "CommunicationNode", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getCommunicationNode_Name(), ecorePackage.getEString(), "name", null, 1, 1,
+				CommunicationNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+		initEAttribute(getCommunicationNode_Type(), ecorePackage.getEString(), "type", null, 1, 1,
+				CommunicationNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
 
-		initEClass(nullBufferEClass, NullBuffer.class, "NullBuffer",
+		initEClass(semaphoreEClass, Semaphore.class, "Semaphore", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(sharedMemoryCommunicationEClass, SharedMemoryCommunication.class, "SharedMemoryCommunication",
 				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getSharedMemoryCommunication_Semaphore(), this.getSemaphore(), null, "semaphore", null, 1, 1,
+				SharedMemoryCommunication.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(constantStringEClass, ConstantString.class, "ConstantString", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getConstantString_Value(), ecorePackage.getEString(), "value", null, 1, 1, ConstantString.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(nullBufferEClass, NullBuffer.class, "NullBuffer", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
 
 		// Initialize enums and add enum literals
 		initEEnum(directionEEnum, Direction.class, "Direction");
@@ -1662,9 +1561,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		addEEnumLiteral(portDirectionEEnum, PortDirection.NONE);
 
 		// Initialize data types
-		initEDataType(rangeEDataType,
-				org.ietr.preesm.memory.script.Range.class, "range",
-				IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS);
+		initEDataType(rangeEDataType, Range.class, "range", IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS);
 
 		// Create resource
 		createResource(eNS_URI);
