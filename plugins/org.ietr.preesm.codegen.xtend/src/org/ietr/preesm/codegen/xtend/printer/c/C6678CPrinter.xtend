@@ -219,7 +219,9 @@ class C6678CPrinter extends CPrinter {
 	
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
 		«IF communication.direction == Direction::SEND && communication.delimiter == Delimiter::START»
-		cache_wbInv(«communication.data.doSwitch», «communication.data.size»*sizeof(«communication.data.type»));
+			«IF !(communication.data instanceof NullBuffer)»
+				cache_wbInv(«communication.data.doSwitch», «communication.data.size»*sizeof(«communication.data.type»));
+			«ENDIF»
 		«ENDIF»
 		«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
 			direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
@@ -233,7 +235,9 @@ class C6678CPrinter extends CPrinter {
 		}»«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.
 			data.doSwitch» 
 		«IF communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END»
-		cache_inv(«communication.data.doSwitch», «communication.data.size»*sizeof(«communication.data.type»));
+			«IF !(communication.data instanceof NullBuffer)»
+				cache_inv(«communication.data.doSwitch», «communication.data.size»*sizeof(«communication.data.type»));
+			«ENDIF»
 		«ENDIF»	
 	'''
 	
