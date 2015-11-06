@@ -113,7 +113,7 @@ class Distributor {
 		memExes = new HashMap<String, MemoryExclusionGraph>
 
 		// Split merged buffers if a distributed policy
-		// is used
+		// is used (except mixedMerged)
 		if(valuePolicy == VALUE_DISTRIBUTION_MIXED || valuePolicy == VALUE_DISTRIBUTION_DISTRIBUTED_ONLY) {
 			splitMergedBuffers(valuePolicy, memEx, alignment)
 		}
@@ -125,6 +125,8 @@ class Distributor {
 		var memExesVerticesSet = switch valuePolicy {
 			case VALUE_DISTRIBUTION_MIXED:
 				distributeMegMixed(memEx)
+			case VALUE_DISTRIBUTION_MIXED_MERGED:
+				distributeMegMixedMerged(memEx)
 			case VALUE_DISTRIBUTION_DISTRIBUTED_ONLY:
 				distributeMegDistributedOnly(memEx)
 			case VALUE_DISTRIBUTION_SHARED_ONLY,
@@ -193,15 +195,13 @@ class Distributor {
 		// Get the map of host Mobjects
 		// (A copy of the map is used because the original map will be modified during iterations)
 		val hosts = (meg.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>)
-		
+
 		// Exit method if no host Mobjects can be found in this MEG
 		if(hosts == null || hosts.empty) {
 			return
 		}
-		
-		var hostsCopy = hosts.immutableCopy // Immutable copy for iteration purposes
-		
 
+		var hostsCopy = hosts.immutableCopy // Immutable copy for iteration purposes
 		// Iterate over the Host MObjects of the MEG 
 		for (entry : hostsCopy.entrySet) {
 			// Create a group of MObject for each memory similarly to what is done 
@@ -610,6 +610,61 @@ class Distributor {
 		val memExesVerticesSet = new HashMap<String, Set<MemoryExclusionVertex>>
 		for (MemoryExclusionVertex memExVertex : memEx.vertexSet) {
 			Distributor.findMObjBankMixed(memExVertex, memExesVerticesSet)
+		}
+		return memExesVerticesSet
+	}
+
+	/**
+	 * Method used to separate the {@link MemoryExclusionVertex} of a {@link 
+	 * MemoryExclusionGraph} into {@link HashSet subsets} according to the 
+	 * MIXED_MERGED policy (see {@link AbstractMemoryAllocatorTask} 
+	 * parameters).
+	 * <br><br>
+	 * With this policy, each {@link MemoryExclusionVertex} is put<ul><li>
+	 * in the memory banks of a processing elements if it is the only PE
+	 * accessing it during an iteration of the original dataflow graph.</li>
+	 * <li> in shared memory if it is a merged buffer, unless all mObjects of 
+	 * the merged buffer fall in the same memory bank.</li>
+	 * <li> in shared memory otherwise (i.e. if multiple PE access this memory
+	 * object during a graph iteration).</li></ul>
+	 * 
+	 * @param memEx
+	 * 			The processed {@link MemoryExclusionGraph}.
+	 * @return {@link Map} containing the name of the memory banks and the 
+	 * 		   associated {@link HashSet subsets} of {@link MemoryExclusionVertex}. 
+	 */
+	protected def static distributeMegMixedMerged(MemoryExclusionGraph memEx) {
+		val memExesVerticesSet = new HashMap<String, Set<MemoryExclusionVertex>>
+		val hosts = memEx.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>
+		for (MemoryExclusionVertex memExVertex : memEx.vertexSet) {
+			if(hosts != null && !hosts.containsKey(memExVertex)) {
+				Distributor.findMObjBankMixed(memExVertex, memExesVerticesSet)
+			} else {
+				// Check if all hosted mObjects fall in the same bank
+				val mobjByBank = new HashMap<String, Set<MemoryExclusionVertex>>
+
+				// Find the bank for each mObj of the group
+				for (mobj : #[memExVertex] + hosts.get(memExVertex)) {
+					findMObjBankMixed(mobj, mobjByBank)
+				}
+
+				// The bank is, the first if all mObjects fall in the same bank
+				// Shared memory otherwise
+				var bank = if(mobjByBank.size == 1) {
+						mobjByBank.keySet.get(0)
+					} else {
+						"Shared"
+					}
+					
+				// Put the mObj in the verticesSet
+				var verticesSet = memExesVerticesSet.get(bank)
+				if(verticesSet == null) {
+					// If the component is not yet in the map, add it
+					verticesSet = new HashSet<MemoryExclusionVertex>
+					memExesVerticesSet.put(bank, verticesSet)
+				}
+				verticesSet.add(memExVertex)
+			}
 		}
 		return memExesVerticesSet
 	}

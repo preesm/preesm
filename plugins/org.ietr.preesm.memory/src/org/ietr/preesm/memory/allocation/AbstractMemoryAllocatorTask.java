@@ -84,8 +84,13 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
 	static final public String VALUE_DISTRIBUTION_SHARED_ONLY = "SharedOnly";
 	static final public String VALUE_DISTRIBUTION_DISTRIBUTED_ONLY = "DistributedOnly";
 	static final public String VALUE_DISTRIBUTION_MIXED = "Mixed";
+	/**
+	 * Mixed Policy, but preserving all merged operations.
+	 */
+	static final public String VALUE_DISTRIBUTION_MIXED_MERGED = "MixedMerged";
 	static final public String VALUE_DISTRIBUTION_DEFAULT = "? C {" + VALUE_DISTRIBUTION_SHARED_ONLY + ", "
-			+ VALUE_DISTRIBUTION_MIXED + ", " + VALUE_DISTRIBUTION_DISTRIBUTED_ONLY + "}";
+			+ VALUE_DISTRIBUTION_MIXED + ", " + VALUE_DISTRIBUTION_DISTRIBUTED_ONLY + ", "
+			+ VALUE_DISTRIBUTION_MIXED_MERGED + "}";
 
 	// Rem: Logger is used to display messages in the console
 	protected Logger logger = WorkflowLogger.getLogger();
