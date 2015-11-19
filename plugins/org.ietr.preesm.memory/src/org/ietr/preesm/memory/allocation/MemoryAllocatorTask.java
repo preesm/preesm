@@ -36,8 +36,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.memory.allocation;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -60,8 +62,8 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 		// Prepare the MEG with the alignment
 		MemoryAllocator.alignSubBuffers(memEx, alignment);
 
-		// Get total number of vertices before distribution
-		int nbVerticesBeforeDistribution = memEx.getTotalNumberOfVertices();
+		// Get vertices before distribution
+		Set<MemoryExclusionVertex> verticesBeforeDistribution = memEx.getTotalSetOfVertices();
 
 		// Create several MEGs according to the selected distribution policy
 		// Each created MEG corresponds to a single memory bank
@@ -85,17 +87,17 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 			}
 		}
 
-		// Get total number of vertices before distribution
-		int nbVerticesAfterDistribution = memEx.getTotalNumberOfVertices();
-		final int nbVerticesInMegs[] = { 0 };
+		// Get total set of vertices after distribution
+		Set<MemoryExclusionVertex> verticesAfterDistribution = memEx.getTotalSetOfVertices();
+		final Set<MemoryExclusionVertex> verticesInMegs = new HashSet<MemoryExclusionVertex>();
 		megs.forEach((bank, meg) -> {
-			nbVerticesInMegs[0] += meg.getTotalNumberOfVertices();
+			verticesInMegs.addAll(meg.getTotalSetOfVertices());
 		});
 
 		// Check that the total number of vertices is unchanged
 		if (!valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)
-				&& (nbVerticesBeforeDistribution != nbVerticesAfterDistribution
-						|| nbVerticesBeforeDistribution != nbVerticesInMegs[0])) {
+				&& (verticesBeforeDistribution.size() != verticesAfterDistribution.size()
+						|| verticesBeforeDistribution.size() != verticesInMegs.size())) {
 			logger.log(Level.SEVERE,
 					"Problem in the MEG distribution, some memory objects were lost during the distribution.\n"
 							+ "Contact Preesm developers to solve this issue.");
