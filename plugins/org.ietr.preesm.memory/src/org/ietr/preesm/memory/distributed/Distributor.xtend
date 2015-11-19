@@ -112,19 +112,16 @@ class Distributor {
 		var Map<String, MemoryExclusionGraph> memExes
 		memExes = new HashMap<String, MemoryExclusionGraph>
 
-		// Split merged buffers if a distributed policy
-		// is used (except mixedMerged)
-		if(valuePolicy == VALUE_DISTRIBUTION_MIXED || valuePolicy == VALUE_DISTRIBUTION_DISTRIBUTED_ONLY) {
-			splitMergedBuffers(valuePolicy, memEx, alignment)
-		}
-
 		// Generate output
 		// Each entry of this map associate a memory to the set
 		// of vertices of its MemEx. This map will be differently
 		// depending on the policy chosen.
 		var memExesVerticesSet = switch valuePolicy {
-			case VALUE_DISTRIBUTION_MIXED:
+			case VALUE_DISTRIBUTION_MIXED: {
+				// Split merged buffers (! modifies the memEx !)
+				splitMergedBuffersMixed(memEx, alignment)
 				distributeMegMixed(memEx)
+			}
 			case VALUE_DISTRIBUTION_MIXED_MERGED:
 				distributeMegMixedMerged(memEx)
 			case VALUE_DISTRIBUTION_DISTRIBUTED_ONLY:
@@ -171,14 +168,10 @@ class Distributor {
 	 * Finds the {@link MemoryExclusionVertex} in the given {@link 
 	 * MemoryExclusionGraph} that result from a merge operation of the memory 
 	 * scripts, and split them into several memory objects according to the 
-	 * selected distribution policy (see {@link AbstractMemoryAllocatorTask} 
+	 * Mixed distribution policy (see {@link AbstractMemoryAllocatorTask} 
 	 * parameters).<br>
 	 * <b>This method modifies the {@link MemoryExclusionGraph} passed as a 
 	 * parameter.</b>
-	 * 
-	 * @param policy 
-	 * 			{@link String} of the distribution policy selected (see {@link 
-	 * 			AbstractMemoryAllocatorTask} parameters).
 	 * 
 	 * @param meg
 	 * 			{@link MemoryExclusionGraph} whose {@link 
@@ -191,7 +184,7 @@ class Distributor {
 	 * 			 used in the memory allocation.
 	 * 			
 	 */
-	protected def static splitMergedBuffers(String policy, MemoryExclusionGraph meg, int alignment) {
+	protected def static splitMergedBuffersMixed(MemoryExclusionGraph meg, int alignment) {
 		// Get the map of host Mobjects
 		// (A copy of the map is used because the original map will be modified during iterations)
 		val hosts = (meg.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>)
@@ -211,14 +204,7 @@ class Distributor {
 
 			// Iteration List including the host Mobj
 			for (mobj : #[entry.key] + entry.value) {
-				switch (policy) {
-					case VALUE_DISTRIBUTION_MIXED:
-						findMObjBankMixed(mobj, mobjByBank)
-					case VALUE_DISTRIBUTION_DISTRIBUTED_ONLY:
-						findMObjBankDistributedOnly(mobj, mobjByBank)
-					default:
-						throw new RuntimeException(policy + " is not a valid distribution policy to split a MEG." + " Contact Preesm developers.")
-				}
+				findMObjBankMixed(mobj, mobjByBank)
 			}
 
 			// If only one bank is used for all MObjs of this host,
@@ -655,7 +641,7 @@ class Distributor {
 					} else {
 						"Shared"
 					}
-					
+
 				// Put the mObj in the verticesSet
 				var verticesSet = memExesVerticesSet.get(bank)
 				if(verticesSet == null) {
