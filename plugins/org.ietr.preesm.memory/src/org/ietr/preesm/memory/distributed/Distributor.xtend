@@ -527,7 +527,7 @@ class Distributor {
 		val memExesVerticesSet = new HashMap<String, Set<MemoryExclusionVertex>>
 		val hosts = memEx.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>
 		for (MemoryExclusionVertex memExVertex : memEx.vertexSet) {
-			val hosted = if(hosts != null) {
+			val hostedMObjs = if(hosts != null) {
 					hosts.get(memExVertex);
 				} else {
 					null
@@ -535,7 +535,32 @@ class Distributor {
 
 			// For source then sink of DAG edge corresponding to the memex
 			// vertex
-			findMObjBankDistributedOnly(memExVertex, hosted, memExesVerticesSet)
+			findMObjBankDistributedOnly(memExVertex, memExesVerticesSet)
+			
+			// special processing for host Mobj
+			if(hostedMObjs != null) {
+				// Create a fake map that will store the theoretical banks of all
+				// hosted mObjects
+				val hostedMObjsBanks = new HashMap<String, Set<MemoryExclusionVertex>>
+				for (hostedMobj : hostedMObjs) {
+					findMObjBankDistributedOnly(hostedMobj, hostedMObjsBanks)
+				}
+
+				// Add the banks for the hosted MObjs (the split of hosted mObj will 
+				// be done later, after duplication of the MEG to avoid having the 
+				// same MObj several time in a pre-duplication MEG)
+				for (bank : hostedMObjsBanks.keySet) {
+					var verticesSet = memExesVerticesSet.get(bank)
+					if(verticesSet == null) {
+						// If the component is not yet in the map, add it
+						verticesSet = new HashSet<MemoryExclusionVertex>
+						memExesVerticesSet.put(bank, verticesSet)
+					}
+					// Add the memEx Vertex to the set of vertex of the
+					// component
+					verticesSet.add(memExVertex)
+				}
+			}
 		}
 		return memExesVerticesSet
 	}
@@ -550,13 +575,10 @@ class Distributor {
 	 * @param mObj
 	 * 			The {@link MemoryExclusionVertex} whose memory banks are 
 	 * 			identified.
-	 * @param hostedMObjs
-	 * 			{@link Set} of hosted {@link MemoryExclusionVertex} if the 
-	 * 			given mObj is a host buffer. <code>null</code> otherwise.
 	 * @param mObjByBank
 	 * 			The {@link Map} in which results of this method are put.
 	 */
-	protected def static void findMObjBankDistributedOnly(MemoryExclusionVertex mObj, Set<MemoryExclusionVertex> hostedMObjs, Map<String, Set<MemoryExclusionVertex>> mObjByBank) {
+	protected def static void findMObjBankDistributedOnly(MemoryExclusionVertex mObj, Map<String, Set<MemoryExclusionVertex>> mObjByBank) {
 		// Process the given mObj
 		for (var i = 0; i < 2; i++) {
 			// Retrieve the component on which the DAG Vertex is mapped
@@ -583,31 +605,6 @@ class Distributor {
 			// Add the memEx Vertex to the set of vertex of the
 			// component
 			verticesSet.add(mObj)
-		}
-
-		// special processing for host Mobj
-		if(hostedMObjs != null) {
-			// Create a fake map that will store the theoretical banks of all
-			// hosted mObjects
-			val hostedMObjsBanks = new HashMap<String, Set<MemoryExclusionVertex>>
-			for (hostedMobj : hostedMObjs) {
-				findMObjBankDistributedOnly(hostedMobj, null, hostedMObjsBanks)
-			}
-
-			// Add the banks for the hosted MObjs (the split of hosted mObj will 
-			// be done later, after duplication of the MEG to avoid having the 
-			// same MObj several time in a pre-duplication MEG)
-			for (bank : hostedMObjsBanks.keySet) {
-				var verticesSet = mObjByBank.get(bank)
-				if(verticesSet == null) {
-					// If the component is not yet in the map, add it
-					verticesSet = new HashSet<MemoryExclusionVertex>
-					mObjByBank.put(bank, verticesSet)
-				}
-				// Add the memEx Vertex to the set of vertex of the
-				// component
-				verticesSet.add(mObj)
-			}
 		}
 	}
 
