@@ -122,7 +122,10 @@ import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
+import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.ietr.preesm.memory.allocation.MemoryAllocator;
+import org.ietr.preesm.memory.allocation.MemoryAllocatorTask;
+import org.ietr.preesm.memory.distributed.Distributor;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.ietr.preesm.memory.script.Range;
@@ -812,6 +815,10 @@ public class CodegenModelGenerator {
 	 * {@link #dagEdgeBuffers} attributes are filled.
 	 * 
 	 * @throws CodegenException
+	 *             if a {@link DAGEdge} is associated to several
+	 *             {@link MemoryExclusionVertex}. (Happens if
+	 *             {@link AbstractMemoryAllocatorTask#VALUE_DISTRIBUTION_DISTRIBUTED_ONLY}
+	 *             distribution policy is used during memory allocation.)
 	 * 
 	 */
 	protected void generateBuffers() throws CodegenException {
@@ -870,7 +877,15 @@ public class CodegenModelGenerator {
 					DAGVertex originalSource = dag.getVertex(dagAlloc.getKey().getSource().getName());
 					DAGVertex originalTarget = dag.getVertex(dagAlloc.getKey().getTarget().getName());
 					DAGEdge originalDagEdge = dag.getEdge(originalSource, originalTarget);
-					dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
+					if (!dagEdgeBuffers.containsKey(originalDagEdge)) {
+						dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
+					} else {
+						throw new CodegenException("\n"
+								+ AbstractMemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY
+								+ " distribution policy during memory allocation not yet supported in code generation.\n"
+								+ "DAGEdge " + originalDagEdge
+								+ " is already associated to a Buffer and cannot be associated to a second one.");
+					}
 				} else {
 					// the buffer is a null buffer
 					NullBuffer dagEdgeBuffer = CodegenFactory.eINSTANCE.createNullBuffer();
