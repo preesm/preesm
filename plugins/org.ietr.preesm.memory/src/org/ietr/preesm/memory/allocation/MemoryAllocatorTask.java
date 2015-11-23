@@ -98,9 +98,12 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 		if (!valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)
 				&& (verticesBeforeDistribution.size() != verticesAfterDistribution.size()
 						|| verticesBeforeDistribution.size() != verticesInMegs.size())) {
+			// Compute the list of missing vertices
+			verticesBeforeDistribution.removeAll(verticesInMegs);
 			logger.log(Level.SEVERE,
 					"Problem in the MEG distribution, some memory objects were lost during the distribution.\n"
-							+ "Contact Preesm developers to solve this issue.");
+					+ verticesBeforeDistribution
+							+ "\nContact Preesm developers to solve this issue.");
 		}
 
 		for(Entry<String,MemoryExclusionGraph> entry : megs.entrySet()) {
