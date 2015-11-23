@@ -41,7 +41,11 @@ import java.util.HashMap
 import java.util.HashSet
 import java.util.List
 import java.util.Map
+import java.util.Map.Entry
 import java.util.Set
+import java.util.logging.Level
+import java.util.logging.Logger
+import org.eclipse.xtend.lib.annotations.Accessors
 import org.ietr.dftools.algorithm.model.dag.DAGEdge
 import org.ietr.dftools.architecture.slam.ComponentInstance
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask
@@ -51,9 +55,6 @@ import org.ietr.preesm.memory.script.Range
 
 import static extension org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask.*
 import static extension org.ietr.preesm.memory.script.Range.*
-import java.util.logging.Logger
-import org.eclipse.xtend.lib.annotations.Accessors
-import java.util.logging.Level
 
 /**
  * This class contains all the code responsible for splitting a {@link 
@@ -158,10 +159,99 @@ class Distributor {
 			verticesToRemove.removeAll(memExesVerticesSet.get(memory))
 			// Remove them
 			copiedMemEx.deepRemoveAllVertices(verticesToRemove)
+			// If the DistributedOnl policy is used, split the merge memory 
+			// objects.
+			if(valuePolicy == VALUE_DISTRIBUTION_DISTRIBUTED_ONLY) {
+				splitMergedBuffersDistributedOnly(copiedMemEx, alignment, memory)
+			}
 			// Save the MemEx
 			memExes.put(memory, copiedMemEx)
 		}
 		return memExes
+	}
+
+	/**
+	 * Finds the {@link MemoryExclusionVertex} in the given {@link 
+	 * MemoryExclusionGraph} that result from a merge operation of the memory 
+	 * scripts, and split them into several memory objects according to the 
+	 * DistributedOnly distribution policy (see {@link 
+	 * AbstractMemoryAllocatorTask} parameters).<br>
+	 * <b>This method modifies the {@link MemoryExclusionGraph} passed as a 
+	 * parameter.</b>
+	 * 
+	 * @param meg
+	 * 			{@link MemoryExclusionGraph} whose {@link 
+	 * 			MemoryExclusionVertex} are processed. This graph will be 
+	 * 			modified by the method.
+	 * 
+	 * @param alignment
+	 * 			 This property is used to represent the alignment of buffers 
+	 * 			 in memory. The same value, or a multiple should always be 
+	 * 			 used in the memory allocation.
+	 * 
+	 * @param memory
+	 * 			Contains the name of the component to which the given {@link 
+	 * 			MemoryExclusionGraph} is associated. Only merged {@link 
+	 * 			MemoryExclusionVertex} accessed by this core will be kept in 
+	 * 			the {@link MemoryExclusionGraph} when the split is applied. 
+	 * 			(others will be removed).
+	 * 			
+	 */
+	protected def static splitMergedBuffersDistributedOnly(MemoryExclusionGraph meg, int alignment, String memory) {
+		// Get the map of host Mobjects
+		// (A copy of the map is used because the original map will be modified during iterations)
+		val hosts = (meg.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>)
+
+		// Exit method if no host Mobjects can be found in this MEG
+		if(hosts == null || hosts.empty) {
+			return
+		}
+
+		var hostsCopy = hosts.immutableCopy // Immutable copy for iteration purposes
+		// Iterate over the Host MObjects of the MEG 
+		// identify mObject to be removed because the belong to another
+		// memory.
+		val mObjectsToRemove = new HashSet<MemoryExclusionVertex>
+		for (entry : hostsCopy.entrySet) {
+			// Create a group of MObject for each memory similarly to what is done 
+			// in distributeMeg method.		
+			// Map storing the groups of Mobjs
+			val mobjByBank = new HashMap<String, Set<MemoryExclusionVertex>>
+
+			// Iteration List including the host Mobj
+			for (mobj : #[entry.key] + entry.value) {
+				findMObjBankDistributedOnly(mobj, mobjByBank)
+			}
+
+			// If only one bank is used for all MObjs of this host,
+			// skip the split operation as it is useless (and may induce extra 
+			// bytes for alignment reasons)
+			if(mobjByBank.size != 1) {
+				// Apply only for mObj falling in the current bank
+				splitMergedBuffers(mobjByBank.filter[bank, mObjects | bank == memory], entry, meg, alignment);
+				
+				// Fill the mObjectsToRemove list
+				// with all mObjects that are not in the current memory
+				val mObjInOtherMem = mobjByBank.filter[bank, mObjects| bank != memory].values.flatten.toList
+				// remove mobj that are duplicated in the current memory from this list
+				mObjInOtherMem.removeAll(mobjByBank.get(memory))
+					
+				mObjectsToRemove.addAll(mObjInOtherMem)
+							
+			} else {
+				// Check that this unique bank is the current one, otherwise, 
+				// something went wrong or this and/or this meg is not the 
+				// result of a call to distributeMegDistributedOnly method
+				if(mobjByBank.values.get(0) != memory) {
+					throw new RuntimeException(
+						"Merged memory objects " + mobjByBank.values.get(0) + " should not be allocated in memory bank " + memory + " but in memory " + mobjByBank.values.get(0) + " instead."
+					)
+				}
+			}
+		}
+		
+		// Remove all mObjects from other banks
+		meg.deepRemoveAllVertices(mObjectsToRemove)
 	}
 
 	/**
@@ -213,224 +303,262 @@ class Distributor {
 			if(mobjByBank.size != 1) {
 
 				// Create the reverse bankByMobj map
-				val bankByMobj = new HashMap<MemoryExclusionVertex, String>
-				mobjByBank.forEach[bank, mobjs|mobjs.forEach[bankByMobj.put(it, bank)]]
+				splitMergedBuffers(mobjByBank, entry, meg, alignment)
+			}
+		}
+	}
 
-				// Set of all the divided memory objects that can not be divided
-				// because they are matched in several banks.
-				val mObjsToUndivide = newHashSet
+	/**
+	 * Split the host {@link MemoryExclusionVertex} from the {@link 
+	 * MemoryExclusionGraph}.
+	 * 
+	 * @param mobjByBank
+	 * 		{@link Map} of {@link String} and {@link Set} of {@link 
+	 * 		MemoryExclusionVertex}. Each memory bank (the {@link String}) is
+	 * 		associated to the {@link Set} of {@link MemoryExclusionVertex} 
+	 * 		that is to be allocated in this bank.
+	 * @param hosts
+	 * 		{@link MemoryExclusionVertex#HOST_MEMORY_OBJECT_PROPERTY} from the 
+	 * 		given {@link MemoryExclusionGraph}.
+	 * @param entry
+	 * 		{@link Entry} copied from an immutable copy of the {@link 
+	 * 		MemoryExclusionVertex#HOST_MEMORY_OBJECT_PROPERTY} of the given {@link 
+	 *  	MemoryExclusionGraph}.
+	 * 		This {@link Entry} is the only one to be processed when calling this 
+	 * 		method. (i.e. the only one that is split.)
+	 * @param meg
+	 * 		{@link MemoryExclusionGraph} whose {@link 
+	 * 		MemoryExclusionVertex} are processed. This graph will be 
+	 * 		modified by the method.
+	 * @param alignment
+	 *  	This property is used to represent the alignment of buffers 
+	 * 		in memory. The same value, or a multiple should always be 
+	 * 		used in the memory allocation.
+	 */
+	protected def static splitMergedBuffers(
+		Map<String, Set<MemoryExclusionVertex>> mobjByBank,
+		Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry,
+		MemoryExclusionGraph meg,
+		int alignment
+	) {
+		val hosts = (meg.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>)
 
-				// Remove information of the current host from the MEG
-				// This is safe since a copy of the hosts is used for iteration
-				hosts.remove(entry.key)
-				meg.removeVertex(entry.key)
-				val realRange = (entry.key.propertyBean.getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>).get(0).value.value
-				entry.key.weight = realRange.length
+		val bankByMobj = new HashMap<MemoryExclusionVertex, String>
+		mobjByBank.forEach[bank, mobjs|mobjs.forEach[bankByMobj.put(it, bank)]]
 
-				// Put the real range in the same referential as other ranges (cf REAL_TOKEN_RANGE_PROPERTY comments)
-				realRange.translate(-realRange.start)
+		// Set of all the divided memory objects that can not be divided
+		// because they are matched in several banks.
+		val mObjsToUndivide = newHashSet
 
-				// For each bank, create as many hosts as the number of
-				// non-contiguous ranges formed by the memory objects falling
-				// into this memory bank.
-				val newHostsMObjs = new HashSet<MemoryExclusionVertex>
-				for (bankEntry : mobjByBank.entrySet) {
-					// Iterate over Mobjects to build the range(s) of this memory 
-					// bank (all ranges are relative to the host mObj)
-					val List<Range> rangesInBank = new ArrayList
-					for (mobj : bankEntry.value) {
-						val rangesInHost = mobj.getPropertyBean.getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
-						// Process non-divided buffers 
-						if(rangesInHost.size == 1) {
-							// add the range covered by this buffer to the
-							// rangesInBank (use a clone because the range will be 
-							// modified during call to the union method
-							rangesInBank.union(rangesInHost.get(0).value.value.clone as Range);
-						} else {
-							// Divided buffers: 
-							// Check if all parts of the MObj were allocated in the same memory bank
-							// i.e. check if source and dest memory objects are 
-							// all stored in the same memory bank
-							val dividedPartsHosts = mobj.propertyBean.getValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS) as List<MemoryExclusionVertex>
-							val partsHostsSet = dividedPartsHosts.map[bankByMobj.get(it)].toSet
-							if(partsHostsSet.size == 1 && partsHostsSet.get(0).equals(bankEntry.key)) {
-								// All hosts were allocated in the same bank
-								// And this bank is the current bankEntry
-								// The split is maintained, and rangesInHost must be updated
-								// (use a clone because the range will be 
-								// modified during call to the union method)
-								rangesInHost.forEach[range|rangesInBank.union(range.value.value.clone as Range)]
-							} else {
-								// Not all hosts were allocated in the same bank
-								// The mObj cannot be splitted
-								// => It must be restored to its original size in 
-								// the graph
-								mObjsToUndivide.add(mobj)
-							}
-						}
+		// Remove information of the current host from the MEG
+		// This is safe since a copy of the hosts is used for iteration
+		hosts.remove(entry.key)
+		meg.removeVertex(entry.key)
+		val realRange = (entry.key.propertyBean.getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>).get(0).value.value
+		entry.key.weight = realRange.length
+
+		// Put the real range in the same referential as other ranges (cf REAL_TOKEN_RANGE_PROPERTY comments)
+		realRange.translate(-realRange.start)
+
+		// For each bank, create as many hosts as the number of
+		// non-contiguous ranges formed by the memory objects falling
+		// into this memory bank.
+		val newHostsMObjs = new HashSet<MemoryExclusionVertex>
+		for (bankEntry : mobjByBank.entrySet) {
+			// Iterate over Mobjects to build the range(s) of this memory 
+			// bank (all ranges are relative to the host mObj)
+			val List<Range> rangesInBank = new ArrayList
+			for (mobj : bankEntry.value) {
+				val rangesInHost = mobj.getPropertyBean.getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
+				// Process non-divided buffers 
+				if(rangesInHost.size == 1) {
+					// add the range covered by this buffer to the
+					// rangesInBank (use a clone because the range will be 
+					// modified during call to the union method
+					rangesInBank.union(rangesInHost.get(0).value.value.clone as Range);
+				} else {
+					// Divided buffers: 
+					// Check if all parts of the MObj were allocated in the same memory bank
+					// i.e. check if source and dest memory objects are 
+					// all stored in the same memory bank
+					val dividedPartsHosts = mobj.propertyBean.getValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS) as List<MemoryExclusionVertex>
+					val partsHostsSet = dividedPartsHosts.map[bankByMobj.get(it)].toSet
+					if(partsHostsSet.size == 1 && partsHostsSet.get(0).equals(bankEntry.key)) {
+						// All hosts were allocated in the same bank
+						// And this bank is the current bankEntry
+						// The split is maintained, and rangesInHost must be updated
+						// (use a clone because the range will be 
+						// modified during call to the union method)
+						rangesInHost.forEach[range|rangesInBank.union(range.value.value.clone as Range)]
+					} else {
+						// Not all hosts were allocated in the same bank
+						// The mObj cannot be splitted
+						// => It must be restored to its original size in 
+						// the graph
+						mObjsToUndivide.add(mobj)
 					}
-
-					// Find the list of mObjs falling in each range
-					// Store the result in the rangesInBankAndMObjs map
-					// mObjsToUndivide are not part of these memory objects
-					val mObjInCurrentBank = mobjByBank.get(bankEntry.key)
-					mObjInCurrentBank.removeAll(mObjsToUndivide)
-					val Map<Range, List<MemoryExclusionVertex>> rangesInBankAndMObjs = newHashMap
-					for (currentRange : rangesInBank) {
-						// 1. Get the list of mObjects falling in this range
-						val mObjInCurrentRange = new ArrayList<MemoryExclusionVertex>
-						for (mObj : mObjInCurrentBank) {
-							val ranges = mObj.getPropertyBean.getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
-							if(ranges.size == 1) {
-								// Buffer is undivided, check if it intersect with 
-								// the current range in bank 
-								if(ranges.get(0).value.value.intersection(currentRange) != null) {
-									// Add undivided object at the beginning of the list
-									// to make sure that no divided object will ever be selected
-									// as a host in the next step
-									mObjInCurrentRange.add(0, mObj)
-								}
-							} else {
-								// Buffer is divided, check if *any* of its range
-								// intersects with the current range in bank
-								// (i.e. check if *not* none of its range intersect with the range)
-								if(! ranges.forall[range|range.value.value.intersection(currentRange) == null]) {
-									// Add divided object at the end of the list
-									// to make sure that no divided object will ever be selected
-									// as a host in the next step
-									mObjInCurrentRange.add(mObj)
-								}
-							}
-						}
-						rangesInBankAndMObjs.put(currentRange, mObjInCurrentRange)
-					}
-
-					// Create a memory object for each range in the bank
-					for (currentRangeAndMobjs : rangesInBankAndMObjs.entrySet) {
-						val currentRange = currentRangeAndMobjs.key
-						val mObjInCurrentRange = currentRangeAndMobjs.value
-
-						// 1. Select the first object as the new host 
-						// (cannot be a divided mObject as divided mObjects were 
-						// always added at the end of the list)
-						val newHostMobj = mObjInCurrentRange.get(0)
-						newHostsMObjs.add(newHostMobj)
-
-						// 2. Give the new host the right size
-						// (pay attention to alignment)
-						// Get aligned min index range
-						val newHostOldRange = newHostMobj.propertyBean.getValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
-						val minIndex = if(alignment <= 0) {
-								currentRange.start
-							} else {
-								// Make sure that index aligned in the buffer are in 
-								// fact aligned.
-								// This goal is here to make sure that
-								// index 0 of the new host buffer is aligned !
-								val newHostOldStart = newHostOldRange.get(0).value.value.start; // .value.value
-								// If the result of te modulo is not null, unaligned 
-								// corresponds to the number of "extra" bytes making
-								// index 0 of newHost not aligned with respect to 
-								// currentRangeStart
-								val unaligned = (newHostOldStart - currentRange.start) % alignment
-								if(unaligned == 0)
-									// Index 0 of new host is already aligned
-									currentRange.start
-								else
-									// Index 0 of new host is not aligned
-									// Extra-bytes are added to the new range
-									// to re-align it.
-									currentRange.start - (alignment - unaligned)
-							}
-						newHostMobj.setWeight(currentRange.end - minIndex)
-
-						if(mObjInCurrentRange.size <= 1) {
-							// The new host Mobj does not host any other MObj
-							// last code was still applied to make sure that 
-							// the mObject has the right size (although it 
-							// will never be larger than its original weight
-							// and never by misaligned as it does not not 
-							// host anything) 
-							newHostMobj.propertyBean.removeProperty(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY)
-						} else {
-							// The remaining processing should only be applied if 
-							// the mObject is not alone in its range and does 
-							// actually host other mObjects
-							// Update newHostMobj realTokenRange property
-							val newHostRealTokenRange = newHostOldRange.get(0).value.key
-							val newHostActualRealTokenRange = newHostOldRange.get(0).value.value.translate(-minIndex)
-							val ranges = newArrayList
-							ranges.add(newHostMobj -> (newHostRealTokenRange -> newHostActualRealTokenRange))
-							newHostMobj.setPropertyValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, ranges)
-
-							// Add the mobj to the meg hosts list
-							val hostMObjSet = newHashSet
-							hosts.put(newHostMobj, hostMObjSet)
-
-							// 3. Add all hosted mObjects to the list
-							// and set their properties
-							// (exclude first mObj from iteration, as it is the 
-							// new host)
-							for (mObj : mObjInCurrentRange.tail) {
-								// update the real token range property by translating
-								// ranges to the current range referential
-								val mObjRanges = mObj.propertyBean.getValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
-								val mObjNewRanges = newArrayList
-								for (mObjRangePair : mObjRanges) {
-									// Check if the current mObjRangePair overlaps with
-									// the current range. 
-									// Always OK for undivided buffers
-									// If a divided buffer is mapped into several 
-									// hosts, this code makes sure that each mapped 
-									// ranged is updated only when the corresponding 
-									// range is processed.
-									if(mObjRangePair.value.value.hasOverlap(currentRange)) {
-										// case for Undivided buffer and divided 
-										// range falling into the current range
-										mObjNewRanges.add(newHostMobj -> (mObjRangePair.value.key -> mObjRangePair.value.value.translate(-minIndex - newHostActualRealTokenRange.start) ))
-									} else {
-										// Case for divided range not falling into 
-										// the current range
-										mObjNewRanges.add(mObjRangePair)
-									}
-								}
-
-								// Save property and update hostMObjSet
-								mObj.propertyBean.setValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, mObjNewRanges)
-								hostMObjSet.add(mObj)
-							}
-						}
-					}
-				}
-
-				// Add the new host MObjects to the MEG
-				// and add exclusion of the host
-				for (newHostMobj : newHostsMObjs) {
-					// Add new host to the MEG
-					meg.addVertex(newHostMobj)
-					// Add exclusions
-					restoreExclusions(meg, newHostMobj)
-				}
-
-				if(logger != null && !mObjsToUndivide.empty) {
-					logger.log(Level.WARNING, "The following divided memory object " + mObjsToUndivide + " are unified again during the memory distribution process.\n" + "This unification was applied because divided memory objects cannot be merged in several distinct memories.\n" +
-						"Deactivating memory script causing this division may lead to lower memory footprints in this distributed memory context.")
-				}
-
-				// Process the mObjects to "undivide".
-				for (mObj : mObjsToUndivide) {
-
-					// Remove the Mobject from the MEG HOST_MEM_OBJ property
-					// Already done when host are removed from HOST_MEM_OBJ in previous loop
-					// val hostMemObjProp = meg.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>
-					// hostMemObjProp.forEach[hostMObj, hostedMobjs|hostedMobjs.remove(mObj)]
-					// Add the mobj back to the Meg
-					meg.addVertex(mObj)
-
-					// Restore original exclusions of the mobj
-					restoreExclusions(meg, mObj)
 				}
 			}
+
+			// Find the list of mObjs falling in each range
+			// Store the result in the rangesInBankAndMObjs map
+			// mObjsToUndivide are not part of these memory objects
+			val mObjInCurrentBank = mobjByBank.get(bankEntry.key)
+			mObjInCurrentBank.removeAll(mObjsToUndivide)
+			val Map<Range, List<MemoryExclusionVertex>> rangesInBankAndMObjs = newHashMap
+			for (currentRange : rangesInBank) {
+				// 1. Get the list of mObjects falling in this range
+				val mObjInCurrentRange = new ArrayList<MemoryExclusionVertex>
+				for (mObj : mObjInCurrentBank) {
+					val ranges = mObj.getPropertyBean.getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
+					if(ranges.size == 1) {
+						// Buffer is undivided, check if it intersect with 
+						// the current range in bank 
+						if(ranges.get(0).value.value.intersection(currentRange) != null) {
+							// Add undivided object at the beginning of the list
+							// to make sure that no divided object will ever be selected
+							// as a host in the next step
+							mObjInCurrentRange.add(0, mObj)
+						}
+					} else {
+						// Buffer is divided, check if *any* of its range
+						// intersects with the current range in bank
+						// (i.e. check if *not* none of its range intersect with the range)
+						if(! ranges.forall[range|range.value.value.intersection(currentRange) == null]) {
+							// Add divided object at the end of the list
+							// to make sure that no divided object will ever be selected
+							// as a host in the next step
+							mObjInCurrentRange.add(mObj)
+						}
+					}
+				}
+				rangesInBankAndMObjs.put(currentRange, mObjInCurrentRange)
+			}
+
+			// Create a memory object for each range in the bank
+			for (currentRangeAndMobjs : rangesInBankAndMObjs.entrySet) {
+				val currentRange = currentRangeAndMobjs.key
+				val mObjInCurrentRange = currentRangeAndMobjs.value
+
+				// 1. Select the first object as the new host 
+				// (cannot be a divided mObject as divided mObjects were 
+				// always added at the end of the list)
+				val newHostMobj = mObjInCurrentRange.get(0)
+				newHostsMObjs.add(newHostMobj)
+
+				// 2. Give the new host the right size
+				// (pay attention to alignment)
+				// Get aligned min index range
+				val newHostOldRange = newHostMobj.propertyBean.getValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
+				val minIndex = if(alignment <= 0) {
+						currentRange.start
+					} else {
+						// Make sure that index aligned in the buffer are in 
+						// fact aligned.
+						// This goal is here to make sure that
+						// index 0 of the new host buffer is aligned !
+						val newHostOldStart = newHostOldRange.get(0).value.value.start; // .value.value
+						// If the result of te modulo is not null, unaligned 
+						// corresponds to the number of "extra" bytes making
+						// index 0 of newHost not aligned with respect to 
+						// currentRangeStart
+						val unaligned = (newHostOldStart - currentRange.start) % alignment
+						if(unaligned == 0)
+							// Index 0 of new host is already aligned
+							currentRange.start
+						else
+							// Index 0 of new host is not aligned
+							// Extra-bytes are added to the new range
+							// to re-align it.
+							currentRange.start - (alignment - unaligned)
+					}
+				newHostMobj.setWeight(currentRange.end - minIndex)
+
+				if(mObjInCurrentRange.size <= 1) {
+					// The new host Mobj does not host any other MObj
+					// last code was still applied to make sure that 
+					// the mObject has the right size (although it 
+					// will never be larger than its original weight
+					// and never by misaligned as it does not not 
+					// host anything) 
+					newHostMobj.propertyBean.removeProperty(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY)
+				} else {
+					// The remaining processing should only be applied if 
+					// the mObject is not alone in its range and does 
+					// actually host other mObjects
+					// Update newHostMobj realTokenRange property
+					val newHostRealTokenRange = newHostOldRange.get(0).value.key
+					val newHostActualRealTokenRange = newHostOldRange.get(0).value.value.translate(-minIndex)
+					val ranges = newArrayList
+					ranges.add(newHostMobj -> (newHostRealTokenRange -> newHostActualRealTokenRange))
+					newHostMobj.setPropertyValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, ranges)
+
+					// Add the mobj to the meg hosts list
+					val hostMObjSet = newHashSet
+					hosts.put(newHostMobj, hostMObjSet)
+
+					// 3. Add all hosted mObjects to the list
+					// and set their properties
+					// (exclude first mObj from iteration, as it is the 
+					// new host)
+					for (mObj : mObjInCurrentRange.tail) {
+						// update the real token range property by translating
+						// ranges to the current range referential
+						val mObjRanges = mObj.propertyBean.getValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY) as List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>
+						val mObjNewRanges = newArrayList
+						for (mObjRangePair : mObjRanges) {
+							// Check if the current mObjRangePair overlaps with
+							// the current range. 
+							// Always OK for undivided buffers
+							// If a divided buffer is mapped into several 
+							// hosts, this code makes sure that each mapped 
+							// ranged is updated only when the corresponding 
+							// range is processed.
+							if(mObjRangePair.value.value.hasOverlap(currentRange)) {
+								// case for Undivided buffer and divided 
+								// range falling into the current range
+								mObjNewRanges.add(newHostMobj -> (mObjRangePair.value.key -> mObjRangePair.value.value.translate(-minIndex - newHostActualRealTokenRange.start) ))
+							} else {
+								// Case for divided range not falling into 
+								// the current range
+								mObjNewRanges.add(mObjRangePair)
+							}
+						}
+
+						// Save property and update hostMObjSet
+						mObj.propertyBean.setValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, mObjNewRanges)
+						hostMObjSet.add(mObj)
+					}
+				}
+			}
+		}
+
+		// Add the new host MObjects to the MEG
+		// and add exclusion of the host
+		for (newHostMobj : newHostsMObjs) {
+			// Add new host to the MEG
+			meg.addVertex(newHostMobj)
+			// Add exclusions
+			restoreExclusions(meg, newHostMobj)
+		}
+
+		if(logger != null && !mObjsToUndivide.empty) {
+			logger.log(Level.WARNING, "The following divided memory object " + mObjsToUndivide + " are unified again during the memory distribution process.\n" + "This unification was applied because divided memory objects cannot be merged in several distinct memories.\n" +
+				"Deactivating memory script causing this division may lead to lower memory footprints in this distributed memory context.")
+		}
+
+		// Process the mObjects to "undivide".
+		for (mObj : mObjsToUndivide) {
+
+			// Remove the Mobject from the MEG HOST_MEM_OBJ property
+			// Already done when host are removed from HOST_MEM_OBJ in previous loop
+			// val hostMemObjProp = meg.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>
+			// hostMemObjProp.forEach[hostMObj, hostedMobjs|hostedMobjs.remove(mObj)]
+			// Add the mobj back to the Meg
+			meg.addVertex(mObj)
+
+			// Restore original exclusions of the mobj
+			restoreExclusions(meg, mObj)
 		}
 	}
 
@@ -536,7 +664,7 @@ class Distributor {
 			// For source then sink of DAG edge corresponding to the memex
 			// vertex
 			findMObjBankDistributedOnly(memExVertex, memExesVerticesSet)
-			
+
 			// special processing for host Mobj
 			if(hostedMObjs != null) {
 				// Create a fake map that will store the theoretical banks of all
