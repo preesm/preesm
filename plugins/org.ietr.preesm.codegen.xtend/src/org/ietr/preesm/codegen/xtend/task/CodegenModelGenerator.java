@@ -124,8 +124,6 @@ import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.core.types.VertexType;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.ietr.preesm.memory.allocation.MemoryAllocator;
-import org.ietr.preesm.memory.allocation.MemoryAllocatorTask;
-import org.ietr.preesm.memory.distributed.Distributor;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.ietr.preesm.memory.script.Range;

@@ -55,6 +55,7 @@ import org.ietr.preesm.memory.script.Range
 
 import static extension org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask.*
 import static extension org.ietr.preesm.memory.script.Range.*
+import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph
 
 /**
  * This class contains all the code responsible for splitting a {@link 
@@ -220,7 +221,7 @@ class Distributor {
 
 			// Iteration List including the host Mobj
 			for (mobj : #[entry.key] + entry.value) {
-				findMObjBankDistributedOnly(mobj, mobjByBank)
+				findMObjBankDistributedOnly(mobj, mobjByBank, meg)
 			}
 
 			// If only one bank is used for all MObjs of this host,
@@ -228,28 +229,28 @@ class Distributor {
 			// bytes for alignment reasons)
 			if(mobjByBank.size != 1) {
 				// Apply only for mObj falling in the current bank
-				splitMergedBuffers(mobjByBank.filter[bank, mObjects | bank == memory], entry, meg, alignment);
-				
+				splitMergedBuffers(mobjByBank, #{memory}, entry, meg, alignment);
+
 				// Fill the mObjectsToRemove list
 				// with all mObjects that are not in the current memory
-				val mObjInOtherMem = mobjByBank.filter[bank, mObjects| bank != memory].values.flatten.toList
+				val mObjInOtherMem = mobjByBank.filter[bank, mObjects|bank != memory].values.flatten.toList
 				// remove mobj that are duplicated in the current memory from this list
 				mObjInOtherMem.removeAll(mobjByBank.get(memory))
-					
+
 				mObjectsToRemove.addAll(mObjInOtherMem)
-							
+
 			} else {
 				// Check that this unique bank is the current one, otherwise, 
 				// something went wrong or this and/or this meg is not the 
 				// result of a call to distributeMegDistributedOnly method
-				if(mobjByBank.values.get(0) != memory) {
+				if(mobjByBank.keySet.get(0) != memory) {
 					throw new RuntimeException(
-						"Merged memory objects " + mobjByBank.values.get(0) + " should not be allocated in memory bank " + memory + " but in memory " + mobjByBank.values.get(0) + " instead."
+						"Merged memory objects " + mobjByBank.values + " should not be allocated in memory bank " + mobjByBank.keySet.get(0) + " but in memory " + memory + " instead."
 					)
 				}
 			}
 		}
-		
+
 		// Remove all mObjects from other banks
 		meg.deepRemoveAllVertices(mObjectsToRemove)
 	}
@@ -303,7 +304,7 @@ class Distributor {
 			if(mobjByBank.size != 1) {
 
 				// Create the reverse bankByMobj map
-				splitMergedBuffers(mobjByBank, entry, meg, alignment)
+				splitMergedBuffers(mobjByBank, mobjByBank.keySet, entry, meg, alignment)
 			}
 		}
 	}
@@ -317,6 +318,9 @@ class Distributor {
 	 * 		MemoryExclusionVertex}. Each memory bank (the {@link String}) is
 	 * 		associated to the {@link Set} of {@link MemoryExclusionVertex} 
 	 * 		that is to be allocated in this bank.
+	 * @param banks
+	 * 		{@link Set} of {@link String} representing the bank to process.
+	 * 		This must be a sub-set of the keys of the mobjByBank param.
 	 * @param hosts
 	 * 		{@link MemoryExclusionVertex#HOST_MEMORY_OBJECT_PROPERTY} from the 
 	 * 		given {@link MemoryExclusionGraph}.
@@ -337,6 +341,7 @@ class Distributor {
 	 */
 	protected def static splitMergedBuffers(
 		Map<String, Set<MemoryExclusionVertex>> mobjByBank,
+		Set<String> banks,
 		Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry,
 		MemoryExclusionGraph meg,
 		int alignment
@@ -364,7 +369,7 @@ class Distributor {
 		// non-contiguous ranges formed by the memory objects falling
 		// into this memory bank.
 		val newHostsMObjs = new HashSet<MemoryExclusionVertex>
-		for (bankEntry : mobjByBank.entrySet) {
+		for (bankEntry : mobjByBank.filter[bank, mobjs|banks.contains(bank)].entrySet) {
 			// Iterate over Mobjects to build the range(s) of this memory 
 			// bank (all ranges are relative to the host mObj)
 			val List<Range> rangesInBank = new ArrayList
@@ -663,7 +668,7 @@ class Distributor {
 
 			// For source then sink of DAG edge corresponding to the memex
 			// vertex
-			findMObjBankDistributedOnly(memExVertex, memExesVerticesSet)
+			findMObjBankDistributedOnly(memExVertex, memExesVerticesSet, memEx)
 
 			// special processing for host Mobj
 			if(hostedMObjs != null) {
@@ -671,7 +676,7 @@ class Distributor {
 				// hosted mObjects
 				val hostedMObjsBanks = new HashMap<String, Set<MemoryExclusionVertex>>
 				for (hostedMobj : hostedMObjs) {
-					findMObjBankDistributedOnly(hostedMobj, hostedMObjsBanks)
+					findMObjBankDistributedOnly(hostedMobj, hostedMObjsBanks, memEx)
 				}
 
 				// Add the banks for the hosted MObjs (the split of hosted mObj will 
@@ -705,20 +710,31 @@ class Distributor {
 	 * 			identified.
 	 * @param mObjByBank
 	 * 			The {@link Map} in which results of this method are put.
+	 * @param memEx
+	 * 			The {@link MemoryExclusionGraph} whose vertices are allocated.
+	 * 			(only used to retrieved the corresponding {@link 
+	 * 			DirectedAcyclicGraph}).
 	 */
-	protected def static void findMObjBankDistributedOnly(MemoryExclusionVertex mObj, Map<String, Set<MemoryExclusionVertex>> mObjByBank) {
+	protected def static void findMObjBankDistributedOnly(MemoryExclusionVertex mObj, Map<String, Set<MemoryExclusionVertex>> mObjByBank, MemoryExclusionGraph memEx) {
 		// Process the given mObj
 		for (var i = 0; i < 2; i++) {
 			// Retrieve the component on which the DAG Vertex is mapped
 			var ComponentInstance component
 			var edge = mObj.edge
-			if(edge == null) {
-				throw new RuntimeException("Feedback fifos not yet supported wit this policy.")
-			}
-			var dagVertex = if(i == 0) {
-					edge.source
+			var dagVertex = if(edge != null) {
+					if(i == 0) {
+						edge.source
+					} else {
+						edge.target
+					}
 				} else {
-					edge.target
+					// retrieve
+					val dag = memEx.propertyBean.getValue(MemoryExclusionGraph.SOURCE_DAG) as DirectedAcyclicGraph
+					if(i == 0) {
+						dag.getVertex(mObj.getSource.substring(("FIFO_Head_").length))
+					} else {
+						dag.getVertex(mObj.getSink)
+					}
 				}
 
 			component = dagVertex.propertyBean.getValue("Operator") as ComponentInstance
