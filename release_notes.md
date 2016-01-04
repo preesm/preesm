@@ -1,3 +1,14 @@
+## Release version 2.2.3 
+*2016.01.04 - Preesm: 2.2.3, DFTools 1.1.7*
+
+### Changes
+* Error/warning checking mechanism for PiGraphs integrated in eclipse.
+* New SVG exporter for PiGraphs
+* Lighten most decorator related computation to improve PiMM editor performance. 
+
+### Bug fix
+* Fix the abnormally long execution time of mapper.
+
 ## Release version 2.2.2 
 *2015.09.16 - Preesm: 2.2.2*
 
