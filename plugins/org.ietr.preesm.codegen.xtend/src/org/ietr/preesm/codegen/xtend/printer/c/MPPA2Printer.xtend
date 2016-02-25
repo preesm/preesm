@@ -37,33 +37,34 @@
 package org.ietr.preesm.codegen.xtend.printer.c
 
 import java.util.Date
-import java.util.HashSet
 import java.util.List
-import org.ietr.preesm.codegen.xtend.model.codegen.Block
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer
-import org.ietr.preesm.codegen.xtend.model.codegen.Call
 import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock
+import org.ietr.preesm.codegen.xtend.model.codegen.Communication
+import org.ietr.preesm.codegen.xtend.model.codegen.Constant
 import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter
-import org.ietr.preesm.codegen.xtend.model.codegen.Direction
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall
 import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock
-import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
-import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection
 import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
+import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
+import org.ietr.preesm.codegen.xtend.printer.DefaultPrinter
+import org.ietr.preesm.codegen.xtend.task.CodegenException
+import java.util.ArrayList
+import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
+import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
 
-class MPPA2Printer extends CPrinter {
+class MPPA2Printer extends DefaultPrinter {
 	
-	/**
-	 * Set of CharSequence used to avoid calling the same cache operation 
-	 * multiple times in a broadcast or roundbuffer call. 
+	/** 
+	 * Temporary global var to ignore the automatic suppression of memcpy
+	 * whose target and destination are identical. 
 	 */
-	var currentOperationMemcpy = new HashSet<CharSequence>();
+	protected var IGNORE_USELESS_MEMCPY = true
 	
 	override printCoreBlockHeader(CoreBlock block) '''
 		/** 
@@ -72,198 +73,274 @@ class MPPA2Printer extends CPrinter {
 		 * @date «new Date»
 		 */
 		
+		/* system includes */
 		#include <stdlib.h>
 		#include <stdio.h>
-		#include <vbsp.h>
 		#include <mOS_vcore_u.h>
 		#include <mppa_noc.h>
-		#include <utask.h>
+		#include <pthread.h>
+		#include <semaphore.h>
+		#include <mppa_dsm_client.h>
+		
+		/* user includes */
+		#include "preesm.h"
+		
+		/* extern variables */
+		extern pthread_barrier_t pthread_barrier;
 		
 		
-	'''
-	
-	override printBroadcast(SpecialCall call) '''
-		«{
-			currentOperationMemcpy.clear
-			super.printBroadcast(call)
-		}»
-		«printCacheCoherency(call)»
+		
 	'''
 	
 	override printBufferDefinition(Buffer buffer) '''
-	// Won't work if the shared memory is >= 512 MB 
-	//#pragma DATA_SECTION(«buffer.name», ".mySharedMem")
-	//in DSM by default it is in DDR
-	//in DSM __attribute__((section("locked_data"))) /* placed in SMEM */;
-	«super.printBufferDefinition(buffer)»
+	/* When using the Distributed Shared Memory buffers are in DDR */
+	«buffer.type» «buffer.name»[«buffer.size»]; // «buffer.comment» size:= «buffer.size»*«buffer.type»
 	'''
 	
-	override printBufferDeclaration(Buffer buffer) '''
-		extern «super.printBufferDefinition(buffer)»
+	override printDefinitionsHeader(List<Variable> list) '''
+	«IF !list.empty»
+		// Core Global Definitions
+		
+	«ENDIF»
+	'''
+	
+	override printSubBufferDefinition(SubBuffer buffer) '''
+	«buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0»«
+	{offset = buffer.offset
+	 var b = buffer.container;
+	 while(b instanceof SubBuffer){
+	 	offset = offset + b.offset
+	  	b = b.container
+	  }
+	 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.size»*«buffer.type»
+	'''
+	
+	override printDefinitionsFooter(List<Variable> list) '''
+	«IF !list.empty»
+	
+	«ENDIF»
 	'''
 	
 	override printDeclarationsHeader(List<Variable> list) '''
 	// Core Global Declaration
+	extern pthread_barrier_t pthread_barrier;
 	
 	'''
+	
+	override printBufferDeclaration(Buffer buffer) '''
+	extern «printBufferDefinition(buffer)»
+	'''
+	
+	override printSubBufferDeclaration(SubBuffer buffer) '''
+	extern «buffer.type» *const «buffer.name»;  // «buffer.comment» size:= «buffer.size»*«buffer.type» defined in «buffer.creator.name»
+	'''
+	
+	override printDeclarationsFooter(List<Variable> list) '''
+	«IF !list.empty»
+	
+	«ENDIF»
+	'''
+	
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
-	void «(callBlock.eContainer as CoreBlock).name.toLowerCase»(void){
-		// Initialisation(s)
-		//mppa_rpc_init();
-		//mppa_async_init();
-		
+	void *computationThread_«(callBlock.eContainer as CoreBlock).name»(void *arg){
+		«IF !callBlock.codeElts.empty»
+			// Initialisation(s)
+			
+		«ENDIF»
 	'''
 	
 	override printCoreLoopBlockHeader(LoopBlock block2) '''
 		
 		«"\t"»// Begin the execution loop 
-			while(1){
-				busy_barrier(); // barrier les threads running bsp_barrier() ?
-		
+			int __iii;
+			for(__iii=0;__iii<GRAPH_ITERATION;__iii++){
+				pthread_barrier_wait(&pthread_barrier);
 	'''
 	
-	override printFifoCall(FifoCall fifoCall) '''
-		«IF fifoCall.operation == FifoOperation::POP»
-			mOS_dinval();
-			«IF fifoCall.bodyBuffer != null»
-				mOS_dinval();
-			«ENDIF»
-		«ENDIF»
-		«super.printFifoCall(fifoCall)»
-		«IF fifoCall.operation == FifoOperation::PUSH || fifoCall.operation == FifoOperation::INIT»
-			__builtin_k1_wpurge();
-			__builtin_k1_fence();
-			mOS_dinval();
-			«IF fifoCall.bodyBuffer != null»
-				__builtin_k1_wpurge();
-				__builtin_k1_fence();
-				mOS_dinval();
-			«ENDIF»
-		«ENDIF»
-		«printCacheCoherency(fifoCall)»
-	'''
+	
+	override printCoreLoopBlockFooter(LoopBlock block2) '''
+#ifdef VERBOSE
+		if(__k1_get_cpu_id() == 0){
+			printf("Cluster %d Graph Iteration %d / %d Done !\n", __k1_get_cluster_id(), __iii+1, GRAPH_ITERATION);
+		}
+#endif
+		/* commit local changes to the global memory */
+		pthread_barrier_wait(&pthread_barrier); /* barrier to make sure all threads have commited data in smem */
+		if(__k1_get_cpu_id() == 0){
+			mppa_dsm_client_global_purge();
+			mppa_dsm_client_global_fence();
+		}
+	}
+}
+	'''	
+	override printFifoCall(FifoCall fifoCall) {
+		var result = "fifo" + fifoCall.operation.toString.toLowerCase.toFirstUpper + "("
+
+		if (fifoCall.operation != FifoOperation::INIT) {
+			var buffer = fifoCall.parameters.head as Buffer
+			result = result + '''«buffer.doSwitch», '''
+		}
+
+		result = result +
+			'''«fifoCall.headBuffer.name», «fifoCall.headBuffer.size»*sizeof(«fifoCall.headBuffer.type»), '''
+		result = result + '''«IF fifoCall.bodyBuffer != null»«fifoCall.bodyBuffer.name», «fifoCall.bodyBuffer.size»*sizeof(«fifoCall.
+			bodyBuffer.type»)«ELSE»NULL, 0«ENDIF»);
+			'''
+	}
 	
 	override printFork(SpecialCall call) '''
-		«super.printFork(call)»
-		«printCacheCoherency(call)»
-	'''	
+	// Fork «call.name»«var input = call.inputBuffers.head»«var index = 0»
+	{
+		«FOR output : call.outputBuffers»
+			«printMemcpy(output,0,input,index,output.size,output.type)»«{index=(output.size+index); ""}»
+		«ENDFOR»
+	}
+	'''
 	
-	override printFunctionCall(FunctionCall functionCall) '''
-		«super.printFunctionCall(functionCall)»
-		«printCacheCoherency(functionCall)»
+	override printBroadcast(SpecialCall call) '''
+	// Broadcast «call.name»«var input = call.inputBuffers.head»«var index = 0»
+	{
+	«FOR output : call.outputBuffers»«var outputIdx = 0»
+		«FOR nbIter : 0..output.size/input.size+1/*Worst case is output.size exec of the loop */»
+			«IF outputIdx < output.size /* Execute loop core until all output for current buffer are produced */»
+				«val value = Math::min(output.size-outputIdx,input.size-index)»«
+				printMemcpy(output,outputIdx,input,index,value,output.type)»«
+				{index=(index+value)%input.size;outputIdx=(outputIdx+value); ""}»
+			«ENDIF»
+		«ENDFOR»
+	«ENDFOR»
+	}
+	'''
+	
+    
+	
+	override printRoundBuffer(SpecialCall call) '''
+	// RoundBuffer «call.name»«var output = call.outputBuffers.head»«var index = 0»«var inputIdx = 0»
+	«/*Compute a list of useful memcpy (the one writing the outputed value) */
+	var copiedInBuffers = {var totalSize = call.inputBuffers.fold(0)[res, buf | res+buf.size]
+		 var lastInputs = new ArrayList
+		 inputIdx = totalSize
+		 var i = call.inputBuffers.size	- 1	 
+		 while(totalSize-inputIdx < output.size){
+		 	inputIdx = inputIdx - call.inputBuffers.get(i).size
+		 	lastInputs.add(0,call.inputBuffers.get(i))
+		 	i=i-1
+		 }
+		 inputIdx = inputIdx %  output.size
+		 lastInputs
+		 }»
+	{
+		«FOR input : copiedInBuffers»
+			«FOR nbIter : 0..input.size/output.size+1/*Worst number the loop exec */»
+				«IF inputIdx < input.size /* Execute loop core until all input for current buffer are produced */»
+					«val value = Math::min(input.size-inputIdx,output.size-index)»«
+					printMemcpy(output,index,input,inputIdx,value,input.type)»«
+					{index=(index+value)%output.size;inputIdx=(inputIdx+value); ""}»
+				«ENDIF»
+			«ENDFOR»
+		«ENDFOR»
+	}
 	'''
 	
 	override printJoin(SpecialCall call) '''
-		«super.printJoin(call)»
-		«printCacheCoherency(call)»
+	// Join «call.name»«var output = call.outputBuffers.head»«var index = 0»
+	{
+		«FOR input : call.inputBuffers»
+			«printMemcpy(output,index,input,0,input.size,input.type)»«{index=(input.size+index); ""}»
+		«ENDFOR»
+	}
 	'''
 	
 	/**
-	 * This methods prints a call to the cache invalidate method for each
-	 * {@link PortDirection#INPUT input} {@link Buffer} of the given
-	 * {@link Call}. If the input port is a {@link NullBuffer}, nothing is 
-	 * printed.
+	 * Print a memcpy call in the generated code. Unless
+	 * {@link #IGNORE_USELESS_MEMCPY} is set to <code>true</code>, this method
+	 * checks if the destination and the source of the memcpy are superimposed.
+	 * In such case, the memcpy is useless and nothing is printed.
 	 * 
-	 * @param call
-	 *            the {@link Call} whose {@link PortDirection#INPUT input}
-	 *            {@link Buffer buffers} must be invalidated.
-	 * @return the corresponding code.
+	 * @param output
+	 *            the destination {@link Buffer}
+	 * @param outOffset
+	 *            the offset in the destination {@link Buffer}
+	 * @param input
+	 *            the source {@link Buffer}
+	 * @param inOffset
+	 *            the offset in the source {@link Buffer}
+	 * @param size
+	 *            the amount of memory to copy
+	 * @param type
+	 *            the type of objects copied
+	 * @return a {@link CharSequence} containing the memcpy call (if any)
 	 */
-	def printCacheCoherency(Call call)'''
-		«IF call.parameters.size > 0»
-			«FOR i :  0 .. call.parameters.size - 1»
-				«IF call.parameterDirections.get(i) == PortDirection.INPUT && !(call.parameters.get(i) instanceof NullBuffer)»
-					«IF (call.parameters.get(i) as Buffer).mergedRange != null»
-						«FOR range : (call.parameters.get(i) as Buffer).mergedRange»
-							__builtin_k1_wpurge();
-							__builtin_k1_fence();
-						«ENDFOR»
-					«ENDIF»					
-					mOS_dinval();
-				«ENDIF»
-			«ENDFOR»
-		«ENDIF»
-	'''
-	
-	override printMemcpy(Buffer output, int outOffset, Buffer input, int inOffset, int size, String type) {
+	def printMemcpy(Buffer output, int outOffset, Buffer input, int inOffset, int size, String type) {
 
-		// Cast pointers into void pointers for non-aligned memory access
-		var result = super.printMemcpy(output, outOffset, input, inOffset, size, type).toString;
-		var regex = "(memcpy\\()(.*?)[,](.*?)[,](.*?[;])"
-		result = result.replaceAll(regex, "$1(void*)($2),(void*)($3),$4")
-
-		// Also if nothing was printed (i.e. if source and destination are identical
-		// Then a writeback is needed for the output to make sure that when a consumer
-		// finish its execution and invalidate the buffer, if another consumer of the same 
-		// merged buffer is executed on the same core, its data will still be valid
-		if (result.empty) {
-			if (!(input instanceof NullBuffer)) {
-				result = '''__builtin_k1_wpurge();__builtin_k1_fence();'''
-			} else {
-
-				// The input buffer is null write back the output instead
-				// since if the input is null, it means it has been exploded
-				// into the output by the memory scripts.
-				result = '''__builtin_k1_wpurge();__builtin_k1_fence();'''
-			}
-			if (!currentOperationMemcpy.contains(result)) {
-				currentOperationMemcpy.add(result)
-			} else {
-				result = ''''''
-			}
+		// Retrieve the container buffer of the input and output as well
+		// as their offset in this buffer
+		var totalOffsetOut = outOffset*output.typeSize
+		var bOutput = output
+		while (bOutput instanceof SubBuffer) {
+			totalOffsetOut = totalOffsetOut + bOutput.offset
+			bOutput = bOutput.container
 		}
-			
-		result;
+		
+		var totalOffsetIn = inOffset*input.typeSize
+		var bInput = input
+		while (bInput instanceof SubBuffer) {
+			totalOffsetIn = totalOffsetIn + bInput.offset
+			bInput = bInput.container
+		}
+		
+		// If the Buffer and offsets are identical, or one buffer is null
+		// there is nothing to print
+		if((IGNORE_USELESS_MEMCPY && bInput == bOutput && totalOffsetIn == totalOffsetOut) ||
+			output instanceof NullBuffer || input instanceof NullBuffer){
+			''''''
+		} else {
+			'''memcpy(«output.doSwitch»+«outOffset», «input.doSwitch»+«inOffset», «size»*sizeof(«type»));'''
+		}	
 	}
 	
-	override printRoundBuffer(SpecialCall call) '''
-		«{
-			currentOperationMemcpy.clear
-			super.printRoundBuffer(call)
-		}»
-		«printCacheCoherency(call)»
-	'''
+	override printNullBuffer(NullBuffer Buffer) {
+		printBuffer(Buffer)
+	}
+	
+	override caseCommunication(Communication communication) {
+		
+		if(communication.nodes.forall[type == "SHARED_MEM"]) {
+			super.caseCommunication(communication)
+		} else {
+			throw new CodegenException("Communication "+ communication.name +
+				 " has at least one unsupported communication node"+ 
+				 " for the " + this.class.name + " printer")
+		}
+	}
 	
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
-		«IF communication.direction == Direction::SEND && communication.delimiter == Delimiter::START»
-		__builtin_k1_wpurge();
-		__builtin_k1_fence();
-		mOS_dinval();
-		«ENDIF»
-		«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
-			direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
-			(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«{
-			var coreName = if (communication.direction == Direction::SEND) {
-					communication.receiveStart.coreContainer.name
-				} else {
-					communication.sendStart.coreContainer.name
-				}
-			coreName.charAt(coreName.length - 1)
-		}»«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.
-			data.doSwitch» 
-		«IF communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END»
-		mOS_dinval();
-		«ENDIF»	
+	«/*Since everything is already in shared memory, communications are simple synchronizations here*/
+	»«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«
+		IF communication.semaphore != null»&«
+		communication.semaphore.name»/*ID*/«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.data.doSwitch» 
 	'''
 	
-	override printSemaphoreDeclaration(Semaphore semaphore) ''''''
+	override printFunctionCall(FunctionCall functionCall) '''
+	«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
+	'''
 	
-	override printSemaphoreDefinition(Semaphore semaphore) ''''''
+	override printConstant(Constant constant) '''«constant.value»«IF !constant.name.nullOrEmpty»/*«constant.name»*/«ENDIF»'''
 	
-	override printSemaphore(Semaphore semaphore) ''''''
-	
-	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {
-		super.preProcessing(printerBlocks, allBlocks)
+	override printConstantString(ConstantString constant) '''"«constant.value»"'''
 
-		for (block : printerBlocks) {
-			/** Remove semaphore init */
-			(block as CoreBlock).initBlock.codeElts.removeAll(
-				((block as CoreBlock).initBlock.codeElts.filter[
-					(it instanceof FunctionCall && (it as FunctionCall).name.startsWith("sem_init"))]))
-			/** Remove semaphores */
-			(block as CoreBlock).definitions.removeAll((block as CoreBlock).definitions.filter[it instanceof Semaphore])
-			(block as CoreBlock).declarations.removeAll(
-				(block as CoreBlock).declarations.filter[it instanceof Semaphore])
-		}		
-	}	
+	override printBuffer(Buffer buffer) '''«buffer.name»'''
+	
+	override printSubBuffer(SubBuffer buffer) {printBuffer(buffer)}
+	
+	override printSemaphore(Semaphore semaphore) '''&«semaphore.name»'''
+	
+	override printSemaphoreDefinition(Semaphore semaphore) '''
+	sem_t «semaphore.name» __attribute__((section(".locked_data")));
+	'''
+	
+	override printSemaphoreDeclaration(Semaphore semaphore) '''
+	extern sem_t «semaphore.name»; 
+	'''
+
 }
