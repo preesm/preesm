@@ -813,6 +813,19 @@ public class CodegenModelGenerator {
 				}
 			}
 		}
+		
+		// If the main operator does not exist
+		if(mainOperatorBlock == null){
+			// Create it
+			final String mainOperatorID = scenario.getSimulationManager()
+					.getMainOperatorName();
+			mainOperatorBlock = CodegenFactory.eINSTANCE.createCoreBlock();
+			ComponentInstance componentInstance = archi.getComponentInstance(mainOperatorID);
+			mainOperatorBlock.setName(componentInstance.getInstanceName());
+			mainOperatorBlock.setCoreType(componentInstance.getComponent().getVlnv()
+					.getName());
+			coreBlocks.put(componentInstance, mainOperatorBlock);
+		}
 
 		sharedBuffer.setCreator(mainOperatorBlock);
 
