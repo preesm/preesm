@@ -39,10 +39,12 @@ import org.eclipse.emf.common.notify.Notification;
 
 import org.eclipse.emf.ecore.EClass;
 
+import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 
 /**
  * <!-- begin-user-doc -->
@@ -78,24 +80,14 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 	 */
 	protected int nbIter = NB_ITER_EDEFAULT;
 	/**
-	 * The default value of the '{@link #getIter() <em>Iter</em>}' attribute.
+	 * The cached value of the '{@link #getIter() <em>Iter</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getIter()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final int ITER_EDEFAULT = 0;
-	/**
-	 * The cached value of the '{@link #getIter() <em>Iter</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getIter()
-	 * @generated
-	 * @ordered
-	 */
-	protected int iter = ITER_EDEFAULT;
-
+	protected IntVar iter;
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -141,7 +133,15 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public int getIter() {
+	public IntVar getIter() {
+		if (iter != null && iter.eIsProxy()) {
+			InternalEObject oldIter = (InternalEObject)iter;
+			iter = (IntVar)eResolveProxy(oldIter);
+			if (iter != oldIter) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.FINITE_LOOP_BLOCK__ITER, oldIter, iter));
+			}
+		}
 		return iter;
 	}
 
@@ -150,8 +150,17 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setIter(int newIter) {
-		int oldIter = iter;
+	public IntVar basicGetIter() {
+		return iter;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setIter(IntVar newIter) {
+		IntVar oldIter = iter;
 		iter = newIter;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.FINITE_LOOP_BLOCK__ITER, oldIter, iter));
@@ -168,7 +177,8 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 			case CodegenPackage.FINITE_LOOP_BLOCK__NB_ITER:
 				return getNbIter();
 			case CodegenPackage.FINITE_LOOP_BLOCK__ITER:
-				return getIter();
+				if (resolve) return getIter();
+				return basicGetIter();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -185,7 +195,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 				setNbIter((Integer)newValue);
 				return;
 			case CodegenPackage.FINITE_LOOP_BLOCK__ITER:
-				setIter((Integer)newValue);
+				setIter((IntVar)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -203,7 +213,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 				setNbIter(NB_ITER_EDEFAULT);
 				return;
 			case CodegenPackage.FINITE_LOOP_BLOCK__ITER:
-				setIter(ITER_EDEFAULT);
+				setIter((IntVar)null);
 				return;
 		}
 		super.eUnset(featureID);
@@ -220,7 +230,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 			case CodegenPackage.FINITE_LOOP_BLOCK__NB_ITER:
 				return nbIter != NB_ITER_EDEFAULT;
 			case CodegenPackage.FINITE_LOOP_BLOCK__ITER:
-				return iter != ITER_EDEFAULT;
+				return iter != null;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -237,8 +247,6 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (nbIter: ");
 		result.append(nbIter);
-		result.append(", iter: ");
-		result.append(iter);
 		result.append(')');
 		return result.toString();
 	}

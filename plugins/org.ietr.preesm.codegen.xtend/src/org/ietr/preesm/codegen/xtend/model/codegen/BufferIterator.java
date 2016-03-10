@@ -45,9 +45,8 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator#getBuffer <em>Buffer</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator#getSize <em>Size</em>}</li>
  *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator#getIter <em>Iter</em>}</li>
- *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator#getIterStep <em>Iter Step</em>}</li>
  * </ul>
  *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBufferIterator()
@@ -56,81 +55,55 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  */
 public interface BufferIterator extends Variable {
 	/**
-	 * Returns the value of the '<em><b>Buffer</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Buffer</em>' reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Buffer</em>' reference.
-	 * @see #setBuffer(Buffer)
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBufferIterator_Buffer()
-	 * @model
-	 * @generated
-	 */
-	Buffer getBuffer();
-
-	/**
-	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator#getBuffer <em>Buffer</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Buffer</em>' reference.
-	 * @see #getBuffer()
-	 * @generated
-	 */
-	void setBuffer(Buffer value);
-
-	/**
-	 * Returns the value of the '<em><b>Iter</b></em>' attribute.
+	 * Returns the value of the '<em><b>Iter</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Iter</em>' attribute isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Iter</em>' attribute.
-	 * @see #setIter(int)
+	 * @return the value of the '<em>Iter</em>' reference.
+	 * @see #setIter(IntVar)
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBufferIterator_Iter()
 	 * @model
 	 * @generated
 	 */
-	int getIter();
+	IntVar getIter();
 
 	/**
-	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator#getIter <em>Iter</em>}' attribute.
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator#getIter <em>Iter</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Iter</em>' attribute.
+	 * @param value the new value of the '<em>Iter</em>' reference.
 	 * @see #getIter()
 	 * @generated
 	 */
-	void setIter(int value);
+	void setIter(IntVar value);
 
 	/**
-	 * Returns the value of the '<em><b>Iter Step</b></em>' attribute.
+	 * Returns the value of the '<em><b>Size</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Iter Step</em>' attribute isn't clear,
+	 * If the meaning of the '<em>Size</em>' attribute isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Iter Step</em>' attribute.
-	 * @see #setIterStep(int)
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBufferIterator_IterStep()
+	 * @return the value of the '<em>Size</em>' attribute.
+	 * @see #setSize(int)
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBufferIterator_Size()
 	 * @model
 	 * @generated
 	 */
-	int getIterStep();
+	int getSize();
 
 	/**
-	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator#getIterStep <em>Iter Step</em>}' attribute.
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator#getSize <em>Size</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Iter Step</em>' attribute.
-	 * @see #getIterStep()
+	 * @param value the new value of the '<em>Size</em>' attribute.
+	 * @see #getSize()
 	 * @generated
 	 */
-	void setIterStep(int value);
+	void setSize(int value);
 
 } // BufferIterator

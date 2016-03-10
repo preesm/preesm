@@ -154,6 +154,7 @@ class MPPA2Printer extends CPrinter {
 		«"\t"»// Begin the execution loop 
 			int __iii __attribute__((unused));
 			for(__iii=0;__iii<GRAPH_ITERATION;__iii++){
+				
 				pthread_barrier_wait(&pthread_barrier);
 				
 	'''
@@ -171,6 +172,7 @@ class MPPA2Printer extends CPrinter {
 					mppa_dsm_client_global_purge();
 					mppa_dsm_client_global_fence();
 				}
+				
 			}
 		}	
 	'''	

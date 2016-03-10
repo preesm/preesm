@@ -58,6 +58,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator
+import org.ietr.preesm.codegen.xtend.model.codegen.IntVar
 
 /**
  * This printer is currently used to print C code only for X86 processor with
@@ -158,21 +159,21 @@ class CPrinter extends DefaultPrinter {
 		}
 	}
 	'''	
-	
+	 
 	override printFiniteLoopBlockHeader(FiniteLoopBlock block2) '''
 		
 		// Begin the for loop 
 		{
-			int ii;
+			int «block2.iter.name»;
 			#pragma omp parallel for
-			for(ii=0;ii<«block2.nbIter»;ii++){
-				
+			for(«block2.iter.name»=0;«block2.iter.name»<«block2.nbIter»;«block2.iter.name»++){
+			
 	'''
 	
-	
 	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
-		«"\t"»}
+		
 		}
+	}
 	'''	
 	
 	override printFifoCall(FifoCall fifoCall) {
@@ -345,11 +346,20 @@ class CPrinter extends DefaultPrinter {
 	extern sem_t «semaphore.name»; 
 	'''
 	
-	override printBufferIterator(BufferIterator bufferIterator) '''«bufferIterator.buffer» + «bufferIterator.iter*bufferIterator.iterStep»'''
+	override printBufferIterator(BufferIterator bufferIterator) '''«bufferIterator.name» + «printIntVar(bufferIterator.iter)» * «bufferIterator.size»'''
 	
 	override printBufferIteratorDeclaration(BufferIterator bufferIterator) ''''''
 	
 	override printBufferIteratorDefinition(BufferIterator bufferIterator) ''''''
 	
+	override printIntVar(IntVar intVar) '''«intVar.name»'''
+
+	override printIntVarDeclaration(IntVar intVar) '''
+	extern int «intVar.name»;
+	'''
+	
+	override printIntVarDefinition(IntVar intVar) '''
+	int «intVar.name»;
+	'''
 
 }
