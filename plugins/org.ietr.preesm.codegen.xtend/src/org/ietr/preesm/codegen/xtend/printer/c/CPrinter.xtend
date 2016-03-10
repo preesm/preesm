@@ -167,7 +167,8 @@ class CPrinter extends DefaultPrinter {
 			int «block2.iter.name»;
 			#pragma omp parallel for
 			for(«block2.iter.name»=0;«block2.iter.name»<«block2.nbIter»;«block2.iter.name»++){
-			
+				
+				
 	'''
 	
 	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
