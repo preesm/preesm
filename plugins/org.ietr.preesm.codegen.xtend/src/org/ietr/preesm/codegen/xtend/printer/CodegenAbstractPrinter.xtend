@@ -467,18 +467,33 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	
 	override caseFiniteLoopBlock(FiniteLoopBlock loopBlock) {
 		
-		//Well to write something right here
+		var result = new StringConcatenation
+		var indentation = ""
+		var boolean hasNewLine
 		
-		var result = new ArrayList<CharSequence>
+		val finiteLoopBlockheader = printFiniteLoopBlockHeader(loopBlock)
+		result.append(finiteLoopBlockheader,indentation)
 
-		result.add(printFiniteLoopBlockHeader(loopBlock))
+		if (finiteLoopBlockheader.length > 0) {
+				indentation = result.lastLineIndentation
+				result = result.trimLastEOL
+				hasNewLine = result.endWithEOL
+			} else {
+				indentation = indentation
+				hasNewLine = false
+			}
 
 		// Visit all codeElements
-		result.addAll(loopBlock.codeElts.map[doSwitch])
+		result.append(loopBlock.codeElts.map[doSwitch].join(''), indentation)
+		
+		if (hasNewLine) {
+			result.newLineIfNotEmpty()
+			result.append(indentation)
+		}
 
-		result.add(printFiniteLoopBlockFooter(loopBlock))
-
-		result.join('')
+		result.append(printFiniteLoopBlockFooter(loopBlock), "")
+		
+		result
 	}
 	
 	override caseNullBuffer(NullBuffer nullBuffer) {
