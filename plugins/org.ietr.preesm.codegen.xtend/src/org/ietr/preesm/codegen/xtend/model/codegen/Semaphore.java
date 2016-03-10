@@ -38,8 +38,8 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
 /**
  * <!-- begin-user-doc --> A representation of the model object '
  * <em><b>Semaphore</b></em>'. <!-- end-user-doc -->
- * 
- * 
+ *
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSemaphore()
  * @model
  * @generated

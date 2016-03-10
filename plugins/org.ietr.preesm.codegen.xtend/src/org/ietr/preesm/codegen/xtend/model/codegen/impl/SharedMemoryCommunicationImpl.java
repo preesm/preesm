@@ -51,21 +51,19 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
  * <em><b>Shared Memory Communication</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SharedMemoryCommunicationImpl#getSemaphore
- * <em>Semaphore</em>}</li>
- * </ul>
  * </p>
- * 
+ * <ul>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SharedMemoryCommunicationImpl#getSemaphore <em>Semaphore</em>}</li>
+ * </ul>
+ *
  * @generated
  */
 public class SharedMemoryCommunicationImpl extends CommunicationImpl implements
 		SharedMemoryCommunication {
 	/**
-	 * The cached value of the '{@link #getSemaphore() <em>Semaphore</em>}'
-	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getSemaphore() <em>Semaphore</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getSemaphore()
 	 * @generated
 	 * @ordered
@@ -74,7 +72,6 @@ public class SharedMemoryCommunicationImpl extends CommunicationImpl implements
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected SharedMemoryCommunicationImpl() {
@@ -83,7 +80,6 @@ public class SharedMemoryCommunicationImpl extends CommunicationImpl implements
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -93,29 +89,24 @@ public class SharedMemoryCommunicationImpl extends CommunicationImpl implements
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Semaphore getSemaphore() {
 		if (semaphore != null && semaphore.eIsProxy()) {
-			InternalEObject oldSemaphore = (InternalEObject) semaphore;
-			semaphore = (Semaphore) eResolveProxy(oldSemaphore);
+			InternalEObject oldSemaphore = (InternalEObject)semaphore;
+			semaphore = (Semaphore)eResolveProxy(oldSemaphore);
 			if (semaphore != oldSemaphore) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(
-							this,
-							Notification.RESOLVE,
-							CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE,
-							oldSemaphore, semaphore));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE, oldSemaphore, semaphore));
 			}
 		}
 		return semaphore;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Semaphore basicGetSemaphore() {
@@ -124,7 +115,6 @@ public class SharedMemoryCommunicationImpl extends CommunicationImpl implements
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -132,67 +122,64 @@ public class SharedMemoryCommunicationImpl extends CommunicationImpl implements
 		Semaphore oldSemaphore = semaphore;
 		semaphore = newSemaphore;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE,
-					oldSemaphore, semaphore));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE, oldSemaphore, semaphore));
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE:
-			if (resolve)
-				return getSemaphore();
-			return basicGetSemaphore();
+			case CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE:
+				if (resolve) return getSemaphore();
+				return basicGetSemaphore();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE:
-			setSemaphore((Semaphore) newValue);
-			return;
+			case CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE:
+				setSemaphore((Semaphore)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE:
-			setSemaphore((Semaphore) null);
-			return;
+			case CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE:
+				setSemaphore((Semaphore)null);
+				return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE:
-			return semaphore != null;
+			case CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE:
+				return semaphore != null;
 		}
 		return super.eIsSet(featureID);
 	}

@@ -35,6 +35,7 @@
  */
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
+import org.eclipse.emf.cdo.CDOObject;
 import org.eclipse.emf.ecore.EObject;
 
 /**
@@ -44,8 +45,8 @@ import org.eclipse.emf.ecore.EObject;
  * a parent {@link Block}.
  * 
  * <!-- end-user-doc -->
- * 
- * 
+ *
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCodeElt()
  * @model interface="true" abstract="true"
  * @generated

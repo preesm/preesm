@@ -56,6 +56,8 @@ import org.ietr.preesm.codegen.xtend.task.CodegenException
 import java.util.ArrayList
 import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
+import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
+import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator
 
 /**
  * This printer is currently used to print C code only for X86 processor with
@@ -156,6 +158,23 @@ class CPrinter extends DefaultPrinter {
 		}
 	}
 	'''	
+	
+	override printFiniteLoopBlockHeader(FiniteLoopBlock block2) '''
+		
+		// Begin the for loop 
+		{
+			int ii;
+			#pragma omp parallel for
+			for(ii=0;ii<«block2.nbIter»;ii++){
+				
+	'''
+	
+	
+	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
+		«"\t"»}
+		}
+	'''	
+	
 	override printFifoCall(FifoCall fifoCall) {
 		var result = "fifo" + fifoCall.operation.toString.toLowerCase.toFirstUpper + "("
 
@@ -325,5 +344,12 @@ class CPrinter extends DefaultPrinter {
 	override printSemaphoreDeclaration(Semaphore semaphore) '''
 	extern sem_t «semaphore.name»; 
 	'''
+	
+	override printBufferIterator(BufferIterator bufferIterator) '''«bufferIterator.buffer» + «bufferIterator.iter*bufferIterator.iterStep»'''
+	
+	override printBufferIteratorDeclaration(BufferIterator bufferIterator) ''''''
+	
+	override printBufferIteratorDefinition(BufferIterator bufferIterator) ''''''
+	
 
 }

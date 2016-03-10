@@ -51,54 +51,47 @@ import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
  * <em><b>Core Block</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CoreBlockImpl#getLoopBlock
- * <em>Loop Block</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CoreBlockImpl#getInitBlock
- * <em>Init Block</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CoreBlockImpl#getCoreType
- * <em>Core Type</em>}</li>
- * </ul>
  * </p>
- * 
+ * <ul>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CoreBlockImpl#getLoopBlock <em>Loop Block</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CoreBlockImpl#getInitBlock <em>Init Block</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CoreBlockImpl#getCoreType <em>Core Type</em>}</li>
+ * </ul>
+ *
  * @generated
  */
 public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 	/**
-	 * The cached value of the '{@link #getLoopBlock() <em>Loop Block</em>}'
-	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getLoopBlock() <em>Loop Block</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getLoopBlock()
 	 * @generated
 	 * @ordered
 	 */
 	protected LoopBlock loopBlock;
 	/**
-	 * The cached value of the '{@link #getInitBlock() <em>Init Block</em>}'
-	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getInitBlock() <em>Init Block</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getInitBlock()
 	 * @generated
 	 * @ordered
 	 */
 	protected CallBlock initBlock;
-
 	/**
-	 * The default value of the '{@link #getCoreType() <em>Core Type</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The default value of the '{@link #getCoreType() <em>Core Type</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getCoreType()
 	 * @generated
 	 * @ordered
 	 */
 	protected static final String CORE_TYPE_EDEFAULT = null;
 	/**
-	 * The cached value of the '{@link #getCoreType() <em>Core Type</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getCoreType() <em>Core Type</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getCoreType()
 	 * @generated
 	 * @ordered
@@ -120,7 +113,6 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -130,27 +122,24 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public LoopBlock getLoopBlock() {
 		if (loopBlock != null && loopBlock.eIsProxy()) {
-			InternalEObject oldLoopBlock = (InternalEObject) loopBlock;
-			loopBlock = (LoopBlock) eResolveProxy(oldLoopBlock);
+			InternalEObject oldLoopBlock = (InternalEObject)loopBlock;
+			loopBlock = (LoopBlock)eResolveProxy(oldLoopBlock);
 			if (loopBlock != oldLoopBlock) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							CodegenPackage.CORE_BLOCK__LOOP_BLOCK,
-							oldLoopBlock, loopBlock));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.CORE_BLOCK__LOOP_BLOCK, oldLoopBlock, loopBlock));
 			}
 		}
 		return loopBlock;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	public LoopBlock basicGetLoopBlock() {
@@ -159,7 +148,6 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -167,34 +155,29 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 		LoopBlock oldLoopBlock = loopBlock;
 		loopBlock = newLoopBlock;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.CORE_BLOCK__LOOP_BLOCK, oldLoopBlock,
-					loopBlock));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.CORE_BLOCK__LOOP_BLOCK, oldLoopBlock, loopBlock));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public CallBlock getInitBlock() {
 		if (initBlock != null && initBlock.eIsProxy()) {
-			InternalEObject oldInitBlock = (InternalEObject) initBlock;
-			initBlock = (CallBlock) eResolveProxy(oldInitBlock);
+			InternalEObject oldInitBlock = (InternalEObject)initBlock;
+			initBlock = (CallBlock)eResolveProxy(oldInitBlock);
 			if (initBlock != oldInitBlock) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							CodegenPackage.CORE_BLOCK__INIT_BLOCK,
-							oldInitBlock, initBlock));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.CORE_BLOCK__INIT_BLOCK, oldInitBlock, initBlock));
 			}
 		}
 		return initBlock;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	public CallBlock basicGetInitBlock() {
@@ -203,7 +186,6 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -211,14 +193,11 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 		CallBlock oldInitBlock = initBlock;
 		initBlock = newInitBlock;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.CORE_BLOCK__INIT_BLOCK, oldInitBlock,
-					initBlock));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.CORE_BLOCK__INIT_BLOCK, oldInitBlock, initBlock));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -228,7 +207,6 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -236,102 +214,97 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 		String oldCoreType = coreType;
 		coreType = newCoreType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.CORE_BLOCK__CORE_TYPE, oldCoreType, coreType));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.CORE_BLOCK__CORE_TYPE, oldCoreType, coreType));
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case CodegenPackage.CORE_BLOCK__LOOP_BLOCK:
-			if (resolve)
-				return getLoopBlock();
-			return basicGetLoopBlock();
-		case CodegenPackage.CORE_BLOCK__INIT_BLOCK:
-			if (resolve)
-				return getInitBlock();
-			return basicGetInitBlock();
-		case CodegenPackage.CORE_BLOCK__CORE_TYPE:
-			return getCoreType();
+			case CodegenPackage.CORE_BLOCK__LOOP_BLOCK:
+				if (resolve) return getLoopBlock();
+				return basicGetLoopBlock();
+			case CodegenPackage.CORE_BLOCK__INIT_BLOCK:
+				if (resolve) return getInitBlock();
+				return basicGetInitBlock();
+			case CodegenPackage.CORE_BLOCK__CORE_TYPE:
+				return getCoreType();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case CodegenPackage.CORE_BLOCK__LOOP_BLOCK:
-			setLoopBlock((LoopBlock) newValue);
-			return;
-		case CodegenPackage.CORE_BLOCK__INIT_BLOCK:
-			setInitBlock((CallBlock) newValue);
-			return;
-		case CodegenPackage.CORE_BLOCK__CORE_TYPE:
-			setCoreType((String) newValue);
-			return;
+			case CodegenPackage.CORE_BLOCK__LOOP_BLOCK:
+				setLoopBlock((LoopBlock)newValue);
+				return;
+			case CodegenPackage.CORE_BLOCK__INIT_BLOCK:
+				setInitBlock((CallBlock)newValue);
+				return;
+			case CodegenPackage.CORE_BLOCK__CORE_TYPE:
+				setCoreType((String)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case CodegenPackage.CORE_BLOCK__LOOP_BLOCK:
-			setLoopBlock((LoopBlock) null);
-			return;
-		case CodegenPackage.CORE_BLOCK__INIT_BLOCK:
-			setInitBlock((CallBlock) null);
-			return;
-		case CodegenPackage.CORE_BLOCK__CORE_TYPE:
-			setCoreType(CORE_TYPE_EDEFAULT);
-			return;
+			case CodegenPackage.CORE_BLOCK__LOOP_BLOCK:
+				setLoopBlock((LoopBlock)null);
+				return;
+			case CodegenPackage.CORE_BLOCK__INIT_BLOCK:
+				setInitBlock((CallBlock)null);
+				return;
+			case CodegenPackage.CORE_BLOCK__CORE_TYPE:
+				setCoreType(CORE_TYPE_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case CodegenPackage.CORE_BLOCK__LOOP_BLOCK:
-			return loopBlock != null;
-		case CodegenPackage.CORE_BLOCK__INIT_BLOCK:
-			return initBlock != null;
-		case CodegenPackage.CORE_BLOCK__CORE_TYPE:
-			return CORE_TYPE_EDEFAULT == null ? coreType != null
-					: !CORE_TYPE_EDEFAULT.equals(coreType);
+			case CodegenPackage.CORE_BLOCK__LOOP_BLOCK:
+				return loopBlock != null;
+			case CodegenPackage.CORE_BLOCK__INIT_BLOCK:
+				return initBlock != null;
+			case CodegenPackage.CORE_BLOCK__CORE_TYPE:
+				return CORE_TYPE_EDEFAULT == null ? coreType != null : !CORE_TYPE_EDEFAULT.equals(coreType);
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy())
-			return super.toString();
+		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (coreType: ");

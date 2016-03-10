@@ -15,34 +15,145 @@
       <genEnumLiterals ecoreEnumLiteral="codegen.ecore#//Delimiter/START"/>
       <genEnumLiterals ecoreEnumLiteral="codegen.ecore#//Delimiter/END"/>
     </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="codegen.ecore#//SpecialType">
+      <genEnumLiterals ecoreEnumLiteral="codegen.ecore#//SpecialType/FORK"/>
+      <genEnumLiterals ecoreEnumLiteral="codegen.ecore#//SpecialType/JOIN"/>
+      <genEnumLiterals ecoreEnumLiteral="codegen.ecore#//SpecialType/BROADCAST"/>
+      <genEnumLiterals ecoreEnumLiteral="codegen.ecore#//SpecialType/ROUND_BUFFER"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="codegen.ecore#//FifoOperation">
+      <genEnumLiterals ecoreEnumLiteral="codegen.ecore#//FifoOperation/PUSH"/>
+      <genEnumLiterals ecoreEnumLiteral="codegen.ecore#//FifoOperation/POP"/>
+      <genEnumLiterals ecoreEnumLiteral="codegen.ecore#//FifoOperation/INIT"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="codegen.ecore#//PortDirection">
+      <genEnumLiterals ecoreEnumLiteral="codegen.ecore#//PortDirection/INPUT"/>
+      <genEnumLiterals ecoreEnumLiteral="codegen.ecore#//PortDirection/OUTPUT"/>
+      <genEnumLiterals ecoreEnumLiteral="codegen.ecore#//PortDirection/NONE"/>
+    </genEnums>
+    <genDataTypes ecoreDataType="codegen.ecore#//range"/>
     <genClasses ecoreClass="codegen.ecore#//Block">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference codegen.ecore#//Block/codeElts"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference codegen.ecore#//Block/declarations"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//Block/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference codegen.ecore#//Block/definitions"/>
     </genClasses>
     <genClasses image="false" ecoreClass="codegen.ecore#//CodeElt"/>
     <genClasses image="false" ecoreClass="codegen.ecore#//Call">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//Call/parameters"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//Call/name"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//Call/EReference0"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//Call/parameterDirections"/>
+      <genOperations ecoreOperation="codegen.ecore#//Call/addParameter">
+        <genParameters ecoreParameter="codegen.ecore#//Call/addParameter/variable"/>
+        <genParameters ecoreParameter="codegen.ecore#//Call/addParameter/direction"/>
+      </genOperations>
+      <genOperations ecoreOperation="codegen.ecore#//Call/removeParameter">
+        <genParameters ecoreParameter="codegen.ecore#//Call/removeParameter/variable"/>
+      </genOperations>
     </genClasses>
     <genClasses image="false" ecoreClass="codegen.ecore#//Variable">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//Variable/name"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//Variable/type"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference codegen.ecore#//Variable/creator"/>
+      <genFeatures property="Readonly" notify="false" createChild="false" ecoreFeature="ecore:EReference codegen.ecore#//Variable/users"/>
     </genClasses>
     <genClasses ecoreClass="codegen.ecore#//Buffer">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//Buffer/size"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//Buffer/childrens"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//Buffer/typeSize"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//Buffer/mergedRange"/>
     </genClasses>
     <genClasses ecoreClass="codegen.ecore#//SubBuffer">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//SubBuffer/container"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//SubBuffer/offset"/>
     </genClasses>
-    <genClasses ecoreClass="codegen.ecore#//Constant"/>
-    <genClasses ecoreClass="codegen.ecore#//FunctionCall"/>
+    <genClasses ecoreClass="codegen.ecore#//Constant">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//Constant/value"/>
+    </genClasses>
+    <genClasses ecoreClass="codegen.ecore#//FunctionCall">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//FunctionCall/actorName"/>
+    </genClasses>
     <genClasses ecoreClass="codegen.ecore#//Communication">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//Communication/EReference0"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//Communication/direction"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//Communication/delimiter"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//Communication/data"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//Communication/sendStart"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//Communication/sendEnd"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//Communication/receiveStart"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//Communication/receiveEnd"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//Communication/id"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference codegen.ecore#//Communication/nodes"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//Communication/receiveRelease"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//Communication/sendReserve"/>
+      <genOperations ecoreOperation="codegen.ecore#//Communication/getCoreContainer"/>
     </genClasses>
-    <genClasses ecoreClass="codegen.ecore#//CoreBlock"/>
-    <genClasses ecoreClass="codegen.ecore#//ActorBlock"/>
+    <genClasses ecoreClass="codegen.ecore#//CoreBlock">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//CoreBlock/loopBlock"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//CoreBlock/initBlock"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//CoreBlock/coreType"/>
+    </genClasses>
+    <genClasses ecoreClass="codegen.ecore#//ActorBlock">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//ActorBlock/loopBlock"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//ActorBlock/initBlock"/>
+    </genClasses>
+    <genClasses ecoreClass="codegen.ecore#//LoopBlock"/>
+    <genClasses ecoreClass="codegen.ecore#//ActorCall"/>
+    <genClasses ecoreClass="codegen.ecore#//CallBlock"/>
+    <genClasses ecoreClass="codegen.ecore#//SpecialCall">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//SpecialCall/type"/>
+      <genFeatures property="Readonly" notify="false" createChild="false" ecoreFeature="ecore:EReference codegen.ecore#//SpecialCall/inputBuffers"/>
+      <genFeatures property="Readonly" notify="false" createChild="false" ecoreFeature="ecore:EReference codegen.ecore#//SpecialCall/outputBuffers"/>
+      <genOperations ecoreOperation="codegen.ecore#//SpecialCall/isFork"/>
+      <genOperations ecoreOperation="codegen.ecore#//SpecialCall/isJoin"/>
+      <genOperations ecoreOperation="codegen.ecore#//SpecialCall/isBroadcast"/>
+      <genOperations ecoreOperation="codegen.ecore#//SpecialCall/isRoundBuffer"/>
+      <genOperations ecoreOperation="codegen.ecore#//SpecialCall/addInputBuffer">
+        <genParameters ecoreParameter="codegen.ecore#//SpecialCall/addInputBuffer/buffer"/>
+      </genOperations>
+      <genOperations ecoreOperation="codegen.ecore#//SpecialCall/addOutputBuffer">
+        <genParameters ecoreParameter="codegen.ecore#//SpecialCall/addOutputBuffer/buffer"/>
+      </genOperations>
+      <genOperations ecoreOperation="codegen.ecore#//SpecialCall/removeInputBuffer">
+        <genParameters ecoreParameter="codegen.ecore#//SpecialCall/removeInputBuffer/buffer"/>
+      </genOperations>
+      <genOperations ecoreOperation="codegen.ecore#//SpecialCall/removeOutputBuffer">
+        <genParameters ecoreParameter="codegen.ecore#//SpecialCall/removeOutputBuffer/buffer"/>
+      </genOperations>
+    </genClasses>
+    <genClasses ecoreClass="codegen.ecore#//FifoCall">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//FifoCall/operation"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//FifoCall/fifoHead"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//FifoCall/fifoTail"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//FifoCall/headBuffer"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//FifoCall/bodyBuffer"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="codegen.ecore#//Commentable">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//Commentable/comment"/>
+    </genClasses>
+    <genClasses ecoreClass="codegen.ecore#//CommunicationNode">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//CommunicationNode/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//CommunicationNode/type"/>
+    </genClasses>
+    <genClasses ecoreClass="codegen.ecore#//Semaphore"/>
+    <genClasses ecoreClass="codegen.ecore#//SharedMemoryCommunication">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//SharedMemoryCommunication/semaphore"/>
+    </genClasses>
+    <genClasses ecoreClass="codegen.ecore#//ConstantString">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//ConstantString/value"/>
+    </genClasses>
+    <genClasses ecoreClass="codegen.ecore#//NullBuffer"/>
+    <genClasses ecoreClass="codegen.ecore#//FiniteLoopBlock">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//FiniteLoopBlock/nbIter"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//FiniteLoopBlock/iter"/>
+    </genClasses>
+    <genClasses ecoreClass="codegen.ecore#//IntVar">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//IntVar/value"/>
+    </genClasses>
+    <genClasses ecoreClass="codegen.ecore#//BufferIterator">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//BufferIterator/buffer"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//BufferIterator/iter"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//BufferIterator/iterStep"/>
+    </genClasses>
   </genPackages>
 </genmodel:GenModel>

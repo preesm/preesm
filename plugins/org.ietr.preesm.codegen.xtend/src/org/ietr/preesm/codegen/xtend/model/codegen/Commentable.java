@@ -35,21 +35,20 @@
  */
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
+import org.eclipse.emf.cdo.CDOObject;
 import org.eclipse.emf.ecore.EObject;
 
 /**
  * <!-- begin-user-doc --> A representation of the model object '
  * <em><b>Commentable</b></em>'. <!-- end-user-doc -->
- * 
+ *
  * <p>
  * The following features are supported:
- * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.Commentable#getComment
- * <em>Comment</em>}</li>
- * </ul>
  * </p>
- * 
+ * <ul>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Commentable#getComment <em>Comment</em>}</li>
+ * </ul>
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCommentable()
  * @model abstract="true"
  * @generated

@@ -47,29 +47,27 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
  * <em><b>Function Call</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FunctionCallImpl#getActorName
- * <em>Actor Name</em>}</li>
- * </ul>
  * </p>
- * 
+ * <ul>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FunctionCallImpl#getActorName <em>Actor Name</em>}</li>
+ * </ul>
+ *
  * @generated
  */
 public class FunctionCallImpl extends CallImpl implements FunctionCall {
 	/**
-	 * The default value of the '{@link #getActorName() <em>Actor Name</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The default value of the '{@link #getActorName() <em>Actor Name</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getActorName()
 	 * @generated
 	 * @ordered
 	 */
 	protected static final String ACTOR_NAME_EDEFAULT = null;
 	/**
-	 * The cached value of the '{@link #getActorName() <em>Actor Name</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getActorName() <em>Actor Name</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getActorName()
 	 * @generated
 	 * @ordered
@@ -78,7 +76,6 @@ public class FunctionCallImpl extends CallImpl implements FunctionCall {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected FunctionCallImpl() {
@@ -87,7 +84,6 @@ public class FunctionCallImpl extends CallImpl implements FunctionCall {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -97,7 +93,6 @@ public class FunctionCallImpl extends CallImpl implements FunctionCall {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -107,7 +102,6 @@ public class FunctionCallImpl extends CallImpl implements FunctionCall {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -115,79 +109,75 @@ public class FunctionCallImpl extends CallImpl implements FunctionCall {
 		String oldActorName = actorName;
 		actorName = newActorName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.FUNCTION_CALL__ACTOR_NAME, oldActorName,
-					actorName));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.FUNCTION_CALL__ACTOR_NAME, oldActorName, actorName));
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case CodegenPackage.FUNCTION_CALL__ACTOR_NAME:
-			return getActorName();
+			case CodegenPackage.FUNCTION_CALL__ACTOR_NAME:
+				return getActorName();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case CodegenPackage.FUNCTION_CALL__ACTOR_NAME:
-			setActorName((String) newValue);
-			return;
+			case CodegenPackage.FUNCTION_CALL__ACTOR_NAME:
+				setActorName((String)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case CodegenPackage.FUNCTION_CALL__ACTOR_NAME:
-			setActorName(ACTOR_NAME_EDEFAULT);
-			return;
+			case CodegenPackage.FUNCTION_CALL__ACTOR_NAME:
+				setActorName(ACTOR_NAME_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case CodegenPackage.FUNCTION_CALL__ACTOR_NAME:
-			return ACTOR_NAME_EDEFAULT == null ? actorName != null
-					: !ACTOR_NAME_EDEFAULT.equals(actorName);
+			case CodegenPackage.FUNCTION_CALL__ACTOR_NAME:
+				return ACTOR_NAME_EDEFAULT == null ? actorName != null : !ACTOR_NAME_EDEFAULT.equals(actorName);
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy())
-			return super.toString();
+		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (actorName: ");

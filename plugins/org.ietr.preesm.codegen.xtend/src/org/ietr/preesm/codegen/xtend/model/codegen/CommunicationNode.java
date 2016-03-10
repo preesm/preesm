@@ -35,24 +35,21 @@
  */
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
+import org.eclipse.emf.cdo.CDOObject;
 import org.eclipse.emf.ecore.EObject;
 
 /**
  * <!-- begin-user-doc --> A representation of the model object '
  * <em><b>Communication Node</b></em>'. <!-- end-user-doc -->
- * 
+ *
  * <p>
  * The following features are supported:
- * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode#getName
- * <em>Name</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode#getType
- * <em>Type</em>}</li>
- * </ul>
  * </p>
- * 
+ * <ul>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode#getName <em>Name</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode#getType <em>Type</em>}</li>
+ * </ul>
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCommunicationNode()
  * @model
  * @generated
@@ -76,12 +73,9 @@ public interface CommunicationNode extends EObject {
 	String getName();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode#getName
-	 * <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Name</em>' attribute.
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode#getName <em>Name</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Name</em>' attribute.
 	 * @see #getName()
 	 * @generated
 	 */
@@ -105,12 +99,9 @@ public interface CommunicationNode extends EObject {
 	String getType();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode#getType
-	 * <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Type</em>' attribute.
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode#getType <em>Type</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Type</em>' attribute.
 	 * @see #getType()
 	 * @generated
 	 */

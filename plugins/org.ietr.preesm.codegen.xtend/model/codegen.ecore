@@ -174,4 +174,17 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="NullBuffer" eSuperTypes="#//SubBuffer"/>
   <eClassifiers xsi:type="ecore:EDataType" name="range" instanceClassName="org.ietr.preesm.memory.script.Range"/>
+  <eClassifiers xsi:type="ecore:EClass" name="FiniteLoopBlock" eSuperTypes="#//LoopBlock">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="nbIter" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="iter" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IntVar" eSuperTypes="#//Variable">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BufferIterator" eSuperTypes="#//Variable">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="buffer" eType="#//Buffer"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="iter" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="iterStep" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
 </ecore:EPackage>

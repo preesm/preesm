@@ -42,9 +42,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
  * <em><b>Null Buffer</b></em>'. <!-- end-user-doc -->
- * <p>
- * </p>
- * 
+ *
  * @generated
  */
 public class NullBufferImpl extends SubBufferImpl implements NullBuffer {
@@ -60,7 +58,6 @@ public class NullBufferImpl extends SubBufferImpl implements NullBuffer {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override

@@ -36,6 +36,7 @@
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
 import org.eclipse.emf.common.util.EList;
+import org.ietr.preesm.memory.script.Range;
 
 /**
  * <!-- begin-user-doc --> A {@link Buffer} is a {@link Variable} that
@@ -43,21 +44,17 @@ import org.eclipse.emf.common.util.EList;
  * seen as equivalent to an array in C code. <br>
  * A {@link Buffer} has a {@link #getSize() size} which is the number of element
  * of its {@link #getType() type} it can store.<!-- end-user-doc -->
- * 
+ *
  * <p>
  * The following features are supported:
- * <ul>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getSize <em>
- * Size</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getChildrens
- * <em>Childrens</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getTypeSize
- * <em>Type Size</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getMergedRange
- * <em>Merged Range</em>}</li>
- * </ul>
  * </p>
- * 
+ * <ul>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getSize <em>Size</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getChildrens <em>Childrens</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getTypeSize <em>Type Size</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getMergedRange <em>Merged Range</em>}</li>
+ * </ul>
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBuffer()
  * @model
  * @generated
@@ -78,30 +75,24 @@ public interface Buffer extends Variable {
 	int getSize();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getSize
-	 * <em>Size</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Size</em>' attribute.
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getSize <em>Size</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Size</em>' attribute.
 	 * @see #getSize()
 	 * @generated
 	 */
 	void setSize(int value);
 
 	/**
-	 * Returns the value of the '<em><b>Childrens</b></em>' reference list. The
-	 * list contents are of type
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer}. It is
-	 * bidirectional and its opposite is '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getContainer
-	 * <em>Container</em>}'. <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Childrens</b></em>' reference list.
+	 * The list contents are of type {@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer}.
+	 * It is bidirectional and its opposite is '{@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getContainer <em>Container</em>}'.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Childrens</em>' reference list isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the value of the '<em>Childrens</em>' reference list.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBuffer_Childrens()
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getContainer
@@ -155,19 +146,16 @@ public interface Buffer extends Variable {
 	 * @model transient="true"
 	 * @generated
 	 */
-	EList<org.ietr.preesm.memory.script.Range> getMergedRange();
+	EList<Range> getMergedRange();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getMergedRange
-	 * <em>Merged Range</em>}' attribute. <!-- begin-user-doc --> <!--
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getMergedRange <em>Merged Range</em>}' attribute.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Merged Range</em>' attribute.
+	 * @param value the new value of the '<em>Merged Range</em>' attribute.
 	 * @see #getMergedRange()
 	 * @generated
 	 */
-	void setMergedRange(EList<org.ietr.preesm.memory.script.Range> value);
+	void setMergedRange(EList<Range> value);
 
 } // Buffer

@@ -43,15 +43,12 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
  * <em><b>Call Block</b></em>'. <!-- end-user-doc -->
- * <p>
- * </p>
- * 
+ *
  * @generated
  */
 public class CallBlockImpl extends BlockImpl implements CallBlock {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected CallBlockImpl() {
@@ -60,7 +57,6 @@ public class CallBlockImpl extends BlockImpl implements CallBlock {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override

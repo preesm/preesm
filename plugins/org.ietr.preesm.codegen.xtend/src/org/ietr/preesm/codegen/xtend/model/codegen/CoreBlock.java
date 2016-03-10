@@ -40,21 +40,16 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  * all information needed to generate the source code associated to a core. It
  * is the result of a mapping/scheduling process performed during an execution
  * of a workflow of Preesm. <!-- end-user-doc -->
- * 
+ *
  * <p>
  * The following features are supported:
- * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getLoopBlock
- * <em>Loop Block</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getInitBlock
- * <em>Init Block</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getCoreType
- * <em>Core Type</em>}</li>
- * </ul>
  * </p>
- * 
+ * <ul>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getLoopBlock <em>Loop Block</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getInitBlock <em>Init Block</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getCoreType <em>Core Type</em>}</li>
+ * </ul>
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCoreBlock()
  * @model
  * @generated
@@ -79,13 +74,10 @@ public interface CoreBlock extends Block {
 	LoopBlock getLoopBlock();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getLoopBlock
-	 * <em>Loop Block</em>}' reference. <!-- begin-user-doc --> <!--
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getLoopBlock <em>Loop Block</em>}' reference.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Loop Block</em>' reference.
+	 * @param value the new value of the '<em>Loop Block</em>' reference.
 	 * @see #getLoopBlock()
 	 * @generated
 	 */
@@ -109,13 +101,10 @@ public interface CoreBlock extends Block {
 	CallBlock getInitBlock();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getInitBlock
-	 * <em>Init Block</em>}' reference. <!-- begin-user-doc --> <!--
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock#getInitBlock <em>Init Block</em>}' reference.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Init Block</em>' reference.
+	 * @param value the new value of the '<em>Init Block</em>' reference.
 	 * @see #getInitBlock()
 	 * @generated
 	 */

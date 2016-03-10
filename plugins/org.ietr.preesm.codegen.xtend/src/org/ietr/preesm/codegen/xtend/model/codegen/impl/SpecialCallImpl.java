@@ -52,58 +52,47 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType;
  * <em><b>Special Call</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SpecialCallImpl#getType
- * <em>Type</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SpecialCallImpl#getInputBuffers
- * <em>Input Buffers</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SpecialCallImpl#getOutputBuffers
- * <em>Output Buffers</em>}</li>
- * </ul>
  * </p>
- * 
+ * <ul>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SpecialCallImpl#getType <em>Type</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SpecialCallImpl#getInputBuffers <em>Input Buffers</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SpecialCallImpl#getOutputBuffers <em>Output Buffers</em>}</li>
+ * </ul>
+ *
  * @generated
  */
 public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	/**
 	 * The default value of the '{@link #getType() <em>Type</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getType()
 	 * @generated
 	 * @ordered
 	 */
 	protected static final SpecialType TYPE_EDEFAULT = SpecialType.FORK;
-
 	/**
 	 * The cached value of the '{@link #getType() <em>Type</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getType()
 	 * @generated
 	 * @ordered
 	 */
 	protected SpecialType type = TYPE_EDEFAULT;
-
 	/**
-	 * The cached value of the '{@link #getInputBuffers()
-	 * <em>Input Buffers</em>}' reference list. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getInputBuffers() <em>Input Buffers</em>}' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getInputBuffers()
 	 * @generated
 	 * @ordered
 	 */
 	protected EList<Buffer> inputBuffers;
-
 	/**
-	 * The cached value of the '{@link #getOutputBuffers()
-	 * <em>Output Buffers</em>}' reference list. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getOutputBuffers() <em>Output Buffers</em>}' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getOutputBuffers()
 	 * @generated
 	 * @ordered
@@ -112,7 +101,6 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected SpecialCallImpl() {
@@ -121,7 +109,6 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -131,7 +118,6 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -141,7 +127,6 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -149,34 +134,31 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 		SpecialType oldType = type;
 		type = newType == null ? TYPE_EDEFAULT : newType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.SPECIAL_CALL__TYPE, oldType, type));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.SPECIAL_CALL__TYPE, oldType, type));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public EList<Buffer> getInputBuffers() {
 		if (inputBuffers == null) {
-			inputBuffers = new EObjectResolvingEList<Buffer>(Buffer.class,
-					this, CodegenPackage.SPECIAL_CALL__INPUT_BUFFERS);
+			inputBuffers = new EObjectResolvingEList<Buffer>(Buffer.class, this, CodegenPackage.SPECIAL_CALL__INPUT_BUFFERS);
 		}
 		return inputBuffers;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public EList<Buffer> getOutputBuffers() {
 		if (outputBuffers == null) {
-			outputBuffers = new EObjectEList<Buffer>(Buffer.class, this,
-					CodegenPackage.SPECIAL_CALL__OUTPUT_BUFFERS);
+			outputBuffers = new EObjectEList<Buffer>(Buffer.class, this, CodegenPackage.SPECIAL_CALL__OUTPUT_BUFFERS);
 		}
 		return outputBuffers;
 	}
@@ -266,80 +248,79 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case CodegenPackage.SPECIAL_CALL__TYPE:
-			return getType();
-		case CodegenPackage.SPECIAL_CALL__INPUT_BUFFERS:
-			return getInputBuffers();
-		case CodegenPackage.SPECIAL_CALL__OUTPUT_BUFFERS:
-			return getOutputBuffers();
+			case CodegenPackage.SPECIAL_CALL__TYPE:
+				return getType();
+			case CodegenPackage.SPECIAL_CALL__INPUT_BUFFERS:
+				return getInputBuffers();
+			case CodegenPackage.SPECIAL_CALL__OUTPUT_BUFFERS:
+				return getOutputBuffers();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case CodegenPackage.SPECIAL_CALL__TYPE:
-			setType((SpecialType) newValue);
-			return;
+			case CodegenPackage.SPECIAL_CALL__TYPE:
+				setType((SpecialType)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case CodegenPackage.SPECIAL_CALL__TYPE:
-			setType(TYPE_EDEFAULT);
-			return;
+			case CodegenPackage.SPECIAL_CALL__TYPE:
+				setType(TYPE_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case CodegenPackage.SPECIAL_CALL__TYPE:
-			return type != TYPE_EDEFAULT;
-		case CodegenPackage.SPECIAL_CALL__INPUT_BUFFERS:
-			return inputBuffers != null && !inputBuffers.isEmpty();
-		case CodegenPackage.SPECIAL_CALL__OUTPUT_BUFFERS:
-			return outputBuffers != null && !outputBuffers.isEmpty();
+			case CodegenPackage.SPECIAL_CALL__TYPE:
+				return type != TYPE_EDEFAULT;
+			case CodegenPackage.SPECIAL_CALL__INPUT_BUFFERS:
+				return inputBuffers != null && !inputBuffers.isEmpty();
+			case CodegenPackage.SPECIAL_CALL__OUTPUT_BUFFERS:
+				return outputBuffers != null && !outputBuffers.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy())
-			return super.toString();
+		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (type: ");

@@ -60,182 +60,145 @@ import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
  * <em><b>Communication</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getDirection
- * <em>Direction</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getDelimiter
- * <em>Delimiter</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getData
- * <em>Data</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getSendStart
- * <em>Send Start</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getSendEnd
- * <em>Send End</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getReceiveStart
- * <em>Receive Start</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getReceiveEnd
- * <em>Receive End</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getId
- * <em>Id</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getNodes
- * <em>Nodes</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getReceiveRelease
- * <em>Receive Release</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getSendReserve
- * <em>Send Reserve</em>}</li>
- * </ul>
  * </p>
- * 
+ * <ul>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getDirection <em>Direction</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getDelimiter <em>Delimiter</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getData <em>Data</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getSendStart <em>Send Start</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getSendEnd <em>Send End</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getReceiveStart <em>Receive Start</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getReceiveEnd <em>Receive End</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getId <em>Id</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getNodes <em>Nodes</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getReceiveRelease <em>Receive Release</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl#getSendReserve <em>Send Reserve</em>}</li>
+ * </ul>
+ *
  * @generated
  */
 public class CommunicationImpl extends CallImpl implements Communication {
 	/**
-	 * The default value of the '{@link #getDirection() <em>Direction</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The default value of the '{@link #getDirection() <em>Direction</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getDirection()
 	 * @generated
 	 * @ordered
 	 */
 	protected static final Direction DIRECTION_EDEFAULT = Direction.SEND;
-
 	/**
-	 * The cached value of the '{@link #getDirection() <em>Direction</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getDirection() <em>Direction</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getDirection()
 	 * @generated
 	 * @ordered
 	 */
 	protected Direction direction = DIRECTION_EDEFAULT;
-
 	/**
-	 * The default value of the '{@link #getDelimiter() <em>Delimiter</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The default value of the '{@link #getDelimiter() <em>Delimiter</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getDelimiter()
 	 * @generated
 	 * @ordered
 	 */
 	protected static final Delimiter DELIMITER_EDEFAULT = Delimiter.START;
-
 	/**
-	 * The cached value of the '{@link #getDelimiter() <em>Delimiter</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getDelimiter() <em>Delimiter</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getDelimiter()
 	 * @generated
 	 * @ordered
 	 */
 	protected Delimiter delimiter = DELIMITER_EDEFAULT;
-
 	/**
 	 * The cached value of the '{@link #getData() <em>Data</em>}' reference.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getData()
 	 * @generated
 	 * @ordered
 	 */
 	protected Buffer data;
-
 	/**
-	 * The cached value of the '{@link #getSendStart() <em>Send Start</em>}'
-	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getSendStart() <em>Send Start</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getSendStart()
 	 * @generated
 	 * @ordered
 	 */
 	protected Communication sendStart;
-
 	/**
-	 * The cached value of the '{@link #getSendEnd() <em>Send End</em>}'
-	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getSendEnd() <em>Send End</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getSendEnd()
 	 * @generated
 	 * @ordered
 	 */
 	protected Communication sendEnd;
-
 	/**
-	 * The cached value of the '{@link #getReceiveStart()
-	 * <em>Receive Start</em>}' reference. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getReceiveStart() <em>Receive Start</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getReceiveStart()
 	 * @generated
 	 * @ordered
 	 */
 	protected Communication receiveStart;
-
 	/**
-	 * The cached value of the '{@link #getReceiveEnd() <em>Receive End</em>}'
-	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getReceiveEnd() <em>Receive End</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getReceiveEnd()
 	 * @generated
 	 * @ordered
 	 */
 	protected Communication receiveEnd;
-
 	/**
-	 * The default value of the '{@link #getId() <em>Id</em>}' attribute. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The default value of the '{@link #getId() <em>Id</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getId()
 	 * @generated
 	 * @ordered
 	 */
 	protected static final int ID_EDEFAULT = 0;
-
 	/**
-	 * The cached value of the '{@link #getId() <em>Id</em>}' attribute. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getId() <em>Id</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getId()
 	 * @generated
 	 * @ordered
 	 */
 	protected int id = ID_EDEFAULT;
-
 	/**
-	 * The cached value of the '{@link #getNodes() <em>Nodes</em>}' containment
-	 * reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getNodes() <em>Nodes</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getNodes()
 	 * @generated
 	 * @ordered
 	 */
 	protected EList<CommunicationNode> nodes;
-
 	/**
-	 * The cached value of the '{@link #getReceiveRelease()
-	 * <em>Receive Release</em>}' reference. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getReceiveRelease() <em>Receive Release</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getReceiveRelease()
 	 * @generated
 	 * @ordered
 	 */
 	protected Communication receiveRelease;
-
 	/**
-	 * The cached value of the '{@link #getSendReserve() <em>Send Reserve</em>}'
-	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getSendReserve() <em>Send Reserve</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getSendReserve()
 	 * @generated
 	 * @ordered
@@ -244,7 +207,6 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected CommunicationImpl() {
@@ -253,7 +215,6 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -263,7 +224,6 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -273,7 +233,6 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -281,14 +240,11 @@ public class CommunicationImpl extends CallImpl implements Communication {
 		Direction oldDirection = direction;
 		direction = newDirection == null ? DIRECTION_EDEFAULT : newDirection;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.COMMUNICATION__DIRECTION, oldDirection,
-					direction));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__DIRECTION, oldDirection, direction));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -298,7 +254,6 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -306,33 +261,29 @@ public class CommunicationImpl extends CallImpl implements Communication {
 		Delimiter oldDelimiter = delimiter;
 		delimiter = newDelimiter == null ? DELIMITER_EDEFAULT : newDelimiter;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.COMMUNICATION__DELIMITER, oldDelimiter,
-					delimiter));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__DELIMITER, oldDelimiter, delimiter));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Buffer getData() {
 		if (data != null && data.eIsProxy()) {
-			InternalEObject oldData = (InternalEObject) data;
-			data = (Buffer) eResolveProxy(oldData);
+			InternalEObject oldData = (InternalEObject)data;
+			data = (Buffer)eResolveProxy(oldData);
 			if (data != oldData) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							CodegenPackage.COMMUNICATION__DATA, oldData, data));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__DATA, oldData, data));
 			}
 		}
 		return data;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Buffer basicGetData() {
@@ -359,27 +310,24 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Communication getSendStart() {
 		if (sendStart != null && sendStart.eIsProxy()) {
-			InternalEObject oldSendStart = (InternalEObject) sendStart;
-			sendStart = (Communication) eResolveProxy(oldSendStart);
+			InternalEObject oldSendStart = (InternalEObject)sendStart;
+			sendStart = (Communication)eResolveProxy(oldSendStart);
 			if (sendStart != oldSendStart) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							CodegenPackage.COMMUNICATION__SEND_START,
-							oldSendStart, sendStart));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__SEND_START, oldSendStart, sendStart));
 			}
 		}
 		return sendStart;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Communication basicGetSendStart() {
@@ -388,7 +336,6 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -396,34 +343,29 @@ public class CommunicationImpl extends CallImpl implements Communication {
 		Communication oldSendStart = sendStart;
 		sendStart = newSendStart;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.COMMUNICATION__SEND_START, oldSendStart,
-					sendStart));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__SEND_START, oldSendStart, sendStart));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Communication getSendEnd() {
 		if (sendEnd != null && sendEnd.eIsProxy()) {
-			InternalEObject oldSendEnd = (InternalEObject) sendEnd;
-			sendEnd = (Communication) eResolveProxy(oldSendEnd);
+			InternalEObject oldSendEnd = (InternalEObject)sendEnd;
+			sendEnd = (Communication)eResolveProxy(oldSendEnd);
 			if (sendEnd != oldSendEnd) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							CodegenPackage.COMMUNICATION__SEND_END, oldSendEnd,
-							sendEnd));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__SEND_END, oldSendEnd, sendEnd));
 			}
 		}
 		return sendEnd;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Communication basicGetSendEnd() {
@@ -432,7 +374,6 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -440,33 +381,29 @@ public class CommunicationImpl extends CallImpl implements Communication {
 		Communication oldSendEnd = sendEnd;
 		sendEnd = newSendEnd;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.COMMUNICATION__SEND_END, oldSendEnd, sendEnd));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__SEND_END, oldSendEnd, sendEnd));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Communication getReceiveStart() {
 		if (receiveStart != null && receiveStart.eIsProxy()) {
-			InternalEObject oldReceiveStart = (InternalEObject) receiveStart;
-			receiveStart = (Communication) eResolveProxy(oldReceiveStart);
+			InternalEObject oldReceiveStart = (InternalEObject)receiveStart;
+			receiveStart = (Communication)eResolveProxy(oldReceiveStart);
 			if (receiveStart != oldReceiveStart) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							CodegenPackage.COMMUNICATION__RECEIVE_START,
-							oldReceiveStart, receiveStart));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__RECEIVE_START, oldReceiveStart, receiveStart));
 			}
 		}
 		return receiveStart;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Communication basicGetReceiveStart() {
@@ -475,7 +412,6 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -483,34 +419,29 @@ public class CommunicationImpl extends CallImpl implements Communication {
 		Communication oldReceiveStart = receiveStart;
 		receiveStart = newReceiveStart;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.COMMUNICATION__RECEIVE_START,
-					oldReceiveStart, receiveStart));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__RECEIVE_START, oldReceiveStart, receiveStart));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Communication getReceiveEnd() {
 		if (receiveEnd != null && receiveEnd.eIsProxy()) {
-			InternalEObject oldReceiveEnd = (InternalEObject) receiveEnd;
-			receiveEnd = (Communication) eResolveProxy(oldReceiveEnd);
+			InternalEObject oldReceiveEnd = (InternalEObject)receiveEnd;
+			receiveEnd = (Communication)eResolveProxy(oldReceiveEnd);
 			if (receiveEnd != oldReceiveEnd) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							CodegenPackage.COMMUNICATION__RECEIVE_END,
-							oldReceiveEnd, receiveEnd));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__RECEIVE_END, oldReceiveEnd, receiveEnd));
 			}
 		}
 		return receiveEnd;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Communication basicGetReceiveEnd() {
@@ -519,7 +450,6 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -527,14 +457,11 @@ public class CommunicationImpl extends CallImpl implements Communication {
 		Communication oldReceiveEnd = receiveEnd;
 		receiveEnd = newReceiveEnd;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.COMMUNICATION__RECEIVE_END, oldReceiveEnd,
-					receiveEnd));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__RECEIVE_END, oldReceiveEnd, receiveEnd));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -544,7 +471,6 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -552,48 +478,42 @@ public class CommunicationImpl extends CallImpl implements Communication {
 		int oldId = id;
 		id = newId;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.COMMUNICATION__ID, oldId, id));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__ID, oldId, id));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public EList<CommunicationNode> getNodes() {
 		if (nodes == null) {
-			nodes = new EObjectContainmentEList<CommunicationNode>(
-					CommunicationNode.class, this,
-					CodegenPackage.COMMUNICATION__NODES);
+			nodes = new EObjectContainmentEList<CommunicationNode>(CommunicationNode.class, this, CodegenPackage.COMMUNICATION__NODES);
 		}
 		return nodes;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Communication getReceiveRelease() {
 		if (receiveRelease != null && receiveRelease.eIsProxy()) {
-			InternalEObject oldReceiveRelease = (InternalEObject) receiveRelease;
-			receiveRelease = (Communication) eResolveProxy(oldReceiveRelease);
+			InternalEObject oldReceiveRelease = (InternalEObject)receiveRelease;
+			receiveRelease = (Communication)eResolveProxy(oldReceiveRelease);
 			if (receiveRelease != oldReceiveRelease) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							CodegenPackage.COMMUNICATION__RECEIVE_RELEASE,
-							oldReceiveRelease, receiveRelease));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__RECEIVE_RELEASE, oldReceiveRelease, receiveRelease));
 			}
 		}
 		return receiveRelease;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Communication basicGetReceiveRelease() {
@@ -602,7 +522,6 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -610,34 +529,29 @@ public class CommunicationImpl extends CallImpl implements Communication {
 		Communication oldReceiveRelease = receiveRelease;
 		receiveRelease = newReceiveRelease;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.COMMUNICATION__RECEIVE_RELEASE,
-					oldReceiveRelease, receiveRelease));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__RECEIVE_RELEASE, oldReceiveRelease, receiveRelease));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Communication getSendReserve() {
 		if (sendReserve != null && sendReserve.eIsProxy()) {
-			InternalEObject oldSendReserve = (InternalEObject) sendReserve;
-			sendReserve = (Communication) eResolveProxy(oldSendReserve);
+			InternalEObject oldSendReserve = (InternalEObject)sendReserve;
+			sendReserve = (Communication)eResolveProxy(oldSendReserve);
 			if (sendReserve != oldSendReserve) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							CodegenPackage.COMMUNICATION__SEND_RESERVE,
-							oldSendReserve, sendReserve));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.COMMUNICATION__SEND_RESERVE, oldSendReserve, sendReserve));
 			}
 		}
 		return sendReserve;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Communication basicGetSendReserve() {
@@ -646,7 +560,6 @@ public class CommunicationImpl extends CallImpl implements Communication {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -654,9 +567,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 		Communication oldSendReserve = sendReserve;
 		sendReserve = newSendReserve;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.COMMUNICATION__SEND_RESERVE, oldSendReserve,
-					sendReserve));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__SEND_RESERVE, oldSendReserve, sendReserve));
 	}
 
 	/**
@@ -679,204 +590,194 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd,
-			int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case CodegenPackage.COMMUNICATION__NODES:
-			return ((InternalEList<?>) getNodes()).basicRemove(otherEnd, msgs);
+			case CodegenPackage.COMMUNICATION__NODES:
+				return ((InternalEList<?>)getNodes()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case CodegenPackage.COMMUNICATION__DIRECTION:
-			return getDirection();
-		case CodegenPackage.COMMUNICATION__DELIMITER:
-			return getDelimiter();
-		case CodegenPackage.COMMUNICATION__DATA:
-			if (resolve)
-				return getData();
-			return basicGetData();
-		case CodegenPackage.COMMUNICATION__SEND_START:
-			if (resolve)
-				return getSendStart();
-			return basicGetSendStart();
-		case CodegenPackage.COMMUNICATION__SEND_END:
-			if (resolve)
-				return getSendEnd();
-			return basicGetSendEnd();
-		case CodegenPackage.COMMUNICATION__RECEIVE_START:
-			if (resolve)
-				return getReceiveStart();
-			return basicGetReceiveStart();
-		case CodegenPackage.COMMUNICATION__RECEIVE_END:
-			if (resolve)
-				return getReceiveEnd();
-			return basicGetReceiveEnd();
-		case CodegenPackage.COMMUNICATION__ID:
-			return getId();
-		case CodegenPackage.COMMUNICATION__NODES:
-			return getNodes();
-		case CodegenPackage.COMMUNICATION__RECEIVE_RELEASE:
-			if (resolve)
-				return getReceiveRelease();
-			return basicGetReceiveRelease();
-		case CodegenPackage.COMMUNICATION__SEND_RESERVE:
-			if (resolve)
-				return getSendReserve();
-			return basicGetSendReserve();
+			case CodegenPackage.COMMUNICATION__DIRECTION:
+				return getDirection();
+			case CodegenPackage.COMMUNICATION__DELIMITER:
+				return getDelimiter();
+			case CodegenPackage.COMMUNICATION__DATA:
+				if (resolve) return getData();
+				return basicGetData();
+			case CodegenPackage.COMMUNICATION__SEND_START:
+				if (resolve) return getSendStart();
+				return basicGetSendStart();
+			case CodegenPackage.COMMUNICATION__SEND_END:
+				if (resolve) return getSendEnd();
+				return basicGetSendEnd();
+			case CodegenPackage.COMMUNICATION__RECEIVE_START:
+				if (resolve) return getReceiveStart();
+				return basicGetReceiveStart();
+			case CodegenPackage.COMMUNICATION__RECEIVE_END:
+				if (resolve) return getReceiveEnd();
+				return basicGetReceiveEnd();
+			case CodegenPackage.COMMUNICATION__ID:
+				return getId();
+			case CodegenPackage.COMMUNICATION__NODES:
+				return getNodes();
+			case CodegenPackage.COMMUNICATION__RECEIVE_RELEASE:
+				if (resolve) return getReceiveRelease();
+				return basicGetReceiveRelease();
+			case CodegenPackage.COMMUNICATION__SEND_RESERVE:
+				if (resolve) return getSendReserve();
+				return basicGetSendReserve();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case CodegenPackage.COMMUNICATION__DIRECTION:
-			setDirection((Direction) newValue);
-			return;
-		case CodegenPackage.COMMUNICATION__DELIMITER:
-			setDelimiter((Delimiter) newValue);
-			return;
-		case CodegenPackage.COMMUNICATION__DATA:
-			setData((Buffer) newValue);
-			return;
-		case CodegenPackage.COMMUNICATION__SEND_START:
-			setSendStart((Communication) newValue);
-			return;
-		case CodegenPackage.COMMUNICATION__SEND_END:
-			setSendEnd((Communication) newValue);
-			return;
-		case CodegenPackage.COMMUNICATION__RECEIVE_START:
-			setReceiveStart((Communication) newValue);
-			return;
-		case CodegenPackage.COMMUNICATION__RECEIVE_END:
-			setReceiveEnd((Communication) newValue);
-			return;
-		case CodegenPackage.COMMUNICATION__ID:
-			setId((Integer) newValue);
-			return;
-		case CodegenPackage.COMMUNICATION__NODES:
-			getNodes().clear();
-			getNodes().addAll(
-					(Collection<? extends CommunicationNode>) newValue);
-			return;
-		case CodegenPackage.COMMUNICATION__RECEIVE_RELEASE:
-			setReceiveRelease((Communication) newValue);
-			return;
-		case CodegenPackage.COMMUNICATION__SEND_RESERVE:
-			setSendReserve((Communication) newValue);
-			return;
+			case CodegenPackage.COMMUNICATION__DIRECTION:
+				setDirection((Direction)newValue);
+				return;
+			case CodegenPackage.COMMUNICATION__DELIMITER:
+				setDelimiter((Delimiter)newValue);
+				return;
+			case CodegenPackage.COMMUNICATION__DATA:
+				setData((Buffer)newValue);
+				return;
+			case CodegenPackage.COMMUNICATION__SEND_START:
+				setSendStart((Communication)newValue);
+				return;
+			case CodegenPackage.COMMUNICATION__SEND_END:
+				setSendEnd((Communication)newValue);
+				return;
+			case CodegenPackage.COMMUNICATION__RECEIVE_START:
+				setReceiveStart((Communication)newValue);
+				return;
+			case CodegenPackage.COMMUNICATION__RECEIVE_END:
+				setReceiveEnd((Communication)newValue);
+				return;
+			case CodegenPackage.COMMUNICATION__ID:
+				setId((Integer)newValue);
+				return;
+			case CodegenPackage.COMMUNICATION__NODES:
+				getNodes().clear();
+				getNodes().addAll((Collection<? extends CommunicationNode>)newValue);
+				return;
+			case CodegenPackage.COMMUNICATION__RECEIVE_RELEASE:
+				setReceiveRelease((Communication)newValue);
+				return;
+			case CodegenPackage.COMMUNICATION__SEND_RESERVE:
+				setSendReserve((Communication)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case CodegenPackage.COMMUNICATION__DIRECTION:
-			setDirection(DIRECTION_EDEFAULT);
-			return;
-		case CodegenPackage.COMMUNICATION__DELIMITER:
-			setDelimiter(DELIMITER_EDEFAULT);
-			return;
-		case CodegenPackage.COMMUNICATION__DATA:
-			setData((Buffer) null);
-			return;
-		case CodegenPackage.COMMUNICATION__SEND_START:
-			setSendStart((Communication) null);
-			return;
-		case CodegenPackage.COMMUNICATION__SEND_END:
-			setSendEnd((Communication) null);
-			return;
-		case CodegenPackage.COMMUNICATION__RECEIVE_START:
-			setReceiveStart((Communication) null);
-			return;
-		case CodegenPackage.COMMUNICATION__RECEIVE_END:
-			setReceiveEnd((Communication) null);
-			return;
-		case CodegenPackage.COMMUNICATION__ID:
-			setId(ID_EDEFAULT);
-			return;
-		case CodegenPackage.COMMUNICATION__NODES:
-			getNodes().clear();
-			return;
-		case CodegenPackage.COMMUNICATION__RECEIVE_RELEASE:
-			setReceiveRelease((Communication) null);
-			return;
-		case CodegenPackage.COMMUNICATION__SEND_RESERVE:
-			setSendReserve((Communication) null);
-			return;
+			case CodegenPackage.COMMUNICATION__DIRECTION:
+				setDirection(DIRECTION_EDEFAULT);
+				return;
+			case CodegenPackage.COMMUNICATION__DELIMITER:
+				setDelimiter(DELIMITER_EDEFAULT);
+				return;
+			case CodegenPackage.COMMUNICATION__DATA:
+				setData((Buffer)null);
+				return;
+			case CodegenPackage.COMMUNICATION__SEND_START:
+				setSendStart((Communication)null);
+				return;
+			case CodegenPackage.COMMUNICATION__SEND_END:
+				setSendEnd((Communication)null);
+				return;
+			case CodegenPackage.COMMUNICATION__RECEIVE_START:
+				setReceiveStart((Communication)null);
+				return;
+			case CodegenPackage.COMMUNICATION__RECEIVE_END:
+				setReceiveEnd((Communication)null);
+				return;
+			case CodegenPackage.COMMUNICATION__ID:
+				setId(ID_EDEFAULT);
+				return;
+			case CodegenPackage.COMMUNICATION__NODES:
+				getNodes().clear();
+				return;
+			case CodegenPackage.COMMUNICATION__RECEIVE_RELEASE:
+				setReceiveRelease((Communication)null);
+				return;
+			case CodegenPackage.COMMUNICATION__SEND_RESERVE:
+				setSendReserve((Communication)null);
+				return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case CodegenPackage.COMMUNICATION__DIRECTION:
-			return direction != DIRECTION_EDEFAULT;
-		case CodegenPackage.COMMUNICATION__DELIMITER:
-			return delimiter != DELIMITER_EDEFAULT;
-		case CodegenPackage.COMMUNICATION__DATA:
-			return data != null;
-		case CodegenPackage.COMMUNICATION__SEND_START:
-			return sendStart != null;
-		case CodegenPackage.COMMUNICATION__SEND_END:
-			return sendEnd != null;
-		case CodegenPackage.COMMUNICATION__RECEIVE_START:
-			return receiveStart != null;
-		case CodegenPackage.COMMUNICATION__RECEIVE_END:
-			return receiveEnd != null;
-		case CodegenPackage.COMMUNICATION__ID:
-			return id != ID_EDEFAULT;
-		case CodegenPackage.COMMUNICATION__NODES:
-			return nodes != null && !nodes.isEmpty();
-		case CodegenPackage.COMMUNICATION__RECEIVE_RELEASE:
-			return receiveRelease != null;
-		case CodegenPackage.COMMUNICATION__SEND_RESERVE:
-			return sendReserve != null;
+			case CodegenPackage.COMMUNICATION__DIRECTION:
+				return direction != DIRECTION_EDEFAULT;
+			case CodegenPackage.COMMUNICATION__DELIMITER:
+				return delimiter != DELIMITER_EDEFAULT;
+			case CodegenPackage.COMMUNICATION__DATA:
+				return data != null;
+			case CodegenPackage.COMMUNICATION__SEND_START:
+				return sendStart != null;
+			case CodegenPackage.COMMUNICATION__SEND_END:
+				return sendEnd != null;
+			case CodegenPackage.COMMUNICATION__RECEIVE_START:
+				return receiveStart != null;
+			case CodegenPackage.COMMUNICATION__RECEIVE_END:
+				return receiveEnd != null;
+			case CodegenPackage.COMMUNICATION__ID:
+				return id != ID_EDEFAULT;
+			case CodegenPackage.COMMUNICATION__NODES:
+				return nodes != null && !nodes.isEmpty();
+			case CodegenPackage.COMMUNICATION__RECEIVE_RELEASE:
+				return receiveRelease != null;
+			case CodegenPackage.COMMUNICATION__SEND_RESERVE:
+				return sendReserve != null;
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy())
-			return super.toString();
+		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (direction: ");

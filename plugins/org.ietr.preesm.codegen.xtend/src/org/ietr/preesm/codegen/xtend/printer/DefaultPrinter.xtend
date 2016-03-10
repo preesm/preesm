@@ -52,7 +52,10 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.Block
 import java.util.HashMap
 import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
+import org.ietr.preesm.codegen.xtend.model.codegen.IntVar
+import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
+import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator
 
 /**
  * This {@link DefaultPrinter} is a dummy implementation of the 
@@ -104,6 +107,12 @@ class DefaultPrinter extends CodegenAbstractPrinter {
 
 	override printConstantStringDefinition(ConstantString constant) ''''''
 
+	override printIntVar(IntVar intVar) ''''''
+
+	override printIntVarDeclaration(IntVar intVar) ''''''
+
+	override printIntVarDefinition(IntVar intVar) ''''''
+
 	override printCoreBlockFooter(CoreBlock block) ''''''
 
 	override printCoreBlockHeader(CoreBlock block) ''''''
@@ -135,6 +144,10 @@ class DefaultPrinter extends CodegenAbstractPrinter {
 	override printLoopBlockFooter(LoopBlock block) ''''''
 
 	override printLoopBlockHeader(LoopBlock block) ''''''
+
+	override printFiniteLoopBlockFooter(FiniteLoopBlock block) ''''''
+
+	override printFiniteLoopBlockHeader(FiniteLoopBlock block) ''''''
 	
 	override printNullBuffer(NullBuffer Buffer) ''''''
 
@@ -159,5 +172,11 @@ class DefaultPrinter extends CodegenAbstractPrinter {
 	override printSubBufferDeclaration(SubBuffer buffer) ''''''
 
 	override printSubBufferDefinition(SubBuffer buffer) ''''''
+	
+	override printBufferIterator(BufferIterator bufferIterator) ''''''
+
+	override printBufferIteratorDeclaration(BufferIterator bufferIterator) ''''''
+
+	override printBufferIteratorDefinition(BufferIterator bufferIterator) ''''''
 	
 }

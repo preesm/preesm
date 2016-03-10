@@ -45,16 +45,15 @@ import org.eclipse.emf.common.util.Enumerator;
  * <!-- begin-user-doc --> A representation of the literals of the enumeration '
  * <em><b>Port Direction</b></em>', and utility methods for working with them.
  * <!-- end-user-doc -->
- * 
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getPortDirection()
  * @model
  * @generated
  */
 public enum PortDirection implements Enumerator {
 	/**
-	 * The '<em><b>INPUT</b></em>' literal object. <!-- begin-user-doc --> <!--
+	 * The '<em><b>INPUT</b></em>' literal object.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @see #INPUT_VALUE
 	 * @generated
 	 * @ordered
@@ -62,9 +61,9 @@ public enum PortDirection implements Enumerator {
 	INPUT(0, "INPUT", "INPUT"),
 
 	/**
-	 * The '<em><b>OUTPUT</b></em>' literal object. <!-- begin-user-doc --> <!--
+	 * The '<em><b>OUTPUT</b></em>' literal object.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @see #OUTPUT_VALUE
 	 * @generated
 	 * @ordered
@@ -72,9 +71,9 @@ public enum PortDirection implements Enumerator {
 	OUTPUT(1, "OUTPUT", "OUTPUT"),
 
 	/**
-	 * The '<em><b>NONE</b></em>' literal object. <!-- begin-user-doc --> <!--
+	 * The '<em><b>NONE</b></em>' literal object.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @see #NONE_VALUE
 	 * @generated
 	 * @ordered
@@ -82,13 +81,13 @@ public enum PortDirection implements Enumerator {
 	NONE(2, "NONE", "NONE");
 
 	/**
-	 * The '<em><b>INPUT</b></em>' literal value. <!-- begin-user-doc -->
+	 * The '<em><b>INPUT</b></em>' literal value.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of '<em><b>INPUT</b></em>' literal object isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @see #INPUT
 	 * @model
 	 * @generated
@@ -97,13 +96,13 @@ public enum PortDirection implements Enumerator {
 	public static final int INPUT_VALUE = 0;
 
 	/**
-	 * The '<em><b>OUTPUT</b></em>' literal value. <!-- begin-user-doc -->
+	 * The '<em><b>OUTPUT</b></em>' literal value.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of '<em><b>OUTPUT</b></em>' literal object isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @see #OUTPUT
 	 * @model
 	 * @generated
@@ -112,13 +111,13 @@ public enum PortDirection implements Enumerator {
 	public static final int OUTPUT_VALUE = 1;
 
 	/**
-	 * The '<em><b>NONE</b></em>' literal value. <!-- begin-user-doc -->
+	 * The '<em><b>NONE</b></em>' literal value.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of '<em><b>NONE</b></em>' literal object isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @see #NONE
 	 * @model
 	 * @generated
@@ -133,21 +132,23 @@ public enum PortDirection implements Enumerator {
 	 * @generated
 	 */
 	private static final PortDirection[] VALUES_ARRAY = new PortDirection[] {
-			INPUT, OUTPUT, NONE, };
+			INPUT,
+			OUTPUT,
+			NONE,
+		};
 
 	/**
-	 * A public read-only list of all the '<em><b>Port Direction</b></em>'
-	 * enumerators. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * A public read-only list of all the '<em><b>Port Direction</b></em>' enumerators.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public static final List<PortDirection> VALUES = Collections
-			.unmodifiableList(Arrays.asList(VALUES_ARRAY));
+	public static final List<PortDirection> VALUES = Collections.unmodifiableList(Arrays.asList(VALUES_ARRAY));
 
 	/**
-	 * Returns the '<em><b>Port Direction</b></em>' literal with the specified
-	 * literal value. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the '<em><b>Port Direction</b></em>' literal with the specified literal value.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param literal the literal.
+	 * @return the matching enumerator or <code>null</code>.
 	 * @generated
 	 */
 	public static PortDirection get(String literal) {
@@ -161,9 +162,10 @@ public enum PortDirection implements Enumerator {
 	}
 
 	/**
-	 * Returns the '<em><b>Port Direction</b></em>' literal with the specified
-	 * name. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the '<em><b>Port Direction</b></em>' literal with the specified name.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param name the name.
+	 * @return the matching enumerator or <code>null</code>.
 	 * @generated
 	 */
 	public static PortDirection getByName(String name) {
@@ -177,48 +179,43 @@ public enum PortDirection implements Enumerator {
 	}
 
 	/**
-	 * Returns the '<em><b>Port Direction</b></em>' literal with the specified
-	 * integer value. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the '<em><b>Port Direction</b></em>' literal with the specified integer value.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the integer value.
+	 * @return the matching enumerator or <code>null</code>.
 	 * @generated
 	 */
 	public static PortDirection get(int value) {
 		switch (value) {
-		case INPUT_VALUE:
-			return INPUT;
-		case OUTPUT_VALUE:
-			return OUTPUT;
-		case NONE_VALUE:
-			return NONE;
+			case INPUT_VALUE: return INPUT;
+			case OUTPUT_VALUE: return OUTPUT;
+			case NONE_VALUE: return NONE;
 		}
 		return null;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private final int value;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private final String name;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private final String literal;
 
 	/**
-	 * Only this class can construct instances. <!-- begin-user-doc --> <!--
+	 * Only this class can construct instances.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private PortDirection(int value, String name, String literal) {
@@ -229,38 +226,34 @@ public enum PortDirection implements Enumerator {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public int getValue() {
-		return value;
+	  return value;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public String getName() {
-		return name;
+	  return name;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public String getLiteral() {
-		return literal;
+	  return literal;
 	}
 
 	/**
-	 * Returns the literal value of the enumerator, which is its string
-	 * representation. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the literal value of the enumerator, which is its string representation.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override

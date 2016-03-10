@@ -53,6 +53,9 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Block
 import java.util.HashMap
 import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
+import org.ietr.preesm.codegen.xtend.model.codegen.IntVar
+import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
+import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator
 
 /**
  * This {@link DevelopperPrinter} is a dummy implementation of the 
@@ -137,6 +140,10 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 
 	override printLoopBlockHeader(LoopBlock block) '''<Loop_Block_Head>'''
 	
+	override printFiniteLoopBlockFooter(FiniteLoopBlock block) '''<Finite_Loop_Block_Foot>'''
+	
+	override printFiniteLoopBlockHeader(FiniteLoopBlock block) '''<Finite_Loop_Block_Head>'''
+	
 	override printNullBuffer(NullBuffer nullBuffer) '''<NullBuffer>'''
 
 	override printNullBufferDeclaration(NullBuffer buffer) '''<NullBuffer_Declaration>'''
@@ -160,5 +167,17 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printSubBufferDeclaration(SubBuffer buffer) '''<Sub_Buffer_Declaration>'''
 
 	override printSubBufferDefinition(SubBuffer buffer) '''<Sub_Buffer_Definition>'''
+	
+	override printIntVar(IntVar intVar) '''<IntVar>'''
+	
+	override printIntVarDeclaration(IntVar intVar) '''<IntVar_Declaration>'''
+	
+	override printIntVarDefinition(IntVar intVar) '''<IntVar_Definition>'''
+	
+	override printBufferIterator(BufferIterator bufferIterator) '''<BufferIterator>'''
+	
+	override printBufferIteratorDeclaration(BufferIterator bufferIterator) '''<BufferIterator_Declaration>'''
+	
+	override printBufferIteratorDefinition(BufferIterator bufferIterator) '''<BufferIterator_Definition>'''
 	
 }

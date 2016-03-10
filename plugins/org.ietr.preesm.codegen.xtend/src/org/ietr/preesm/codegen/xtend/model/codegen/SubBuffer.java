@@ -42,18 +42,15 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  * the portion of a {@link Buffer} accessed by this {@link SubBuffer}. The
  * parent {@link Buffer} of a {@link SubBuffer} is called its
  * {@link #getContainer() container}. <!-- end-user-doc -->
- * 
+ *
  * <p>
  * The following features are supported:
- * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getContainer
- * <em>Container</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getOffset
- * <em>Offset</em>}</li>
- * </ul>
  * </p>
- * 
+ * <ul>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getContainer <em>Container</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getOffset <em>Offset</em>}</li>
+ * </ul>
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSubBuffer()
  * @model
  * @generated
@@ -77,18 +74,15 @@ public interface SubBuffer extends Buffer {
 	Buffer getContainer();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getContainer
-	 * <em>Container</em>}' reference. <!-- begin-user-doc --> The container of
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer#getContainer <em>Container</em>}' reference.
+	 * <!-- begin-user-doc --> The container of
 	 * the {@link SubBuffer} is a {@link Buffer} containing the current
 	 * {@link SubBuffer}. If the {@link SubBuffer} already has a
 	 * {@link #getCreator() creator}, it will be added to the
 	 * {@link #getUsers()} list of the new container. (If an old container is
 	 * replaced, the creator of the current SubBuffer will not be removed from
 	 * its users list)<!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Container</em>' reference.
+	 * @param value the new value of the '<em>Container</em>' reference.
 	 * @see #getContainer()
 	 * @generated
 	 */

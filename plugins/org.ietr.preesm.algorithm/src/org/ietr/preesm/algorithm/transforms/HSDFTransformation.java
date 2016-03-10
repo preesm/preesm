@@ -37,12 +37,19 @@ knowledge of the CeCILL-C license and that you accept its terms.
 package org.ietr.preesm.algorithm.transforms;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.dftools.algorithm.model.IInterface;
+import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
+import org.ietr.dftools.algorithm.model.parameters.VariableSet;
+import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
+import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.algorithm.model.visitors.VisitorOutput;
@@ -50,6 +57,8 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
+
+import com.singularsys.jep.Variable;
 
 /**
  * Class used to transform a SDF graph into a HSDF graph. Actually into a single
@@ -73,12 +82,70 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 
 		try {
 
-			logger.setLevel(Level.FINEST);
-			logger.log(Level.FINER,
+			logger.setLevel(Level.INFO);
+			logger.log(Level.INFO,
 					"Transforming application " + algorithm.getName()
 							+ " to HSDF");
 			VisitorOutput.setLogger(logger);
 			if (algorithm.validateModel(WorkflowLogger.getLogger())) {
+				
+				// let's find 
+				String hasOpenMP = parameters.get("HasOpenMP");
+				if(hasOpenMP != null){
+					logger.log(Level.INFO, "Test Has OpenMP " + hasOpenMP.equals("true"));
+				}
+				if (hasOpenMP != null && hasOpenMP.equals("true") == true) {
+					logger.log(Level.INFO, "Has OpenMP");
+					if (algorithm.isSchedulable()) {
+						
+						try {
+							for (SDFAbstractVertex vertex : algorithm.vertexSet()) {
+								if (vertex instanceof SDFAbstractVertex 
+										&& vertex.getNbRepeatAsInteger() > 1) {
+									vertex.setNbRepeat(1);
+									List<SDFInterfaceVertex> sinks = vertex.getSinks(); // output
+									List<SDFInterfaceVertex> sources = vertex.getSources(); // inputs
+									List<IInterface> interfaces = vertex.getInterfaces(); // both outputs and inputs 
+									for(int index=0; index < sinks.size();index++){
+										logger.log(Level.INFO, "Vertex " + vertex.getName() + " sinks " + sinks.get(index).getName());	
+									}
+									for(int index=0; index < sources.size();index++){
+										logger.log(Level.INFO, "Vertex " + vertex.getName() + " sources " + sources.get(index).getName());	
+									}
+									for(int index=0; index < interfaces.size();index++){
+										logger.log(Level.INFO, "Vertex " + vertex.getName() + " interfaces " + interfaces.get(index).getName());	
+										SDFEdge edge = (SDFEdge) vertex.getAssociatedEdge(interfaces.get(index));
+										logger.log(Level.INFO, 
+												edge.getSource().getName() + " " + edge.getSourceLabel() + " " + edge.getProd().intValue() + " " +
+												edge.getTarget().getName() + " " + edge.getTargetLabel() + " " + edge.getCons().intValue() + 
+												" => Parallel Degree " + edge.getProd().intValue()/edge.getCons().intValue() );
+									}
+									VariableSet varSet = algorithm.getVariables();
+									/*for (int i = 0; i < varSet.size(); i++) {
+										logger.log(Level.INFO, "Variable set " + varSet.);
+									}*/
+									logger.log(Level.INFO, "Variable set " + varSet.getVariable("height"));
+									int nbRepeatOMP = -1;
+									logger.log(Level.INFO, "OMP number of sources " + sources.size());
+									for(int index=0; index < sources.size();index++){
+										SDFEdge edge = (SDFEdge) vertex.getAssociatedEdge(sources.get(index));
+										nbRepeatOMP = edge.getProd().intValue() / edge.getCons().intValue(); /* might be wrong on unbalance grafs need to check on more complex applications */
+										logger.log(Level.INFO, "OMP repeat " + edge.getProd().intValue() + " " + edge.getCons().intValue());
+										//logger.log(Level.INFO, "OMP repeat " + edge.getProd().toString() + " " + edge.getCons().toString());
+										logger.log(Level.INFO, "OMP port name prod " + edge.getSourceLabel() + " cons " + edge.getTargetLabel());
+										//vertex.getOmpParallelInputs().add(new String(edge.getTargetLabel())); // get which port will need to get slicing at OMP level
+									}
+									logger.log(Level.INFO, "nbRepeatOMP computed " + nbRepeatOMP);
+									vertex.setOmpRepeat(nbRepeatOMP);
+								}
+								logger.log(Level.INFO, "Vertex nb repeat OMP " + vertex.getOmpRepeat() + " nbRepeat " + vertex.getNbRepeatAsInteger());
+							}
+						}catch (InvalidExpressionException e) {
+							e.printStackTrace();
+							throw (new SDF4JException(e.getMessage()));
+						}
+					}
+				}
 
 				ToHSDFVisitor toHsdf = new ToHSDFVisitor();
 
@@ -88,7 +155,7 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 					e.printStackTrace();
 					throw (new WorkflowException(e.getMessage()));
 				}
-				logger.log(Level.FINER, "HSDF transformation complete");
+				logger.log(Level.INFO, "HSDF transformation complete");
 
 				SDFGraph hsdf = toHsdf.getOutput();
 				logger.log(Level.INFO, "HSDF with " + hsdf.vertexSet().size()

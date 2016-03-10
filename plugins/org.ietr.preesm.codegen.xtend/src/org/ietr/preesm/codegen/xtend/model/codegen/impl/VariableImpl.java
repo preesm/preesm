@@ -53,69 +53,57 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
  * <em><b>Variable</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.VariableImpl#getName
- * <em>Name</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.VariableImpl#getType
- * <em>Type</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.VariableImpl#getCreator
- * <em>Creator</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.VariableImpl#getUsers
- * <em>Users</em>}</li>
- * </ul>
  * </p>
- * 
+ * <ul>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.VariableImpl#getName <em>Name</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.VariableImpl#getType <em>Type</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.VariableImpl#getCreator <em>Creator</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.VariableImpl#getUsers <em>Users</em>}</li>
+ * </ul>
+ *
  * @generated
  */
 public abstract class VariableImpl extends CommentableImpl implements Variable {
 	/**
 	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getName()
 	 * @generated
 	 * @ordered
 	 */
 	protected static final String NAME_EDEFAULT = null;
-
 	/**
 	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getName()
 	 * @generated
 	 * @ordered
 	 */
 	protected String name = NAME_EDEFAULT;
-
 	/**
 	 * The default value of the '{@link #getType() <em>Type</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getType()
 	 * @generated
 	 * @ordered
 	 */
 	protected static final String TYPE_EDEFAULT = null;
-
 	/**
 	 * The cached value of the '{@link #getType() <em>Type</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getType()
 	 * @generated
 	 * @ordered
 	 */
 	protected String type = TYPE_EDEFAULT;
-
 	/**
-	 * The cached value of the '{@link #getUsers() <em>Users</em>}' reference
-	 * list. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getUsers() <em>Users</em>}' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #getUsers()
 	 * @generated
 	 * @ordered
@@ -124,7 +112,6 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected VariableImpl() {
@@ -133,7 +120,6 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -143,7 +129,6 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -153,7 +138,6 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -161,13 +145,11 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 		String oldName = name;
 		name = newName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.VARIABLE__NAME, oldName, name));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.VARIABLE__NAME, oldName, name));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -177,7 +159,6 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -185,222 +166,202 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 		String oldType = type;
 		type = newType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.VARIABLE__TYPE, oldType, type));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.VARIABLE__TYPE, oldType, type));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Block getCreator() {
-		if (eContainerFeatureID() != CodegenPackage.VARIABLE__CREATOR)
-			return null;
-		return (Block) eInternalContainer();
+		if (eContainerFeatureID() != CodegenPackage.VARIABLE__CREATOR) return null;
+		return (Block)eInternalContainer();
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetCreator(Block newCreator,
-			NotificationChain msgs) {
-		msgs = eBasicSetContainer((InternalEObject) newCreator,
-				CodegenPackage.VARIABLE__CREATOR, msgs);
+	public NotificationChain basicSetCreator(Block newCreator, NotificationChain msgs) {
+		msgs = eBasicSetContainer((InternalEObject)newCreator, CodegenPackage.VARIABLE__CREATOR, msgs);
 		return msgs;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public void setCreator(Block newCreator) {
-		if (newCreator != eInternalContainer()
-				|| (eContainerFeatureID() != CodegenPackage.VARIABLE__CREATOR && newCreator != null)) {
+		if (newCreator != eInternalContainer() || (eContainerFeatureID() != CodegenPackage.VARIABLE__CREATOR && newCreator != null)) {
 			if (EcoreUtil.isAncestor(this, newCreator))
-				throw new IllegalArgumentException(
-						"Recursive containment not allowed for " + toString());
+				throw new IllegalArgumentException("Recursive containment not allowed for " + toString());
 			NotificationChain msgs = null;
 			if (eInternalContainer() != null)
 				msgs = eBasicRemoveFromContainer(msgs);
 			if (newCreator != null)
-				msgs = ((InternalEObject) newCreator).eInverseAdd(this,
-						CodegenPackage.BLOCK__DEFINITIONS, Block.class, msgs);
+				msgs = ((InternalEObject)newCreator).eInverseAdd(this, CodegenPackage.BLOCK__DEFINITIONS, Block.class, msgs);
 			msgs = basicSetCreator(newCreator, msgs);
-			if (msgs != null)
-				msgs.dispatch();
-		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.VARIABLE__CREATOR, newCreator, newCreator));
+			if (msgs != null) msgs.dispatch();
+		}
+		else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.VARIABLE__CREATOR, newCreator, newCreator));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public EList<Block> getUsers() {
 		if (users == null) {
-			users = new EObjectWithInverseResolvingEList.ManyInverse<Block>(
-					Block.class, this, CodegenPackage.VARIABLE__USERS,
-					CodegenPackage.BLOCK__DECLARATIONS);
+			users = new EObjectWithInverseResolvingEList.ManyInverse<Block>(Block.class, this, CodegenPackage.VARIABLE__USERS, CodegenPackage.BLOCK__DECLARATIONS);
 		}
 		return users;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public NotificationChain eInverseAdd(InternalEObject otherEnd,
-			int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case CodegenPackage.VARIABLE__CREATOR:
-			if (eInternalContainer() != null)
-				msgs = eBasicRemoveFromContainer(msgs);
-			return basicSetCreator((Block) otherEnd, msgs);
-		case CodegenPackage.VARIABLE__USERS:
-			return ((InternalEList<InternalEObject>) (InternalEList<?>) getUsers())
-					.basicAdd(otherEnd, msgs);
+			case CodegenPackage.VARIABLE__CREATOR:
+				if (eInternalContainer() != null)
+					msgs = eBasicRemoveFromContainer(msgs);
+				return basicSetCreator((Block)otherEnd, msgs);
+			case CodegenPackage.VARIABLE__USERS:
+				return ((InternalEList<InternalEObject>)(InternalEList<?>)getUsers()).basicAdd(otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd,
-			int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case CodegenPackage.VARIABLE__CREATOR:
-			return basicSetCreator(null, msgs);
-		case CodegenPackage.VARIABLE__USERS:
-			return ((InternalEList<?>) getUsers()).basicRemove(otherEnd, msgs);
+			case CodegenPackage.VARIABLE__CREATOR:
+				return basicSetCreator(null, msgs);
+			case CodegenPackage.VARIABLE__USERS:
+				return ((InternalEList<?>)getUsers()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eBasicRemoveFromContainerFeature(
-			NotificationChain msgs) {
+	public NotificationChain eBasicRemoveFromContainerFeature(NotificationChain msgs) {
 		switch (eContainerFeatureID()) {
-		case CodegenPackage.VARIABLE__CREATOR:
-			return eInternalContainer().eInverseRemove(this,
-					CodegenPackage.BLOCK__DEFINITIONS, Block.class, msgs);
+			case CodegenPackage.VARIABLE__CREATOR:
+				return eInternalContainer().eInverseRemove(this, CodegenPackage.BLOCK__DEFINITIONS, Block.class, msgs);
 		}
 		return super.eBasicRemoveFromContainerFeature(msgs);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case CodegenPackage.VARIABLE__NAME:
-			return getName();
-		case CodegenPackage.VARIABLE__TYPE:
-			return getType();
-		case CodegenPackage.VARIABLE__CREATOR:
-			return getCreator();
-		case CodegenPackage.VARIABLE__USERS:
-			return getUsers();
+			case CodegenPackage.VARIABLE__NAME:
+				return getName();
+			case CodegenPackage.VARIABLE__TYPE:
+				return getType();
+			case CodegenPackage.VARIABLE__CREATOR:
+				return getCreator();
+			case CodegenPackage.VARIABLE__USERS:
+				return getUsers();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case CodegenPackage.VARIABLE__NAME:
-			setName((String) newValue);
-			return;
-		case CodegenPackage.VARIABLE__TYPE:
-			setType((String) newValue);
-			return;
-		case CodegenPackage.VARIABLE__CREATOR:
-			setCreator((Block) newValue);
-			return;
+			case CodegenPackage.VARIABLE__NAME:
+				setName((String)newValue);
+				return;
+			case CodegenPackage.VARIABLE__TYPE:
+				setType((String)newValue);
+				return;
+			case CodegenPackage.VARIABLE__CREATOR:
+				setCreator((Block)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case CodegenPackage.VARIABLE__NAME:
-			setName(NAME_EDEFAULT);
-			return;
-		case CodegenPackage.VARIABLE__TYPE:
-			setType(TYPE_EDEFAULT);
-			return;
-		case CodegenPackage.VARIABLE__CREATOR:
-			setCreator((Block) null);
-			return;
+			case CodegenPackage.VARIABLE__NAME:
+				setName(NAME_EDEFAULT);
+				return;
+			case CodegenPackage.VARIABLE__TYPE:
+				setType(TYPE_EDEFAULT);
+				return;
+			case CodegenPackage.VARIABLE__CREATOR:
+				setCreator((Block)null);
+				return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case CodegenPackage.VARIABLE__NAME:
-			return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT
-					.equals(name);
-		case CodegenPackage.VARIABLE__TYPE:
-			return TYPE_EDEFAULT == null ? type != null : !TYPE_EDEFAULT
-					.equals(type);
-		case CodegenPackage.VARIABLE__CREATOR:
-			return getCreator() != null;
-		case CodegenPackage.VARIABLE__USERS:
-			return users != null && !users.isEmpty();
+			case CodegenPackage.VARIABLE__NAME:
+				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
+			case CodegenPackage.VARIABLE__TYPE:
+				return TYPE_EDEFAULT == null ? type != null : !TYPE_EDEFAULT.equals(type);
+			case CodegenPackage.VARIABLE__CREATOR:
+				return getCreator() != null;
+			case CodegenPackage.VARIABLE__USERS:
+				return users != null && !users.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy())
-			return super.toString();
+		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (name: ");

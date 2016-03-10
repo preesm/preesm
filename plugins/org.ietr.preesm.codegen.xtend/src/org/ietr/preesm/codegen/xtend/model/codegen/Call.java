@@ -41,22 +41,17 @@ import org.eclipse.emf.common.util.EList;
  * <!-- begin-user-doc --> A {@link Call} is a {@link CodeElt} used to represent
  * a {@link Call} to a {@link FunctionCall function} or other primitive used in
  * the codegen such as {@link Communication} primitives. <!-- end-user-doc -->
- * 
+ *
  * <p>
  * The following features are supported:
- * <ul>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getParameters
- * <em>Parameters</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getName <em>Name
- * </em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getEReference0
- * <em>EReference0</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getParameterDirections
- * <em>Parameter Directions</em>}</li>
- * </ul>
  * </p>
- * 
+ * <ul>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getParameters <em>Parameters</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getName <em>Name</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getEReference0 <em>EReference0</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getParameterDirections <em>Parameter Directions</em>}</li>
+ * </ul>
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCall()
  * @model abstract="true"
  * @generated
@@ -100,12 +95,9 @@ public interface Call extends CodeElt {
 	String getName();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getName
-	 * <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Name</em>' attribute.
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getName <em>Name</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Name</em>' attribute.
 	 * @see #getName()
 	 * @generated
 	 */
@@ -129,13 +121,10 @@ public interface Call extends CodeElt {
 	Call getEReference0();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getEReference0
-	 * <em>EReference0</em>}' reference. <!-- begin-user-doc --> <!--
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Call#getEReference0 <em>EReference0</em>}' reference.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>EReference0</em>' reference.
+	 * @param value the new value of the '<em>EReference0</em>' reference.
 	 * @see #getEReference0()
 	 * @generated
 	 */
@@ -164,7 +153,6 @@ public interface Call extends CodeElt {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @model
 	 * @generated
 	 */
@@ -172,7 +160,6 @@ public interface Call extends CodeElt {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @model
 	 * @generated
 	 */

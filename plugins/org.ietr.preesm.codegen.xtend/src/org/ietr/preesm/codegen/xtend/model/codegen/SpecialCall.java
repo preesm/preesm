@@ -40,21 +40,16 @@ import org.eclipse.emf.common.util.EList;
 /**
  * <!-- begin-user-doc --> A representation of the model object '
  * <em><b>Special Call</b></em>'. <!-- end-user-doc -->
- * 
+ *
  * <p>
  * The following features are supported:
- * <ul>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall#getType
- * <em>Type</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall#getInputBuffers
- * <em>Input Buffers</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall#getOutputBuffers
- * <em>Output Buffers</em>}</li>
- * </ul>
  * </p>
- * 
+ * <ul>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall#getType <em>Type</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall#getInputBuffers <em>Input Buffers</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall#getOutputBuffers <em>Output Buffers</em>}</li>
+ * </ul>
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSpecialCall()
  * @model
  * @generated
@@ -81,12 +76,9 @@ public interface SpecialCall extends Call {
 	SpecialType getType();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall#getType
-	 * <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Type</em>' attribute.
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall#getType <em>Type</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Type</em>' attribute.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.SpecialType
 	 * @see #getType()
 	 * @generated
@@ -133,7 +125,6 @@ public interface SpecialCall extends Call {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @model kind="operation"
 	 * @generated
 	 */
@@ -141,7 +132,6 @@ public interface SpecialCall extends Call {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @model kind="operation"
 	 * @generated
 	 */
@@ -149,7 +139,6 @@ public interface SpecialCall extends Call {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @model kind="operation"
 	 * @generated
 	 */
@@ -157,7 +146,6 @@ public interface SpecialCall extends Call {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @model kind="operation"
 	 * @generated
 	 */
@@ -165,7 +153,6 @@ public interface SpecialCall extends Call {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @model
 	 * @generated
 	 */
@@ -173,7 +160,6 @@ public interface SpecialCall extends Call {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @model
 	 * @generated
 	 */
@@ -181,7 +167,6 @@ public interface SpecialCall extends Call {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @model
 	 * @generated
 	 */
@@ -189,7 +174,6 @@ public interface SpecialCall extends Call {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @model
 	 * @generated
 	 */

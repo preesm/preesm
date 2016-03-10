@@ -40,16 +40,14 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  * native function. A {@link FunctionCall} is characterized by its
  * {@link #getName() name} and the {@link #getParameters() parameters} it
  * involves. <!-- end-user-doc -->
- * 
+ *
  * <p>
  * The following features are supported:
- * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall#getActorName
- * <em>Actor Name</em>}</li>
- * </ul>
  * </p>
- * 
+ * <ul>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall#getActorName <em>Actor Name</em>}</li>
+ * </ul>
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFunctionCall()
  * @model
  * @generated
@@ -74,13 +72,10 @@ public interface FunctionCall extends Call {
 	String getActorName();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall#getActorName
-	 * <em>Actor Name</em>}' attribute. <!-- begin-user-doc --> <!--
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall#getActorName <em>Actor Name</em>}' attribute.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Actor Name</em>' attribute.
+	 * @param value the new value of the '<em>Actor Name</em>' attribute.
 	 * @see #getActorName()
 	 * @generated
 	 */

@@ -58,7 +58,7 @@ import java.util.ArrayList
 import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
 
-class MPPA2Printer extends DefaultPrinter {
+class MPPA2Printer extends CPrinter {
 	
 	/** 
 	 * Temporary global var to ignore the automatic suppression of memcpy
@@ -93,7 +93,7 @@ class MPPA2Printer extends DefaultPrinter {
 	'''
 	
 	override printBufferDefinition(Buffer buffer) '''
-	/* When using the Distributed Shared Memory buffers are in DDR */
+	/* When using the Distributed Shared Memory buffers are in DDR (global memory) */
 	«buffer.type» «buffer.name»[«buffer.size»]; // «buffer.comment» size:= «buffer.size»*«buffer.type»
 	'''
 	
@@ -152,26 +152,27 @@ class MPPA2Printer extends DefaultPrinter {
 	override printCoreLoopBlockHeader(LoopBlock block2) '''
 		
 		«"\t"»// Begin the execution loop 
-			int __iii;
+			int __iii __attribute__((unused));
 			for(__iii=0;__iii<GRAPH_ITERATION;__iii++){
 				pthread_barrier_wait(&pthread_barrier);
+				
 	'''
 	
 	
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
-#ifdef VERBOSE
-		if(__k1_get_cpu_id() == 0){
-			printf("Cluster %d Graph Iteration %d / %d Done !\n", __k1_get_cluster_id(), __iii+1, GRAPH_ITERATION);
-		}
-#endif
-		/* commit local changes to the global memory */
-		pthread_barrier_wait(&pthread_barrier); /* barrier to make sure all threads have commited data in smem */
-		if(__k1_get_cpu_id() == 0){
-			mppa_dsm_client_global_purge();
-			mppa_dsm_client_global_fence();
-		}
-	}
-}
+		#ifdef VERBOSE
+				if(__k1_get_cpu_id() == 0){
+					printf("Cluster %d Graph Iteration %d / %d Done !\n", __k1_get_cluster_id(), __iii+1, GRAPH_ITERATION);
+				}
+		#endif
+				/* commit local changes to the global memory */
+				pthread_barrier_wait(&pthread_barrier); /* barrier to make sure all threads have commited data in smem */
+				if(__k1_get_cpu_id() == 0){
+					mppa_dsm_client_global_purge();
+					mppa_dsm_client_global_fence();
+				}
+			}
+		}	
 	'''	
 	override printFifoCall(FifoCall fifoCall) {
 		var result = "fifo" + fifoCall.operation.toString.toLowerCase.toFirstUpper + "("
@@ -271,7 +272,7 @@ class MPPA2Printer extends DefaultPrinter {
 	 *            the type of objects copied
 	 * @return a {@link CharSequence} containing the memcpy call (if any)
 	 */
-	def printMemcpy(Buffer output, int outOffset, Buffer input, int inOffset, int size, String type) {
+	override printMemcpy(Buffer output, int outOffset, Buffer input, int inOffset, int size, String type) {
 
 		// Retrieve the container buffer of the input and output as well
 		// as their offset in this buffer

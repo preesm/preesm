@@ -45,37 +45,37 @@ import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
 
 import org.ietr.preesm.codegen.xtend.model.codegen.*;
+import org.ietr.preesm.memory.script.Range;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!--
  * end-user-doc -->
- * 
  * @generated
  */
 public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	/**
-	 * Creates the default factory implementation. <!-- begin-user-doc --> <!--
+	 * Creates the default factory implementation.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public static CodegenFactory init() {
 		try {
-			CodegenFactory theCodegenFactory = (CodegenFactory) EPackage.Registry.INSTANCE
-					.getEFactory(CodegenPackage.eNS_URI);
+			CodegenFactory theCodegenFactory = (CodegenFactory)EPackage.Registry.INSTANCE.getEFactory(CodegenPackage.eNS_URI);
 			if (theCodegenFactory != null) {
 				return theCodegenFactory;
 			}
-		} catch (Exception exception) {
+		}
+		catch (Exception exception) {
 			EcorePlugin.INSTANCE.log(exception);
 		}
 		return new CodegenFactoryImpl();
 	}
 
 	/**
-	 * Creates an instance of the factory. <!-- begin-user-doc --> <!--
+	 * Creates an instance of the factory.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public CodegenFactoryImpl() {
@@ -84,109 +84,87 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
-		case CodegenPackage.BLOCK:
-			return createBlock();
-		case CodegenPackage.BUFFER:
-			return createBuffer();
-		case CodegenPackage.SUB_BUFFER:
-			return createSubBuffer();
-		case CodegenPackage.CONSTANT:
-			return createConstant();
-		case CodegenPackage.FUNCTION_CALL:
-			return createFunctionCall();
-		case CodegenPackage.COMMUNICATION:
-			return createCommunication();
-		case CodegenPackage.CORE_BLOCK:
-			return createCoreBlock();
-		case CodegenPackage.ACTOR_BLOCK:
-			return createActorBlock();
-		case CodegenPackage.LOOP_BLOCK:
-			return createLoopBlock();
-		case CodegenPackage.ACTOR_CALL:
-			return createActorCall();
-		case CodegenPackage.CALL_BLOCK:
-			return createCallBlock();
-		case CodegenPackage.SPECIAL_CALL:
-			return createSpecialCall();
-		case CodegenPackage.FIFO_CALL:
-			return createFifoCall();
-		case CodegenPackage.COMMUNICATION_NODE:
-			return createCommunicationNode();
-		case CodegenPackage.SEMAPHORE:
-			return createSemaphore();
-		case CodegenPackage.SHARED_MEMORY_COMMUNICATION:
-			return createSharedMemoryCommunication();
-		case CodegenPackage.CONSTANT_STRING:
-			return createConstantString();
-		case CodegenPackage.NULL_BUFFER:
-			return createNullBuffer();
-		default:
-			throw new IllegalArgumentException("The class '" + eClass.getName()
-					+ "' is not a valid classifier");
+			case CodegenPackage.BLOCK: return createBlock();
+			case CodegenPackage.BUFFER: return createBuffer();
+			case CodegenPackage.SUB_BUFFER: return createSubBuffer();
+			case CodegenPackage.CONSTANT: return createConstant();
+			case CodegenPackage.FUNCTION_CALL: return createFunctionCall();
+			case CodegenPackage.COMMUNICATION: return createCommunication();
+			case CodegenPackage.CORE_BLOCK: return createCoreBlock();
+			case CodegenPackage.ACTOR_BLOCK: return createActorBlock();
+			case CodegenPackage.LOOP_BLOCK: return createLoopBlock();
+			case CodegenPackage.ACTOR_CALL: return createActorCall();
+			case CodegenPackage.CALL_BLOCK: return createCallBlock();
+			case CodegenPackage.SPECIAL_CALL: return createSpecialCall();
+			case CodegenPackage.FIFO_CALL: return createFifoCall();
+			case CodegenPackage.COMMUNICATION_NODE: return createCommunicationNode();
+			case CodegenPackage.SEMAPHORE: return createSemaphore();
+			case CodegenPackage.SHARED_MEMORY_COMMUNICATION: return createSharedMemoryCommunication();
+			case CodegenPackage.CONSTANT_STRING: return createConstantString();
+			case CodegenPackage.NULL_BUFFER: return createNullBuffer();
+			case CodegenPackage.FINITE_LOOP_BLOCK: return createFiniteLoopBlock();
+			case CodegenPackage.INT_VAR: return createIntVar();
+			case CodegenPackage.BUFFER_ITERATOR: return createBufferIterator();
+			default:
+				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Object createFromString(EDataType eDataType, String initialValue) {
 		switch (eDataType.getClassifierID()) {
-		case CodegenPackage.DIRECTION:
-			return createDirectionFromString(eDataType, initialValue);
-		case CodegenPackage.DELIMITER:
-			return createDelimiterFromString(eDataType, initialValue);
-		case CodegenPackage.SPECIAL_TYPE:
-			return createSpecialTypeFromString(eDataType, initialValue);
-		case CodegenPackage.FIFO_OPERATION:
-			return createFifoOperationFromString(eDataType, initialValue);
-		case CodegenPackage.PORT_DIRECTION:
-			return createPortDirectionFromString(eDataType, initialValue);
-		case CodegenPackage.RANGE:
-			return createrangeFromString(eDataType, initialValue);
-		default:
-			throw new IllegalArgumentException("The datatype '"
-					+ eDataType.getName() + "' is not a valid classifier");
+			case CodegenPackage.DIRECTION:
+				return createDirectionFromString(eDataType, initialValue);
+			case CodegenPackage.DELIMITER:
+				return createDelimiterFromString(eDataType, initialValue);
+			case CodegenPackage.SPECIAL_TYPE:
+				return createSpecialTypeFromString(eDataType, initialValue);
+			case CodegenPackage.FIFO_OPERATION:
+				return createFifoOperationFromString(eDataType, initialValue);
+			case CodegenPackage.PORT_DIRECTION:
+				return createPortDirectionFromString(eDataType, initialValue);
+			case CodegenPackage.RANGE:
+				return createrangeFromString(eDataType, initialValue);
+			default:
+				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
 		}
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public String convertToString(EDataType eDataType, Object instanceValue) {
 		switch (eDataType.getClassifierID()) {
-		case CodegenPackage.DIRECTION:
-			return convertDirectionToString(eDataType, instanceValue);
-		case CodegenPackage.DELIMITER:
-			return convertDelimiterToString(eDataType, instanceValue);
-		case CodegenPackage.SPECIAL_TYPE:
-			return convertSpecialTypeToString(eDataType, instanceValue);
-		case CodegenPackage.FIFO_OPERATION:
-			return convertFifoOperationToString(eDataType, instanceValue);
-		case CodegenPackage.PORT_DIRECTION:
-			return convertPortDirectionToString(eDataType, instanceValue);
-		case CodegenPackage.RANGE:
-			return convertrangeToString(eDataType, instanceValue);
-		default:
-			throw new IllegalArgumentException("The datatype '"
-					+ eDataType.getName() + "' is not a valid classifier");
+			case CodegenPackage.DIRECTION:
+				return convertDirectionToString(eDataType, instanceValue);
+			case CodegenPackage.DELIMITER:
+				return convertDelimiterToString(eDataType, instanceValue);
+			case CodegenPackage.SPECIAL_TYPE:
+				return convertSpecialTypeToString(eDataType, instanceValue);
+			case CodegenPackage.FIFO_OPERATION:
+				return convertFifoOperationToString(eDataType, instanceValue);
+			case CodegenPackage.PORT_DIRECTION:
+				return convertPortDirectionToString(eDataType, instanceValue);
+			case CodegenPackage.RANGE:
+				return convertrangeToString(eDataType, instanceValue);
+			default:
+				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
 		}
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -197,7 +175,6 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -208,7 +185,6 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -219,7 +195,6 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -230,7 +205,6 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -241,7 +215,6 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -252,7 +225,6 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -263,7 +235,6 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -274,7 +245,6 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -285,7 +255,6 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -296,7 +265,6 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -307,7 +275,6 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -318,7 +285,6 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -329,7 +295,6 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -340,7 +305,6 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -351,7 +315,6 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -362,7 +325,6 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -373,7 +335,6 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -383,23 +344,48 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	}
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public FiniteLoopBlock createFiniteLoopBlock() {
+		FiniteLoopBlockImpl finiteLoopBlock = new FiniteLoopBlockImpl();
+		return finiteLoopBlock;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IntVar createIntVar() {
+		IntVarImpl intVar = new IntVarImpl();
+		return intVar;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public BufferIterator createBufferIterator() {
+		BufferIteratorImpl bufferIterator = new BufferIteratorImpl();
+		return bufferIterator;
+	}
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Direction createDirectionFromString(EDataType eDataType,
 			String initialValue) {
 		Direction result = Direction.get(initialValue);
-		if (result == null)
-			throw new IllegalArgumentException("The value '" + initialValue
-					+ "' is not a valid enumerator of '" + eDataType.getName()
-					+ "'");
+		if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public String convertDirectionToString(EDataType eDataType,
@@ -409,22 +395,17 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Delimiter createDelimiterFromString(EDataType eDataType,
 			String initialValue) {
 		Delimiter result = Delimiter.get(initialValue);
-		if (result == null)
-			throw new IllegalArgumentException("The value '" + initialValue
-					+ "' is not a valid enumerator of '" + eDataType.getName()
-					+ "'");
+		if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public String convertDelimiterToString(EDataType eDataType,
@@ -434,22 +415,17 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public SpecialType createSpecialTypeFromString(EDataType eDataType,
 			String initialValue) {
 		SpecialType result = SpecialType.get(initialValue);
-		if (result == null)
-			throw new IllegalArgumentException("The value '" + initialValue
-					+ "' is not a valid enumerator of '" + eDataType.getName()
-					+ "'");
+		if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public String convertSpecialTypeToString(EDataType eDataType,
@@ -459,22 +435,17 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public FifoOperation createFifoOperationFromString(EDataType eDataType,
 			String initialValue) {
 		FifoOperation result = FifoOperation.get(initialValue);
-		if (result == null)
-			throw new IllegalArgumentException("The value '" + initialValue
-					+ "' is not a valid enumerator of '" + eDataType.getName()
-					+ "'");
+		if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public String convertFifoOperationToString(EDataType eDataType,
@@ -484,22 +455,17 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public PortDirection createPortDirectionFromString(EDataType eDataType,
 			String initialValue) {
 		PortDirection result = PortDirection.get(initialValue);
-		if (result == null)
-			throw new IllegalArgumentException("The value '" + initialValue
-					+ "' is not a valid enumerator of '" + eDataType.getName()
-					+ "'");
+		if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public String convertPortDirectionToString(EDataType eDataType,
@@ -509,18 +475,15 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
-	public org.ietr.preesm.memory.script.Range createrangeFromString(
+	public Range createrangeFromString(
 			EDataType eDataType, String initialValue) {
-		return (org.ietr.preesm.memory.script.Range) super.createFromString(
-				eDataType, initialValue);
+		return (Range)super.createFromString(eDataType, initialValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public String convertrangeToString(EDataType eDataType, Object instanceValue) {
@@ -529,17 +492,15 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public CodegenPackage getCodegenPackage() {
-		return (CodegenPackage) getEPackage();
+		return (CodegenPackage)getEPackage();
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @deprecated
 	 * @generated
 	 */

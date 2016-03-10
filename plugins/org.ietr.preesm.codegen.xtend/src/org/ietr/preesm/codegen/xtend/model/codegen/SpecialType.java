@@ -45,16 +45,15 @@ import org.eclipse.emf.common.util.Enumerator;
  * <!-- begin-user-doc --> A representation of the literals of the enumeration '
  * <em><b>Special Type</b></em>', and utility methods for working with them.
  * <!-- end-user-doc -->
- * 
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSpecialType()
  * @model
  * @generated
  */
 public enum SpecialType implements Enumerator {
 	/**
-	 * The '<em><b>FORK</b></em>' literal object. <!-- begin-user-doc --> <!--
+	 * The '<em><b>FORK</b></em>' literal object.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @see #FORK_VALUE
 	 * @generated
 	 * @ordered
@@ -62,9 +61,9 @@ public enum SpecialType implements Enumerator {
 	FORK(0, "FORK", "FORK"),
 
 	/**
-	 * The '<em><b>JOIN</b></em>' literal object. <!-- begin-user-doc --> <!--
+	 * The '<em><b>JOIN</b></em>' literal object.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @see #JOIN_VALUE
 	 * @generated
 	 * @ordered
@@ -72,9 +71,9 @@ public enum SpecialType implements Enumerator {
 	JOIN(1, "JOIN", "JOIN"),
 
 	/**
-	 * The '<em><b>BROADCAST</b></em>' literal object. <!-- begin-user-doc -->
+	 * The '<em><b>BROADCAST</b></em>' literal object.
+	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * 
 	 * @see #BROADCAST_VALUE
 	 * @generated
 	 * @ordered
@@ -82,9 +81,9 @@ public enum SpecialType implements Enumerator {
 	BROADCAST(2, "BROADCAST", "BROADCAST"),
 
 	/**
-	 * The '<em><b>ROUND BUFFER</b></em>' literal object. <!-- begin-user-doc
+	 * The '<em><b>ROUND BUFFER</b></em>' literal object.
+	 * <!-- begin-user-doc
 	 * --> <!-- end-user-doc -->
-	 * 
 	 * @see #ROUND_BUFFER_VALUE
 	 * @generated
 	 * @ordered
@@ -92,13 +91,13 @@ public enum SpecialType implements Enumerator {
 	ROUND_BUFFER(3, "ROUND_BUFFER", "ROUND_BUFFER");
 
 	/**
-	 * The '<em><b>FORK</b></em>' literal value. <!-- begin-user-doc -->
+	 * The '<em><b>FORK</b></em>' literal value.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of '<em><b>FORK</b></em>' literal object isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @see #FORK
 	 * @model
 	 * @generated
@@ -107,13 +106,13 @@ public enum SpecialType implements Enumerator {
 	public static final int FORK_VALUE = 0;
 
 	/**
-	 * The '<em><b>JOIN</b></em>' literal value. <!-- begin-user-doc -->
+	 * The '<em><b>JOIN</b></em>' literal value.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of '<em><b>JOIN</b></em>' literal object isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @see #JOIN
 	 * @model
 	 * @generated
@@ -122,13 +121,13 @@ public enum SpecialType implements Enumerator {
 	public static final int JOIN_VALUE = 1;
 
 	/**
-	 * The '<em><b>BROADCAST</b></em>' literal value. <!-- begin-user-doc -->
+	 * The '<em><b>BROADCAST</b></em>' literal value.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of '<em><b>BROADCAST</b></em>' literal object isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @see #BROADCAST
 	 * @model
 	 * @generated
@@ -137,13 +136,13 @@ public enum SpecialType implements Enumerator {
 	public static final int BROADCAST_VALUE = 2;
 
 	/**
-	 * The '<em><b>ROUND BUFFER</b></em>' literal value. <!-- begin-user-doc -->
+	 * The '<em><b>ROUND BUFFER</b></em>' literal value.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of '<em><b>ROUND BUFFER</b></em>' literal object isn't
 	 * clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @see #ROUND_BUFFER
 	 * @model
 	 * @generated
@@ -157,22 +156,25 @@ public enum SpecialType implements Enumerator {
 	 * 
 	 * @generated
 	 */
-	private static final SpecialType[] VALUES_ARRAY = new SpecialType[] { FORK,
-			JOIN, BROADCAST, ROUND_BUFFER, };
+	private static final SpecialType[] VALUES_ARRAY = new SpecialType[] {
+			FORK,
+			JOIN,
+			BROADCAST,
+			ROUND_BUFFER,
+		};
 
 	/**
-	 * A public read-only list of all the '<em><b>Special Type</b></em>'
-	 * enumerators. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * A public read-only list of all the '<em><b>Special Type</b></em>' enumerators.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public static final List<SpecialType> VALUES = Collections
-			.unmodifiableList(Arrays.asList(VALUES_ARRAY));
+	public static final List<SpecialType> VALUES = Collections.unmodifiableList(Arrays.asList(VALUES_ARRAY));
 
 	/**
-	 * Returns the '<em><b>Special Type</b></em>' literal with the specified
-	 * literal value. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the '<em><b>Special Type</b></em>' literal with the specified literal value.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param literal the literal.
+	 * @return the matching enumerator or <code>null</code>.
 	 * @generated
 	 */
 	public static SpecialType get(String literal) {
@@ -186,9 +188,10 @@ public enum SpecialType implements Enumerator {
 	}
 
 	/**
-	 * Returns the '<em><b>Special Type</b></em>' literal with the specified
-	 * name. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the '<em><b>Special Type</b></em>' literal with the specified name.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param name the name.
+	 * @return the matching enumerator or <code>null</code>.
 	 * @generated
 	 */
 	public static SpecialType getByName(String name) {
@@ -202,50 +205,44 @@ public enum SpecialType implements Enumerator {
 	}
 
 	/**
-	 * Returns the '<em><b>Special Type</b></em>' literal with the specified
-	 * integer value. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the '<em><b>Special Type</b></em>' literal with the specified integer value.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the integer value.
+	 * @return the matching enumerator or <code>null</code>.
 	 * @generated
 	 */
 	public static SpecialType get(int value) {
 		switch (value) {
-		case FORK_VALUE:
-			return FORK;
-		case JOIN_VALUE:
-			return JOIN;
-		case BROADCAST_VALUE:
-			return BROADCAST;
-		case ROUND_BUFFER_VALUE:
-			return ROUND_BUFFER;
+			case FORK_VALUE: return FORK;
+			case JOIN_VALUE: return JOIN;
+			case BROADCAST_VALUE: return BROADCAST;
+			case ROUND_BUFFER_VALUE: return ROUND_BUFFER;
 		}
 		return null;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private final int value;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private final String name;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private final String literal;
 
 	/**
-	 * Only this class can construct instances. <!-- begin-user-doc --> <!--
+	 * Only this class can construct instances.
+	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	private SpecialType(int value, String name, String literal) {
@@ -256,38 +253,34 @@ public enum SpecialType implements Enumerator {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public int getValue() {
-		return value;
+	  return value;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public String getName() {
-		return name;
+	  return name;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public String getLiteral() {
-		return literal;
+	  return literal;
 	}
 
 	/**
-	 * Returns the literal value of the enumerator, which is its string
-	 * representation. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns the literal value of the enumerator, which is its string representation.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override

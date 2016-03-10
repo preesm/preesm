@@ -37,6 +37,8 @@ package org.ietr.preesm.pimm.algorithm.pimm2sdf.visitor;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.ietr.dftools.algorithm.model.CodeRefinement;
 import org.ietr.dftools.algorithm.model.IRefinement;
@@ -58,6 +60,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFExpressionEdgePropertyType;
 import org.ietr.dftools.algorithm.model.sdf.types.SDFStringEdgePropertyType;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 import org.ietr.preesm.codegen.idl.Prototype;
 import org.ietr.preesm.codegen.model.CodeGenArgument;
@@ -151,6 +154,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 			Variable var = new Variable(p.getName(), p.getExpression()
 					.evaluate());
 			sdf.addVariable(var);
+			//WorkflowLogger.getLogger().log(Level.INFO, "parameters2GraphVariables " + sdf.getVariables().getVariable(var.getName()).getName());
 		}
 	}
 
@@ -210,12 +214,15 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 		// of the parameter is derived (i.e., computed from other parameters
 		// values), we can evaluate it (after the values of other parameters
 		// have been fixed)
+		Logger logger = WorkflowLogger.getLogger();
 		for (Parameter p : graph.getParameters()) {
+			//logger.log(Level.INFO, "computeDerivedParameterValues " + p.getName());
 			if (!execution.hasValue(p)) {
 				// Evaluate the expression wrt. the current values of the
 				// parameters and set the result as new expression
 				Expression pExp = piFactory.createExpression();
 				String value = p.getExpression().evaluate();
+				//logger.log(Level.INFO, "computeDerivedParameterValues has value " + value);
 				pExp.setString(value);
 				p.setExpression(pExp);
 			}
