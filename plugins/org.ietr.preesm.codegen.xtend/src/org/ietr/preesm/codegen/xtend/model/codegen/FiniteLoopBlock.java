@@ -82,28 +82,29 @@ public interface FiniteLoopBlock extends LoopBlock {
 	void setNbIter(int value);
 
 	/**
-	 * Returns the value of the '<em><b>Iter</b></em>' attribute.
+	 * Returns the value of the '<em><b>Iter</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Iter</em>' attribute isn't clear, there really
-	 * should be more of a description here...
+	 * If the meaning of the '<em>Iter</em>' reference isn't clear,
+	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Iter</em>' attribute.
-	 * @see #setIter(int)
+	 * @return the value of the '<em>Iter</em>' reference.
+	 * @see #setIter(IntVar)
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFiniteLoopBlock_Iter()
-	 * @model required="true"
+	 * @model
 	 * @generated
 	 */
-	int getIter();
+	IntVar getIter();
 
 	/**
-	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock#getIter <em>Iter</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Iter</em>' attribute.
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock#getIter <em>Iter</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Iter</em>' reference.
 	 * @see #getIter()
 	 * @generated
 	 */
-	void setIter(int value);
+	void setIter(IntVar value);
 
 } // FiniteLoopBlock

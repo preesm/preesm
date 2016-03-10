@@ -1000,8 +1000,8 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getFiniteLoopBlock_Iter() {
-		return (EAttribute)finiteLoopBlockEClass.getEStructuralFeatures().get(1);
+	public EReference getFiniteLoopBlock_Iter() {
+		return (EReference)finiteLoopBlockEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -1018,15 +1018,6 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getIntVar_Value() {
-		return (EAttribute)intVarEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EClass getBufferIterator() {
 		return bufferIteratorEClass;
 	}
@@ -1036,8 +1027,8 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getBufferIterator_Buffer() {
-		return (EReference)bufferIteratorEClass.getEStructuralFeatures().get(0);
+	public EReference getBufferIterator_Iter() {
+		return (EReference)bufferIteratorEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -1045,17 +1036,8 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getBufferIterator_Iter() {
-		return (EAttribute)bufferIteratorEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getBufferIterator_IterStep() {
-		return (EAttribute)bufferIteratorEClass.getEStructuralFeatures().get(2);
+	public EAttribute getBufferIterator_Size() {
+		return (EAttribute)bufferIteratorEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -1234,15 +1216,13 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
 		finiteLoopBlockEClass = createEClass(FINITE_LOOP_BLOCK);
 		createEAttribute(finiteLoopBlockEClass, FINITE_LOOP_BLOCK__NB_ITER);
-		createEAttribute(finiteLoopBlockEClass, FINITE_LOOP_BLOCK__ITER);
+		createEReference(finiteLoopBlockEClass, FINITE_LOOP_BLOCK__ITER);
 
 		intVarEClass = createEClass(INT_VAR);
-		createEAttribute(intVarEClass, INT_VAR__VALUE);
 
 		bufferIteratorEClass = createEClass(BUFFER_ITERATOR);
-		createEReference(bufferIteratorEClass, BUFFER_ITERATOR__BUFFER);
-		createEAttribute(bufferIteratorEClass, BUFFER_ITERATOR__ITER);
-		createEAttribute(bufferIteratorEClass, BUFFER_ITERATOR__ITER_STEP);
+		createEAttribute(bufferIteratorEClass, BUFFER_ITERATOR__SIZE);
+		createEReference(bufferIteratorEClass, BUFFER_ITERATOR__ITER);
 
 		// Create enums
 		directionEEnum = createEEnum(DIRECTION);
@@ -1433,15 +1413,13 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 
 		initEClass(finiteLoopBlockEClass, FiniteLoopBlock.class, "FiniteLoopBlock", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getFiniteLoopBlock_NbIter(), ecorePackage.getEInt(), "nbIter", null, 1, 1, FiniteLoopBlock.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getFiniteLoopBlock_Iter(), ecorePackage.getEInt(), "iter", null, 1, 1, FiniteLoopBlock.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getFiniteLoopBlock_Iter(), this.getIntVar(), null, "iter", null, 0, 1, FiniteLoopBlock.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(intVarEClass, IntVar.class, "IntVar", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getIntVar_Value(), ecorePackage.getEInt(), "value", null, 0, 1, IntVar.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(bufferIteratorEClass, BufferIterator.class, "BufferIterator", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getBufferIterator_Buffer(), this.getBuffer(), null, "buffer", null, 0, 1, BufferIterator.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getBufferIterator_Iter(), ecorePackage.getEInt(), "iter", null, 0, 1, BufferIterator.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getBufferIterator_IterStep(), ecorePackage.getEInt(), "iterStep", null, 0, 1, BufferIterator.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getBufferIterator_Size(), ecorePackage.getEInt(), "size", null, 0, 1, BufferIterator.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getBufferIterator_Iter(), this.getIntVar(), null, "iter", null, 0, 1, BufferIterator.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(directionEEnum, Direction.class, "Direction");

@@ -96,6 +96,7 @@ import org.ietr.preesm.codegen.model.CodeGenArgument;
 import org.ietr.preesm.codegen.model.CodeGenParameter;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer;
+import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator;
 import org.ietr.preesm.codegen.xtend.model.codegen.Call;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory;
@@ -109,6 +110,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation;
 import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
+import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
 import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
@@ -737,32 +739,40 @@ public class CodegenModelGenerator {
 			if (vertex_ref instanceof ActorPrototypes)
 				prototypes = (ActorPrototypes) vertex_ref;
 			if(prototypes != null){
-				
+				String iteratorIndex = new String("iteratorIndex");
 				Prototype loopPrototype = prototypes.getLoopPrototype();
+				/* get repetition vector */
+				int vertexRep = 1;
 				try {
-					p("Prototype rep vertex " + loopPrototype.getFunctionName() + " repeat " + repVertex.getNbRepeatAsInteger() );
+					vertexRep  = repVertex.getNbRepeatAsInteger();
 				} catch (InvalidExpressionException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				p("Actor " + repVertex.getName() + " Repeat " + vertexRep);
 				
+				/* create code elements and setup them */
 				FunctionCall repFunc = CodegenFactory.eINSTANCE.createFunctionCall();
 				FiniteLoopBlock forLoop = CodegenFactory.eINSTANCE.createFiniteLoopBlock();
-				try {
-					forLoop.setNbIter(repVertex.getNbRepeatAsInteger());
-					operatorBlock.getLoopBlock().getCodeElts().add(forLoop);
-				} catch (InvalidExpressionException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				IntVar var = CodegenFactory.eINSTANCE.createIntVar();
+				var.setName(iteratorIndex);
+				forLoop.setIter(var);
+				forLoop.setNbIter(vertexRep);
+				operatorBlock.getLoopBlock().getCodeElts().add(forLoop);
 				repFunc.setName(loopPrototype.getFunctionName());
-				try {
-					p("Func " + repFunc.getName() + " is repeated " + repVertex.getNbRepeatAsInteger());
-				} catch (InvalidExpressionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				repFunc.setActorName(dagVertex.getName()); /* function call set to the hierarchical actor */
+				
+				/* retrieve and set variables to be called by the function */
+				Entry<List<Variable>, List<PortDirection>> callVars = generateRepeatedCallVariables(dagVertex, repVertex, loopPrototype, var);
+				//logger.log(Level.INFO, "generateFunctionCall name " + dagVertex.getName());
+				// Put Variables in the function call
+				for (int idx = 0; idx < callVars.getKey().size(); idx++) {
+					repFunc.addParameter(callVars.getKey().get(idx), callVars.getValue().get(idx));
+					p("Called var " + idx + " " + 
+							callVars.getKey().get(idx).getName() + " " + callVars.getValue().get(idx).getName() );
 				}
-				repFunc.setActorName(dagVertex.getName());
+				//identifyMergedInputRange(callVars); NOT SUPPORTED YET
+				
 				
 				for (CodeGenArgument arg : loopPrototype.getArguments().keySet()) {
 					p("Arg Buffer " + arg.getName());
@@ -770,7 +780,6 @@ public class CodegenModelGenerator {
 				for (CodeGenParameter param : loopPrototype.getParameters().keySet()) {
 					p("Arg Parameter " + param.getName());
 				}
-				
 				// Add the function call to the for loop block
 				forLoop.getCodeElts().add(repFunc);
 				// Save the functionCall in the dagvertexFunctionCall Map
@@ -862,41 +871,6 @@ public class CodegenModelGenerator {
 					FunctionCall functionCall = generateFunctionCall(dagVertex,
 							loopPrototype, false);
 					
-					/* dirty omp generation */
-					if(sdfVertex.getOmpRepeat() != -1){
-						//logger.log(Level.INFO, "functionCall " + functionCall.getName() + " parameter size " + functionCall.getParameters().size());
-						functionCall.setName("#pragma omp parallel for\n" +
-											 "for(__omp_iter=0 ;__omp_iter<" + sdfVertex.getOmpRepeat() + " ; __omp_iter++)\n" +
-											 functionCall.getName());
-						for(int i=0;i<functionCall.getParameters().size();i++){
-							if(functionCall.getParameters().get(i) instanceof ConstantImpl){
-								logger.log(Level.INFO, "Constant " + functionCall.getParameters().get(i).getName() + " of value " + ((Constant)(functionCall.getParameters().get(i))).getValue() );
-							}
-							if(functionCall.getParameters().get(i) instanceof ConstantStringImpl){
-								logger.log(Level.INFO, "String " + functionCall.getParameters().get(i).getName() + " of value " + ((Constant)(functionCall.getParameters().get(i))).getValue() );
-							}
-						}
-						try {
-							for(int i=0;i<sdfVertex.getSources().size();i++){
-								SDFEdge edge = sdfVertex.getAssociatedEdge(sdfVertex.getSources().get(i));
-								logger.log(Level.INFO, "Tokens sources " + sdfVertex.getAssociatedEdge(sdfVertex.getSources().get(i)).getSourceLabel() + 
-										" prod " + edge.getProd().intValue() + " cons " + edge.getCons().intValue() + 
-										" data type " + edge.getDataType().toString() );
-								//int cons = sdfVertex.getAssociatedEdge(sdfVertex.getSources().get(i)).getCons();
-							}
-							for(int i=0;i<sdfVertex.getSinks().size();i++){
-								SDFEdge edge = sdfVertex.getAssociatedEdge(sdfVertex.getSources().get(i));
-								logger.log(Level.INFO, "Tokens sinks " + sdfVertex.getAssociatedEdge(sdfVertex.getSinks().get(i)).getTargetLabel() + 
-										" prod " + edge.getProd().intValue() + " cons " + edge.getCons().intValue() +
-										" data type " + edge.getDataType().toString() );
-							}
-						}catch (Exception e) {
-							e.printStackTrace();
-						}
-						/*for(int i=0;i<sdfVertex.getOmpParallelInputs().size();i++){
-							logger.log(Level.INFO, "Port that needs omp " + sdfVertex.getOmpParallelInputs().get(i));
-						}*/
-					}
 					registerCallVariableToCoreBlock(operatorBlock, functionCall);
 					
 					// Add the function call to the operatorBlock
@@ -1318,73 +1292,7 @@ public class CodegenModelGenerator {
 								+ "There is something wrong in the Memory Allocation task.");
 			}
 
-			// add iter variable for OMP para when possible
-			if(sdfVertex.getOmpRepeat() != -1){
-				logger.log(Level.INFO, "OMP Add iterration para on " + var.getName() + 
-						" sdfvertex " + sdfVertex.getName() + 
-						" rep " + sdfVertex.getOmpRepeat() );
-				String size = null;
-				switch (arg.getDirection()) {
-				case CodeGenArgument.OUTPUT:
-				{
-					logger.log(Level.INFO, "OMP Output");
-					String buffName = port.getName();
-					for(int i=0;i<sdfVertex.getSinks().size();i++){
-						logger.log(Level.INFO, "OMP Output" + buffName + " equals " + sdfVertex.getAssociatedEdge(sdfVertex.getSinks().get(i)).getSourceLabel());
-						if(buffName.equals(sdfVertex.getAssociatedEdge(sdfVertex.getSinks().get(i)).getSourceLabel())){
-							SDFEdge edge = sdfVertex.getAssociatedEdge(sdfVertex.getSinks().get(i));
-							try {
-								logger.log(Level.INFO, "OMP Output " + edge.getCons().intValue() + " " + edge.getProd().intValue() );
-								size = Integer.toString(edge.getProd().intValue());
-								logger.log(Level.INFO, "OMP Output Token size " + size); 
-							} catch (InvalidExpressionException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					}
-				}
-					break;
-				case CodeGenArgument.INPUT:
-				{
-					logger.log(Level.INFO, "OMP Input");
-					//SDFEdge edge = sdfVertex.getAssociatedEdge(sdfVertex.getSources().get(index));
-					String buffName = port.getName();
-					for(int i=0;i<sdfVertex.getSources().size();i++){
-						logger.log(Level.INFO, "OMP Input " + buffName + " equals " + sdfVertex.getAssociatedEdge(sdfVertex.getSources().get(i)).getTargetLabel());
-						if(buffName.equals(sdfVertex.getAssociatedEdge(sdfVertex.getSources().get(i)).getTargetLabel())){
-							SDFEdge edge = sdfVertex.getAssociatedEdge(sdfVertex.getSources().get(i));
-							try {
-								logger.log(Level.INFO, "OMP Input " + edge.getCons().intValue() + " " + edge.getProd().intValue() );
-								size = Integer.toString(edge.getCons().intValue());
-								logger.log(Level.INFO, "OMP Input Token size " + size); 
-							} catch (InvalidExpressionException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					}
-				}
-					break;
-				default:
-					;
-				}
-				if(size == null){
-					logger.log(Level.INFO, "OMP Bad Token Slice Size");
-					System.exit(-1);
-				}
-				
-				//var.setName(var.getName() + " + __omp_iter * " + size);
-				//Variable ompVar = new BufferProperties(var.get);
-				
-				Variable ompVar = CodegenFactory.eINSTANCE.createBuffer();
-				ompVar.setName(var.getName() + " + __omp_iter * " + size); 
-				variableList.put(prototype.getArguments().get(arg), ompVar);
-				
-				logger.log(Level.INFO, "Added iterration para is now " + ompVar.getName());
-			}else{
-				variableList.put(prototype.getArguments().get(arg), var);
-			}
+			variableList.put(prototype.getArguments().get(arg), var);
 			directionList.put(prototype.getArguments().get(arg), dir);
 			//logger.log(Level.INFO, "Get corresponding variable " + prototype.getFunctionName() + " nbargs " + prototype.getNbArgs() + " args " + 
 				//	prototype.getArguments().get(arg) +  " " + prototype.getArguments().get(arg).toString() + " " + var.getName());
@@ -1412,6 +1320,230 @@ public class CodegenModelGenerator {
 			}
 		}
 
+		// Retrieve the Variables corresponding to the Parameters of the
+		// prototype
+		// This loop manages only parameters (parameters and NOT buffers)
+		for (CodeGenParameter param : prototype.getParameters().keySet()) {
+			// Check that the actor has the right parameter
+			Argument actorParam = sdfVertex.getArgument(param.getName());
+
+			if (actorParam == null) {
+				throw new CodegenException("Actor " + sdfVertex
+						+ " has no match for parameter " + param.getName()
+						+ " declared in the IDL.");
+			}
+
+			Constant constant = CodegenFactory.eINSTANCE.createConstant();
+			constant.setName(param.getName());
+			try {
+				constant.setValue(actorParam.intValue());
+			} catch (Exception e) {
+				// Exception should never happen here since the expression was
+				// evaluated before during the Workflow execution
+				e.printStackTrace();
+			}
+			constant.setType("long");
+			variableList.put(prototype.getParameters().get(param), constant);
+			directionList.put(prototype.getParameters().get(param),
+					PortDirection.NONE);
+			//logger.log(Level.INFO, "Variable to Param " + prototype.getParameters().get(param) + " " + param.getName() + " " + constant.getName());
+
+			// // Retrieve the variable from its context (i.e. from its original
+			// // (sub)graph)
+			// org.ietr.dftools.algorithm.model.parameters.Variable originalVar
+			// =
+			// originalSDF
+			// .getHierarchicalVertexFromPath(sdfVertex.getInfo())
+			// .getBase().getVariables().getVariable(actorParam.getName());
+			//
+			// Constant constant = sdfVariableConstants.get(originalVar);
+			// if (constant == null) {
+			// constant = CodegenFactory.eINSTANCE.createConstant();
+			// constant.setName(originalVar.getName());
+			// //constant.setValue(originalVar.getValue());
+			// }
+		}
+
+		return new AbstractMap.SimpleEntry<List<Variable>, List<PortDirection>>(
+				new ArrayList<Variable>(variableList.values()),
+				new ArrayList<PortDirection>(directionList.values()));
+	}
+	
+	/**
+	 * This method generates the list of variable corresponding to a prototype
+	 * of the {@link DAGVertex} firing. The {@link Prototype} passed as a
+	 * parameter must belong to the processedoutput__input__1 {@link DAGVertex}.
+	 * 
+	 * @param dagVertex
+	 *            the {@link DAGVertex} corresponding to the
+	 *            {@link FunctionCall}.
+	 * @param prototype
+	 *            the prototype whose {@link Variable variables} are retrieved
+	 * @param isInit
+	 *            Whethet the given prototype is an Init or a loop call. (We do
+	 *            not check missing arguments in the IDL for init Calls)
+	 * @throws CodegenException
+	 *             Exception is thrown if:
+	 *             <ul>
+	 *             <li>There is a mismatch between the {@link Prototype}
+	 *             parameter and and the actor ports</li>
+	 *             <li>an actor port is connected to no edge.</li>
+	 *             <li>No {@link Buffer} in {@link #srSDFEdgeBuffers}
+	 *             corresponds to the edge connected to a port of the
+	 *             {@link DAGVertex}</li>
+	 *             <li>There is a mismatch between Parameters declared in the
+	 *             IDL and in the {@link SDFGraph}</li>
+	 *             <li>There is a missing argument in the IDL Loop
+	 *             {@link Prototype}</li>
+	 *             </ul>
+	 */
+	protected Entry<List<Variable>, List<PortDirection>> generateRepeatedCallVariables(
+			DAGVertex dagVertex, SDFAbstractVertex sdfAbsVertex, Prototype prototype, IntVar iterVar)
+			throws CodegenException {
+		// Retrieve the sdf vertex and the refinement.
+		/*SDFVertex sdfVertex = (SDFVertex) dagVertex.getPropertyBean().getValue(
+				DAGVertex.SDF_VERTEX, SDFVertex.class);*/
+		SDFVertex sdfVertex = (SDFVertex) sdfAbsVertex;
+		// Sorted list of the variables used by the prototype.
+		// The integer is only used to order the variable and is retrieved
+		// from the prototype
+		TreeMap<Integer, Variable> variableList = new TreeMap<Integer, Variable>();
+		TreeMap<Integer, PortDirection> directionList = new TreeMap<Integer, PortDirection>();
+		
+		// Retrieve the Variable corresponding to the arguments of the prototype
+		// This loop manages only buffers (data buffer and NOT parameters)
+		for (CodeGenArgument arg : prototype.getArguments().keySet()) {
+			PortDirection dir = null;
+
+			// Check that the Actor has the right ports
+			SDFInterfaceVertex port;
+			switch (arg.getDirection()) {
+			case CodeGenArgument.OUTPUT:
+				port = sdfVertex.getSink(arg.getName());
+				dir = PortDirection.OUTPUT;
+				p("Codegen interface OUTPUT " + port.getName() + " value " + arg.getName());
+				break;
+			case CodeGenArgument.INPUT:
+				port = sdfVertex.getSource(arg.getName());
+				dir = PortDirection.INPUT;
+				p("Codegen interface INPUT " + port.getName() + " value " + arg.getName() + " " + 
+						sdfVertex.getSource(arg.getName()).getName() );
+				break;
+			default:
+				port = null;
+			}
+			if (port == null) {
+				throw new CodegenException("Mismatch between actor ("
+						+ sdfVertex
+						+ ") ports and IDL loop prototype argument "
+						+ arg.getName());
+			}
+
+			// Retrieve the Edge corresponding to the current Argument
+			DAGEdge dagEdge = null;
+			BufferProperties subBufferProperties = null;
+			SDFEdge sdfEdge = null;
+			switch (arg.getDirection()) {
+			case CodeGenArgument.OUTPUT: {
+				Set<DAGEdge> edges = dag.outgoingEdgesOf(dagVertex);
+				for (DAGEdge edge : edges) {
+					BufferAggregate bufferAggregate = (BufferAggregate) edge
+							.getPropertyBean().getValue(
+									BufferAggregate.propertyBeanName);
+					for (BufferProperties buffProperty : bufferAggregate) {
+						if (buffProperty.getSourceOutputPortID().equals(
+								arg.getName())
+						/*
+						 * && buffProperty.getDataType().equals( arg.getType())
+						 */) {
+							// check that this edge is not connected to a
+							// receive vertex
+							if (edge.getTarget().getKind() != null) {
+								dagEdge = edge;
+								subBufferProperties = buffProperty;
+							}
+						}
+					}
+				}
+			}
+				break;
+			case CodeGenArgument.INPUT: {
+				Set<DAGEdge> edges = dag.incomingEdgesOf(dagVertex);
+				for (DAGEdge edge : edges) {
+					BufferAggregate bufferAggregate = (BufferAggregate) edge
+							.getPropertyBean().getValue(
+									BufferAggregate.propertyBeanName);
+					for (BufferProperties buffProperty : bufferAggregate) {
+						if (buffProperty.getDestInputPortID().equals(
+								arg.getName())
+						/*
+						 * && buffProperty.getDataType().equals( arg.getType())
+						 */) {
+							// check that this edge is not connected to a send
+							// vertex
+							if (edge.getSource().getKind() != null) {
+								dagEdge = edge;
+								subBufferProperties = buffProperty;
+							}
+						}
+					}
+				}
+			}
+				break;
+			}
+			/*logger.log(Level.INFO, "Edge " + dagEdge.getSource().getName() + " " + dagEdge.getTarget().getName() + " to args " + 
+					subBufferProperties.getDestInputPortID() + " " + 
+					subBufferProperties.getSourceOutputPortID() + " " + 
+					subBufferProperties.getDataType() );*/
+
+			if (dagEdge == null || subBufferProperties == null) {
+				throw new CodegenException(
+						"The DAGEdge connected to the port  "
+								+ port
+								+ " of Actor ("
+								+ dagVertex
+								+ ") does not exist.\n"
+								+ "Possible cause is that the DAG"
+								+ " was altered before entering"
+								+ " the Code generation.\n"
+								+ "This error may also happen if the port type "
+								+ "in the graph and in the IDL are not identical");
+			}
+
+			// At this point, the dagEdge, srsdfEdge corresponding to the
+			// current argument were identified
+			// Get the corresponding Variable
+			p("dagEdge subBufferProperties " + subBufferProperties.getSize() + " " + subBufferProperties.getDataType());
+			Variable var = this.srSDFEdgeBuffers.get(subBufferProperties);
+			BufferIterator bufIter = CodegenFactory.eINSTANCE.createBufferIterator();
+			if (var == null) {
+				throw new CodegenException(
+						"Edge connected to "
+								+ arg.getDirection()
+								+ " port "
+								+ arg.getName()
+								+ " of DAG Actor "
+								+ dagVertex
+								+ " is not present in the input MemEx.\n"
+								+ "There is something wrong in the Memory Allocation task.");
+			}
+			bufIter.setName(var.getName());
+			bufIter.setIter(iterVar);
+			
+			int rep = 1;
+			try {
+				rep = sdfVertex.getNbRepeatAsInteger();
+			} catch (InvalidExpressionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			bufIter.setSize(subBufferProperties.getSize()/rep);
+			
+			variableList.put(prototype.getArguments().get(arg), bufIter);
+			directionList.put(prototype.getArguments().get(arg), dir);
+			//logger.log(Level.INFO, "Get corresponding variable " + prototype.getFunctionName() + " nbargs " + prototype.getNbArgs() + " args " + 
+				//	prototype.getArguments().get(arg) +  " " + prototype.getArguments().get(arg).toString() + " " + var.getName());
+		}
 		// Retrieve the Variables corresponding to the Parameters of the
 		// prototype
 		// This loop manages only parameters (parameters and NOT buffers)

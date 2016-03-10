@@ -145,15 +145,12 @@
     <genClasses ecoreClass="codegen.ecore#//NullBuffer"/>
     <genClasses ecoreClass="codegen.ecore#//FiniteLoopBlock">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//FiniteLoopBlock/nbIter"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//FiniteLoopBlock/iter"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//FiniteLoopBlock/iter"/>
     </genClasses>
-    <genClasses ecoreClass="codegen.ecore#//IntVar">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//IntVar/value"/>
-    </genClasses>
+    <genClasses ecoreClass="codegen.ecore#//IntVar"/>
     <genClasses ecoreClass="codegen.ecore#//BufferIterator">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//BufferIterator/buffer"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//BufferIterator/iter"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//BufferIterator/iterStep"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//BufferIterator/size"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference codegen.ecore#//BufferIterator/iter"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>
