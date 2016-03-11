@@ -165,6 +165,18 @@
 	\end{longtable} 
 }
 
+\newcommand{\tabValue}[1]{
+	& \multicolumn{2}{p{13.00cm}|}{}	\\
+	\cline{2-3}
+	& \textbf{Value} & \multicolumn{1}{l|}{\textbf{Effect}} #1
+}
+
+\newcommand{\valueDef}[2]{
+	\\
+	\cline{2-3}
+	& #1 & \multicolumn{1}{L{10.0cm}|}{#2} \\
+	& & \multicolumn{1}{L{10.0cm}|}{}
+}
 
 \begin{document}
 	\maketitle
@@ -178,7 +190,12 @@
 	{Description of the purpose of the workflow task in one sentence.}
 	{org.ietr.preesm.experiment.pimm2sdf.StaticPiMM2SDFTask}	
 	
-	\tabParam{\textit{Param1} & \multicolumn{2}{l|}{Description of what this valus does}}
+	\tabParam{\textit{Param1} & \multicolumn{2}{p{13.00cm}|}{Description of what this parameter does.} \\
+	\tabValue{
+			\valueDef{value1}{Description of the effect of this parameter value.}
+			\valueDef{value2}{Description of the effect of this parameter value.}
+		}
+	}
 	
 	\tabDesc{Detailed description of the workflow task including references to associated papers (if any).}	
 	
