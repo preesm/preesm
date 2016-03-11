@@ -76,18 +76,25 @@ class MPPA2Printer extends CPrinter {
 		/* system includes */
 		#include <stdlib.h>
 		#include <stdio.h>
+		#include <stdint.h>
 		#include <mOS_vcore_u.h>
 		#include <mppa_noc.h>
 		#include <pthread.h>
 		#include <semaphore.h>
+		#include <HAL/hal/hal.h>
 		
 		/* user includes */
 		#include "preesm.h"
 		
-		/* extern variables */
-		extern pthread_barrier_t pthread_barrier;
-		
-		
+		/* local Core variables */
+		#ifdef PROFILE
+		#define DUMP_MAX_TIME 128
+		static uint64_t timestamp[BSP_NB_PE_MAX][DUMP_MAX_TIME]; /* 4KB of data */
+		static int current_dump[BSP_NB_PE_MAX] = { 0 };
+		#define getTimeProfile() if(current_dump[__k1_get_cpu_id()] < DUMP_MAX_TIME) \
+								timestamp[__k1_get_cpu_id()][current_dump[__k1_get_cpu_id()]] = __k1_read_dsu_timestamp(); \
+								current_dump[__k1_get_cpu_id()]++;
+		#endif
 		
 	'''
 	
@@ -159,6 +166,9 @@ class MPPA2Printer extends CPrinter {
 			for(__iii=0;__iii<GRAPH_ITERATION;__iii++){
 				
 				pthread_barrier_wait(&pthread_barrier);
+				#ifdef PROFILE
+				getTimeProfile();
+				#endif
 				
 	'''
 	
@@ -176,6 +186,22 @@ class MPPA2Printer extends CPrinter {
 						mppa_dsm_client_global_purge();
 						mppa_dsm_client_global_fence();
 					}
+		#ifdef PROFILE
+					int ii, jj;
+					for(jj=0;jj<BSP_NB_PE_MAX;jj++){
+						if(current_dump[jj] != 0){
+							printf("C%d PE%d : Number of actors %d\n", __k1_get_cluster_id(), jj, current_dump[jj]);
+							printf("\t# Profile %d Timestamp %lld\n", 0, (long long)timestamp[jj][0]);
+							for(ii=1;ii<current_dump[jj];ii++){
+								printf("\t# Profile %d Timestamp %lld Cycle %lld Time %.4f ms\n", 
+										ii, 
+										(long long)timestamp[jj][ii], 
+										(long long)timestamp[jj][ii]-(long long)timestamp[jj][ii-1], 
+										((float)timestamp[jj][ii]-(float)timestamp[jj][ii-1])/400000.0f /* chip freq */);
+							}
+						}
+					}
+		#endif
 				}
 				
 			}
@@ -331,6 +357,9 @@ class MPPA2Printer extends CPrinter {
 	
 	override printFunctionCall(FunctionCall functionCall) '''
 	«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
+	#ifdef PROFILE
+	getTimeProfile();
+	#endif
 	'''
 	
 	override printConstant(Constant constant) '''«constant.value»«IF !constant.name.nullOrEmpty»/*«constant.name»*/«ENDIF»'''
