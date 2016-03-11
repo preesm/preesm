@@ -165,7 +165,7 @@ class CPrinter extends DefaultPrinter {
 		// Begin the for loop 
 		{
 			int «block2.iter.name»;
-			#pragma omp parallel for
+			#pragma omp parallel for private(«block2.iter.name»)
 			for(«block2.iter.name»=0;«block2.iter.name»<«block2.nbIter»;«block2.iter.name»++){
 				
 				

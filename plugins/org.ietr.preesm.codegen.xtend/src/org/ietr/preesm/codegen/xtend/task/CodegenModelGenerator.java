@@ -1421,13 +1421,13 @@ public class CodegenModelGenerator {
 			case CodeGenArgument.OUTPUT:
 				port = sdfVertex.getSink(arg.getName());
 				dir = PortDirection.OUTPUT;
-				p("Codegen interface OUTPUT " + port.getName() + " value " + arg.getName());
+				//p("Codegen interface OUTPUT " + port.getName() + " value " + arg.getName());
 				break;
 			case CodeGenArgument.INPUT:
 				port = sdfVertex.getSource(arg.getName());
 				dir = PortDirection.INPUT;
-				p("Codegen interface INPUT " + port.getName() + " value " + arg.getName() + " " + 
-						sdfVertex.getSource(arg.getName()).getName() );
+				//p("Codegen interface INPUT " + port.getName() + " value " + arg.getName() + " " + 
+						//sdfVertex.getSource(arg.getName()).getName() );
 				break;
 			default:
 				port = null;
@@ -1442,7 +1442,6 @@ public class CodegenModelGenerator {
 			// Retrieve the Edge corresponding to the current Argument
 			DAGEdge dagEdge = null;
 			BufferProperties subBufferProperties = null;
-			SDFEdge sdfEdge = null;
 			switch (arg.getDirection()) {
 			case CodeGenArgument.OUTPUT: {
 				Set<DAGEdge> edges = dag.outgoingEdgesOf(dagVertex);
@@ -1513,7 +1512,7 @@ public class CodegenModelGenerator {
 			// At this point, the dagEdge, srsdfEdge corresponding to the
 			// current argument were identified
 			// Get the corresponding Variable
-			p("dagEdge subBufferProperties " + subBufferProperties.getSize() + " " + subBufferProperties.getDataType());
+			//p("dagEdge subBufferProperties " + subBufferProperties.getSize() + " " + subBufferProperties.getDataType());
 			Variable var = this.srSDFEdgeBuffers.get(subBufferProperties);
 			BufferIterator bufIter = CodegenFactory.eINSTANCE.createBufferIterator();
 			if (var == null) {

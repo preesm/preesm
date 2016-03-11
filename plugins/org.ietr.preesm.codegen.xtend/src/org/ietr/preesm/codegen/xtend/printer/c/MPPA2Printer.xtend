@@ -80,7 +80,6 @@ class MPPA2Printer extends CPrinter {
 		#include <mppa_noc.h>
 		#include <pthread.h>
 		#include <semaphore.h>
-		#include <mppa_dsm_client.h>
 		
 		/* user includes */
 		#include "preesm.h"
@@ -124,6 +123,10 @@ class MPPA2Printer extends CPrinter {
 	override printDeclarationsHeader(List<Variable> list) '''
 	// Core Global Declaration
 	extern pthread_barrier_t pthread_barrier;
+	
+	/* will link with it if the lflag is put, else it won't bother */
+	extern void mppa_dsm_client_global_purge(void) __attribute__((weak));
+	extern void mppa_dsm_client_global_fence(void) __attribute__((weak));
 	
 	'''
 	
@@ -169,8 +172,10 @@ class MPPA2Printer extends CPrinter {
 				/* commit local changes to the global memory */
 				pthread_barrier_wait(&pthread_barrier); /* barrier to make sure all threads have commited data in smem */
 				if(__k1_get_cpu_id() == 0){
-					mppa_dsm_client_global_purge();
-					mppa_dsm_client_global_fence();
+					if(mppa_dsm_client_global_purge && mppa_dsm_client_global_fence){
+						mppa_dsm_client_global_purge();
+						mppa_dsm_client_global_fence();
+					}
 				}
 				
 			}
