@@ -1,0 +1,262 @@
+\documentclass[10pt,letterpaper]{report}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage[top=1in, bottom=1.25in, left=1.0in, right=1.0in]{geometry}
+
+% to deal with space after reesm in \preesm command
+\usepackage{xspace}
+
+
+\usepackage{array}
+\usepackage{multirow}
+
+% make is possible to constrain column width for all horizontal alignment
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{calc}
+
+\pgfdeclarelayer{bg}    % declare background layer
+\pgfsetlayers{bg,main}  % set the order of the layers (main is the standard layer)
+
+\newcommand{\preesm}{P\textsc{reesm}\xspace}
+\newcommand{\version}{version 2.2.4\xspace}
+
+
+\title{{\Huge\preesm Documentation} \\ 
+	~\\
+	Workflow Tasks Documentation \\
+	~\\
+	{\Large Last update for \preesm \version}
+}
+
+\usepackage{hyperref}
+\author{D\textsc{esnos} Karol, N\textsc{ezan} Jean-Fran\c{c}ois, P\textsc{elcat} Maxime \\(\href{mailto:preesm-users@lists.sourceforge.net}{contact: preesm-users@lists.sourceforge.net})}
+	
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\preesm documentation (\version) - Workflow tasks}
+\rfoot{\thepage}
+
+\renewcommand{\thesection}{\arabic{section}}
+
+\definecolor{kgreen}{RGB}{155,187,89}
+\definecolor{kred}{RGB}{192,80,77}
+\definecolor{korange}{RGB}{247,150,70}
+\definecolor{klightblue}{RGB}{151,180,239}
+\definecolor{klightgreen}{RGB}{182,215,122}
+\definecolor{klightred}{RGB}{234,153,153}
+\definecolor{kdarkred}{RGB}{204,0,0}
+\definecolor{kgray}{RGB}{100,100,100}
+\definecolor{kyellow}{RGB}{255,202,0}
+\definecolor{klightyellow}{RGB}{239,239,125}
+\definecolor{kblue}{RGB}{53,111,204}
+
+
+\newlength{\nameWidth}
+\newlength{\taskWidth}
+\newlength{\maxOutWidth}
+\newlength{\maxInWidth}
+\newcommand{\task}[3]{ %
+		\begin{tikzpicture}[y=-1cm, x=1cm,baseline=(current bounding box.north)]
+		\def\name{#1};
+		\def\inputs{#2}
+		\def\outputs{#3}
+		% constant
+		\edef\ordStep{0.45};
+		\edef\initOrd{0.85};
+		\settowidth{\nameWidth}{\pgfinterruptpicture \textbf{\name} \endpgfinterruptpicture}
+		\pgfmathparse{\nameWidth + 10}; %+10 for extra space
+		\xdef\taskWidth{\pgfmathresult};		
+		% Compute max in width
+		\foreach \input in \inputs {
+			\settowidth{\nameWidth}{\pgfinterruptpicture \textbf{\input} \endpgfinterruptpicture}
+			\pgfmathparse{max(\nameWidth,\maxInWidth)};
+			\xdef\maxInWidth{\pgfmathresult};
+		}		
+		% Compute max in width
+		\foreach \output in \outputs {
+			\settowidth{\nameWidth}{\pgfinterruptpicture \textbf{\output} \endpgfinterruptpicture}
+			\pgfmathparse{max(\nameWidth,\maxOutWidth)};
+			\xdef\maxOutWidth{\pgfmathresult};
+		}		
+		\pgfmathparse{max(\taskWidth,\maxOutWidth+\maxInWidth)};
+		\xdef\taskWidth{\pgfmathresult pt};		
+		\draw[color=black] (\taskWidth/2,0.3) node{\textbf{\name}};
+		\edef\ord{\initOrd};
+		\foreach \input in \inputs {
+			\draw (0,\ord) node[right] {\input};
+			\pgfmathparse{\ord+\ordStep};
+			\xdef\ord{\pgfmathresult};
+		};
+		\edef\ordIn{\ord}
+		\edef\ord{\initOrd};
+		\foreach \output in \outputs {
+			\draw (\taskWidth,\ord) node[left] {\output};
+			\pgfmathparse{\ord+\ordStep};
+			\xdef\ord{\pgfmathresult};
+		}		;
+		\begin{pgfonlayer}{bg}
+		\pgfmathparse{max(\ord,\ordIn)}
+		\edef\maxOrd{\pgfmathresult};
+		\draw[thick,,color=white,fill=klightblue,fill opacity=0.60] (0,0) rectangle (\taskWidth,\maxOrd);
+		\end{pgfonlayer}
+		\end{tikzpicture}
+}
+
+\usepackage{longtable}
+\newcommand{\tab}[8]{
+	{\centering
+		\begin{longtable}[t]{|C{2.5cm}|C{2.5cm}|@{}p{10cm}@{}|}
+			\hline
+			\multicolumn{2}{|c|}{\textbf{Graphic Element}} & \multicolumn{1}{l|}{\textbf{Brief Description}} \\
+			\hline
+			\multicolumn{2}{|c|}{\task{#1}{#2}{#3}} & \begin{tabular}[t]{p{10.03cm}}
+				#4 \\[1em] \hline
+				\textbf{Plugin identifier} \\ \hline
+				\texttt{#5} 
+			\end{tabular} \\
+			\multicolumn{2}{|c|}{} & \\
+			\hline
+			\multicolumn{3}{c}{} \\
+			\hline
+			\textbf{Parameters} & \multicolumn{2}{l|}{\textbf{Description}} \\
+			\hline			
+				#6 \\
+			\hline
+			\multicolumn{3}{c}{} \\
+			\hline
+			\multicolumn{3}{|l|}{\textbf{Description}} \\
+			\hline	
+			\multicolumn{3}{|p{15.9cm}|}{
+				#7
+			} \\
+			\hline 
+			\multicolumn{3}{c}{} \\
+			\hline
+			\multicolumn{3}{|l|}{\textbf{Documented Errors}} \\
+			\hline		
+			#8 \\
+			\hline
+			\multicolumn{1}{C{2.5cm}}{} & \multicolumn{1}{C{2.5cm}}{}  & \multicolumn{1}{@{}p{10cm}@{}}{} \\
+		\end{longtable} 
+	}
+}
+
+\begin{document}
+	\maketitle
+
+	\tableofcontents
+	
+	\newpage
+	\section{How to Read this Document}
+	\tab{TaskName}{Input1,Input2,{..{}.}}{Output1,{..{}.}}
+		{Description of the purpose of the workflow task in one sentence.}
+		{org.ietr.preesm.experiment.pimm2sdf.StaticPiMM2SDFTask}
+		{\textit{Param1} & \multicolumn{2}{l|}{Description of what this valus does}}
+		{
+			Detailed description of the workflow task including references to associated papers (if any). 
+		}
+		{\multicolumn{3}{|c|}{None}}
+	
+	\section{Graph transformation}
+	\subsection{Static PiMM to IBSDF}
+		\tab{StaticPiMM2SDF}{PiMM,scenario}{SDF}
+		{Transforms a static PiSDF Graph into an equivalent IBSDF graph.}
+		{org.ietr.preesm.experiment.pimm2sdf.StaticPiMM2SDFTask}
+		{\multicolumn{3}{|c|}{None}}
+		{
+			In \preesm, since version 2.0.0, the PiSDF model of computation is used as the frontend model in the graphical editor of dataflow graphs. This model makes it possible to design dynamically reconfigurable dataflow graphs where the value of parameters, and production/consumption rates depending on them, might change during the execution of the application. 
+			
+			In former versions, the IBSDF model of computation was used as the front end model for application design. Contrary to the PiSDF, the IBSDF is a static model of computation where production and consumption rates of actors is fixed at compile-time.
+			
+			The purpose of this workflow task is to transform a static PiSDF graph into an equivalent IBSDF graph. A static PiSDF graph is a PiSDF graph where dynamic reconfiguration features of the PiSDF model of computation is not used.
+		}
+		{\multicolumn{3}{|c|}{None}}
+		
+%	\centering{
+%		\begin{tabular}[t]{|C{2.5cm}|C{2.5cm}|L{10cm}|}
+%			\hline
+%				\multicolumn{2}{|c|}{\textbf{Graphic Element}} & \textbf{Brief Description} \\
+%			\hline
+%				\multicolumn{2}{|c|}{\multirow{2}{*}{\task{StaticPiMM2SDF}{PiMM,scenario}{SDF}}} & Transforms a static PiSDF Graph into an equivalent IBSDF graph.  \\[1em]
+%			\cline{3 - 3}
+%				\multicolumn{2}{|c|}{} &\textbf{Plugin identifier}\\
+%			\cline{3 - 3}
+%				\multicolumn{2}{|c|}{} &\texttt{org.ietr.preesm.experiment.pimm2sdf.StaticPiMM2SDFTask}\\[1em]
+%			\hline
+%				\multicolumn{3}{c}{} \\
+%			\hline
+%				\textbf{Parameters} & \textbf{Values} & \textbf{Description} \\
+%			\hline			
+%				\multicolumn{3}{|c|}{None} \\
+%			\hline
+%				\multicolumn{3}{c}{} \\
+%			\hline
+%				\multicolumn{3}{|l|}{\textbf{Description}} \\
+%			\hline	
+%				\multicolumn{3}{|p{15.9cm}|}{
+%					In \preesm, since version 2.0.0, the PiSDF model of computation is used as the frontend model in the graphical editor of dataflow graphs. This model makes it possible to design dynamically reconfigurable dataflow graphs where the value of parameters, and production/consumption rates depending on them, might change during the execution of the application. 
+%					
+%					In former versions, the IBSDF model of computation was used as the front end model for application design. Contrary to the PiSDF, the IBSDF is a static model of computation where production and consumption rates of actors is fixed at compile-time.
+%					
+%					The purpose of this workflow task is to transform a static PiSDF graph into an equivalent IBSDF graph. A static PiSDF graph is a PiSDF graph where dynamic reconfiguration features of the PiSDF model of computation is not used.
+%				} \\
+%			\hline 
+%				\multicolumn{3}{c}{} \\
+%			\hline
+%				\multicolumn{3}{|l|}{\textbf{Documented Errors}} \\
+%			\hline		
+%				\multicolumn{3}{|c|}{None} \\
+%			\hline
+%		\end{tabular} 
+%	}
+%	
+	
+
+	\subsection{Hierarchy Flattening}
+
+	\subsection{Single-Rate Transformation}
+	
+	\section{Graph Exporters}
+	\subsection{SDF Exporter}
+	\subsection{DAG Exporter}
+	
+	\section{Static Mapping Scheduling}
+	\subsection{LIST Scheduler}
+	\subsection{FAST Scheduler}
+	
+	\section{Memory optimization}
+	\subsection{MEG Builder}
+	\subsection{MEG Update with Scheduling Information}
+	\subsection{Memory Bounds Estimator}
+	\label{sec:memory_bounds_estimator}
+	\subsection{Buffer Merging: Memory Script Runner}
+	\subsection{Memory Allocation}
+	
+	\section{Code Generation}
+	\subsection{Static Code Generation}
+	
+	\section{Exporter/Importer for Third-Party Dataflow Frameworks}
+	\subsection{SDF3 Exporter}
+	\subsection{SDF3 Importer}
+	\subsection{DIF Exporter}
+	\subsection{SPIN Exporter}
+	
+	\section{Analysis}
+	\subsection{Gantt Display}
+	\subsection{Memory Bounds Estimator}
+	See Section~\ref{sec:memory_bounds_estimator}.
+%	\begin{table}
+%		\begin{tabular}{|c|c|c|}
+%			a & a & a
+%		\end{tabular}
+%	\end{table}
+\end{document}
