@@ -112,43 +112,59 @@
 }
 
 \usepackage{longtable}
-\newcommand{\tab}[8]{
-	{\centering
-		\begin{longtable}[t]{|C{2.5cm}|C{2.5cm}|@{}p{10cm}@{}|}
+
+\newcommand{\tabBrief}[5]{
+		\hspace{2pt}\noindent\begin{tabular}[t]{|C{2.5cm}|C{2.5cm}|@{}p{10.5cm}@{}|}
 			\hline
 			\multicolumn{2}{|c|}{\textbf{Graphic Element}} & \multicolumn{1}{l|}{\textbf{Brief Description}} \\
 			\hline
-			\multicolumn{2}{|c|}{\task{#1}{#2}{#3}} & \begin{tabular}[t]{p{10.03cm}}
+			\multicolumn{2}{|c|}{\task{#1}{#2}{#3}} & \begin{tabular}[t]{p{10.09cm}}
 				#4 \\[1em] \hline
 				\textbf{Plugin identifier} \\ \hline
 				\texttt{#5} 
 			\end{tabular} \\
 			\multicolumn{2}{|c|}{} & \\
 			\hline
-			\multicolumn{3}{c}{} \\
-			\hline
-			\textbf{Parameters} & \multicolumn{2}{l|}{\textbf{Description}} \\
-			\hline			
-				#6 \\
-			\hline
-			\multicolumn{3}{c}{} \\
-			\hline
-			\multicolumn{3}{|l|}{\textbf{Description}} \\
-			\hline	
-			\multicolumn{3}{|p{15.9cm}|}{
-				#7
-			} \\
-			\hline 
-			\multicolumn{3}{c}{} \\
-			\hline
-			\multicolumn{3}{|l|}{\textbf{Documented Errors}} \\
-			\hline		
-			#8 \\
-			\hline
-			\multicolumn{1}{C{2.5cm}}{} & \multicolumn{1}{C{2.5cm}}{}  & \multicolumn{1}{@{}p{10cm}@{}}{} \\
-		\end{longtable} 
-	}
+			\multicolumn{1}{C{2.5cm}}{} & \multicolumn{1}{C{2.5cm}}{}  & \multicolumn{1}{@{}p{10.5cm}@{}}{} \\ % empty line to make sure the formatting of the table is good
+		\end{tabular} 
+		\vspace{-1.5em}
 }
+
+\newcommand{\tabParam}[1]{
+	\noindent\begin{longtable}[t]{|C{2.5cm}|C{2.5cm}|@{}p{10.5cm}@{}|}
+		\hline
+		\textbf{Parameters} & \multicolumn{2}{l|}{\textbf{Description}} \\
+		\hline			
+		#1 \\
+		\hline
+		\multicolumn{1}{C{2.5cm}}{} & \multicolumn{1}{C{2.5cm}}{}  & \multicolumn{1}{@{}p{10.5cm}@{}}{} \\[-2.5em] % empty line to make sure the formatting of the table is good
+	\end{longtable} 
+}
+
+\newcommand{\tabDesc}[1]{
+	\noindent\begin{longtable}[t]{|C{2.5cm}|C{2.5cm}|@{}p{10.5cm}@{}|}
+		\hline
+		\multicolumn{3}{|l|}{\textbf{Description}} \\
+		\hline	
+		\multicolumn{3}{|p{15.9cm}|}{
+			#1
+		} \\
+		\hline
+		\multicolumn{1}{C{2.5cm}}{} & \multicolumn{1}{C{2.5cm}}{}  & \multicolumn{1}{@{}p{10.5cm}@{}}{} \\[-2.5em] % empty line to make sure the formatting of the table is good
+	\end{longtable} 
+}
+
+\newcommand{\tabError}[1]{
+	\noindent\begin{longtable}[t]{|C{2.5cm}|C{2.5cm}|@{}p{10.5cm}@{}|}
+		\hline
+		\multicolumn{3}{|l|}{\textbf{Documented Errors}} \\
+		\hline		
+		#1\\
+		\hline
+		\multicolumn{1}{C{2.5cm}}{} & \multicolumn{1}{C{2.5cm}}{}  & \multicolumn{1}{@{}p{10.5cm}@{}}{} \\[-2.5em] % empty line to make sure the formatting of the table is good
+	\end{longtable} 
+}
+
 
 \begin{document}
 	\maketitle
@@ -157,69 +173,36 @@
 	
 	\newpage
 	\section{How to Read this Document}
-	\tab{TaskName}{Input1,Input2,{..{}.}}{Output1,{..{}.}}
-		{Description of the purpose of the workflow task in one sentence.}
-		{org.ietr.preesm.experiment.pimm2sdf.StaticPiMM2SDFTask}
-		{\textit{Param1} & \multicolumn{2}{l|}{Description of what this valus does}}
-		{
-			Detailed description of the workflow task including references to associated papers (if any). 
-		}
-		{\multicolumn{3}{|c|}{None}}
 	
+	\tabBrief{TaskName}{Input1,Input2,{..{}.}}{Output1,{..{}.}}
+	{Description of the purpose of the workflow task in one sentence.}
+	{org.ietr.preesm.experiment.pimm2sdf.StaticPiMM2SDFTask}	
+	
+	\tabParam{\textit{Param1} & \multicolumn{2}{l|}{Description of what this valus does}}
+	
+	\tabDesc{Detailed description of the workflow task including references to associated papers (if any).}	
+	
+	\tabError{\multicolumn{3}{|c|}{None}}
+	
+	
+	\newpage
 	\section{Graph transformation}
 	\subsection{Static PiMM to IBSDF}
-		\tab{StaticPiMM2SDF}{PiMM,scenario}{SDF}
+		\tabBrief{StaticPiMM2SDF}{PiMM,scenario}{SDF}
 		{Transforms a static PiSDF Graph into an equivalent IBSDF graph.}
 		{org.ietr.preesm.experiment.pimm2sdf.StaticPiMM2SDFTask}
-		{\multicolumn{3}{|c|}{None}}
-		{
+		
+		\tabParam{\multicolumn{3}{|c|}{None}}
+		
+		\tabDesc{
 			In \preesm, since version 2.0.0, the PiSDF model of computation is used as the frontend model in the graphical editor of dataflow graphs. This model makes it possible to design dynamically reconfigurable dataflow graphs where the value of parameters, and production/consumption rates depending on them, might change during the execution of the application. 
 			
 			In former versions, the IBSDF model of computation was used as the front end model for application design. Contrary to the PiSDF, the IBSDF is a static model of computation where production and consumption rates of actors is fixed at compile-time.
 			
 			The purpose of this workflow task is to transform a static PiSDF graph into an equivalent IBSDF graph. A static PiSDF graph is a PiSDF graph where dynamic reconfiguration features of the PiSDF model of computation is not used.
 		}
-		{\multicolumn{3}{|c|}{None}}
 		
-%	\centering{
-%		\begin{tabular}[t]{|C{2.5cm}|C{2.5cm}|L{10cm}|}
-%			\hline
-%				\multicolumn{2}{|c|}{\textbf{Graphic Element}} & \textbf{Brief Description} \\
-%			\hline
-%				\multicolumn{2}{|c|}{\multirow{2}{*}{\task{StaticPiMM2SDF}{PiMM,scenario}{SDF}}} & Transforms a static PiSDF Graph into an equivalent IBSDF graph.  \\[1em]
-%			\cline{3 - 3}
-%				\multicolumn{2}{|c|}{} &\textbf{Plugin identifier}\\
-%			\cline{3 - 3}
-%				\multicolumn{2}{|c|}{} &\texttt{org.ietr.preesm.experiment.pimm2sdf.StaticPiMM2SDFTask}\\[1em]
-%			\hline
-%				\multicolumn{3}{c}{} \\
-%			\hline
-%				\textbf{Parameters} & \textbf{Values} & \textbf{Description} \\
-%			\hline			
-%				\multicolumn{3}{|c|}{None} \\
-%			\hline
-%				\multicolumn{3}{c}{} \\
-%			\hline
-%				\multicolumn{3}{|l|}{\textbf{Description}} \\
-%			\hline	
-%				\multicolumn{3}{|p{15.9cm}|}{
-%					In \preesm, since version 2.0.0, the PiSDF model of computation is used as the frontend model in the graphical editor of dataflow graphs. This model makes it possible to design dynamically reconfigurable dataflow graphs where the value of parameters, and production/consumption rates depending on them, might change during the execution of the application. 
-%					
-%					In former versions, the IBSDF model of computation was used as the front end model for application design. Contrary to the PiSDF, the IBSDF is a static model of computation where production and consumption rates of actors is fixed at compile-time.
-%					
-%					The purpose of this workflow task is to transform a static PiSDF graph into an equivalent IBSDF graph. A static PiSDF graph is a PiSDF graph where dynamic reconfiguration features of the PiSDF model of computation is not used.
-%				} \\
-%			\hline 
-%				\multicolumn{3}{c}{} \\
-%			\hline
-%				\multicolumn{3}{|l|}{\textbf{Documented Errors}} \\
-%			\hline		
-%				\multicolumn{3}{|c|}{None} \\
-%			\hline
-%		\end{tabular} 
-%	}
-%	
-	
+		\tabError{\multicolumn{3}{|c|}{None}}
 
 	\subsection{Hierarchy Flattening}
 
