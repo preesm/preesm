@@ -10,6 +10,8 @@
 % to deal with space after reesm in \preesm command
 \usepackage{xspace}
 
+\usepackage[acronym,toc]{glossaries}
+\input{acronyms}
 
 \usepackage{array}
 \usepackage{multirow}
@@ -113,6 +115,14 @@
 
 \usepackage{longtable}
 
+\newcommand*\justify{%
+	\fontdimen2\font=0.4em% interword space
+	\fontdimen3\font=0.2em% interword stretch
+	\fontdimen4\font=0.1em% interword shrink
+	\fontdimen7\font=0.1em% extra space
+	\hyphenchar\font=`\-% allowing hyphenation
+}
+
 \newcommand{\tabBrief}[5]{
 		\hspace{2pt}\noindent\begin{tabular}[t]{|C{2.5cm}|C{2.5cm}|@{}p{10.5cm}@{}|}
 			\hline
@@ -121,7 +131,7 @@
 			\multicolumn{2}{|c|}{\task{#1}{#2}{#3}} & \begin{tabular}[t]{p{10.09cm}}
 				#4 \\[1em] \hline
 				\textbf{Plugin identifier} \\ \hline
-				\texttt{#5} 
+				\texttt{\justify #5} 
 			\end{tabular} \\
 			\multicolumn{2}{|c|}{} & \\
 			\hline
@@ -159,11 +169,18 @@
 		\hline
 		\multicolumn{3}{|l|}{\textbf{Documented Errors}} \\
 		\hline		
-		#1\\
+		#1
+		\multicolumn{3}{|c|}{} \\
 		\hline
 		\multicolumn{1}{C{2.5cm}}{} & \multicolumn{1}{C{2.5cm}}{}  & \multicolumn{1}{@{}p{10.5cm}@{}}{} \\[-2.5em] % empty line to make sure the formatting of the table is good
 	\end{longtable} 
 }
+
+\newcommand{\error}[2]{
+	\multicolumn{3}{|l|}{\texttt{#1}} \\ 
+	\multicolumn{3}{|@{\hspace{0.7cm}}p{15.5cm}|}{#2} \\}
+
+\newcommand{\noError}{\multicolumn{3}{|c|}{None}\\}
 
 \newcommand{\tabValue}[1]{
 	& \multicolumn{2}{p{13.00cm}|}{}	\\
@@ -178,17 +195,25 @@
 	& & \multicolumn{1}{L{10.0cm}|}{}
 }
 
+\makenoidxglossaries
+\setglossarysection{section}
+
 \begin{document}
 	\maketitle
 
 	\tableofcontents
 	
 	\newpage
+
+	\printnoidxglossaries
+	
+	\newpage
+
 	\section{How to Read this Document}
 	
 	\tabBrief{TaskName}{Input1,Input2,{..{}.}}{Output1,{..{}.}}
 	{Description of the purpose of the workflow task in one sentence.}
-	{org.ietr.preesm.experiment.pimm2sdf.StaticPiMM2SDFTask}	
+	{ID associated to the workflow task. In order to use the presented workflow task, add a new task to a workflow using \preesm, edit the property of the new workflow task, and set the "plugin identifier" field of the "Basic" property tab with the value given in this cell.}	
 	
 	\tabParam{\textit{Param1} & \multicolumn{2}{p{13.00cm}|}{Description of what this parameter does.} \\
 	\tabValue{
@@ -199,7 +224,7 @@
 	
 	\tabDesc{Detailed description of the workflow task including references to associated papers (if any).}	
 	
-	\tabError{\multicolumn{3}{|c|}{None}}
+	\tabError{\noError}
 	
 	
 	\newpage
@@ -212,18 +237,81 @@
 		\tabParam{\multicolumn{3}{|c|}{None}}
 		
 		\tabDesc{
-			In \preesm, since version 2.0.0, the PiSDF model of computation is used as the frontend model in the graphical editor of dataflow graphs. This model makes it possible to design dynamically reconfigurable dataflow graphs where the value of parameters, and production/consumption rates depending on them, might change during the execution of the application. 
+			In \preesm, since version 2.0.0, the \gls{pisdf} model of computation is used as the frontend model in the graphical editor of dataflow graphs. This model makes it possible to design dynamically reconfigurable dataflow graphs where the value of parameters, and production/consumption rates depending on them, might change during the execution of the application. 
 			
-			In former versions, the IBSDF model of computation was used as the front end model for application design. Contrary to the PiSDF, the IBSDF is a static model of computation where production and consumption rates of actors is fixed at compile-time.
+			In former versions, the \gls{ibsdf} model of computation was used as the front end model for application design. Contrary to the \gls{pisdf}, the \gls{ibsdf} is a static model of computation where production and consumption rates of actors is fixed at compile-time.
 			
-			The purpose of this workflow task is to transform a static PiSDF graph into an equivalent IBSDF graph. A static PiSDF graph is a PiSDF graph where dynamic reconfiguration features of the PiSDF model of computation is not used.
+			The purpose of this workflow task is to transform a static \gls{pisdf} graph into an equivalent \gls{ibsdf} graph. A static \gls{pisdf} graph is a \gls{pisdf} graph where dynamic reconfiguration features of the \gls{pisdf} model of computation are not used.
+			
+			~\newline{}
+			\textbf{See also:} \gls{ibsdf} \cite{Piat_2009_Interface}, \gls{pisdf} \cite{Desnos_PiMM_2013}
 		}
 		
-		\tabError{\multicolumn{3}{|c|}{None}}
+		\tabError{\noError}
 
+	\newpage
 	\subsection{Hierarchy Flattening}
+		\tabBrief{HierarchyFlattening}{SDF}{SDF}{Transforms a hierarchical \gls{ibsdf} graph into an equivalent \gls{sdf} graph.}{org.ietr.preesm.plugin.transforms.flathierarchy}
+		
+		\tabParam{\textit{depth} & \multicolumn{2}{p{13.00cm}|}{This parameter is used to select the number of hierarchy levels that will be flattened by the workflow task.} \\
+			\tabValue{
+				\valueDef{$0$}{The input \gls{ibsdf} graph is copied to the output port of the workflow task with no modification.}
+				\valueDef{$n \in \mathbb{N}^*$}{The first $n$ levels of the hierarchical \gls{ibsdf} graph are flattened.}
+			}
+		}
+		
+		\tabDesc{
+			The purpose of this workflow task is to flatten several levels of the hierarchy of an \gls{ibsdf} graph and produce an equivalent \gls{sdf} graph.
+			
+			A hierarchical \gls{ibsdf} graph is a graph where the internal behavior of some actors is described using another \gls{ibsdf} subgraph instead of a C header file. 
+			
+			When applying this transformation, hierarchical \gls{ibsdf} actors of the first $n$ levels of hierarchy are replaced with the actors of the \gls{ibsdf} subgraph with which these hierarchical actors are associated.
+			
+			~\newline{}
+			\textbf{See also:} \gls{ibsdf} \cite{Piat_2009_Interface}
+		}
+		
+		\tabError{
+			\error{Inconsistent Hierarchy, graph can't be flattened}{
+				Flattening of the \gls{ibsdf} graph was aborted because one of the graph composing the application, at the top level or deeper in the hierarchy, was not consistent. 
+				
+				
+				\textbf{See also:} Graph consistency~\cite{Lee_Synchronous_1987}.}
+		}
 
+	\newpage
 	\subsection{Single-Rate Transformation}
+	\tabBrief{Single-rate Transformation}{SDF}{SDF}{Transforms an \gls{sdf} graph into an equivalent single-rate \gls{sdf} graph.}{org.ietr.preesm.plugin.transforms.sdf2hsdf}
+	
+	\tabParam{
+		\textit{ExplodeImploreSuppr} & \multicolumn{2}{p{13.00cm}|}{\textit{(Deprecated: use at your own risks)}
+			
+			 This parameter makes it possible to remove most of the \emph{explode} and \emph{implode} actors that are inserted in the graph during the single-rate transformation. The resulting \gls{sdf} graph is an ill-constructed graph where a single data input/output port of an actor may be connected to several \glspl{fifo}.} \\
+		\tabValue{
+			\valueDef{\texttt{false}}{(default) The suppression of explode/implode special actors is not activated.}	
+			\valueDef{\texttt{true}}{The suppression of explode/implode special actors is activated.}	
+		}
+	}
+	
+	\tabDesc{
+		The purpose of this task is to transform an \gls{sdf} graph --- which is actually an \gls{ibsdf} graph in \preesm --- into an equivalent single-rate \gls{sdf} graph.
+		
+		A single-rate \gls{sdf} graph is a graph where each actor of the original \gls{sdf} graph is duplicated as many times as its number of firings per iteration of the original graph. The purpose of this transformation is to reveal of the implicit data-parallelism of the original \gls{sdf} graph.
+		
+		Special actors, called \emph{explode} and \emph{implode} actors, may be automatically inserted in the single-rate \gls{sdf} graph resulting from this transformation. The purpose of these actors is to distribute (resp. gather) data-tokens produced (resp. consumed) on a single input (resp. output) port of an actor in order to send them to several consumer actors (resp. to receive them from several producer actors).
+		
+		~\newline{}
+		\textbf{See also:} Single-rate transformation~\cite{Pino_hierarchical_1995}, Special actors~\cite{Desnos_Memory_2016}
+	}
+	
+			
+	\tabError{
+		\error{Graph not valid, not schedulable}{
+			Single-rate transformation of the \gls{sdf} graph was aborted because the top level was not consistent, or it was consistent but did not contained enough delays --- i.e. initial data tokens --- to make it schedulable. 
+			
+			
+			\textbf{See also:} Graph consistency~\cite{Lee_Synchronous_1987}.}
+	}
 	
 	\section{Graph Exporters}
 	\subsection{SDF Exporter}
@@ -259,4 +347,7 @@
 %			a & a & a
 %		\end{tabular}
 %	\end{table}
+
+	\bibliographystyle{plain}
+	\bibliography{workflow_tasks}
 \end{document}
