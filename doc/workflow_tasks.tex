@@ -191,7 +191,7 @@
 \newcommand{\valueDef}[2]{
 	\\
 	\cline{2-3}
-	& #1 & \multicolumn{1}{L{10.0cm}|}{#2} \\
+	& #1 & \multicolumn{1}{p{10.0cm}|}{#2} \\
 	& & \multicolumn{1}{L{10.0cm}|}{}
 }
 
@@ -230,6 +230,7 @@
 	\newpage
 	\section{Graph transformation}
 	\subsection{Static PiMM to IBSDF}
+	\label{sec:static_pimm_2_sdf}
 		\tabBrief{StaticPiMM2SDF}{PiMM,scenario}{SDF}
 		{Transforms a static PiSDF Graph into an equivalent IBSDF graph.}
 		{org.ietr.preesm.experiment.pimm2sdf.StaticPiMM2SDFTask}
@@ -251,6 +252,7 @@
 
 	\newpage
 	\subsection{Hierarchy Flattening}
+	\label{sec:hierarchy_flattening}
 		\tabBrief{HierarchyFlattening}{SDF}{SDF}{Transforms a hierarchical \gls{ibsdf} graph into an equivalent \gls{sdf} graph.}{org.ietr.preesm.plugin.transforms.flathierarchy}
 		
 		\tabParam{\textit{depth} & \multicolumn{2}{p{13.00cm}|}{This parameter is used to select the number of hierarchy levels that will be flattened by the workflow task.} \\
@@ -281,6 +283,7 @@
 
 	\newpage
 	\subsection{Single-Rate Transformation}
+	\label{sec:single-rate_transformation}
 	\tabBrief{Single-rate Transformation}{SDF}{SDF}{Transforms an \gls{sdf} graph into an equivalent single-rate \gls{sdf} graph.}{org.ietr.preesm.plugin.transforms.sdf2hsdf}
 	
 	\tabParam{
@@ -315,6 +318,35 @@
 	
 	\section{Graph Exporters}
 	\subsection{SDF Exporter}
+	\tabBrief{SDF Exporter}{SDF}{}{Create a new \texttt{*.graphml} file containing the exported \gls{sdf} graph.}{org.ietr.preesm.plugin.exportXml.sdf4jgml}
+	
+	\tabParam{\textit{path} & \multicolumn{2}{p{13.00cm}|}{			
+			Path of the directory within which the exported \texttt{*.graphml} file will be created. If the specified directory does not exist, it will be created.} \\
+		\tabValue{
+			\valueDef{\texttt{\justify path/in/proj}}{Path within the \preesm project containing the workflow where the "\gls{sdf} Exporter" task is instantiated. Even if the workflow of a \preesm project $A$ is executed with a scenario from a different project $B$, the \texttt{*.graphml} file will be generated within the specified directory of project $A$.
+				
+			Exported \gls{sdf} graphs will be named automatically, usually using the same name as the original \gls{sdf} graph processed by the workflow. If a graph with this name already exists in the given path, it will be overwritten.
+				
+			Example: \texttt{Algo/generated/singlerate}}
+			
+			\valueDef{\texttt{\justify path/in/proj/ name.graphml}}{Path within the \preesm project containing the workflow where the "\gls{sdf} Exporter" task is instantiated. Even if the workflow of a \preesm project $A$ is executed with a scenario from a different project $B$, the \texttt{*.graphml} file will be generated within the specified directory of project $A$.
+			
+			Exported \gls{sdf} graph will be named using the string with the \texttt{graphml} extension at the end of the given path. If a graph with this name already exists in the given path, it will be overwritten.
+			
+			Example: \texttt{Algo/generated/singlerate/myexport.graphml}
+			}	
+		}	
+	}
+	
+	\tabDesc{
+		The purpose of this task is to create a new \texttt{*.graphml} file containing where the exported \gls{ibsdf} graph will be written. The exported graph can then be visualized and exported using the former \preesm graph editor for \gls{ibsdf} graph, which was replaced with the \gls{pisdf} graph editor since version 2.0.0 (See~\ref{sec:static_pimm_2_sdf}).
+		
+		This task is generally used to export intermediary graphs generated at different step of a workflow execution. For example, to visualize the \gls{sdf} graph resulting from the flattening of an \gls{ibsdf} graph (See~\ref{sec:hierarchy_flattening}), or to understand the parallelism that was exposed by the single-rate transformation (See~\ref{sec:single-rate_transformation}).
+	}
+	
+	\tabError{\error{Path <given path> is not a valid path for export. <reason>}{The value set for parameter \textit{path} is not a valid path in the project.}}
+	
+	\newpage
 	\subsection{DAG Exporter}
 	
 	\section{Static Mapping Scheduling}
