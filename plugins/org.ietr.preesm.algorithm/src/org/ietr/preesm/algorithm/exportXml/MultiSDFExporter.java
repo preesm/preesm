@@ -56,38 +56,27 @@ public class MultiSDFExporter extends AbstractTaskImplementation {
 	private static final String PATH_KEY = "path";
 
 	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+	public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
+			IProgressMonitor monitor, String nodeName, Workflow workflow) throws WorkflowException {
 
 		String sXmlPath;
 		IPath xmlPath;
 
 		@SuppressWarnings("unchecked")
-		Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs
-				.get(KEY_SDF_GRAPHS_SET);
+		Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs.get(KEY_SDF_GRAPHS_SET);
 		SDF2GraphmlExporter exporter = new SDF2GraphmlExporter();
 
 		for (SDFGraph algorithm : algorithms) {
 
-			sXmlPath = PathTools.getAbsolutePath(parameters.get(PATH_KEY) + "/"
-					+ algorithm.getName() + ".graphml",
+			sXmlPath = PathTools.getAbsolutePath(parameters.get(PATH_KEY) + "/" + algorithm.getName() + ".graphml",
 					workflow.getProjectName());
 			xmlPath = new Path(sXmlPath);
 			// Get a complete valid path with all folders existing
 			try {
-				if (xmlPath.getFileExtension() != null)
-					ContainersManager.createMissingFolders(xmlPath
-							.removeFileExtension().removeLastSegments(1));
-				else {
-					ContainersManager.createMissingFolders(xmlPath);
-					xmlPath = xmlPath.removeFileExtension()
-							.removeLastSegments(1)
-							.append(algorithm.getName() + ".graphml");
-				}
-			} catch (CoreException e) {
-				throw new WorkflowException("Path " + sXmlPath
-						+ " is not a valid path for export.");
+				ContainersManager.createMissingFolders(xmlPath.removeFileExtension().removeLastSegments(1));
+
+			} catch (CoreException | IllegalArgumentException e) {
+				throw new WorkflowException("Path " + sXmlPath + " is not a valid path for export.\n" + e.getMessage());
 			}
 
 			exporter.export(algorithm, xmlPath);
