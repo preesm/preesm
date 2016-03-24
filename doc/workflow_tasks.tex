@@ -412,7 +412,7 @@
 				}	
 		}\\
 		\hline
-		\textit{Synchronous production/ consumption} & \multicolumn{2}{p{13.00cm}|}{			
+		\multirow{2}{2.5cm}{\centering \textit{Synchronous production/ consumption}} & \multicolumn{2}{p{13.00cm}|}{			
 			This parameter is used to select how \gls{sdf} actor firings are modeled in the generated \texttt{*.pml} file} \\
 		\tabValue{
 			\valueDef{\texttt{true}}{
@@ -422,9 +422,8 @@
 				When an \gls{sdf} actor is executed, data tokens are consumed on its input ports and later produced on its output ports in two separate, non-simultaneous steps. 
 			}	
 		}
-	}
+	}	
 	
-	\newpage
 	\tabDesc{This task generates Promela code modeling the given \gls{sdf} graph. \gls{sdf} modeling in Promela follow the specification introduced by Geilen et al. in~\cite{Geilen_Minimising_2005}.}
 	
 	\tabError{\noError}
