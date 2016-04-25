@@ -58,10 +58,11 @@ import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
 
 /**
- * This printer is currently used to print C code only for X86 processor with
- * shared memory communication.
+ * This printer is currently used to print C code only for GPP processors
+ * supporting pthreads and shared memory communication.
  * 
  * @author kdesnos
+ * @author mpelcat
  */
 class CPrinter extends DefaultPrinter {
 
@@ -78,7 +79,7 @@ class CPrinter extends DefaultPrinter {
 			 * @date «new Date»
 			 */
 			
-			#include "../include/x86.h"
+			#include "../include/«block.coreType».h"
 			
 			
 	'''

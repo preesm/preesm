@@ -38,6 +38,12 @@
             <core_type
                   type="GPP">
             </core_type>
+            <core_type
+                  type="ARM_CortexA7">
+            </core_type>
+            <core_type
+                  type="ARM_CortexA15">
+            </core_type>
          </printer>
          <printer
                class="org.ietr.preesm.codegen.xtend.printer.c.C6678CPrinter"
