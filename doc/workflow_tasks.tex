@@ -383,7 +383,34 @@
 	\subsection{Static Code Generation}
 	
 	\section{Exporter/Importer for Third-Party Dataflow Frameworks}
+	\newpage
 	\subsection{SDF3 Exporter}
+	\tabBrief{SDF3 Exporter}{SDF,architecture,scenario}{}{Export a \texttt{*.xml} file conforming the \gls{sdf3} format.}{org.ietr.preesm.algorithm.exportSdf3Xml.Sdf3Exporter}
+	
+	\tabParam{\textit{path} & \multicolumn{2}{p{13.00cm}|}{			
+			Path of the exported \texttt{*.xml} file. If the specified directory does not exist, it will not be created.}\\
+	\tabValue{
+		\valueDef{\texttt{\justify path/in/proj/ name.xml}}{Path within the \preesm project containing the workflow where the "SDF3 Exporter" task is instantiated. 
+			
+		Exported \gls{sdf} graph will be named using the string with the \texttt{xml} extension at the end of the given path. If a graph with this name already exists in the given path, it will be overwritten.
+		
+		Example: \texttt{Code/generated/sdf3/myexport.xml}
+		}	
+	} 
+	}
+	
+	\tabDesc{This task generates \gls{sdf3} code modeling the given \gls{sdf} graph. \gls{sdf} modeling in \gls{sdf3} follow the specification introduced by Stuijk et al. in~\cite{Stuijk_SDF3_2006}.
+		
+	~\newline{}
+    \textbf{Known Limitations:}
+    TODO
+    Here is a list of known limitations of the SDF3 importation process:
+    
+    Only SDF graphs can be imported
+    Actors of the SDF cannot be implemented on more than one processor type
+    Timings cannot depend on parameters since SDF3 does not support parameterized SDF
+    }
+	
 	\subsection{SDF3 Importer}
 	\subsection{DIF Exporter}
 	\newpage
