@@ -365,14 +365,16 @@
 	
 	\tabError{\error{Path <given path> is not a valid path for export. <reason>}{The value set for parameter \textit{path} is not a valid path in the project.}}
 	
-	\newpage
 	\section{Static Mapping Scheduling}
 	\label{sec:static_mapping_scheduling}
 	\subsection{LIST Scheduler}
 	\subsection{FAST Scheduler}
 	
+	\newpage
 	\section{Memory optimization}
 	\subsection{MEG Builder}
+	
+	
 	\subsection{MEG Update with Scheduling Information}
 	\subsection{Memory Bounds Estimator}
 	\label{sec:memory_bounds_estimator}
@@ -457,6 +459,27 @@
 	
 	\section{Analysis}
 	\subsection{Gantt Display}
+	\subsection{Gantt Exporter}
+	\tabBrief{Gantt Exporter}{ABC, scenario}{}{This task exports scheduling results as a \texttt{*.pgantt} file that can be viewed using the \textit{ganttDisplay} viewer.}{org.ietr.preesm.stats.exporter.StatsExporterTask}
+	
+	\tabParam{\textit{path} & \multicolumn{2}{p{13.00cm}|}{			
+			Path of the exported \texttt{*.pgantt} file. If the specified directory does not exist, it will not be created.} \\
+		\tabValue{
+			\valueDef{\texttt{\justify /path/in/proj}}{Path within the \preesm project containing the workflow where the "Gantt Exporter" task is instantiated. 
+				
+				Exported Gantt will be named as follows: \texttt{/path/in/proj/<scenario\_name>\_stats.pgantt}. If a graph with this name already exists in the given path, it will be overwritten.
+			}	
+		} 
+	}
+	
+	
+	\tabDesc{This task exports scheduling results as a \texttt{*.pgantt} file that can be viewed using the \textit{ganttDisplay} viewer. The exported \texttt{*.pgantt} file uses the \texttt{XML} syntax.
+		
+		
+	\textbf{See also:} ganttDisplay project: \url{https://github.com/preesm/preesm-apps/tree/master/GanttDisplay}.}
+
+	\tabError{\noError}
+		
 	\subsection{Memory Bounds Estimator}
 	See Section~\ref{sec:memory_bounds_estimator}.
 %	\begin{table}
