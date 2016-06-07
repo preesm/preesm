@@ -61,6 +61,18 @@
             <core_type
                   type="x86">
             </core_type>
+            <core_type
+                  type="ARM_CortexA7">
+            </core_type>
+            <core_type
+                  type="ARM_CortexA15">
+            </core_type>
+            <core_type
+                  type="ARM">
+            </core_type>
+            <core_type
+                  type="GPP">
+            </core_type>
          </printer>
          <printer
                class="org.ietr.preesm.codegen.xtend.printer.c.instrumented.InstrumentedC6678CPrinter"
