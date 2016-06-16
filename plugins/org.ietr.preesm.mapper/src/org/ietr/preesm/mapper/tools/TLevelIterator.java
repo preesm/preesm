@@ -53,21 +53,21 @@ public class TLevelIterator extends ImplementationIterator {
 	@Override
 	public int compare(MapperDAGVertex arg0, MapperDAGVertex arg1) {
 
-		long TLevelDifference = (arg0.getTiming().getTLevel() - arg1
+		long tLevelDifference = (arg0.getTiming().getTLevel() - arg1
 				.getTiming().getTLevel());
 
 		if (!directOrder)
-			TLevelDifference = -TLevelDifference;
+			tLevelDifference = -tLevelDifference;
 
-		if (TLevelDifference == 0) {
-			TLevelDifference = arg0.getName().compareTo(arg1.getName());
-
-			if (TLevelDifference == 0) {
-				TLevelDifference++;
-			}
+		if (tLevelDifference == 0) {
+			tLevelDifference = arg0.getName().compareTo(arg1.getName());
 		}
 
-		return (int) TLevelDifference;
+		// Preventing overflows in conversion from long to int
+		if(tLevelDifference >= 0) tLevelDifference = 1;
+		else tLevelDifference = -1;
+		
+		return (int) tLevelDifference;
 	}
 
 }

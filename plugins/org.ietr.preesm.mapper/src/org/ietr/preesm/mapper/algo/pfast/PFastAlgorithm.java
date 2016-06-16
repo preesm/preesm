@@ -105,10 +105,9 @@ public class PFastAlgorithm extends Observable {
 
 			difference -= o2.getScheduleCost();
 
-			if (difference == 0) {
-				difference = 1;
-			}
-
+			if(difference>=0) difference = 1;
+			else difference = 0;
+			
 			return (int) difference;
 		}
 

@@ -347,7 +347,10 @@ public abstract class LatencyAbc extends AbstractAbc {
 			Collections.sort(taskSums, new Comparator<Long>() {
 				@Override
 				public int compare(Long arg0, Long arg1) {
-					return (int) (arg0 - arg1);
+					long temp = arg0 - arg1;
+					if(temp >= 0) temp = 1;
+					else temp = -1;
+					return (int) temp;
 				}
 			});
 
