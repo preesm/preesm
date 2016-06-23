@@ -8,6 +8,8 @@ import java.util.logging.Logger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
+import org.ietr.dftools.algorithm.model.AbstractGraph;
+import org.ietr.dftools.algorithm.model.AbstractVertex;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
@@ -30,9 +32,10 @@ public class Clustering extends AbstractTaskImplementation {
 		Map<String, Object> outputs = new HashMap<String, Object>();
 		SDFGraph inputSdf = (SDFGraph) inputs.get("SDF");
 		SDFGraph outputSdf = inputSdf.clone();
-		p("Hello here is my new workflow Clustering " + inputs.toString());
-		//computeHierarchizedGraph(outputSdf);
+		computeHierarchizedGraph(outputSdf);
+		p("Clustering computeHierarchizedGraph Done !" + inputs.toString());
 		outputs.put("SDF", outputSdf);
+		p("Clustering Done !" + inputs.toString());
 		return outputs;
 	}
 
@@ -47,40 +50,90 @@ public class Clustering extends AbstractTaskImplementation {
 	public String monitorMessage() {
 		return "Execute Clustering.";
 	}
-	
+
 	private SDFGraph computeHierarchizedGraph(SDFGraph sdfGraph) {
-		
+
 		// go through all vertexes
-		for(SDFAbstractVertex hVertex : sdfGraph.vertexSet()){
+		for(SDFAbstractVertex v : sdfGraph.vertexSet()){
 			try {
-				int nbRepeat = hVertex.getNbRepeatAsInteger();
-				if(nbRepeat > 1){
-					/* update source cons */
-					/*for(int i=0;i<hVertex.getSources().size();i++){
-						SDFEdge e = hVertex.getAssociatedEdge(hVertex.getSources().get(i));
-						p("update edge source cons " + e.getSourceLabel() + " " + e.getTargetLabel() + 
-								" from " + e.getCons().intValue() + " to " + e.getCons().intValue()*nbRepeat);
-						e.setCons(new SDFDoubleEdgePropertyType(nbRepeat*e.getCons().intValue()));
-					}*/
-					/* update target prod */
-					/*for(int i=0;i<hVertex.getSinks().size();i++){
-						SDFEdge e = hVertex.getAssociatedEdge(hVertex.getSinks().get(i));
-						p("update edge target prod " + e.getSourceLabel() + " " + e.getTargetLabel() +
-							" from " + e.getProd().intValue() + " to " + e.getProd().intValue()*nbRepeat);
-						e.setProd(new SDFDoubleEdgePropertyType(nbRepeat*e.getProd().intValue()));
-					}*/
-		
-					//SDFAbstractVertex v = hVertex.clone();  // v is the actor which is going to be repeated (for loop)
-					//hVertex.setNbRepeat(1); 				// hierarchical actor triggered one time
-					//SDFGraph ng = new SDFGraph();			// related sdf graph to the hierarchical actor
-					//hVertex.setGraphDescription(ng);
-					//ng.addVertex(v);
-					/*for(int i=0; i<hVertex.getGraphDescription().edgeSet().size();i++ ){
-						p(hVertex.getGraphDescription().edgeSet().toArray()[i].toString());
-					}*/
-					//hVertex.getGraphDescription().
+				int nbRepeat = v.getNbRepeatAsInteger();
+				
+				Object refinement = v.getPropertyBean().getValue(
+						AbstractVertex.REFINEMENT);
+
+				/* Hierarchical graph */
+				if(refinement instanceof AbstractGraph){
+					p("Hierarchical graph of name " + v.getName() + " rep " + nbRepeat);
+					
+					SDFGraph h = (SDFGraph)v.getGraphDescription();
+					for(SDFEdge e : h.edgeSet()){
+						p("SDFEdge source " + e.getSourceLabel() + " target " + e.getTargetLabel());
+					}
+					for(SDFAbstractVertex vi : h.vertexSet()){
+						p("SDFAbstractVertex " + vi.getName() + " repeated " + vi.getNbRepeatAsInteger());
+					}
 				}
-				p("vertice " + hVertex.getName() + " rep " + hVertex.getNbRepeatAsInteger());
+				
+				/* Interface */
+				else if ( v instanceof SDFInterfaceVertex){
+					p("SDFInterfaceVertex of name " + v.getName() + " rep " + nbRepeat);
+				}
+				
+				/* Vextex */
+				else if ( v instanceof SDFVertex){
+					p("SDFVertex of name " + v.getName() + " rep " + nbRepeat);
+
+					// if vertex and vertex.nb_repeat > 1
+					if(v.getNbRepeatAsInteger() > 1){
+						p("Auto Transform " + v.getName() + " rep " + nbRepeat);
+						SDFAbstractVertex vGraph = v.clone(); //new SDFVertex();
+						//vGraph.getPropertyBean().setValue(AbstractVertex.REFINEMENT, new SDFGraph());
+						vGraph.setName(new String("Hierarchical_" + v.getName()));
+						//sdfGraph.addVertex(vGraph);
+						vGraph.setNbRepeat(1);
+
+						for(SDFInterfaceVertex iv : v.getSources()){
+							p("SDFInterfaceVertex sources " + iv.getName());
+						}
+						for(SDFInterfaceVertex iv : v.getSinks()){
+							p("SDFInterfaceVertex sinks " + iv.getName());
+						}
+					}
+				}
+
+				else if ( v instanceof SDFAbstractVertex){
+					p("SDFAbstractVertex of name " + v.getName() + " rep " + nbRepeat);
+				}else{
+					p("Unkown vertex of name " + v.getName() + " rep " + nbRepeat);
+				}
+				
+//				if(nbRepeat > 1){
+//					/* update source cons */
+//					for(int i=0;i<hVertex.getSources().size();i++){
+//						SDFEdge e = hVertex.getAssociatedEdge(hVertex.getSources().get(i));
+//						p("update edge source cons " + e.getSourceLabel() + " " + e.getTargetLabel() + 
+//								" from " + e.getCons().intValue() + " to " + e.getCons().intValue()*nbRepeat);
+//						e.setCons(new SDFDoubleEdgePropertyType(nbRepeat*e.getCons().intValue()));
+//					}
+//					/* update target prod */
+//					for(int i=0;i<hVertex.getSinks().size();i++){
+//						SDFEdge e = hVertex.getAssociatedEdge(hVertex.getSinks().get(i));
+//						p("update edge target prod " + e.getSourceLabel() + " " + e.getTargetLabel() +
+//							" from " + e.getProd().intValue() + " to " + e.getProd().intValue()*nbRepeat);
+//						e.setProd(new SDFDoubleEdgePropertyType(nbRepeat*e.getProd().intValue()));
+//					}
+//		
+//					SDFAbstractVertex v = hVertex.clone();  // v is the actor which is going to be repeated (for loop)
+//					hVertex.setNbRepeat(1); 				// hierarchical actor triggered one time
+//					SDFGraph ng = new SDFGraph();			// related sdf graph to the hierarchical actor
+//					hVertex.setGraphDescription(ng);
+//					ng.addVertex(v);
+//					for(int i=0; i<hVertex.getGraphDescription().edgeSet().size();i++ ){
+//						p(hVertex.getGraphDescription().edgeSet().toArray()[i].toString());
+//					}
+//					hVertex.getGraphDescription().
+//				}
+//				p("vertice " + hVertex.getName() + " rep " + hVertex.getNbRepeatAsInteger());
 			} catch (InvalidExpressionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
