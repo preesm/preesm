@@ -50,6 +50,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.ietr.dftools.algorithm.iterators.DAGIterator;
 import org.ietr.dftools.algorithm.model.CloneableProperty;
 import org.ietr.dftools.algorithm.model.PropertyBean;
@@ -66,6 +67,7 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
+import org.ietr.preesm.memory.script.Range;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
@@ -83,9 +85,7 @@ import org.jgrapht.graph.SimpleGraph;
  * @author kdesnos
  * 
  */
-public class MemoryExclusionGraph extends
-		SimpleGraph<MemoryExclusionVertex, DefaultEdge> implements
-		PropertySource {
+public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, DefaultEdge> implements PropertySource {
 
 	/**
 	 * Mandatory when extending SimpleGraph
@@ -124,23 +124,16 @@ public class MemoryExclusionGraph extends
 	 */
 	public static final String ALLOCATED_MEMORY_SIZE = "allocated_memory_size";
 
+	@SuppressWarnings("serial")
+	protected static List<String> public_properties = new ArrayList<String>() {
+		{
+		}
+	};
+
 	/**
 	 * Backup the vertex adjacent to a given vertex for speed-up purposes.
 	 */
 	private HashMap<MemoryExclusionVertex, HashSet<MemoryExclusionVertex>> adjacentVerticesBackup;
-
-	/**
-	 * Each DAGVertex is associated to a list of MemoryExclusionVertex that have
-	 * a precedence relationship with this DAGVertex. All successors of this
-	 * DAGVertex will NOT have exclusion with MemoryExclusionVertex in this
-	 * list. This list is built along the build of the MemEx, and used for
-	 * subsequent updates. We use the name of the DAGVertex as a key.. Because
-	 * using the DAG itself seems to be impossible.<br>
-	 * If there are {@link MemoryExclusionVertex} corresponding to the working
-	 * memory of {@link DAGVertex}, they will be added to the predecessor list
-	 * of this vertex.
-	 */
-	private HashMap<String, HashSet<MemoryExclusionVertex>> verticesPredecessors;
 
 	/**
 	 * This {@link Map} is used to identify and store the list of
@@ -158,23 +151,30 @@ public class MemoryExclusionGraph extends
 	// implodeExplodeMap;
 
 	/**
-	 * {@link DirectedAcyclicGraph DAG} {@link DAGVertex vertices} in the
-	 * scheduling order retrieved in
-	 * {@link #updateWithSchedule(DirectedAcyclicGraph)}.
+	 * Each DAGVertex is associated to a list of MemoryExclusionVertex that have
+	 * a precedence relationship with this DAGVertex. All successors of this
+	 * DAGVertex will NOT have exclusion with MemoryExclusionVertex in this
+	 * list. This list is built along the build of the MemEx, and used for
+	 * subsequent updates. We use the name of the DAGVertex as a key.. Because
+	 * using the DAG itself seems to be impossible.<br>
+	 * If there are {@link MemoryExclusionVertex} corresponding to the working
+	 * memory of {@link DAGVertex}, they will be added to the predecessor list
+	 * of this vertex.
 	 */
-	protected List<DAGVertex> dagVerticesInSchedulingOrder = null;
+	private HashMap<String, HashSet<MemoryExclusionVertex>> verticesPredecessors;
+
+	/**
+	 * {@link MemoryExclusionVertex} of the {@link MemoryExclusionGraph} in the
+	 * scheduling order retrieved in the
+	 * {@link #updateWithSchedule(DirectedAcyclicGraph)} method.
+	 */
+	protected List<MemoryExclusionVertex> memExVerticesInSchedulingOrder = null;
 
 	/**
 	 * The {@link PropertyBean} that stores the properties of the
 	 * {@link MemoryExclusionGraph}.
 	 */
 	protected PropertyBean properties;
-
-	@SuppressWarnings("serial")
-	protected static List<String> public_properties = new ArrayList<String>() {
-		{
-		}
-	};
 
 	/**
 	 * Default constructor
@@ -183,6 +183,17 @@ public class MemoryExclusionGraph extends
 		super(DefaultEdge.class);
 		properties = new PropertyBean();
 		adjacentVerticesBackup = new HashMap<MemoryExclusionVertex, HashSet<MemoryExclusionVertex>>();
+	}
+
+	@Override
+	public DefaultEdge addEdge(MemoryExclusionVertex arg0, MemoryExclusionVertex arg1) {
+		Set<MemoryExclusionVertex> set0 = adjacentVerticesBackup.get(arg0);
+		if (set0 != null)
+			set0.add(arg1);
+		Set<MemoryExclusionVertex> set1 = adjacentVerticesBackup.get(arg1);
+		if (set1 != null)
+			set1.add(arg0);
+		return super.addEdge(arg0, arg1);
 	}
 
 	/**
@@ -203,10 +214,8 @@ public class MemoryExclusionGraph extends
 		// As the non-task vertices are removed at the beginning of the build
 		// function
 		// This if statement could probably be removed. (I keep it just in case)
-		if (edge.getSource().getPropertyBean().getValue("vertexType")
-				.toString().equals("task")
-				&& edge.getTarget().getPropertyBean().getValue("vertexType")
-						.toString().equals("task")) {
+		if (edge.getSource().getPropertyBean().getValue("vertexType").toString().equals("task")
+				&& edge.getTarget().getPropertyBean().getValue("vertexType").toString().equals("task")) {
 			newNode = new MemoryExclusionVertex(edge);
 
 			boolean added = this.addVertex(newNode);
@@ -220,19 +229,136 @@ public class MemoryExclusionGraph extends
 
 		}
 		return newNode;
-	}
-
-	@Override
-	public DefaultEdge addEdge(MemoryExclusionVertex arg0,
-			MemoryExclusionVertex arg1) {
-		Set<MemoryExclusionVertex> set0 = adjacentVerticesBackup.get(arg0);
-		if (set0 != null)
-			set0.add(arg1);
-		Set<MemoryExclusionVertex> set1 = adjacentVerticesBackup.get(arg1);
-		if (set1 != null)
-			set1.add(arg0);
-		return super.addEdge(arg0, arg1);
 	};
+
+	/**
+	 * Build the memory objects corresponding to the fifos of the input
+	 * {@link DirectedAcyclicGraph}. The new memory objects are added to the
+	 * {@link MemoryExclusionGraph}. This method creates 1 or 2
+	 * {@link MemoryExclusionVertex} for each pair of init/end {@link DAGVertex}
+	 * encountered in the graph.
+	 * 
+	 * @param dag
+	 *            the dag containing the fifos.
+	 */
+	protected void buildFifoMemoryObjects(DirectedAcyclicGraph dag) {
+		// Scan the dag vertices
+		for (DAGVertex vertex : dag.vertexSet()) {
+			String vertKind = vertex.getPropertyBean().getValue("kind").toString();
+
+			// Process Init vertices only
+			if (vertKind.equals("dag_init_vertex")) {
+
+				DAGVertex dagInitVertex = vertex;
+
+				// Retrieve the corresponding EndVertex
+				SDFInitVertex sdfInitVertex = (SDFInitVertex) vertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX);
+				SDFEndVertex sdfEndVertex = (SDFEndVertex) sdfInitVertex.getEndReference();
+				DAGVertex dagEndVertex = dag.getVertex(sdfEndVertex.getName());
+
+				// Create the Head Memory Object
+				// Get the typeSize
+				MemoryExclusionVertex headMemoryNode;
+				int typeSize = 1; // (size of a token (from the scenario)
+				{
+					// TODO: Support the supprImplodeExplode option
+					if (dag.outgoingEdgesOf(dagInitVertex).size() != 1) {
+						throw new RuntimeException("Init DAG vertex " + dagInitVertex + " has several outgoing edges.\n"
+								+ "This is not supported by the MemEx builder.\n"
+								+ "Set \"ImplodeExplodeSuppr\" and \"Suppr Fork/Join\""
+								+ " options to false in the workflow tasks" + " to get rid of this error.");
+					}
+					DAGEdge outgoingEdge = dag.outgoingEdgesOf(dagInitVertex).iterator().next();
+					BufferAggregate buffers = (BufferAggregate) outgoingEdge.getPropertyBean()
+							.getValue(BufferAggregate.propertyBeanName);
+					if (buffers.size() != 1) {
+						throw new RuntimeException("DAGEdge " + outgoingEdge + " is equivalent to several SDFEdges.\n"
+								+ "This is not supported by the MemEx builder.\n"
+								+ "Please contact Preesm developers.");
+					}
+					DataType type = MemoryExclusionVertex._dataTypes.get(buffers.get(0).getDataType());
+					if (type != null) {
+						typeSize = type.getSize();
+					}
+					headMemoryNode = new MemoryExclusionVertex("FIFO_Head_" + dagEndVertex.getName(),
+							dagInitVertex.getName(), buffers.get(0).getSize() * typeSize);
+					headMemoryNode.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE, typeSize);
+				}
+				// Add the head node to the MEG
+				this.addVertex(headMemoryNode);
+
+				// Compute the list of all edges between init and end
+				// Also compute the list of actors
+				Set<DAGEdge> between;
+				Set<MemoryExclusionVertex> betweenVert;
+				{
+					Set<DAGEdge> endPredecessors = dag.getPredecessorEdgesOf(dagEndVertex);
+					Set<DAGEdge> initSuccessors = dag.getSuccessorEdgesOf(vertex);
+					between = (new HashSet<DAGEdge>(initSuccessors));
+					between.retainAll(endPredecessors);
+
+					Set<MemoryExclusionVertex> endPredecessorsVert = new HashSet<MemoryExclusionVertex>();
+					for (DAGEdge edge : endPredecessors) {
+						endPredecessorsVert.add(
+								new MemoryExclusionVertex(edge.getSource().getName(), edge.getSource().getName(), 0));
+					}
+					Set<MemoryExclusionVertex> initSuccessorsVert = new HashSet<MemoryExclusionVertex>();
+					for (DAGEdge edge : initSuccessors) {
+						initSuccessorsVert.add(
+								new MemoryExclusionVertex(edge.getTarget().getName(), edge.getTarget().getName(), 0));
+					}
+					betweenVert = (new HashSet<MemoryExclusionVertex>(initSuccessorsVert));
+					betweenVert.retainAll(endPredecessorsVert);
+				}
+
+				// Add exclusions between the head node and ALL MemoryObjects
+				// that do not correspond to edges in the between list or to
+				// the working memory of an actor in the betweenVert list.
+				for (MemoryExclusionVertex memObject : this.vertexSet()) {
+					DAGEdge correspondingEdge = memObject.getEdge();
+					// For Edges
+					if (correspondingEdge != null) {
+						if (!between.contains(correspondingEdge)) {
+							this.addEdge(headMemoryNode, memObject);
+						}
+					}
+
+					// For Working memory
+					else if (memObject.getSource() == memObject.getSink()) {
+						if (!betweenVert.contains(memObject)) {
+							this.addEdge(headMemoryNode, memObject);
+						}
+					} else if (memObject != headMemoryNode) {
+						this.addEdge(headMemoryNode, memObject);
+					}
+				}
+
+				// No need to add exclusion between the head MObj and the
+				// outgoing edge of the init or the incoming edge of the end.
+				// (unless of course the init and the end have an empty
+				// "between" list, but this will be handled by the previous
+				// loop.)
+
+				// Create the Memory Object for the remaining of the FIFO (if
+				// any)
+				int fifoDepth = sdfInitVertex.getInitSize();
+				if (fifoDepth > headMemoryNode.getWeight() / typeSize) {
+					MemoryExclusionVertex fifoMemoryNode = new MemoryExclusionVertex(
+							"FIFO_Body_" + dagEndVertex.getName(), dagInitVertex.getName(),
+							fifoDepth * typeSize - headMemoryNode.getWeight());
+					fifoMemoryNode.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE, typeSize);
+
+					// Add to the graph and exclude with everyone
+					this.addVertex(fifoMemoryNode);
+					for (MemoryExclusionVertex mObj : this.vertexSet()) {
+						if (mObj != fifoMemoryNode) {
+							this.addEdge(fifoMemoryNode, mObj);
+						}
+					}
+				}
+			}
+		}
+	}
 
 	/**
 	 * Method to build the graph based on a DirectedAcyclicGraph
@@ -246,8 +372,7 @@ public class MemoryExclusionGraph extends
 	 * @throws InvalidExpressionException
 	 * @throws WorkflowException
 	 */
-	public void buildGraph(DirectedAcyclicGraph dag)
-			throws InvalidExpressionException, WorkflowException {
+	public void buildGraph(DirectedAcyclicGraph dag) throws InvalidExpressionException, WorkflowException {
 
 		final String localOrdering = "memExBuildingLocalOrdering";
 
@@ -259,8 +384,7 @@ public class MemoryExclusionGraph extends
 		// Be careful, DAGiterator does not seem to work well if dag is
 		// modified throughout the iteration.
 		// That's why we use first copy the ordered dag vertex set.
-		LinkedHashSet<DAGVertex> dagVertices = new LinkedHashSet<DAGVertex>(dag
-				.vertexSet().size());
+		LinkedHashSet<DAGVertex> dagVertices = new LinkedHashSet<DAGVertex>(dag.vertexSet().size());
 		while (iterDAGVertices.hasNext()) {
 			DAGVertex vert = iterDAGVertices.next();
 			dagVertices.add(vert);
@@ -280,8 +404,7 @@ public class MemoryExclusionGraph extends
 		int newOrder = 0;
 
 		for (DAGVertex vert : dagVertices) {
-			boolean isTask = vert.getPropertyBean().getValue("vertexType")
-					.toString().equals("task");
+			boolean isTask = vert.getPropertyBean().getValue("vertexType").toString().equals("task");
 			String vertKind = "";
 
 			// Only task vertices have a kind
@@ -289,13 +412,10 @@ public class MemoryExclusionGraph extends
 				vertKind = vert.getPropertyBean().getValue("kind").toString();
 			}
 
-			if (vertKind.equals("dag_vertex")
-					|| vertKind.equals("dag_broadcast_vertex") // roundbffers
-																// covered
-					|| vertKind.equals("dag_init_vertex")
-					|| vertKind.equals("dag_end_vertex")
-					|| vertKind.equals("dag_fork_vertex")
-					|| vertKind.equals("dag_join_vertex")) {
+			if (vertKind.equals("dag_vertex") || vertKind.equals("dag_broadcast_vertex") // roundbffers
+																							// covered
+					|| vertKind.equals("dag_init_vertex") || vertKind.equals("dag_end_vertex")
+					|| vertKind.equals("dag_fork_vertex") || vertKind.equals("dag_join_vertex")) {
 				// If the dagVertex is a task (except implode/explode task), set
 				// the scheduling Order which will be used as a unique ID for
 				// each vertex
@@ -349,8 +469,11 @@ public class MemoryExclusionGraph extends
 			// 3. Outgoing Edges processing
 
 			// Retrieve the vertex to process
-			int vertexID = (Integer) vertexDAG.getPropertyBean().getValue(
-					localOrdering); // Retrieve the vertex unique ID
+			int vertexID = (Integer) vertexDAG.getPropertyBean().getValue(localOrdering); // Retrieve
+																							// the
+																							// vertex
+																							// unique
+																							// ID
 
 			// 1. Fork/Join/Broadcast/Roundbuffer specific processing
 			// Not usable yet ! Does not work because output edges are not
@@ -375,23 +498,19 @@ public class MemoryExclusionGraph extends
 			// 2. Working Memory specific Processing
 			// If the current vertex has some working memory, create the
 			// associated MemoryExclusionGraphVertex
-			Integer wMem = (Integer) vertexDAG.getCorrespondingSDFVertex()
-					.getPropertyBean().getValue("working_memory");
+			Integer wMem = (Integer) vertexDAG.getCorrespondingSDFVertex().getPropertyBean().getValue("working_memory");
 			if (wMem != null) {
-				MemoryExclusionVertex workingMemoryNode = new MemoryExclusionVertex(
-						vertexDAG.getName(), vertexDAG.getName(), wMem);
+				MemoryExclusionVertex workingMemoryNode = new MemoryExclusionVertex(vertexDAG.getName(),
+						vertexDAG.getName(), wMem);
 				this.addVertex(workingMemoryNode);
 				// Currently, there is no special alignment for working memory.
 				// So we always assume a unitary typesize.
-				workingMemoryNode.setPropertyValue(
-						MemoryExclusionVertex.TYPE_SIZE, 1);
+				workingMemoryNode.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE, 1);
 
 				// Add Exclusions with all non-predecessors of the current
 				// vertex
-				HashSet<MemoryExclusionVertex> inclusions = predecessors
-						.get(vertexID);
-				HashSet<MemoryExclusionVertex> exclusions = new HashSet<MemoryExclusionVertex>(
-						this.vertexSet());
+				HashSet<MemoryExclusionVertex> inclusions = predecessors.get(vertexID);
+				HashSet<MemoryExclusionVertex> exclusions = new HashSet<MemoryExclusionVertex>(this.vertexSet());
 				exclusions.remove(workingMemoryNode);
 				exclusions.removeAll(inclusions);
 				for (MemoryExclusionVertex exclusion : exclusions) {
@@ -415,10 +534,8 @@ public class MemoryExclusionGraph extends
 
 					// Add Exclusions with all non-predecessors of the current
 					// vertex
-					HashSet<MemoryExclusionVertex> inclusions = predecessors
-							.get(vertexID);
-					HashSet<MemoryExclusionVertex> exclusions = new HashSet<MemoryExclusionVertex>(
-							this.vertexSet());
+					HashSet<MemoryExclusionVertex> inclusions = predecessors.get(vertexID);
+					HashSet<MemoryExclusionVertex> exclusions = new HashSet<MemoryExclusionVertex>(this.vertexSet());
 					exclusions.remove(newNode);
 					exclusions.removeAll(inclusions);
 					for (MemoryExclusionVertex exclusion : exclusions) {
@@ -427,29 +544,24 @@ public class MemoryExclusionGraph extends
 
 					// Add newNode to the incoming list of the consumer of this
 					// edge
-					incoming.get(
-							(Integer) edge.getTarget().getPropertyBean()
-									.getValue(localOrdering)).add(newNode);
+					incoming.get((Integer) edge.getTarget().getPropertyBean().getValue(localOrdering)).add(newNode);
 
 					// Update the predecessor list of the consumer of this edge
 					HashSet<MemoryExclusionVertex> predecessor;
-					predecessor = predecessors.get((Integer) edge.getTarget()
-							.getPropertyBean().getValue(localOrdering));
+					predecessor = predecessors
+							.get((Integer) edge.getTarget().getPropertyBean().getValue(localOrdering));
 					predecessor.addAll(inclusions);
 					predecessor.addAll(incoming.get(vertexID));
 				} else {
 					// If the node was not added.
 					// Should never happen
-					throw new WorkflowException(
-							"The exclusion graph vertex corresponding to edge "
-									+ edge.toString()
-									+ " was not added to the graph.");
+					throw new WorkflowException("The exclusion graph vertex corresponding to edge " + edge.toString()
+							+ " was not added to the graph.");
 				}
 			}
 			// Save predecessor list, and include incoming to it.
 			predecessors.get(vertexID).addAll(incoming.get(vertexID));
-			verticesPredecessors.put(vertexDAG.getName(),
-					predecessors.get(vertexID));
+			verticesPredecessors.put(vertexDAG.getName(), predecessors.get(vertexID));
 		}
 
 		// Add the memory objects corresponding to the fifos.
@@ -457,157 +569,6 @@ public class MemoryExclusionGraph extends
 
 		// Save the dag in the properties
 		this.setPropertyValue(SOURCE_DAG, dag);
-	}
-
-	/**
-	 * Build the memory objects corresponding to the fifos of the input
-	 * {@link DirectedAcyclicGraph}. The new memory objects are added to the
-	 * {@link MemoryExclusionGraph}. This method creates 1 or 2
-	 * {@link MemoryExclusionVertex} for each pair of init/end {@link DAGVertex}
-	 * encountered in the graph.
-	 * 
-	 * @param dag
-	 *            the dag containing the fifos.
-	 */
-	protected void buildFifoMemoryObjects(DirectedAcyclicGraph dag) {
-		// Scan the dag vertices
-		for (DAGVertex vertex : dag.vertexSet()) {
-			String vertKind = vertex.getPropertyBean().getValue("kind")
-					.toString();
-
-			// Process Init vertices only
-			if (vertKind.equals("dag_init_vertex")) {
-
-				DAGVertex dagInitVertex = vertex;
-
-				// Retrieve the corresponding EndVertex
-				SDFInitVertex sdfInitVertex = (SDFInitVertex) vertex
-						.getPropertyBean().getValue(DAGVertex.SDF_VERTEX);
-				SDFEndVertex sdfEndVertex = (SDFEndVertex) sdfInitVertex
-						.getEndReference();
-				DAGVertex dagEndVertex = dag.getVertex(sdfEndVertex.getName());
-
-				// Create the Head Memory Object
-				// Get the typeSize
-				MemoryExclusionVertex headMemoryNode;
-				int typeSize = 1; // (size of a token (from the scenario)
-				{
-					// TODO: Support the supprImplodeExplode option
-					if (dag.outgoingEdgesOf(dagInitVertex).size() != 1) {
-						throw new RuntimeException(
-								"Init DAG vertex "
-										+ dagInitVertex
-										+ " has several outgoing edges.\n"
-										+ "This is not supported by the MemEx builder.\n"
-										+ "Set \"ImplodeExplodeSuppr\" and \"Suppr Fork/Join\""
-										+ " options to false in the workflow tasks"
-										+ " to get rid of this error.");
-					}
-					DAGEdge outgoingEdge = dag.outgoingEdgesOf(dagInitVertex)
-							.iterator().next();
-					BufferAggregate buffers = (BufferAggregate) outgoingEdge
-							.getPropertyBean().getValue(
-									BufferAggregate.propertyBeanName);
-					if (buffers.size() != 1) {
-						throw new RuntimeException(
-								"DAGEdge "
-										+ outgoingEdge
-										+ " is equivalent to several SDFEdges.\n"
-										+ "This is not supported by the MemEx builder.\n"
-										+ "Please contact Preesm developers.");
-					}
-					DataType type = MemoryExclusionVertex._dataTypes
-							.get(buffers.get(0).getDataType());
-					if (type != null) {
-						typeSize = type.getSize();
-					}
-					headMemoryNode = new MemoryExclusionVertex("FIFO_Head_"
-							+ dagEndVertex.getName(), dagInitVertex.getName(),
-							buffers.get(0).getSize() * typeSize);
-					headMemoryNode.setPropertyValue(
-							MemoryExclusionVertex.TYPE_SIZE, typeSize);
-				}
-				// Add the head node to the MEG
-				this.addVertex(headMemoryNode);
-
-				// Compute the list of all edges between init and end
-				// Also compute the list of actors
-				Set<DAGEdge> between;
-				Set<MemoryExclusionVertex> betweenVert;
-				{
-					Set<DAGEdge> endPredecessors = dag
-							.getPredecessorEdgesOf(dagEndVertex);
-					Set<DAGEdge> initSuccessors = dag
-							.getSuccessorEdgesOf(vertex);
-					between = (new HashSet<DAGEdge>(initSuccessors));
-					between.retainAll(endPredecessors);
-
-					Set<MemoryExclusionVertex> endPredecessorsVert = new HashSet<MemoryExclusionVertex>();
-					for (DAGEdge edge : endPredecessors) {
-						endPredecessorsVert.add(new MemoryExclusionVertex(edge
-								.getSource().getName(), edge.getSource()
-								.getName(), 0));
-					}
-					Set<MemoryExclusionVertex> initSuccessorsVert = new HashSet<MemoryExclusionVertex>();
-					for (DAGEdge edge : initSuccessors) {
-						initSuccessorsVert.add(new MemoryExclusionVertex(edge
-								.getTarget().getName(), edge.getTarget()
-								.getName(), 0));
-					}
-					betweenVert = (new HashSet<MemoryExclusionVertex>(
-							initSuccessorsVert));
-					betweenVert.retainAll(endPredecessorsVert);
-				}
-
-				// Add exclusions between the head node and ALL MemoryObjects
-				// that do not correspond to edges in the between list or to
-				// the working memory of an actor in the betweenVert list.
-				for (MemoryExclusionVertex memObject : this.vertexSet()) {
-					DAGEdge correspondingEdge = memObject.getEdge();
-					// For Edges
-					if (correspondingEdge != null) {
-						if (!between.contains(correspondingEdge)) {
-							this.addEdge(headMemoryNode, memObject);
-						}
-					}
-
-					// For Working memory
-					else if (memObject.getSource() == memObject.getSink()) {
-						if (!betweenVert.contains(memObject)) {
-							this.addEdge(headMemoryNode, memObject);
-						}
-					} else if (memObject != headMemoryNode) {
-						this.addEdge(headMemoryNode, memObject);
-					}
-				}
-
-				// No need to add exclusion between the head MObj and the
-				// outgoing edge of the init or the incoming edge of the end.
-				// (unless of course the init and the end have an empty
-				// "between" list, but this will be handled by the previous
-				// loop.)
-
-				// Create the Memory Object for the remaining of the FIFO (if
-				// any)
-				int fifoDepth = sdfInitVertex.getInitSize();
-				if (fifoDepth > headMemoryNode.getWeight() / typeSize) {
-					MemoryExclusionVertex fifoMemoryNode = new MemoryExclusionVertex(
-							"FIFO_Body_" + dagEndVertex.getName(),
-							dagInitVertex.getName(), fifoDepth * typeSize
-									- headMemoryNode.getWeight());
-					fifoMemoryNode.setPropertyValue(
-							MemoryExclusionVertex.TYPE_SIZE, typeSize);
-
-					// Add to the graph and exclude with everyone
-					this.addVertex(fifoMemoryNode);
-					for (MemoryExclusionVertex mObj : this.vertexSet()) {
-						if (mObj != fifoMemoryNode) {
-							this.addEdge(fifoMemoryNode, mObj);
-						}
-					}
-				}
-			}
-		}
 	}
 
 	/**
@@ -628,76 +589,10 @@ public class MemoryExclusionGraph extends
 	}
 
 	/**
-	 * This method puts the {@link MemoryExclusionGraph} back to its state
-	 * before any memory allocation was performed.<br>
-	 * Tasks performed are:<br>
-	 * - Put back the host memory objects that were replaced by their content
-	 * during memory allocation.
-	 * - Restore the MEG to its original state before allocation
-	 */
-	public void deallocate() {
-
-		@SuppressWarnings("unchecked")
-		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostVertices = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) this
-				.getPropertyBean().getValue(HOST_MEMORY_OBJECT_PROPERTY);
-		// Scan host vertices
-		if (hostVertices != null) {
-			for (MemoryExclusionVertex hostVertex : hostVertices.keySet()) {
-				// Put the host back to its original size (if it was changed,
-				// i.e. if it was allocated)
-				Integer hostSize = (Integer) hostVertex.getPropertyBean()
-						.getValue(MemoryExclusionVertex.HOST_SIZE);
-				if (hostSize != null) {
-					hostVertex.setWeight(hostSize);
-					hostVertex.getPropertyBean().removeProperty(
-							MemoryExclusionVertex.HOST_SIZE);
-
-					// Scan merged vertices
-					for (MemoryExclusionVertex mergedVertex : hostVertices
-							.get(hostVertex)) {
-						// If the merged vertex was in the graph (i.e. it was
-						// already allocated)
-						if (this.containsVertex(mergedVertex)) {
-							// Add exclusions between host and adjacent vertex
-							// of
-							// the merged vertex
-							for (MemoryExclusionVertex adjacentVertex : this
-									.getAdjacentVertexOf(mergedVertex)) {
-								this.addEdge(hostVertex, adjacentVertex);
-							}
-							// Remove it from the MEG
-							this.removeVertex(mergedVertex);
-
-							// If the merged vertex is not split
-							if (mergedVertex.getWeight() != 0) {
-								// Put it back to its real weight
-								int emptySpace = (int) mergedVertex
-										.getPropertyBean()
-										.getValue(
-												MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
-								mergedVertex.setWeight(mergedVertex.getWeight()
-										- emptySpace);
-							} else {
-								// The vertex was divided
-								// Remove all fake mobjects
-								@SuppressWarnings("unchecked")
-								List<MemoryExclusionVertex> fakeMobjects = (List<MemoryExclusionVertex>) mergedVertex
-										.getPropertyBean()
-										.getValue(
-												MemoryExclusionVertex.FAKE_MOBJECT);
-								for (MemoryExclusionVertex fakeMobj : fakeMobjects) {
-									this.removeVertex(fakeMobj);
-								}
-								fakeMobjects.clear();
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
+	 * Does a shallow copy (copy of the attribute reference) except for the list
+	 * of vertices and edges where a deep copy of the List is duplicated, but
+	 * not its content.
+	 * 
 	 * @override
 	 */
 	@Override
@@ -713,15 +608,424 @@ public class MemoryExclusionGraph extends
 	public void copyProperties(PropertySource props) {
 		for (String key : props.getPropertyBean().keys()) {
 			if (props.getPropertyBean().getValue(key) instanceof CloneableProperty) {
-				this.getPropertyBean().setValue(
-						key,
-						((CloneableProperty) props.getPropertyBean().getValue(
-								key)).clone());
-			} else {
 				this.getPropertyBean().setValue(key,
-						props.getPropertyBean().getValue(key));
+						((CloneableProperty) props.getPropertyBean().getValue(key)).clone());
+			} else {
+				this.getPropertyBean().setValue(key, props.getPropertyBean().getValue(key));
 			}
 		}
+	}
+
+	/**
+	 * This method puts the {@link MemoryExclusionGraph} back to its state
+	 * before any memory allocation was performed.<br>
+	 * Tasks performed are:<br>
+	 * - Put back the host memory objects that were replaced by their content
+	 * during memory allocation. - Restore the MEG to its original state before
+	 * allocation
+	 */
+	public void deallocate() {
+
+		@SuppressWarnings("unchecked")
+		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostVertices = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) this
+				.getPropertyBean().getValue(HOST_MEMORY_OBJECT_PROPERTY);
+		// Scan host vertices
+		if (hostVertices != null) {
+			for (MemoryExclusionVertex hostVertex : hostVertices.keySet()) {
+				// Put the host back to its original size (if it was changed,
+				// i.e. if it was allocated)
+				Integer hostSize = (Integer) hostVertex.getPropertyBean().getValue(MemoryExclusionVertex.HOST_SIZE);
+				if (hostSize != null) {
+					hostVertex.setWeight(hostSize);
+					hostVertex.getPropertyBean().removeProperty(MemoryExclusionVertex.HOST_SIZE);
+
+					// Scan merged vertices
+					for (MemoryExclusionVertex mergedVertex : hostVertices.get(hostVertex)) {
+						// If the merged vertex was in the graph (i.e. it was
+						// already allocated)
+						if (this.containsVertex(mergedVertex)) {
+							// Add exclusions between host and adjacent vertex
+							// of
+							// the merged vertex
+							for (MemoryExclusionVertex adjacentVertex : this.getAdjacentVertexOf(mergedVertex)) {
+								this.addEdge(hostVertex, adjacentVertex);
+							}
+							// Remove it from the MEG
+							this.removeVertex(mergedVertex);
+
+							// If the merged vertex is not split
+							if (mergedVertex.getWeight() != 0) {
+								// Put it back to its real weight
+								int emptySpace = (int) mergedVertex.getPropertyBean()
+										.getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
+								mergedVertex.setWeight(mergedVertex.getWeight() - emptySpace);
+							} else {
+								// The vertex was divided
+								// Remove all fake mobjects
+								@SuppressWarnings("unchecked")
+								List<MemoryExclusionVertex> fakeMobjects = (List<MemoryExclusionVertex>) mergedVertex
+										.getPropertyBean().getValue(MemoryExclusionVertex.FAKE_MOBJECT);
+								for (MemoryExclusionVertex fakeMobj : fakeMobjects) {
+									this.removeVertex(fakeMobj);
+								}
+								fakeMobjects.clear();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * This methods returns a clone of the calling {@link MemoryExclusionGraph}
+	 * where attributes and properties are copied as follows:
+	 * <ul>
+	 * <li>Deep copy (object is duplicated):</li>
+	 * <ul>
+	 * <li>List of Vertices (List of MemoryExclusionVertex)</li>
+	 * <li>MemoryExclusionVertex</li>
+	 * <li>Property of MemoryExclusionVertex</li>
+	 * <li>List of exclusions</li>
+	 * <li>{@link #adjacentVerticesBackup}</li>
+	 * <li>{@link #properties propertyBean} (but not all properties are deeply
+	 * copied)</li>
+	 * <li>{@link #HOST_MEMORY_OBJECT_PROPERTY} property</li>
+	 * <li>{@link #dagVerticesInSchedulingOrder}</li>
+	 * </ul>
+	 * <li>Shallow copy (reference to the object is copied):</li>
+	 * <ul>
+	 * <li>{@link #SOURCE_DAG} property</li>
+	 * <li>{@link #verticesPredecessors} list</li>
+	 * </ul>
+	 * </ul>
+	 * 
+	 * @return
+	 */
+	public MemoryExclusionGraph deepClone() {
+		// Shallow copy with clone
+		// Handle shallow copy of attributes and deep copy of lists of vertices
+		// and
+		// exclusion
+		MemoryExclusionGraph result = new MemoryExclusionGraph();
+
+		// Deep copy of all MObj (including merged ones)
+		// Keep a record of the old and new mObj
+		Map<MemoryExclusionVertex, MemoryExclusionVertex> mObjMap = new HashMap<MemoryExclusionVertex, MemoryExclusionVertex>();
+		for (MemoryExclusionVertex vertex : this.getTotalSetOfVertices()) {
+			MemoryExclusionVertex vertexClone = vertex.getClone();
+			mObjMap.put(vertex, vertexClone);
+		}
+
+		// Add mObjs to the graph (except merged ones)
+		for (MemoryExclusionVertex vertex : this.vertexSet()) {
+			result.addVertex(mObjMap.get(vertex));
+		}
+
+		// Copy exclusions
+		for (DefaultEdge edge : this.edgeSet()) {
+			result.addEdge(this.getEdgeSource(edge), this.getEdgeTarget(edge));
+		}
+
+		// Deep copy of mObj properties
+		deepCloneVerticesProperties(mObjMap);
+
+		// Deep copy of propertyBean
+		deepCloneMegProperties(result, mObjMap);
+
+		// Deep copy of memExVerticesInSchedulingOrder
+		result.memExVerticesInSchedulingOrder = new ArrayList<MemoryExclusionVertex>(
+				this.memExVerticesInSchedulingOrder);
+		result.memExVerticesInSchedulingOrder.replaceAll(mObj -> {
+			return mObjMap.get(mObj);
+		});
+
+		return result;
+	}
+
+	/**
+	 * This method clones the {@link PropertyBean} of the current
+	 * {@link MemoryExclusionGraph} into the clone {@link MemoryExclusionGraph}
+	 * passed as a parameter. The mObjMap parameter is used to make properties
+	 * of the clone reference only cloned {@link MemoryExclusionVertex} (and not
+	 * {@link MemoryExclusionVertex} of the original
+	 * {@link MemoryExclusionGraph}).
+	 * 
+	 * @param result
+	 *            The clone {@link MemoryExclusionGraph} created in the
+	 *            {@link #deepClone()} method.
+	 * @param mObjMap
+	 *            <code>Map<MemoryExclusionVertex,MemoryExclusionVertex></code>
+	 *            associating original {@link MemoryExclusionVertex} of the
+	 *            current {@link MemoryExclusionGraph} to their clone.
+	 */
+	protected void deepCloneMegProperties(MemoryExclusionGraph result,
+			Map<MemoryExclusionVertex, MemoryExclusionVertex> mObjMap) {
+		// DAG_EDGE_ALLOCATION
+		@SuppressWarnings("unchecked")
+		Map<DAGEdge, Integer> dagEdgeAlloc = (Map<DAGEdge, Integer>) this.getPropertyBean()
+				.getValue(DAG_EDGE_ALLOCATION);
+		if (dagEdgeAlloc != null) {
+			Map<DAGEdge, Integer> dagEdgeAllocCopy = new HashMap<DAGEdge, Integer>(dagEdgeAlloc);
+			result.setPropertyValue(DAG_EDGE_ALLOCATION, dagEdgeAllocCopy);
+		}
+
+		// DAG_FIFO_ALLOCATION
+		@SuppressWarnings("unchecked")
+		Map<MemoryExclusionVertex, Integer> dagFifoAlloc = (Map<MemoryExclusionVertex, Integer>) this.getPropertyBean()
+				.getValue(DAG_FIFO_ALLOCATION);
+		if (dagFifoAlloc != null) {
+			Map<MemoryExclusionVertex, Integer> dagFifoAllocCopy = new HashMap<MemoryExclusionVertex, Integer>();
+			for (Entry<MemoryExclusionVertex, Integer> fifoAlloc : dagFifoAlloc.entrySet()) {
+				dagFifoAllocCopy.put(mObjMap.get(fifoAlloc.getKey()), fifoAlloc.getValue());
+			}
+			result.setPropertyValue(DAG_FIFO_ALLOCATION, dagFifoAllocCopy);
+		}
+
+		// WORKING_MEM_ALLOCATION
+		@SuppressWarnings("unchecked")
+		Map<MemoryExclusionVertex, Integer> wMemAlloc = (Map<MemoryExclusionVertex, Integer>) this.getPropertyBean()
+				.getValue(WORKING_MEM_ALLOCATION);
+		if (wMemAlloc != null) {
+			Map<MemoryExclusionVertex, Integer> wMemAllocCopy = new HashMap<MemoryExclusionVertex, Integer>();
+			for (Entry<MemoryExclusionVertex, Integer> wMem : wMemAlloc.entrySet()) {
+				wMemAllocCopy.put(mObjMap.get(wMem.getKey()), wMem.getValue());
+			}
+			result.setPropertyValue(WORKING_MEM_ALLOCATION, wMemAllocCopy);
+		}
+
+		// SOURCE_DAG
+		if (this.getPropertyBean().getValue(SOURCE_DAG) != null) {
+			result.setPropertyValue(SOURCE_DAG, this.getPropertyBean().getValue(SOURCE_DAG));
+		}
+
+		// ALLOCATED_MEMORY_SIZE
+		if (this.getPropertyBean().getValue(ALLOCATED_MEMORY_SIZE) != null) {
+			result.setPropertyValue(ALLOCATED_MEMORY_SIZE, this.getPropertyBean().getValue(ALLOCATED_MEMORY_SIZE));
+		}
+
+		// HOST_MEMORY_OBJECT_PROPERTY property
+		@SuppressWarnings("unchecked")
+		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostMemoryObject = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) this
+				.getPropertyBean().getValue(HOST_MEMORY_OBJECT_PROPERTY);
+		if (hostMemoryObject != null) {
+			Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostMemoryObjectCopy = new HashMap<MemoryExclusionVertex, Set<MemoryExclusionVertex>>();
+			for (Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> host : hostMemoryObject.entrySet()) {
+				Set<MemoryExclusionVertex> hostedCopy = new HashSet<MemoryExclusionVertex>();
+				for (MemoryExclusionVertex hosted : host.getValue()) {
+					hostedCopy.add(mObjMap.get(hosted));
+				}
+				hostMemoryObjectCopy.put(mObjMap.get(host.getKey()), hostedCopy);
+			}
+			result.setPropertyValue(HOST_MEMORY_OBJECT_PROPERTY, hostMemoryObjectCopy);
+		}
+	}
+
+	/**
+	 * This method create a deep copy of the properties of the
+	 * {@link MemoryExclusionVertex} cloned in the {@link #deepClone()} method.
+	 * <br>
+	 * Keys of the mObjMap parameter are the original
+	 * {@link MemoryExclusionVertex} whose properties are to be cloned, and
+	 * values of the map are the corresponding {@link MemoryExclusionVertex}
+	 * clones. Cloned properties are:
+	 * <ul>
+	 * <li>{@link MemoryExclusionVertex#MEMORY_OFFSET_PROPERTY}</li>
+	 * <li>{@link MemoryExclusionVertex#REAL_TOKEN_RANGE_PROPERTY}</li>
+	 * <li>{@link MemoryExclusionVertex#FAKE_MOBJECT}</li>
+	 * <li>{@link MemoryExclusionVertex#ADJACENT_VERTICES_BACKUP}</li>
+	 * <li>{@link MemoryExclusionVertex#EMPTY_SPACE_BEFORE}</li>
+	 * <li>{@link MemoryExclusionVertex#HOST_SIZE}</li>
+	 * <li>{@link MemoryExclusionVertex#DIVIDED_PARTS_HOSTS}</li>
+	 * <li>{@link MemoryExclusionVertex#TYPE_SIZE}</li>
+	 * <li>{@link MemoryExclusionVertex#INTER_BUFFER_SPACES}</li>
+	 * </ul>
+	 * All cloned properties referencing {@link MemoryExclusionVertex} are
+	 * referencing {@link MemoryExclusionVertex} of the mObjMap values (i.e. the
+	 * cloned {@link MemoryExclusionVertex}).
+	 * 
+	 * @param mObjMap
+	 *            <code>Map<MemoryExclusionVertex,MemoryExclusionVertex></code>
+	 *            associating original {@link MemoryExclusionVertex} of the
+	 *            current {@link MemoryExclusionGraph} to their clone.
+	 */
+	protected void deepCloneVerticesProperties(Map<MemoryExclusionVertex, MemoryExclusionVertex> mObjMap) {
+		for (Entry<MemoryExclusionVertex, MemoryExclusionVertex> entry : mObjMap.entrySet()) {
+			MemoryExclusionVertex vertex = entry.getKey();
+			MemoryExclusionVertex vertexClone = entry.getValue();
+
+			// MEMORY_OFFSET_PROPERTY
+			Integer memOffset = (Integer) vertex.getPropertyBean()
+					.getValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY);
+			if (memOffset != null) {
+				vertexClone.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, memOffset);
+			}
+
+			// REAL_TOKEN_RANGE_PROPERTY
+			@SuppressWarnings("unchecked")
+			List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realTokenRange = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) vertex
+					.getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+			if (realTokenRange != null) {
+				List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realTokenRangeCopy = new ArrayList<Pair<MemoryExclusionVertex, Pair<Range, Range>>>();
+				for (Pair<MemoryExclusionVertex, Pair<Range, Range>> pair : realTokenRange) {
+					realTokenRangeCopy.add(Pair.of(mObjMap.get(pair.getKey()), Pair
+							.of((Range) pair.getValue().getKey().clone(), (Range) pair.getValue().getValue().clone())));
+				}
+				vertexClone.setPropertyValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY, realTokenRangeCopy);
+			}
+
+			// FAKE_MOBJECT
+			@SuppressWarnings("unchecked")
+			List<MemoryExclusionVertex> fakeMobject = (List<MemoryExclusionVertex>) vertex.getPropertyBean()
+					.getValue(MemoryExclusionVertex.FAKE_MOBJECT);
+			if (fakeMobject != null) {
+				List<MemoryExclusionVertex> fakeMobjectCopy = new ArrayList<MemoryExclusionVertex>();
+				for (MemoryExclusionVertex fakeMobj : fakeMobject) {
+					fakeMobjectCopy.add(mObjMap.get(fakeMobj));
+				}
+				vertexClone.setPropertyValue(MemoryExclusionVertex.FAKE_MOBJECT, fakeMobjectCopy);
+			}
+
+			// ADJACENT_VERTICES_BACKUP
+			@SuppressWarnings("unchecked")
+			List<MemoryExclusionVertex> adjacentVerticesBackup = (List<MemoryExclusionVertex>) vertex.getPropertyBean()
+					.getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
+			if (adjacentVerticesBackup != null) {
+				List<MemoryExclusionVertex> adjacentVerticesBackupCopy = new ArrayList<MemoryExclusionVertex>();
+				for (MemoryExclusionVertex adjacentVertex : adjacentVerticesBackup) {
+					adjacentVerticesBackupCopy.add(mObjMap.get(adjacentVertex));
+				}
+				vertexClone.setPropertyValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP,
+						adjacentVerticesBackupCopy);
+			}
+
+			// EMPTY_SPACE_BEFORE
+			Integer emptySpaceBefore = (Integer) vertex.getPropertyBean()
+					.getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
+			if (emptySpaceBefore != null) {
+				vertexClone.setPropertyValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE, emptySpaceBefore);
+			}
+
+			// HOST_SIZE
+			Integer hostSize = (Integer) vertex.getPropertyBean().getValue(MemoryExclusionVertex.HOST_SIZE);
+			if (hostSize != null) {
+				vertexClone.setPropertyValue(MemoryExclusionVertex.HOST_SIZE, hostSize);
+			}
+
+			// DIVIDED_PARTS_HOSTS
+			@SuppressWarnings("unchecked")
+			List<MemoryExclusionVertex> dividedPartHosts = (List<MemoryExclusionVertex>) vertex.getPropertyBean()
+					.getValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS);
+			if (dividedPartHosts != null) {
+				List<MemoryExclusionVertex> dividedPartHostCopy = new ArrayList<MemoryExclusionVertex>();
+				for (MemoryExclusionVertex host : dividedPartHosts) {
+					dividedPartHostCopy.add(mObjMap.get(host));
+				}
+				vertexClone.setPropertyValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS, dividedPartHostCopy);
+			}
+
+			// TYPE_SIZE
+			Integer typeSize = (Integer) vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE);
+			if (typeSize != null) {
+				vertexClone.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE, typeSize);
+			}
+
+			// INTER_BUFFER_SPACES
+			@SuppressWarnings("unchecked")
+			List<Integer> interBufferSpaces = (List<Integer>) vertex.getPropertyBean()
+					.getValue(MemoryExclusionVertex.INTER_BUFFER_SPACES);
+			if (interBufferSpaces != null) {
+				vertexClone.setPropertyValue(MemoryExclusionVertex.INTER_BUFFER_SPACES,
+						new ArrayList<Integer>(interBufferSpaces));
+			}
+		}
+	}
+
+	/**
+	 * {@link #deepRemoveVertex(MemoryExclusionVertex)} for a {@link Collection}
+	 * of {@link MemoryExclusionVertex}.
+	 * 
+	 * @param vertices
+	 *            the {@link Collection} of {@link MemoryExclusionVertex}
+	 *            removed from the graph.
+	 */
+	public void deepRemoveAllVertices(Collection<? extends MemoryExclusionVertex> vertices) {
+
+		// List of vertices
+		// List of edges
+		// adjacentVerticesBackup
+		this.removeAllVertices(vertices);
+
+		// memExVerticesInSchedulingOrder
+		memExVerticesInSchedulingOrder.removeAll(vertices);
+
+		// HOST_MEMORY_OBJECT_PROPERTY property
+		@SuppressWarnings("unchecked")
+		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) this
+				.getPropertyBean().getValue(HOST_MEMORY_OBJECT_PROPERTY);
+
+		if (hosts != null) {
+			hosts.keySet().removeAll(vertices); // Changes to the KeySet are
+												// applied
+												// to the map
+			hosts.forEach((host, hosted) -> {
+				if (hosted.removeAll(vertices))
+					// List of hosted mObjects should never be impacted by
+					// the remove operation. (in the context of Distributor
+					// call)
+					// indeed, deeply removed vertices correspond to vertices
+					// belonging to other memory banks, hence if a hosted Mobj
+					// belong to a list, and this Mobj is to be removed, then
+					// the
+					// host Mobj for this hosted Mobj is mandatorily associated
+					// to
+					// another bank, and has been removed in the previous lines
+					// of
+					// the code.
+					throw new RuntimeException("A hosted Memory Object was removed (but its host was not).");
+			});
+		
+		// ADJACENT_VERTICES_BACKUP property vertices
+		Set<MemoryExclusionVertex> verticesWithAdjacentVerticesBackup = new HashSet<MemoryExclusionVertex>();
+		verticesWithAdjacentVerticesBackup.addAll(hosts.keySet());
+		for (Set<MemoryExclusionVertex> hosted : hosts.values()) {
+			verticesWithAdjacentVerticesBackup.addAll(hosted);
+		}
+		for (MemoryExclusionVertex vertex : verticesWithAdjacentVerticesBackup) {
+			@SuppressWarnings("unchecked")
+			List<MemoryExclusionVertex> adjacentVerticesBackup = (List<MemoryExclusionVertex>) vertex.getPropertyBean()
+					.getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
+			adjacentVerticesBackup.removeAll(vertices);
+			}
+		}
+	}
+
+	/**
+	 * Remove a {@link MemoryExclusionVertex} from the
+	 * {@link MemoryExclusionGraph}. Contrary to
+	 * {@link #removeVertex(MemoryExclusionVertex)}, this method scans the
+	 * properties and attributes of the {@link MemoryExclusionGraph} to remove
+	 * all reference to the removed {@link MemoryExclusionVertex}.<br>
+	 * <br>
+	 * Properties and attributes affected by this method are:
+	 * <ul>
+	 * <li>List of vertices</li>
+	 * <li>List of edges</li>
+	 * <li>{@link #adjacentVerticesBackup}</li>
+	 * <li>{@link #memExVerticesInSchedulingOrder}</li>
+	 * <li>{@link #HOST_MEMORY_OBJECT_PROPERTY} property}</li>
+	 * <li>{@link MemoryExclusionVertex#ADJACENT_VERTICES_BACKUP} property of
+	 * {@link MemoryExclusionVertex vertices}</li>
+	 * </ul>
+	 * 
+	 * @param vertex
+	 *            the {@link MemoryExclusionVertex} removed from the graph.
+	 */
+	public void deepRemoveVertex(MemoryExclusionVertex vertex) {
+		List<MemoryExclusionVertex> list = new ArrayList<MemoryExclusionVertex>();
+		list.add(vertex);
+		// Calls the list removing code to avoid duplicating the method code.
+		deepRemoveAllVertices(list);
 	}
 
 	/**
@@ -731,8 +1035,7 @@ public class MemoryExclusionGraph extends
 	 *            the vertex whose neighbors are retrieved
 	 * @return a set containing the neighbor vertices
 	 */
-	public HashSet<MemoryExclusionVertex> getAdjacentVertexOf(
-			MemoryExclusionVertex vertex) {
+	public HashSet<MemoryExclusionVertex> getAdjacentVertexOf(MemoryExclusionVertex vertex) {
 		HashSet<MemoryExclusionVertex> result;
 
 		// If this vertex was previously treated, simply access the backed-up
@@ -804,8 +1107,7 @@ public class MemoryExclusionGraph extends
 			result.addVertex(vertex);
 		}
 		// Retrieve the vertices list
-		MemoryExclusionVertex[] vertices = this.vertexSet().toArray(
-				new MemoryExclusionVertex[0]);
+		MemoryExclusionVertex[] vertices = this.vertexSet().toArray(new MemoryExclusionVertex[0]);
 		// For each pair of vertex, check if the corresponding edge exists in
 		// the current graph.
 		// If not, add an edge in the complementary graph
@@ -820,16 +1122,16 @@ public class MemoryExclusionGraph extends
 	}
 
 	/**
-	 * @return the {@link #dagVerticesInSchedulingOrder} or <code>null</code> if
-	 *         the {@link MemoryExclusionGraph MemEx} was not
-	 *         {@link #updateWithSchedule(DirectedAcyclicGraph) updated with a
-	 *         schedule}
+	 * @return a copy of the {@link #memExVerticesInSchedulingOrder} or
+	 *         <code>null</code> if the {@link MemoryExclusionGraph MemEx} was
+	 *         not {@link #updateWithSchedule(DirectedAcyclicGraph) updated with
+	 *         a schedule}
 	 */
-	public List<DAGVertex> getDagVerticesInSchedulingOrder() {
-		if (dagVerticesInSchedulingOrder == null) {
+	public List<MemoryExclusionVertex> getMemExVerticesInSchedulingOrder() {
+		if (memExVerticesInSchedulingOrder == null) {
 			return null;
 		} else {
-			return new ArrayList<DAGVertex>(dagVerticesInSchedulingOrder);
+			return new ArrayList<MemoryExclusionVertex>(memExVerticesInSchedulingOrder);
 		}
 	}
 
@@ -856,8 +1158,8 @@ public class MemoryExclusionGraph extends
 	 *             given {@link DirectedAcyclicGraph DAG} or if the
 	 *             {@link DirectedAcyclicGraph DAG} was not scheduled.
 	 */
-	protected Entry<Long, Long> getLifeTime(MemoryExclusionVertex vertex,
-			DirectedAcyclicGraph dag) throws RuntimeException {
+	protected Entry<Long, Long> getLifeTime(MemoryExclusionVertex vertex, DirectedAcyclicGraph dag)
+			throws RuntimeException {
 
 		// If the MemObject corresponds to an edge, its lifetime spans from the
 		// execution start of its source until the execution end of its target
@@ -867,64 +1169,47 @@ public class MemoryExclusionGraph extends
 			DAGVertex target = edge.getTarget();
 
 			if (source == null || target == null) {
-				throw new RuntimeException(
-						"Cannot get lifetime of a memory object "
-								+ vertex.toString()
-								+ " because its corresponding DAGEdge has no valid source and/or target");
+				throw new RuntimeException("Cannot get lifetime of a memory object " + vertex.toString()
+						+ " because its corresponding DAGEdge has no valid source and/or target");
 			}
 
-			Object birth = source.getPropertyBean().getValue("TaskStartTime",
-					Long.class);
+			Object birth = source.getPropertyBean().getValue("TaskStartTime", Long.class);
 
-			Object death = target.getPropertyBean().getValue("TaskStartTime",
-					Long.class);
+			Object death = target.getPropertyBean().getValue("TaskStartTime", Long.class);
 
 			if (death == null || birth == null) {
-				throw new RuntimeException(
-						"Cannot get lifetime of a memory object "
-								+ vertex.toString()
-								+ " because the source or target of its corresponding DAGEdge"
-								+ " has no TaskStartTime property. Maybe the DAG was not sheduled.");
+				throw new RuntimeException("Cannot get lifetime of a memory object " + vertex.toString()
+						+ " because the source or target of its corresponding DAGEdge"
+						+ " has no TaskStartTime property. Maybe the DAG was not sheduled.");
 			}
 
-			Object duration = target.getPropertyBean().getValue(
-					ImplementationPropertyNames.Task_duration, Long.class);
+			Object duration = target.getPropertyBean().getValue(ImplementationPropertyNames.Task_duration, Long.class);
 			if (duration == null) {
-				throw new RuntimeException(
-						"Cannot get lifetime of a memory object "
-								+ vertex
-								+ " because the target of its corresponding DAGEdge"
-								+ " has no duration property.");
+				throw new RuntimeException("Cannot get lifetime of a memory object " + vertex
+						+ " because the target of its corresponding DAGEdge" + " has no duration property.");
 			}
 
-			return new AbstractMap.SimpleEntry<Long, Long>((Long) birth,
-					(Long) death + (Long) duration);
+			return new AbstractMap.SimpleEntry<Long, Long>((Long) birth, (Long) death + (Long) duration);
 		}
 
 		// Else the memEx vertex corresponds to a working memory
 		if (vertex.getSink().equals(vertex.getSource())) {
 			DAGVertex dagVertex = dag.getVertex(vertex.getSink());
 			if (dagVertex == null) {
-				throw new RuntimeException(
-						"Cannot get lifetime of working memory object "
-								+ vertex
-								+ " because its corresponding DAGVertex does not exist in the given DAG.");
+				throw new RuntimeException("Cannot get lifetime of working memory object " + vertex
+						+ " because its corresponding DAGVertex does not exist in the given DAG.");
 			}
 
-			Object birth = dagVertex.getPropertyBean().getValue(
-					"TaskStartTime", Long.class);
-			Object duration = dagVertex.getPropertyBean().getValue(
-					ImplementationPropertyNames.Task_duration, Long.class);
+			Object birth = dagVertex.getPropertyBean().getValue("TaskStartTime", Long.class);
+			Object duration = dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.Task_duration,
+					Long.class);
 
 			if (birth == null || duration == null) {
-				throw new RuntimeException(
-						"Cannot get lifetime of working memory object "
-								+ vertex
-								+ " because its DAGVertex has no TaskStartTime and/or duration property");
+				throw new RuntimeException("Cannot get lifetime of working memory object " + vertex
+						+ " because its DAGVertex has no TaskStartTime and/or duration property");
 			}
 
-			return new AbstractMap.SimpleEntry<Long, Long>((Long) birth,
-					(Long) birth + (Long) duration);
+			return new AbstractMap.SimpleEntry<Long, Long>((Long) birth, (Long) birth + (Long) duration);
 
 		}
 
@@ -939,42 +1224,31 @@ public class MemoryExclusionGraph extends
 			// vertices they will not be added (since updating only consists in
 			// removing existing exclusions)
 			if (vertex.getSource().startsWith("FIFO_Head_")) {
-				DAGVertex dagEndVertex = dag.getVertex(vertex.getSource()
-						.substring(("FIFO_Head_").length()));
+				DAGVertex dagEndVertex = dag.getVertex(vertex.getSource().substring(("FIFO_Head_").length()));
 				DAGVertex dagInitVertex = dag.getVertex(vertex.getSink());
 
 				if (dagEndVertex == null || dagInitVertex == null) {
-					throw new RuntimeException(
-							"Cannot get lifetime of a memory object "
-									+ vertex.toString()
-									+ " because its corresponding DAGVertex could not be found in the DAG");
+					throw new RuntimeException("Cannot get lifetime of a memory object " + vertex.toString()
+							+ " because its corresponding DAGVertex could not be found in the DAG");
 				}
-				Object birth = dagEndVertex.getPropertyBean().getValue(
-						"TaskStartTime", Long.class);
+				Object birth = dagEndVertex.getPropertyBean().getValue("TaskStartTime", Long.class);
 
-				Object death = dagInitVertex.getPropertyBean().getValue(
-						"TaskStartTime", Long.class);
+				Object death = dagInitVertex.getPropertyBean().getValue("TaskStartTime", Long.class);
 
 				if (death == null || birth == null) {
-					throw new RuntimeException(
-							"Cannot get lifetime of a memory object "
-									+ vertex.toString()
-									+ " because the source or target of its corresponding End/Init"
-									+ " has no TaskStartTime property. Maybe the DAG was not sheduled.");
+					throw new RuntimeException("Cannot get lifetime of a memory object " + vertex.toString()
+							+ " because the source or target of its corresponding End/Init"
+							+ " has no TaskStartTime property. Maybe the DAG was not sheduled.");
 				}
 
-				Object duration = dagInitVertex.getPropertyBean().getValue(
-						ImplementationPropertyNames.Task_duration, Long.class);
+				Object duration = dagInitVertex.getPropertyBean().getValue(ImplementationPropertyNames.Task_duration,
+						Long.class);
 				if (duration == null) {
-					throw new RuntimeException(
-							"Cannot get lifetime of a memory object "
-									+ vertex
-									+ " because the Init of its corresponding Fifo"
-									+ " has no duration property.");
+					throw new RuntimeException("Cannot get lifetime of a memory object " + vertex
+							+ " because the Init of its corresponding Fifo" + " has no duration property.");
 				}
 
-				return new AbstractMap.SimpleEntry<Long, Long>((Long) death
-						+ (Long) duration, (Long) birth);
+				return new AbstractMap.SimpleEntry<Long, Long>((Long) death + (Long) duration, (Long) birth);
 			}
 		}
 
@@ -982,8 +1256,7 @@ public class MemoryExclusionGraph extends
 		// nor from a fifo
 		// Error
 		throw new RuntimeException("Cannot get lifetime of a memory object "
-				+ "that is not derived from a scheduled DAG." + " (MemObject: "
-				+ vertex.toString() + ")");
+				+ "that is not derived from a scheduled DAG." + " (MemObject: " + vertex.toString() + ")");
 
 	}
 
@@ -1006,35 +1279,71 @@ public class MemoryExclusionGraph extends
 	}
 
 	/**
+	 * Returns the total number of {@link MemoryExclusionVertex} in the
+	 * {@link MemoryExclusionGraph} including these merged as a result of a
+	 * buffer merging operation, and stored in the
+	 * {@value #HOST_MEMORY_OBJECT_PROPERTY} property.
+	 * 
+	 * @return
+	 */
+	public int getTotalNumberOfVertices() {
+		return getTotalSetOfVertices().size();
+	}
+
+	/**
+	 * Returns the {@link Set} of all {@link MemoryExclusionVertex} in the
+	 * {@link MemoryExclusionGraph}, including these merged as a result of a
+	 * buffer merging operation, and stored in the
+	 * {@value #HOST_MEMORY_OBJECT_PROPERTY} property.
+	 * 
+	 * @return
+	 */
+	public Set<MemoryExclusionVertex> getTotalSetOfVertices() {
+		Set<MemoryExclusionVertex> allVertices = new HashSet<MemoryExclusionVertex>(this.vertexSet());
+		@SuppressWarnings("unchecked")
+		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) this
+				.getPropertyBean().getValue(HOST_MEMORY_OBJECT_PROPERTY);
+		if (hosts != null) {
+			hosts.forEach((host, hosted) -> {
+				allVertices.addAll(hosted);
+			});
+		}
+
+		return allVertices;
+	}
+
+	/**
+	 * This method returns the local copy of the {@link MemoryExclusionVertex}
+	 * that is {@link MemoryExclusionVertex}{@link #equals(Object)} to the
+	 * {@link MemoryExclusionVertex} passed as a parameter.
+	 * 
+	 * @param memObject
+	 *            a {@link MemoryExclusionVertex} searched in the
+	 *            {@link MemoryExclusionGraph}
+	 * @return an equal {@link MemoryExclusionVertex} from the
+	 *         {@link #vertexSet()}, null if there is no such vertex.
+	 */
+	public MemoryExclusionVertex getVertex(MemoryExclusionVertex memObject) {
+		Iterator<MemoryExclusionVertex> iter = this.vertexSet().iterator();
+		while (iter.hasNext()) {
+			MemoryExclusionVertex vertex = iter.next();
+			if (vertex.equals(memObject)) {
+				return vertex;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * @override
 	 */
 	@Override
-	public boolean removeAllVertices(
-			Collection<? extends MemoryExclusionVertex> arg0) {
+	public boolean removeAllVertices(Collection<? extends MemoryExclusionVertex> arg0) {
 		boolean result = super.removeAllVertices(arg0);
 
-		for (HashSet<MemoryExclusionVertex> backup : adjacentVerticesBackup
-				.values()) {
+		for (HashSet<MemoryExclusionVertex> backup : adjacentVerticesBackup.values()) {
 			result |= backup.removeAll(arg0);
 		}
-		return result;
-	}
-
-	@Override
-	public DefaultEdge removeEdge(MemoryExclusionVertex arg0,
-			MemoryExclusionVertex arg1) {
-		DefaultEdge result = super.removeEdge(arg0, arg1);
-		if (result != null) {
-			HashSet<MemoryExclusionVertex> arg0Neighbors = adjacentVerticesBackup
-					.get(arg0);
-			if (arg0Neighbors != null)
-				arg0Neighbors.remove(arg1);
-			HashSet<MemoryExclusionVertex> arg1Neighbors = adjacentVerticesBackup
-					.get(arg1);
-			if (arg1Neighbors != null)
-				arg1Neighbors.remove(arg0);
-		}
-
 		return result;
 	}
 
@@ -1045,15 +1354,28 @@ public class MemoryExclusionGraph extends
 
 		boolean result = super.removeEdge(arg0);
 		if (result) {
-			HashSet<MemoryExclusionVertex> targetNeighbors = adjacentVerticesBackup
-					.get(target);
+			HashSet<MemoryExclusionVertex> targetNeighbors = adjacentVerticesBackup.get(target);
 			if (targetNeighbors != null)
 				targetNeighbors.remove(source);
-			HashSet<MemoryExclusionVertex> sourceNeighbors = adjacentVerticesBackup
-					.get(source);
+			HashSet<MemoryExclusionVertex> sourceNeighbors = adjacentVerticesBackup.get(source);
 			if (sourceNeighbors != null)
 				sourceNeighbors.remove(target);
 		}
+		return result;
+	}
+
+	@Override
+	public DefaultEdge removeEdge(MemoryExclusionVertex arg0, MemoryExclusionVertex arg1) {
+		DefaultEdge result = super.removeEdge(arg0, arg1);
+		if (result != null) {
+			HashSet<MemoryExclusionVertex> arg0Neighbors = adjacentVerticesBackup.get(arg0);
+			if (arg0Neighbors != null)
+				arg0Neighbors.remove(arg1);
+			HashSet<MemoryExclusionVertex> arg1Neighbors = adjacentVerticesBackup.get(arg1);
+			if (arg1Neighbors != null)
+				arg1Neighbors.remove(arg0);
+		}
+
 		return result;
 	}
 
@@ -1075,8 +1397,7 @@ public class MemoryExclusionGraph extends
 	public void removeLightestEquivalentNodes() {
 
 		// Retrieve the list of nodes of the gaph
-		ArrayList<MemoryExclusionVertex> nodes = new ArrayList<MemoryExclusionVertex>(
-				this.vertexSet());
+		ArrayList<MemoryExclusionVertex> nodes = new ArrayList<MemoryExclusionVertex>(this.vertexSet());
 
 		// Sort it in descending order of weights
 		Collections.sort(nodes, Collections.reverseOrder());
@@ -1087,16 +1408,13 @@ public class MemoryExclusionGraph extends
 		// comments
 		for (MemoryExclusionVertex node : nodes) {
 			if (!fusionned.contains(node)) {
-				HashSet<MemoryExclusionVertex> nonAdjacentSet = new HashSet<MemoryExclusionVertex>(
-						this.vertexSet());
+				HashSet<MemoryExclusionVertex> nonAdjacentSet = new HashSet<MemoryExclusionVertex>(this.vertexSet());
 				nonAdjacentSet.removeAll(getAdjacentVertexOf(node));
 				nonAdjacentSet.remove(node);
 
 				for (MemoryExclusionVertex notNeighbor : nonAdjacentSet) {
-					if (getAdjacentVertexOf(notNeighbor).size() == getAdjacentVertexOf(
-							node).size()) {
-						if (getAdjacentVertexOf(notNeighbor).containsAll(
-								getAdjacentVertexOf(node))) {
+					if (getAdjacentVertexOf(notNeighbor).size() == getAdjacentVertexOf(node).size()) {
+						if (getAdjacentVertexOf(notNeighbor).containsAll(getAdjacentVertexOf(node))) {
 
 							// Keep only the one with the max weight
 							fusionned.add(notNeighbor);
@@ -1113,6 +1431,162 @@ public class MemoryExclusionGraph extends
 	@Override
 	public void setPropertyValue(String propertyName, Object value) {
 		this.getPropertyBean().setValue(propertyName, value);
+	}
+
+	/**
+	 * Method used to update the exclusions between memory objects corresponding
+	 * to Fifo heads and other memory objects of the
+	 * {@link MemoryExclusionGraph}. Exclusions will be removed from the
+	 * exclusion graph, but no exclusions will be added.
+	 * 
+	 * @param dag
+	 *            the scheduled DAG
+	 * 
+	 */
+	protected void updateFIFOMemObjectWithSchedule(DirectedAcyclicGraph inputDAG) {
+
+		// Create a DAG with new edges from scheduling info
+		DirectedAcyclicGraph scheduledDAG = (DirectedAcyclicGraph) inputDAG.clone();
+
+		// Create an TreeMap of the DAGVertices, in scheduling order.
+		TreeMap<Integer, DAGVertex> verticesMap = new TreeMap<Integer, DAGVertex>();
+
+		DAGIterator iterDAGVertices = new DAGIterator(scheduledDAG); // Iterator
+																		// on
+																		// DAG
+		// vertices
+
+		// Get vertices in scheduling order and remove send/receive vertices
+		// from the dag.
+		// Also identify the init vertices
+		Set<DAGVertex> removedVertices = new HashSet<DAGVertex>();
+		Set<DAGVertex> initVertices = new HashSet<>();
+
+		while (iterDAGVertices.hasNext()) {
+			DAGVertex currentVertex = iterDAGVertices.next();
+
+			boolean isTask = currentVertex.getPropertyBean().getValue("vertexType").toString().equals("task");
+
+			String vertKind = "";
+
+			// Only task vertices have a kind
+			if (isTask) {
+				vertKind = currentVertex.getPropertyBean().getValue("kind").toString();
+			}
+
+			if (vertKind.equals("dag_vertex") || vertKind.equals("dag_broadcast_vertex")
+					|| vertKind.equals("dag_init_vertex") || vertKind.equals("dag_end_vertex")
+					|| vertKind.equals("dag_fork_vertex") || vertKind.equals("dag_join_vertex")) {
+				int schedulingOrder = (Integer) currentVertex.getPropertyBean()
+						.getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
+				verticesMap.put(schedulingOrder, currentVertex);
+
+				if (vertKind.equals("dag_init_vertex")) {
+					initVertices.add(currentVertex);
+				}
+			} else {
+				removedVertices.add(currentVertex);
+			}
+		}
+
+		if (initVertices.size() == 0) {
+			// Nothing to update !
+			return;
+		}
+
+		// Remove unwanted vertices from the scheduledDag
+		scheduledDAG.removeAllVertices(removedVertices);
+
+		// This map is used along the scan of the vertex of the dag.
+		// Its purpose is to store the last vertex scheduled on each
+		// component. This way, when a new vertex is executed on this
+		// instance is encountered, an edge can be added between it and
+		// the previous one.
+		HashMap<ComponentInstance, DAGVertex> lastVerticesScheduled;
+		lastVerticesScheduled = new HashMap<ComponentInstance, DAGVertex>();
+
+		// Scan the dag and add new precedence edges caused by the schedule
+		Set<DAGEdge> addedEdges = new HashSet<DAGEdge>();
+		for (Entry<Integer, DAGVertex> entry : verticesMap.entrySet()) {
+			DAGVertex currentVertex = entry.getValue();
+
+			// Retrieve component
+			ComponentInstance comp = (ComponentInstance) currentVertex.getPropertyBean().getValue("Operator");
+
+			// Retrieve last DAGVertex executed on this component
+			DAGVertex lastScheduled = lastVerticesScheduled.get(comp);
+
+			// If this is not the first time this component is encountered
+			if (lastScheduled != null) {
+
+				// Add an edge between the last and the currend vertex
+				// if there is not already one
+				if (scheduledDAG.getEdge(lastScheduled, currentVertex) == null) {
+					DAGEdge newEdge = scheduledDAG.addEdge(lastScheduled, currentVertex);
+					addedEdges.add(newEdge);
+				}
+			}
+			// Save currentVertex as lastScheduled on this component
+			lastVerticesScheduled.put(comp, currentVertex);
+		}
+
+		// Now, remove fifo exclusion
+		for (DAGVertex dagInitVertex : initVertices) {
+			// Retrieve the corresponding EndVertex
+			SDFInitVertex sdfInitVertex = (SDFInitVertex) dagInitVertex.getPropertyBean()
+					.getValue(DAGVertex.SDF_VERTEX);
+			SDFEndVertex sdfEndVertex = (SDFEndVertex) sdfInitVertex.getEndReference();
+			DAGVertex dagEndVertex = scheduledDAG.getVertex(sdfEndVertex.getName());
+
+			// Compute the list of all edges between init and end
+			Set<DAGEdge> edgesBetween;
+			{
+				Set<DAGEdge> endPredecessors = scheduledDAG.getPredecessorEdgesOf(dagEndVertex);
+				Set<DAGEdge> initSuccessors = scheduledDAG.getSuccessorEdgesOf(dagInitVertex);
+				edgesBetween = (new HashSet<DAGEdge>(initSuccessors));
+				edgesBetween.retainAll(endPredecessors);
+				edgesBetween.removeAll(addedEdges);
+			}
+
+			// Remove exclusions with all buffer in the list (if any)
+			if (edgesBetween.size() != 0) {
+
+				// retrieve the head MObj for current fifo
+				// size does not matter ("that's what she said") to retrieve the
+				// Memory object from the exclusion graph
+				MemoryExclusionVertex headMemoryNode = new MemoryExclusionVertex("FIFO_Head_" + dagEndVertex.getName(),
+						dagInitVertex.getName(), 0);
+				for (DAGEdge edge : edgesBetween) {
+					MemoryExclusionVertex mObj = new MemoryExclusionVertex(edge);
+					this.removeEdge(headMemoryNode, mObj);
+				}
+			}
+
+			// Compute the list of all actors between
+			// init and end
+			Set<DAGVertex> verticesBetween = null;
+			{
+				Set<DAGVertex> endPredecessors = scheduledDAG.getPredecessorVerticesOf(dagEndVertex);
+				Set<DAGVertex> initSuccessors = scheduledDAG.getSuccessorVerticesOf(dagInitVertex);
+				verticesBetween = (new HashSet<DAGVertex>(initSuccessors));
+				verticesBetween.retainAll(endPredecessors);
+				verticesBetween.removeAll(addedEdges);
+			}
+
+			// retrieve the head MObj for current fifo
+			// size does not matter ("that's what she said") to retrieve the
+			// Memory object from the exclusion graph
+			MemoryExclusionVertex headMemoryNode = new MemoryExclusionVertex("FIFO_Head_" + dagEndVertex.getName(),
+					dagInitVertex.getName(), 0);
+			for (DAGVertex dagVertex : verticesBetween) {
+				MemoryExclusionVertex wMemoryObj = new MemoryExclusionVertex(dagVertex.getName(), dagVertex.getName(),
+						0);
+				if (this.containsVertex(wMemoryObj)) {
+					this.removeEdge(headMemoryNode, wMemoryObj);
+				}
+			}
+
+		}
 	}
 
 	/**
@@ -1166,8 +1640,7 @@ public class MemoryExclusionGraph extends
 			// If this code is reached, the two objects are buffers or working
 			// memory
 			// If the lifetimes do not overlap
-			if (!(obj1Lifetime.getKey() < obj2Lifetime.getValue() && obj2Lifetime
-					.getKey() < obj1Lifetime.getValue())) {
+			if (!(obj1Lifetime.getKey() < obj2Lifetime.getValue() && obj2Lifetime.getKey() < obj1Lifetime.getValue())) {
 				// Remove the exclution
 				removedExclusions.add(exclusion);
 			}
@@ -1221,36 +1694,28 @@ public class MemoryExclusionGraph extends
 		while (iterDAGVertices.hasNext()) {
 			DAGVertex currentVertex = iterDAGVertices.next();
 
-			boolean isTask = currentVertex.getPropertyBean()
-					.getValue("vertexType").toString().equals("task");
+			boolean isTask = currentVertex.getPropertyBean().getValue("vertexType").toString().equals("task");
 
 			String vertKind = "";
 
 			// Only task vertices have a kind
 			if (isTask) {
-				vertKind = currentVertex.getPropertyBean().getValue("kind")
-						.toString();
+				vertKind = currentVertex.getPropertyBean().getValue("kind").toString();
 			}
 
-			if (vertKind.equals("dag_vertex")
-					|| vertKind.equals("dag_broadcast_vertex")
-					|| vertKind.equals("dag_init_vertex")
-					|| vertKind.equals("dag_end_vertex")
-					|| vertKind.equals("dag_fork_vertex")
-					|| vertKind.equals("dag_join_vertex")) {
-				int schedulingOrder = (Integer) currentVertex
-						.getPropertyBean()
-						.getValue(
-								ImplementationPropertyNames.Vertex_schedulingOrder);
+			if (vertKind.equals("dag_vertex") || vertKind.equals("dag_broadcast_vertex")
+					|| vertKind.equals("dag_init_vertex") || vertKind.equals("dag_end_vertex")
+					|| vertKind.equals("dag_fork_vertex") || vertKind.equals("dag_join_vertex")) {
+				int schedulingOrder = (Integer) currentVertex.getPropertyBean()
+						.getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
 				verticesMap.put(schedulingOrder, currentVertex);
 			}
 		}
 
-		ArrayList<Integer> schedulingOrders = new ArrayList<Integer>(
-				verticesMap.keySet());
+		ArrayList<Integer> schedulingOrders = new ArrayList<Integer>(verticesMap.keySet());
 		Collections.sort(schedulingOrders);
 
-		dagVerticesInSchedulingOrder = new ArrayList<DAGVertex>();
+		List<DAGVertex> dagVerticesInSchedulingOrder = new ArrayList<DAGVertex>();
 
 		// Update the buffer exclusions
 		// Scan the vertices in scheduling order
@@ -1260,17 +1725,14 @@ public class MemoryExclusionGraph extends
 
 			// retrieve new predecessor list, if any.
 			// else, create an empty one
-			HashSet<MemoryExclusionVertex> newPredecessors = newVerticesPredecessors
-					.get(currentVertex.getName());
+			HashSet<MemoryExclusionVertex> newPredecessors = newVerticesPredecessors.get(currentVertex.getName());
 			if (newPredecessors == null) {
 				newPredecessors = new HashSet<MemoryExclusionVertex>();
-				newVerticesPredecessors.put(currentVertex.getName(),
-						newPredecessors);
+				newVerticesPredecessors.put(currentVertex.getName(), newPredecessors);
 			}
 
 			// Retrieve component
-			ComponentInstance comp = (ComponentInstance) currentVertex
-					.getPropertyBean().getValue("Operator");
+			ComponentInstance comp = (ComponentInstance) currentVertex.getPropertyBean().getValue("Operator");
 
 			// Retrieve last DAGVertex executed on this component
 			DAGVertex lastScheduled = lastVerticesScheduled.get(comp);
@@ -1280,18 +1742,15 @@ public class MemoryExclusionGraph extends
 				// update new predecessors of current vertex
 				// with all predecessor (new and not new) of previous
 				// DAGVertex executed on this component.
-				newPredecessors.addAll(newVerticesPredecessors
-						.get(lastScheduled.getName()));
-				newPredecessors.addAll(verticesPredecessors.get(lastScheduled
-						.getName()));
+				newPredecessors.addAll(newVerticesPredecessors.get(lastScheduled.getName()));
+				newPredecessors.addAll(verticesPredecessors.get(lastScheduled.getName()));
 				// "old" predecessors will be excluded later
 			}
 			// Save currentVertex as lastScheduled on this component
 			lastVerticesScheduled.put(comp, currentVertex);
 
 			// Exclude all "old" predecessors from "new" list
-			newPredecessors.removeAll(verticesPredecessors.get(currentVertex
-					.getName()));
+			newPredecessors.removeAll(verticesPredecessors.get(currentVertex.getName()));
 
 			if (!newPredecessors.isEmpty()) {
 				// Remove exclusion between the Exclusion Vertex corresponding
@@ -1300,8 +1759,8 @@ public class MemoryExclusionGraph extends
 
 				// Re-create the working memory exclusion vertex (weight does
 				// not matter to find the vertex in the Memex)
-				MemoryExclusionVertex wMemVertex = new MemoryExclusionVertex(
-						currentVertex.getName(), currentVertex.getName(), 0);
+				MemoryExclusionVertex wMemVertex = new MemoryExclusionVertex(currentVertex.getName(),
+						currentVertex.getName(), 0);
 				if (this.containsVertex(wMemVertex)) {
 					for (MemoryExclusionVertex newPredecessor : newPredecessors) {
 						if (this.removeEdge(wMemVertex, newPredecessor) == null) {
@@ -1314,10 +1773,8 @@ public class MemoryExclusionGraph extends
 				// to outgoing edges of the currentVertex, and ExclusionVertices
 				// in newPredecessors list
 				for (DAGEdge outgoingEdge : currentVertex.outgoingEdges()) {
-					if (outgoingEdge.getTarget().getPropertyBean()
-							.getValue("vertexType").toString().equals("task")) {
-						MemoryExclusionVertex edgeVertex = new MemoryExclusionVertex(
-								outgoingEdge);
+					if (outgoingEdge.getTarget().getPropertyBean().getValue("vertexType").toString().equals("task")) {
+						MemoryExclusionVertex edgeVertex = new MemoryExclusionVertex(outgoingEdge);
 						for (MemoryExclusionVertex newPredecessor : newPredecessors) {
 							if (this.removeEdge(edgeVertex, newPredecessor) == null) {
 								/**
@@ -1333,24 +1790,19 @@ public class MemoryExclusionGraph extends
 								 * creating the MemEx but not when updating it.
 								 */
 								throw new RuntimeException(
-										"Failed removing exclusion between "
-												+ edgeVertex + " and "
-												+ newPredecessor);
+										"Failed removing exclusion between " + edgeVertex + " and " + newPredecessor);
 							}
 						}
 
 						// Update newPredecessor list of successors
 						// DAGVertices (the target of the current edge)
 						HashSet<MemoryExclusionVertex> successorPredecessor;
-						successorPredecessor = newVerticesPredecessors
-								.get(outgoingEdge.getTarget().getName());
+						successorPredecessor = newVerticesPredecessors.get(outgoingEdge.getTarget().getName());
 						if (successorPredecessor == null) {
 							// if successor did not have a new predecessor
 							// list, create one
 							successorPredecessor = new HashSet<MemoryExclusionVertex>();
-							newVerticesPredecessors.put(outgoingEdge
-									.getTarget().getName(),
-									successorPredecessor);
+							newVerticesPredecessors.put(outgoingEdge.getTarget().getName(), successorPredecessor);
 						}
 						successorPredecessor.addAll(newPredecessors);
 						// Add the working memory object to the
@@ -1365,201 +1817,47 @@ public class MemoryExclusionGraph extends
 
 		// Update the fifo exclusions
 		updateFIFOMemObjectWithSchedule(dag);
-	}
 
-	/**
-	 * Method used to update the exclusions between memory objects corresponding
-	 * to Fifo heads and other memory objects of the
-	 * {@link MemoryExclusionGraph}. Exclusions will be removed from the
-	 * exclusion graph, but no exclusions will be added.
-	 * 
-	 * @param dag
-	 *            the scheduled DAG
-	 * 
-	 */
-	protected void updateFIFOMemObjectWithSchedule(DirectedAcyclicGraph inputDAG) {
-
-		// Create a DAG with new edges from scheduling info
-		DirectedAcyclicGraph scheduledDAG = (DirectedAcyclicGraph) inputDAG
-				.clone();
-
-		// Create an TreeMap of the DAGVertices, in scheduling order.
-		TreeMap<Integer, DAGVertex> verticesMap = new TreeMap<Integer, DAGVertex>();
-
-		DAGIterator iterDAGVertices = new DAGIterator(scheduledDAG); // Iterator
-																		// on
-																		// DAG
-		// vertices
-
-		// Get vertices in scheduling order and remove send/receive vertices
-		// from the dag.
-		// Also identify the init vertices
-		Set<DAGVertex> removedVertices = new HashSet<DAGVertex>();
-		Set<DAGVertex> initVertices = new HashSet<>();
-
-		while (iterDAGVertices.hasNext()) {
-			DAGVertex currentVertex = iterDAGVertices.next();
-
-			boolean isTask = currentVertex.getPropertyBean()
-					.getValue("vertexType").toString().equals("task");
-
-			String vertKind = "";
-
-			// Only task vertices have a kind
-			if (isTask) {
-				vertKind = currentVertex.getPropertyBean().getValue("kind")
-						.toString();
-			}
-
-			if (vertKind.equals("dag_vertex")
-					|| vertKind.equals("dag_broadcast_vertex")
-					|| vertKind.equals("dag_init_vertex")
-					|| vertKind.equals("dag_end_vertex")
-					|| vertKind.equals("dag_fork_vertex")
-					|| vertKind.equals("dag_join_vertex")) {
-				int schedulingOrder = (Integer) currentVertex
-						.getPropertyBean()
-						.getValue(
-								ImplementationPropertyNames.Vertex_schedulingOrder);
-				verticesMap.put(schedulingOrder, currentVertex);
-
-				if (vertKind.equals("dag_init_vertex")) {
-					initVertices.add(currentVertex);
-				}
-			} else {
-				removedVertices.add(currentVertex);
+		// Save memory object "scheduling" order
+		memExVerticesInSchedulingOrder = new ArrayList<MemoryExclusionVertex>();
+		// Copy the set of graph vertices (as a list to speedup search in
+		// remaining code)
+		List<MemoryExclusionVertex> memExVertices = new ArrayList<MemoryExclusionVertex>(this.vertexSet());
+		/** Begin by putting all FIFO related Memory objects (if any) */
+		for (MemoryExclusionVertex vertex : this.vertexSet()) {
+			if (vertex.getSource().startsWith("FIFO_Head_") || vertex.getSource().startsWith("FIFO_Body_")) {
+				memExVerticesInSchedulingOrder.add(vertex);
 			}
 		}
 
-		if (initVertices.size() == 0) {
-			// Nothing to update !
-			return;
-		}
-
-		// Remove unwanted vertices from the scheduledDag
-		scheduledDAG.removeAllVertices(removedVertices);
-
-		// This map is used along the scan of the vertex of the dag.
-		// Its purpose is to store the last vertex scheduled on each
-		// component. This way, when a new vertex is executed on this
-		// instance is encountered, an edge can be added between it and
-		// the previous one.
-		HashMap<ComponentInstance, DAGVertex> lastVerticesScheduled;
-		lastVerticesScheduled = new HashMap<ComponentInstance, DAGVertex>();
-
-		// Scan the dag and add new precedence edges caused by the schedule
-		Set<DAGEdge> addedEdges = new HashSet<DAGEdge>();
-		for (Entry<Integer, DAGVertex> entry : verticesMap.entrySet()) {
-			DAGVertex currentVertex = entry.getValue();
-
-			// Retrieve component
-			ComponentInstance comp = (ComponentInstance) currentVertex
-					.getPropertyBean().getValue("Operator");
-
-			// Retrieve last DAGVertex executed on this component
-			DAGVertex lastScheduled = lastVerticesScheduled.get(comp);
-
-			// If this is not the first time this component is encountered
-			if (lastScheduled != null) {
-
-				// Add an edge between the last and the currend vertex
-				// if there is not already one
-				if (scheduledDAG.getEdge(lastScheduled, currentVertex) == null) {
-					DAGEdge newEdge = scheduledDAG.addEdge(lastScheduled,
-							currentVertex);
-					addedEdges.add(newEdge);
-				}
-			}
-			// Save currentVertex as lastScheduled on this component
-			lastVerticesScheduled.put(comp, currentVertex);
-		}
-
-		// Now, remove fifo exclusion
-		for (DAGVertex dagInitVertex : initVertices) {
-			// Retrieve the corresponding EndVertex
-			SDFInitVertex sdfInitVertex = (SDFInitVertex) dagInitVertex
-					.getPropertyBean().getValue(DAGVertex.SDF_VERTEX);
-			SDFEndVertex sdfEndVertex = (SDFEndVertex) sdfInitVertex
-					.getEndReference();
-			DAGVertex dagEndVertex = scheduledDAG.getVertex(sdfEndVertex
-					.getName());
-
-			// Compute the list of all edges between init and end
-			Set<DAGEdge> edgesBetween;
+		for (DAGVertex vertex : dagVerticesInSchedulingOrder) {
+			/** 1- Retrieve the Working Memory MemEx Vertex (if any) */
 			{
-				Set<DAGEdge> endPredecessors = scheduledDAG
-						.getPredecessorEdgesOf(dagEndVertex);
-				Set<DAGEdge> initSuccessors = scheduledDAG
-						.getSuccessorEdgesOf(dagInitVertex);
-				edgesBetween = (new HashSet<DAGEdge>(initSuccessors));
-				edgesBetween.retainAll(endPredecessors);
-				edgesBetween.removeAll(addedEdges);
-			}
-
-			// Remove exclusions with all buffer in the list (if any)
-			if (edgesBetween.size() != 0) {
-
-				// retrieve the head MObj for current fifo
-				// size does not matter ("that's what she said") to retrieve the
-				// Memory object from the exclusion graph
-				MemoryExclusionVertex headMemoryNode = new MemoryExclusionVertex(
-						"FIFO_Head_" + dagEndVertex.getName(),
-						dagInitVertex.getName(), 0);
-				for (DAGEdge edge : edgesBetween) {
-					MemoryExclusionVertex mObj = new MemoryExclusionVertex(edge);
-					this.removeEdge(headMemoryNode, mObj);
+				// Re-create the working memory exclusion vertex (weight does
+				// not matter to find the vertex in the Memex)
+				MemoryExclusionVertex wMemVertex = new MemoryExclusionVertex(vertex.getName(), vertex.getName(), 0);
+				int index;
+				if ((index = memExVertices.indexOf(wMemVertex)) != -1) {
+					// The working memory exists
+					memExVerticesInSchedulingOrder.add(memExVertices.get(index));
 				}
 			}
 
-			// Compute the list of all actors between
-			// init and end
-			Set<DAGVertex> verticesBetween = null;
+			/** 2- Retrieve the MemEx Vertices of outgoing edges (if any) */
 			{
-				Set<DAGVertex> endPredecessors = scheduledDAG
-						.getPredecessorVerticesOf(dagEndVertex);
-				Set<DAGVertex> initSuccessors = scheduledDAG
-						.getSuccessorVerticesOf(dagInitVertex);
-				verticesBetween = (new HashSet<DAGVertex>(initSuccessors));
-				verticesBetween.retainAll(endPredecessors);
-				verticesBetween.removeAll(addedEdges);
-			}
-
-			// retrieve the head MObj for current fifo
-			// size does not matter ("that's what she said") to retrieve the
-			// Memory object from the exclusion graph
-			MemoryExclusionVertex headMemoryNode = new MemoryExclusionVertex(
-					"FIFO_Head_" + dagEndVertex.getName(),
-					dagInitVertex.getName(), 0);
-			for (DAGVertex dagVertex : verticesBetween) {
-				MemoryExclusionVertex wMemoryObj = new MemoryExclusionVertex(
-						dagVertex.getName(), dagVertex.getName(), 0);
-				if (this.containsVertex(wMemoryObj)) {
-					this.removeEdge(headMemoryNode, wMemoryObj);
+				for (DAGEdge outgoingEdge : vertex.outgoingEdges()) {
+					if (outgoingEdge.getTarget().getPropertyBean().getValue("vertexType").toString().equals("task")) {
+						MemoryExclusionVertex edgeVertex = new MemoryExclusionVertex(outgoingEdge);
+						int index;
+						if ((index = memExVertices.indexOf(edgeVertex)) != -1) {
+							// The working memory exists
+							memExVerticesInSchedulingOrder.add(memExVertices.get(index));
+						} else {
+							throw new RuntimeException("Missing MemEx Vertex: " + edgeVertex);
+						}
+					}
 				}
 			}
-
 		}
-	}
-
-	/**
-	 * This method returns the local copy of the {@link MemoryExclusionVertex}
-	 * that is {@link MemoryExclusionVertex}{@link #equals(Object)} to the
-	 * {@link MemoryExclusionVertex} passed as a parameter.
-	 * 
-	 * @param memObject
-	 *            a {@link MemoryExclusionVertex} searched in the
-	 *            {@link MemoryExclusionGraph}
-	 * @return an equal {@link MemoryExclusionVertex} from the
-	 *         {@link #vertexSet()}, null if there is no such vertex.
-	 */
-	public MemoryExclusionVertex getVertex(MemoryExclusionVertex memObject) {
-		Iterator<MemoryExclusionVertex> iter = this.vertexSet().iterator();
-		while (iter.hasNext()) {
-			MemoryExclusionVertex vertex = iter.next();
-			if (vertex.equals(memObject)) {
-				return vertex;
-			}
-		}
-		return null;
 	}
 }
