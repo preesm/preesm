@@ -47,7 +47,6 @@ import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-import org.eclipse.emf.internal.cdo.CDOObjectImpl;
 import org.ietr.preesm.codegen.xtend.model.codegen.Block;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
@@ -71,8 +70,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
 public class BlockImpl extends EObjectImpl implements Block {
 	/**
 	 * The cached value of the '{@link #getCodeElts() <em>Code Elts</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getCodeElts()
 	 * @generated
 	 * @ordered
@@ -80,8 +78,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 	protected EList<CodeElt> codeElts;
 	/**
 	 * The cached value of the '{@link #getDeclarations() <em>Declarations</em>}' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getDeclarations()
 	 * @generated
 	 * @ordered
@@ -89,8 +86,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 	protected EList<Variable> declarations;
 	/**
 	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -98,8 +94,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 	protected static final String NAME_EDEFAULT = null;
 	/**
 	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -107,8 +102,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 	protected String name = NAME_EDEFAULT;
 	/**
 	 * The cached value of the '{@link #getDefinitions() <em>Definitions</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getDefinitions()
 	 * @generated
 	 * @ordered
@@ -193,8 +187,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
@@ -210,8 +203,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -228,8 +220,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -248,8 +239,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
@@ -268,8 +258,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -286,8 +275,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -306,8 +294,7 @@ public class BlockImpl extends EObjectImpl implements Block {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override

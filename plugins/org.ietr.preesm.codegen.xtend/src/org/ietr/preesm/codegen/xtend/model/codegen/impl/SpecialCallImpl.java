@@ -64,8 +64,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType;
 public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	/**
 	 * The default value of the '{@link #getType() <em>Type</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getType()
 	 * @generated
 	 * @ordered
@@ -73,8 +72,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	protected static final SpecialType TYPE_EDEFAULT = SpecialType.FORK;
 	/**
 	 * The cached value of the '{@link #getType() <em>Type</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getType()
 	 * @generated
 	 * @ordered
@@ -82,8 +80,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	protected SpecialType type = TYPE_EDEFAULT;
 	/**
 	 * The cached value of the '{@link #getInputBuffers() <em>Input Buffers</em>}' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getInputBuffers()
 	 * @generated
 	 * @ordered
@@ -91,8 +88,8 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	protected EList<Buffer> inputBuffers;
 	/**
 	 * The cached value of the '{@link #getOutputBuffers() <em>Output Buffers</em>}' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
 	 * @see #getOutputBuffers()
 	 * @generated
 	 * @ordered
@@ -248,8 +245,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -266,8 +262,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -281,8 +276,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -296,8 +290,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -314,8 +307,7 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override

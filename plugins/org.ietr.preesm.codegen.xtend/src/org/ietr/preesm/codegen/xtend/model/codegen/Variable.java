@@ -42,7 +42,8 @@ import org.eclipse.emf.common.util.EList;
  * several time in the generated code.<br>
  * It usually is {@link Block#getDeclarations() declared} within a {@link Block
  * code block} before being used as a parameter to the
- * {@link Block#getCodeElts() code elements} of this {@link Block code block}. <br>
+ * {@link Block#getCodeElts() code elements} of this {@link Block code block}.
+ * <br>
  * Each {@link Variable} has a {@link #getName() name} and a {@link #getType()
  * type}. <!-- end-user-doc -->
  *

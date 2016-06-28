@@ -219,22 +219,19 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	private EClass nullBufferEClass = null;
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	private EClass finiteLoopBlockEClass = null;
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	private EClass intVarEClass = null;
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	private EClass bufferIteratorEClass = null;
@@ -525,6 +522,14 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	@Override
 	public EAttribute getBuffer_MergedRange() {
 		return (EAttribute)bufferEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getBuffer_Local() {
+		return (EAttribute)bufferEClass.getEStructuralFeatures().get(4);
 	}
 
 	/**
@@ -978,8 +983,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public EClass getFiniteLoopBlock() {
@@ -987,8 +991,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public EAttribute getFiniteLoopBlock_NbIter() {
@@ -996,8 +999,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public EReference getFiniteLoopBlock_Iter() {
@@ -1005,8 +1007,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public EClass getIntVar() {
@@ -1014,8 +1015,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public EClass getBufferIterator() {
@@ -1023,8 +1023,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public EReference getBufferIterator_Iter() {
@@ -1032,8 +1031,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public EAttribute getBufferIterator_Size() {
@@ -1146,6 +1144,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		createEReference(bufferEClass, BUFFER__CHILDRENS);
 		createEAttribute(bufferEClass, BUFFER__TYPE_SIZE);
 		createEAttribute(bufferEClass, BUFFER__MERGED_RANGE);
+		createEAttribute(bufferEClass, BUFFER__LOCAL);
 
 		subBufferEClass = createEClass(SUB_BUFFER);
 		createEReference(subBufferEClass, SUB_BUFFER__CONTAINER);
@@ -1321,6 +1320,7 @@ public class CodegenPackageImpl extends EPackageImpl implements CodegenPackage {
 		EGenericType g2 = createEGenericType(this.getrange());
 		g1.getETypeArguments().add(g2);
 		initEAttribute(getBuffer_MergedRange(), g1, "mergedRange", null, 0, 1, Buffer.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getBuffer_Local(), ecorePackage.getEBoolean(), "local", "false", 0, 1, Buffer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(subBufferEClass, SubBuffer.class, "SubBuffer", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getSubBuffer_Container(), this.getBuffer(), this.getBuffer_Childrens(), "container", null, 1, 1, SubBuffer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

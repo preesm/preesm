@@ -61,8 +61,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
 public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	/**
 	 * The cached value of the '{@link #getContainer() <em>Container</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getContainer()
 	 * @generated
 	 * @ordered
@@ -70,8 +69,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	protected Buffer container;
 	/**
 	 * The default value of the '{@link #getOffset() <em>Offset</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getOffset()
 	 * @generated
 	 * @ordered
@@ -79,8 +77,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	protected static final int OFFSET_EDEFAULT = 0;
 	/**
 	 * The cached value of the '{@link #getOffset() <em>Offset</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getOffset()
 	 * @generated
 	 * @ordered
@@ -122,8 +119,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Buffer basicGetContainer() {
@@ -131,8 +127,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public NotificationChain basicSetContainer(Buffer newContainer, NotificationChain msgs) {
@@ -154,17 +149,16 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 		if (newContainer != container) {
 			NotificationChain msgs = null;
 			if (container != null)
-				msgs = ((InternalEObject) container).eInverseRemove(this,
-						CodegenPackage.BUFFER__CHILDRENS, Buffer.class, msgs);
+				msgs = ((InternalEObject) container).eInverseRemove(this, CodegenPackage.BUFFER__CHILDRENS,
+						Buffer.class, msgs);
 			if (newContainer != null)
-				msgs = ((InternalEObject) newContainer).eInverseAdd(this,
-						CodegenPackage.BUFFER__CHILDRENS, Buffer.class, msgs);
+				msgs = ((InternalEObject) newContainer).eInverseAdd(this, CodegenPackage.BUFFER__CHILDRENS,
+						Buffer.class, msgs);
 			msgs = basicSetContainer(newContainer, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired()) {
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.SUB_BUFFER__CONTAINER, newContainer,
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.SUB_BUFFER__CONTAINER, newContainer,
 					newContainer));
 		}
 		if (getCreator() != null) {
@@ -203,8 +197,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -219,8 +212,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -233,8 +225,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -250,8 +241,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -268,8 +258,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -286,8 +275,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -302,8 +290,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override

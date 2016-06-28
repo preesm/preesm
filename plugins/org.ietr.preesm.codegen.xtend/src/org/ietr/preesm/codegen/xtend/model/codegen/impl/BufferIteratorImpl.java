@@ -46,9 +46,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Buffer Iterator</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '
+ * <em><b>Buffer Iterator</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
@@ -62,8 +61,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 	/**
 	 * The default value of the '{@link #getSize() <em>Size</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getSize()
 	 * @generated
 	 * @ordered
@@ -71,8 +69,7 @@ public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 	protected static final int SIZE_EDEFAULT = 0;
 	/**
 	 * The cached value of the '{@link #getSize() <em>Size</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getSize()
 	 * @generated
 	 * @ordered
@@ -80,16 +77,15 @@ public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 	protected int size = SIZE_EDEFAULT;
 	/**
 	 * The cached value of the '{@link #getIter() <em>Iter</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getIter()
 	 * @generated
 	 * @ordered
 	 */
 	protected IntVar iter;
+
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	protected BufferIteratorImpl() {
@@ -97,8 +93,7 @@ public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -107,8 +102,7 @@ public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public IntVar getIter() {
@@ -124,8 +118,7 @@ public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public IntVar basicGetIter() {
@@ -133,8 +126,7 @@ public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public void setIter(IntVar newIter) {
@@ -145,8 +137,7 @@ public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public int getSize() {
@@ -154,8 +145,7 @@ public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public void setSize(int newSize) {
@@ -166,8 +156,7 @@ public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -183,8 +172,7 @@ public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -201,8 +189,7 @@ public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -219,8 +206,7 @@ public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -235,8 +221,7 @@ public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -250,4 +235,4 @@ public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 		return result.toString();
 	}
 
-} //BufferIteratorImpl
+} // BufferIteratorImpl

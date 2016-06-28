@@ -344,8 +344,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public FiniteLoopBlock createFiniteLoopBlock() {
@@ -354,8 +353,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public IntVar createIntVar() {
@@ -364,8 +362,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public BufferIterator createBufferIterator() {
@@ -377,8 +374,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Direction createDirectionFromString(EDataType eDataType,
-			String initialValue) {
+	public Direction createDirectionFromString(EDataType eDataType, String initialValue) {
 		Direction result = Direction.get(initialValue);
 		if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
@@ -388,8 +384,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String convertDirectionToString(EDataType eDataType,
-			Object instanceValue) {
+	public String convertDirectionToString(EDataType eDataType, Object instanceValue) {
 		return instanceValue == null ? null : instanceValue.toString();
 	}
 
@@ -397,8 +392,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Delimiter createDelimiterFromString(EDataType eDataType,
-			String initialValue) {
+	public Delimiter createDelimiterFromString(EDataType eDataType, String initialValue) {
 		Delimiter result = Delimiter.get(initialValue);
 		if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
@@ -408,8 +402,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String convertDelimiterToString(EDataType eDataType,
-			Object instanceValue) {
+	public String convertDelimiterToString(EDataType eDataType, Object instanceValue) {
 		return instanceValue == null ? null : instanceValue.toString();
 	}
 
@@ -417,8 +410,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public SpecialType createSpecialTypeFromString(EDataType eDataType,
-			String initialValue) {
+	public SpecialType createSpecialTypeFromString(EDataType eDataType, String initialValue) {
 		SpecialType result = SpecialType.get(initialValue);
 		if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
@@ -428,8 +420,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String convertSpecialTypeToString(EDataType eDataType,
-			Object instanceValue) {
+	public String convertSpecialTypeToString(EDataType eDataType, Object instanceValue) {
 		return instanceValue == null ? null : instanceValue.toString();
 	}
 
@@ -437,8 +428,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public FifoOperation createFifoOperationFromString(EDataType eDataType,
-			String initialValue) {
+	public FifoOperation createFifoOperationFromString(EDataType eDataType, String initialValue) {
 		FifoOperation result = FifoOperation.get(initialValue);
 		if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
@@ -448,8 +438,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String convertFifoOperationToString(EDataType eDataType,
-			Object instanceValue) {
+	public String convertFifoOperationToString(EDataType eDataType, Object instanceValue) {
 		return instanceValue == null ? null : instanceValue.toString();
 	}
 
@@ -457,8 +446,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public PortDirection createPortDirectionFromString(EDataType eDataType,
-			String initialValue) {
+	public PortDirection createPortDirectionFromString(EDataType eDataType, String initialValue) {
 		PortDirection result = PortDirection.get(initialValue);
 		if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
@@ -468,8 +456,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String convertPortDirectionToString(EDataType eDataType,
-			Object instanceValue) {
+	public String convertPortDirectionToString(EDataType eDataType, Object instanceValue) {
 		return instanceValue == null ? null : instanceValue.toString();
 	}
 
@@ -477,8 +464,7 @@ public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Range createrangeFromString(
-			EDataType eDataType, String initialValue) {
+	public Range createrangeFromString(EDataType eDataType, String initialValue) {
 		return (Range)super.createFromString(eDataType, initialValue);
 	}
 

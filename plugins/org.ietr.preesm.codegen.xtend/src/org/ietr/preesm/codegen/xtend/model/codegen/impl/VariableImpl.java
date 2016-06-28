@@ -66,8 +66,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
 public abstract class VariableImpl extends CommentableImpl implements Variable {
 	/**
 	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -75,8 +74,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	protected static final String NAME_EDEFAULT = null;
 	/**
 	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getName()
 	 * @generated
 	 * @ordered
@@ -84,8 +82,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	protected String name = NAME_EDEFAULT;
 	/**
 	 * The default value of the '{@link #getType() <em>Type</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getType()
 	 * @generated
 	 * @ordered
@@ -93,8 +90,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	protected static final String TYPE_EDEFAULT = null;
 	/**
 	 * The cached value of the '{@link #getType() <em>Type</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getType()
 	 * @generated
 	 * @ordered
@@ -102,8 +98,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	protected String type = TYPE_EDEFAULT;
 	/**
 	 * The cached value of the '{@link #getUsers() <em>Users</em>}' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getUsers()
 	 * @generated
 	 * @ordered
@@ -180,8 +175,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public NotificationChain basicSetCreator(Block newCreator, NotificationChain msgs) {
@@ -224,8 +218,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
@@ -243,8 +236,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -259,8 +251,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -273,8 +264,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -293,8 +283,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -314,8 +303,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -335,8 +323,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -355,8 +342,7 @@ public abstract class VariableImpl extends CommentableImpl implements Variable {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override

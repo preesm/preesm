@@ -99,7 +99,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	'''
 	
 	override printBufferDefinition(Buffer buffer) '''
-	/* When using the Distributed Shared Memory buffers are in DDR (global memory) */
+	/* Buffers are mapped in compute cluster SMEM */
 	«buffer.type» «buffer.name»[«buffer.size»]; // «buffer.comment» size:= «buffer.size»*«buffer.type»
 	'''
 	
@@ -131,10 +131,6 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	// Core Global Declaration
 	extern pthread_barrier_t pthread_barrier;
 	
-	/* will link with it if the lflag is put, else it won't bother */
-	extern void mppa_dsm_client_global_purge(void) __attribute__((weak));
-	extern void mppa_dsm_client_global_fence(void) __attribute__((weak));
-	
 	'''
 	
 	override printBufferDeclaration(Buffer buffer) '''
@@ -152,7 +148,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	'''
 	
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
-	void *computationThread_«(callBlock.eContainer as CoreBlock).name»(void *arg){
+	void *computationTask_«(callBlock.eContainer as CoreBlock).name»(void *arg){
 		«IF !callBlock.codeElts.empty»
 			// Initialisation(s)
 			
@@ -182,10 +178,6 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				/* commit local changes to the global memory */
 				pthread_barrier_wait(&pthread_barrier); /* barrier to make sure all threads have commited data in smem */
 				if(__k1_get_cpu_id() == 0){
-					if(mppa_dsm_client_global_purge && mppa_dsm_client_global_fence){
-						mppa_dsm_client_global_purge();
-						mppa_dsm_client_global_fence();
-					}
 		#ifdef PROFILE
 					int ii, jj;
 					for(jj=0;jj<BSP_NB_PE_MAX;jj++){
@@ -373,7 +365,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	override printSemaphore(Semaphore semaphore) '''&«semaphore.name»'''
 	
 	override printSemaphoreDefinition(Semaphore semaphore) '''
-	sem_t «semaphore.name» __attribute__((section(".locked_data")));
+	sem_t «semaphore.name»;
 	'''
 	
 	override printSemaphoreDeclaration(Semaphore semaphore) '''

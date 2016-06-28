@@ -80,8 +80,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
 public class CommunicationImpl extends CallImpl implements Communication {
 	/**
 	 * The default value of the '{@link #getDirection() <em>Direction</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getDirection()
 	 * @generated
 	 * @ordered
@@ -89,8 +88,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	protected static final Direction DIRECTION_EDEFAULT = Direction.SEND;
 	/**
 	 * The cached value of the '{@link #getDirection() <em>Direction</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getDirection()
 	 * @generated
 	 * @ordered
@@ -98,8 +96,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	protected Direction direction = DIRECTION_EDEFAULT;
 	/**
 	 * The default value of the '{@link #getDelimiter() <em>Delimiter</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getDelimiter()
 	 * @generated
 	 * @ordered
@@ -107,8 +104,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	protected static final Delimiter DELIMITER_EDEFAULT = Delimiter.START;
 	/**
 	 * The cached value of the '{@link #getDelimiter() <em>Delimiter</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getDelimiter()
 	 * @generated
 	 * @ordered
@@ -116,8 +112,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	protected Delimiter delimiter = DELIMITER_EDEFAULT;
 	/**
 	 * The cached value of the '{@link #getData() <em>Data</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getData()
 	 * @generated
 	 * @ordered
@@ -125,8 +120,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	protected Buffer data;
 	/**
 	 * The cached value of the '{@link #getSendStart() <em>Send Start</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getSendStart()
 	 * @generated
 	 * @ordered
@@ -134,8 +128,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	protected Communication sendStart;
 	/**
 	 * The cached value of the '{@link #getSendEnd() <em>Send End</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getSendEnd()
 	 * @generated
 	 * @ordered
@@ -143,8 +136,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	protected Communication sendEnd;
 	/**
 	 * The cached value of the '{@link #getReceiveStart() <em>Receive Start</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getReceiveStart()
 	 * @generated
 	 * @ordered
@@ -152,26 +144,25 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	protected Communication receiveStart;
 	/**
 	 * The cached value of the '{@link #getReceiveEnd() <em>Receive End</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getReceiveEnd()
 	 * @generated
 	 * @ordered
 	 */
 	protected Communication receiveEnd;
 	/**
-	 * The default value of the '{@link #getId() <em>Id</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The default value of the '{@link #getId() <em>Id</em>}' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getId()
 	 * @generated
 	 * @ordered
 	 */
 	protected static final int ID_EDEFAULT = 0;
 	/**
-	 * The cached value of the '{@link #getId() <em>Id</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * The cached value of the '{@link #getId() <em>Id</em>}' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getId()
 	 * @generated
 	 * @ordered
@@ -179,8 +170,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	protected int id = ID_EDEFAULT;
 	/**
 	 * The cached value of the '{@link #getNodes() <em>Nodes</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getNodes()
 	 * @generated
 	 * @ordered
@@ -188,8 +178,8 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	protected EList<CommunicationNode> nodes;
 	/**
 	 * The cached value of the '{@link #getReceiveRelease() <em>Receive Release</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
 	 * @see #getReceiveRelease()
 	 * @generated
 	 * @ordered
@@ -197,8 +187,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	protected Communication receiveRelease;
 	/**
 	 * The cached value of the '{@link #getSendReserve() <em>Send Reserve</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getSendReserve()
 	 * @generated
 	 * @ordered
@@ -282,8 +271,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Buffer basicGetData() {
@@ -300,8 +288,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 		Buffer oldData = data;
 		data = newData;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.COMMUNICATION__DATA, oldData, data));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.COMMUNICATION__DATA, oldData, data));
 		this.getParameters().clear();
 		if (newData != null) {
 			this.addParameter(newData, PortDirection.NONE);
@@ -326,8 +313,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Communication basicGetSendStart() {
@@ -364,8 +350,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Communication basicGetSendEnd() {
@@ -402,8 +387,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Communication basicGetReceiveStart() {
@@ -440,8 +424,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Communication basicGetReceiveEnd() {
@@ -512,8 +495,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Communication basicGetReceiveRelease() {
@@ -550,8 +532,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Communication basicGetSendReserve() {
@@ -590,8 +571,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -604,8 +584,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -645,8 +624,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
@@ -692,8 +670,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -737,8 +714,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -771,8 +747,7 @@ public class CommunicationImpl extends CallImpl implements Communication {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override

@@ -45,16 +45,14 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
 
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Int Var</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '
+ * <em><b>Int Var</b></em>'. <!-- end-user-doc -->
  *
  * @generated
  */
 public class IntVarImpl extends VariableImpl implements IntVar {
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	protected IntVarImpl() {
@@ -62,8 +60,7 @@ public class IntVarImpl extends VariableImpl implements IntVar {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -71,4 +68,4 @@ public class IntVarImpl extends VariableImpl implements IntVar {
 		return CodegenPackage.Literals.INT_VAR;
 	}
 
-} //IntVarImpl
+} // IntVarImpl

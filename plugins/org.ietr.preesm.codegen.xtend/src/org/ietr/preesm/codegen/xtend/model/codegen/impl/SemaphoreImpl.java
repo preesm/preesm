@@ -70,8 +70,7 @@ public class SemaphoreImpl extends VariableImpl implements Semaphore {
 
 	@Override
 	public void setType(String newType) {
-		System.err.println("Cannot set the type of a Codegen.Semaphore"
-				+ "because type is always Semaphore.");
+		System.err.println("Cannot set the type of a Codegen.Semaphore" + "because type is always Semaphore.");
 	}
 
 } // SemaphoreImpl

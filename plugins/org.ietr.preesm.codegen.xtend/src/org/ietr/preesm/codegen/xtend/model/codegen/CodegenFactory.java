@@ -214,9 +214,9 @@ public interface CodegenFactory extends EFactory {
 	NullBuffer createNullBuffer();
 
 	/**
-	 * Returns a new object of class '<em>Finite Loop Block</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Returns a new object of class '<em>Finite Loop Block</em>'. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @return a new object of class '<em>Finite Loop Block</em>'.
 	 * @generated
 	 */
@@ -232,9 +232,9 @@ public interface CodegenFactory extends EFactory {
 	IntVar createIntVar();
 
 	/**
-	 * Returns a new object of class '<em>Buffer Iterator</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Returns a new object of class '<em>Buffer Iterator</em>'. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @return a new object of class '<em>Buffer Iterator</em>'.
 	 * @generated
 	 */

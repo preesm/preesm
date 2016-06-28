@@ -63,8 +63,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation;
 public class FifoCallImpl extends CallImpl implements FifoCall {
 	/**
 	 * The default value of the '{@link #getOperation() <em>Operation</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getOperation()
 	 * @generated
 	 * @ordered
@@ -72,8 +71,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	protected static final FifoOperation OPERATION_EDEFAULT = FifoOperation.PUSH;
 	/**
 	 * The cached value of the '{@link #getOperation() <em>Operation</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getOperation()
 	 * @generated
 	 * @ordered
@@ -81,8 +79,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	protected FifoOperation operation = OPERATION_EDEFAULT;
 	/**
 	 * The cached value of the '{@link #getFifoHead() <em>Fifo Head</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getFifoHead()
 	 * @generated
 	 * @ordered
@@ -90,8 +87,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	protected FifoCall fifoHead;
 	/**
 	 * The cached value of the '{@link #getFifoTail() <em>Fifo Tail</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getFifoTail()
 	 * @generated
 	 * @ordered
@@ -99,8 +95,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	protected FifoCall fifoTail;
 	/**
 	 * The cached value of the '{@link #getHeadBuffer() <em>Head Buffer</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getHeadBuffer()
 	 * @generated
 	 * @ordered
@@ -108,8 +103,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	protected Buffer headBuffer;
 	/**
 	 * The cached value of the '{@link #getBodyBuffer() <em>Body Buffer</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getBodyBuffer()
 	 * @generated
 	 * @ordered
@@ -172,8 +166,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public FifoCall basicGetFifoHead() {
@@ -210,8 +203,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public FifoCall basicGetFifoTail() {
@@ -248,8 +240,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Buffer basicGetHeadBuffer() {
@@ -286,8 +277,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Buffer basicGetBodyBuffer() {
@@ -307,8 +297,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -333,8 +322,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -360,8 +348,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -387,8 +374,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -409,8 +395,7 @@ public class FifoCallImpl extends CallImpl implements FifoCall {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override

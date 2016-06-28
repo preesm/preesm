@@ -68,10 +68,11 @@ public enum FifoOperation implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	POP(1, "POP", "POP"), /**
-	 * The '<em><b>INIT</b></em>' literal object. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	POP(1, "POP", "POP"),
+	/**
+	 * The '<em><b>INIT</b></em>' literal object.
+	 * <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
 	 * @see #INIT_VALUE
 	 * @generated
 	 * @ordered

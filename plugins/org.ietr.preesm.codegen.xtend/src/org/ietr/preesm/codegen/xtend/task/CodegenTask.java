@@ -71,20 +71,18 @@ public class CodegenTask extends AbstractTaskImplementation {
 	 * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
 	 */
 	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+	public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
+			IProgressMonitor monitor, String nodeName, Workflow workflow) throws WorkflowException {
 
 		// Retrieve inputs
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 		Design archi = (Design) inputs.get("architecture");
 		@SuppressWarnings("unchecked")
-		Map<String,MemoryExclusionGraph> megs = (Map<String,MemoryExclusionGraph>) inputs.get("MEGs");
+		Map<String, MemoryExclusionGraph> megs = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");
 		DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 
 		// Generate intermediate model
-		CodegenModelGenerator generator = new CodegenModelGenerator(archi, dag,
-				megs, scenario, workflow);
+		CodegenModelGenerator generator = new CodegenModelGenerator(archi, dag, megs, scenario, workflow);
 
 		List<Block> codeBlocks = new ArrayList<>(generator.generate());
 
@@ -94,12 +92,10 @@ public class CodegenTask extends AbstractTaskImplementation {
 		// Do the print
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		workspace.getRoot().getLocation();
-		String codegenPath = scenario.getCodegenManager().getCodegenDirectory()
-				+ "/";
+		String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + "/";
 
 		// Create the codegen engine
-		CodegenEngine engine = new CodegenEngine(scenario, workspace,
-				codegenPath, codeBlocks);
+		CodegenEngine engine = new CodegenEngine(scenario, workspace, codegenPath, codeBlocks);
 
 		if (selectedPrinter.equals(VALUE_PRINTER_IR)) {
 			engine.initializePrinterIR(codegenPath);

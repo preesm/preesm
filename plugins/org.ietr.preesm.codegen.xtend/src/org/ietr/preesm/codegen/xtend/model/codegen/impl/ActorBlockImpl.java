@@ -61,8 +61,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 public class ActorBlockImpl extends BlockImpl implements ActorBlock {
 	/**
 	 * The cached value of the '{@link #getLoopBlock() <em>Loop Block</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getLoopBlock()
 	 * @generated
 	 * @ordered
@@ -70,8 +69,7 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
 	protected LoopBlock loopBlock;
 	/**
 	 * The cached value of the '{@link #getInitBlock() <em>Init Block</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getInitBlock()
 	 * @generated
 	 * @ordered
@@ -119,8 +117,7 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public LoopBlock basicGetLoopBlock() {
@@ -157,8 +154,7 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public CallBlock basicGetInitBlock() {
@@ -178,8 +174,7 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -196,8 +191,7 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -214,8 +208,7 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -232,8 +225,7 @@ public class ActorBlockImpl extends BlockImpl implements ActorBlock {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override

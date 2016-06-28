@@ -63,8 +63,7 @@ import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
 public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 	/**
 	 * The cached value of the '{@link #getLoopBlock() <em>Loop Block</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getLoopBlock()
 	 * @generated
 	 * @ordered
@@ -72,8 +71,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 	protected LoopBlock loopBlock;
 	/**
 	 * The cached value of the '{@link #getInitBlock() <em>Init Block</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getInitBlock()
 	 * @generated
 	 * @ordered
@@ -81,8 +79,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 	protected CallBlock initBlock;
 	/**
 	 * The default value of the '{@link #getCoreType() <em>Core Type</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getCoreType()
 	 * @generated
 	 * @ordered
@@ -90,8 +87,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 	protected static final String CORE_TYPE_EDEFAULT = null;
 	/**
 	 * The cached value of the '{@link #getCoreType() <em>Core Type</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getCoreType()
 	 * @generated
 	 * @ordered
@@ -138,8 +134,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public LoopBlock basicGetLoopBlock() {
@@ -176,8 +171,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public CallBlock basicGetInitBlock() {
@@ -218,8 +212,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -238,8 +231,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -259,8 +251,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -280,8 +271,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -298,8 +288,7 @@ public class CoreBlockImpl extends BlockImpl implements CoreBlock {
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override

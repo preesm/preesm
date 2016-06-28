@@ -58,12 +58,10 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
  *
  * @generated
  */
-public class SharedMemoryCommunicationImpl extends CommunicationImpl implements
-		SharedMemoryCommunication {
+public class SharedMemoryCommunicationImpl extends CommunicationImpl implements SharedMemoryCommunication {
 	/**
 	 * The cached value of the '{@link #getSemaphore() <em>Semaphore</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getSemaphore()
 	 * @generated
 	 * @ordered
@@ -105,8 +103,7 @@ public class SharedMemoryCommunicationImpl extends CommunicationImpl implements
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	public Semaphore basicGetSemaphore() {
@@ -126,8 +123,7 @@ public class SharedMemoryCommunicationImpl extends CommunicationImpl implements
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -141,8 +137,7 @@ public class SharedMemoryCommunicationImpl extends CommunicationImpl implements
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -156,8 +151,7 @@ public class SharedMemoryCommunicationImpl extends CommunicationImpl implements
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
@@ -171,8 +165,7 @@ public class SharedMemoryCommunicationImpl extends CommunicationImpl implements
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override

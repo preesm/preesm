@@ -49,16 +49,11 @@ import org.ietr.preesm.memory.script.Range;
  * The following features are supported:
  * </p>
  * <ul>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getSize
- * <em>Size</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getChildrens
- * <em>Childrens</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getTypeSize
- * <em>Type Size</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getMergedRange
- * <em>Merged Range</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#isLocal
- * <em>Local</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getSize <em>Size</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getChildrens <em>Childrens</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getTypeSize <em>Type Size</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#getMergedRange <em>Merged Range</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#isLocal <em>Local</em>}</li>
  * </ul>
  *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBuffer()
@@ -165,15 +160,15 @@ public interface Buffer extends Variable {
 	void setMergedRange(EList<Range> value);
 
 	/**
-	 * Returns the value of the '<em><b>Local</b></em>' attribute. The default
-	 * value is <code>"false"</code>. <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Local</b></em>' attribute.
+	 * The default value is <code>"false"</code>.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * This attribute specifies whether this {@link Buffer} is local to a single
 	 * {@link CoreBlock} of (<code>true</code>) or if it may be accessed from
 	 * several {@link CoreBlock} (<code>false</code>).
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the value of the '<em>Local</em>' attribute.
 	 * @see #setLocal(boolean)
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBuffer_Local()
@@ -183,12 +178,9 @@ public interface Buffer extends Variable {
 	boolean isLocal();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#isLocal
-	 * <em>Local</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Local</em>' attribute.
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#isLocal <em>Local</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Local</em>' attribute.
 	 * @see #isLocal()
 	 * @generated
 	 */

@@ -63,6 +63,7 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//Buffer/childrens"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//Buffer/typeSize"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//Buffer/mergedRange"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute codegen.ecore#//Buffer/local"/>
     </genClasses>
     <genClasses ecoreClass="codegen.ecore#//SubBuffer">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference codegen.ecore#//SubBuffer/container"/>

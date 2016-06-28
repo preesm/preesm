@@ -76,8 +76,7 @@ public class CodegenEngine {
 	private Map<IConfigurationElement, List<Block>> registeredPrintersAndBlocks;
 	private Map<IConfigurationElement, CodegenAbstractPrinter> realPrinters;
 
-	public CodegenEngine(PreesmScenario scenario, IWorkspace workspace,
-			String codegenPath, List<Block> codeBlocks) {
+	public CodegenEngine(PreesmScenario scenario, IWorkspace workspace, String codegenPath, List<Block> codeBlocks) {
 		this.scenario = scenario;
 		this.workspace = workspace;
 		this.codegenPath = codegenPath;
@@ -98,8 +97,7 @@ public class CodegenEngine {
 		for (Block b : codeBlocks) {
 			// Create a resource
 			scenario.getCodegenManager().getCodegenDirectory();
-			Resource resource = resSet.createResource(URI.createURI(codegenPath
-					+ b.getName() + ".codegen"));
+			Resource resource = resSet.createResource(URI.createURI(codegenPath + b.getName() + ".codegen"));
 			// Get the first model element and cast it to the right type, in
 			// my example everything is hierarchical included in this first
 			// node
@@ -117,8 +115,7 @@ public class CodegenEngine {
 
 	}
 
-	public void registerPrintersAndBlocks(String selectedPrinter)
-			throws WorkflowException {
+	public void registerPrintersAndBlocks(String selectedPrinter) throws WorkflowException {
 		registeredPrintersAndBlocks = new HashMap<IConfigurationElement, List<Block>>();
 
 		// 1. Get the printers of the desired "language"
@@ -142,8 +139,7 @@ public class CodegenEngine {
 			if (b instanceof CoreBlock) {
 				String coreType = ((CoreBlock) b).getCoreType();
 				for (IConfigurationElement printer : usablePrinters) {
-					IConfigurationElement[] supportedCores = printer
-							.getChildren();
+					IConfigurationElement[] supportedCores = printer.getChildren();
 					for (IConfigurationElement supportedCore : supportedCores) {
 						if (supportedCore.getAttribute("type").equals(coreType)) {
 							foundPrinter = printer;
@@ -155,18 +151,15 @@ public class CodegenEngine {
 					}
 				}
 				if (foundPrinter != null) {
-					List<Block> blocks = registeredPrintersAndBlocks
-							.get(foundPrinter);
+					List<Block> blocks = registeredPrintersAndBlocks.get(foundPrinter);
 					if (blocks == null) {
 						blocks = new ArrayList<Block>();
 						registeredPrintersAndBlocks.put(foundPrinter, blocks);
 					}
 					blocks.add(b);
 				} else {
-					throw new WorkflowException(
-							"Could not find a printer for language \""
-									+ selectedPrinter + "\" and core type \""
-									+ coreType + "\".");
+					throw new WorkflowException("Could not find a printer for language \"" + selectedPrinter
+							+ "\" and core type \"" + coreType + "\".");
 				}
 			} else {
 				throw new WorkflowException(
@@ -181,14 +174,11 @@ public class CodegenEngine {
 		// - Do the pre-processing
 		// - Save the printers in a map
 		realPrinters = new HashMap<IConfigurationElement, CodegenAbstractPrinter>();
-		for (Entry<IConfigurationElement, List<Block>> printerAndBlocks : registeredPrintersAndBlocks
-				.entrySet()) {
-			String extension = printerAndBlocks.getKey().getAttribute(
-					"extension");
+		for (Entry<IConfigurationElement, List<Block>> printerAndBlocks : registeredPrintersAndBlocks.entrySet()) {
+			String extension = printerAndBlocks.getKey().getAttribute("extension");
 			CodegenAbstractPrinter printer = null;
 			try {
-				printer = (CodegenAbstractPrinter) printerAndBlocks.getKey()
-						.createExecutableExtension("class");
+				printer = (CodegenAbstractPrinter) printerAndBlocks.getKey().createExecutableExtension("class");
 			} catch (CoreException e) {
 				throw new WorkflowException(e.getMessage());
 			}
@@ -208,8 +198,7 @@ public class CodegenEngine {
 					}
 				}
 			} else {
-				throw new WorkflowException(
-						"The code generation directory was not found.");
+				throw new WorkflowException("The code generation directory was not found.");
 			}
 
 			// Do the pre-processing
@@ -219,26 +208,21 @@ public class CodegenEngine {
 	}
 
 	public void print() {
-		for (Entry<IConfigurationElement, List<Block>> printerAndBlocks : registeredPrintersAndBlocks
-				.entrySet()) {
-			String extension = printerAndBlocks.getKey().getAttribute(
-					"extension");
-			CodegenAbstractPrinter printer = realPrinters.get(printerAndBlocks
-					.getKey());
+		for (Entry<IConfigurationElement, List<Block>> printerAndBlocks : registeredPrintersAndBlocks.entrySet()) {
+			String extension = printerAndBlocks.getKey().getAttribute("extension");
+			CodegenAbstractPrinter printer = realPrinters.get(printerAndBlocks.getKey());
 
 			for (Block b : printerAndBlocks.getValue()) {
-				IFile iFile = workspace.getRoot().getFile(
-						new Path(codegenPath + b.getName() + extension));
+				IFile iFile = workspace.getRoot().getFile(new Path(codegenPath + b.getName() + extension));
 				try {
 					IFolder iFolder = workspace.getRoot().getFolder(new Path(codegenPath));
-					if(!iFolder.exists()){
+					if (!iFolder.exists()) {
 						iFolder.create(false, true, new NullProgressMonitor());
 					}
 					if (!iFile.exists()) {
 						iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
 					}
-					iFile.setContents(new ByteArrayInputStream(printer
-							.doSwitch(b).toString().getBytes()), true, false,
+					iFile.setContents(new ByteArrayInputStream(printer.doSwitch(b).toString().getBytes()), true, false,
 							new NullProgressMonitor());
 				} catch (CoreException e1) {
 					e1.printStackTrace();
@@ -247,20 +231,17 @@ public class CodegenEngine {
 
 			// Print secondary files
 			for (Entry<String, CharSequence> entry : printer
-					.createSecondaryFiles(printerAndBlocks.getValue(),
-							codeBlocks).entrySet()) {
-				IFile iFile = workspace.getRoot().getFile(
-						new Path(codegenPath + entry.getKey()));
+					.createSecondaryFiles(printerAndBlocks.getValue(), codeBlocks).entrySet()) {
+				IFile iFile = workspace.getRoot().getFile(new Path(codegenPath + entry.getKey()));
 				try {
 					IFolder iFolder = workspace.getRoot().getFolder(new Path(codegenPath));
-					if(!iFolder.exists()){
+					if (!iFolder.exists()) {
 						iFolder.create(false, true, new NullProgressMonitor());
 					}
 					if (!iFile.exists()) {
 						iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
 					}
-					iFile.setContents(new ByteArrayInputStream(entry.getValue()
-							.toString().getBytes()), true, false,
+					iFile.setContents(new ByteArrayInputStream(entry.getValue().toString().getBytes()), true, false,
 							new NullProgressMonitor());
 				} catch (CoreException e1) {
 					e1.printStackTrace();
