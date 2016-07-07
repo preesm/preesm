@@ -138,7 +138,6 @@ public class SpecialCallImpl extends CallImpl implements SpecialCall {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public EList<Buffer> getInputBuffers() {
 		if (inputBuffers == null) {

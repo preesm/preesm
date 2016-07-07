@@ -52,11 +52,13 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable
-import org.ietr.preesm.codegen.xtend.printer.DefaultPrinter
 import org.ietr.preesm.codegen.xtend.task.CodegenException
 import java.util.ArrayList
 import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
+import org.ietr.preesm.codegen.xtend.model.codegen.Block
+import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter
+import org.ietr.preesm.codegen.xtend.model.codegen.Direction
 
 class MPPA2ExplicitPrinter extends CPrinter {
 	
@@ -65,6 +67,8 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	 * whose target and destination are identical. 
 	 */
 	protected var IGNORE_USELESS_MEMCPY = true
+	
+	protected var local_buffer = "local_buffer"
 	
 	override printCoreBlockHeader(CoreBlock block) '''
 		/** 
@@ -79,9 +83,14 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		#include <stdint.h>
 		#include <mOS_vcore_u.h>
 		#include <mppa_noc.h>
+		#include <mppa_rpc.h>
+		#include <mppa_async.h>
 		#include <pthread.h>
 		#include <semaphore.h>
 		#include <HAL/hal/hal.h>
+		#ifndef __nodeos__
+		#include <utask.h>
+		#endif
 		
 		/* user includes */
 		#include "preesm.h"
@@ -89,18 +98,25 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		/* local Core variables */
 		#ifdef PROFILE
 		#define DUMP_MAX_TIME 128
-		static uint64_t timestamp[BSP_NB_PE_MAX][DUMP_MAX_TIME]; /* 4KB of data */
-		static int current_dump[BSP_NB_PE_MAX] = { 0 };
+		static uint64_t timestamp[NB_CORE][DUMP_MAX_TIME]; /* 4KB of data */
+		static int current_dump[NB_CORE] = { 0 };
 		#define getTimeProfile() if(current_dump[__k1_get_cpu_id()] < DUMP_MAX_TIME) \
 								timestamp[__k1_get_cpu_id()][current_dump[__k1_get_cpu_id()]] = __k1_read_dsu_timestamp(); \
 								current_dump[__k1_get_cpu_id()]++;
 		#endif
 		
+		extern uint64_t total_get_cycles;
+		extern uint64_t total_put_cycles;
+		
 	'''
 	
 	override printBufferDefinition(Buffer buffer) '''
-	/* Buffers are mapped in compute cluster SMEM */
-	«buffer.type» «buffer.name»[«buffer.size»]; // «buffer.comment» size:= «buffer.size»*«buffer.type»
+		«IF buffer.name == "Shared"»
+		//#define Shared ((char*)0x84000000ULL) 	/* Shared buffer in DDR */
+		«ELSE»
+			char «local_buffer»[1024*512];		/* Scratchpad buffer */
+			«buffer.type» «buffer.name»[«buffer.size»]; // «buffer.comment» size:= «buffer.size»*«buffer.type»
+		«ENDIF»
 	'''
 	
 	override printDefinitionsHeader(List<Variable> list) '''
@@ -121,6 +137,74 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.size»*«buffer.type»
 	'''
 	
+	override printFunctionCall(FunctionCall functionCall) '''
+	// Fonction has «functionCall.parameters.size» params
+	{
+	«{
+		var gets = ""
+		var local_offset = 0;
+		for(param : functionCall.parameters){
+			if(param instanceof SubBuffer){
+				var port = functionCall.parameterDirections.get(functionCall.parameters.indexOf(param))
+				var b = param.container;
+				var offset = param.offset;
+				while(b instanceof SubBuffer){
+					offset += b.offset;
+					b = b.container;
+					//System.out.print("Running through all buffer " + b.name + "\n");
+				}
+				//System.out.print("===> " + b.name + "\n");
+				if(b.name == "Shared"){
+					gets += "	void *" + param.name + " = local_buffer+" + local_offset +";\n";
+					if(port.getName == "INPUT"){ /* we get data from DDR -> cluster only when INPUT */
+						gets += "	{\n"
+						gets += "		uint64_t start = __k1_read_dsu_timestamp();\n"
+						gets += "		mppa_async_get(local_buffer+" + local_offset + ", " + b.name + "+" + offset + ", MPPA_ASYNC_DDR_0, " + param.typeSize * param.size + ", NULL);\n";
+						gets += "		total_get_cycles += __k1_read_dsu_timestamp() - start;\n"
+						gets += "	}\n"
+					}
+					local_offset += param.typeSize * param.size;
+					//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
+				}
+			}
+		}
+	gets}»
+		«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ', '»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
+	«{
+		var puts = ""
+		var local_offset = 0;
+		for(param : functionCall.parameters){
+			if(param instanceof SubBuffer){
+				var port = functionCall.parameterDirections.get(functionCall.parameters.indexOf(param))
+				var b = param.container
+				var offset = param.offset
+				while(b instanceof SubBuffer){
+					offset += b.offset;
+					b = b.container;
+					//System.out.print("Running through all buffer " + b.name + "\n");
+				}
+				//System.out.print("===> " + b.name + "\n");
+				if(b.name == "Shared"){
+					if(port.getName == "OUTPUT"){ /* we put data from cluster -> DDR only when OUTPUT */
+						puts += "	{\n"
+						puts += "		uint64_t start = __k1_read_dsu_timestamp();\n"
+						puts += "		mppa_async_put(local_buffer+" + local_offset + ", " + b.name + "+" + offset + ", MPPA_ASYNC_DDR_0, " + param.typeSize * param.size + ", NULL);\n";	
+						puts += "		total_put_cycles += __k1_read_dsu_timestamp() - start;\n"
+						puts += "	}\n"
+					}
+					local_offset += param.typeSize * param.size;
+					//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
+				}
+			}
+		}
+	puts}»
+	}
+	#ifdef PROFILE
+	getTimeProfile();
+	#endif
+	'''
+	
+	
 	override printDefinitionsFooter(List<Variable> list) '''
 	«IF !list.empty»
 	
@@ -138,7 +222,14 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	'''
 	
 	override printSubBufferDeclaration(SubBuffer buffer) '''
-	extern «buffer.type» *const «buffer.name»;  // «buffer.comment» size:= «buffer.size»*«buffer.type» defined in «buffer.creator.name»
+	«buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0»«
+	{offset = buffer.offset
+	 var b = buffer.container;
+	 while(b instanceof SubBuffer){
+	 	offset = offset + b.offset
+	  	b = b.container
+	  }
+	 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.size»*«buffer.type»
 	'''
 	
 	override printDeclarationsFooter(List<Variable> list) '''
@@ -149,6 +240,9 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
 	void *computationTask_«(callBlock.eContainer as CoreBlock).name»(void *arg){
+	#ifdef VERBOSE
+		printf("Cluster %d runs on task «(callBlock.eContainer as CoreBlock).name»\n", __k1_get_cluster_id());
+	#endif
 		«IF !callBlock.codeElts.empty»
 			// Initialisation(s)
 			
@@ -162,30 +256,36 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			for(__iii=0;__iii<GRAPH_ITERATION;__iii++){
 				
 				pthread_barrier_wait(&pthread_barrier);
-				#ifdef PROFILE
+		#ifdef PROFILE
 				getTimeProfile();
-				#endif
+		#endif
 				
 	'''
 	
 	
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
 		#ifdef VERBOSE
-				if(__k1_get_cpu_id() == 0){
-					printf("Cluster %d Graph Iteration %d / %d Done !\n", __k1_get_cluster_id(), __iii+1, GRAPH_ITERATION);
+				mppa_rpc_barrier_all(); /* sync all PE0 of all Clusters */
+				if(__k1_get_cpu_id() == 0 && __k1_get_cluster_id() == 0){
+					printf("C0->%d Graph Iteration %d / %d Done !\n", NB_CLUSTER, __iii+1, GRAPH_ITERATION);
 				}
+				mppa_rpc_barrier_all(); /* sync all PE0 of all Clusters */
 		#endif
 				/* commit local changes to the global memory */
 				pthread_barrier_wait(&pthread_barrier); /* barrier to make sure all threads have commited data in smem */
 				if(__k1_get_cpu_id() == 0){
 		#ifdef PROFILE
+					int iii;
+					for(iii=0;iii<__k1_get_cluster_id();iii++)
+						mppa_rpc_barrier_all();
 					int ii, jj;
-					for(jj=0;jj<BSP_NB_PE_MAX;jj++){
+					for(jj=0;jj<NB_CORE;jj++){
 						if(current_dump[jj] != 0){
 							printf("C%d PE%d : Number of actors %d\n", __k1_get_cluster_id(), jj, current_dump[jj]);
 							printf("\t# Profile %d Timestamp %lld\n", 0, (long long)timestamp[jj][0]);
 							for(ii=1;ii<current_dump[jj];ii++){
-								printf("\t# Profile %d Timestamp %lld Cycle %lld Time %.4f ms\n", 
+								printf("\t# C%d Profile %d Timestamp %lld Cycle %lld Time %.4f ms\n", 
+										__k1_get_cluster_id(),
 										ii, 
 										(long long)timestamp[jj][ii], 
 										(long long)timestamp[jj][ii]-(long long)timestamp[jj][ii-1], 
@@ -193,6 +293,8 @@ class MPPA2ExplicitPrinter extends CPrinter {
 							}
 						}
 					}
+					for(iii=__k1_get_cluster_id();iii<NB_CLUSTER;iii++)
+						mppa_rpc_barrier_all();
 		#endif
 				}
 				
@@ -341,17 +443,18 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	}
 	
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
-	«/*Since everything is already in shared memory, communications are simple synchronizations here*/
-	»«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«
-		IF communication.semaphore != null»&«
-		communication.semaphore.name»/*ID*/«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.data.doSwitch» 
-	'''
-	
-	override printFunctionCall(FunctionCall functionCall) '''
-	«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ','»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
-	#ifdef PROFILE
-	getTimeProfile();
-	#endif
+		«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
+			direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
+			(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«{
+			var coreName = if (communication.direction == Direction::SEND) {
+					communication.receiveStart.coreContainer.name
+				} else {
+					communication.sendStart.coreContainer.name
+				}
+			var ret = coreName.substring(4, coreName.length)
+			ret
+		}»«ENDIF»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»: «communication.
+			data.doSwitch» 
 	'''
 	
 	override printConstant(Constant constant) '''«constant.value»«IF !constant.name.nullOrEmpty»/*«constant.name»*/«ENDIF»'''
@@ -362,14 +465,24 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	
 	override printSubBuffer(SubBuffer buffer) {printBuffer(buffer)}
 	
-	override printSemaphore(Semaphore semaphore) '''&«semaphore.name»'''
+	override printSemaphore(Semaphore semaphore) ''''''
 	
-	override printSemaphoreDefinition(Semaphore semaphore) '''
-	sem_t «semaphore.name»;
-	'''
+	override printSemaphoreDefinition(Semaphore semaphore) ''''''
 	
-	override printSemaphoreDeclaration(Semaphore semaphore) '''
-	extern sem_t «semaphore.name»; 
-	'''
+	override printSemaphoreDeclaration(Semaphore semaphore) ''''''
 
+	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {
+		super.preProcessing(printerBlocks, allBlocks)
+
+		for (block : printerBlocks) {
+			/** Remove semaphore init */
+			(block as CoreBlock).initBlock.codeElts.removeAll(
+				((block as CoreBlock).initBlock.codeElts.filter[
+					(it instanceof FunctionCall && (it as FunctionCall).name.startsWith("sem_init"))]))
+			/** Remove semaphores */
+			(block as CoreBlock).definitions.removeAll((block as CoreBlock).definitions.filter[it instanceof Semaphore])
+			(block as CoreBlock).declarations.removeAll(
+				(block as CoreBlock).declarations.filter[it instanceof Semaphore])
+		}		
+	}
 }

@@ -84,7 +84,6 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFRoundBufferVertex;
-import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.elements.Workflow;
@@ -123,10 +122,6 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
 import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
-import org.ietr.preesm.codegen.xtend.model.codegen.impl.ConstantImpl;
-import org.ietr.preesm.codegen.xtend.model.codegen.impl.ConstantStringImpl;
-import org.ietr.preesm.codegen.xtend.model.codegen.impl.FiniteLoopBlockImpl;
-import org.ietr.preesm.codegen.xtend.model.codegen.impl.VariableImpl;
 import org.ietr.preesm.core.architecture.route.MessageRouteStep;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.BufferAggregate;
@@ -779,10 +774,6 @@ public class CodegenModelGenerator {
 		SDFVertex sdfVertex = (SDFVertex) dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFVertex.class);
 		Object refinement = sdfVertex.getPropertyBean().getValue(AbstractVertex.REFINEMENT);
 
-		Logger logger = WorkflowLogger.getLogger();
-		// logger.log(Level.INFO, "Codegen actor firing " + sdfVertex.getName()
-		// + " omp repeat " + sdfVertex.getOmpRepeat());
-
 		// If the actor is hierarchical
 		if (refinement instanceof AbstractGraph) {
 			// try to generate for loop on a hierarchical actor
@@ -1006,9 +997,8 @@ public class CodegenModelGenerator {
 					DAGVertex originalTarget = dag.getVertex(dagAlloc.getKey().getTarget().getName());
 					DAGEdge originalDagEdge = dag.getEdge(originalSource, originalTarget);
 
-					p("dagEdgeBuffer name " + name + " source vertex " + originalSource.getName() + " target vertex " + originalTarget.getName() + 
-							" dagEdge " + originalDagEdge.getSourceLabel() + " " + originalDagEdge.getTargetLabel() );
-
+					/* p("dagEdgeBuffer name " + name + " source vertex " + originalSource.getName() + " target vertex " + originalTarget.getName() + 
+							" dagEdge " + originalDagEdge.getSourceLabel() + " " + originalDagEdge.getTargetLabel() ); */
 					if (!dagEdgeBuffers.containsKey(originalDagEdge)) {
 						dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
 					} else {
@@ -1122,8 +1112,6 @@ public class CodegenModelGenerator {
 		// from the prototype
 		TreeMap<Integer, Variable> variableList = new TreeMap<Integer, Variable>();
 		TreeMap<Integer, PortDirection> directionList = new TreeMap<Integer, PortDirection>();
-
-		Logger logger = WorkflowLogger.getLogger();
 
 		// Retrieve the Variable corresponding to the arguments of the prototype
 		// This loop manages only buffers (data buffer and NOT parameters)
@@ -1800,8 +1788,6 @@ public class CodegenModelGenerator {
 		// SDFVertex sdfVertex = (SDFVertex)
 		// dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX,
 		// SDFVertex.class);
-
-		Logger logger = WorkflowLogger.getLogger();
 
 		// Retrieve the Arguments that must correspond to the incoming data
 		// fifos
