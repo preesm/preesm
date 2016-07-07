@@ -378,9 +378,48 @@
 	\subsection{MEG Update with Scheduling Information}
 	\subsection{Memory Bounds Estimator}
 	\label{sec:memory_bounds_estimator}
+	\newpage
 	\subsection{Buffer Merging: Memory Script Runner}
-	\subsection{Memory Allocation}
+	\tabBrief{Memory Scripts}{DAG, scenario, MEGs}{MEGs}{Executes the memory scripts associated to actors and merge buffers.}{org.ietr.preesm.memory.script.MemoryScriptTask}
 	
+	\tabParam{\textit{Check} & \multicolumn{2}{p{13.00cm}|}{			
+			Verification policy used when checking the applicability of the memory scripts written by the developer and associated to the actor. More information on forbidden buffer matching patterns in \cite{Desnos_Memory_2016}.} \\
+		\tabValue{
+			\valueDef{\texttt{\justify Thorough}}{Will generate error messages with a detailed description of the source of the error. This policy should be used when writting memory scripts for the first time.}
+			
+			\valueDef{\texttt{Fast}}{All errors in memory script are still detected, but error messages are less verbose. This verification policy is faster than the \texttt{Thorough} policy.}	
+			
+			\valueDef{\texttt{None}}{No verification is performed. Use this policy to speed up workflow execution once all memory scripts have been validated.}	
+		} \\
+		\hline	
+		\textit{Data alignment} & \multicolumn{2}{p{13.00cm}|}{			
+			Option used to force the allocation of buffers with aligned addresses. The data alignment property should always have the same value as the one set in the properties of the \textit{Memory Allocation} task (See~\ref{sec:mem_alloc}).} 
+		 \\
+		 \hline	
+		 \textit{Log Path} & \multicolumn{2}{p{13.00cm}|}{Specify whether, and where, a log of the buffer matching optimization should be generated. Generated log are in the markdown format, and provide information on all matches created by scripts as well as which match could be applied by the optimization process.} \\
+		 \tabValue{
+		 	 \valueDef{\texttt{path/file.txt}}{The path given in this property is relative to the "Code generation directory" defined in the executed scenario.}
+			 \valueDef{\textit{empty}}{No log will be generated.}		
+		 }
+		 \\
+		 \hline	
+		 \textit{Verbose} & \multicolumn{2}{p{13.00cm}|}{Verbosity of the workflow task.} \\
+		 \tabValue{
+		 	\valueDef{\texttt{True}}{The workflow task will be verbose in the console.}
+		 	\valueDef{\texttt{False}}{The workflow task will be more quiet in the console.}		
+		 }
+	}
+	
+	\newpage
+	\tabDesc{Executes the memory scripts associated to actors and merge buffers. The purpose of the memory scripts is to allow Preesm to allocate input and output buffers of certain actors in overlapping memory range.
+		
+	~\newline{}
+	\textbf{See also:} Buffer merging~\cite{Desnos_Memory_2016}}
+
+	\tabError{\noError}
+	
+	\subsection{Memory Allocation}
+	\label{sec:mem_alloc}
 	\section{Code Generation}
 	\subsection{Static Code Generation}
 	
