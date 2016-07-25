@@ -84,7 +84,7 @@ public class JoinForkCleaner {
 	 * @return true if some join-fork pairs has be removed
 	 * @throws SDF4JException
 	 */
-	public boolean cleanJoinForkPairsFrom(SDFGraph graph) throws InvalidExpressionException, SDF4JException {
+	static public boolean cleanJoinForkPairsFrom(SDFGraph graph) throws InvalidExpressionException, SDF4JException {
 		boolean result = false;
 
 		// Check that the graph is single rate.
@@ -157,7 +157,7 @@ public class JoinForkCleaner {
 	 *             if some expressions associated to data ports or delays are
 	 *             invalid.
 	 */
-	private void replaceEdge(SDFEdge replacedEdge, SDFGraph graph) throws InvalidExpressionException {
+	static private void replaceEdge(SDFEdge replacedEdge, SDFGraph graph) throws InvalidExpressionException {
 
 		// Retrieve the sources and targets actor to connect, as well as all
 		// edges replaced b this algorithm.
@@ -502,7 +502,7 @@ public class JoinForkCleaner {
 		SpecialActorPortsIndexer.sortIndexedPorts(graph);
 	}
 
-	private boolean isBetweenJoinAndFork(SDFEdge edge) {
+	static private boolean isBetweenJoinAndFork(SDFEdge edge) {
 		return (edge.getSource() instanceof SDFJoinVertex) && (edge.getTarget() instanceof SDFForkVertex);
 	}
 }
