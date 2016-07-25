@@ -42,6 +42,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
@@ -56,9 +57,8 @@ import org.ietr.preesm.algorithm.optimization.clean.joinfork.JoinForkCleaner;
 public class AlgorithmOptimizationTask extends AbstractTaskImplementation {
 
 	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+	public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
+			IProgressMonitor monitor, String nodeName, Workflow workflow) throws WorkflowException {
 
 		// Get the SDFGraph to optimize
 		SDFGraph graph = (SDFGraph) inputs.get(KEY_SDF_GRAPH);
@@ -70,11 +70,18 @@ public class AlgorithmOptimizationTask extends AbstractTaskImplementation {
 		// can throw InvalidExpressionExceptions, even if at this point of the
 		// workflow, there should have been already raised
 		try {
-			while(cleaner.cleanJoinForkPairsFrom(graph));
+			cleaner.cleanJoinForkPairsFrom(graph);
 		} catch (InvalidExpressionException e) {
-			System.err.println("SDFGraph " + graph.getName()
-					+ " contains invalid expressions.");
+			System.err.println("SDFGraph " + graph.getName() + " contains invalid expressions.");
 			e.printStackTrace();
+			throw new WorkflowException(e.getMessage());
+		} catch (SDF4JException e) {
+			System.err.println("Error when cleaning fork/join pairs in SDFGraph " + graph.getName());
+			e.printStackTrace();
+			throw new WorkflowException(e.getMessage());
+		} catch (Exception e){
+			e.printStackTrace();
+			throw e;
 		}
 
 		Map<String, Object> outputs = new HashMap<String, Object>();
