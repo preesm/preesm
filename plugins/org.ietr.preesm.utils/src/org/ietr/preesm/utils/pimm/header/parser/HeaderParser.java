@@ -137,7 +137,7 @@ public class HeaderParser {
 			parameters.remove(" ");
 
 			Pattern paramPattern = Pattern
-					.compile("(IN|OUT)?\\s?([^\\*]+)(\\s\\**)?\\s([\\S&&[^\\[\\]]]+)(\\[(\\d|\\]\\[)*\\])?");
+					.compile("(IN|OUT)?\\s?([^\\*]+)(\\s?\\**)?\\s([\\S&&[^\\[\\]]]+)(\\[(\\d|\\]\\[)*\\])?");
 			// Procces parameters one by one
 			for (String param : parameters) {
 				FunctionParameter fp = PiMMFactory.eINSTANCE
@@ -433,9 +433,8 @@ public class HeaderParser {
 					proto.getParameters());
 			boolean allParams = true;
 			for (FunctionParameter param : params) {
-				if (!param.getType().contains("*")) {
+				if (param.isIsConfigurationParameter()) {
 					param.setDirection(Direction.IN);
-					param.setIsConfigurationParameter(true);
 				} else {
 					allParams = false;
 					break;

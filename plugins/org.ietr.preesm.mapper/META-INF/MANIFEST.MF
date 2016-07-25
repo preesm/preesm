@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm mapper Plug-in
 Bundle-SymbolicName: org.ietr.preesm.mapper;singleton:=true
-Bundle-Version: 2.2.2.qualifier
+Bundle-Version: 2.2.3
 Bundle-Activator: org.ietr.preesm.mapper.activator.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.ietr.preesm.core,
@@ -26,12 +26,14 @@ Bundle-Vendor: IETR/INSA Rennes
 Export-Package: org.ietr.preesm.mapper,
  org.ietr.preesm.mapper.abc,
  org.ietr.preesm.mapper.abc.impl.latency,
+ org.ietr.preesm.mapper.abc.route,
  org.ietr.preesm.mapper.abc.taskscheduling,
  org.ietr.preesm.mapper.algo.list,
  org.ietr.preesm.mapper.exporter,
  org.ietr.preesm.mapper.gantt,
  org.ietr.preesm.mapper.graphtransfo,
  org.ietr.preesm.mapper.model,
+ org.ietr.preesm.mapper.model.property,
  org.ietr.preesm.mapper.multiSDFTasks,
  org.ietr.preesm.mapper.params,
  org.ietr.preesm.mapper.scenariogen,

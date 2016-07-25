@@ -746,6 +746,30 @@ public class CodegenModelGenerator {
 					// declare the Buffer.
 					correspondingOperatorID = scenario.getSimulationManager().getMainOperatorName();
 					isLocal = false;
+					
+					// Check that the main operator block exists.
+					CoreBlock mainOperatorBlock = null;
+					{
+						for (Entry<ComponentInstance, CoreBlock> componentEntry : coreBlocks
+								.entrySet()) {
+							if (componentEntry.getKey().getInstanceName()
+									.equals(correspondingOperatorID)) {
+								mainOperatorBlock = componentEntry.getValue();
+							}
+						}
+					}
+					
+					// If the main operator does not exist
+					if(mainOperatorBlock == null){
+						// Create it
+						mainOperatorBlock = CodegenFactory.eINSTANCE.createCoreBlock();
+						ComponentInstance componentInstance = archi.getComponentInstance(correspondingOperatorID);
+						mainOperatorBlock.setName(componentInstance.getInstanceName());
+						mainOperatorBlock.setCoreType(componentInstance.getComponent().getVlnv()
+								.getName());
+						coreBlocks.put(componentInstance, mainOperatorBlock);
+					}
+					
 				} else {
 					// else, the operator corresponding to the memory bank will
 					// do the work
