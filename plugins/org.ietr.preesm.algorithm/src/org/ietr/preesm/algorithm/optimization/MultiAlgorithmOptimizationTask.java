@@ -43,6 +43,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
@@ -77,6 +78,9 @@ public class MultiAlgorithmOptimizationTask extends AbstractTaskImplementation {
 			} catch (InvalidExpressionException e) {
 				System.err.println("SDFGraph " + graph.getName()
 						+ " contains invalid expressions.");
+				e.printStackTrace();
+			} catch (SDF4JException e) {
+				System.err.println("Error when cleaning fork/join pairs in SDFGraph " + graph.getName());
 				e.printStackTrace();
 			}
 		}
