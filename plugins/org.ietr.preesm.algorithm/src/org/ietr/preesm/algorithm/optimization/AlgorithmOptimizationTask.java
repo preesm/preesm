@@ -65,12 +65,12 @@ public class AlgorithmOptimizationTask extends AbstractTaskImplementation {
 
 		// First pass is to clean the graph from useless pairs of join-fork
 		// vertices which can hinder scheduling
-		JoinForkCleaner cleaner = new JoinForkCleaner();
+
 		// JoinForkCleaner evaluates some rates and delays expressions, and thus
 		// can throw InvalidExpressionExceptions, even if at this point of the
 		// workflow, there should have been already raised
 		try {
-			cleaner.cleanJoinForkPairsFrom(graph);
+			JoinForkCleaner.cleanJoinForkPairsFrom(graph);
 		} catch (InvalidExpressionException e) {
 			System.err.println("SDFGraph " + graph.getName() + " contains invalid expressions.");
 			e.printStackTrace();
