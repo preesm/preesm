@@ -261,7 +261,8 @@ public class JoinForkCleaner {
 			boolean explode = rest < sourceEdges.get(sourceIndex).getProd().intValue();
 			boolean implode = rest < targetEdges.get(targetIndex).getCons().intValue();
 			if (explode && !(sourceCopies.get(sourceIndex) instanceof SDFForkVertex)
-					&& !(sourceCopies.get(sourceIndex) instanceof SDFBroadcastVertex)) {
+					&& (!(sourceCopies.get(sourceIndex) instanceof SDFBroadcastVertex) 
+							|| (sourceCopies.get(sourceIndex) instanceof SDFRoundBufferVertex))){
 
 				// If an explode must be added
 				SDFAbstractVertex explodeVertex = new SDFForkVertex();
