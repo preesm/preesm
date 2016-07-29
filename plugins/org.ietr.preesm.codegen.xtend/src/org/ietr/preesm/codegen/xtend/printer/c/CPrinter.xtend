@@ -168,11 +168,9 @@ class CPrinter extends DefaultPrinter {
 			#pragma omp parallel for private(«block2.iter.name»)
 			for(«block2.iter.name»=0;«block2.iter.name»<«block2.nbIter»;«block2.iter.name»++){
 				
-				
 	'''
 	
 	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
-		
 		}
 	}
 	'''	
@@ -347,7 +345,7 @@ class CPrinter extends DefaultPrinter {
 	extern sem_t «semaphore.name»; 
 	'''
 	
-	override printBufferIterator(BufferIterator bufferIterator) '''«bufferIterator.name» + «printIntVar(bufferIterator.iter)» * «bufferIterator.size»'''
+	override printBufferIterator(BufferIterator bufferIterator) '''«bufferIterator.name» + «printIntVar(bufferIterator.iter)» * «bufferIterator.iterSize»'''
 	
 	override printBufferIteratorDeclaration(BufferIterator bufferIterator) ''''''
 	

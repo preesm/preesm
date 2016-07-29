@@ -82,6 +82,10 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	 */
 	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {}
 	
+	override postProcessing(CharSequence charSequence) {
+		return charSequence;
+	}
+	
 	override printBroadcast(SpecialCall call) '''<Broadcast>'''
 	
 	override printBuffer(Buffer buffer) '''<Buffer>'''

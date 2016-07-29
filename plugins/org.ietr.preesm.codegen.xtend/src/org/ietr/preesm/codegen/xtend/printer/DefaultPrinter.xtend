@@ -81,6 +81,14 @@ class DefaultPrinter extends CodegenAbstractPrinter {
 	 */
 	override preProcessing(List<Block> printerBlocks, List<Block> allBlocks) {}
 	
+	/**
+	 * Default implementation: does nothing.
+	 * @see CodegenAbstractPrinter#postProcessing(CharSequence)
+	 */
+	override postProcessing(CharSequence charSequence) {
+		return charSequence;
+	}
+	
 	override printBroadcast(SpecialCall call) ''''''
 
 	override printBuffer(Buffer buffer) ''''''

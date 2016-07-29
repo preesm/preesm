@@ -59,6 +59,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer
 import org.ietr.preesm.codegen.xtend.model.codegen.Block
 import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter
 import org.ietr.preesm.codegen.xtend.model.codegen.Direction
+import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator
+import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock
 
 class MPPA2ExplicitPrinter extends CPrinter {
 	
@@ -69,6 +71,12 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	protected var IGNORE_USELESS_MEMCPY = true
 	
 	protected var local_buffer = "local_buffer"
+	
+	protected var IS_HIERARCHICAL = false
+	
+	protected var scratch_pad_buffer = ""
+	
+	protected var local_buffer_size = 0
 	
 	override printCoreBlockHeader(CoreBlock block) '''
 		/** 
@@ -114,8 +122,14 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		«IF buffer.name == "Shared"»
 		//#define Shared ((char*)0x84000000ULL) 	/* Shared buffer in DDR */
 		«ELSE»
-			char «local_buffer»[1024*512];		/* Scratchpad buffer */
-			«buffer.type» «buffer.name»[«buffer.size»]; // «buffer.comment» size:= «buffer.size»*«buffer.type»
+		/* Scratchpad buffer size */
+		int «buffer.name»_size = 
+		char *local_buffer;
+		«buffer.type» «buffer.name»[«buffer.size»]; // «buffer.comment» size:= «buffer.size»*«buffer.type»
+		«{	var out = ""
+			local_buffer_size = 0
+			scratch_pad_buffer = buffer.name
+			out}»
 		«ENDIF»
 	'''
 	
@@ -137,73 +151,172 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.size»*«buffer.type»
 	'''
 	
-	override printFunctionCall(FunctionCall functionCall) '''
-	// Fonction has «functionCall.parameters.size» params
+	override printFiniteLoopBlockHeader(FiniteLoopBlock block2) '''
+	«{
+	 	IS_HIERARCHICAL = true
+	"\t"}»// Begin the for loop
 	{
+		«{
+		var gets = ""
+		var local_offset = 0;
+			/* go through eventual out param fisrt because of foot FiniteLoopBlock */
+			for(param : block2.outBuffers){
+				if(param instanceof SubBuffer){
+					var b = param.container;
+					var offset = param.offset;
+					while(b instanceof SubBuffer){
+						offset += b.offset;
+						b = b.container;
+					}
+					/* put out buffer here */
+					if(b.name == "Shared"){
+						gets += "void *" + param.name + " = local_buffer+" + local_offset +";\n";
+						local_offset += param.typeSize * param.size;
+					}
+				}
+			}
+			/* go through in param */
+			for(param : block2.inBuffers){
+				if(param instanceof SubBuffer){
+					var b = param.container;
+					var offset = param.offset;
+					while(b instanceof SubBuffer){
+						offset += b.offset;
+						b = b.container;
+						//System.out.print("Running through all buffer " + b.name + "\n");
+					}
+					//System.out.print("===> " + b.name + "\n");
+					if(b.name == "Shared"){
+						gets += "void *" + param.name + " = local_buffer+" + local_offset +";\n";
+						gets += "{\n"
+						gets += "	uint64_t start = __k1_read_dsu_timestamp();\n"
+						gets += "	mppa_async_get(local_buffer+" + local_offset + ", " + b.name + "+" + offset + ", MPPA_ASYNC_DDR_0, " + param.typeSize * param.size + ", NULL);\n";
+						gets += "	total_get_cycles += __k1_read_dsu_timestamp() - start;\n"
+						gets += "}\n"
+						local_offset += param.typeSize * param.size;
+						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
+					}
+				}
+			}
+			if(local_offset > local_buffer_size)
+				local_buffer_size = local_offset
+	gets}»
+		int «block2.iter.name»;
+		#pragma omp parallel for private(«block2.iter.name»)
+		for(«block2.iter.name»=0;«block2.iter.name»<«block2.nbIter»;«block2.iter.name»++)
+		{
+			
+	'''
+	
+	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
+		}
+		«{
+				var puts = ""
+				var local_offset = 0;
+				for(param : block2.outBuffers){
+					if(param instanceof SubBuffer){
+						var b = param.container
+						var offset = param.offset
+						while(b instanceof SubBuffer){
+							offset += b.offset;
+							b = b.container;
+							//System.out.print("Running through all buffer " + b.name + "\n");
+						}
+						//System.out.print("===> " + b.name + "\n");
+						if(b.name == "Shared"){
+							puts += "	{\n"
+							puts += "		uint64_t start = __k1_read_dsu_timestamp();\n"
+							puts += "		mppa_async_put(local_buffer+" + local_offset + ", " + b.name + "+" + offset + ", MPPA_ASYNC_DDR_0, " + param.typeSize * param.size + ", NULL);\n";	
+							puts += "		total_put_cycles += __k1_read_dsu_timestamp() - start;\n"
+							puts += "	}\n"
+							local_offset += param.typeSize * param.size;
+							//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
+						}
+					}
+				}
+			puts}»
+		«{
+			 	IS_HIERARCHICAL = false
+			""}»
+		}
+	'''
+	
+	override printFunctionCall(FunctionCall functionCall) '''
 	«{
 		var gets = ""
 		var local_offset = 0;
-		for(param : functionCall.parameters){
-			if(param instanceof SubBuffer){
-				var port = functionCall.parameterDirections.get(functionCall.parameters.indexOf(param))
-				var b = param.container;
-				var offset = param.offset;
-				while(b instanceof SubBuffer){
-					offset += b.offset;
-					b = b.container;
-					//System.out.print("Running through all buffer " + b.name + "\n");
-				}
-				//System.out.print("===> " + b.name + "\n");
-				if(b.name == "Shared"){
-					gets += "	void *" + param.name + " = local_buffer+" + local_offset +";\n";
-					if(port.getName == "INPUT"){ /* we get data from DDR -> cluster only when INPUT */
-						gets += "	{\n"
-						gets += "		uint64_t start = __k1_read_dsu_timestamp();\n"
-						gets += "		mppa_async_get(local_buffer+" + local_offset + ", " + b.name + "+" + offset + ", MPPA_ASYNC_DDR_0, " + param.typeSize * param.size + ", NULL);\n";
-						gets += "		total_get_cycles += __k1_read_dsu_timestamp() - start;\n"
-						gets += "	}\n"
+		if(IS_HIERARCHICAL == false){
+			gets += "{\n"
+			for(param : functionCall.parameters){
+				
+				if(param instanceof SubBuffer){
+					var port = functionCall.parameterDirections.get(functionCall.parameters.indexOf(param))
+					var b = param.container;
+					var offset = param.offset;
+					while(b instanceof SubBuffer){
+						offset += b.offset;
+						b = b.container;
+						//System.out.print("Running through all buffer " + b.name + "\n");
 					}
-					local_offset += param.typeSize * param.size;
-					//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
+					//System.out.print("===> " + b.name + "\n");
+					if(b.name == "Shared"){
+						gets += "	void *" + param.name + " = local_buffer+" + local_offset +";\n";
+						if(port.getName == "INPUT"){ /* we get data from DDR -> cluster only when INPUT */
+							gets += "	{\n"
+							gets += "		uint64_t start = __k1_read_dsu_timestamp();\n"
+							gets += "		mppa_async_get(local_buffer+" + local_offset + ", " + b.name + "+" + offset + ", MPPA_ASYNC_DDR_0, " + param.typeSize * param.size + ", NULL);\n";
+							gets += "		total_get_cycles += __k1_read_dsu_timestamp() - start;\n"
+							gets += "	}\n"
+						}
+						local_offset += param.typeSize * param.size;
+						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
+					}
 				}
 			}
+			gets += "\t"
+		}else{
+			gets += " /* gets are normaly generated before */ \n"
 		}
+		if(local_offset > local_buffer_size)
+			local_buffer_size = local_offset
 	gets}»
 		«functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ', '»«param.doSwitch»«ENDFOR»); // «functionCall.actorName»
 	«{
 		var puts = ""
 		var local_offset = 0;
-		for(param : functionCall.parameters){
-			if(param instanceof SubBuffer){
-				var port = functionCall.parameterDirections.get(functionCall.parameters.indexOf(param))
-				var b = param.container
-				var offset = param.offset
-				while(b instanceof SubBuffer){
-					offset += b.offset;
-					b = b.container;
-					//System.out.print("Running through all buffer " + b.name + "\n");
-				}
-				//System.out.print("===> " + b.name + "\n");
-				if(b.name == "Shared"){
-					if(port.getName == "OUTPUT"){ /* we put data from cluster -> DDR only when OUTPUT */
-						puts += "	{\n"
-						puts += "		uint64_t start = __k1_read_dsu_timestamp();\n"
-						puts += "		mppa_async_put(local_buffer+" + local_offset + ", " + b.name + "+" + offset + ", MPPA_ASYNC_DDR_0, " + param.typeSize * param.size + ", NULL);\n";	
-						puts += "		total_put_cycles += __k1_read_dsu_timestamp() - start;\n"
-						puts += "	}\n"
+		if(IS_HIERARCHICAL == false){
+			for(param : functionCall.parameters){
+				if(param instanceof SubBuffer){
+					var port = functionCall.parameterDirections.get(functionCall.parameters.indexOf(param))
+					var b = param.container
+					var offset = param.offset
+					while(b instanceof SubBuffer){
+						offset += b.offset;
+						b = b.container;
+						//System.out.print("Running through all buffer " + b.name + "\n");
 					}
-					local_offset += param.typeSize * param.size;
-					//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
+					//System.out.print("===> " + b.name + "\n");
+					if(b.name == "Shared"){
+						if(port.getName == "OUTPUT"){ /* we put data from cluster -> DDR only when OUTPUT */
+							puts += "	{\n"
+							puts += "		uint64_t start = __k1_read_dsu_timestamp();\n"
+							puts += "		mppa_async_put(local_buffer+" + local_offset + ", " + b.name + "+" + offset + ", MPPA_ASYNC_DDR_0, " + param.typeSize * param.size + ", NULL);\n";	
+							puts += "		total_put_cycles += __k1_read_dsu_timestamp() - start;\n"
+							puts += "	}\n"
+						}
+						local_offset += param.typeSize * param.size;
+						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
+					}
 				}
 			}
+			puts += "}\n"
+		}else{
+			puts += " /* puts are normaly generated before */ \n"
 		}
+		if(local_offset > local_buffer_size)
+			local_buffer_size = local_offset
 	puts}»
-	}
-	#ifdef PROFILE
-	getTimeProfile();
-	#endif
 	'''
-	
 	
 	override printDefinitionsFooter(List<Variable> list) '''
 	«IF !list.empty»
@@ -484,5 +597,11 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			(block as CoreBlock).declarations.removeAll(
 				(block as CoreBlock).declarations.filter[it instanceof Semaphore])
 		}		
+	}
+	
+	override postProcessing(CharSequence charSequence){
+		charSequence.toString.replace(
+				"int " + scratch_pad_buffer + "_size = ", 
+				"int " + scratch_pad_buffer + "_size = " + local_buffer_size + ";");
 	}
 }

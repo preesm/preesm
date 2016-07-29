@@ -314,7 +314,7 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	}
 
 	/**
-	 * Get a {@link String} that corresponds to the the number of tabulations
+	 * Get a {@link String} that corresponds to the number of tabulations
 	 * that form the last line of the input {@link CharSequence}. If the
 	 * {@link CharSequence} ends with an '\n' or with a '\r\n' {@link String},
 	 * the penultimate line is processed instead. If the last line contains
@@ -562,6 +562,17 @@ abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 	 * 				This list includes all printerBlocks
 	 */
 	def void preProcessing(List<Block> printerBlocks, List<Block> allBlocks);
+
+	/**
+	 * Method called after printing a set of {@link Block blocks}. This method
+	 * can perform some printer specific modification on a char sequence as
+	 * parameters.
+	 * 
+	 * @param charSequence
+	 * 				Input CharSequence to post process
+	 * @return CharSequence
+	 */
+	def CharSequence postProcessing(CharSequence charSequence);
 
 	/**
 	 * This method is called after all the {@link Block blocks} have been 

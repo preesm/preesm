@@ -671,19 +671,19 @@ public class CodegenModelGenerator {
 			int nbActor = 0;
 			SDFAbstractVertex repVertex = null;
 			// Check nb actor for loop generation as only one actor in the hierarchy is supported yet
-			for (SDFAbstractVertex v : graph.vertexSet())
+			for (SDFAbstractVertex v : graph.vertexSet()){
 				if (v instanceof SDFVertex) {
 					repVertex = v;
 					nbActor++;
 				}
+				/*if( v instanceof SDFInterfaceVertex){ p("SDF Interface Vertex " +
+						 v.getName()); }else if( v instanceof SDFVertex){ p("SDF Vertex "
+						 + v.getName()); }else{ p("SDF Abs Vertex " + v.getName()); }*/
+			}
 
 			if (nbActor != 1)
 				throw new CodegenException("nbActor " + nbActor + " ===> Several Actors are not supported yet !");
-			/*
-			 * if( v instanceof SDFInterfaceVertex){ p("SDF Interface Vertex " +
-			 * v.getName()); }else if( v instanceof SDFVertex){ p("SDF Vertex "
-			 * + v.getName()); }else{ p("SDF Abs Vertex " + v.getName()); }
-			 */
+			
 			ActorPrototypes prototypes = null;
 			Object vertex_ref = repVertex.getPropertyBean().getValue(AbstractVertex.REFINEMENT);
 			if (vertex_ref instanceof ActorPrototypes)
@@ -699,7 +699,7 @@ public class CodegenModelGenerator {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				p("Actor " + repVertex.getName() + " Repeat " + vertexRep);
+				//p("Actor " + repVertex.getName() + " Repeat " + vertexRep);
 
 				/* create code elements and setup them */
 				FunctionCall repFunc = CodegenFactory.eINSTANCE.createFunctionCall();
@@ -710,33 +710,32 @@ public class CodegenModelGenerator {
 				forLoop.setNbIter(vertexRep);
 				operatorBlock.getLoopBlock().getCodeElts().add(forLoop);
 				repFunc.setName(loopPrototype.getFunctionName());
-				repFunc.setActorName(
-						dagVertex.getName()); /*
-												 * function call set to the
-												 * hierarchical actor
-												 */
+				/* Function call set to the hierarchical actor */
+				repFunc.setActorName(dagVertex.getName());
 
 				/* retrieve and set variables to be called by the function */
-				Entry<List<Variable>, List<PortDirection>> callVars = generateRepeatedCallVariables(dagVertex,
+				Entry<List<Variable>, List<PortDirection>> callVars = generateRepeatedCallVariables(operatorBlock, forLoop, dagVertex,
 						repVertex, loopPrototype, var);
 				// logger.log(Level.INFO, "generateFunctionCall name " +
 				// dagVertex.getName());
 				// Put Variables in the function call
 				for (int idx = 0; idx < callVars.getKey().size(); idx++) {
 					repFunc.addParameter(callVars.getKey().get(idx), callVars.getValue().get(idx));
-					p("Called var " + idx + " " + callVars.getKey().get(idx).getName() + " "
-							+ callVars.getValue().get(idx).getName());
+					/*p("Called var " + idx + " " + callVars.getKey().get(idx).getName() + " "
+							+ callVars.getValue().get(idx).getName());*/	
 				}
-				// identifyMergedInputRange(callVars); NOT SUPPORTED YET
+				//identifyMergedInputRange(callVars); //NOT SUPPORTED YET
 
-				for (CodeGenArgument arg : loopPrototype.getArguments().keySet()) {
+				/*for (CodeGenArgument arg : loopPrototype.getArguments().keySet()) {
 					p("Arg Buffer " + arg.getName());
 				}
 				for (CodeGenParameter param : loopPrototype.getParameters().keySet()) {
 					p("Arg Parameter " + param.getName());
-				}
+				}*/
 				// Add the function call to the for loop block
 				forLoop.getCodeElts().add(repFunc);
+				registerCallVariableToCoreBlock(operatorBlock, repFunc);
+				//operatorBlock.getLoopBlock().getCodeElts().add(repFunc);
 				// Save the functionCall in the dagvertexFunctionCall Map
 				dagVertexCalls.put(dagVertex, repFunc);
 
@@ -746,7 +745,7 @@ public class CodegenModelGenerator {
 			}
 
 		}
-		return 1;
+		return 0;
 	}
 
 	/**
@@ -779,10 +778,10 @@ public class CodegenModelGenerator {
 			// try to generate for loop on a hierarchical actor
 			if (tryGenerateRepeatActorFiring(operatorBlock, dagVertex) == 0) {
 
-				p("tryGenerateRepeatActorFiring Successed");
+				p("Hierarchical actor " + dagVertex.getName() + " generation Successed");
 
 			} else {
-				p("tryGenerateRepeatActorFiring Failed");
+				p("Hierarchical actor " + dagVertex.getName() + " printing Failed");
 				throw new CodegenException("Unflattened hierarchical actors (" + sdfVertex
 						+ ") are not yet supported by the Xtend Code Generation.\n"
 						+ "Flatten the graph completely before using this code-generation.");
@@ -1317,7 +1316,7 @@ public class CodegenModelGenerator {
 	 *             {@link Prototype}</li>
 	 *             </ul>
 	 */
-	protected Entry<List<Variable>, List<PortDirection>> generateRepeatedCallVariables(DAGVertex dagVertex,
+	protected Entry<List<Variable>, List<PortDirection>> generateRepeatedCallVariables(CoreBlock operatorBlock, FiniteLoopBlock loopBlock, DAGVertex dagVertex,
 			SDFAbstractVertex sdfAbsVertex, Prototype prototype, IntVar iterVar) throws CodegenException {
 		// Retrieve the sdf vertex and the refinement.
 		/*
@@ -1435,8 +1434,24 @@ public class CodegenModelGenerator {
 						+ " of DAG Actor " + dagVertex + " is not present in the input MemEx.\n"
 						+ "There is something wrong in the Memory Allocation task.");
 			}
+			
 			bufIter.setName(var.getName());
+			bufIter.setContainer(((SubBuffer)var).getContainer());
 			bufIter.setIter(iterVar);
+			bufIter.setTypeSize(((SubBuffer)var).getTypeSize());
+			bufIter.setType(((SubBuffer)var).getType());
+			
+			if( arg.getDirection() == CodeGenArgument.INPUT){
+				loopBlock.getInBuffers().add(bufIter);
+			}else if(arg.getDirection() == CodeGenArgument.OUTPUT){
+				loopBlock.getOutBuffers().add(bufIter);
+			}else{
+				throw new CodegenException("Args INPUT / OUTPUT failed\n");
+			}
+			
+			/* register to call block */
+			var.getUsers().add(operatorBlock);
+			//registerCallVariableToCoreBlock(operatorBlock, bufIter);
 
 			int rep = 1;
 			try {
@@ -1445,8 +1460,10 @@ public class CodegenModelGenerator {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			bufIter.setSize(subBufferProperties.getSize() / rep);
-
+			bufIter.setIterSize(subBufferProperties.getSize() / rep);
+			bufIter.setSize(subBufferProperties.getSize());
+			
+			
 			variableList.put(prototype.getArguments().get(arg), bufIter);
 			directionList.put(prototype.getArguments().get(arg), dir);
 			// logger.log(Level.INFO, "Get corresponding variable " +

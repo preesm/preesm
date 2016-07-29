@@ -35,13 +35,17 @@
  */
 package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
+import java.util.Collection;
 import org.eclipse.emf.common.notify.Notification;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
+import org.eclipse.emf.ecore.util.EObjectResolvingEList;
+import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.FiniteLoopBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
@@ -55,6 +59,8 @@ import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
  * <ul>
  *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FiniteLoopBlockImpl#getNbIter <em>Nb Iter</em>}</li>
  *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FiniteLoopBlockImpl#getIter <em>Iter</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FiniteLoopBlockImpl#getInBuffers <em>In Buffers</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.FiniteLoopBlockImpl#getOutBuffers <em>Out Buffers</em>}</li>
  * </ul>
  *
  * @generated
@@ -85,6 +91,24 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 	 */
 	protected IntVar iter;
 
+	/**
+	 * The cached value of the '{@link #getInBuffers() <em>In Buffers</em>}' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getInBuffers()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<BufferIterator> inBuffers;
+	/**
+	 * The cached value of the '{@link #getOutBuffers() <em>Out Buffers</em>}' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getOutBuffers()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<BufferIterator> outBuffers;
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
@@ -157,6 +181,30 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 	}
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EList<BufferIterator> getInBuffers() {
+		if (inBuffers == null) {
+			inBuffers = new EObjectResolvingEList<BufferIterator>(BufferIterator.class, this, CodegenPackage.FINITE_LOOP_BLOCK__IN_BUFFERS);
+		}
+		return inBuffers;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EList<BufferIterator> getOutBuffers() {
+		if (outBuffers == null) {
+			outBuffers = new EObjectResolvingEList<BufferIterator>(BufferIterator.class, this, CodegenPackage.FINITE_LOOP_BLOCK__OUT_BUFFERS);
+		}
+		return outBuffers;
+	}
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
@@ -168,6 +216,10 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 			case CodegenPackage.FINITE_LOOP_BLOCK__ITER:
 				if (resolve) return getIter();
 				return basicGetIter();
+			case CodegenPackage.FINITE_LOOP_BLOCK__IN_BUFFERS:
+				return getInBuffers();
+			case CodegenPackage.FINITE_LOOP_BLOCK__OUT_BUFFERS:
+				return getOutBuffers();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -176,6 +228,7 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
@@ -184,6 +237,14 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 				return;
 			case CodegenPackage.FINITE_LOOP_BLOCK__ITER:
 				setIter((IntVar)newValue);
+				return;
+			case CodegenPackage.FINITE_LOOP_BLOCK__IN_BUFFERS:
+				getInBuffers().clear();
+				getInBuffers().addAll((Collection<? extends BufferIterator>)newValue);
+				return;
+			case CodegenPackage.FINITE_LOOP_BLOCK__OUT_BUFFERS:
+				getOutBuffers().clear();
+				getOutBuffers().addAll((Collection<? extends BufferIterator>)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -202,6 +263,12 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 			case CodegenPackage.FINITE_LOOP_BLOCK__ITER:
 				setIter((IntVar)null);
 				return;
+			case CodegenPackage.FINITE_LOOP_BLOCK__IN_BUFFERS:
+				getInBuffers().clear();
+				return;
+			case CodegenPackage.FINITE_LOOP_BLOCK__OUT_BUFFERS:
+				getOutBuffers().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -217,6 +284,10 @@ public class FiniteLoopBlockImpl extends LoopBlockImpl implements FiniteLoopBloc
 				return nbIter != NB_ITER_EDEFAULT;
 			case CodegenPackage.FINITE_LOOP_BLOCK__ITER:
 				return iter != null;
+			case CodegenPackage.FINITE_LOOP_BLOCK__IN_BUFFERS:
+				return inBuffers != null && !inBuffers.isEmpty();
+			case CodegenPackage.FINITE_LOOP_BLOCK__OUT_BUFFERS:
+				return outBuffers != null && !outBuffers.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

@@ -286,6 +286,8 @@ public class CodegenSwitch<T> extends Switch<T> {
 			case CodegenPackage.BUFFER_ITERATOR: {
 				BufferIterator bufferIterator = (BufferIterator)theEObject;
 				T result = caseBufferIterator(bufferIterator);
+				if (result == null) result = caseSubBuffer(bufferIterator);
+				if (result == null) result = caseBuffer(bufferIterator);
 				if (result == null) result = caseVariable(bufferIterator);
 				if (result == null) result = caseCommentable(bufferIterator);
 				if (result == null) result = defaultCase(theEObject);

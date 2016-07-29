@@ -43,7 +43,7 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator#getSize <em>Size</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator#getIterSize <em>Iter Size</em>}</li>
  *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator#getIter <em>Iter</em>}</li>
  * </ul>
  *
@@ -51,7 +51,33 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
  * @model
  * @generated
  */
-public interface BufferIterator extends Variable {
+public interface BufferIterator extends SubBuffer {
+	/**
+	 * Returns the value of the '<em><b>Iter Size</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Iter Size</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Iter Size</em>' attribute.
+	 * @see #setIterSize(int)
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBufferIterator_IterSize()
+	 * @model
+	 * @generated
+	 */
+	int getIterSize();
+
+	/**
+	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator#getIterSize <em>Iter Size</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Iter Size</em>' attribute.
+	 * @see #getIterSize()
+	 * @generated
+	 */
+	void setIterSize(int value);
+
 	/**
 	 * Returns the value of the '<em><b>Iter</b></em>' reference. <!--
 	 * begin-user-doc -->
@@ -77,31 +103,5 @@ public interface BufferIterator extends Variable {
 	 * @generated
 	 */
 	void setIter(IntVar value);
-
-	/**
-	 * Returns the value of the '<em><b>Size</b></em>' attribute. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Size</em>' attribute isn't clear, there really
-	 * should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Size</em>' attribute.
-	 * @see #setSize(int)
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBufferIterator_Size()
-	 * @model
-	 * @generated
-	 */
-	int getSize();
-
-	/**
-	 * Sets the value of the '{@link org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator#getSize <em>Size</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Size</em>' attribute.
-	 * @see #getSize()
-	 * @generated
-	 */
-	void setSize(int value);
 
 } // BufferIterator

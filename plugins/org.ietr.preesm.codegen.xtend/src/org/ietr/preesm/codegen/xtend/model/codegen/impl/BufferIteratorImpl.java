@@ -52,29 +52,31 @@ import org.ietr.preesm.codegen.xtend.model.codegen.IntVar;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferIteratorImpl#getSize <em>Size</em>}</li>
+ *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferIteratorImpl#getIterSize <em>Iter Size</em>}</li>
  *   <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferIteratorImpl#getIter <em>Iter</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
+public class BufferIteratorImpl extends SubBufferImpl implements BufferIterator {
 	/**
-	 * The default value of the '{@link #getSize() <em>Size</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @see #getSize()
+	 * The default value of the '{@link #getIterSize() <em>Iter Size</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getIterSize()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final int SIZE_EDEFAULT = 0;
+	protected static final int ITER_SIZE_EDEFAULT = 0;
 	/**
-	 * The cached value of the '{@link #getSize() <em>Size</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @see #getSize()
+	 * The cached value of the '{@link #getIterSize() <em>Iter Size</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getIterSize()
 	 * @generated
 	 * @ordered
 	 */
-	protected int size = SIZE_EDEFAULT;
+	protected int iterSize = ITER_SIZE_EDEFAULT;
 	/**
 	 * The cached value of the '{@link #getIter() <em>Iter</em>}' reference.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -99,6 +101,27 @@ public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 	@Override
 	protected EClass eStaticClass() {
 		return CodegenPackage.Literals.BUFFER_ITERATOR;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public int getIterSize() {
+		return iterSize;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setIterSize(int newIterSize) {
+		int oldIterSize = iterSize;
+		iterSize = newIterSize;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.BUFFER_ITERATOR__ITER_SIZE, oldIterSize, iterSize));
 	}
 
 	/**
@@ -140,30 +163,11 @@ public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public int getSize() {
-		return size;
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setSize(int newSize) {
-		int oldSize = size;
-		size = newSize;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.BUFFER_ITERATOR__SIZE, oldSize, size));
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case CodegenPackage.BUFFER_ITERATOR__SIZE:
-				return getSize();
+			case CodegenPackage.BUFFER_ITERATOR__ITER_SIZE:
+				return getIterSize();
 			case CodegenPackage.BUFFER_ITERATOR__ITER:
 				if (resolve) return getIter();
 				return basicGetIter();
@@ -178,8 +182,8 @@ public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case CodegenPackage.BUFFER_ITERATOR__SIZE:
-				setSize((Integer)newValue);
+			case CodegenPackage.BUFFER_ITERATOR__ITER_SIZE:
+				setIterSize((Integer)newValue);
 				return;
 			case CodegenPackage.BUFFER_ITERATOR__ITER:
 				setIter((IntVar)newValue);
@@ -195,8 +199,8 @@ public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case CodegenPackage.BUFFER_ITERATOR__SIZE:
-				setSize(SIZE_EDEFAULT);
+			case CodegenPackage.BUFFER_ITERATOR__ITER_SIZE:
+				setIterSize(ITER_SIZE_EDEFAULT);
 				return;
 			case CodegenPackage.BUFFER_ITERATOR__ITER:
 				setIter((IntVar)null);
@@ -212,8 +216,8 @@ public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case CodegenPackage.BUFFER_ITERATOR__SIZE:
-				return size != SIZE_EDEFAULT;
+			case CodegenPackage.BUFFER_ITERATOR__ITER_SIZE:
+				return iterSize != ITER_SIZE_EDEFAULT;
 			case CodegenPackage.BUFFER_ITERATOR__ITER:
 				return iter != null;
 		}
@@ -229,8 +233,8 @@ public class BufferIteratorImpl extends VariableImpl implements BufferIterator {
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (size: ");
-		result.append(size);
+		result.append(" (iterSize: ");
+		result.append(iterSize);
 		result.append(')');
 		return result.toString();
 	}
