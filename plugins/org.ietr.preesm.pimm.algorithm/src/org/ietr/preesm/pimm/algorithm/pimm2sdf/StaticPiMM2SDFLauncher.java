@@ -60,7 +60,7 @@ public class StaticPiMM2SDFLauncher {
 	 * Precondition: All
 	 * 
 	 * @return the SDFGraph obtained by visiting graph
-	 * @throws StaticPiMM2SDFException 
+	 * @throws StaticPiMM2SDFException
 	 */
 	public SDFGraph launch() throws StaticPiMM2SDFException {
 		SDFGraph result;
@@ -70,8 +70,7 @@ public class StaticPiMM2SDFLauncher {
 
 		// Visitor creating the SDFGraph
 		StaticPiMM2SDFVisitor visitor;
-		PiGraphExecution execution = new PiGraphExecution(graph,
-				parametersValues);
+		PiGraphExecution execution = new PiGraphExecution(graph, parametersValues);
 		visitor = new StaticPiMM2SDFVisitor(execution);
 		graph.accept(visitor);
 
@@ -82,20 +81,24 @@ public class StaticPiMM2SDFLauncher {
 	private Map<String, List<Integer>> getParametersValues() throws StaticPiMM2SDFException {
 		Map<String, List<Integer>> result = new HashMap<String, List<Integer>>();
 
-		for (ParameterValue paramValue : scenario.getParameterValueManager()
-				.getParameterValues()) {
+		for (ParameterValue paramValue : scenario.getParameterValueManager().getParameterValues()) {
 			switch (paramValue.getType()) {
 			case ACTOR_DEPENDENT:
-				throw new StaticPiMM2SDFException(
-						"Parameter "
-								+ paramValue.getName()
-								+ " is depends on a configuration actor. It is thus impossible to use the Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
+				throw new StaticPiMM2SDFException("Parameter " + paramValue.getName()
+						+ " is depends on a configuration actor. It is thus impossible to use the Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
 			case INDEPENDENT:
-				int value = Integer.parseInt(paramValue.getValue());
-				List<Integer> values = new ArrayList<Integer>();
-				values.add(value);
-				result.put(paramValue.getName(), values);
-				break;
+				try {
+					int value = Integer.parseInt(paramValue.getValue());
+					List<Integer> values = new ArrayList<Integer>();
+					values.add(value);
+					result.put(paramValue.getName(), values);
+					break;
+				} catch (NumberFormatException e) {
+					// The expression associated to the parameter is an
+					// expression (and not an constant int value).
+					// Leave it as it is, it will be solved later.
+					break;
+				}
 			default:
 				break;
 			}
