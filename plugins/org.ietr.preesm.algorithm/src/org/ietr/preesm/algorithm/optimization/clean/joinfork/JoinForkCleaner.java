@@ -473,8 +473,8 @@ public class JoinForkCleaner {
 				// rate (since the graph is single-rate).
 				int multSource = sourceEdges.get(sourceIndex).getDelay().intValue()
 						/ sourceEdges.get(sourceIndex).getProd().intValue();
-				int multTarget = targetEdges.get(sourceIndex).getDelay().intValue()
-						/ targetEdges.get(sourceIndex).getCons().intValue();
+				int multTarget = targetEdges.get(targetIndex).getDelay().intValue()
+						/ targetEdges.get(targetIndex).getCons().intValue();
 
 				// Compute the new number of delays
 				int nbPreservedDelays = newEdge.getDelay().intValue() + multSource * newEdge.getProd().intValue()
