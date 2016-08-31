@@ -187,7 +187,10 @@ public class AddSendReceiveTransaction extends Transaction {
 		implementation.addVertex(receiveVertex);
 		receiveVertex.getTiming().setCost(transferCost);
 		receiveVertex.setEffectiveOperator(receiverOperator);
-		orderManager.insertAfter(sendVertex, receiveVertex);
+		
+		//orderManager.insertAfter(sendVertex, receiveVertex);
+		// scheduling receive vertices ALAP
+		orderManager.insertBefore(currentTarget, receiveVertex);
 
 		newEdge1 = (MapperDAGEdge) implementation.addEdge(currentSource,
 				sendVertex);
