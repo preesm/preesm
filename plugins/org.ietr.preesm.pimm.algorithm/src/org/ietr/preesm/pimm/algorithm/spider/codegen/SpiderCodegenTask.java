@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.pimm.algorithm.cppgenerator;
+package org.ietr.preesm.pimm.algorithm.spider.codegen;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -52,9 +52,9 @@ import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.pimm.algorithm.cppgenerator.visitor.PiSDFCodeGenerator;
+import org.ietr.preesm.pimm.algorithm.spider.codegen.visitor.SpiderCodegen;
 
-public class PiMMCppGenerationTask extends AbstractTaskImplementation {
+public class SpiderCodegenTask extends AbstractTaskImplementation {
 
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
@@ -65,7 +65,7 @@ public class PiMMCppGenerationTask extends AbstractTaskImplementation {
 		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
 		PiGraph pg = (PiGraph) inputs.get(KEY_PI_GRAPH);
 
-		PiSDFCodeGenerator launcher = new PiSDFCodeGenerator(scenario);
+		SpiderCodegen launcher = new SpiderCodegen(scenario);
 
 		launcher.initGenerator(pg);
 		String graphCode = launcher.generateGraphCode(pg);

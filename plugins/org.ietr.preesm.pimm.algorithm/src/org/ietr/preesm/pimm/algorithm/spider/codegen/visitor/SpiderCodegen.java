@@ -35,7 +35,7 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  * ****************************************************************************
  */
-package org.ietr.preesm.pimm.algorithm.cppgenerator.visitor;
+package org.ietr.preesm.pimm.algorithm.spider.codegen.visitor;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -58,9 +58,9 @@ import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.pimm.algorithm.cppgenerator.utils.CppNameGenerator;
+import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderNameGenerator;
 
-public class PiSDFCodeGenerator{	
+public class SpiderCodegen{	
 	private PreesmScenario scenario;
 	StringBuilder cppString = new StringBuilder();
 
@@ -73,7 +73,7 @@ public class PiSDFCodeGenerator{
 	private Map<String, Integer> coreTypesIds;
 	private Map<String, Integer> coreIds;
 	
-	private CppPreProcessVisitor preprocessor;
+	private SpiderPreProcessVisitor preprocessor;
 	
 	/* Map timing strings to actors */
 	private Map<AbstractActor, Map<String, String>> timings;
@@ -86,14 +86,14 @@ public class PiSDFCodeGenerator{
 	
 	private HashMap<AbstractActor, Set<String>> constraints;
 		
-	public PiSDFCodeGenerator(PreesmScenario scenario) {
+	public SpiderCodegen(PreesmScenario scenario) {
 		this.scenario = scenario;
 	}
 	
 	public void initGenerator(PiGraph pg){
 		/* Preprocessor visitor */	
 		/* Initialize functions, dataports and dependency maps */
-		preprocessor = new CppPreProcessVisitor();
+		preprocessor = new SpiderPreProcessVisitor();
 		preprocessor.visit(pg);
 		
 		portMap = preprocessor.getPortMap();
@@ -190,7 +190,7 @@ public class PiSDFCodeGenerator{
 		/* Core */
 		append("typedef enum{\n");
 		for(String core : coreIds.keySet()){
-			append("\t" + CppNameGenerator.getCoreName(core) 
+			append("\t" + SpiderNameGenerator.getCoreName(core) 
 					+ " = " + coreIds.get(core) + ",\n");			
 		}
 		append("} PE;\n\n");
@@ -198,7 +198,7 @@ public class PiSDFCodeGenerator{
 		/* Core Type */
 		append("typedef enum{\n");
 		for(String coreType : coreTypesIds.keySet()){
-			append("\t" + CppNameGenerator.getCoreTypeName(coreType) 
+			append("\t" + SpiderNameGenerator.getCoreTypeName(coreType) 
 					+ " = " + coreTypesIds.get(coreType) + ",\n");			
 		}
 		append("} PEType;\n\n");	
@@ -206,7 +206,7 @@ public class PiSDFCodeGenerator{
 		/* Fct Ix */
 		append("typedef enum{\n");
 		for(AbstractActor aa : functionMap.keySet()){
-			append("\t" + CppNameGenerator.getFunctionName(aa).toUpperCase() + "_FCT"
+			append("\t" + SpiderNameGenerator.getFunctionName(aa).toUpperCase() + "_FCT"
 					+ " = " + functionMap.get(aa) + ",\n");			
 		}
 		append("} FctIxs;\n\n");
@@ -225,7 +225,7 @@ public class PiSDFCodeGenerator{
 		cppString.setLength(0);
 		
 		StringBuilder tmp = new StringBuilder();
-		CPPCodeGenerationVisitor codeGenerator = new CPPCodeGenerationVisitor(
+		SpiderCodegenVisitor codeGenerator = new SpiderCodegenVisitor(
 				tmp, preprocessor, timings, constraints, scenario.getSimulationManager().getDataTypes());
 		// Generate C++ code for the whole PiGraph, at the end, tmp will contain
 		// the vertex declaration for pg
@@ -291,7 +291,7 @@ public class PiSDFCodeGenerator{
 		/* Generate prototypes */
 		for(AbstractActor aa : functionMap.keySet()){
 			append("void ");
-			append(CppNameGenerator.getFunctionName(aa));
+			append(SpiderNameGenerator.getFunctionName(aa));
 			append("(void* inputFIFOs[], void* outputFIFOs[], Param inParams[], Param outParams[]);\n");
 		}
 		append("\n");
@@ -299,7 +299,7 @@ public class PiSDFCodeGenerator{
 		/* Generate LrtFct */
 		append("lrtFct " + pg.getName() + "_fcts[N_FCT_" + pg.getName().toUpperCase() + "] = {\n");
 		for(AbstractActor aa : functionMap.keySet()){
-			append("\t&" + CppNameGenerator.getFunctionName(aa) + ",\n");			
+			append("\t&" + SpiderNameGenerator.getFunctionName(aa) + ",\n");			
 		}
 		append("};\n\n");
 		
@@ -366,7 +366,7 @@ public class PiSDFCodeGenerator{
 	
 	private void generateFunctionBody(AbstractActor aa) {
 		append("void ");
-		append(CppNameGenerator.getFunctionName(aa));
+		append(SpiderNameGenerator.getFunctionName(aa));
 		append("(void* inputFIFOs[], void* outputFIFOs[], Param inParams[], Param outParams[]){\n");
 		
 		Actor a = (Actor)aa;

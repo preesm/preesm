@@ -1,11 +1,11 @@
-package org.ietr.preesm.pimm.algorithm.cppgenerator.utils;
+package org.ietr.preesm.pimm.algorithm.spider.codegen.utils;
 
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 
-public final class CppTypeConverter {
+public final class SpiderTypeConverter {
 	public enum PiSDFType {
 		PISDF_TYPE_BODY, 
 		PISDF_TYPE_CONFIG, 
@@ -23,7 +23,7 @@ public final class CppTypeConverter {
 	}
 	
 	/** Private constructor: prevents instantiation by client code */
-	private CppTypeConverter(){		
+	private SpiderTypeConverter(){		
 	}
 	
 	public static PiSDFType getType(AbstractVertex aa){

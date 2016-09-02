@@ -35,7 +35,7 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  * ****************************************************************************
  */
-package org.ietr.preesm.pimm.algorithm.cppgenerator.visitor;
+package org.ietr.preesm.pimm.algorithm.spider.codegen.visitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -83,9 +83,9 @@ import org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl;
 import org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl;
 import org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
-import org.ietr.preesm.pimm.algorithm.cppgenerator.utils.CppNameGenerator;
-import org.ietr.preesm.pimm.algorithm.cppgenerator.utils.CppTypeConverter;
-import org.ietr.preesm.pimm.algorithm.cppgenerator.utils.CppTypeConverter.PiSDFSubType;
+import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderNameGenerator;
+import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderTypeConverter;
+import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderTypeConverter.PiSDFSubType;
 
 // TODO: Find a cleaner way to setParentEdge in Interfaces
 /* 
@@ -99,8 +99,8 @@ import org.ietr.preesm.pimm.algorithm.cppgenerator.utils.CppTypeConverter.PiSDFS
  * most outer graph of the PiMM model currentMethod: The StringBuilder used to
  * write the C++ code
  */
-public class CPPCodeGenerationVisitor extends PiMMVisitor {
-	private CppPreProcessVisitor preprocessor;
+public class SpiderCodegenVisitor extends PiMMVisitor {
+	private SpiderPreProcessVisitor preprocessor;
 
 	// Ordered set for methods prototypes
 	private LinkedHashSet<String> prototypes = new LinkedHashSet<String>();
@@ -144,8 +144,8 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 		currentMethod.append(a);
 	}
 
-	public CPPCodeGenerationVisitor(StringBuilder topMethod,
-			CppPreProcessVisitor prepocessor,
+	public SpiderCodegenVisitor(StringBuilder topMethod,
+			SpiderPreProcessVisitor prepocessor,
 			Map<AbstractActor, Map<String, String>> timings,
 			Map<AbstractActor, Set<String>> constraints,
 			Map<String, DataType> dataTypes) {
@@ -225,7 +225,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 		StringBuilder definition = new StringBuilder();
 
 		prototype.append("PiSDFGraph* ");
-		prototype.append(CppNameGenerator.getMethodName(pg));
+		prototype.append(SpiderNameGenerator.getMethodName(pg));
 		prototype.append("(");
 		
 		definition.append(prototype.toString());
@@ -264,9 +264,9 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 		int nBody = 0;
 
 		for (AbstractActor v : pg.getVertices()) {
-			switch (CppTypeConverter.getType(v)) {
+			switch (SpiderTypeConverter.getType(v)) {
 			case PISDF_TYPE_IF:
-				if (CppTypeConverter.getSubType(v) == PiSDFSubType.PISDF_SUBTYPE_INPUT_IF)
+				if (SpiderTypeConverter.getSubType(v) == PiSDFSubType.PISDF_SUBTYPE_INPUT_IF)
 					nInIf++;
 				else
 					nOutif++;
@@ -312,11 +312,11 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 	}
 
 	private String generateConfigVertex(AbstractActor aa) {
-		String vertexName = CppNameGenerator.getVertexName(aa);
+		String vertexName = SpiderNameGenerator.getVertexName(aa);
 
 		String fctIx;
 		if (functionMap.containsKey(aa))
-			fctIx = CppNameGenerator.getFunctionName(aa).toUpperCase() + "_FCT";
+			fctIx = SpiderNameGenerator.getFunctionName(aa).toUpperCase() + "_FCT";
 		else
 			fctIx = "-1";
 
@@ -336,11 +336,11 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 	}
 
 	private String generateBodyVertex(AbstractActor aa) {
-		String vertexName = CppNameGenerator.getVertexName(aa);
+		String vertexName = SpiderNameGenerator.getVertexName(aa);
 
 		String fctIx;
 		if (functionMap.containsKey(aa))
-			fctIx = CppNameGenerator.getFunctionName(aa).toUpperCase() + "_FCT";
+			fctIx = SpiderNameGenerator.getFunctionName(aa).toUpperCase() + "_FCT";
 		else
 			fctIx = "-1";
 
@@ -358,7 +358,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 	}
 
 	private String generateHierarchicalVertex(AbstractActor aa) {
-		String vertexName = CppNameGenerator.getVertexName(aa);
+		String vertexName = SpiderNameGenerator.getVertexName(aa);
 		PiGraph subGraph = ((PiGraph) aa);
 
 		// Call the addVertex method on the current graph
@@ -366,7 +366,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 		append(" = Spider::addHierVertex(\n");
 		append("\t\t/*Graph*/   graph,\n");
 		append("\t\t/*Name*/    \"" + aa.getName() + "\",\n");
-		append("\t\t/*Graph*/   " + CppNameGenerator.getMethodName(subGraph) + "(");		
+		append("\t\t/*Graph*/   " + SpiderNameGenerator.getMethodName(subGraph) + "(");		
 		
 		List<Parameter> l = new LinkedList<Parameter>();
 		l.addAll(subGraph.getAllParameters());
@@ -413,7 +413,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 				append("\tSpider::addOutParam(");
 				append(vertexName + ", ");
 				append(portMap.get(cop) + ", ");
-				append(CppNameGenerator.getParameterName((Parameter) d
+				append(SpiderNameGenerator.getParameterName((Parameter) d
 						.getGetter().eContainer()));
 				append(");\n");
 			}
@@ -424,7 +424,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 			append("\tSpider::addInParam(");
 			append(vertexName + ", ");
 			append(portMap.get(cip) + ", ");
-			append(CppNameGenerator.getParameterName((Parameter) cip
+			append(SpiderNameGenerator.getParameterName((Parameter) cip
 					.getIncomingDependency().getSetter()));
 			append(");\n");
 		}
@@ -434,7 +434,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 				for (String core : constraints.get(aa)) {
 					append("\tSpider::isExecutableOnPE(");
 					append(vertexName + ", ");
-					append(CppNameGenerator.getCoreName(core) + ");\n");
+					append(SpiderNameGenerator.getCoreName(core) + ");\n");
 				}
 			}
 		}
@@ -444,7 +444,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 			for (String coreType : aaTimings.keySet()) {
 				append("\tSpider::setTimingOnType(");
 				append(vertexName + ", ");
-				append(CppNameGenerator.getCoreTypeName(coreType) + ", \"");
+				append(SpiderNameGenerator.getCoreTypeName(coreType) + ", \"");
 				append(aaTimings.get(coreType));
 				append("\");\n");
 			}
@@ -460,7 +460,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitDataInputInterface(DataInputInterface dii) {
-		String vertexName = CppNameGenerator.getVertexName(dii);
+		String vertexName = SpiderNameGenerator.getVertexName(dii);
 
 		append("\tPiSDFVertex* " + vertexName);
 		append(" = Spider::addInputIf(\n");
@@ -473,7 +473,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 			append("\tSpider::addInParam(");
 			append(vertexName + ", ");
 			append(portMap.get(cip) + ", ");
-			append(CppNameGenerator.getParameterName((Parameter) cip
+			append(SpiderNameGenerator.getParameterName((Parameter) cip
 					.getIncomingDependency().getSetter()));
 			append(");\n");
 		}
@@ -482,7 +482,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitDataOutputInterface(DataOutputInterface doi) {
-		String vertexName = CppNameGenerator.getVertexName(doi);
+		String vertexName = SpiderNameGenerator.getVertexName(doi);
 
 		append("\tPiSDFVertex* " + vertexName);
 		append(" = Spider::addOutputIf(\n");
@@ -495,7 +495,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 			append("\tSpider::addInParam(");
 			append(vertexName + ", ");
 			append(portMap.get(cip) + ", ");
-			append(CppNameGenerator.getParameterName((Parameter) cip
+			append(SpiderNameGenerator.getParameterName((Parameter) cip
 					.getIncomingDependency().getSetter()));
 			append(");\n");
 		}
@@ -557,13 +557,13 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 		
 
 		append("\t\t/*Src*/ "
-				+ CppNameGenerator.getVertexName(srcActor) 
+				+ SpiderNameGenerator.getVertexName(srcActor) 
 				+ ", /*SrcPrt*/ " + portMap.get(srcPort)
 //				+ ", /*Prod*/ \"(" + srcProd + ")*sizeof(" + f.getType() + ")\",\n");
 				+ ", /*Prod*/ \"(" + srcProd + ")*" + typeSize + "\",\n");
 
 		append("\t\t/*Snk*/ "
-				+ CppNameGenerator.getVertexName(snkActor) 
+				+ SpiderNameGenerator.getVertexName(snkActor) 
 				+ ", /*SnkPrt*/ " + portMap.get(snkPort)
 //				+ ", /*Cons*/ \"(" + snkProd + ")*sizeof(" + f.getType() + ")\",\n");
 				+ ", /*Cons*/ \"(" + snkProd + ")*" + typeSize + "\",\n");
@@ -580,7 +580,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 	 */
 	@Override
 	public void visitParameter(Parameter p) {
-		String paramName = CppNameGenerator.getParameterName(p);
+		String paramName = SpiderNameGenerator.getParameterName(p);
 
 
 		if (!p.isLocallyStatic()) {
@@ -626,7 +626,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitBroadcastActor(BroadcastActor ba) {
-		append("\tPiSDFVertex* " + CppNameGenerator.getVertexName(ba));
+		append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(ba));
 		append(" = Spider::addSpecialVertex(\n");
 		append("\t\t/*Graph*/   graph,\n");
 		append("\t\t/*Type*/    " + "PISDF_SUBTYPE_BROADCAST" + ",\n");
@@ -637,9 +637,9 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 		// Add connections from parameters if necessary
 		for (ConfigInputPort cip : ba.getConfigInputPorts()) {
 			append("\tSpider::addInParam(");
-			append(CppNameGenerator.getVertexName(ba) + ", ");
+			append(SpiderNameGenerator.getVertexName(ba) + ", ");
 			append(portMap.get(cip) + ", ");
-			append(CppNameGenerator.getParameterName((Parameter) cip
+			append(SpiderNameGenerator.getParameterName((Parameter) cip
 					.getIncomingDependency().getSetter()));
 			append(");\n");
 		}
@@ -647,7 +647,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 	}
 
 	public void visitEndActor(AbstractActor aa) {
-		append("\tPiSDFVertex* " + CppNameGenerator.getVertexName(aa));
+		append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(aa));
 		append(" = Spider::addSpecialVertex(\n");
 		append("\t\t/*Graph*/   graph,\n");
 		append("\t\t/*Type*/    " + "PISDF_SUBTYPE_END" + ",\n");
@@ -658,9 +658,9 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 		// Add connections from parameters if necessary
 		for (ConfigInputPort cip : aa.getConfigInputPorts()) {
 			append("\tSpider::addInParam(");
-			append(CppNameGenerator.getVertexName(aa) + ", ");
+			append(SpiderNameGenerator.getVertexName(aa) + ", ");
 			append(portMap.get(cip) + ", ");
-			append(CppNameGenerator.getParameterName((Parameter) cip
+			append(SpiderNameGenerator.getParameterName((Parameter) cip
 					.getIncomingDependency().getSetter()));
 			append(");\n");
 		}
@@ -669,7 +669,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 	
 	@Override
 	public void visitJoinActor(JoinActor ja) {
-		append("\tPiSDFVertex* " + CppNameGenerator.getVertexName(ja));
+		append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(ja));
 		append(" = Spider::addSpecialVertex(\n");
 		append("\t\t/*Graph*/   graph,\n");
 		append("\t\t/*Type*/    " + "PISDF_SUBTYPE_JOIN" + ",\n");
@@ -680,9 +680,9 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 		// Add connections from parameters if necessary
 		for (ConfigInputPort cip : ja.getConfigInputPorts()) {
 			append("\tSpider::addInParam(");
-			append(CppNameGenerator.getVertexName(ja) + ", ");
+			append(SpiderNameGenerator.getVertexName(ja) + ", ");
 			append(portMap.get(cip) + ", ");
-			append(CppNameGenerator.getParameterName((Parameter) cip
+			append(SpiderNameGenerator.getParameterName((Parameter) cip
 					.getIncomingDependency().getSetter()));
 			append(");\n");
 		}
@@ -691,7 +691,7 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitForkActor(ForkActor fa) {
-		append("\tPiSDFVertex* " + CppNameGenerator.getVertexName(fa));
+		append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(fa));
 		append(" = Spider::addSpecialVertex(\n");
 		append("\t\t/*Graph*/   graph,\n");
 		append("\t\t/*Type*/    " + "PISDF_SUBTYPE_FORK" + ",\n");
@@ -702,9 +702,9 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 		// Add connections from parameters if necessary
 		for (ConfigInputPort cip : fa.getConfigInputPorts()) {
 			append("\tSpider::addInParam(");
-			append(CppNameGenerator.getVertexName(fa) + ", ");
+			append(SpiderNameGenerator.getVertexName(fa) + ", ");
 			append(portMap.get(cip) + ", ");
-			append(CppNameGenerator.getParameterName((Parameter) cip
+			append(SpiderNameGenerator.getParameterName((Parameter) cip
 					.getIncomingDependency().getSetter()));
 			append(");\n");
 		}
