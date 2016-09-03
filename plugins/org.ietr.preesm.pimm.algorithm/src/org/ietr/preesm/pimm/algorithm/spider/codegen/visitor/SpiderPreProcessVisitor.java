@@ -159,6 +159,8 @@ public class SpiderPreProcessVisitor extends PiMMVisitor {
 			functionMap.put(a, functionMap.size());
 			if(!(a.getRefinement() instanceof HRefinement))
 				WorkflowLogger.getLogger().warning("Actor "+a.getName()+" doesn't have correct refinement.");
+			else if(((HRefinement)(a.getRefinement())).getInitPrototype() != null)
+				WorkflowLogger.getLogger().warning("Init function of Actor "+a.getName()+" will not be handled");
 		}
 		
 		actorNames.put(a.getName(), a);
