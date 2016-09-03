@@ -48,6 +48,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.types.DataType;
@@ -446,6 +447,8 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 					append(vertexName + ", ");
 					append(SpiderNameGenerator.getCoreName(core) + ");\n");
 				}
+			}else{
+				WorkflowLogger.getLogger().log(Level.WARNING, "Actor " + aa.getName() + " does not have a valid refinement");
 			}
 		}
 
