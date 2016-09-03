@@ -81,7 +81,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
 
 		// Get the name of the folder for code generation
 		String codegenFolder = scenario.getCodegenManager().getCodegenDirectory();
-		if (codegenFolder == null) codegenFolder = "/Code/generated/cpp/";
+		if (codegenFolder == null || codegenFolder.equals("")) codegenFolder = "/Code/generated/";
 
 		// Create the folder and its parent if necessary
 		String folderPath = project.getLocation() + codegenFolder;
