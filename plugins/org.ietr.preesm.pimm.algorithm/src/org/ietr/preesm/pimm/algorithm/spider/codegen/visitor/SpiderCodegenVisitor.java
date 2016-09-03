@@ -222,6 +222,8 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 	 */
 	private void generateMethodPrototype(PiGraph pg) {
 		StringBuilder prototype = new StringBuilder();
+		StringBuilder parameters_proto = new StringBuilder();
+		StringBuilder parameters_def = new StringBuilder();
 		StringBuilder definition = new StringBuilder();
 
 		prototype.append("PiSDFGraph* ");
@@ -238,12 +240,20 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 	            return  p1.getName().compareTo(p2.getName());
 	        }
 		});
+		
 		for(Parameter p : l){
 			if(p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()){
-				prototype.append(", Param " + p.getName() + " = " + ((int) Double.parseDouble(p.getExpression().evaluate())));
-				definition.append(", Param " + p.getName());
+				if(parameters_proto.length() > 0){
+					parameters_proto.append(", ");
+					parameters_def.append(", ");
+				}
+				parameters_proto.append("Param " + p.getName() + " = " + ((int) Double.parseDouble(p.getExpression().evaluate())));
+				parameters_def.append("Param " + p.getName());
 			}
 		}
+
+		prototype.append(parameters_proto);
+		definition.append(parameters_def);
 		
 		prototype.append(");\n");	
 		definition.append(")");

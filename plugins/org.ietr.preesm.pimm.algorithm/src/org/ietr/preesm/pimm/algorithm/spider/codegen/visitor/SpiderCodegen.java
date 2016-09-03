@@ -177,11 +177,16 @@ public class SpiderCodegen{
 	            return  p1.getName().compareTo(p2.getName());
 	        }
 		});
+		StringBuilder parameters_proto = new StringBuilder();
 		for(Parameter p : l){
 			if(p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()){
-				append(", Param " + p.getName() + " = " + ((int) Double.parseDouble(p.getExpression().evaluate())));
+				if(parameters_proto.length() > 0){
+					parameters_proto.append(", ");
+				}
+				parameters_proto.append("Param " + p.getName() + " = " + ((int) Double.parseDouble(p.getExpression().evaluate())));
 			}
 		}
+		append(parameters_proto);
 		append(");\n");	
 		
 		append("void free_"+pg.getName()+"();\n");
@@ -335,12 +340,18 @@ public class SpiderCodegen{
 	            return  p1.getName().compareTo(p2.getName());
 	        }
 		});
+		StringBuilder parameters_proto = new StringBuilder();
 		for(Parameter p : l){
 			if(p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()){
-				params.append(", " + p.getName());
-				append(", Param " + p.getName());
+				if(parameters_proto.length() > 0){
+					parameters_proto.append(", ");
+					params.append(", ");
+				}
+				parameters_proto.append("Param " + p.getName());
+				params.append(p.getName());
 			}
 		}
+		append(parameters_proto);
 		append("){\n");
 		
 		// Create a top graph and a top vertex
