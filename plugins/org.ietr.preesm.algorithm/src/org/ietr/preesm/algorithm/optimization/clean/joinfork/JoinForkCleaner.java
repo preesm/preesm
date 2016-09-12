@@ -282,6 +282,7 @@ public class JoinForkCleaner {
 				newEdge.setCons(new SDFIntEdgePropertyType(sourceEdges.get(sourceIndex).getProd().intValue()));
 				newEdge.setDataType(sourceEdges.get(sourceIndex).getDataType());
 				newEdge.setSourceInterface(sourceEdges.get(sourceIndex).getSourceInterface());
+				explodeVertex.addInterface(sourceEdges.get(sourceIndex).getTargetInterface());
 				newEdge.setTargetInterface(sourceEdges.get(sourceIndex).getTargetInterface());
 				newEdge.setSourcePortModifier(sourceEdges.get(sourceIndex).getSourcePortModifier());
 
@@ -307,6 +308,7 @@ public class JoinForkCleaner {
 				newEdge.setProd(new SDFIntEdgePropertyType(targetEdges.get(targetIndex).getCons().intValue()));
 				newEdge.setCons(new SDFIntEdgePropertyType(targetEdges.get(targetIndex).getCons().intValue()));
 				newEdge.setDataType(targetEdges.get(targetIndex).getDataType());
+				implodeVertex.addInterface(targetEdges.get(targetIndex).getTargetInterface());
 				newEdge.setSourceInterface(targetEdges.get(targetIndex).getSourceInterface());
 				newEdge.setTargetInterface(targetEdges.get(targetIndex).getTargetInterface());
 				newEdge.setTargetPortModifier(targetEdges.get(targetIndex).getTargetPortModifier());
@@ -337,6 +339,7 @@ public class JoinForkCleaner {
 				} else {
 					// if the source does not have the interface.
 					newEdge.setSourceInterface(sourceEdges.get(sourceIndex).getSourceInterface().clone());
+					sourceCopies.get(sourceIndex).addInterface(newEdge.getSourceInterface());
 				}
 				// Copy the source port modifier of the original source
 				newEdge.setSourcePortModifier(sourceEdges.get(sourceIndex).getSourcePortModifier());
@@ -361,6 +364,7 @@ public class JoinForkCleaner {
 
 				sourceInterface.setName(newInterfaceName);
 				newEdge.setSourceInterface(sourceInterface);
+				newEdge.getSource().addInterface(sourceInterface);
 				// Add a source port modifier
 				newEdge.setSourcePortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_WRITE_ONLY));
 			}
@@ -387,6 +391,7 @@ public class JoinForkCleaner {
 				// if the target does not have the interface.
 				else {
 					newEdge.setTargetInterface(targetEdges.get(targetIndex).getTargetInterface().clone());
+					targetCopies.get(targetIndex).addInterface(newEdge.getTargetInterface());
 				}
 				// Copy the target port modifier of the original source
 				// Except for roundbuffers
@@ -417,6 +422,7 @@ public class JoinForkCleaner {
 
 				targetInterface.setName(newInterfaceName);
 				newEdge.setTargetInterface(targetInterface);
+				newEdge.getTarget().addInterface(targetInterface);
 				// Add a target port modifier
 				newEdge.setTargetPortModifier(new SDFStringEdgePropertyType(SDFEdge.MODIFIER_READ_ONLY));
 
