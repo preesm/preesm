@@ -367,8 +367,85 @@
 	
 	\section{Static Mapping Scheduling}
 	\label{sec:static_mapping_scheduling}
-	\subsection{LIST Scheduler}
+	
+	\subsection{List Scheduler}
+	\label{sec:list_scheduler}
+	\tabBrief{List Scheduler}{architecture, scenario, SDF}{ABC, DAG}{Map and schedule the dataflow graph on the architecture.}{org.ietr.preesm.plugin.mapper.listscheduling}
+	
+	\tabParam{\textit{balanceLoads} & \multicolumn{2}{p{13.00cm}|}{			
+			Specify whether the mapping and scheduling algorithm should try to distribute the computational load fairly among cores. Computational load is measured as the amount of time during which a processing element is executing an actor.} \\
+		\tabValue{
+			\valueDef{\texttt{true}}{Load balancing will be an objective of the mapping algorithm.}
+			
+			\valueDef{\texttt{false}}{Load balancing will not be an objective of the mapping algorithm. Only minimizing the graph iteration latency will be.}	
+		} \\
+		\hline	
+		\textit{edgeSchedType} & \multicolumn{2}{p{13.00cm}|}{Specify which strategy the scheduling algorithm should use to order the communications.} \\
+		\tabValue{
+			\valueDef{\texttt{Simple}}{\textit{description missing}}
+			\valueDef{\texttt{Switcher}}{\textit{description missing}}
+			\valueDef{\texttt{Advanced}}{\textit{description missing}}		
+		}
+	}
+	
+	\newpage
+	\tabParam{	
+		\textit{simulatorType} & \multicolumn{2}{p{13.00cm}|}{Control the accuracy/complexity tradeoff of the simulator used to minimize latency of the scheduling algorithm.} \\
+		\tabValue{
+			\valueDef{\texttt{LooselyTimed}}{The loosely-timed ABC that accounts for task times of operators and transfer	costs on PN and CN. However, it does not consider transfer contention (ignoring the difference between Parallel and Contention Nodes in the S-LAM architecture).}
+			\valueDef{\texttt{ApproximatelyTimed}}{The approximately-timed ABC that associates each inter-core contention node with a constant rate and simulates contentions on CNs.}		
+			\valueDef{\texttt{AccuratelyTimed}}{The accurately-timed ABC that includes the set-up time necessary to initialize	a parallel transfer controller such as Texas Instruments Enhanced Direct Memory Access (EDMA). This set-up time is scheduled in the core which triggers the	transfer.}
+			\valueDef{\texttt{InfiniteHomogeneous}}{The infinite homogeneous ABC which is a special ABC that performs an algorithm execution simulation on a homogeneous architecture containing an infinite	number of cores with main type. It may be noted that for this study, the main core type of an S-LAM architecture is defined in the input scenario. This ABC enables the extraction of the critical path of the graph.}
+			\valueDef{\texttt{CommConten}}{\textit{description missing}}		
+			\valueDef{\texttt{DynamicQueuing}}{\textit{description missing}}
+		}
+	}
+	
+	\tabDesc{
+		Schedules the algorithm on the architecture using the Kwok List	scheduling
+		heuristic. This implementation of the scheduling algorithm is based on the ABC scheduler.
+		
+		~\newline{}
+		\textbf{See also:} List scheduling~\cite{Kwok_High_1997}, ABC scheduler~\cite{Pelcat_Scalable_2009}.
+	}
+	
+	\tabError{\noError}
+	
 	\subsection{FAST Scheduler}
+		\tabBrief{FAST Scheduler}{architecture, scenario, SDF}{ABC, DAG}{Map and schedule the dataflow graph on the architecture using an iterative algorithm.}{org.ietr.preesm.plugin.mapper.fast}
+		
+		\tabParam{\textit{balanceLoads} & \multicolumn{2}{p{13.00cm}|}{see List Scheduler (Section~\ref{sec:list_scheduler}).} \\
+			\hline	
+			\textit{edgeSchedType} & \multicolumn{2}{p{13.00cm}|}{see List Scheduler (Section~\ref{sec:list_scheduler}).} \\
+			\hline
+			\textit{simulatorType} & \multicolumn{2}{p{13.00cm}|}{see List Scheduler (Section~\ref{sec:list_scheduler}).} \\
+			\hline
+			\textit{fastTime} & \multicolumn{2}{p{13.00cm}|}{Specify for how long the FAST algorithm will iteratively search for better a scheduling, if not already interrupted manually by the user.} \\
+			\tabValue{
+				\valueDef{$n \in \mathbb{N}^*$}{Timeout value in seconds.}
+			}\\
+			\hline
+			\textit{fastLocal\-SearchTime} & \multicolumn{2}{p{13.00cm}|}{\textit{Description missing.}} \\
+			\tabValue{
+				\valueDef{$n \in \mathbb{N}^*$}{Time in seconds.}
+			}\\
+			\hline
+			\textit{displaySolutions} & \multicolumn{2}{p{13.00cm}|}{Specify whether Gantt diagrams of intermediate schedules found iteratively by the algorithm should be displayed.} \\
+			\tabValue{
+				\valueDef{\texttt{true}}{Intermediate Gantt diagrams are displayed. May be slow for large applications.}
+				\valueDef{\texttt{false}}{Intermediate Gantt diagrams are not displayed.}
+			} 
+		}
+		
+		\tabDesc{
+			Schedules the algorithm on the architecture using the Kwok FAST	scheduling
+			heuristic. This implementation of the scheduling algorithm is based on the ABC scheduler.
+			
+			~\newline{}
+			\textbf{See also:} FAST scheduling~\cite{Kwok_High_1997}, ABC scheduler~\cite{Pelcat_Scalable_2009}.
+		}
+		
+		\tabError{\noError}
 	
 	\newpage
 	\section{Memory optimization}
