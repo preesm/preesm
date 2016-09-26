@@ -450,9 +450,10 @@
 	\newpage
 	\section{Memory optimization}
 	\subsection{MEG Builder}
+	\label{sec:meg_builder}
 	\tabBrief{MEG Builder}{DAG, scenario}{MEG}{Builds the \gls{meg} modeling the memory allocation constraints.}{org.ietr.preesm.memory.exclusiongraph.MemoryExclusion\-GraphBuilder}
 	
-	\tabParam{\textit{Verbose} & \multicolumn{2}{p{13.00cm}|}{How verbose will this task be during its execution. In verbose mode, the task will log the start and completion time of the build, as well as characteristics (number of memory objects, number of exclusions) of the produced \gls{meg}.} \\
+	\tabParam{\textit{Verbose} & \multicolumn{2}{p{13.00cm}|}{How verbose will this task be during its execution. In verbose mode, the task will log the start and completion time of the build, as well as characteristics (number of memory objects, density of exclusions) of the produced \gls{meg}.} \\
 		\tabValue{
 			\valueDef{\texttt{false}}{(Default) The task will not log information.}
 			\valueDef{\texttt{true}}{The task will log build and \gls{meg} information.}
@@ -474,6 +475,32 @@
 	\tabError{\noError}
 	
 	\subsection{MEG Update with Scheduling Information}
+		\tabBrief{MEG Updater}{DAG, MEG}{MEG}{Relax memory allocation constraints of the \gls{meg} using scheduling information. constraints.}{org.ietr.preesm.memory.exclusiongraph.MemExUpdater}
+		
+		\tabParam{\textit{Verbose} & \multicolumn{2}{p{13.00cm}|}{How verbose will this task be during its execution. In verbose mode, the task will log the start and completion time of the update, as well as characteristics (number of memory objects, density of exclusions) of the \glspl{meg} both before and after the update.} \\
+			\tabValue{
+				\valueDef{\texttt{false}}{(Default) The task will not log information.}
+				\valueDef{\texttt{true}}{The task will log build and \gls{meg} information.}
+			}\\
+			\hline
+			\textit{supprForkJoin} & \multicolumn{2}{p{13.00cm}|}{\textit{(Deprecated) See MEG Builder~\ref{sec:meg_builder}.}
+			} \\
+			\hline
+			\textit{Update with MemObject lifetime} & \multicolumn{2}{p{13.00cm}|}{Specify what kind of precedence information should be used when updating the \gls{meg}.} \\
+			\tabValue{
+				\valueDef{\texttt{false}}{(Default) Only data precedence and scheduling order are taken into account to update the \gls{meg}.}
+				\valueDef{\texttt{true}}{Update the \gls{meg} with precedence and timing information from the schedule. This option will produce a valid allocation only if the runtime of the actors is constant and identical to the one used by the scheduler. Small variations of the actors runtime may corrupt the memory allocation.}
+			}
+		}
+		
+		\tabDesc{The \gls{meg} used in \preesm can be updated with scheduling information to remove exclusions between memory objects and make better allocations possible.
+			
+			~\newline{}
+			\textbf{See also:} \gls{meg} update~\cite{Desnos_Pre_2013}.
+		}
+		
+		\tabError{\noError}
+		
 	\subsection{Memory Bounds Estimator}
 	\label{sec:memory_bounds_estimator}
 	\newpage
