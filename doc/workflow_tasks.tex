@@ -647,9 +647,23 @@
 	
 	\section{Code Generation}
 	\subsection{Static Code Generation}
+	\tabBrief{Code Generation}{MEGs, DAG, scenario, architecture}{}{Generate code for the application deployment resulting from the workflow execution.}{org.ietr.preesm.codegen.xtend.task.CodegenTask}
 	
-	\section{Exporter/Importer for Third-Party Dataflow Frameworks}
+	\tabParam{\textit{Printer} & \multicolumn{2}{p{13.00cm}|}{Specify which printer should be used to generate code. Printers are defined in \preesm source code using an extension mechanism that make it possible to define a single printer name for several targeted architecture. Hence, depending on the type of \glspl{pe} declared in the architecture model, \preesm will automatically select the associated printer class, if it exists.} \\
+		\tabValue{
+			\valueDef{\texttt{C}}{Print C code and shared-memory based communications. Currently compatible with \texttt{x86}, \texttt{c6678}, and \texttt{arm} architectures.}
+			\valueDef{\texttt{InstrumentedC}}{Print C code instrumented with profiling code, and shared-memory based communications. Currently compatible with \texttt{x86}, \texttt{c6678} architectures.}
+			\valueDef{\texttt{DynamicAllocC}}{Print C code and shared-memory based communications with dynamic allocation. Compatible with \texttt{x86}, \texttt{c6678}. \textit{(Not maintained, use at your own risks)}}
+			\valueDef{\texttt{XML}}{Print XML code with all informations used by other printers to print code. Compatible with \texttt{x86}, \texttt{c6678}.}
+		} 
+	}
+
+	\tabDesc{This workflow task is responsible for generating code for the application deployment resulting from the workflow execution.}
+	
+	\tabError{\noError}
+	
 	\newpage
+	\section{Exporter/Importer for Third-Party Dataflow Frameworks}
 	\subsection{SDF3 Exporter}
 	\tabBrief{SDF3 Exporter}{SDF,architecture,scenario}{}{Export a \texttt{*.xml} file conforming the \gls{sdf3} format.}{org.ietr.preesm.algorithm.exportSdf3Xml.Sdf3Exporter}
 	
@@ -669,13 +683,13 @@
 		
 	~\newline{}
     \textbf{Known Limitations:}
-    TODO
-    Here is a list of known limitations of the SDF3 importation process:
-    
-    Only SDF graphs can be imported
-    Actors of the SDF cannot be implemented on more than one processor type
-    Timings cannot depend on parameters since SDF3 does not support parameterized SDF
+    Here is a list of known limitations of the SDF3 importation process: 
+    Only SDF graphs can be imported,
+    Actors of the SDF cannot be implemented on more than one processor type, 
+    Timings cannot depend on parameters since SDF3 does not support parameterized SDF.
     }
+    
+    \tabError{\noError}
 	
 	\subsection{SDF3 Importer}
 	\subsection{DIF Exporter}
