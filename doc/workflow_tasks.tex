@@ -737,6 +737,18 @@
 	
 	\section{Analysis}
 	\subsection{Gantt Display}
+	\tabBrief{Gantt Display}{scenario, ABC}{}{Displays the result of a mapping/scheduling algorithm as a Gantt diagram.}{org.ietr.preesm.plugin.mapper.plot}
+	
+	\tabParam{None &\multicolumn{2}{c|}{}}
+	
+	\tabDesc{
+		When executed, this workflow task opens a new tab in \preesm where the result of a mapping/scheduling workflow task is displayed. The tab itslef consists of three subtabs containing: a Gantt diagram, statistics on the computational load of each core, and a speedup assessment chart.
+		
+		~\newline{}
+		\textbf{See also:} Speedup assessment chart~\cite{Pelcat_Prototypage_2010}.
+	}
+	
+	\tabError{\noError}
 	\subsection{Gantt Exporter}
 	\tabBrief{Gantt Exporter}{ABC, scenario}{}{This task exports scheduling results as a \texttt{*.pgantt} file that can be viewed using the \textit{ganttDisplay} viewer.}{org.ietr.preesm.stats.exporter.StatsExporterTask}
 	
