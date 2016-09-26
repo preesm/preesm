@@ -475,7 +475,7 @@
 	\tabError{\noError}
 	
 	\subsection{MEG Update with Scheduling Information}
-		\tabBrief{MEG Updater}{DAG, MEG}{MEG}{Relax memory allocation constraints of the \gls{meg} using scheduling information. constraints.}{org.ietr.preesm.memory.exclusiongraph.MemExUpdater}
+		\tabBrief{MEG Updater}{DAG, MEG}{MEG}{Relax memory allocation constraints of the \gls{meg} using scheduling information.}{org.ietr.preesm.memory.exclusiongraph.MemExUpdater}
 		
 		\tabParam{\textit{Verbose} & \multicolumn{2}{p{13.00cm}|}{How verbose will this task be during its execution. In verbose mode, the task will log the start and completion time of the update, as well as characteristics (number of memory objects, density of exclusions) of the \glspl{meg} both before and after the update.} \\
 			\tabValue{
@@ -503,6 +503,33 @@
 		
 	\subsection{Memory Bounds Estimator}
 	\label{sec:memory_bounds_estimator}
+	
+	\tabBrief{Memory Bounds Estimator}{MEG}{}{Compute bounds of the amount of memory needed to allocate the \gls{meg}}{org.ietr.preesm.memory.bounds.MemoryBoundsEstimator}
+	
+	\tabParam{\textit{Verbose} & \multicolumn{2}{p{13.00cm}|}{How verbose will this task be during its execution. In verbose mode, the task will log the name of the used solver, the start and completion time of the bound estimation algorithm. Computed bounds are always logged, even if the verbose parameter is set to \texttt{false}.} \\
+		\tabValue{
+			\valueDef{\texttt{false}}{(Default) The task will not log information.}
+			\valueDef{\texttt{true}}{The task will log build and \gls{meg} information.}
+		} \\
+		\hline
+		\textit{Solver} & \multicolumn{2}{p{13.00cm}|}{Specify which algorithm is used to compute the lower bound.} \\
+		\tabValue{
+			\valueDef{\texttt{Heuristic}}{(Default) Heuristic algorithm described in~\cite{Desnos_Memory_2012} is used. This technique find an approximate solution.}
+			\valueDef{\texttt{Ostergard}}{\"{O}sterg{\aa}rd's algorithm~\cite{Ostergaard_new_2001} is used. This technique finds an optimal solution, but has a potentially exponential complexity.}
+			\valueDef{\texttt{Yamaguchi}}{Yamaguchi et al.'s algorithm~\cite{Yamaguchi_New_2008} is used. This technique finds an optimal solution, but has a potentially exponential complexity.}
+		}
+	}
+	
+	\tabDesc{The analysis technique presented in~\cite{Desnos_Memory_2012} can be used in \preesm to derive bounds for the amount of memory that can be allocated for an application. The upper bound corresponds to the worst memory allocation possible for an application. The lower bound is a theoretical value that limits the minimum amount of memory that can be allocated. By definition, the lower bound is not always reachable, which means that it might be impossible to find an allocation with this optimal amount of memory. The minimum bound is found by solving the Maximum Weight Clique problem on the \gls{meg}.
+		
+	This task provides a convenient way to evaluate the quality of a memory allocation.
+		
+	~\newline{}
+	\textbf{See also:} Memory Bounds~\cite{Desnos_Memory_2012,Desnos_Pre_2013}.
+	}
+			
+	\tabError{\noError}
+	
 	\newpage
 	\subsection{Buffer Merging: Memory Script Runner}
 	\tabBrief{Memory Scripts}{DAG, scenario, MEGs}{MEGs}{Executes the memory scripts associated to actors and merge buffers.}{org.ietr.preesm.memory.script.MemoryScriptTask}
