@@ -450,7 +450,28 @@
 	\newpage
 	\section{Memory optimization}
 	\subsection{MEG Builder}
+	\tabBrief{MEG Builder}{DAG, scenario}{MEG}{Builds the \gls{meg} modeling the memory allocation constraints.}{org.ietr.preesm.memory.exclusiongraph.MemoryExclusion\-GraphBuilder}
 	
+	\tabParam{\textit{Verbose} & \multicolumn{2}{p{13.00cm}|}{How verbose will this task be during its execution. In verbose mode, the task will log the start and completion time of the build, as well as characteristics (number of memory objects, number of exclusions) of the produced \gls{meg}.} \\
+		\tabValue{
+			\valueDef{\texttt{false}}{(Default) The task will not log information.}
+			\valueDef{\texttt{true}}{The task will log build and \gls{meg} information.}
+		}\\
+		\hline
+		\textit{supprForkJoin} & \multicolumn{2}{p{13.00cm}|}{\textit{(Deprecated) When activated, the \gls{dag} used to build the \gls{meg} is pre-processed to remove all fork/join (aka. explode/implode) actors. Compatibility of the produced \gls{meg} with other workflow tasks is not guaranteed, and known to be non-functional for code generation tasks.}} \\
+		\tabValue{
+		\valueDef{\texttt{false}}{(Default) Feature is not activated.}
+		\valueDef{\texttt{true}}{Feature is activated.}
+		}
+	}
+	
+	\tabDesc{The memory allocation technique used in \preesm is based on a \acrfull{meg}. A \gls{meg} is a graph whose vertices model the memory objects that must be allocated in memory in order to run the generated code. In the current version of \preesm, each of these memory objects corresponds either to an edge of the \acrfull{dag} or to a buffer corresponding to "delays" of the graph that store data between executions of a schedule. In the \gls{meg}, two memory objects are linked by an edge (called an exclusion) if they can not be allocated in overlapping memory spaces.
+		
+		~\newline{}
+		\textbf{See also:} \gls{meg}~\cite{Desnos_Memory_2012}.
+	}
+	
+	\tabError{\noError}
 	
 	\subsection{MEG Update with Scheduling Information}
 	\subsection{Memory Bounds Estimator}
