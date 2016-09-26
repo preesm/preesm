@@ -78,9 +78,9 @@ public class DAGExportTransform extends AbstractTaskImplementation {
 				ContainersManager.createMissingFolders(graphmlPath);
 				graphmlPath = graphmlPath.append(dag.getName() + ".graphml");
 			}
-		} catch (CoreException e) {
+		} catch (CoreException | IllegalArgumentException e) {
 			throw new WorkflowException("Path " + sGraphmlPath
-					+ " is not a valid path for export.");
+					+ " is not a valid path for export.\n"+ e.getMessage());
 		}
 		// Exporting the DAG in a GraphML
 		if (graphmlPath != null) {
