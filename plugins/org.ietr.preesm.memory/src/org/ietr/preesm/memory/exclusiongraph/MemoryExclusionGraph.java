@@ -734,11 +734,13 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 		deepCloneMegProperties(result, mObjMap);
 
 		// Deep copy of memExVerticesInSchedulingOrder
-		result.memExVerticesInSchedulingOrder = new ArrayList<MemoryExclusionVertex>(
-				this.memExVerticesInSchedulingOrder);
-		result.memExVerticesInSchedulingOrder.replaceAll(mObj -> {
-			return mObjMap.get(mObj);
-		});
+		if (this.memExVerticesInSchedulingOrder != null) {
+			result.memExVerticesInSchedulingOrder = new ArrayList<MemoryExclusionVertex>(
+					this.memExVerticesInSchedulingOrder);
+			result.memExVerticesInSchedulingOrder.replaceAll(mObj -> {
+				return mObjMap.get(mObj);
+			});
+		}
 
 		return result;
 	}
@@ -957,7 +959,9 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 		this.removeAllVertices(vertices);
 
 		// memExVerticesInSchedulingOrder
-		memExVerticesInSchedulingOrder.removeAll(vertices);
+		if(memExVerticesInSchedulingOrder != null){
+			memExVerticesInSchedulingOrder.removeAll(vertices);
+		}
 
 		// HOST_MEMORY_OBJECT_PROPERTY property
 		@SuppressWarnings("unchecked")
@@ -984,18 +988,18 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 					// the code.
 					throw new RuntimeException("A hosted Memory Object was removed (but its host was not).");
 			});
-		
-		// ADJACENT_VERTICES_BACKUP property vertices
-		Set<MemoryExclusionVertex> verticesWithAdjacentVerticesBackup = new HashSet<MemoryExclusionVertex>();
-		verticesWithAdjacentVerticesBackup.addAll(hosts.keySet());
-		for (Set<MemoryExclusionVertex> hosted : hosts.values()) {
-			verticesWithAdjacentVerticesBackup.addAll(hosted);
-		}
-		for (MemoryExclusionVertex vertex : verticesWithAdjacentVerticesBackup) {
-			@SuppressWarnings("unchecked")
-			List<MemoryExclusionVertex> adjacentVerticesBackup = (List<MemoryExclusionVertex>) vertex.getPropertyBean()
-					.getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
-			adjacentVerticesBackup.removeAll(vertices);
+
+			// ADJACENT_VERTICES_BACKUP property vertices
+			Set<MemoryExclusionVertex> verticesWithAdjacentVerticesBackup = new HashSet<MemoryExclusionVertex>();
+			verticesWithAdjacentVerticesBackup.addAll(hosts.keySet());
+			for (Set<MemoryExclusionVertex> hosted : hosts.values()) {
+				verticesWithAdjacentVerticesBackup.addAll(hosted);
+			}
+			for (MemoryExclusionVertex vertex : verticesWithAdjacentVerticesBackup) {
+				@SuppressWarnings("unchecked")
+				List<MemoryExclusionVertex> adjacentVerticesBackup = (List<MemoryExclusionVertex>) vertex
+						.getPropertyBean().getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
+				adjacentVerticesBackup.removeAll(vertices);
 			}
 		}
 	}
