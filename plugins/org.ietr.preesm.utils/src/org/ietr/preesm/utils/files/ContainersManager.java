@@ -35,7 +35,6 @@
  ******************************************************************************/
 package org.ietr.preesm.utils.files;
 
-import java.io.FileNotFoundException;
 import java.util.Set;
 
 import org.eclipse.core.resources.IContainer;
