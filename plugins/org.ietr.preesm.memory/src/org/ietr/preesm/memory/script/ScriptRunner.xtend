@@ -1400,7 +1400,9 @@ class ScriptRunner {
 	}
 
 	new(int alignment) {
-		this.alignment = alignment
+		// kdesnos: Data alignment is supposed to be equivalent
+		// to no alignment from the script POV. (not 100% sure of this)
+		this.alignment = if(alignment <= 0) -1 else alignment
 		printTodo = false
 	}
 
@@ -1729,6 +1731,11 @@ class ScriptRunner {
 
 						// Make sure that index aligned in the buffer are in 
 						// fact aligned
+						// NB: at this point, the minIndex of the buffer is
+						// either 0 or a negative number (if buffer were
+						// matched before the range of real tokens of the 
+						// host). This division is here to make sure that
+						// index 0 of the host buffer is still aligned !
 						((buffer.minIndex / alignment) - 1) * alignment
 					}
 				mObj.setWeight(buffer.maxIndex - minIndex)
@@ -1791,12 +1798,35 @@ class ScriptRunner {
 					val remoteRange = entry.value.value.intersection(translatedLocalRange)
 					if (remoteRange != translatedLocalRange) {
 
-						// Should always be the case
+						// Should never be the case
 						throw new RuntimeException("Unexpected error !")
 					}
 					mObjRoots.add(rootMObj -> (localRange -> remoteRange))
 				]
-
+				
+				// If the mObj is a divided buffer
+				if(rootBuffers.size > 1) {
+					// Identify and all source and destination buffers in which
+					// parts of the divided buffer are merged and store this 
+					// information in the mObject properties.
+					// => This information will be used when allocating a 
+					// mObject in distributed memory to make sure that the 
+					// divided buffer remains accessible everywhere it is 
+					// needed, and otherwise forbid its division.
+					val sourceAndDestBuffers = new ArrayList<Buffer>
+					
+					// buffers in which the divided buffer is mapped
+					sourceAndDestBuffers += rootBuffers.values.map[it.key].toSet
+					// buffers mapped in the divided buffer
+					sourceAndDestBuffers += buffers.filter[it.appliedMatches.values.map[it.key].exists[it == buffer]]
+					
+					// Find corresponding mObjects
+					var srcAndDestMObj = sourceAndDestBuffers.map[bufferAndMObjectMap.get(it)]
+					
+					// Save this list in the attributes of the divided buffer
+					mObj.setPropertyValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS,srcAndDestMObj)			
+				}
+				
 				// Sort mObjRoots in order of contiguous ranges
 				mObjRoots.sortInplaceBy[it.value.key.start]
 			}

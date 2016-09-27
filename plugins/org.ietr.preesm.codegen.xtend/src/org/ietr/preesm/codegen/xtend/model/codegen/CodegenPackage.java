@@ -85,8 +85,7 @@ public interface CodegenPackage extends EPackage {
 	 * 
 	 * @generated
 	 */
-	CodegenPackage eINSTANCE = org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl
-			.init();
+	CodegenPackage eINSTANCE = org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl.init();
 
 	/**
 	 * The meta object id for the '
@@ -408,13 +407,22 @@ public interface CodegenPackage extends EPackage {
 	int BUFFER__MERGED_RANGE = VARIABLE_FEATURE_COUNT + 3;
 
 	/**
+	 * The feature id for the '<em><b>Local</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int BUFFER__LOCAL = VARIABLE_FEATURE_COUNT + 4;
+
+	/**
 	 * The number of structural features of the '<em>Buffer</em>' class. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int BUFFER_FEATURE_COUNT = VARIABLE_FEATURE_COUNT + 4;
+	int BUFFER_FEATURE_COUNT = VARIABLE_FEATURE_COUNT + 5;
 
 	/**
 	 * The meta object id for the '
@@ -508,6 +516,15 @@ public interface CodegenPackage extends EPackage {
 	 * @ordered
 	 */
 	int SUB_BUFFER__MERGED_RANGE = BUFFER__MERGED_RANGE;
+
+	/**
+	 * The feature id for the '<em><b>Local</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int SUB_BUFFER__LOCAL = BUFFER__LOCAL;
 
 	/**
 	 * The feature id for the '<em><b>Container</b></em>' reference. <!--
@@ -1353,7 +1370,8 @@ public interface CodegenPackage extends EPackage {
 	 * <em>Communication Node</em>}' class. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
 	 * 
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationNodeImpl
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.
+	 *      CommunicationNodeImpl
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getCommunicationNode()
 	 * @generated
 	 */
@@ -1457,7 +1475,8 @@ public interface CodegenPackage extends EPackage {
 	 * <em>Shared Memory Communication</em>}' class. <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * 
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.SharedMemoryCommunicationImpl
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.
+	 *      SharedMemoryCommunicationImpl
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getSharedMemoryCommunication()
 	 * @generated
 	 */
@@ -1786,6 +1805,15 @@ public interface CodegenPackage extends EPackage {
 	int NULL_BUFFER__MERGED_RANGE = SUB_BUFFER__MERGED_RANGE;
 
 	/**
+	 * The feature id for the '<em><b>Local</b></em>' attribute. <!--
+	 * begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int NULL_BUFFER__LOCAL = SUB_BUFFER__LOCAL;
+
+	/**
 	 * The feature id for the '<em><b>Container</b></em>' reference. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -2074,8 +2102,8 @@ public interface CodegenPackage extends EPackage {
 
 	/**
 	 * Returns the meta object for class '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer
-	 * <em>Buffer</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer <em>Buffer</em>
+	 * }'. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @return the meta object for class '<em>Buffer</em>'.
 	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Buffer
@@ -2130,6 +2158,18 @@ public interface CodegenPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getBuffer_MergedRange();
+
+	/**
+	 * Returns the meta object for the attribute '
+	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer#isLocal
+	 * <em>Local</em>}'. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Local</em>'.
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Buffer#isLocal()
+	 * @see #getBuffer()
+	 * @generated
+	 */
+	EAttribute getBuffer_Local();
 
 	/**
 	 * Returns the meta object for class '
@@ -2666,7 +2706,8 @@ public interface CodegenPackage extends EPackage {
 	 * end-user-doc -->
 	 * 
 	 * @return the meta object for class '<em>Shared Memory Communication</em>'.
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication
+	 * @see org.ietr.preesm.codegen.xtend.model.codegen.
+	 *      SharedMemoryCommunication
 	 * @generated
 	 */
 	EClass getSharedMemoryCommunication();
@@ -2906,8 +2947,7 @@ public interface CodegenPackage extends EPackage {
 		 * 
 		 * @generated
 		 */
-		EAttribute CALL__PARAMETER_DIRECTIONS = eINSTANCE
-				.getCall_ParameterDirections();
+		EAttribute CALL__PARAMETER_DIRECTIONS = eINSTANCE.getCall_ParameterDirections();
 
 		/**
 		 * The meta object literal for the '
@@ -2998,6 +3038,14 @@ public interface CodegenPackage extends EPackage {
 		EAttribute BUFFER__MERGED_RANGE = eINSTANCE.getBuffer_MergedRange();
 
 		/**
+		 * The meta object literal for the '<em><b>Local</b></em>' attribute
+		 * feature. <!-- begin-user-doc --> <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute BUFFER__LOCAL = eINSTANCE.getBuffer_Local();
+
+		/**
 		 * The meta object literal for the '
 		 * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SubBufferImpl
 		 * <em>Sub Buffer</em>}' class. <!-- begin-user-doc --> <!--
@@ -3051,7 +3099,8 @@ public interface CodegenPackage extends EPackage {
 		 * <em>Function Call</em>}' class. <!-- begin-user-doc --> <!--
 		 * end-user-doc -->
 		 * 
-		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.FunctionCallImpl
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.
+		 *      FunctionCallImpl
 		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getFunctionCall()
 		 * @generated
 		 */
@@ -3063,8 +3112,7 @@ public interface CodegenPackage extends EPackage {
 		 * 
 		 * @generated
 		 */
-		EAttribute FUNCTION_CALL__ACTOR_NAME = eINSTANCE
-				.getFunctionCall_ActorName();
+		EAttribute FUNCTION_CALL__ACTOR_NAME = eINSTANCE.getFunctionCall_ActorName();
 
 		/**
 		 * The meta object literal for the '
@@ -3072,7 +3120,8 @@ public interface CodegenPackage extends EPackage {
 		 * <em>Communication</em>}' class. <!-- begin-user-doc --> <!--
 		 * end-user-doc -->
 		 * 
-		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationImpl
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.
+		 *      CommunicationImpl
 		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getCommunication()
 		 * @generated
 		 */
@@ -3084,8 +3133,7 @@ public interface CodegenPackage extends EPackage {
 		 * 
 		 * @generated
 		 */
-		EAttribute COMMUNICATION__DIRECTION = eINSTANCE
-				.getCommunication_Direction();
+		EAttribute COMMUNICATION__DIRECTION = eINSTANCE.getCommunication_Direction();
 
 		/**
 		 * The meta object literal for the '<em><b>Delimiter</b></em>' attribute
@@ -3093,8 +3141,7 @@ public interface CodegenPackage extends EPackage {
 		 * 
 		 * @generated
 		 */
-		EAttribute COMMUNICATION__DELIMITER = eINSTANCE
-				.getCommunication_Delimiter();
+		EAttribute COMMUNICATION__DELIMITER = eINSTANCE.getCommunication_Delimiter();
 
 		/**
 		 * The meta object literal for the '<em><b>Data</b></em>' reference
@@ -3110,8 +3157,7 @@ public interface CodegenPackage extends EPackage {
 		 * 
 		 * @generated
 		 */
-		EReference COMMUNICATION__SEND_START = eINSTANCE
-				.getCommunication_SendStart();
+		EReference COMMUNICATION__SEND_START = eINSTANCE.getCommunication_SendStart();
 
 		/**
 		 * The meta object literal for the '<em><b>Send End</b></em>' reference
@@ -3119,8 +3165,7 @@ public interface CodegenPackage extends EPackage {
 		 * 
 		 * @generated
 		 */
-		EReference COMMUNICATION__SEND_END = eINSTANCE
-				.getCommunication_SendEnd();
+		EReference COMMUNICATION__SEND_END = eINSTANCE.getCommunication_SendEnd();
 
 		/**
 		 * The meta object literal for the '<em><b>Receive Start</b></em>'
@@ -3128,8 +3173,7 @@ public interface CodegenPackage extends EPackage {
 		 * 
 		 * @generated
 		 */
-		EReference COMMUNICATION__RECEIVE_START = eINSTANCE
-				.getCommunication_ReceiveStart();
+		EReference COMMUNICATION__RECEIVE_START = eINSTANCE.getCommunication_ReceiveStart();
 
 		/**
 		 * The meta object literal for the '<em><b>Receive End</b></em>'
@@ -3137,8 +3181,7 @@ public interface CodegenPackage extends EPackage {
 		 * 
 		 * @generated
 		 */
-		EReference COMMUNICATION__RECEIVE_END = eINSTANCE
-				.getCommunication_ReceiveEnd();
+		EReference COMMUNICATION__RECEIVE_END = eINSTANCE.getCommunication_ReceiveEnd();
 
 		/**
 		 * The meta object literal for the '<em><b>Id</b></em>' attribute
@@ -3162,8 +3205,7 @@ public interface CodegenPackage extends EPackage {
 		 * 
 		 * @generated
 		 */
-		EReference COMMUNICATION__RECEIVE_RELEASE = eINSTANCE
-				.getCommunication_ReceiveRelease();
+		EReference COMMUNICATION__RECEIVE_RELEASE = eINSTANCE.getCommunication_ReceiveRelease();
 
 		/**
 		 * The meta object literal for the '<em><b>Send Reserve</b></em>'
@@ -3171,8 +3213,7 @@ public interface CodegenPackage extends EPackage {
 		 * 
 		 * @generated
 		 */
-		EReference COMMUNICATION__SEND_RESERVE = eINSTANCE
-				.getCommunication_SendReserve();
+		EReference COMMUNICATION__SEND_RESERVE = eINSTANCE.getCommunication_SendReserve();
 
 		/**
 		 * The meta object literal for the '
@@ -3228,8 +3269,7 @@ public interface CodegenPackage extends EPackage {
 		 * 
 		 * @generated
 		 */
-		EReference ACTOR_BLOCK__LOOP_BLOCK = eINSTANCE
-				.getActorBlock_LoopBlock();
+		EReference ACTOR_BLOCK__LOOP_BLOCK = eINSTANCE.getActorBlock_LoopBlock();
 
 		/**
 		 * The meta object literal for the '<em><b>Init Block</b></em>'
@@ -3237,8 +3277,7 @@ public interface CodegenPackage extends EPackage {
 		 * 
 		 * @generated
 		 */
-		EReference ACTOR_BLOCK__INIT_BLOCK = eINSTANCE
-				.getActorBlock_InitBlock();
+		EReference ACTOR_BLOCK__INIT_BLOCK = eINSTANCE.getActorBlock_InitBlock();
 
 		/**
 		 * The meta object literal for the '
@@ -3302,8 +3341,7 @@ public interface CodegenPackage extends EPackage {
 		 * 
 		 * @generated
 		 */
-		EReference SPECIAL_CALL__INPUT_BUFFERS = eINSTANCE
-				.getSpecialCall_InputBuffers();
+		EReference SPECIAL_CALL__INPUT_BUFFERS = eINSTANCE.getSpecialCall_InputBuffers();
 
 		/**
 		 * The meta object literal for the '<em><b>Output Buffers</b></em>'
@@ -3311,8 +3349,7 @@ public interface CodegenPackage extends EPackage {
 		 * 
 		 * @generated
 		 */
-		EReference SPECIAL_CALL__OUTPUT_BUFFERS = eINSTANCE
-				.getSpecialCall_OutputBuffers();
+		EReference SPECIAL_CALL__OUTPUT_BUFFERS = eINSTANCE.getSpecialCall_OutputBuffers();
 
 		/**
 		 * The meta object literal for the '
@@ -3392,7 +3429,8 @@ public interface CodegenPackage extends EPackage {
 		 * <em>Communication Node</em>}' class. <!-- begin-user-doc --> <!--
 		 * end-user-doc -->
 		 * 
-		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CommunicationNodeImpl
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.
+		 *      CommunicationNodeImpl
 		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getCommunicationNode()
 		 * @generated
 		 */
@@ -3404,8 +3442,7 @@ public interface CodegenPackage extends EPackage {
 		 * 
 		 * @generated
 		 */
-		EAttribute COMMUNICATION_NODE__NAME = eINSTANCE
-				.getCommunicationNode_Name();
+		EAttribute COMMUNICATION_NODE__NAME = eINSTANCE.getCommunicationNode_Name();
 
 		/**
 		 * The meta object literal for the '<em><b>Type</b></em>' attribute
@@ -3413,8 +3450,7 @@ public interface CodegenPackage extends EPackage {
 		 * 
 		 * @generated
 		 */
-		EAttribute COMMUNICATION_NODE__TYPE = eINSTANCE
-				.getCommunicationNode_Type();
+		EAttribute COMMUNICATION_NODE__TYPE = eINSTANCE.getCommunicationNode_Type();
 
 		/**
 		 * The meta object literal for the '
@@ -3434,12 +3470,12 @@ public interface CodegenPackage extends EPackage {
 		 * <em>Shared Memory Communication</em>}' class. <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * 
-		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.SharedMemoryCommunicationImpl
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.
+		 *      SharedMemoryCommunicationImpl
 		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getSharedMemoryCommunication()
 		 * @generated
 		 */
-		EClass SHARED_MEMORY_COMMUNICATION = eINSTANCE
-				.getSharedMemoryCommunication();
+		EClass SHARED_MEMORY_COMMUNICATION = eINSTANCE.getSharedMemoryCommunication();
 
 		/**
 		 * The meta object literal for the '<em><b>Semaphore</b></em>' reference
@@ -3447,8 +3483,7 @@ public interface CodegenPackage extends EPackage {
 		 * 
 		 * @generated
 		 */
-		EReference SHARED_MEMORY_COMMUNICATION__SEMAPHORE = eINSTANCE
-				.getSharedMemoryCommunication_Semaphore();
+		EReference SHARED_MEMORY_COMMUNICATION__SEMAPHORE = eINSTANCE.getSharedMemoryCommunication_Semaphore();
 
 		/**
 		 * The meta object literal for the '
@@ -3456,7 +3491,8 @@ public interface CodegenPackage extends EPackage {
 		 * <em>Constant String</em>}' class. <!-- begin-user-doc --> <!--
 		 * end-user-doc -->
 		 * 
-		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.ConstantStringImpl
+		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.
+		 *      ConstantStringImpl
 		 * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.CodegenPackageImpl#getConstantString()
 		 * @generated
 		 */
