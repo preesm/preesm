@@ -81,7 +81,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
 		String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + "/";
 		
 		if(codegenPath.equals("/")){
-			WorkflowLogger.getLogger().log(Level.SEVERE, "Error: A Codegen folder must e specified in Scenario");
+			WorkflowLogger.getLogger().log(Level.SEVERE, "Error: A Codegen folder must be specified in Scenario");
 			return Collections.emptyMap();			
 		}
 		

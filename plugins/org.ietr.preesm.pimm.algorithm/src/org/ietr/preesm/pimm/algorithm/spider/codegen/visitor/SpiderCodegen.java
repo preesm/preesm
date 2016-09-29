@@ -37,6 +37,7 @@
  */
 package org.ietr.preesm.pimm.algorithm.spider.codegen.visitor;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
@@ -105,9 +107,17 @@ public class SpiderCodegen{
 			coreTypesIds.put(coreType, coreTypeId++);	
 		
 		coreIds = new HashMap<String, Integer>();
-		int coreId = 0;
-		for (String core : scenario.getOperatorIds())
-			coreIds.put(core, coreId++);	
+		String mainOperator = scenario.getSimulationManager().getMainOperatorName();
+		if(mainOperator == null || mainOperator.equals("")){
+			/* Warning */
+			mainOperator = scenario.getOrderedOperatorIds().get(0);
+			WorkflowLogger.getLogger().warning("No Main Operator selected in scenario, " + mainOperator + " used by default");
+		}
+		coreIds.put(mainOperator, 0);
+		int coreId = 1;
+		for (String core : scenario.getOrderedOperatorIds())
+			if(!core.equals(mainOperator))
+				coreIds.put(core, coreId++);	
 		
 		// Generate timings
 		Map<String, AbstractActor> actorsByNames = preprocessor.getActorNames();
@@ -194,9 +204,16 @@ public class SpiderCodegen{
 		
 		/* Core */
 		append("typedef enum{\n");
-		for(String core : coreIds.keySet()){
-			append("\t" + SpiderNameGenerator.getCoreName(core) 
-					+ " = " + coreIds.get(core) + ",\n");			
+		List<String> sortedCores = new ArrayList<String>(coreIds.keySet());
+		Collections.sort(sortedCores);
+		for(int i=0; i<coreIds.size(); i++){
+			for(Entry<String, Integer> entry : coreIds.entrySet()){
+				if(entry.getValue() == i){
+					String core = entry.getKey();
+					append("\t" + SpiderNameGenerator.getCoreName(core) 
+						+ " = " + coreIds.get(core) + ",\n");
+				}					
+			}			
 		}
 		append("} PE;\n\n");
 		
