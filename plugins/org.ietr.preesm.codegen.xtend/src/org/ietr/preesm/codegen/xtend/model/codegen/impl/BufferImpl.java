@@ -48,12 +48,14 @@ import org.eclipse.emf.ecore.util.InternalEList;
 import org.ietr.preesm.codegen.xtend.model.codegen.Buffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
+import org.ietr.preesm.memory.script.Range;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
  * <em><b>Buffer</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>
  * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferImpl#getSize
@@ -67,9 +69,11 @@ import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
  * <li>
  * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferImpl#getMergedRange
  * <em>Merged Range</em>}</li>
+ * <li>
+ * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferImpl#isLocal
+ * <em>Local</em>}</li>
  * </ul>
- * </p>
- * 
+ *
  * @generated
  */
 public class BufferImpl extends VariableImpl implements Buffer {
@@ -131,7 +135,27 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<org.ietr.preesm.memory.script.Range> mergedRange;
+	protected EList<Range> mergedRange;
+
+	/**
+	 * The default value of the '{@link #isLocal() <em>Local</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #isLocal()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean LOCAL_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isLocal() <em>Local</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #isLocal()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean local = LOCAL_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -172,8 +196,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
 		int oldSize = size;
 		size = newSize;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.BUFFER__SIZE, oldSize, size));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.BUFFER__SIZE, oldSize, size));
 	}
 
 	/**
@@ -184,9 +207,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	@Override
 	public EList<SubBuffer> getChildrens() {
 		if (childrens == null) {
-			childrens = new EObjectWithInverseResolvingEList<SubBuffer>(
-					SubBuffer.class, this, CodegenPackage.BUFFER__CHILDRENS,
-					CodegenPackage.SUB_BUFFER__CONTAINER);
+			childrens = new EObjectWithInverseResolvingEList<SubBuffer>(SubBuffer.class, this,
+					CodegenPackage.BUFFER__CHILDRENS, CodegenPackage.SUB_BUFFER__CONTAINER);
 		}
 		return childrens;
 	}
@@ -211,8 +233,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
 		int oldTypeSize = typeSize;
 		typeSize = newTypeSize;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.BUFFER__TYPE_SIZE, oldTypeSize, typeSize));
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.BUFFER__TYPE_SIZE, oldTypeSize,
+					typeSize));
 	}
 
 	/**
@@ -221,7 +243,7 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * @generated
 	 */
 	@Override
-	public EList<org.ietr.preesm.memory.script.Range> getMergedRange() {
+	public EList<Range> getMergedRange() {
 		return mergedRange;
 	}
 
@@ -231,14 +253,33 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * @generated
 	 */
 	@Override
-	public void setMergedRange(
-			EList<org.ietr.preesm.memory.script.Range> newMergedRange) {
-		EList<org.ietr.preesm.memory.script.Range> oldMergedRange = mergedRange;
+	public void setMergedRange(EList<Range> newMergedRange) {
+		EList<Range> oldMergedRange = mergedRange;
 		mergedRange = newMergedRange;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.BUFFER__MERGED_RANGE, oldMergedRange,
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.BUFFER__MERGED_RANGE, oldMergedRange,
 					mergedRange));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public boolean isLocal() {
+		return local;
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public void setLocal(boolean newLocal) {
+		boolean oldLocal = local;
+		local = newLocal;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.BUFFER__LOCAL, oldLocal, local));
 	}
 
 	/**
@@ -248,12 +289,10 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public NotificationChain eInverseAdd(InternalEObject otherEnd,
-			int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case CodegenPackage.BUFFER__CHILDRENS:
-			return ((InternalEList<InternalEObject>) (InternalEList<?>) getChildrens())
-					.basicAdd(otherEnd, msgs);
+			return ((InternalEList<InternalEObject>) (InternalEList<?>) getChildrens()).basicAdd(otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
@@ -264,12 +303,10 @@ public class BufferImpl extends VariableImpl implements Buffer {
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd,
-			int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case CodegenPackage.BUFFER__CHILDRENS:
-			return ((InternalEList<?>) getChildrens()).basicRemove(otherEnd,
-					msgs);
+			return ((InternalEList<?>) getChildrens()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -290,6 +327,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
 			return getTypeSize();
 		case CodegenPackage.BUFFER__MERGED_RANGE:
 			return getMergedRange();
+		case CodegenPackage.BUFFER__LOCAL:
+			return isLocal();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -314,7 +353,10 @@ public class BufferImpl extends VariableImpl implements Buffer {
 			setTypeSize((Integer) newValue);
 			return;
 		case CodegenPackage.BUFFER__MERGED_RANGE:
-			setMergedRange((EList<org.ietr.preesm.memory.script.Range>) newValue);
+			setMergedRange((EList<Range>) newValue);
+			return;
+		case CodegenPackage.BUFFER__LOCAL:
+			setLocal((Boolean) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -338,7 +380,10 @@ public class BufferImpl extends VariableImpl implements Buffer {
 			setTypeSize(TYPE_SIZE_EDEFAULT);
 			return;
 		case CodegenPackage.BUFFER__MERGED_RANGE:
-			setMergedRange((EList<org.ietr.preesm.memory.script.Range>) null);
+			setMergedRange((EList<Range>) null);
+			return;
+		case CodegenPackage.BUFFER__LOCAL:
+			setLocal(LOCAL_EDEFAULT);
 			return;
 		}
 		super.eUnset(featureID);
@@ -360,6 +405,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
 			return typeSize != TYPE_SIZE_EDEFAULT;
 		case CodegenPackage.BUFFER__MERGED_RANGE:
 			return mergedRange != null;
+		case CodegenPackage.BUFFER__LOCAL:
+			return local != LOCAL_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -381,6 +428,8 @@ public class BufferImpl extends VariableImpl implements Buffer {
 		result.append(typeSize);
 		result.append(", mergedRange: ");
 		result.append(mergedRange);
+		result.append(", local: ");
+		result.append(local);
 		result.append(')');
 		return result.toString();
 	}

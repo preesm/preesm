@@ -53,6 +53,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -529,9 +530,18 @@ public class ScenarioParser {
 		String completePath = file.getLocation().toString();
 
 		// resourceSet.
-		Resource resource = resourceSet.getResource(URI.createFileURI(completePath), true);
-		// Extract the root object from the resource.
-		Design design = (Design) resource.getContents().get(0);
+		Resource resource = null;
+		Design design = null;
+
+		try {
+			resource = resourceSet.getResource(URI.createFileURI(completePath), true);
+
+			// Extract the root object from the resource.
+			design = (Design) resource.getContents().get(0);
+		} catch (WrappedException e) {
+			WorkflowLogger.getLogger().log(Level.SEVERE, "The architecture file \"" + completePath
+					+ "\" specified by the scenario does not exist any more.");
+		}
 
 		return design;
 	}
@@ -571,11 +581,17 @@ public class ScenarioParser {
 		URI uri = URI.createPlatformResourceURI(url, true);
 		if (uri.fileExtension() == null || !uri.fileExtension().contentEquals("pi"))
 			return null;
-		Resource ressource = resourceSet.getResource(uri, true);
-		pigraph = (PiGraph) (ressource.getContents().get(0));
+		Resource ressource;
+		try {
+			ressource = resourceSet.getResource(uri, true);
+			pigraph = (PiGraph) (ressource.getContents().get(0));
 
-		SubgraphConnector connector = new SubgraphConnector();
-		connector.connectSubgraphs(pigraph);
+			SubgraphConnector connector = new SubgraphConnector();
+			connector.connectSubgraphs(pigraph);
+		} catch (WrappedException e) {
+			WorkflowLogger.getLogger().log(Level.SEVERE,
+					"The algorithm file \"" + uri + "\" specified by the scenario does not exist any more.");
+		}
 
 		return pigraph;
 	}

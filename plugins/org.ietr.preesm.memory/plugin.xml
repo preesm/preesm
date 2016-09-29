@@ -55,7 +55,7 @@
             type="org.ietr.preesm.memory.bounds.SerialMemoryBoundsEstimator">
          <inputs>
             <input
-                  id="MemExes"
+                  id="MEGs"
                   object="java.util.Map">
             </input>
          </inputs>
@@ -93,8 +93,8 @@
          </inputs>
          <outputs>
             <output
-                  id="MemEx"
-                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+                  id="MEGs"
+                  object="java.util.Map">
             </output>
          </outputs>
       </task>
@@ -120,6 +120,23 @@
             <output
                   id="MemEx"
                   object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+            </output>
+         </outputs>
+      </task>
+      <task
+            id="org.ietr.preesm.memory.distributed.MapperTask"
+            name="Memory Exclusion Graph Mapper"
+            type="org.ietr.preesm.memory.distributed.MapperTask">
+         <inputs>
+            <input
+                  id="MemEx"
+                  object="org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph">
+            </input>
+         </inputs>
+         <outputs>
+            <output
+                  id="MemExes"
+                  object="java.util.Map">
             </output>
          </outputs>
       </task>

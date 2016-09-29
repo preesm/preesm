@@ -42,6 +42,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.algorithm.model.sdf.visitors.ToHSDFVisitor;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
@@ -50,6 +51,7 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
+import org.ietr.preesm.algorithm.optimization.clean.joinfork.JoinForkCleaner;
 
 /**
  * Class used to transform a SDF graph into a HSDF graph. Actually into a single
@@ -81,16 +83,24 @@ public class HSDFTransformation extends AbstractTaskImplementation {
 			if (algorithm.validateModel(WorkflowLogger.getLogger())) {
 
 				ToHSDFVisitor toHsdf = new ToHSDFVisitor();
-
+				
+				SDFGraph hsdf = null; 
 				try {
 					algorithm.accept(toHsdf);
+					hsdf = toHsdf.getOutput();
+					logger.log(Level.FINER, "Minimize special actors");
+					JoinForkCleaner.cleanJoinForkPairsFrom(hsdf);
 				} catch (SDF4JException e) {
+					e.printStackTrace();
+					throw (new WorkflowException(e.getMessage()));
+				} catch (InvalidExpressionException e) {
 					e.printStackTrace();
 					throw (new WorkflowException(e.getMessage()));
 				}
 				logger.log(Level.FINER, "HSDF transformation complete");
+				
 
-				SDFGraph hsdf = toHsdf.getOutput();
+				
 				logger.log(Level.INFO, "HSDF with " + hsdf.vertexSet().size()
 						+ " vertices and " + hsdf.edgeSet().size() + " edges.");
 

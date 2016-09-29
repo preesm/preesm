@@ -19,18 +19,19 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
+import org.eclipse.graphiti.mm.algorithms.Ellipse;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
+import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.Font;
+import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -39,13 +40,8 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
-import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
-import org.ietr.preesm.experiment.model.pimm.ConfigInputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
@@ -61,7 +57,6 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
-import org.ietr.preesm.ui.scenario.editor.EditorTools.FileContentProvider;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -72,7 +67,14 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 		// Retrieve the shape and the graphic algorithm
 		PictogramElement[] actorPes = fp.getAllPictogramElementsForBusinessObject(aa);
 		
-		ContainerShape containerShape = (ContainerShape) actorPes[0];
+		ContainerShape containerShape = null;
+		for(PictogramElement pe : actorPes){
+			if(pe instanceof ContainerShape)
+				containerShape = (ContainerShape)pe;
+		}
+		if(containerShape == null)
+			throw new IllegalArgumentException("getFont of a AbstractVertex without ContainerShape");
+		
 		EList<Shape> childrenShapes = containerShape.getChildren();
 				
 		for (Shape shape : childrenShapes) {
@@ -85,18 +87,18 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 		return null;
 	}
 	
-	FreeFormConnection getFifoFFC(Fifo f){
+	Set<FreeFormConnection> getFifoFFC(Fifo f){
+		Set<FreeFormConnection> result = new HashSet<FreeFormConnection>();
 		PictogramElement[] pes = fp.getAllPictogramElementsForBusinessObject(f);
 		if (pes == null) return null;
 		
-		int id = -1;
-		for(int i1=0; i1<pes.length; i1++){
-			Fifo fPe = (Fifo)(((pes[i1]).getLink().getBusinessObjects()).get(0));
-			if(fPe.equals(f))
-				id = i1;
+		for(int i=0; i<pes.length; i++){
+			Fifo fPe = (Fifo)(((pes[i]).getLink().getBusinessObjects()).get(0));
+			if(fPe.equals(f)){
+				result.add((FreeFormConnection) pes[i]);
+			}
 		}
-		
-		return (FreeFormConnection) pes[id];
+		return result;
 	}
 	
 	FreeFormConnection getDepFFC(Dependency d){
@@ -217,6 +219,10 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 		return true;
 	}
 	
+	public boolean hasDoneChanges(){
+		return false;
+	}
+	
 	@Override
 	public void execute(ICustomContext context) {
 		/* Get PiGraph */
@@ -273,7 +279,7 @@ public class ExportSVGFeature extends AbstractCustomFeature {
         }
         
         /* Populate SVG File with Graph Data */ 
-        SVGRExporterSwitch visitor = new SVGRExporterSwitch(doc, svg);
+        SVGExporterSwitch visitor = new SVGExporterSwitch(doc, svg);
         for(Dependency d : graph.getDependencies()){
         	visitor.doSwitch(d);
 		}
@@ -325,7 +331,7 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 		}
 	}
 	
-	public class SVGRExporterSwitch extends PiMMSwitch<Integer>{
+	public class SVGExporterSwitch extends PiMMSwitch<Integer>{
 		protected Document doc;
 		protected Element svg;
 		protected int totalWidth;
@@ -345,7 +351,7 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 			return totalHeight;
 		}
 
-		public SVGRExporterSwitch(Document doc, Element svg){
+		public SVGExporterSwitch(Document doc, Element svg){
 			this.doc = doc;
 			this.svg = svg;
 			totalWidth = 0;
@@ -353,6 +359,9 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 		}
 				
 		public Integer caseParameter(Parameter p) {
+			if(p.isLocallyStatic() && p.getGraphPort() instanceof ConfigInputPort)
+				return caseConfigInputInterface(p);
+			
 			int x = 0, y = 0, width = 0, height = 0;
 			PictogramElement[] paramPes = fp.getAllPictogramElementsForBusinessObject(p);
 			if (paramPes == null) return null;
@@ -407,14 +416,17 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 		
 		public Integer caseDataInputInterface(DataInputInterface dii) {
 			int x = 0, y = 0;
+			int width=0, height=0;
 			PictogramElement[] diiPes = fp.getAllPictogramElementsForBusinessObject(dii);
 			if (diiPes != null) {
-				x = diiPes[0].getGraphicsAlgorithm().getX();
-				y = diiPes[0].getGraphicsAlgorithm().getY();
+				x = diiPes[1].getGraphicsAlgorithm().getX();
+				y = diiPes[1].getGraphicsAlgorithm().getY();
+				width = diiPes[1].getGraphicsAlgorithm().getWidth();
+				height = diiPes[1].getGraphicsAlgorithm().getHeight();
 			}
 
-			totalWidth = java.lang.Math.max(x+16,totalWidth);
-			totalHeight = java.lang.Math.max(y+16,totalHeight);
+			totalWidth = java.lang.Math.max(x+width,totalWidth);
+			totalHeight = java.lang.Math.max(y+height,totalHeight);
 					
 		    Element diiNode = doc.createElement("g");
 		    svg.appendChild(diiNode);
@@ -425,6 +437,8 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 		        diiNode.appendChild(rect);
 		        rect.setAttribute("rx", "2");
 		        rect.setAttribute("ry", "2");
+		        rect.setAttribute("x", ""+(width-16));
+		        rect.setAttribute("y", "0");
 		        rect.setAttribute("width", "16");
 		        rect.setAttribute("height","16");
 		        rect.setAttribute("fill","rgb(182, 215, 122)");
@@ -433,11 +447,11 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 		        		        
 		        Element text = doc.createElement("text");
 		        diiNode.appendChild(text);
-		        text.setAttribute("x", "5");
-		        text.setAttribute("y", "13");
+		        text.setAttribute("x", "2");
+		        text.setAttribute("y", "11");
 		        text.setAttribute("fill", "black");
-		        text.setAttribute("text-anchor", "end");
-		        text.setAttribute("font-size", "14pt");
+		        text.setAttribute("text-anchor", "start");
+		        addFontToSVG(text, getFont(dii));
 		        text.appendChild(doc.createTextNode(dii.getName()));
 		    }			
 			return 0;
@@ -445,14 +459,17 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 		
 		public Integer caseDataOutputInterface(DataOutputInterface doi) {
 			int x = 0, y = 0;
+			int width=0, height=0;
 			PictogramElement[] doiPes = fp.getAllPictogramElementsForBusinessObject(doi);
 			if (doiPes != null) {
-				x = doiPes[0].getGraphicsAlgorithm().getX();
-				y = doiPes[0].getGraphicsAlgorithm().getY();
+				x = doiPes[1].getGraphicsAlgorithm().getX();
+				y = doiPes[1].getGraphicsAlgorithm().getY();
+				width = doiPes[1].getGraphicsAlgorithm().getWidth();
+				height = doiPes[1].getGraphicsAlgorithm().getHeight();
 			}
 
-			totalWidth = java.lang.Math.max(x+16,totalWidth); // TODO Text size
-			totalHeight = java.lang.Math.max(y+16,totalHeight);
+			totalWidth = java.lang.Math.max(x+width,totalWidth); 
+			totalHeight = java.lang.Math.max(y+height,totalHeight);
 					
 		    Element doiNode = doc.createElement("g");
 		    svg.appendChild(doiNode);
@@ -463,6 +480,8 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 		        doiNode.appendChild(rect);
 		        rect.setAttribute("rx", "2");
 		        rect.setAttribute("ry", "2");
+		        rect.setAttribute("x", "0");
+		        rect.setAttribute("y", "0");
 		        rect.setAttribute("width", "16");
 		        rect.setAttribute("height","16");
 		        rect.setAttribute("fill","rgb(234, 153, 153)");
@@ -472,25 +491,28 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 		        Element text = doc.createElement("text");
 		        doiNode.appendChild(text);
 		        text.setAttribute("x", "21");
-		        text.setAttribute("y", "13");
+		        text.setAttribute("y", "11");
 		        text.setAttribute("fill", "black");
 		        text.setAttribute("text-anchor", "start");
-		        text.setAttribute("font-size", "14pt");
+		        addFontToSVG(text, getFont(doi));
 		        text.appendChild(doc.createTextNode(doi.getName()));
 		    }			
 			return 0;
 		}
 	
-		public Integer caseConfigInputInterface(ConfigInputInterface cii) {
+		public Integer caseConfigInputInterface(Parameter cii) {
 			int x = 0, y = 0;
+			int width=0, height=0;
 			PictogramElement[] ciiPes = fp.getAllPictogramElementsForBusinessObject(cii);
 			if (ciiPes != null) {
-				x = ciiPes[0].getGraphicsAlgorithm().getX();
-				y = ciiPes[0].getGraphicsAlgorithm().getY();
+				x = ciiPes[2].getGraphicsAlgorithm().getX();
+				y = ciiPes[2].getGraphicsAlgorithm().getY();
+				width = ciiPes[2].getGraphicsAlgorithm().getWidth();
+				height = ciiPes[2].getGraphicsAlgorithm().getHeight();
 			}
 
-			totalWidth = java.lang.Math.max(x+16,totalWidth); // TODO Adjust size
-			totalHeight = java.lang.Math.max(y+16,totalHeight);
+			totalWidth = java.lang.Math.max(x+width,totalWidth); 
+			totalHeight = java.lang.Math.max(y+height,totalHeight);
 					
 		    Element ciiNode = doc.createElement("g");
 		    svg.appendChild(ciiNode);
@@ -498,20 +520,25 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 		    ciiNode.setAttribute("transform", "translate(" + x + "," + y + ")");	        
 		    {
 		        Element polygon = doc.createElement("polygon"); 
+		        Polygon polyPe = (Polygon)ciiPes[0].getGraphicsAlgorithm();
 		        ciiNode.appendChild(polygon);
-		        polygon.setAttribute("points", "0,16 8,0 16,16");
-		        polygon.setAttribute("fill","rgb(187, 218, 247)");
-		        polygon.setAttribute("stroke", "rgb(100,100,100)");
+		        String points = "";
+		        for(Point p : polyPe.getPoints()){
+		        	points += (p.getX()+3)+","+(p.getY()+16)+" "; 
+		        }
+		        polygon.setAttribute("points", points);
+		        polygon.setAttribute("fill", "rgb(187, 218, 247)");
+		        polygon.setAttribute("stroke", "rgb(98,131,167)");
 		        polygon.setAttribute("stroke-width", "3px");
 		        		        
 		        Element text = doc.createElement("text");
 		        ciiNode.appendChild(text);
-		        text.setAttribute("x", "8");
-		        text.setAttribute("y", "-5");
+		        text.setAttribute("x", ""+width/2);
+		        text.setAttribute("y", "10");
 		        text.setAttribute("fill", "black");
 		        text.setAttribute("text-anchor", "middle");
-		        text.setAttribute("font-size", "14pt");
-			        text.appendChild(doc.createTextNode(cii.getName()));
+		        addFontToSVG(text, getFont(cii));
+		        text.appendChild(doc.createTextNode(cii.getName()));
 		    }			
 			return 0;
 		}
@@ -520,8 +547,8 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 			int x = 0, y = 0;
 			PictogramElement[] coiPes = fp.getAllPictogramElementsForBusinessObject(coi);
 			if (coiPes != null) {
-				x = coiPes[0].getGraphicsAlgorithm().getX();
-				y = coiPes[0].getGraphicsAlgorithm().getY();
+				x = coiPes[1].getGraphicsAlgorithm().getX();
+				y = coiPes[1].getGraphicsAlgorithm().getY();
 			}
 
 			totalWidth = java.lang.Math.max(x+16,totalWidth); // TODO Adjust size
@@ -542,11 +569,11 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 		        Element text = doc.createElement("text");
 		        coiNode.appendChild(text);
 		        text.setAttribute("x", "21");
-		        text.setAttribute("y", "13");
+		        text.setAttribute("y", "11");
 		        text.setAttribute("fill", "black");
 		        text.setAttribute("text-anchor", "start");
-		        text.setAttribute("font-size", "14pt");
-			        text.appendChild(doc.createTextNode(coi.getName()));
+		        addFontToSVG(text, getFont(coi));
+			    text.appendChild(doc.createTextNode(coi.getName()));
 		    }			
 			return 0;
 		}
@@ -766,7 +793,7 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 		public Integer caseDependency(Dependency d){
 			FreeFormConnection ffc = getDepFFC(d);
 			
-			Element depNode = doc.createElement("polyline");
+			Element depNode = doc.createElement("path");
 	        svg.appendChild(depNode);     
 	        
 	        ILocation start = Graphiti.getPeLayoutService()
@@ -787,15 +814,18 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 	        	end.setY(end.getY() + 5);
 	        }
 
-	        String points = "";
+	        String points = "m ";
+	        int prevX = start.getX();
+	        int prevY = start.getY();
 	        points = points + start.getX() + "," + start.getY() + " ";
 	        for(org.eclipse.graphiti.mm.algorithms.styles.Point p : ffc.getBendpoints()){
-	        	points = points + p.getX() + "," + p.getY() + " ";
+	        	points = points + (p.getX()-prevX) + "," + (p.getY()-prevY) + " ";
+	        	prevX = p.getX();
+	        	prevY = p.getY();
 	        }
-	        points = points + end.getX()+","+end.getY()+" ";
+	        points = points + (end.getX()-prevX) + "," + (end.getY()-prevY) + " ";
 	        
-	        
-	        depNode.setAttribute("points", points);
+	        depNode.setAttribute("d", points);
 	        depNode.setAttribute("fill", "none");
 	        depNode.setAttribute("stroke", "rgb(98, 131, 167)");
 	        depNode.setAttribute("stroke-width", "3px");
@@ -806,35 +836,57 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 		}
 		
 		public Integer caseFifo(Fifo f){
-			FreeFormConnection ffc = getFifoFFC(f);
+			Set<FreeFormConnection> ffcs = getFifoFFC(f);
 			
-			Element depNode = doc.createElement("polyline");
-	        svg.appendChild(depNode);     
-	        
-	        ILocation start = Graphiti.getPeLayoutService()
-					.getLocationRelativeToDiagram((Anchor) ffc.getStart());
-	        
-	        if(f.getSourcePort() instanceof DataOutputPort)
-	        	start.setY(start.getY() + 5);
-	        
-	        ILocation end   = Graphiti.getPeLayoutService()
-					.getLocationRelativeToDiagram((Anchor) ffc.getEnd());
-	        
-	        if(f.getTargetPort() instanceof DataInputPort)
-	        	end.setY(end.getY() + 5);
-	        
-	        String points = "";
-	        points = points + start.getX() + "," + start.getY() + " ";
-	        for(org.eclipse.graphiti.mm.algorithms.styles.Point p : ffc.getBendpoints()){
-	        	points = points + p.getX() + "," + p.getY() + " ";
-	        }
-	        points = points + end.getX()+","+end.getY()+" ";
-	        
-	        depNode.setAttribute("points", points);
-	        depNode.setAttribute("fill", "none");
-	        depNode.setAttribute("stroke", "rgb(100, 100, 100)");
-	        depNode.setAttribute("stroke-width", "3px");
-	        depNode.setAttribute("marker-end", "url(#fifoEnd)");		        
+			for(FreeFormConnection ffc : ffcs){
+				Element depNode = doc.createElement("path");
+		        svg.appendChild(depNode);     
+		        
+		        ILocation start = Graphiti.getPeLayoutService()
+						.getLocationRelativeToDiagram((Anchor) ffc.getStart());
+		        
+		        if(f.getSourcePort() instanceof DataOutputPort)
+		        	start.setY(start.getY() + 5);
+		        
+		        ILocation end   = Graphiti.getPeLayoutService()
+						.getLocationRelativeToDiagram((Anchor) ffc.getEnd());
+		        
+		        if(f.getTargetPort() instanceof DataInputPort)
+		        	end.setY(end.getY() + 5);
+		        
+		        String points = "m ";
+		        int prevX = start.getX();
+		        int prevY = start.getY();
+		        points = points + start.getX() + "," + start.getY() + " ";
+		        for(org.eclipse.graphiti.mm.algorithms.styles.Point p : ffc.getBendpoints()){
+		        	points = points + (p.getX()-prevX) + "," + (p.getY()-prevY) + " ";
+		        	prevX = p.getX();
+		        	prevY = p.getY();
+		        }
+		        points = points + (end.getX()-prevX) + "," + (end.getY()-prevY) + " ";
+
+		        depNode.setAttribute("d", points);
+		        depNode.setAttribute("fill", "none");
+		        depNode.setAttribute("stroke", "rgb(100, 100, 100)");
+		        depNode.setAttribute("stroke-width", "3px");
+		        depNode.setAttribute("marker-end", "url(#fifoEnd)");		  
+			}
+			
+			if(f.getDelay() != null){
+				PictogramElement[] pes = fp.getAllPictogramElementsForBusinessObject(f.getDelay());
+				Ellipse delay = (Ellipse)(pes[0].getGraphicsAlgorithm());
+				
+				Element circle = doc.createElement("circle"); 
+		        svg.appendChild(circle);
+		        circle.setAttribute("cx", ""+(delay.getX()+12));
+		        circle.setAttribute("cy", ""+(delay.getY()+12));
+		        circle.setAttribute("r", "8");
+		        circle.setAttribute("fill","rgb(100,100,100)");
+		        circle.setAttribute("stroke", "rgb(100,100,100)");
+		        circle.setAttribute("stroke-width", "1px");
+		        
+				pes[0].getLink();
+			}
 		      			
 			return 0;
 		}

@@ -38,15 +38,19 @@ package org.ietr.preesm.memory.exclusiongraph;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import org.eclipse.xtext.util.Pair;
 import org.ietr.dftools.algorithm.model.AbstractEdge;
 import org.ietr.dftools.algorithm.model.AbstractVertex;
+import org.ietr.dftools.algorithm.model.PropertyBean;
 import org.ietr.dftools.algorithm.model.PropertyFactory;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
+import org.ietr.preesm.memory.script.Range;
 
 /**
  * MemoryExclusionVertex is used to represent vertices in the Exclusion graph.
@@ -68,14 +72,22 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 * Property of the {@link MemoryExclusionVertex}. The object associated to
 	 * this property is:<br>
 	 * <code>
-	 * List&lt;Pair&lt;MemoryExclusionVertex,Pair&lt;Range,Range&gt;&gt;</code><br>
+	 * List&lt;Pair&lt;MemoryExclusionVertex,Pair&lt;Range,Range&gt;&gt;</code>
+	 * <br>
 	 * This {@link List} stores {@link Pair} of {@link MemoryExclusionVertex}
 	 * and {@link Pair}. Each {@link Pair} corresponds to a {@link Range} of
 	 * real tokens of the memory object and their position in the actual
 	 * {@link MemoryExclusionVertex} (i.e. the key of the first {@link Pair}).
+	 * <br>
+	 * For the host memory object, this property gives the position of the range
+	 * of bytes of the host within the memory allocated for it.<br>
+	 * For hosted memory object, this property gives the position of the
+	 * range(s) of bytes of the hosted memory object relatively to the position
+	 * of the 0 index of the host memory object within the memory allocated for
+	 * it.
 	 */
 	public static final String REAL_TOKEN_RANGE_PROPERTY = "real_token_range";
-	
+
 	/**
 	 * Property of the {@link MemoryExclusionVertex}. The object associated to
 	 * this property is:<br>
@@ -111,7 +123,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 * property is set after the memory script execution.
 	 */
 	public static final String EMPTY_SPACE_BEFORE = "empty_space_before";
-	
+
 	/**
 	 * Property of the {@link MemoryExclusionVertex}. The object associated to
 	 * this property is an {@link Integer} that corresponds to the size in bytes
@@ -122,7 +134,16 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 * {@link MemoryExclusionVertex} are merged.
 	 */
 	public static final String HOST_SIZE = "host_size";
-	
+
+	/**
+	 * Property associated to {@link MemoryExclusionVertex} that are divided as
+	 * a result of the application of memory scripts. The object associated to
+	 * this property is a {@link List} of {@link MemoryExclusionVertex} that
+	 * corresponds to the {@link MemoryExclusionVertex} in which the parts of
+	 * the divided {@link MemoryExclusionVertex} will be merged.
+	 */
+	public static final String DIVIDED_PARTS_HOSTS = "divided_parts_hosts";
+
 	/**
 	 * This Map is used as a reference of dataTypes size when creating an vertex
 	 * from a DAGEdge
@@ -200,8 +221,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 		sink = inputEdge.getTarget().getName();
 
 		if (inputEdge.getPropertyBean().getValue("explodeName") != null) {
-			explodeImplode = inputEdge.getPropertyBean()
-					.getValue("explodeName").toString();
+			explodeImplode = inputEdge.getPropertyBean().getValue("explodeName").toString();
 		} else {
 			explodeImplode = "";
 		}
@@ -299,8 +319,8 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof MemoryExclusionVertex) {
-			return (this.source.equals(((MemoryExclusionVertex) o).source) && this.sink
-					.equals(((MemoryExclusionVertex) o).sink));
+			return (this.source.equals(((MemoryExclusionVertex) o).source)
+					&& this.sink.equals(((MemoryExclusionVertex) o).sink));
 		} else {
 			return false;
 		}
@@ -312,6 +332,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 		copy = new MemoryExclusionVertex(this.source, this.sink, this.size);
 		copy.setIdentifier(getIdentifier());
 		copy.edge = this.edge;
+		copy.explodeImplode = this.explodeImplode;
 		return copy;
 	}
 
@@ -367,8 +388,8 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	}
 
 	/**
-	 * Method added to enable the use of contains() method in
-	 * Set<MemoryExclusionVertex>
+	 * Method added to enable the use of contains() method in Set
+	 * <MemoryExclusionVertex>
 	 */
 	@Override
 	public int hashCode() {

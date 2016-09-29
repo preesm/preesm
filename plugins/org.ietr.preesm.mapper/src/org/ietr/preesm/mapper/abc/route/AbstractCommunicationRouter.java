@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAG;
@@ -125,4 +126,9 @@ public abstract class AbstractCommunicationRouter {
 	 * Evaluates the cost of a routed edge
 	 */
 	public abstract long evaluateTransferCost(MapperDAGEdge edge);
+
+	/**
+	 * Gets the route of a routed edge
+	 */
+	public abstract Route getRoute(MapperDAGEdge edge);
 }

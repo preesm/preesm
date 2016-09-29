@@ -80,9 +80,7 @@ public class MemoryBoundsEstimator extends AbstractMemoryBoundsEstimator {
 		int maxBound = engine.getMaxBound();
 
 		logger.log(Level.INFO, "Bound_Max = " + maxBound + " Bound_Min = "
-				+ minBound);
-		System.out.println(minBound+";");
-		
+				+ minBound);		
 
 		// Generate output
 		Map<String, Object> output = new HashMap<String, Object>();

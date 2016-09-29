@@ -37,6 +37,7 @@ package org.ietr.preesm.memory.multiSDFTasks;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -45,62 +46,97 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.ietr.preesm.memory.allocation.MemoryAllocator;
+import org.ietr.preesm.memory.distributed.Distributor;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 
 public class MultiMemoryAllocator extends AbstractMemoryAllocatorTask {
 
 	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+	public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
+			IProgressMonitor monitor, String nodeName, Workflow workflow) throws WorkflowException {
 		this.init(parameters);
 
 		// Retrieve the input of the task
 		@SuppressWarnings("unchecked")
 		Map<DirectedAcyclicGraph, MemoryExclusionGraph> dagsAndMemExs = (Map<DirectedAcyclicGraph, MemoryExclusionGraph>) inputs
 				.get(KEY_DAG_AND_MEM_EX_MAP);
-		
-		for (DirectedAcyclicGraph dag : dagsAndMemExs.keySet()) {
+
+		for (DirectedAcyclicGraph dag : dagsAndMemExs.keySet()) {// Prepare the MEG with the alignment
 			MemoryExclusionGraph memEx = dagsAndMemExs.get(dag);
-			
-			// Prepare the MEG with the alignment
 			MemoryAllocator.alignSubBuffers(memEx, alignment);
-	
-			createAllocators(memEx);
-	
-			// Heat up the neighborsBackup
-			if (verbose) {
-				logger.log(Level.INFO, "Heat up MemEx");
-			}
-			for (MemoryExclusionVertex vertex : memEx.vertexSet()) {
-				memEx.getAdjacentVertexOf(vertex);
-			}
-	
-			StringBuilder csv = new StringBuilder();
-	
-			for (MemoryAllocator allocator : allocators) {
-				this.allocateWith(allocator, csv);
+
+			// Get total number of vertices before distribution
+			int nbVerticesBeforeDistribution = memEx.getTotalNumberOfVertices();
+
+			// Create several MEGs according to the selected distribution policy
+			// Each created MEG corresponds to a single memory bank
+			// Log the distribution policy used
+			if (verbose && !valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)) {
+				logger.log(Level.INFO, "Split MEG with " + valueDistribution + " policy");
 			}
 			
-			System.out.println(csv);
-		}
-		
+			// Do the distribution
+			Map<String, MemoryExclusionGraph> megs = Distributor.distributeMeg(valueDistribution, memEx, alignment);
+			
+			// Log results
+			if (verbose && !valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)) {
+				logger.log(Level.INFO, "Created " + megs.keySet().size() + " MemExes");
+				for (Entry<String, MemoryExclusionGraph> entry : megs.entrySet()) {
+					double density = entry.getValue().edgeSet().size()
+							/ (entry.getValue().vertexSet().size() * (entry.getValue().vertexSet().size() - 1) / 2.0);
+					logger.log(Level.INFO, "Memex(" + entry.getKey() + "): " + entry.getValue().vertexSet().size()
+							+ " vertices, density=" + density + ":: " + entry.getValue().getTotalSetOfVertices());
+				}
+			}
+
+			// Get total number of vertices before distribution
+			int nbVerticesAfterDistribution = memEx.getTotalNumberOfVertices();
+			final int nbVerticesInMegs[] = { 0 };
+			megs.forEach((bank, meg) -> {
+				nbVerticesInMegs[0] += meg.getTotalNumberOfVertices();
+			});
+
+			// Check that the total number of vertices is unchanged
+			if (!valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)
+					&& (nbVerticesBeforeDistribution != nbVerticesAfterDistribution
+							|| nbVerticesBeforeDistribution != nbVerticesInMegs[0])) {
+				logger.log(Level.SEVERE,
+						"Problem in the MEG distribution, some memory objects were lost during the distribution.\n"
+								+ "Contact Preesm developers to solve this issue.");
+			}
+
+			for(Entry<String,MemoryExclusionGraph> entry : megs.entrySet()) {
+				
+				String memoryBank = entry.getKey();
+				MemoryExclusionGraph meg = entry.getValue();
+				
+				createAllocators(meg);
+				
+				if (verbose) {
+					logger.log(Level.INFO, "Heat up MemEx for " + memoryBank +" memory bank." );
+				}
+				for (MemoryExclusionVertex vertex : meg.vertexSet()) {
+					meg.getAdjacentVertexOf(vertex);
+				}
+
+				for (MemoryAllocator allocator : allocators) {
+					this.allocateWith(allocator);
+				}
+			}}
+
 		Map<String, Object> output = new HashMap<String, Object>();
 		output.put(KEY_DAG_AND_MEM_EX_MAP, dagsAndMemExs);
 		return output;
 	}
-
+	
 	@Override
 	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put(PARAM_VERBOSE, VALUE_TRUE_FALSE_DEFAULT);
-		parameters.put(PARAM_ALLOCATORS, VALUE_ALLOCATORS_DEFAULT);
-		parameters.put(PARAM_XFIT_ORDER, VALUE_XFIT_ORDER_DEFAULT);
-		parameters.put(PARAM_NB_SHUFFLE, VALUE_NB_SHUFFLE_DEFAULT);
-		parameters.put(PARAM_ALIGNMENT, VALUE_ALIGNEMENT_DEFAULT);
-		return parameters;
+		// This useless method must be copied here because inheritance link
+		// does not work when getting the parameter lists.
+		return super.getDefaultParameters();
 	}
+
 
 	@Override
 	public String monitorMessage() {

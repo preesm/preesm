@@ -78,12 +78,13 @@ public class CodegenTask extends AbstractTaskImplementation {
 		// Retrieve inputs
 		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 		Design archi = (Design) inputs.get("architecture");
-		MemoryExclusionGraph memEx = (MemoryExclusionGraph) inputs.get("MemEx");
+		@SuppressWarnings("unchecked")
+		Map<String,MemoryExclusionGraph> megs = (Map<String,MemoryExclusionGraph>) inputs.get("MEGs");
 		DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 
 		// Generate intermediate model
 		CodegenModelGenerator generator = new CodegenModelGenerator(archi, dag,
-				memEx, scenario, workflow);
+				megs, scenario, workflow);
 
 		List<Block> codeBlocks = new ArrayList<>(generator.generate());
 

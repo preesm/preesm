@@ -40,8 +40,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.ietr.dftools.algorithm.model.dag.DAGEdge;
-import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.preesm.memory.bounds.AbstractMaximumWeightCliqueSolver;
 import org.ietr.preesm.memory.bounds.HeuristicSolver;
 import org.ietr.preesm.memory.bounds.OstergardSolver;
@@ -160,66 +158,17 @@ public abstract class OrderedAllocator extends MemoryAllocator {
 			return;
 		}
 
-		// Retrieve the DAG vertices in scheduling order
-		List<DAGVertex> dagVertices = inputExclusionGraph
-				.getDagVerticesInSchedulingOrder();
-		if (dagVertices == null) {
+		// Retrieve the memEx vertices in scheduling order
+		List<MemoryExclusionVertex> memExVerticesInSchedulingOrder  = inputExclusionGraph
+				.getMemExVerticesInSchedulingOrder();
+		if (memExVerticesInSchedulingOrder == null) {
 			throw new RuntimeException(
 					"Cannot allocate MemEx in scheduling order"
 							+ " because the MemEx was not updated with a schedule.");
 		}
-
-		// Create a List of MemEx Vertices
-		List<MemoryExclusionVertex> memExVertices = new ArrayList<MemoryExclusionVertex>(
-				inputExclusionGraph.vertexSet());
-		// scan the dag vertices to retrieve the MemEx vertices in Scheduling
-		// order
-		List<MemoryExclusionVertex> memExVerticesInSchedulingOrder = new ArrayList<MemoryExclusionVertex>(
-				inputExclusionGraph.vertexSet().size());
-
-		/** Begin by putting all FIFO related Memory objects (if any) */
-		for (MemoryExclusionVertex vertex : inputExclusionGraph.vertexSet()) {
-			if (vertex.getSource().startsWith("FIFO_Head_")
-					|| vertex.getSource().startsWith("FIFO_Body_")) {
-				memExVerticesInSchedulingOrder.add(vertex);
-			}
-		}
-
-		for (DAGVertex vertex : dagVertices) {
-			/** 1- Retrieve the Working Memory MemEx Vertex (if any) */
-			{
-				// Re-create the working memory exclusion vertex (weight does
-				// not matter to find the vertex in the Memex)
-				MemoryExclusionVertex wMemVertex = new MemoryExclusionVertex(
-						vertex.getName(), vertex.getName(), 0);
-				int index;
-				if ((index = memExVertices.indexOf(wMemVertex)) != -1) {
-					// The working memory exists
-					memExVerticesInSchedulingOrder
-							.add(memExVertices.get(index));
-				}
-			}
-
-			/** 2- Retrieve the MemEx Vertices of outgoing edges (if any) */
-			{
-				for (DAGEdge outgoingEdge : vertex.outgoingEdges()) {
-					if (outgoingEdge.getTarget().getPropertyBean()
-							.getValue("vertexType").toString().equals("task")) {
-						MemoryExclusionVertex edgeVertex = new MemoryExclusionVertex(
-								outgoingEdge);
-						int index;
-						if ((index = memExVertices.indexOf(edgeVertex)) != -1) {
-							// The working memory exists
-							memExVerticesInSchedulingOrder.add(memExVertices
-									.get(index));
-						} else {
-							throw new RuntimeException("Missing MemEx Vertex: "
-									+ edgeVertex);
-						}
-					}
-				}
-			}
-		}
+		
+		// Remove hosted vertices from the memEx list in scheduling order
+		memExVerticesInSchedulingOrder.retainAll(inputExclusionGraph.vertexSet());
 
 		// Do the allocation
 		allocateInOrder(memExVerticesInSchedulingOrder);

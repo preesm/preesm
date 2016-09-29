@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Preesm memory Plug-in
 Bundle-SymbolicName: org.ietr.preesm.memory;singleton:=true
-Bundle-Version: 2.2.3.qualifier
+Bundle-Version: 2.2.4
 Bundle-Activator: org.ietr.preesm.memory.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.ietr.dftools.workflow;bundle-version="0.0.1",
@@ -22,6 +22,7 @@ Bundle-Vendor: IETR/INSA Rennes
 Bundle-ClassPath: lib/bsh-2.1.7.jar,.
 Export-Package: org.ietr.preesm.memory.allocation,
  org.ietr.preesm.memory.bounds,
+ org.ietr.preesm.memory.distributed,
  org.ietr.preesm.memory.exclusiongraph,
  org.ietr.preesm.memory.multiSDFTasks,
  org.ietr.preesm.memory.script

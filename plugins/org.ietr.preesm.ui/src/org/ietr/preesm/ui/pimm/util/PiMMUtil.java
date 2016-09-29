@@ -63,7 +63,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
-import org.eclipse.ui.dialogs.FileSelectionDialog;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.ui.pimm.diagram.PiMMToolBehaviorProvider;

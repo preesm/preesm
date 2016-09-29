@@ -193,7 +193,7 @@ public class ExcelTimingParser {
 
 						try {
 							Timing timing = new Timing(opDefId, vertexName,
-									Integer.valueOf(timingCell.getContents()));
+									Long.valueOf(timingCell.getContents()));
 
 							scenario.getTimingManager().addTiming(timing);
 

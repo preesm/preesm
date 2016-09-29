@@ -71,8 +71,8 @@ public class SDFExporter extends AbstractTaskImplementation {
 				ContainersManager.createMissingFolders(xmlPath);
 				xmlPath = xmlPath.append(algorithm.getName() + ".graphml");
 			}
-		} catch (CoreException e) {
-			throw new WorkflowException("Path " + sXmlPath + " is not a valid path for export.");
+		} catch (CoreException | IllegalArgumentException e) {
+			throw new WorkflowException("Path " + sXmlPath + " is not a valid path for export.\n" + e.getMessage());
 		}
 		
 		SDF2GraphmlExporter exporter = new SDF2GraphmlExporter();

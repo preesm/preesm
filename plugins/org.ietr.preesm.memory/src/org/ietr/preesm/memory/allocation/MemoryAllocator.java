@@ -38,6 +38,7 @@ package org.ietr.preesm.memory.allocation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -89,11 +90,12 @@ public abstract class MemoryAllocator {
 	 *            {@link MemoryExclusionVertex} might be modified by this
 	 *            method.
 	 * @param alignment
-	 *            <li><b>{@link #alignment}=-1</b>: Data should not be aligned.</li>
-	 *            <li>
-	 *            <b>{@link #alignment}= 0</b>: Data should be aligned according
-	 *            to its own type. For example, an array of int32 should begin
-	 *            at an offset (i.e. an address) that is a multiple of 4.</li>
+	 *            <li><b>{@link #alignment}=-1</b>: Data should not be aligned.
+	 *            </li>
+	 *            <li><b>{@link #alignment}= 0</b>: Data should be aligned
+	 *            according to its own type. For example, an array of int32
+	 *            should begin at an offset (i.e. an address) that is a multiple
+	 *            of 4.</li>
 	 *            <li><b>{@link #alignment}= N</b>: All data should be aligned
 	 *            to the given value N. This means that all arrays will begin at
 	 *            an offset that is a multiple of N. It does not mean that ALL
@@ -103,19 +105,32 @@ public abstract class MemoryAllocator {
 	 * @return the total amount of memory added to the
 	 *         {@link MemoryExclusionVertex}
 	 */
+	@SuppressWarnings("unchecked")
 	public static int alignSubBuffers(MemoryExclusionGraph meg, int alignment) {
 		int addedSpace = 0;
 		if (alignment != -1) {
+
+			// Build a list of all MObject of the graph, including merged ones
+			Set<MemoryExclusionVertex> allMObjects = new HashSet<MemoryExclusionVertex>();
+			allMObjects.addAll(meg.vertexSet());
+			// Include merged Mobjects (if any)
+			Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostMap = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) meg
+					.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+			if (hostMap != null) {
+				for (Set<MemoryExclusionVertex> mergedMOBjects : hostMap.values()) {
+					allMObjects.addAll(mergedMOBjects);
+				}
+			}
+
 			// Scan the vertices of the graph
-			for (MemoryExclusionVertex memObj : meg.vertexSet()) {
+			for (MemoryExclusionVertex memObj : allMObjects) {
 				// Check alignment of DAGEdge (that may involve subbuffers)
 				// other memory objects can be ignored in this method.
 				DAGEdge edge = memObj.getEdge();
 				if (edge != null) {
 
-					BufferAggregate buffers = (BufferAggregate) edge
-							.getPropertyBean().getValue(
-									BufferAggregate.propertyBeanName);
+					BufferAggregate buffers = (BufferAggregate) edge.getPropertyBean()
+							.getValue(BufferAggregate.propertyBeanName);
 					Iterator<BufferProperties> iter = buffers.iterator();
 
 					List<Integer> interBufferSpaces = new ArrayList<Integer>();
@@ -124,16 +139,16 @@ public abstract class MemoryAllocator {
 					while (iter.hasNext()) {
 						BufferProperties properties = iter.next();
 						String dataType = properties.getDataType();
-						DataType type = MemoryExclusionVertex._dataTypes
-								.get(dataType);
+						DataType type = MemoryExclusionVertex._dataTypes.get(dataType);
 						int typeSize;
 						// A proper type was not set for the considered edge
-						if(type == null){
-							WorkflowLogger.getLogger().log(
-									Level.SEVERE, "No valid data type was found on an edge between actors " + edge.getSource().getName() + " and " + edge.getTarget().getName() + ".\nCheck the edge in the graph editor and the declared types in the scenario.");
+						if (type == null) {
+							WorkflowLogger.getLogger().log(Level.SEVERE,
+									"No valid data type was found on an edge between actors "
+											+ edge.getSource().getName() + " and " + edge.getTarget().getName()
+											+ ".\nCheck the edge in the graph editor and the declared types in the scenario.");
 							typeSize = 1;
-						}
-						else{
+						} else {
 							typeSize = type.getSize();
 						}
 						largestTypeSize = Math.max(typeSize, largestTypeSize);
@@ -155,24 +170,20 @@ public abstract class MemoryAllocator {
 						}
 
 						interBufferSpaces.add(interSpace);
-						internalOffset += interSpace + typeSize
-								* properties.getSize();
+						internalOffset += interSpace + typeSize * properties.getSize();
 					}
 
 					// Update the size of the memObject and add the interbuffer
 					// space if it does not contain with 0.
 					if (internalOffset - memObj.getWeight() > 0) {
-						memObj.setPropertyValue(
-								MemoryExclusionVertex.INTER_BUFFER_SPACES,
-								interBufferSpaces);
+						memObj.setPropertyValue(MemoryExclusionVertex.INTER_BUFFER_SPACES, interBufferSpaces);
 						addedSpace += internalOffset - memObj.getWeight();
 						memObj.setWeight(internalOffset);
 					}
 					// Backup the largest typeSize contained in the aggregate.
 					// This information will be used to align the memObject
 					// during allocation
-					memObj.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE,
-							largestTypeSize);
+					memObj.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE, largestTypeSize);
 				}
 			}
 		}
@@ -209,13 +220,14 @@ public abstract class MemoryAllocator {
 	 * aligned in memory.<br>
 	 * The following configurations are valid:<br>
 	 * 
-	 * <li><b>{@link #alignment}=-1</b>: Data should not be aligned.</li> <li>
-	 * <b>{@link #alignment}= 0</b>: Data should be aligned according to its own
-	 * type. For example, an array of int32 should begin at an offset (i.e. an
-	 * address) that is a multiple of 4.</li> <li><b>{@link #alignment}= N</b>:
-	 * All data should be aligned to the given value N. This means that all
-	 * arrays will begin at an offset that is a multiple of N. It does not mean
-	 * that ALL array elements are aligned on N, only the first element.</li>
+	 * <li><b>{@link #alignment}=-1</b>: Data should not be aligned.</li>
+	 * <li><b>{@link #alignment}= 0</b>: Data should be aligned according to its
+	 * own type. For example, an array of int32 should begin at an offset (i.e.
+	 * an address) that is a multiple of 4.</li>
+	 * <li><b>{@link #alignment}= N</b>: All data should be aligned to the given
+	 * value N. This means that all arrays will begin at an offset that is a
+	 * multiple of N. It does not mean that ALL array elements are aligned on N,
+	 * only the first element.</li>
 	 */
 	protected int alignment;
 
@@ -338,13 +350,9 @@ public abstract class MemoryAllocator {
 		memExNodeAllocation = new HashMap<MemoryExclusionVertex, Integer>();
 		inputExclusionGraph = memEx;
 
-		inputExclusionGraph.setPropertyValue(
-				MemoryExclusionGraph.DAG_EDGE_ALLOCATION, edgeAllocation);
-		inputExclusionGraph.setPropertyValue(
-				MemoryExclusionGraph.DAG_FIFO_ALLOCATION, fifoAllocation);
-		inputExclusionGraph.setPropertyValue(
-				MemoryExclusionGraph.WORKING_MEM_ALLOCATION,
-				workingMemAllocation);
+		inputExclusionGraph.setPropertyValue(MemoryExclusionGraph.DAG_EDGE_ALLOCATION, edgeAllocation);
+		inputExclusionGraph.setPropertyValue(MemoryExclusionGraph.DAG_FIFO_ALLOCATION, fifoAllocation);
+		inputExclusionGraph.setPropertyValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION, workingMemAllocation);
 		alignment = -1;
 	}
 
@@ -397,25 +405,20 @@ public abstract class MemoryAllocator {
 			fifoAllocation.put(vertex, offset);
 		}
 
-		vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
-				offset);
+		vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, offset);
 		Integer size = (Integer) inputExclusionGraph.getPropertyBean()
-				.getValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE,
-						Integer.class);
+				.getValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE, Integer.class);
 		if (size == null || size < offset + vertex.getWeight()) {
-			inputExclusionGraph.setPropertyValue(
-					MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE,
+			inputExclusionGraph.setPropertyValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE,
 					offset + vertex.getWeight());
 		}
 
 		// If the allocated memory object is the result from a merge
 		// do the specific processing.
 		Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostMap = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) inputExclusionGraph
-				.getPropertyBean().getValue(
-						MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+				.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
 		if (hostMap != null && hostMap.containsKey(vertex)) {
-			allocateHostMemoryObject(vertex,
-					hostMap.get(vertex), offset);
+			allocateHostMemoryObject(vertex, hostMap.get(vertex), offset);
 		}
 	}
 
@@ -440,18 +443,16 @@ public abstract class MemoryAllocator {
 	 * @param offset
 	 *            the offset of the hostVertex
 	 */
-	protected void allocateHostMemoryObject(MemoryExclusionVertex hostVertex,
-			Set<MemoryExclusionVertex> vertices, int offset) {
+	protected void allocateHostMemoryObject(MemoryExclusionVertex hostVertex, Set<MemoryExclusionVertex> vertices,
+			int offset) {
 		// 1 - Put back all hosted mobj in the meg (with their exclusions)
 		// 2 - Put the host Mobj back to its original size and exclusions
 		@SuppressWarnings("unchecked")
 		Pair<MemoryExclusionVertex, Pair<Range, Range>> hostRealTokenRange = ((List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) hostVertex
-				.getPropertyBean().getValue(
-						MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY))
-				.get(0);
-		
+				.getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY)).get(0);
+
 		int hostZeroIndexOffset = hostRealTokenRange.getValue().getValue().getStart();
-		
+
 		// 1- Put back all hosted mobj in the meg (with their exclusions)
 		{
 			// For each vertex of the group
@@ -460,46 +461,33 @@ public abstract class MemoryAllocator {
 				// Get its offset within the host vertex
 				@SuppressWarnings("unchecked")
 				List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realTokenRange = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) vertex
-						.getPropertyBean()
-						.getValue(
-								MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+						.getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
 
 				@SuppressWarnings("unchecked")
-				List<MemoryExclusionVertex> neighbors = (List<MemoryExclusionVertex>) vertex
-						.getPropertyBean().getValue(
-								MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
-
-				
-				
+				List<MemoryExclusionVertex> neighbors = (List<MemoryExclusionVertex>) vertex.getPropertyBean()
+						.getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
 
 				// If the Mobject is not splitted
 				if (realTokenRange.size() == 1) {
-					int startOffset = realTokenRange.get(0).getValue()
-							.getValue().getStart();
-					
-					// Compute the space that must be left empty before the 
+					int startOffset = realTokenRange.get(0).getValue().getValue().getStart();
+
+					// Compute the space that must be left empty before the
 					// allocated space to ensure that the MObject has its own
 					// cache line.
 					int emptySpace = 0;
-					if (alignment > 0
-							&& (offset + startOffset + hostZeroIndexOffset)
-									% alignment != 0) {
-						emptySpace = (offset + startOffset + hostZeroIndexOffset)
-								% alignment;
+					if (alignment > 0 && (offset + startOffset + hostZeroIndexOffset) % alignment != 0) {
+						emptySpace = (offset + startOffset + hostZeroIndexOffset) % alignment;
 					}
 					vertex.setPropertyValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE, emptySpace);
-					// Enlarge the weight of the vertex to include the empty space
-					vertex.setWeight(vertex.getWeight()+emptySpace);
-					
+					// Enlarge the weight of the vertex to include the empty
+					// space
+					vertex.setWeight(vertex.getWeight() + emptySpace);
+
 					// Allocate it at the right place
-					memExNodeAllocation.put(vertex, offset + startOffset
-							+ hostZeroIndexOffset - emptySpace);
-					edgeAllocation.put(vertex.getEdge(), offset + startOffset
-							+ hostZeroIndexOffset - emptySpace);
-					vertex.setPropertyValue(
-							MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
-							offset + startOffset + hostZeroIndexOffset
-									- emptySpace);
+					memExNodeAllocation.put(vertex, offset + startOffset + hostZeroIndexOffset - emptySpace);
+					edgeAllocation.put(vertex.getEdge(), offset + startOffset + hostZeroIndexOffset - emptySpace);
+					vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
+							offset + startOffset + hostZeroIndexOffset - emptySpace);
 
 					// Put the MObject Back in the MEG
 					inputExclusionGraph.addVertex(vertex);
@@ -508,8 +496,7 @@ public abstract class MemoryAllocator {
 					for (MemoryExclusionVertex neighbor : neighbors) {
 						// If the neighbor is not part of the same merge
 						// operation
-						if (!vertices.contains(neighbor)
-								&& neighbor != hostVertex) {
+						if (!vertices.contains(neighbor) && neighbor != hostVertex) {
 							// Restore its old exclusions
 							if (inputExclusionGraph.containsVertex(neighbor)) {
 								inputExclusionGraph.addEdge(vertex, neighbor);
@@ -527,17 +514,14 @@ public abstract class MemoryAllocator {
 					// Allocate it at index -1
 					memExNodeAllocation.put(vertex, -1);
 					edgeAllocation.put(vertex.getEdge(), -1);
-					vertex.setPropertyValue(
-							MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, -1);
+					vertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, -1);
 					inputExclusionGraph.addVertex(vertex);
 					vertex.setPropertyValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE, -1);
 
 					// Put a fake MObject in the MEG for each subrange
 					@SuppressWarnings("unchecked")
 					List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> realRanges = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) vertex
-							.getPropertyBean()
-							.getValue(
-									MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+							.getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
 
 					int indexPart = 0;
 					// For each contiguous range
@@ -550,37 +534,33 @@ public abstract class MemoryAllocator {
 							// Get host range
 							Range hostRange = realRange.getValue().getValue();
 							int startOffset = hostRange.getStart();
-							
+
 							// Create new fake Mobj
 							MemoryExclusionVertex fakeMObj = new MemoryExclusionVertex(
-									"part" + indexPart + "_"
-											+ vertex.getSource(),
-									vertex.getSink(), hostRange.getLength());
-							
-							// Compute the space that must be left empty before the 
-							// allocated space to ensure that the MObject has its own
+									"part" + indexPart + "_" + vertex.getSource(), vertex.getSink(),
+									hostRange.getLength());
+
+							// Compute the space that must be left empty before
+							// the
+							// allocated space to ensure that the MObject has
+							// its own
 							// cache line.
 							int emptySpace = 0;
-							if(alignment > 0 && (offset + startOffset
-									+ hostZeroIndexOffset) % alignment != 0) {
-								emptySpace = (offset + startOffset
-										+ hostZeroIndexOffset) % alignment;
+							if (alignment > 0 && (offset + startOffset + hostZeroIndexOffset) % alignment != 0) {
+								emptySpace = (offset + startOffset + hostZeroIndexOffset) % alignment;
 							}
 							fakeMObj.setPropertyValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE, emptySpace);
-							// Enlarge the weight of the vertex to include the empty space
-							fakeMObj.setWeight(fakeMObj.getWeight()+emptySpace);
+							// Enlarge the weight of the vertex to include the
+							// empty space
+							fakeMObj.setWeight(fakeMObj.getWeight() + emptySpace);
 
 							// Allocate the fake Mobject
 							// (in order to be considered when checking for
 							// exclusions)
-							
-							memExNodeAllocation.put(fakeMObj, offset
-									+ startOffset + hostZeroIndexOffset
-									- emptySpace);
-							fakeMObj.setPropertyValue(
-									MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
-									offset + startOffset + hostZeroIndexOffset
-											- emptySpace);
+
+							memExNodeAllocation.put(fakeMObj, offset + startOffset + hostZeroIndexOffset - emptySpace);
+							fakeMObj.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY,
+									offset + startOffset + hostZeroIndexOffset - emptySpace);
 
 							// Put the Fake MObject in the MEG
 							inputExclusionGraph.addVertex(fakeMObj);
@@ -589,13 +569,10 @@ public abstract class MemoryAllocator {
 							// deallocation purpose)
 							@SuppressWarnings("unchecked")
 							List<MemoryExclusionVertex> fakeMobjects = (List<MemoryExclusionVertex>) vertex
-									.getPropertyBean().getValue(
-											MemoryExclusionVertex.FAKE_MOBJECT);
+									.getPropertyBean().getValue(MemoryExclusionVertex.FAKE_MOBJECT);
 							if (fakeMobjects == null) {
 								fakeMobjects = new ArrayList<MemoryExclusionVertex>();
-								vertex.setPropertyValue(
-										MemoryExclusionVertex.FAKE_MOBJECT,
-										fakeMobjects);
+								vertex.setPropertyValue(MemoryExclusionVertex.FAKE_MOBJECT, fakeMobjects);
 							}
 							fakeMobjects.add(fakeMObj);
 
@@ -603,19 +580,15 @@ public abstract class MemoryAllocator {
 							for (MemoryExclusionVertex neighbor : neighbors) {
 								// If the neighbor is not part of the same merge
 								// operation
-								if (!vertices.contains(neighbor)
-										&& neighbor != hostVertex) {
+								if (!vertices.contains(neighbor) && neighbor != hostVertex) {
 									// Restore its old exclusions
-									if (inputExclusionGraph
-											.containsVertex(neighbor)) {
-										inputExclusionGraph.addEdge(fakeMObj,
-												neighbor);
+									if (inputExclusionGraph.containsVertex(neighbor)) {
+										inputExclusionGraph.addEdge(fakeMObj, neighbor);
 									} else {
 										// The neighbor is not in the graph, it
 										// must be
 										// hosted by another mObject or divided.
-										excludeWithHostedNeighbor(fakeMObj,
-												neighbor);
+										excludeWithHostedNeighbor(fakeMObj, neighbor);
 									}
 								}
 							}
@@ -626,36 +599,31 @@ public abstract class MemoryAllocator {
 				}
 			}
 		}
-		
+
 		// 2 - Put the host Mobj back to its original size and exclusions
 		{
 			// Backup the host size
-			hostVertex.setPropertyValue(MemoryExclusionVertex.HOST_SIZE,
-					hostVertex.getWeight());
-			
+			hostVertex.setPropertyValue(MemoryExclusionVertex.HOST_SIZE, hostVertex.getWeight());
+
 			// Put it back to its real size
 			hostVertex.setWeight(hostRealTokenRange.getValue().getValue().getLength());
 
 			// Allocate it at the right place (replace old value)
-			// (no empty space for host since their alignment with range start 
+			// (no empty space for host since their alignment with range start
 			// is taken care of in meg update with script)
 			memExNodeAllocation.put(hostVertex, offset + hostZeroIndexOffset);
-			edgeAllocation.put(hostVertex.getEdge(), offset
-					+ hostZeroIndexOffset);
-			hostVertex.setPropertyValue(
-					MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, offset
-							+ hostZeroIndexOffset);
-			
+			edgeAllocation.put(hostVertex.getEdge(), offset + hostZeroIndexOffset);
+			hostVertex.setPropertyValue(MemoryExclusionVertex.MEMORY_OFFSET_PROPERTY, offset + hostZeroIndexOffset);
+
 			// Get real neighbors
 			@SuppressWarnings("unchecked")
-			List<MemoryExclusionVertex> neighbors = (List<MemoryExclusionVertex>) hostVertex
-					.getPropertyBean().getValue(
-							MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
-			
+			List<MemoryExclusionVertex> neighbors = (List<MemoryExclusionVertex>) hostVertex.getPropertyBean()
+					.getValue(MemoryExclusionVertex.ADJACENT_VERTICES_BACKUP);
+
 			// Remove all neighbors
 			inputExclusionGraph.removeVertex(hostVertex);
 			inputExclusionGraph.addVertex(hostVertex);
-			
+
 			// Put back the exclusions with all neighbors
 			for (MemoryExclusionVertex neighbor : neighbors) {
 				// If the neighbor is not part of the same merge
@@ -685,15 +653,13 @@ public abstract class MemoryAllocator {
 	 *            The {@link MemoryExclusionVertex} that is not yet in the
 	 *            {@link #inputExclusionGraph}.
 	 */
-	protected void excludeWithHostedNeighbor(MemoryExclusionVertex vertex,
-			MemoryExclusionVertex neighbor) {
+	protected void excludeWithHostedNeighbor(MemoryExclusionVertex vertex, MemoryExclusionVertex neighbor) {
 		// The neighbor is not in the graph, it must be
 		// hosted by another mObject or divided.
 		// Find the host(s)
 		@SuppressWarnings("unchecked")
 		List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> neighborHosts = (List<Pair<MemoryExclusionVertex, Pair<Range, Range>>>) neighbor
-				.getPropertyBean().getValue(
-						MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
+				.getPropertyBean().getValue(MemoryExclusionVertex.REAL_TOKEN_RANGE_PROPERTY);
 		// Scan the hosted part(s) of the neighbor
 		for (Pair<MemoryExclusionVertex, Pair<Range, Range>> neighborHost : neighborHosts) {
 			if (!memExNodeAllocation.containsKey(neighborHost.getKey())) {
@@ -711,16 +677,13 @@ public abstract class MemoryAllocator {
 				Function1<MemoryExclusionVertex, Boolean> function = new Function1<MemoryExclusionVertex, Boolean>() {
 					@Override
 					public Boolean apply(final MemoryExclusionVertex it) {
-						return it.getSource().startsWith(
-								"part" + partIndex + "_");
+						return it.getSource().startsWith("part" + partIndex + "_");
 					}
 				};
 				@SuppressWarnings("unchecked")
-				List<MemoryExclusionVertex> fakeMobjs = (List<MemoryExclusionVertex>) neighbor
-						.getPropertyBean().getValue(
-								MemoryExclusionVertex.FAKE_MOBJECT);
-				MemoryExclusionVertex fakeMobj = IterableExtensions.findFirst(
-						fakeMobjs, function);
+				List<MemoryExclusionVertex> fakeMobjs = (List<MemoryExclusionVertex>) neighbor.getPropertyBean()
+						.getValue(MemoryExclusionVertex.FAKE_MOBJECT);
+				MemoryExclusionVertex fakeMobj = IterableExtensions.findFirst(fakeMobjs, function);
 
 				// Add the exclusion
 				inputExclusionGraph.addEdge(vertex, fakeMobj);
@@ -745,32 +708,27 @@ public abstract class MemoryAllocator {
 
 				// Check if the buffer was merged as a result of memory script
 				// execution.
-				boolean isMerged = memObj.getPropertyBean().getValue(
-						MemoryExclusionVertex.EMPTY_SPACE_BEFORE) != null;
+				boolean isMerged = memObj.getPropertyBean().getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE) != null;
 
 				// Check alignment of DAGEdge (that may involve subbuffers)
 				// Do not perform the test for buffers involved in a merge
 				// operation
 				DAGEdge edge = memObj.getEdge();
 				if (edge != null && !isMerged) {
-					BufferAggregate buffers = (BufferAggregate) edge
-							.getPropertyBean().getValue(
-									BufferAggregate.propertyBeanName);
+					BufferAggregate buffers = (BufferAggregate) edge.getPropertyBean()
+							.getValue(BufferAggregate.propertyBeanName);
 					Iterator<BufferProperties> iter = buffers.iterator();
 
 					@SuppressWarnings("unchecked")
-					List<Integer> interBufferSpaces = (List<Integer>) memObj
-							.getPropertyBean().getValue(
-									MemoryExclusionVertex.INTER_BUFFER_SPACES,
-									List.class);
+					List<Integer> interBufferSpaces = (List<Integer>) memObj.getPropertyBean()
+							.getValue(MemoryExclusionVertex.INTER_BUFFER_SPACES, List.class);
 
 					int internalOffset = 0;
 					int i = 0;
 					while (iter.hasNext()) {
 						BufferProperties properties = iter.next();
 						String dataType = properties.getDataType();
-						DataType type = MemoryExclusionVertex._dataTypes
-								.get(dataType);
+						DataType type = MemoryExclusionVertex._dataTypes.get(dataType);
 						int typeSize = type.getSize();
 
 						if (interBufferSpaces != null) {
@@ -780,15 +738,13 @@ public abstract class MemoryAllocator {
 
 						// Both data and fixed alignment must be aligned on
 						// data typeSize
-						if (alignment >= 0
-								&& (internalOffset + offset) % typeSize != 0) {
+						if (alignment >= 0 && (internalOffset + offset) % typeSize != 0) {
 							unalignedObjects.put(memObj, offset);
 							break;
 						}
 
 						// Check the fixed alignment
-						if (alignment > 0
-								&& (internalOffset + offset) % alignment != 0) {
+						if (alignment > 0 && (internalOffset + offset) % alignment != 0) {
 							unalignedObjects.put(memObj, offset);
 							break;
 						}
@@ -804,9 +760,8 @@ public abstract class MemoryAllocator {
 					// no declared type.
 					// Process fifo memobjects here
 					if (memObj.getSource().startsWith("FIFO_")) {
-						Integer typeSize = (Integer) memObj.getPropertyBean()
-								.getValue(MemoryExclusionVertex.TYPE_SIZE,
-										Integer.class);
+						Integer typeSize = (Integer) memObj.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE,
+								Integer.class);
 						if (alignment == 0 && offset % typeSize != 0) {
 							unalignedObjects.put(memObj, offset);
 						}
@@ -821,10 +776,11 @@ public abstract class MemoryAllocator {
 
 	/**
 	 * This method is responsible for checking the conformity of a memory
-	 * allocation with the following constraints : <li>An input buffer of an
-	 * actor can not share a memory space with an output. <li>As all actors are
-	 * considered self-scheduled, buffers in parallel branches of the DAG can
-	 * not share the same memory space.
+	 * allocation with the following constraints :
+	 * <li>An input buffer of an actor can not share a memory space with an
+	 * output.
+	 * <li>As all actors are considered self-scheduled, buffers in parallel
+	 * branches of the DAG can not share the same memory space.
 	 * 
 	 * 
 	 * @return The list of conflicting memory elements. Empty list if allocation
@@ -832,8 +788,7 @@ public abstract class MemoryAllocator {
 	 */
 	public HashMap<MemoryExclusionVertex, Integer> checkAllocation() {
 		if (memExNodeAllocation == null) {
-			throw new RuntimeException(
-					"Cannot check memory allocation because no allocation was performed.");
+			throw new RuntimeException("Cannot check memory allocation because no allocation was performed.");
 		}
 
 		HashMap<MemoryExclusionVertex, Integer> conflictingElements;
@@ -841,10 +796,8 @@ public abstract class MemoryAllocator {
 
 		// Check that no edge of the exclusion graph is violated
 		for (DefaultEdge edge : inputExclusionGraph.edgeSet()) {
-			MemoryExclusionVertex source = inputExclusionGraph
-					.getEdgeSource(edge);
-			MemoryExclusionVertex target = inputExclusionGraph
-					.getEdgeTarget(edge);
+			MemoryExclusionVertex source = inputExclusionGraph.getEdgeSource(edge);
+			MemoryExclusionVertex target = inputExclusionGraph.getEdgeTarget(edge);
 
 			Integer sourceOffset;
 			Integer targetOffset;
@@ -858,12 +811,12 @@ public abstract class MemoryAllocator {
 			targetOffset = memExNodeAllocation.get(target);
 
 			if (sourceOffset == null) {
-				throw new RuntimeException("Allocation check failed because "
-						+ source + " memory object was not allocated.");
+				throw new RuntimeException(
+						"Allocation check failed because " + source + " memory object was not allocated.");
 			}
 			if (targetOffset == null) {
-				throw new RuntimeException("Allocation check failed because "
-						+ target + " memory object was not allocated.");
+				throw new RuntimeException(
+						"Allocation check failed because " + target + " memory object was not allocated.");
 			}
 			// If the memory element share memory space
 			if ((sourceOffset < (targetOffset + target.getWeight()))
@@ -885,23 +838,23 @@ public abstract class MemoryAllocator {
 		fifoAllocation.clear();
 		workingMemAllocation.clear();
 		memExNodeAllocation.clear();
-		inputExclusionGraph.setPropertyValue(
-				MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE, 0);
+		inputExclusionGraph.setPropertyValue(MemoryExclusionGraph.ALLOCATED_MEMORY_SIZE, 0);
 		inputExclusionGraph.deallocate();
 	}
 
 	/**
 	 * Get the value of the {@link #alignment} attribute.
 	 * 
-	 * <li><b>{@link #alignment}=-1</b>: Data should not be aligned.</li> <li>
-	 * <b>{@link #alignment}= 0</b>: Data should be aligned according to its own
-	 * type. For example, an array of int32 should begin at an offset (i.e. an
-	 * address) that is a multiple of 4.</li> <li><b>{@link #alignment}= N</b>:
-	 * All data should be aligned to the given value N. This means that all
-	 * arrays will begin at an offset that is a multiple of N. It does not mean
-	 * that ALL array elements are aligned on N, only the first element.If an
-	 * array has a data type different than 1, then the least common multiple of
-	 * the two values is used to align the data</li>
+	 * <li><b>{@link #alignment}=-1</b>: Data should not be aligned.</li>
+	 * <li><b>{@link #alignment}= 0</b>: Data should be aligned according to its
+	 * own type. For example, an array of int32 should begin at an offset (i.e.
+	 * an address) that is a multiple of 4.</li>
+	 * <li><b>{@link #alignment}= N</b>: All data should be aligned to the given
+	 * value N. This means that all arrays will begin at an offset that is a
+	 * multiple of N. It does not mean that ALL array elements are aligned on N,
+	 * only the first element.If an array has a data type different than 1, then
+	 * the least common multiple of the two values is used to align the data
+	 * </li>
 	 * 
 	 * @return the value of the {@link #alignment} attribute.
 	 */
@@ -950,8 +903,7 @@ public abstract class MemoryAllocator {
 		if (memExNodeAllocation != null) {
 			for (MemoryExclusionVertex vertex : memExNodeAllocation.keySet()) {
 				if ((memExNodeAllocation.get(vertex) + vertex.getWeight()) > memorySize) {
-					memorySize = memExNodeAllocation.get(vertex)
-							+ vertex.getWeight();
+					memorySize = memExNodeAllocation.get(vertex) + vertex.getWeight();
 				}
 			}
 			return memorySize;
@@ -963,8 +915,7 @@ public abstract class MemoryAllocator {
 				// allocation map
 				for (DAGEdge edge : edgeAllocation.keySet()) {
 					if ((edgeAllocation.get(edge) + edge.getWeight().intValue()) > memorySize) {
-						memorySize = edgeAllocation.get(edge)
-								+ edge.getWeight().intValue();
+						memorySize = edgeAllocation.get(edge) + edge.getWeight().intValue();
 					}
 				}
 			} catch (InvalidExpressionException e) {
@@ -979,11 +930,12 @@ public abstract class MemoryAllocator {
 	 * Set the value of the {@link #alignment} attribute.
 	 * 
 	 * @param alignment
-	 *            <li><b>{@link #alignment}=-1</b>: Data should not be aligned.</li>
-	 *            <li>
-	 *            <b>{@link #alignment}= 0</b>: Data should be aligned according
-	 *            to its own type. For example, an array of int32 should begin
-	 *            at an offset (i.e. an address) that is a multiple of 4.</li>
+	 *            <li><b>{@link #alignment}=-1</b>: Data should not be aligned.
+	 *            </li>
+	 *            <li><b>{@link #alignment}= 0</b>: Data should be aligned
+	 *            according to its own type. For example, an array of int32
+	 *            should begin at an offset (i.e. an address) that is a multiple
+	 *            of 4.</li>
 	 *            <li><b>{@link #alignment}= N</b>: All data should be aligned
 	 *            to the given value N. This means that all arrays will begin at
 	 *            an offset that is a multiple of N. It does not mean that ALL

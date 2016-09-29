@@ -104,7 +104,7 @@ public class SerialMemoryBoundsEstimator extends AbstractTaskImplementation {
 		// inputs.get("MemEx");
 		@SuppressWarnings("unchecked")
 		Map<String, MemoryExclusionGraph> memExes = (Map<String, MemoryExclusionGraph>) inputs
-				.get("MemExes");
+				.get("MEGs");
 
 		for (String memory : memExes.keySet()) {
 			MemoryExclusionGraph memEx = memExes.get(memory);

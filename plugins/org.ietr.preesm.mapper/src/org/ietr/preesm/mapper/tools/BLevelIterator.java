@@ -75,12 +75,12 @@ public class BLevelIterator extends ImplementationIterator {
 
 		if (bLevelDifference == 0) {
 			bLevelDifference = arg0.getName().compareTo(arg1.getName());
-
-			if (bLevelDifference == 0) {
-				bLevelDifference++;
-			}
 		}
 
+		// Preventing overflows in conversion from long to int
+		if(bLevelDifference >= 0) bLevelDifference = 1;
+		else bLevelDifference = -1;
+		
 		return (int) bLevelDifference;
 	}
 }

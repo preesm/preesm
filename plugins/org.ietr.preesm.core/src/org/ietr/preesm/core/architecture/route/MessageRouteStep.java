@@ -93,6 +93,18 @@ public class MessageRouteStep extends AbstractRouteStep {
 		return id;
 	}
 
+	/**
+	 * The name of the step node is retrieved
+	 */
+	@Override
+	public String getName() {
+		String name = "";
+		for (ComponentInstance node : nodes) {
+			name += node.getInstanceName();
+		}
+		return name;
+	}
+
 	public List<ComponentInstance> getContentionNodes() {
 		List<ComponentInstance> contentionNodes = new ArrayList<ComponentInstance>();
 		for (ComponentInstance node : nodes) {

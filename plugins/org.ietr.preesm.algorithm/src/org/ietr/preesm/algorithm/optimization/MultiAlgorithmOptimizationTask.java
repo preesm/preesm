@@ -43,6 +43,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
+import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
@@ -67,16 +68,19 @@ public class MultiAlgorithmOptimizationTask extends AbstractTaskImplementation {
 
 		// First pass is to clean the graph from useless pairs of join-fork
 		// vertices which can hinder scheduling
-		JoinForkCleaner cleaner = new JoinForkCleaner();
+
 		// JoinForkCleaner evaluates some rates and delays expressions, and thus
 		// can throw InvalidExpressionExceptions, even if at this point of the
 		// workflow, there should have been already raised
 		for(SDFGraph graph : graphs){
 			try {
-				while(cleaner.cleanJoinForkPairsFrom(graph));
+				while(JoinForkCleaner.cleanJoinForkPairsFrom(graph));
 			} catch (InvalidExpressionException e) {
 				System.err.println("SDFGraph " + graph.getName()
 						+ " contains invalid expressions.");
+				e.printStackTrace();
+			} catch (SDF4JException e) {
+				System.err.println("Error when cleaning fork/join pairs in SDFGraph " + graph.getName());
 				e.printStackTrace();
 			}
 		}
