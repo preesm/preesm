@@ -65,7 +65,7 @@ and SFTPSSH protocol (files are under `htdocs/eclipse/update-site`);
 2. `push` the `develop` branch;
 3. `merge` the `develop` branch into `master`:
   * `git checkout master`
-  * `git merge develop`
+  * `git merge --no-ff develop`
 4. Tag the last commit with version number: `git tag “vX.Y.Z”`
 5. `push`the `master` branch and `push` the tag:
   * `git push`
