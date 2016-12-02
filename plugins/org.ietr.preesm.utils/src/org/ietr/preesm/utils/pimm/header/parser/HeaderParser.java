@@ -208,7 +208,7 @@ public class HeaderParser {
 	protected static List<String> extractPrototypeStrings(String fileContent) {
 		// The remaining code is a single line containing only C code
 		// (enum, struct, prototypes, inline functions, ..)
-		Pattern pattern = Pattern.compile("[^;}](.*?\\(.*?\\))[;]");
+		Pattern pattern = Pattern.compile("[^;}](.*?\\(.*?\\))\\s?[;]");
 		Matcher matcher = pattern.matcher(fileContent);
 		List<String> prototypes = new ArrayList<String>();
 		boolean containsPrototype;
