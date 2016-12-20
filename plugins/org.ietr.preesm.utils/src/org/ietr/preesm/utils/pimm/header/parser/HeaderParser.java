@@ -82,17 +82,19 @@ public class HeaderParser {
 	 * matchable. Which means that the "as many as possible" clause holds as
 	 * long as the remaining patterns are also matched.</li>
 	 * <li><code>\\s?</code>: Match 0 or 1 whitespace.</li>
-	 * <li><code>(\\*+)?</code>: <b>Group 3 - Pointers</b> Match, if possible, a
-	 * string '*' of length 1 to infinite.</li>
+	 * <li><code>(\\*+(?:\\s?const)?)?</code>: <b>Group 3 - Pointers</b> Match,
+	 * if possible, a string '*' of length 1 to infinite. Also match optional
+	 * <code> const</code> option for pointer.</li>
 	 * <li><code>\\s</code>: Match exactly 1 whitespace.</li>
-	 * <li><code>([\\S&&[^\\[\\]]]+)</code>: Group 4 - Name</li> Match a string
-	 * of non-whitespace characters (except '[' or ']') of length 1 to infinite.
-	 * <li><code>(\\[(\\d|\\]\\[)*\\])?</code>: Group 5 - Array?</li> Match, if
-	 * possible, a string of opening and closing square brackets '[]', possibly
-	 * containing digits.
+	 * <li><code>([\\S&&[^\\[\\]]]+)</code>: <b>Group 4 - Name</b></li> Match a
+	 * string of non-whitespace characters (except '[' or ']') of length 1 to
+	 * infinite.
+	 * <li><code>(\\[(\\d|\\]\\[)*\\])?</code>: <b>Group 5 - Array?</b></li>
+	 * Match, if possible, a string of opening and closing square brackets '[]',
+	 * possibly containing digits.
 	 * </ul>
 	 */
-	private static final String PARAM_BREAK_DOWN_REGEX = "(IN|OUT)?\\s?([^\\*]+)\\s?(\\*+)?\\s([\\S&&[^\\[\\]]]+)(\\[(\\d|\\]\\[)*\\])?";
+	private static final String PARAM_BREAK_DOWN_REGEX = "(IN|OUT)?\\s?([^\\*]+)\\s?(\\*+(?:\\s?const)?)?\\s([\\S&&[^\\[\\]]]+)(\\[(\\d|\\]\\[)*\\])?";
 
 	/**
 	 * This method parse a C header file and extract a set of function
