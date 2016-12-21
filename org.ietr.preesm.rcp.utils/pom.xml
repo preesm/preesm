@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ietr.preesm.rcp.utils</groupId>
   <artifactId>org.ietr.preesm.rcp.utils</artifactId>
-  <version>2.2.4</version>
+  <version>2.2.5</version>
   <packaging>eclipse-plugin</packaging>
   <parent>
   	<groupId>org.ietr.preesm.releng</groupId>

@@ -1,3 +1,9 @@
+## Release version 2.2.5
+*2016.12.21 - Preesm: 2.2.5*
+
+### Bug fix
+* Fix parsing of header files. (typedefs, const pointers in function parameters, space before semi-colon).
+
 ## Release version 2.2.4
 *2016.09.28 - Preesm: 2.2.4, DFTools 1.1.8*
 
