@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ietr.preesm.codegen.xtend</groupId>
   <artifactId>org.ietr.preesm.codegen.xtend</artifactId>
-  <version>2.2.3</version>
+  <version>2.2.5</version>
   <packaging>eclipse-plugin</packaging>
   <parent>
   	<groupId>org.ietr.preesm.releng</groupId>

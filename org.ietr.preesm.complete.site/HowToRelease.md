@@ -30,6 +30,7 @@ For each updated repository:
   * Make sure newly created plugins are included in the released features.
   * Change version number of all plug-ins by clicking on `Versions...` within the `Plug-ins and fragments` frame. Select _Force feature version into plug-in and fragment manifests_.
   * **/!\ When updating `graphiti`, make sure the `org.jgrapht` plugin version is not updated and is still set to `0.8.2`. /!\\**
+4. For each plugin of an updated repository, edit the `pom.xml` file and update the version number coherently. 
 
 ## 4. Update site
 Follow these steps scrupulously to make sure former versions of Preesm are still available on the update site.
