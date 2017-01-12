@@ -372,7 +372,7 @@ public class SpiderCodegen{
 		append("){\n");
 		
 		// Create a top graph and a top vertex
-		append("\tPiSDFGraph* top = Spider::createGraph(\n"
+		append("\tPiSDFGraph* topGraph = Spider::createGraph(\n"
 				+ "\t\t/*Edges*/    0,\n"
 				+ "\t\t/*Params*/   0,\n"
 				+ "\t\t/*InputIf*/  0,\n"
@@ -381,14 +381,14 @@ public class SpiderCodegen{
 				+ "\t\t/*Body*/     1);\n\n");
 		
 		append("\tSpider::addHierVertex(\n"
-				+ "\t\t/*Graph*/    top,\n"
+				+ "\t\t/*Graph*/    topGraph,\n"
 				+ "\t\t/*Name*/     \"top\",\n"
 				+ "\t\t/*Graph*/    " + sgName + "(" + params.toString() + "),\n"
 				+ "\t\t/*InputIf*/  0,\n"
 				+ "\t\t/*OutputIf*/ 0,\n"
 				+ "\t\t/*Params*/   0);\n\n");
 		
-		append("\tSpider::setGraph(top);\n");
+		append("\tSpider::setGraph(topGraph);\n");
 		append("}\n");
 	}
 	
@@ -457,7 +457,7 @@ public class SpiderCodegen{
 					break;
 				}
 				if(!found){
-					WorkflowLogger.getLogger().warning("Port " + param.getName() + " not found.");
+					WorkflowLogger.getLogger().warning("Port " + param.getName() + " in Actor " + a.getName() + " not found.");
 				}
 			}
 			append("\n\t);\n");
