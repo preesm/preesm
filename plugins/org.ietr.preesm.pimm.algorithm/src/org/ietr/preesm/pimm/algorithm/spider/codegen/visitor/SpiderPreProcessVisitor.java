@@ -333,7 +333,8 @@ public class SpiderPreProcessVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitRoundBufferActor(RoundBufferActor rba) {
-		throw new UnsupportedOperationException();
+		visitAbstractActor(rba);
+//		throw new UnsupportedOperationException();
 	}
 	
 	@Override

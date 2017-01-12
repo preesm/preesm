@@ -725,6 +725,29 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 	}
 
 	@Override
+	public void visitRoundBufferActor(RoundBufferActor rba) {
+		append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(rba));
+		append(" = Spider::addSpecialVertex(\n");
+		append("\t\t/*Graph*/   graph,\n");
+		append("\t\t/*Type*/    " + "PISDF_SUBTYPE_ROUNDBUFFER" + ",\n");
+		append("\t\t/*InData*/  " + rba.getDataInputPorts().size() + ",\n");
+		append("\t\t/*OutData*/ " + rba.getDataOutputPorts().size() + ",\n");
+		append("\t\t/*InParam*/ " + rba.getConfigInputPorts().size() + ");\n");
+
+		// Add connections from parameters if necessary
+		for (ConfigInputPort cip : rba.getConfigInputPorts()) {
+			append("\tSpider::addInParam(");
+			append(SpiderNameGenerator.getVertexName(rba) + ", ");
+			append(portMap.get(cip) + ", ");
+			append(SpiderNameGenerator.getParameterName((Parameter) cip
+					.getIncomingDependency().getSetter()));
+			append(");\n");
+		}
+		append("\n");
+	}
+
+
+	@Override
 	public void visitConfigOutputInterface(ConfigOutputInterface coi) {
 		throw new UnsupportedOperationException();
 	}
@@ -820,12 +843,7 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 	public void visitHRefinement(HRefinementImpl hRefinementImpl) {
 		throw new UnsupportedOperationException();
 	}
-
-	@Override
-	public void visitRoundBufferActor(RoundBufferActor rba) {
-		throw new UnsupportedOperationException();
-	}
-
+	
 	@Override
 	public void visitExecutableActor(ExecutableActor ea) {
 		throw new UnsupportedOperationException();
