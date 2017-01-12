@@ -33,7 +33,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package org.ietr.preesm.pimm.algorithm.cppgenerator;
+package org.ietr.preesm.pimm.algorithm.spider.codegen;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -41,20 +41,22 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
-import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
-import org.ietr.preesm.pimm.algorithm.cppgenerator.visitor.PiSDFCodeGenerator;
+import org.ietr.preesm.pimm.algorithm.spider.codegen.visitor.SpiderCodegen;
 
-public class PiMMCppGenerationTask extends AbstractTaskImplementation {
+public class SpiderCodegenTask extends AbstractTaskImplementation {
 
 	@Override
 	public Map<String, Object> execute(Map<String, Object> inputs,
@@ -65,38 +67,37 @@ public class PiMMCppGenerationTask extends AbstractTaskImplementation {
 		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
 		PiGraph pg = (PiGraph) inputs.get(KEY_PI_GRAPH);
 
-		PiSDFCodeGenerator launcher = new PiSDFCodeGenerator(scenario);
+		SpiderCodegen launcher = new SpiderCodegen(scenario);
 
 		launcher.initGenerator(pg);
 		String graphCode = launcher.generateGraphCode(pg);
 		String fctCode = launcher.generateFunctionCode(pg);
 		String hCode = launcher.generateHeaderCode(pg);
 
-		// Get the root of the workspace
+		// Get the workspace
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IWorkspaceRoot root = workspace.getRoot();
-		// Get the project
-		String projectName = workflow.getProjectName();
-		IProject project = root.getProject(projectName);
 
 		// Get the name of the folder for code generation
-		String codegenFolder = scenario.getCodegenManager().getCodegenDirectory();
-		if (codegenFolder == null) codegenFolder = "/Code/generated/cpp/";
-
-		// Create the folder and its parent if necessary
-		String folderPath = project.getLocation() + codegenFolder;
-		File parent = new File(folderPath);
-		parent.mkdirs();
+		String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + "/";
+		
+		if(codegenPath.equals("/")){
+			WorkflowLogger.getLogger().log(Level.SEVERE, "Error: A Codegen folder must be specified in Scenario");
+			return Collections.emptyMap();			
+		}
+		
+		IFolder f = workspace.getRoot().getFolder(new Path(codegenPath));
+		File folder = new File(f.getRawLocation().toOSString());
+		folder.mkdirs();
 
 		// Create the files
 		String hFilePath = pg.getName() + ".h";
-		File hFile = new File(parent, hFilePath);
+		File hFile = new File(folder, hFilePath);
 		
 		String piGraphfilePath = "pi_" + pg.getName() + ".cpp";
-		File piGraphFile = new File(parent, piGraphfilePath);
+		File piGraphFile = new File(folder, piGraphfilePath);
 		
 		String piFctfilePath = "fct_" + pg.getName() + ".cpp";
-		File piFctFile = new File(parent, piFctfilePath);
+		File piFctFile = new File(folder, piFctfilePath);
 		
 		// Write the files
 		FileWriter piGraphWriter;

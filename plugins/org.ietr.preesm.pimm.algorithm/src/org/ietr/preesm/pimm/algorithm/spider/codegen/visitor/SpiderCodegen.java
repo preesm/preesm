@@ -35,8 +35,9 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  * ****************************************************************************
  */
-package org.ietr.preesm.pimm.algorithm.cppgenerator.visitor;
+package org.ietr.preesm.pimm.algorithm.spider.codegen.visitor;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
@@ -58,9 +60,9 @@ import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
-import org.ietr.preesm.pimm.algorithm.cppgenerator.utils.CppNameGenerator;
+import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderNameGenerator;
 
-public class PiSDFCodeGenerator{	
+public class SpiderCodegen{	
 	private PreesmScenario scenario;
 	StringBuilder cppString = new StringBuilder();
 
@@ -73,7 +75,7 @@ public class PiSDFCodeGenerator{
 	private Map<String, Integer> coreTypesIds;
 	private Map<String, Integer> coreIds;
 	
-	private CppPreProcessVisitor preprocessor;
+	private SpiderPreProcessVisitor preprocessor;
 	
 	/* Map timing strings to actors */
 	private Map<AbstractActor, Map<String, String>> timings;
@@ -86,14 +88,14 @@ public class PiSDFCodeGenerator{
 	
 	private HashMap<AbstractActor, Set<String>> constraints;
 		
-	public PiSDFCodeGenerator(PreesmScenario scenario) {
+	public SpiderCodegen(PreesmScenario scenario) {
 		this.scenario = scenario;
 	}
 	
 	public void initGenerator(PiGraph pg){
 		/* Preprocessor visitor */	
 		/* Initialize functions, dataports and dependency maps */
-		preprocessor = new CppPreProcessVisitor();
+		preprocessor = new SpiderPreProcessVisitor();
 		preprocessor.visit(pg);
 		
 		portMap = preprocessor.getPortMap();
@@ -105,9 +107,17 @@ public class PiSDFCodeGenerator{
 			coreTypesIds.put(coreType, coreTypeId++);	
 		
 		coreIds = new HashMap<String, Integer>();
-		int coreId = 0;
-		for (String core : scenario.getOperatorIds())
-			coreIds.put(core, coreId++);	
+		String mainOperator = scenario.getSimulationManager().getMainOperatorName();
+		if(mainOperator == null || mainOperator.equals("")){
+			/* Warning */
+			mainOperator = scenario.getOrderedOperatorIds().get(0);
+			WorkflowLogger.getLogger().warning("No Main Operator selected in scenario, " + mainOperator + " used by default");
+		}
+		coreIds.put(mainOperator, 0);
+		int coreId = 1;
+		for (String core : scenario.getOrderedOperatorIds())
+			if(!core.equals(mainOperator))
+				coreIds.put(core, coreId++);	
 		
 		// Generate timings
 		Map<String, AbstractActor> actorsByNames = preprocessor.getActorNames();
@@ -177,11 +187,16 @@ public class PiSDFCodeGenerator{
 	            return  p1.getName().compareTo(p2.getName());
 	        }
 		});
+		StringBuilder parameters_proto = new StringBuilder();
 		for(Parameter p : l){
 			if(p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()){
-				append(", Param " + p.getName() + " = " + ((int) Double.parseDouble(p.getExpression().evaluate())));
+				if(parameters_proto.length() > 0){
+					parameters_proto.append(", ");
+				}
+				parameters_proto.append("Param " + p.getName() + " = " + ((int) Double.parseDouble(p.getExpression().evaluate())));
 			}
 		}
+		append(parameters_proto);
 		append(");\n");	
 		
 		append("void free_"+pg.getName()+"();\n");
@@ -189,16 +204,23 @@ public class PiSDFCodeGenerator{
 		
 		/* Core */
 		append("typedef enum{\n");
-		for(String core : coreIds.keySet()){
-			append("\t" + CppNameGenerator.getCoreName(core) 
-					+ " = " + coreIds.get(core) + ",\n");			
+		List<String> sortedCores = new ArrayList<String>(coreIds.keySet());
+		Collections.sort(sortedCores);
+		for(int i=0; i<coreIds.size(); i++){
+			for(Entry<String, Integer> entry : coreIds.entrySet()){
+				if(entry.getValue() == i){
+					String core = entry.getKey();
+					append("\t" + SpiderNameGenerator.getCoreName(core) 
+						+ " = " + coreIds.get(core) + ",\n");
+				}					
+			}			
 		}
 		append("} PE;\n\n");
 		
 		/* Core Type */
 		append("typedef enum{\n");
 		for(String coreType : coreTypesIds.keySet()){
-			append("\t" + CppNameGenerator.getCoreTypeName(coreType) 
+			append("\t" + SpiderNameGenerator.getCoreTypeName(coreType) 
 					+ " = " + coreTypesIds.get(coreType) + ",\n");			
 		}
 		append("} PEType;\n\n");	
@@ -206,7 +228,7 @@ public class PiSDFCodeGenerator{
 		/* Fct Ix */
 		append("typedef enum{\n");
 		for(AbstractActor aa : functionMap.keySet()){
-			append("\t" + CppNameGenerator.getFunctionName(aa).toUpperCase() + "_FCT"
+			append("\t" + SpiderNameGenerator.getFunctionName(aa).toUpperCase() + "_FCT"
 					+ " = " + functionMap.get(aa) + ",\n");			
 		}
 		append("} FctIxs;\n\n");
@@ -225,7 +247,7 @@ public class PiSDFCodeGenerator{
 		cppString.setLength(0);
 		
 		StringBuilder tmp = new StringBuilder();
-		CPPCodeGenerationVisitor codeGenerator = new CPPCodeGenerationVisitor(
+		SpiderCodegenVisitor codeGenerator = new SpiderCodegenVisitor(
 				tmp, preprocessor, timings, constraints, scenario.getSimulationManager().getDataTypes());
 		// Generate C++ code for the whole PiGraph, at the end, tmp will contain
 		// the vertex declaration for pg
@@ -291,7 +313,7 @@ public class PiSDFCodeGenerator{
 		/* Generate prototypes */
 		for(AbstractActor aa : functionMap.keySet()){
 			append("void ");
-			append(CppNameGenerator.getFunctionName(aa));
+			append(SpiderNameGenerator.getFunctionName(aa));
 			append("(void* inputFIFOs[], void* outputFIFOs[], Param inParams[], Param outParams[]);\n");
 		}
 		append("\n");
@@ -299,7 +321,7 @@ public class PiSDFCodeGenerator{
 		/* Generate LrtFct */
 		append("lrtFct " + pg.getName() + "_fcts[N_FCT_" + pg.getName().toUpperCase() + "] = {\n");
 		for(AbstractActor aa : functionMap.keySet()){
-			append("\t&" + CppNameGenerator.getFunctionName(aa) + ",\n");			
+			append("\t&" + SpiderNameGenerator.getFunctionName(aa) + ",\n");			
 		}
 		append("};\n\n");
 		
@@ -335,16 +357,22 @@ public class PiSDFCodeGenerator{
 	            return  p1.getName().compareTo(p2.getName());
 	        }
 		});
+		StringBuilder parameters_proto = new StringBuilder();
 		for(Parameter p : l){
 			if(p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()){
-				params.append(", " + p.getName());
-				append(", Param " + p.getName());
+				if(parameters_proto.length() > 0){
+					parameters_proto.append(", ");
+					params.append(", ");
+				}
+				parameters_proto.append("Param " + p.getName());
+				params.append(p.getName());
 			}
 		}
+		append(parameters_proto);
 		append("){\n");
 		
 		// Create a top graph and a top vertex
-		append("\tPiSDFGraph* top = Spider::createGraph(\n"
+		append("\tPiSDFGraph* topGraph = Spider::createGraph(\n"
 				+ "\t\t/*Edges*/    0,\n"
 				+ "\t\t/*Params*/   0,\n"
 				+ "\t\t/*InputIf*/  0,\n"
@@ -353,20 +381,20 @@ public class PiSDFCodeGenerator{
 				+ "\t\t/*Body*/     1);\n\n");
 		
 		append("\tSpider::addHierVertex(\n"
-				+ "\t\t/*Graph*/    top,\n"
+				+ "\t\t/*Graph*/    topGraph,\n"
 				+ "\t\t/*Name*/     \"top\",\n"
 				+ "\t\t/*Graph*/    " + sgName + "(" + params.toString() + "),\n"
 				+ "\t\t/*InputIf*/  0,\n"
 				+ "\t\t/*OutputIf*/ 0,\n"
 				+ "\t\t/*Params*/   0);\n\n");
 		
-		append("\tSpider::setGraph(top);\n");
+		append("\tSpider::setGraph(topGraph);\n");
 		append("}\n");
 	}
 	
 	private void generateFunctionBody(AbstractActor aa) {
 		append("void ");
-		append(CppNameGenerator.getFunctionName(aa));
+		append(SpiderNameGenerator.getFunctionName(aa));
 		append("(void* inputFIFOs[], void* outputFIFOs[], Param inParams[], Param outParams[]){\n");
 		
 		Actor a = (Actor)aa;
@@ -429,7 +457,7 @@ public class PiSDFCodeGenerator{
 					break;
 				}
 				if(!found){
-					WorkflowLogger.getLogger().warning("Port " + param.getName() + " not found.");
+					WorkflowLogger.getLogger().warning("Port " + param.getName() + " in Actor " + a.getName() + " not found.");
 				}
 			}
 			append("\n\t);\n");

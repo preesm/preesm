@@ -35,7 +35,7 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  * ****************************************************************************
  */
-package org.ietr.preesm.pimm.algorithm.cppgenerator.visitor;
+package org.ietr.preesm.pimm.algorithm.spider.codegen.visitor;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -76,7 +76,7 @@ import org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl;
 import org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
-public class CppPreProcessVisitor extends PiMMVisitor {
+public class SpiderPreProcessVisitor extends PiMMVisitor {
 	private AbstractActor currentAbstractActor = null;
 	private String currentAbstractVertexName = "";
 
@@ -159,6 +159,8 @@ public class CppPreProcessVisitor extends PiMMVisitor {
 			functionMap.put(a, functionMap.size());
 			if(!(a.getRefinement() instanceof HRefinement))
 				WorkflowLogger.getLogger().warning("Actor "+a.getName()+" doesn't have correct refinement.");
+			else if(((HRefinement)(a.getRefinement())).getInitPrototype() != null)
+				WorkflowLogger.getLogger().warning("Init function of Actor "+a.getName()+" will not be handled");
 		}
 		
 		actorNames.put(a.getName(), a);
@@ -331,7 +333,8 @@ public class CppPreProcessVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitRoundBufferActor(RoundBufferActor rba) {
-		throw new UnsupportedOperationException();
+		visitAbstractActor(rba);
+//		throw new UnsupportedOperationException();
 	}
 	
 	@Override

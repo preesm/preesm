@@ -17,5 +17,5 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.ietr.preesm.pimm.algorithm.checker,
  org.ietr.preesm.pimm.algorithm.checker.task,
- org.ietr.preesm.pimm.algorithm.cppgenerator,
- org.ietr.preesm.pimm.algorithm.pimm2sdf
+ org.ietr.preesm.pimm.algorithm.pimm2sdf,
+ org.ietr.preesm.pimm.algorithm.spider.codegen

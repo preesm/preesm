@@ -94,7 +94,7 @@ public class HeaderParser {
 	 * possibly containing digits.
 	 * </ul>
 	 */
-	private static final String PARAM_BREAK_DOWN_REGEX = "(IN|OUT)?\\s?([^\\*]+)\\s?(\\*+(?:\\s?const)?)?\\s([\\S&&[^\\[\\]]]+)(\\[(\\d|\\]\\[)*\\])?";
+	private static final String PARAM_BREAK_DOWN_REGEX = "(IN|OUT)?\\s?([^\\*]+)\\s?(\\*+(?:\\s?const)?)?\\s([\\S&&[^\\[\\]]]+)(\\[(\\d|\\]\\[)*\\])?\\s?";
 
 	/**
 	 * This method parse a C header file and extract a set of function

@@ -1,13 +1,13 @@
-package org.ietr.preesm.pimm.algorithm.cppgenerator.utils;
+package org.ietr.preesm.pimm.algorithm.spider.codegen.utils;
 
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
-public final class CppNameGenerator {
+public final class SpiderNameGenerator {
 	/** Private constructor: prevents instantiation by client code */
-	private CppNameGenerator(){
+	private SpiderNameGenerator(){
 		
 	}
 	
@@ -27,7 +27,7 @@ public final class CppNameGenerator {
 	 * to AbstractActor aa
 	 */
 	public static String getVertexName(AbstractVertex aa) {
-		switch (CppTypeConverter.getType(aa)) {
+		switch (SpiderTypeConverter.getType(aa)) {
 		case PISDF_TYPE_BODY:
 			return "bo_" + aa.getName();
 		case PISDF_TYPE_CONFIG:
