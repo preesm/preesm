@@ -448,7 +448,7 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 					append(SpiderNameGenerator.getCoreName(core) + ");\n");
 				}
 			}else{
-				WorkflowLogger.getLogger().log(Level.WARNING, "Actor " + aa.getName() + " does not have a valid refinement");
+				WorkflowLogger.getLogger().log(Level.WARNING, "Actor " + aa.getName() + " does not have a valid operator to execute on");
 			}
 		}
 
