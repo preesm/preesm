@@ -608,11 +608,11 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 						+ " = Spider::addDynamicParam(graph, " + "\"" + p.getName() + "\""
 						+ ");\n");				
 			}else{
-				/* Static DEPENDANT */
+				/* DYNAMIC DEPENDANT */
 				currentStaticDependentParams.append(
 						"\tPiSDFParam *"
 						+ paramName
-						+ " = Spider::addStaticDependentParam(graph, " + "\"" + p.getName() + "\", \""
+						+ " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName() + "\", \""
 						+ p.getExpression().getString()
 						+ "\");\n");				
 			}
@@ -630,11 +630,11 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 					+ p.getName() // (int) Double.parseDouble(p.getExpression().evaluate())
 					+ ");\n");
 		} else {
-			/* Dynamic DEPENDANT */
+			/* STATIC DEPENDANT */
 			currentDynamicDependentParams.append(
 					"\tPiSDFParam *"
 					+ paramName
-					+ " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName() + "\", \""
+					+ " = Spider::addStaticDependentParam(graph, " + "\"" + p.getName() + "\", \""
 					+ p.getExpression().getString()
 					+ "\");\n");
 		}
