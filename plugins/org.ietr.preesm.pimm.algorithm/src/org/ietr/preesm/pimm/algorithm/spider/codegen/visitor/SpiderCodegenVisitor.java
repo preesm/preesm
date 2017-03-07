@@ -113,7 +113,8 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 	private Map<String, DataType> dataTypes;
 
 	private StringBuilder currentMethod;
-	private StringBuilder currentDependentParams;
+	private StringBuilder currentStaticDependentParams;
+	private StringBuilder currentDynamicDependentParams;
 	
 	private PiGraph currentGraph;
 	private List<PiGraph> currentSubGraphs;
@@ -301,11 +302,13 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 
 		// Generating parameters
 		append("\n\t/* Parameters */\n");
-		currentDependentParams = new StringBuilder();
+		currentStaticDependentParams = new StringBuilder();
+		currentDynamicDependentParams = new StringBuilder();
 		for (Parameter p : pg.getParameters()) {
 			p.accept(this);
 		}
-		currentMethod.append(currentDependentParams);
+		currentMethod.append(currentStaticDependentParams);
+		currentMethod.append(currentDynamicDependentParams);
 		
 		// Generating vertices
 		append("\n\t/* Vertices */\n");
@@ -605,11 +608,11 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 						+ " = Spider::addDynamicParam(graph, " + "\"" + p.getName() + "\""
 						+ ");\n");				
 			}else{
-				/* DEPENDANT */
-				currentDependentParams.append(
+				/* Static DEPENDANT */
+				currentStaticDependentParams.append(
 						"\tPiSDFParam *"
 						+ paramName
-						+ " = Spider::addDependentParam(graph, " + "\"" + p.getName() + "\", \""
+						+ " = Spider::addStaticDependentParam(graph, " + "\"" + p.getName() + "\", \""
 						+ p.getExpression().getString()
 						+ "\");\n");				
 			}
@@ -627,11 +630,11 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 					+ p.getName() // (int) Double.parseDouble(p.getExpression().evaluate())
 					+ ");\n");
 		} else {
-			/* DEPENDANT */
-			currentDependentParams.append(
+			/* Dynamic DEPENDANT */
+			currentDynamicDependentParams.append(
 					"\tPiSDFParam *"
 					+ paramName
-					+ " = Spider::addDependentParam(graph, " + "\"" + p.getName() + "\", \""
+					+ " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName() + "\", \""
 					+ p.getExpression().getString()
 					+ "\");\n");
 		}
