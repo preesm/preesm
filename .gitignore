@@ -54,3 +54,8 @@ DAG/*.graphml
 stats/xml/
 stats/mat/algo/
 stats/mat/archi/
+
+# Eclipse files #
+#################
+#**/.settings
+#**/.project
