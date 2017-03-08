@@ -16,3 +16,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.ietr.dftools.algorithm
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
+Bundle-Vendor: IETR/INSA Rennes

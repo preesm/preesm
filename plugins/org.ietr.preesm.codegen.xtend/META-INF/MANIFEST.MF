@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %pluginName
+Bundle-Name: Preesm code generation plug-in (XTend)
 Bundle-SymbolicName: org.ietr.preesm.codegen.xtend;singleton:=true
 Bundle-ClassPath: .
 Bundle-Activator: org.ietr.preesm.codegen.xtend.Activator
-Bundle-Vendor: %providerName
+Bundle-Vendor: IETR/INSA Rennes
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
