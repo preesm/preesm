@@ -45,6 +45,7 @@ lib/
 /plugins/org.ietr.preesm.codegen.xtend/xtend-gen/
 *~
 *._trace
+*.orig
 
 # PREESM generated files #
 ##########################
