@@ -57,5 +57,5 @@ stats/mat/archi/
 
 # Eclipse files #
 #################
-#**/.settings
-#**/.project
+**/.settings
+**/.project
