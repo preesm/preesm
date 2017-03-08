@@ -112,7 +112,7 @@
 		<module>plugins/org.ietr.preesm.experiment.model</module>
 		<module>plugins/org.ietr.preesm.core</module>
 		
-		<!-- <module>plugins/org.ietr.preesm.algorithm</module>
+		<module>plugins/org.ietr.preesm.algorithm</module>
 		<module>plugins/org.ietr.preesm.archi</module>
 		<module>plugins/org.ietr.preesm.cli</module>
 		<module>plugins/org.ietr.preesm.codegen</module>
@@ -124,7 +124,7 @@
 		<module>plugins/org.ietr.preesm.memory</module>
 		<module>plugins/org.ietr.preesm.pimm.algorithm</module>
 		<module>plugins/org.ietr.preesm.ui</module>
-				
+				<!--
 		<module>org.ietr.preesm.feature</module>
 		<module>org.ietr.preesm.complete.site</module>		
 		<module>org.ietr.preesm.product</module>
