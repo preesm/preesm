@@ -1,0 +1,134 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.ietr.preesm.releng</groupId>
+	<artifactId>org.ietr.preesm.releng</artifactId>
+	<version>2.2.5</version>
+	<packaging>pom</packaging>
+  
+  	<properties>  
+		<tycho-version>1.0.0</tycho-version>  	
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> 
+	</properties> 
+	  
+	<repositories>  
+		<!-- add Mars repository to resolve dependencies -->  
+		<repository>  
+			<id>Mars</id>  
+			<layout>p2</layout>  
+			<url>http://download.eclipse.org/releases/mars/</url>  
+		</repository>  
+	</repositories> 
+	
+	<dependencies>
+	<dependency>
+	<groupId>org.antlr</groupId>
+	<artifactId>antlr4-runtime</artifactId>
+	<version>4.3</version>
+</dependency>	
+	</dependencies>
+	
+	
+	<build>  
+		<plugins>  
+			<plugin>  
+				<!-- enable tycho build extension -->  
+				<groupId>org.eclipse.tycho</groupId>  
+				<artifactId>tycho-maven-plugin</artifactId>  
+				<version>${tycho-version}</version>  
+				<extensions>true</extensions>  
+				<configuration>  
+				    <environments>  
+					    <environment>  
+						    <os>linux</os>  
+						    <ws>gtk</ws>  
+						    <arch>x86_64</arch>  
+					    </environment>  
+					    <environment>  
+						    <os>linux</os>  
+						    <ws>gtk</ws>  
+						    <arch>x86</arch>  
+					    </environment>  
+					    <environment>  
+						    <os>win32</os>  
+						    <ws>win32</ws>  
+						    <arch>x86_64</arch>  
+					    </environment>  
+					    <environment>  
+						    <os>win32</os>  
+						    <ws>win32</ws>  
+						    <arch>x86</arch>  
+					    </environment>  
+				    </environments>  
+			   </configuration>  
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+				    <environments>  
+					    <environment>  
+						    <os>linux</os>  
+						    <ws>gtk</ws>  
+						    <arch>x86_64</arch>  
+					    </environment>
+					    <environment>  
+						    <os>linux</os>  
+						    <ws>gtk</ws>  
+						    <arch>x86</arch>  
+					    </environment>  
+					    <environment>  
+						    <os>win32</os>  
+						    <ws>win32</ws>  
+						    <arch>x86_64</arch>  
+					    </environment>  
+					    <environment>  
+						    <os>win32</os>  
+						    <ws>win32</ws>  
+						    <arch>x86</arch>  
+					    </environment>
+				    </environments> 
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.xtend</groupId>
+				<artifactId>xtend-maven-plugin</artifactId>
+				<version>2.9.0.beta2</version>
+				<executions>
+				  	<execution>
+					    <goals>
+							<goal>compile</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>xtend-gen</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>  
+	</build>  
+	<modules>			
+		<module>plugins/org.ietr.preesm.utils</module>
+		<module>plugins/org.ietr.preesm.experiment.model</module>
+		<module>plugins/org.ietr.preesm.core</module>
+		
+		<!-- <module>plugins/org.ietr.preesm.algorithm</module>
+		<module>plugins/org.ietr.preesm.archi</module>
+		<module>plugins/org.ietr.preesm.cli</module>
+		<module>plugins/org.ietr.preesm.codegen</module>
+		<module>plugins/org.ietr.preesm.codegen.xtend</module>
+		
+		<module>plugins/org.ietr.preesm.evaluator</module>
+		
+		<module>plugins/org.ietr.preesm.mapper</module>
+		<module>plugins/org.ietr.preesm.memory</module>
+		<module>plugins/org.ietr.preesm.pimm.algorithm</module>
+		<module>plugins/org.ietr.preesm.ui</module>
+				
+		<module>org.ietr.preesm.feature</module>
+		<module>org.ietr.preesm.complete.site</module>		
+		<module>org.ietr.preesm.product</module>
+		<module>org.ietr.preesm.rcp.utils</module> -->
+	</modules>
+	
+</project>
