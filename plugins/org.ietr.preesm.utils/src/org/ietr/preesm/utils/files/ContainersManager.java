@@ -134,7 +134,7 @@ public class ContainersManager {
 	 *            the IPath containing the folders to create
 	 * @throws CoreException
 	 */
-	public static void createMissingFolders(IPath path) throws CoreException {
+	public static void createMissingFolders(IPath path) throws IllegalArgumentException, CoreException {
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IResource resource = root.getFolder(path);
 		createMissingFolders(resource);

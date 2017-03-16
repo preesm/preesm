@@ -250,5 +250,9 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 
 		return cost;
 	}
+	
+	public Route getRoute(MapperDAGEdge edge){
+		return calculator.getRoute(edge);
+	}
 
 }

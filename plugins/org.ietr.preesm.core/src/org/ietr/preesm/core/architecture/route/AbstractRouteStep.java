@@ -92,6 +92,11 @@ public abstract class AbstractRouteStep {
 	public abstract String getId();
 
 	/**
+	 * The name of the step node is retrieved
+	 */
+	public abstract String getName();
+
+	/**
 	 * Evaluates the cost of a data transfer with size transferSize. This cost
 	 * can include overheads, involvements...
 	 */

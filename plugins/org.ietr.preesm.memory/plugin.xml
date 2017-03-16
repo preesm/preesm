@@ -55,7 +55,7 @@
             type="org.ietr.preesm.memory.bounds.SerialMemoryBoundsEstimator">
          <inputs>
             <input
-                  id="MemExes"
+                  id="MEGs"
                   object="java.util.Map">
             </input>
          </inputs>

@@ -1,0 +1,793 @@
+\documentclass[10pt,letterpaper]{report}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage[top=1in, bottom=1.25in, left=1.0in, right=1.0in]{geometry}
+
+% to deal with space after reesm in \preesm command
+\usepackage{xspace}
+
+\usepackage[acronym,toc]{glossaries}
+\input{acronyms}
+
+\usepackage{array}
+\usepackage{multirow}
+
+% make is possible to constrain column width for all horizontal alignment
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{calc}
+
+\pgfdeclarelayer{bg}    % declare background layer
+\pgfsetlayers{bg,main}  % set the order of the layers (main is the standard layer)
+
+\newcommand{\preesm}{P\textsc{reesm}\xspace}
+\newcommand{\version}{version 2.2.4\xspace}
+
+
+\title{{\Huge\preesm Documentation} \\ 
+	~\\
+	Workflow Tasks Documentation \\
+	~\\
+	{\Large Last update for \preesm \version}
+}
+
+\usepackage{hyperref}
+\author{D\textsc{esnos} Karol, N\textsc{ezan} Jean-Fran\c{c}ois, P\textsc{elcat} Maxime \\(\href{mailto:preesm-users@lists.sourceforge.net}{contact: preesm-users@lists.sourceforge.net})}
+	
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\preesm documentation (\version) - Workflow tasks}
+\rfoot{\thepage}
+
+\renewcommand{\thesection}{\arabic{section}}
+
+\definecolor{kgreen}{RGB}{155,187,89}
+\definecolor{kred}{RGB}{192,80,77}
+\definecolor{korange}{RGB}{247,150,70}
+\definecolor{klightblue}{RGB}{151,180,239}
+\definecolor{klightgreen}{RGB}{182,215,122}
+\definecolor{klightred}{RGB}{234,153,153}
+\definecolor{kdarkred}{RGB}{204,0,0}
+\definecolor{kgray}{RGB}{100,100,100}
+\definecolor{kyellow}{RGB}{255,202,0}
+\definecolor{klightyellow}{RGB}{239,239,125}
+\definecolor{kblue}{RGB}{53,111,204}
+
+
+\usepackage{titlesec}
+\newcommand{\sectionbreak}{\clearpage}
+\newcommand{\subsectionbreak}{\clearpage}
+
+
+\newlength{\nameWidth}
+\newlength{\taskWidth}
+\newlength{\maxOutWidth}
+\newlength{\maxInWidth}
+\newcommand{\task}[3]{ %
+		\begin{tikzpicture}[y=-1cm, x=1cm,baseline=(current bounding box.north)]
+		\def\name{#1};
+		\def\inputs{#2}
+		\def\outputs{#3}
+		% constant
+		\edef\ordStep{0.45};
+		\edef\initOrd{0.85};
+		\settowidth{\nameWidth}{\pgfinterruptpicture \textbf{\name} \endpgfinterruptpicture}
+		\pgfmathparse{\nameWidth + 10}; %+10 for extra space
+		\xdef\taskWidth{\pgfmathresult};		
+		% Compute max in width
+		\foreach \input in \inputs {
+			\settowidth{\nameWidth}{\pgfinterruptpicture \textbf{\input} \endpgfinterruptpicture}
+			\pgfmathparse{max(\nameWidth,\maxInWidth)};
+			\xdef\maxInWidth{\pgfmathresult};
+		}		
+		% Compute max in width
+		\foreach \output in \outputs {
+			\settowidth{\nameWidth}{\pgfinterruptpicture \textbf{\output} \endpgfinterruptpicture}
+			\pgfmathparse{max(\nameWidth,\maxOutWidth)};
+			\xdef\maxOutWidth{\pgfmathresult};
+		}		
+		\pgfmathparse{max(\taskWidth,\maxOutWidth+\maxInWidth)};
+		\xdef\taskWidth{\pgfmathresult pt};		
+		\draw[color=black] (\taskWidth/2,0.3) node{\textbf{\name}};
+		\edef\ord{\initOrd};
+		\foreach \input in \inputs {
+			\draw (0,\ord) node[right] {\input};
+			\pgfmathparse{\ord+\ordStep};
+			\xdef\ord{\pgfmathresult};
+		};
+		\edef\ordIn{\ord}
+		\edef\ord{\initOrd};
+		\foreach \output in \outputs {
+			\draw (\taskWidth,\ord) node[left] {\output};
+			\pgfmathparse{\ord+\ordStep};
+			\xdef\ord{\pgfmathresult};
+		}		;
+		\begin{pgfonlayer}{bg}
+		\pgfmathparse{max(\ord,\ordIn)}
+		\edef\maxOrd{\pgfmathresult};
+		\draw[thick,,color=white,fill=klightblue,fill opacity=0.60] (0,0) rectangle (\taskWidth,\maxOrd);
+		\end{pgfonlayer}
+		\end{tikzpicture}
+}
+
+\usepackage{longtable}
+
+\newcommand*\justify{%
+	\fontdimen2\font=0.4em% interword space
+	\fontdimen3\font=0.2em% interword stretch
+	\fontdimen4\font=0.1em% interword shrink
+	\fontdimen7\font=0.1em% extra space
+	\hyphenchar\font=`\-% allowing hyphenation
+}
+
+\newcommand{\tabBrief}[5]{
+		\hspace{2pt}\noindent\begin{tabular}[t]{|C{2.5cm}|C{2.5cm}|@{}p{10.5cm}@{}|}
+			\hline
+			\multicolumn{2}{|c|}{\textbf{Graphic Element}} & \multicolumn{1}{l|}{\textbf{Brief Description}} \\
+			\hline
+			\multicolumn{2}{|c|}{\task{#1}{#2}{#3}} & \begin{tabular}[t]{p{10.09cm}}
+				#4 \\[1em] \hline
+				\textbf{Plugin identifier} \\ \hline
+				\texttt{\justify #5} 
+			\end{tabular} \\
+			\multicolumn{2}{|c|}{} & \\
+			\hline
+			\multicolumn{1}{C{2.5cm}}{} & \multicolumn{1}{C{2.5cm}}{}  & \multicolumn{1}{@{}p{10.5cm}@{}}{} \\ % empty line to make sure the formatting of the table is good
+		\end{tabular} 
+		\vspace{-1.5em}
+}
+
+\newcommand{\tabParam}[1]{
+	\noindent\begin{longtable}[t]{|C{2.5cm}|C{2.5cm}|@{}p{10.5cm}@{}|}
+		\hline
+		\textbf{Parameters} & \multicolumn{2}{l|}{\textbf{Description}} \\
+		\hline			
+		#1 \\
+		\hline
+		\multicolumn{1}{C{2.5cm}}{} & \multicolumn{1}{C{2.5cm}}{}  & \multicolumn{1}{@{}p{10.5cm}@{}}{} \\[-2.5em] % empty line to make sure the formatting of the table is good
+	\end{longtable} 
+}
+
+\newcommand{\tabDesc}[1]{
+	\noindent\begin{longtable}[t]{|C{2.5cm}|C{2.5cm}|@{}p{10.5cm}@{}|}
+		\hline
+		\multicolumn{3}{|l|}{\textbf{Description}} \\
+		\hline	
+		\multicolumn{3}{|p{15.9cm}|}{
+			#1
+		} \\
+		\hline
+		\multicolumn{1}{C{2.5cm}}{} & \multicolumn{1}{C{2.5cm}}{}  & \multicolumn{1}{@{}p{10.5cm}@{}}{} \\[-2.5em] % empty line to make sure the formatting of the table is good
+	\end{longtable} 
+}
+
+\newcommand{\tabError}[1]{
+	\noindent\begin{longtable}[t]{|C{2.5cm}|C{2.5cm}|@{}p{10.5cm}@{}|}
+		\hline
+		\multicolumn{3}{|l|}{\textbf{Documented Errors}} \\
+		\hline		
+		#1
+		\multicolumn{3}{|c|}{} \\
+		\hline
+		\multicolumn{1}{C{2.5cm}}{} & \multicolumn{1}{C{2.5cm}}{}  & \multicolumn{1}{@{}p{10.5cm}@{}}{} \\[-2.5em] % empty line to make sure the formatting of the table is good
+	\end{longtable} 
+}
+
+\newcommand{\error}[2]{
+	\multicolumn{3}{|p{15.5cm}|}{\texttt{#1}} \\ 
+	\multicolumn{3}{|@{\hspace{0.7cm}}p{15.5cm}|}{#2} \\}
+
+\newcommand{\noError}{\multicolumn{3}{|c|}{None}\\}
+
+\newcommand{\tabValue}[1]{
+	& \multicolumn{2}{p{13.00cm}|}{}	\\
+	\cline{2-3}
+	& \textbf{Value} & \multicolumn{1}{l|}{\textbf{Effect}} #1
+}
+
+\newcommand{\valueDef}[2]{
+	\\
+	\cline{2-3}
+	& #1 & \multicolumn{1}{p{10.0cm}|}{#2} \\
+	& & \multicolumn{1}{L{10.0cm}|}{}
+}
+
+\makenoidxglossaries
+\setglossarysection{section}
+
+\begin{document}
+	\maketitle
+
+	\tableofcontents
+
+	\printnoidxglossaries
+
+	\section{How to Read this Document}
+	
+	\tabBrief{TaskName}{Input1,Input2,{..{}.}}{Output1,{..{}.}}
+	{Description of the purpose of the workflow task in one sentence.}
+	{ID associated to the workflow task. In order to use the presented workflow task, add a new task to a workflow using \preesm, edit the property of the new workflow task, and set the "plugin identifier" field of the "Basic" property tab with the value given in this cell.}	
+	
+	\tabParam{\textit{Param1} & \multicolumn{2}{p{13.00cm}|}{Description of what this parameter does.} \\
+	\tabValue{
+			\valueDef{value1}{Description of the effect of this parameter value.}
+			\valueDef{value2}{Description of the effect of this parameter value.}
+		}
+	}
+	
+	\tabDesc{Detailed description of the workflow task including references to associated papers (if any).}	
+	
+	\tabError{\noError}
+	
+	
+	\section{Graph transformation}
+	\subsection{Static PiMM to IBSDF}
+	\label{sec:static_pimm_2_sdf}
+		\tabBrief{StaticPiMM2SDF}{PiMM,scenario}{SDF}
+		{Transforms a static PiSDF Graph into an equivalent IBSDF graph.}
+		{org.ietr.preesm.experiment.pimm2sdf.StaticPiMM2SDFTask}
+		
+		\tabParam{\multicolumn{3}{|c|}{None}}
+		
+		\tabDesc{
+			In \preesm, since version 2.0.0, the \gls{pisdf} model of computation is used as the frontend model in the graphical editor of dataflow graphs. This model makes it possible to design dynamically reconfigurable dataflow graphs where the value of parameters, and production/consumption rates depending on them, might change during the execution of the application. 
+			
+			In former versions, the \gls{ibsdf} model of computation was used as the front end model for application design. Contrary to the \gls{pisdf}, the \gls{ibsdf} is a static model of computation where production and consumption rates of actors is fixed at compile-time.
+			
+			The purpose of this workflow task is to transform a static \gls{pisdf} graph into an equivalent \gls{ibsdf} graph. A static \gls{pisdf} graph is a \gls{pisdf} graph where dynamic reconfiguration features of the \gls{pisdf} model of computation are not used.
+			
+			~\newline{}
+			\textbf{See also:} \gls{ibsdf} \cite{Piat_2009_Interface}, \gls{pisdf} \cite{Desnos_PiMM_2013}
+		}
+		
+		\tabError{\noError}
+
+	\subsection{Hierarchy Flattening}
+	\label{sec:hierarchy_flattening}
+		\tabBrief{HierarchyFlattening}{SDF}{SDF}{Transforms a hierarchical \gls{ibsdf} graph into an equivalent \gls{sdf} graph.}{org.ietr.preesm.plugin.transforms.flathierarchy}
+		
+		\tabParam{\textit{depth} & \multicolumn{2}{p{13.00cm}|}{This parameter is used to select the number of hierarchy levels that will be flattened by the workflow task.} \\
+			\tabValue{
+				\valueDef{$0$}{The input \gls{ibsdf} graph is copied to the output port of the workflow task with no modification.}
+				\valueDef{$n \in \mathbb{N}^*$}{The first $n$ levels of the hierarchical \gls{ibsdf} graph are flattened.}
+			}
+		}
+		
+		\tabDesc{
+			The purpose of this workflow task is to flatten several levels of the hierarchy of an \gls{ibsdf} graph and produce an equivalent \gls{sdf} graph.
+			
+			A hierarchical \gls{ibsdf} graph is a graph where the internal behavior of some actors is described using another \gls{ibsdf} subgraph instead of a C header file. 
+			
+			When applying this transformation, hierarchical \gls{ibsdf} actors of the first $n$ levels of hierarchy are replaced with the actors of the \gls{ibsdf} subgraph with which these hierarchical actors are associated.
+			
+			~\newline{}
+			\textbf{See also:} \gls{ibsdf} \cite{Piat_2009_Interface}
+		}
+		
+		\tabError{
+			\error{Inconsistent Hierarchy, graph can't be flattened}{
+				Flattening of the \gls{ibsdf} graph was aborted because one of the graph composing the application, at the top level or deeper in the hierarchy, was not consistent. 
+				
+				
+				\textbf{See also:} Graph consistency~\cite{Lee_Synchronous_1987}.}
+		}
+
+	\subsection{Single-Rate Transformation}
+	\label{sec:single-rate_transformation}
+	\tabBrief{Single-rate Transformation}{SDF}{SDF}{Transforms an \gls{sdf} graph into an equivalent single-rate \gls{sdf} graph.}{org.ietr.preesm.plugin.transforms.sdf2hsdf}
+	
+	\tabParam{
+		\textit{ExplodeImploreSuppr} & \multicolumn{2}{p{13.00cm}|}{\textit{(Deprecated: use at your own risks)}
+			
+			 This parameter makes it possible to remove most of the \emph{explode} and \emph{implode} actors that are inserted in the graph during the single-rate transformation. The resulting \gls{sdf} graph is an ill-constructed graph where a single data input/output port of an actor may be connected to several \glspl{fifo}.} \\
+		\tabValue{
+			\valueDef{\texttt{false}}{(default) The suppression of explode/implode special actors is not activated.}	
+			\valueDef{\texttt{true}}{The suppression of explode/implode special actors is activated.}	
+		}
+	}
+	
+	\tabDesc{
+		The purpose of this task is to transform an \gls{sdf} graph --- which is actually an \gls{ibsdf} graph in \preesm --- into an equivalent single-rate \gls{sdf} graph.
+		
+		A single-rate \gls{sdf} graph is a graph where each actor of the original \gls{sdf} graph is duplicated as many times as its number of firings per iteration of the original graph. The purpose of this transformation is to reveal of the implicit data-parallelism of the original \gls{sdf} graph.
+		
+		Special actors, called \emph{explode} and \emph{implode} actors, may be automatically inserted in the single-rate \gls{sdf} graph resulting from this transformation. The purpose of these actors is to distribute (resp. gather) data-tokens produced (resp. consumed) on a single input (resp. output) port of an actor in order to send them to several consumer actors (resp. to receive them from several producer actors).
+		
+		~\newline{}
+		\textbf{See also:} Single-rate transformation~\cite{Pino_hierarchical_1995}, Special actors~\cite{Desnos_Memory_2016}
+	}
+	
+			
+	\tabError{
+		\error{Graph not valid, not schedulable}{
+			Single-rate transformation of the \gls{sdf} graph was aborted because the top level was not consistent, or it was consistent but did not contained enough delays --- i.e. initial data tokens --- to make it schedulable. 
+			
+			
+			\textbf{See also:} Graph consistency~\cite{Lee_Synchronous_1987}.}
+	}
+	
+	\section{Graph Exporters}
+	\subsection{SDF Exporter}
+	\label{sec:sdf_exporter}
+	\tabBrief{SDF Exporter}{SDF}{}{Create a new \texttt{*.graphml} file containing the exported \gls{sdf} graph.}{org.ietr.preesm.plugin.exportXml.sdf4jgml}
+	
+	\tabParam{\textit{path} & \multicolumn{2}{p{13.00cm}|}{			
+			Path of the directory within which the exported \texttt{*.graphml} file will be created. If the specified directory does not exist, it will be created.} \\
+		\tabValue{
+			\valueDef{\texttt{\justify path/in/proj}}{Path within the \preesm project containing the workflow where the "\gls{sdf} Exporter" task is instantiated. Even if the workflow of a \preesm project $A$ is executed with a scenario from a different project $B$, the \texttt{*.graphml} file will be generated within the specified directory of project $A$.
+				
+			Exported \gls{sdf} graphs will be named automatically, usually using the same name as the original \gls{sdf} graph processed by the workflow. If a graph with this name already exists in the given path, it will be overwritten.
+				
+			Example: \texttt{Algo/generated/singlerate}}
+			
+			\valueDef{\texttt{\justify path/in/proj/ name.graphml}}{Path within the \preesm project containing the workflow where the "\gls{sdf} Exporter" task is instantiated. Even if the workflow of a \preesm project $A$ is executed with a scenario from a different project $B$, the \texttt{*.graphml} file will be generated within the specified directory of project $A$.
+			
+			Exported \gls{sdf} graph will be named using the string with the \texttt{graphml} extension at the end of the given path. If a graph with this name already exists in the given path, it will be overwritten.
+			
+			Example: \texttt{Algo/generated/singlerate/myexport.graphml}
+			}	
+		}	
+	}
+	
+	\tabDesc{
+		The purpose of this task is to create a new \texttt{*.graphml} file containing where the exported \gls{ibsdf} graph will be written. The exported graph can then be visualized and exported using the former \preesm graph editor for \gls{ibsdf} graph, which was replaced with the \gls{pisdf} graph editor since version 2.0.0 (See~\ref{sec:static_pimm_2_sdf}).
+		
+		This task is generally used to export intermediary graphs generated at different step of a workflow execution. For example, to visualize the \gls{sdf} graph resulting from the flattening of an \gls{ibsdf} graph (See~\ref{sec:hierarchy_flattening}), or to understand the parallelism that was exposed by the single-rate transformation (See~\ref{sec:single-rate_transformation}).
+	}
+	
+	\tabError{\error{Path <given path> is not a valid path for export. <reason>}{The value set for parameter \textit{path} is not a valid path in the project.}}
+	
+	\subsection{DAG Exporter}
+	\tabBrief{DAG Exporter}{DAG}{}{Create a new \texttt{*.graphml} file containing the exported \gls{dag}.}{org.ietr.preesm.mapper.exporter.DAGExportTransform}
+	
+	\tabParam{\textit{path} & \multicolumn{2}{p{13.00cm}|}{			
+			See \gls{sdf} Exporter task~\ref{sec:sdf_exporter}} \\
+		& \multicolumn{2}{p{13.00cm}|}{} \\
+		\hline
+		\textit{openFile} & \multicolumn{2}{p{13.00cm}|}{			
+			\textit{(Deprecated)}} \\
+		& \multicolumn{2}{p{13.00cm}|}{}
+	}
+	
+	\tabDesc{
+		The purpose of this task is to create a new \texttt{*.graphml} file containing where the exported \gls{dag} will be written. The exported graph can then be visualized and exported using the former \preesm graph editor for \gls{ibsdf} graph, which was replaced with the \gls{pisdf} graph editor since version 2.0.0 (See~\ref{sec:static_pimm_2_sdf}).
+		
+		This task is generally used to export intermediary graphs generated by the mapping and scheduling tasks of the workflow (See~\ref{sec:static_mapping_scheduling}).
+	}
+	
+	\tabError{\error{Path <given path> is not a valid path for export. <reason>}{The value set for parameter \textit{path} is not a valid path in the project.}}
+	
+	\section{Static Mapping Scheduling}
+	\label{sec:static_mapping_scheduling}
+	
+	\subsection{List Scheduler}
+	\label{sec:list_scheduler}
+	\tabBrief{List Scheduler}{architecture, scenario, SDF}{ABC, DAG}{Map and schedule the dataflow graph on the architecture.}{org.ietr.preesm.plugin.mapper.listscheduling}
+	
+	\tabParam{\textit{balanceLoads} & \multicolumn{2}{p{13.00cm}|}{			
+			Specify whether the mapping and scheduling algorithm should try to distribute the computational load fairly among cores. Computational load is measured as the amount of time during which a processing element is executing an actor.} \\
+		\tabValue{
+			\valueDef{\texttt{true}}{Load balancing will be an objective of the mapping algorithm.}
+			
+			\valueDef{\texttt{false}}{Load balancing will not be an objective of the mapping algorithm. Only minimizing the graph iteration latency will be.}	
+		} \\
+		\hline	
+		\textit{edgeSchedType} & \multicolumn{2}{p{13.00cm}|}{Specify which strategy the scheduling algorithm should use to order the communications.} \\
+		\tabValue{
+			\valueDef{\texttt{Simple}}{\textit{description missing}}
+			\valueDef{\texttt{Switcher}}{\textit{description missing}}
+			\valueDef{\texttt{Advanced}}{\textit{description missing}}		
+		}
+	}
+	
+	\newpage
+	\tabParam{	
+		\textit{simulatorType} & \multicolumn{2}{p{13.00cm}|}{Control the accuracy/complexity tradeoff of the simulator used to minimize latency of the scheduling algorithm.} \\
+		\tabValue{
+			\valueDef{\texttt{LooselyTimed}}{The loosely-timed ABC that accounts for task times of operators and transfer	costs on PN and CN. However, it does not consider transfer contention (ignoring the difference between Parallel and Contention Nodes in the S-LAM architecture).}
+			\valueDef{\texttt{ApproximatelyTimed}}{The approximately-timed ABC that associates each inter-core contention node with a constant rate and simulates contentions on CNs.}		
+			\valueDef{\texttt{AccuratelyTimed}}{The accurately-timed ABC that includes the set-up time necessary to initialize	a parallel transfer controller such as Texas Instruments Enhanced Direct Memory Access (EDMA). This set-up time is scheduled in the core which triggers the	transfer.}
+			\valueDef{\texttt{InfiniteHomogeneous}}{The infinite homogeneous ABC which is a special ABC that performs an algorithm execution simulation on a homogeneous architecture containing an infinite	number of cores with main type. It may be noted that for this study, the main core type of an S-LAM architecture is defined in the input scenario. This ABC enables the extraction of the critical path of the graph.}
+			\valueDef{\texttt{CommConten}}{\textit{description missing}}		
+			\valueDef{\texttt{DynamicQueuing}}{\textit{description missing}}
+		}
+	}
+	
+	\tabDesc{
+		Schedules the algorithm on the architecture using the Kwok List	scheduling
+		heuristic. This implementation of the scheduling algorithm is based on the ABC scheduler.
+		
+		~\newline{}
+		\textbf{See also:} List scheduling~\cite{Kwok_High_1997}, ABC scheduler~\cite{Pelcat_Scalable_2009}.
+	}
+	
+	\tabError{\noError}
+	
+	\subsection{FAST Scheduler}
+		\tabBrief{FAST Scheduler}{architecture, scenario, SDF}{ABC, DAG}{Map and schedule the dataflow graph on the architecture using an iterative algorithm.}{org.ietr.preesm.plugin.mapper.fast}
+		
+		\tabParam{\textit{balanceLoads} & \multicolumn{2}{p{13.00cm}|}{see List Scheduler (Section~\ref{sec:list_scheduler}).} \\
+			\hline	
+			\textit{edgeSchedType} & \multicolumn{2}{p{13.00cm}|}{see List Scheduler (Section~\ref{sec:list_scheduler}).} \\
+			\hline
+			\textit{simulatorType} & \multicolumn{2}{p{13.00cm}|}{see List Scheduler (Section~\ref{sec:list_scheduler}).} \\
+			\hline
+			\textit{fastTime} & \multicolumn{2}{p{13.00cm}|}{Specify for how long the FAST algorithm will iteratively search for better a scheduling, if not already interrupted manually by the user.} \\
+			\tabValue{
+				\valueDef{$n \in \mathbb{N}^*$}{Timeout value in seconds.}
+			}\\
+			\hline
+			\textit{fastLocal\-SearchTime} & \multicolumn{2}{p{13.00cm}|}{\textit{Description missing.}} \\
+			\tabValue{
+				\valueDef{$n \in \mathbb{N}^*$}{Time in seconds.}
+			}\\
+			\hline
+			\textit{displaySolutions} & \multicolumn{2}{p{13.00cm}|}{Specify whether Gantt diagrams of intermediate schedules found iteratively by the algorithm should be displayed.} \\
+			\tabValue{
+				\valueDef{\texttt{true}}{Intermediate Gantt diagrams are displayed. May be slow for large applications.}
+				\valueDef{\texttt{false}}{Intermediate Gantt diagrams are not displayed.}
+			} 
+		}
+		
+		\tabDesc{
+			Schedules the algorithm on the architecture using the Kwok FAST	scheduling
+			heuristic. This implementation of the scheduling algorithm is based on the ABC scheduler.
+			
+			~\newline{}
+			\textbf{See also:} FAST scheduling~\cite{Kwok_High_1997}, ABC scheduler~\cite{Pelcat_Scalable_2009}.
+		}
+		
+		\tabError{\noError}
+	
+	\newpage
+	\section{Memory optimization}
+	\subsection{MEG Builder}
+	\label{sec:meg_builder}
+	\tabBrief{MEG Builder}{DAG, scenario}{MemEx}{Builds the \gls{meg} modeling the memory allocation constraints.}{org.ietr.preesm.memory.exclusiongraph.MemoryExclusion\-GraphBuilder}
+	
+	\tabParam{\textit{Verbose} & \multicolumn{2}{p{13.00cm}|}{How verbose will this task be during its execution. In verbose mode, the task will log the start and completion time of the build, as well as characteristics (number of memory objects, density of exclusions) of the produced \gls{meg}.} \\
+		\tabValue{
+			\valueDef{\texttt{false}}{(Default) The task will not log information.}
+			\valueDef{\texttt{true}}{The task will log build and \gls{meg} information.}
+		}\\
+		\hline
+		\textit{supprForkJoin} & \multicolumn{2}{p{13.00cm}|}{\textit{(Deprecated) When activated, the \gls{dag} used to build the \gls{meg} is pre-processed to remove all fork/join (aka. explode/implode) actors. Compatibility of the produced \gls{meg} with other workflow tasks is not guaranteed, and known to be non-functional for code generation tasks.}} \\
+		\tabValue{
+		\valueDef{\texttt{false}}{(Default) Feature is not activated.}
+		\valueDef{\texttt{true}}{Feature is activated.}
+		}
+	}
+	
+	\tabDesc{The memory allocation technique used in \preesm is based on a \acrfull{meg}. A \gls{meg} is a graph whose vertices model the memory objects that must be allocated in memory in order to run the generated code. In the current version of \preesm, each of these memory objects corresponds either to an edge of the \acrfull{dag} or to a buffer corresponding to "delays" of the graph that store data between executions of a schedule. In the \gls{meg}, two memory objects are linked by an edge (called an exclusion) if they can not be allocated in overlapping memory spaces.
+		
+		~\newline{}
+		\textbf{See also:} \gls{meg}~\cite{Desnos_Memory_2012}.
+	}
+	
+	\tabError{\noError}
+	
+	\subsection{MEG Update with Scheduling Information}
+		\tabBrief{MEG Updater}{DAG, MemEx}{MemEx}{Relax memory allocation constraints of the \gls{meg} using scheduling information.}{org.ietr.preesm.memory.exclusiongraph.MemExUpdater}
+		
+		\tabParam{\textit{Verbose} & \multicolumn{2}{p{13.00cm}|}{How verbose will this task be during its execution. In verbose mode, the task will log the start and completion time of the update, as well as characteristics (number of memory objects, density of exclusions) of the \glspl{meg} both before and after the update.} \\
+			\tabValue{
+				\valueDef{\texttt{false}}{(Default) The task will not log information.}
+				\valueDef{\texttt{true}}{The task will log build and \gls{meg} information.}
+			}\\
+			\hline
+			\textit{supprForkJoin} & \multicolumn{2}{p{13.00cm}|}{\textit{(Deprecated) See MEG Builder~\ref{sec:meg_builder}.}
+			} \\
+			\hline
+			\textit{Update with MemObject lifetime} & \multicolumn{2}{p{13.00cm}|}{Specify what kind of precedence information should be used when updating the \gls{meg}.} \\
+			\tabValue{
+				\valueDef{\texttt{false}}{(Default) Only data precedence and scheduling order are taken into account to update the \gls{meg}.}
+				\valueDef{\texttt{true}}{Update the \gls{meg} with precedence and timing information from the schedule. This option will produce a valid allocation only if the runtime of the actors is constant and identical to the one used by the scheduler. Small variations of the actors runtime may corrupt the memory allocation.}
+			}
+		}
+		
+		\tabDesc{The \gls{meg} used in \preesm can be updated with scheduling information to remove exclusions between memory objects and make better allocations possible.
+			
+			~\newline{}
+			\textbf{See also:} \gls{meg} update~\cite{Desnos_Pre_2013}.
+		}
+		
+		\tabError{\noError}
+		
+	\subsection{Memory Bounds Estimator}
+	\label{sec:memory_bounds_estimator}
+	
+	\tabBrief{Memory Bounds Estimator}{MemEx}{}{Compute bounds of the amount of memory needed to allocate the \gls{meg}}{org.ietr.preesm.memory.bounds.MemoryBoundsEstimator}
+	
+	\tabParam{\textit{Verbose} & \multicolumn{2}{p{13.00cm}|}{How verbose will this task be during its execution. In verbose mode, the task will log the name of the used solver, the start and completion time of the bound estimation algorithm. Computed bounds are always logged, even if the verbose parameter is set to \texttt{false}.} \\
+		\tabValue{
+			\valueDef{\texttt{false}}{(Default) The task will not log information.}
+			\valueDef{\texttt{true}}{The task will log build and \gls{meg} information.}
+		} \\
+		\hline
+		\textit{Solver} & \multicolumn{2}{p{13.00cm}|}{Specify which algorithm is used to compute the lower bound.} \\
+		\tabValue{
+			\valueDef{\texttt{Heuristic}}{(Default) Heuristic algorithm described in~\cite{Desnos_Memory_2012} is used. This technique find an approximate solution.}
+			\valueDef{\texttt{Ostergard}}{\"{O}sterg{\aa}rd's algorithm~\cite{Ostergaard_new_2001} is used. This technique finds an optimal solution, but has a potentially exponential complexity.}
+			\valueDef{\texttt{Yamaguchi}}{Yamaguchi et al.'s algorithm~\cite{Yamaguchi_New_2008} is used. This technique finds an optimal solution, but has a potentially exponential complexity.}
+		}
+	}
+	
+	\tabDesc{The analysis technique presented in~\cite{Desnos_Memory_2012} can be used in \preesm to derive bounds for the amount of memory that can be allocated for an application. The upper bound corresponds to the worst memory allocation possible for an application. The lower bound is a theoretical value that limits the minimum amount of memory that can be allocated. By definition, the lower bound is not always reachable, which means that it might be impossible to find an allocation with this optimal amount of memory. The minimum bound is found by solving the Maximum Weight Clique problem on the \gls{meg}.
+		
+	This task provides a convenient way to evaluate the quality of a memory allocation.
+		
+	~\newline{}
+	\textbf{See also:} Memory Bounds~\cite{Desnos_Memory_2012,Desnos_Pre_2013}.
+	}
+			
+	\tabError{\noError}
+	
+	\newpage
+	
+	\subsection{Serial Memory Bounds Estimator}
+	
+	\tabBrief{Serial Memory Bounds}{MEGs}{}{Compute bounds of the amount of memory needed to allocate the \glspl{meg}}{org.ietr.preesm.memory.bounds.SerialMemoryBounds\-Estimator}
+	
+	\tabDesc{This task computes the memory bounds (see Memory Bound Estimator Task~\ref{sec:memory_bounds_estimator}) for several \glspl{meg}, like the one produced by the Memory Allocation task~\ref{sec:mem_alloc}.
+	}
+	
+	\newpage
+	
+	\subsection{Buffer Merging: Memory Script Runner}
+	\label{sec:mem_scripts}
+	\tabBrief{Memory Scripts}{DAG, scenario, MemEx}{MemEx}{Executes the memory scripts associated to actors and merge buffers.}{org.ietr.preesm.memory.script.MemoryScriptTask}
+	
+	\tabParam{\textit{Check} & \multicolumn{2}{p{13.00cm}|}{			
+			Verification policy used when checking the applicability of the memory scripts written by the developer and associated to the actor. More information on forbidden buffer matching patterns in \cite{Desnos_Memory_2016}.} \\
+		\tabValue{
+			\valueDef{\texttt{\justify Thorough}}{Will generate error messages with a detailed description of the source of the error. This policy should be used when writting memory scripts for the first time.}
+			
+			\valueDef{\texttt{Fast}}{All errors in memory script are still detected, but error messages are less verbose. This verification policy is faster than the \texttt{Thorough} policy.}	
+			
+			\valueDef{\texttt{None}}{No verification is performed. Use this policy to speed up workflow execution once all memory scripts have been validated.}	
+		} \\
+		\hline	
+		\textit{Data alignment} & \multicolumn{2}{p{13.00cm}|}{			
+			Option used to force the allocation of buffers with aligned addresses. The data alignment property should always have the same value as the one set in the properties of the \textit{Memory Allocation} task (See~\ref{sec:mem_alloc}).} 
+		 \\
+		 \hline	
+		 \textit{Log Path} & \multicolumn{2}{p{13.00cm}|}{Specify whether, and where, a log of the buffer matching optimization should be generated. Generated log are in the markdown format, and provide information on all matches created by scripts as well as which match could be applied by the optimization process.} \\
+		 \tabValue{
+		 	 \valueDef{\texttt{path/file.txt}}{The path given in this property is relative to the "Code generation directory" defined in the executed scenario.}
+			 \valueDef{\textit{empty}}{No log will be generated.}		
+		 }
+		 \\
+		 \hline	
+		 \textit{Verbose} & \multicolumn{2}{p{13.00cm}|}{Verbosity of the workflow task.} \\
+		 \tabValue{
+		 	\valueDef{\texttt{True}}{The workflow task will be verbose in the console.}
+		 	\valueDef{\texttt{False}}{The workflow task will be more quiet in the console.}		
+		 }
+	}
+	
+	\newpage
+	\tabDesc{Executes the memory scripts associated to actors and merge buffers. The purpose of the memory scripts is to allow Preesm to allocate input and output buffers of certain actors in overlapping memory range.
+		
+	~\newline{}
+	\textbf{See also:} Buffer merging~\cite{Desnos_Memory_2016}}
+
+	\tabError{\noError}
+	
+	\subsection{Memory Allocation}
+	\label{sec:mem_alloc}
+	
+	\tabBrief{Memory Allocation}{MemEx}{MEGs}{Perform the memory allocation for the given \gls{meg}.}{org.ietr.preesm.memory.allocation.MemoryAllocatorTask}
+	
+	\tabParam{
+		\textit{Verbose} & \multicolumn{2}{p{13.00cm}|}{Verbosity of the task.} \\
+		\tabValue{
+			\valueDef{\texttt{True}}{Detailed statistics of the allocation process are logged.}
+			\valueDef{\texttt{False} }{Logged information is kept to a minimum.}
+		} \\
+		\hline
+		\textit{Allocator(s)} & \multicolumn{2}{p{13.00cm}|}{Specify which memory allocation algorithm(s) should be used. If the string value of the parameters contains several algorithm names, all will be executed one by one.} \\
+		\tabValue{
+			\valueDef{\texttt{Basic}}{Each memory object is allocated in a dedicated memory space. Memory allocated for a given object is not reused for other.}
+			\valueDef{\texttt{BestFit}}{Memory objects are allocated one by one; allocating each object to the available space in memory whose size is the closest to the size of the allocated object. If \gls{meg} exclusions permit it, memory allocated for a memory object may be reused for others.}
+			\valueDef{\texttt{FirstFit}}{Memory objects are allocated one by one; allocating each object to the first available space in memory whose size is the large enough to allocate the object. If \gls{meg} exclusions permit it, memory allocated for a memory object may be reused for others.}
+			\valueDef{\texttt{DeGreef}}{Algorithm adapted from~\cite{Greef_Array_1997}. If \gls{meg} exclusions permit it, memory allocated for a memory object may be reused for others.}
+		}		\\
+		\hline
+		\textit{Distribution} & \multicolumn{2}{p{13.00cm}|}{Specify which memory architecture should be used to allocate the memory.} \\
+		\tabValue{
+			\valueDef{\texttt{SharedOnly}}{(Default) All memory objects are allocated in a single memory bank accessible to all \glspl{pe}.}
+			\valueDef{\texttt{Distributed\-Only}}{Each \gls{pe} is associated to a private memory bank that no other \gls{pe} can access. (Currently not supported by code generation.)}
+			\valueDef{\texttt{Mixed}}{Both private memory banks and a shared memory can be used for allocating memory.}
+			\valueDef{\texttt{MixedMerged}}{Same as mixed, but the memory allocation algorithm favors buffer merging over memory distribution.}
+
+		} 
+	}
+	\newpage
+	
+	\tabParam{
+		\textit{Best/First Fit order} & \multicolumn{2}{p{13.00cm}|}{When using \texttt{FirstFit} or \texttt{BestFit} memory allocators, this parameter specifies in which order the memory objects will be fed to the allocation algorithm. If the string value associated to the parameters contains several order names, all will be executed one by one.} \\
+		\tabValue{
+			\valueDef{\texttt{ApproxStableSet}}{Memory objects are sorted into disjoint stable sets. Stable sets are formed one after the other, each with the largest possible number of object. Memory objects are fed to the allocator set by set and in the largest first order within each stable set.}
+			\valueDef{\texttt{ExactStableSet} }{Similar to "ApproxStableSet". Stable set are built using an exact algorithm instead of a heuristic.}
+			\valueDef{LargestFirst}{Memory objects are allocated in decreasing order of their size.}
+			\valueDef{\texttt{Shuffle}}{Memory objects are allocated in a random order. Using the "Nb of Shuffling Tested" parameter, it is possible to test several random orders and only keep the best memory allocation.}
+			\valueDef{\texttt{Scheduling}}{Memory objects are allocated in scheduling order of their "birth". The "birth" of a memory object is the instant when its memory would be allocated by a dynamic allocator. This option can be used to mimic the behavior of a dynamic allocator. (Only available for \glspl{meg} updated with scheduling information).}
+		} \\
+		\hline
+		\textit{Data alignment} & \multicolumn{2}{p{13.00cm}|}{Option used to force the allocation of buffers (i.e. Memory objects) with aligned addresses. The data alignment property should always have the same value as the one set in the properties of the \textit{Memory Scripts} task (See~\ref{sec:mem_scripts}).} \\
+		\tabValue{
+			\valueDef{\texttt{None}}{No special care is taken to align the buffers in memory.}
+			\valueDef{\texttt{Data}}{All buffers are aligned on addresses that are multiples of their size. For example, a 4 bytes integer is aligned on 4 bytes address.}
+			\valueDef{\texttt{Fixed:=}$n$}{Where $n\in \mathbb{N}^*$. This forces the allocation algorithm to align all buffers on addresses that are multiples of n bytes.}
+		} \\
+		\hline
+		\textit{Nb of Shuffling Tested} & \multicolumn{2}{p{13.00cm}|}{Number of random order tested when using the \texttt{Shuffle} value for the \textit{Best/First Fit order} parameter.} \\
+		\tabValue{
+			\valueDef{$n\in \mathbb{N}^*$}{Number of random order.}
+		} 
+		\\
+		\hline
+		\textit{Merge broadcasts} & \multicolumn{2}{p{13.00cm}|}{(Deprecated) Merge memory objects corresponding to outputs of Broadcast actors. This feature was replaced by the more generic Memory Scripts.} 
+	}
+	
+	\newpage
+	
+	\tabDesc{Workflow task responsible for allocating the memory objects of the given \gls{meg}.
+		
+		~\newline{}
+		\textbf{See also:} Memory Allocation Algorithms~\cite{Desnos_Pre_2013}, Distributed Memory Allocation~\cite{Desnos_Distributed_2016}, Broadcast Merging~\cite{Desnos_Memory_2014}.
+	}
+	
+	\tabError{\error{The obtained allocation was not valid because mutually exclusive memory objects have overlapping address ranges. The allocator is not working.\newline{} 	
+	<List of memory objects>}{
+		When checking the result of a memory allocation, two memory objects linked with an exclusion in the \gls{meg} were allocated in overlapping memory spaces. The error is caused by an invalid memory allocation algorithm and should be corrected in the source code.}
+	\hline
+	\error{The obtained allocation was not valid because there were unaligned memory objects. The allocator is not working.\newline{} 	
+		<List of memory objects>}{
+		When checking the result of a memory allocation, some memory objects were found not to respect the \textit{Dala alignment} parameter. The error is caused by an invalid memory allocation algorithm and should be corrected in the source code.}
+}
+	
+	\section{Code Generation}
+	\subsection{Static Code Generation}
+	\tabBrief{Code Generation}{MEGs, DAG, scenario, architecture}{}{Generate code for the application deployment resulting from the workflow execution.}{org.ietr.preesm.codegen.xtend.task.CodegenTask}
+	
+	\tabParam{\textit{Printer} & \multicolumn{2}{p{13.00cm}|}{Specify which printer should be used to generate code. Printers are defined in \preesm source code using an extension mechanism that make it possible to define a single printer name for several targeted architecture. Hence, depending on the type of \glspl{pe} declared in the architecture model, \preesm will automatically select the associated printer class, if it exists.} \\
+		\tabValue{
+			\valueDef{\texttt{C}}{Print C code and shared-memory based communications. Currently compatible with \texttt{x86}, \texttt{c6678}, and \texttt{arm} architectures.}
+			\valueDef{\texttt{InstrumentedC}}{Print C code instrumented with profiling code, and shared-memory based communications. Currently compatible with \texttt{x86}, \texttt{c6678} architectures.}
+			\valueDef{\texttt{DynamicAllocC}}{Print C code and shared-memory based communications with dynamic allocation. Compatible with \texttt{x86}, \texttt{c6678}. \textit{(Not maintained, use at your own risks)}}
+			\valueDef{\texttt{XML}}{Print XML code with all informations used by other printers to print code. Compatible with \texttt{x86}, \texttt{c6678}.}
+		} 
+	}
+
+	\tabDesc{This workflow task is responsible for generating code for the application deployment resulting from the workflow execution.}
+	
+	\tabError{\noError}
+	
+	\newpage
+	\section{Exporter/Importer for Third-Party Dataflow Frameworks}
+	\subsection{SDF3 Exporter}
+	\tabBrief{SDF3 Exporter}{SDF,architecture,scenario}{}{Export a \texttt{*.xml} file conforming the \gls{sdf3} format.}{org.ietr.preesm.algorithm.exportSdf3Xml.Sdf3Exporter}
+	
+	\tabParam{\textit{path} & \multicolumn{2}{p{13.00cm}|}{			
+			Path of the exported \texttt{*.xml} file. If the specified directory does not exist, it will not be created.}\\
+	\tabValue{
+		\valueDef{\texttt{\justify path/in/proj/ name.xml}}{Path within the \preesm project containing the workflow where the "SDF3 Exporter" task is instantiated. 
+			
+		Exported \gls{sdf} graph will be named using the string with the \texttt{xml} extension at the end of the given path. If a graph with this name already exists in the given path, it will be overwritten.
+		
+		Example: \texttt{Code/generated/sdf3/myexport.xml}
+		}	
+	} 
+	}
+	
+	\tabDesc{This task generates \gls{sdf3} code modeling the given \gls{sdf} graph. \gls{sdf} modeling in \gls{sdf3} follow the specification introduced by Stuijk et al. in~\cite{Stuijk_SDF3_2006}.
+		
+	~\newline{}
+    \textbf{Known Limitations:}
+    Here is a list of known limitations of the SDF3 importation process: 
+    Only SDF graphs can be imported,
+    Actors of the SDF cannot be implemented on more than one processor type, 
+    Timings cannot depend on parameters since SDF3 does not support parameterized SDF.
+    }
+    
+    \tabError{\noError}
+	
+	\subsection{SDF3 Importer}
+	\subsection{DIF Exporter}
+	\newpage
+	\subsection{Promela Exporter}
+	\tabBrief{Promela Exporter}{SDF,scenario}{}{Generate a \texttt{*.pml} file modeling the given \gls{sdf} graph.}{org.ietr.preesm.algorithm.exportPromela.PromelaExporter}
+	
+	\tabParam{\textit{path} & \multicolumn{2}{p{13.00cm}|}{			
+			Path of the exported \texttt{*.pml} file. If the specified directory does not exist, it will not be created.} \\
+	\tabValue{
+		\valueDef{\texttt{\justify path/in/proj/ name.pml}}{Path within the \preesm project containing the workflow where the "Promela Exporter" task is instantiated. 
+			
+			Exported \gls{sdf} graph will be named using the string with the \texttt{pml} extension at the end of the given path. If a graph with this name already exists in the given path, it will be overwritten.
+			
+			Example: \texttt{Code/generated/promela/myexport.pml}
+		}	
+		} \\
+		\hline
+		\textit{FIFO allocation policy} & \multicolumn{2}{p{13.00cm}|}{			
+			This parameter is used to select how \glspl{fifo} will be allocated in memory in the generated Promela code.} \\
+			\tabValue{
+				\valueDef{\texttt{Separated}}{
+					\textit{(Default)} Each \gls{fifo} is assumed to be allocated in a dedicated, separate memory space. The total amount of memory needed to run the application is the sum of the maximum number of data tokens stored in all \glspl{fifo} during an \gls{sdf} graph iteration.
+				}
+				\valueDef{\texttt{Shared}}{
+					All \glspl{fifo} are assumed to be allocated in a shared memory space. The total amount of memory needed to run the application is the maximum number of data tokens stored in all \glspl{fifo} during an \gls{sdf} graph iteration.
+				}	
+		}\\
+		\hline
+		\multirow{2}{2.5cm}{\centering \textit{Synchronous production/ consumption}} & \multicolumn{2}{p{13.00cm}|}{			
+			This parameter is used to select how \gls{sdf} actor firings are modeled in the generated \texttt{*.pml} file} \\
+		\tabValue{
+			\valueDef{\texttt{true}}{
+				\textit{(Default)} When an \gls{sdf} actor is executed, data tokens are consumed on its input ports and produced on its output ports simultaneously. This means that produced and consumed tokens are not present in input and output \glspl{fifo} simultaneously.
+			}
+			\valueDef{\texttt{false}}{
+				When an \gls{sdf} actor is executed, data tokens are consumed on its input ports and later produced on its output ports in two separate, non-simultaneous steps. 
+			}	
+		}
+	}	
+	
+	\tabDesc{This task generates Promela code modeling the given \gls{sdf} graph. \gls{sdf} modeling in Promela follow the specification introduced by Geilen et al. in~\cite{Geilen_Minimising_2005}.}
+	
+	\tabError{\noError}
+	
+	\section{Analysis}
+	\subsection{Gantt Display}
+	\tabBrief{Gantt Display}{scenario, ABC}{}{Displays the result of a mapping/scheduling algorithm as a Gantt diagram.}{org.ietr.preesm.plugin.mapper.plot}
+	
+	\tabParam{None &\multicolumn{2}{c|}{}}
+	
+	\tabDesc{
+		When executed, this workflow task opens a new tab in \preesm where the result of a mapping/scheduling workflow task is displayed. The tab itslef consists of three subtabs containing: a Gantt diagram, statistics on the computational load of each core, and a speedup assessment chart.
+		
+		~\newline{}
+		\textbf{See also:} Speedup assessment chart~\cite{Pelcat_Prototypage_2010}.
+	}
+	
+	\tabError{\noError}
+	\subsection{Gantt Exporter}
+	\tabBrief{Gantt Exporter}{ABC, scenario}{}{This task exports scheduling results as a \texttt{*.pgantt} file that can be viewed using the \textit{ganttDisplay} viewer.}{org.ietr.preesm.stats.exporter.StatsExporterTask}
+	
+	\tabParam{\textit{path} & \multicolumn{2}{p{13.00cm}|}{			
+			Path of the exported \texttt{*.pgantt} file. If the specified directory does not exist, it will not be created.} \\
+		\tabValue{
+			\valueDef{\texttt{\justify /path/in/proj}}{Path within the \preesm project containing the workflow where the "Gantt Exporter" task is instantiated. 
+				
+				Exported Gantt will be named as follows: \texttt{/path/in/proj/<scenario\_name>\_stats.pgantt}. If a graph with this name already exists in the given path, it will be overwritten.
+			}	
+		} 
+	}
+	
+	
+	\tabDesc{This task exports scheduling results as a \texttt{*.pgantt} file that can be viewed using the \textit{ganttDisplay} viewer. The exported \texttt{*.pgantt} file uses the \texttt{XML} syntax.
+		
+		
+	\textbf{See also:} ganttDisplay project: \url{https://github.com/preesm/preesm-apps/tree/master/GanttDisplay}.}
+
+	\tabError{\noError}
+		
+	\subsection{Memory Bounds Estimator}
+	See Section~\ref{sec:memory_bounds_estimator}.
+%	\begin{table}
+%		\begin{tabular}{|c|c|c|}
+%			a & a & a
+%		\end{tabular}
+%	\end{table}
+
+	\bibliographystyle{plain}
+	\bibliography{workflow_tasks}
+\end{document}

@@ -61,10 +61,11 @@ import org.ietr.preesm.codegen.xtend.model.codegen.BufferIterator
 import org.ietr.preesm.codegen.xtend.model.codegen.IntVar
 
 /**
- * This printer is currently used to print C code only for X86 processor with
- * shared memory communication.
+ * This printer is currently used to print C code only for GPP processors
+ * supporting pthreads and shared memory communication.
  * 
  * @author kdesnos
+ * @author mpelcat
  */
 class CPrinter extends DefaultPrinter {
 
@@ -81,7 +82,7 @@ class CPrinter extends DefaultPrinter {
 			 * @date «new Date»
 			 */
 			
-			#include "../include/x86.h"
+			#include "../include/«block.coreType».h"
 			
 			
 	'''
@@ -146,7 +147,12 @@ class CPrinter extends DefaultPrinter {
 	override printCoreLoopBlockHeader(LoopBlock block2) '''
 		
 		«"\t"»// Begin the execution loop 
+#ifdef LOOP_SIZE // Case of a finite loop
+			int index;
+			for(index=0;index<LOOP_SIZE;index++){
+#else // Default case of an infinite loop
 			while(1){
+#endif
 				pthread_barrier_wait(&iter_barrier);
 				if(stopThreads){
 					pthread_exit(NULL);
@@ -158,6 +164,13 @@ class CPrinter extends DefaultPrinter {
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
 		}
 	}
+
+	«IF block2.codeElts.empty»
+	// This call may inform the compiler that the main loop of the thread does not call any function.
+	void emptyLoop_«(block2.eContainer as CoreBlock).name»(){
+
+	}
+	«ENDIF»
 	'''	
 	 
 	override printFiniteLoopBlockHeader(FiniteLoopBlock block2) '''

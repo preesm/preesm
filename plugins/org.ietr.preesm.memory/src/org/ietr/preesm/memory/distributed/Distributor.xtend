@@ -799,7 +799,7 @@ class Distributor {
 		val memExesVerticesSet = new HashMap<String, Set<MemoryExclusionVertex>>
 		val hosts = memEx.propertyBean.getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY) as Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>
 		for (MemoryExclusionVertex memExVertex : memEx.vertexSet) {
-			if(hosts != null && !hosts.containsKey(memExVertex)) {
+			if(hosts != null && !hosts.containsKey(memExVertex) || hosts==null) {
 				Distributor.findMObjBankMixed(memExVertex, memExesVerticesSet)
 			} else {
 				// Check if all hosted mObjects fall in the same bank

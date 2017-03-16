@@ -65,6 +65,38 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 public class HeaderParser {
 
 	/**
+	 * This Regular expression is used to identify and separate the different
+	 * elements composing a function prototype parameter. It should be noted
+	 * that before being processed by this regular expression, all consecutive
+	 * whitespace were reduced to a single one. <br>
+	 * <br>
+	 * Explanation:
+	 * <ul>
+	 * <li><code>(IN|OUT)?</code>: <b>Group 1 - Direction</b> Check if either
+	 * character string <code>IN</code> xor <code>OUT</code> are present, or
+	 * not, at the beginning of the parameter declaration.</li>
+	 * <li><code>\\s?</code>: Match 0 or 1 whitespace.</li>
+	 * <li><code>([^\\*]+)</code>: <b>Group 2 - Type</b> Match as many
+	 * characters different from '*' as possible (1 to infinite). For the
+	 * pattern to match, the remaining of the regular expression must still be
+	 * matchable. Which means that the "as many as possible" clause holds as
+	 * long as the remaining patterns are also matched.</li>
+	 * <li><code>\\s?</code>: Match 0 or 1 whitespace.</li>
+	 * <li><code>(\\*+(?:\\s?const)?)?</code>: <b>Group 3 - Pointers</b> Match,
+	 * if possible, a string '*' of length 1 to infinite. Also match optional
+	 * <code> const</code> option for pointer.</li>
+	 * <li><code>\\s</code>: Match exactly 1 whitespace.</li>
+	 * <li><code>([\\S&&[^\\[\\]]]+)</code>: <b>Group 4 - Name</b></li> Match a
+	 * string of non-whitespace characters (except '[' or ']') of length 1 to
+	 * infinite.
+	 * <li><code>(\\[(\\d|\\]\\[)*\\])?</code>: <b>Group 5 - Array?</b></li>
+	 * Match, if possible, a string of opening and closing square brackets '[]',
+	 * possibly containing digits.
+	 * </ul>
+	 */
+	private static final String PARAM_BREAK_DOWN_REGEX = "(IN|OUT)?\\s?([^\\*]+)\\s?(\\*+(?:\\s?const)?)?\\s([\\S&&[^\\[\\]]]+)(\\[(\\d|\\]\\[)*\\])?";
+
+	/**
 	 * This method parse a C header file and extract a set of function
 	 * prototypes from it.
 	 * 
@@ -108,8 +140,7 @@ public class HeaderParser {
 	 * @return a {@link List} of {@link FunctionPrototype}, or <code>null</code>
 	 *         if something went wrong during the parsing.
 	 */
-	protected static List<FunctionPrototype> createFunctionPrototypes(
-			List<String> prototypes) {
+	protected static List<FunctionPrototype> createFunctionPrototypes(List<String> prototypes) {
 		List<FunctionPrototype> result;
 		result = new ArrayList<FunctionPrototype>();
 
@@ -117,8 +148,7 @@ public class HeaderParser {
 		// and the list of parameters
 		Pattern pattern = Pattern.compile("(.+?)\\s(\\S+?)\\s?\\((.*?)\\)");
 		for (String prototypeString : prototypes) {
-			FunctionPrototype funcProto = PiMMFactory.eINSTANCE
-					.createFunctionPrototype();
+			FunctionPrototype funcProto = PiMMFactory.eINSTANCE.createFunctionPrototype();
 
 			// Get the name
 			Matcher matcher = pattern.matcher(prototypeString);
@@ -130,18 +160,15 @@ public class HeaderParser {
 			// A new array list must be created because the list
 			// returned by Arrays.asList cannot be modified (in
 			// particular, no element can be removed from it).
-			List<String> parameters = new ArrayList<String>(
-					Arrays.asList(matcher.group(3).split("\\s?,\\s?")));
+			List<String> parameters = new ArrayList<String>(Arrays.asList(matcher.group(3).split("\\s?,\\s?")));
 			// Remove empty match (is the function has no parameter)
 			parameters.remove("");
 			parameters.remove(" ");
 
-			Pattern paramPattern = Pattern
-					.compile("(IN|OUT)?\\s?([^\\*]+)(\\s\\**)?\\s([\\S&&[^\\[\\]]]+)(\\[(\\d|\\]\\[)*\\])?");
+			Pattern paramPattern = Pattern.compile(PARAM_BREAK_DOWN_REGEX);
 			// Procces parameters one by one
 			for (String param : parameters) {
-				FunctionParameter fp = PiMMFactory.eINSTANCE
-						.createFunctionParameter();
+				FunctionParameter fp = PiMMFactory.eINSTANCE.createFunctionParameter();
 				matcher = paramPattern.matcher(param);
 				boolean matched = matcher.matches();
 				if (matched) { // Apply the matcher (if possible)
@@ -183,7 +210,7 @@ public class HeaderParser {
 	protected static List<String> extractPrototypeStrings(String fileContent) {
 		// The remaining code is a single line containing only C code
 		// (enum, struct, prototypes, inline functions, ..)
-		Pattern pattern = Pattern.compile("[^;}](.*?\\(.*?\\))[;]");
+		Pattern pattern = Pattern.compile("[^;}]([^;}{]*?\\(.*?\\))\\s?[;]");
 		Matcher matcher = pattern.matcher(fileContent);
 		List<String> prototypes = new ArrayList<String>();
 		boolean containsPrototype;
@@ -227,9 +254,7 @@ public class HeaderParser {
 		fileContent = matcher.replaceAll("");
 
 		// Filter all pre-processing (
-		pattern = Pattern.compile(
-				"^\\s*#\\s*(([^\\\\]+?)((\\\\$[^\\\\]+?)*?$))",
-				Pattern.MULTILINE | Pattern.DOTALL);
+		pattern = Pattern.compile("^\\s*#\\s*(([^\\\\]+?)((\\\\$[^\\\\]+?)*?$))", Pattern.MULTILINE | Pattern.DOTALL);
 		matcher = pattern.matcher(fileContent);
 		fileContent = matcher.replaceAll("");
 
@@ -264,12 +289,11 @@ public class HeaderParser {
 	 * @throws IOException
 	 *             {@link InputStream#read()}
 	 */
-	protected static String readFileContent(IFile file) throws CoreException,
-			IOException {
+	protected static String readFileContent(IFile file) throws CoreException, IOException {
 		String fileString = null;
-	    try (Scanner scanner = new Scanner(file.getContents())) {
-	    	fileString = scanner.useDelimiter("\\A").next();
-	    }	    
+		try (Scanner scanner = new Scanner(file.getContents())) {
+			fileString = scanner.useDelimiter("\\A").next();
+		}
 		return fileString;
 	}
 
@@ -282,8 +306,8 @@ public class HeaderParser {
 	 * @return the set of FunctionPrototypes corresponding to actor
 	 *         initialization
 	 */
-	static public List<FunctionPrototype> filterInitPrototypesFor(
-			AbstractActor actor, List<FunctionPrototype> prototypes) {
+	static public List<FunctionPrototype> filterInitPrototypesFor(AbstractActor actor,
+			List<FunctionPrototype> prototypes) {
 		List<FunctionPrototype> result = new ArrayList<FunctionPrototype>();
 
 		// For each function prototype proto
@@ -291,10 +315,8 @@ public class HeaderParser {
 			// proto matches the initialization of actor if:
 			// -it does not have more parameters than the actors configuration
 			// input ports
-			List<FunctionParameter> params = new ArrayList<FunctionParameter>(
-					proto.getParameters());
-			boolean matches = params.size() <= actor.getConfigInputPorts()
-					.size();
+			List<FunctionParameter> params = new ArrayList<FunctionParameter>(proto.getParameters());
+			boolean matches = params.size() <= actor.getConfigInputPorts().size();
 			// -all function parameters of proto match a configuration input
 			// port of the actor (initialization function cannot read or write
 			// in fifo nor write on configuration output ports)
@@ -326,21 +348,17 @@ public class HeaderParser {
 	 *            the AbstractActor which ports we use to filter prototypes
 	 * @return the set of FunctionPrototypes corresponding to actor
 	 */
-	public static List<FunctionPrototype> filterLoopPrototypesFor(
-			AbstractActor actor, List<FunctionPrototype> prototypes) {
+	public static List<FunctionPrototype> filterLoopPrototypesFor(AbstractActor actor,
+			List<FunctionPrototype> prototypes) {
 		List<FunctionPrototype> result = new ArrayList<FunctionPrototype>();
 
 		// For each function prototype proto
 		for (FunctionPrototype proto : prototypes) {
 			// proto matches the signature of actor if:
 			// -it does not have more parameters than the actors ports
-			ArrayList<FunctionParameter> params = new ArrayList<FunctionParameter>(
-					proto.getParameters());
-			boolean matches = params.size() <= (actor.getDataInputPorts()
-					.size()
-					+ actor.getDataOutputPorts().size()
-					+ actor.getConfigInputPorts().size() + actor
-					.getConfigOutputPorts().size());
+			ArrayList<FunctionParameter> params = new ArrayList<FunctionParameter>(proto.getParameters());
+			boolean matches = params.size() <= (actor.getDataInputPorts().size() + actor.getDataOutputPorts().size()
+					+ actor.getConfigInputPorts().size() + actor.getConfigOutputPorts().size());
 
 			// Check that all proto parameters can be matched with a port
 			List<Port> allPorts = new ArrayList<Port>();
@@ -356,8 +374,7 @@ public class HeaderParser {
 			// of the parameters of proto
 			if (matches) {
 				for (Port p : actor.getDataInputPorts()) {
-					FunctionParameter param = getCorrespondingFunctionParameter(
-							p, params);
+					FunctionParameter param = getCorrespondingFunctionParameter(p, params);
 					if (param != null) {
 						param.setDirection(Direction.IN);
 						param.setIsConfigurationParameter(false);
@@ -370,8 +387,7 @@ public class HeaderParser {
 			}
 			if (matches) {
 				for (Port p : actor.getDataOutputPorts()) {
-					FunctionParameter param = getCorrespondingFunctionParameter(
-							p, params);
+					FunctionParameter param = getCorrespondingFunctionParameter(p, params);
 					if (param != null) {
 						param.setDirection(Direction.OUT);
 						param.setIsConfigurationParameter(false);
@@ -386,8 +402,7 @@ public class HeaderParser {
 			// of the parameters of proto
 			if (matches) {
 				for (Port p : actor.getConfigOutputPorts()) {
-					FunctionParameter param = getCorrespondingFunctionParameter(
-							p, params);
+					FunctionParameter param = getCorrespondingFunctionParameter(p, params);
 					if (param != null) {
 						param.setDirection(Direction.OUT);
 						param.setIsConfigurationParameter(true);
@@ -422,20 +437,17 @@ public class HeaderParser {
 	 * 
 	 * @return the set of FunctionPrototypes corresponding to initialization
 	 */
-	static public List<FunctionPrototype> filterInitPrototypes(
-			List<FunctionPrototype> prototypes) {
+	static public List<FunctionPrototype> filterInitPrototypes(List<FunctionPrototype> prototypes) {
 		List<FunctionPrototype> result = new ArrayList<FunctionPrototype>();
 
 		// For each function prototype proto check that the prototype has no
 		// input or output buffers (i.e. parameters with a pointer type)
 		for (FunctionPrototype proto : prototypes) {
-			List<FunctionParameter> params = new ArrayList<FunctionParameter>(
-					proto.getParameters());
+			List<FunctionParameter> params = new ArrayList<FunctionParameter>(proto.getParameters());
 			boolean allParams = true;
 			for (FunctionParameter param : params) {
-				if (!param.getType().contains("*")) {
+				if (param.isIsConfigurationParameter()) {
 					param.setDirection(Direction.IN);
-					param.setIsConfigurationParameter(true);
 				} else {
 					allParams = false;
 					break;
@@ -450,8 +462,7 @@ public class HeaderParser {
 		return result;
 	}
 
-	static private FunctionParameter getCorrespondingFunctionParameter(Port p,
-			List<FunctionParameter> params) {
+	static private FunctionParameter getCorrespondingFunctionParameter(Port p, List<FunctionParameter> params) {
 		for (FunctionParameter param : params) {
 			if (p.getName().equals(param.getName()))
 				return param;
@@ -459,8 +470,7 @@ public class HeaderParser {
 		return null;
 	}
 
-	static private boolean hasCorrespondingPort(FunctionParameter f,
-			List<? extends Port> ports) {
+	static private boolean hasCorrespondingPort(FunctionParameter f, List<? extends Port> ports) {
 		for (Port p : ports) {
 			if (p.getName().equals(f.getName())) {
 				return true;

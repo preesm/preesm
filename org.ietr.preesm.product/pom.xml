@@ -3,12 +3,12 @@
   <groupId>org.ietr.preesm.product</groupId>
   <artifactId>org.ietr.preesm.product</artifactId>
   <packaging>eclipse-repository</packaging>
-  <version>2.2.3-SNAPSHOT</version>
+  <version>2.2.5</version>
   
   <parent>
   	<groupId>org.ietr.preesm.releng</groupId>
   	<artifactId>org.ietr.preesm.releng</artifactId>
-  	<version>1.0.0-SNAPSHOT</version>
+  	<version>1.0.0</version>
   	<relativePath>../org.ietr.preesm.releng</relativePath>
   </parent>	
     

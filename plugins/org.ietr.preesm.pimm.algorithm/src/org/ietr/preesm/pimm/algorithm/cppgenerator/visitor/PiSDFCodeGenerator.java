@@ -160,7 +160,7 @@ public class PiSDFCodeGenerator{
 		append("#define " + pg.getName().toUpperCase() + "_H\n\n");
 		
 		/* Declare Include Files */
-		append("#include <spider.h>\n\n");
+		append("#include <spider/spider.h>\n\n");
 		
 		/* Declare the addGraph method */
 		append("#define N_FCT_" + pg.getName().toUpperCase() + " " + functionMap.size() + "\n");
@@ -168,7 +168,7 @@ public class PiSDFCodeGenerator{
 		append("\n");
 
 		/* Declare Fcts */
-		append("PiSDFGraph* init_"+pg.getName()+"(Archi* archi, Stack* stack");
+		append("void init_"+pg.getName()+"(");
 		List<Parameter> l = new LinkedList<Parameter>();
 		l.addAll(pg.getAllParameters());
 		Collections.sort(l, new Comparator<Parameter>() {
@@ -184,7 +184,7 @@ public class PiSDFCodeGenerator{
 		}
 		append(");\n");	
 		
-		append("void free_"+pg.getName()+"(PiSDFGraph* top, Stack* stack);\n");
+		append("void free_"+pg.getName()+"();\n");
 		append("\n");
 		
 		/* Core */
@@ -251,9 +251,8 @@ public class PiSDFCodeGenerator{
 		
 		// Add free fct
 		append("\n");
-		append("void free_" + pg.getName() + "(PiSDFGraph* top, Stack* stack){\n");
-		append("\ttop->~PiSDFGraph();\n");
-		append("\tstack->free(top);\n");
+		append("void free_" + pg.getName() + "(){\n");
+		append("\tSpider::cleanPiSDF();\n");
 		append("}\n");
 		
 		// Returns the final C++ code
@@ -270,7 +269,7 @@ public class PiSDFCodeGenerator{
 		// /Generate the header (license, includes and constants)
 		append(getLicense());
 
-		append("#include <spider.h>\n");
+		append("#include <spider/spider.h>\n");
 		append("#include \"" + pg.getName() + ".h\"\n\n");
 		
 		Set<String> includeList = new HashSet<String>();
@@ -325,7 +324,7 @@ public class PiSDFCodeGenerator{
 		append(" */\n");
 		
 		// The method does not return anything and is named top
-		append("PiSDFGraph* init_"+pg.getName()+"(Archi* archi, Stack* stack");		
+		append("void init_"+pg.getName()+"(");		
 		
 		StringBuilder params = new StringBuilder();
 		List<Parameter> l = new LinkedList<Parameter>();
@@ -345,24 +344,23 @@ public class PiSDFCodeGenerator{
 		append("){\n");
 		
 		// Create a top graph and a top vertex
-		append("\tPiSDFGraph* top = CREATE(stack, PiSDFGraph)(\n"
+		append("\tPiSDFGraph* top = Spider::createGraph(\n"
 				+ "\t\t/*Edges*/    0,\n"
 				+ "\t\t/*Params*/   0,\n"
 				+ "\t\t/*InputIf*/  0,\n"
 				+ "\t\t/*OutputIf*/ 0,\n"
 				+ "\t\t/*Config*/   0,\n"
-				+ "\t\t/*Body*/     1,\n"
-				+ "\t\t/*Archi*/    archi,\n"
-				+ "\t\t/*Stack*/    stack);\n\n");
+				+ "\t\t/*Body*/     1);\n\n");
 		
-		append("\ttop->addHierVertex(\n"
+		append("\tSpider::addHierVertex(\n"
+				+ "\t\t/*Graph*/    top,\n"
 				+ "\t\t/*Name*/     \"top\",\n"
-				+ "\t\t/*Graph*/    " + sgName + "(archi, stack" + params.toString() + "),\n"
+				+ "\t\t/*Graph*/    " + sgName + "(" + params.toString() + "),\n"
 				+ "\t\t/*InputIf*/  0,\n"
 				+ "\t\t/*OutputIf*/ 0,\n"
 				+ "\t\t/*Params*/   0);\n\n");
 		
-		append("\treturn top;\n");
+		append("\tSpider::setGraph(top);\n");
 		append("}\n");
 	}
 	
@@ -404,7 +402,7 @@ public class PiSDFCodeGenerator{
 						for(Port port : a.getDataInputPorts()){
 							if(port.getName().equals(param.getName())){
 								append("\t\t/* " + String.format("%1$-" + maxParamSize + "s", param.getName()) 
-										+ " */ ("+param.getType().replaceAll("[^a-zA-Z0-9*]","")+") inputFIFOs[" + portMap.get(port) + "]");
+										+ " */ ("+param.getType()+"*) inputFIFOs[" + portMap.get(port) + "]");
 								found = true;
 							}
 						}						
@@ -423,7 +421,7 @@ public class PiSDFCodeGenerator{
 						for(Port port : a.getDataOutputPorts()){
 							if(port.getName().equals(param.getName())){
 								append("\t\t/* " + String.format("%1$-" + maxParamSize + "s", param.getName()) 
-										+ " */ ("+param.getType().replaceAll("[^a-zA-Z0-9*]","")+") outputFIFOs[" + portMap.get(port) + "]");
+										+ " */ ("+param.getType()+"*) outputFIFOs[" + portMap.get(port) + "]");
 								found = true;
 							}
 						}

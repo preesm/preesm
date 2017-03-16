@@ -72,6 +72,12 @@ import org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl;
 import org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl;
 import org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl;
 
+/**
+ * Parse and connect hierarchical sub-{@link PiGraph} to a top level {@link PiGraph}
+ * @author cguy
+ * @author kdesnos
+ *
+ */
 public class SubgraphConnector extends PiMMVisitor {
 
 	// Actor in the outer graph corresponding to the currently visited graph
@@ -151,6 +157,7 @@ public class SubgraphConnector extends PiMMVisitor {
 					fifo.setTargetPort(dip2);
 
 					dip2.setExpression(dip1.getExpression());
+					dip2.setAnnotation(dip1.getAnnotation());
 
 					found = true;
 					break;
@@ -171,6 +178,7 @@ public class SubgraphConnector extends PiMMVisitor {
 					fifo.setSourcePort(dop2);
 
 					dop2.setExpression(dop1.getExpression());
+					dop2.setAnnotation(dop1.getAnnotation());
 
 					found = true;
 					break;

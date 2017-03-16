@@ -113,10 +113,13 @@ public abstract class MemoryAllocator {
 			// Build a list of all MObject of the graph, including merged ones
 			Set<MemoryExclusionVertex> allMObjects = new HashSet<MemoryExclusionVertex>();
 			allMObjects.addAll(meg.vertexSet());
-			// Include merged Mobjects
-			for (Set<MemoryExclusionVertex> mergedMOBjects : ((Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) meg
-					.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY)).values()) {
-				allMObjects.addAll(mergedMOBjects);
+			// Include merged Mobjects (if any)
+			Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostMap = (Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>>) meg
+					.getPropertyBean().getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+			if (hostMap != null) {
+				for (Set<MemoryExclusionVertex> mergedMOBjects : hostMap.values()) {
+					allMObjects.addAll(mergedMOBjects);
+				}
 			}
 
 			// Scan the vertices of the graph
