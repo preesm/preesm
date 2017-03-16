@@ -113,8 +113,8 @@ class MPPA2ExplicitPrinter extends CPrinter {
 								current_dump[__k1_get_cpu_id()]++;
 		#endif
 		
-		extern uint64_t total_get_cycles;
-		extern uint64_t total_put_cycles;
+		extern long long total_get_cycles[];
+		extern long long total_put_cycles[];
 		
 	'''
 	
@@ -173,9 +173,8 @@ class MPPA2ExplicitPrinter extends CPrinter {
 						gets += "void *" + param.name + " = local_buffer+" + local_offset +";\n";
 						local_offset += param.typeSize * param.size;
 					}
-				}
+				}	
 			}
-			/* go through in param */
 			for(param : block2.inBuffers){
 				if(param instanceof SubBuffer){
 					var b = param.container;
@@ -183,29 +182,34 @@ class MPPA2ExplicitPrinter extends CPrinter {
 					while(b instanceof SubBuffer){
 						offset += b.offset;
 						b = b.container;
-						//System.out.print("Running through all buffer " + b.name + "\n");
 					}
 					//System.out.print("===> " + b.name + "\n");
 					if(b.name == "Shared"){
 						gets += "void *" + param.name + " = local_buffer+" + local_offset +";\n";
 						gets += "{\n"
 						gets += "	uint64_t start = __k1_read_dsu_timestamp();\n"
-						gets += "	mppa_async_get(local_buffer+" + local_offset + ", " + b.name + "+" + offset + ", MPPA_ASYNC_DDR_0, " + param.typeSize * param.size + ", NULL);\n";
-						gets += "	total_get_cycles += __k1_read_dsu_timestamp() - start;\n"
+						gets += "	mppa_async_get(local_buffer + " + local_offset + ",\n"; 
+						gets += "	" + b.name + " + " + offset + ",\n";
+						gets += "	MPPA_ASYNC_DDR_0,\n";
+						gets += "	" + param.typeSize * param.size + ",\n";
+						gets += "	NULL);\n";
+						gets += "	__builtin_k1_afdau(&total_get_cycles[__k1_get_cpu_id()], (__k1_read_dsu_timestamp() - start));\n"
 						gets += "}\n"
 						local_offset += param.typeSize * param.size;
 						//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
 					}
 				}
 			}
+			
+			gets += "int " + block2.iter.name + ";\n"
+			gets += "#pragma omp parallel for private(" + block2.iter.name + ")\n"
+			gets += "for(" + block2.iter.name + "=0;" + block2.iter.name +"<" + block2.nbIter + ";" + block2.iter.name + "++)\n"
+			gets += "	{\n"
+			
+			
 			if(local_offset > local_buffer_size)
 				local_buffer_size = local_offset
 	gets}»
-		int «block2.iter.name»;
-		#pragma omp parallel for private(«block2.iter.name»)
-		for(«block2.iter.name»=0;«block2.iter.name»<«block2.nbIter»;«block2.iter.name»++)
-		{
-			
 	'''
 	
 	override printFiniteLoopBlockFooter(FiniteLoopBlock block2) '''
@@ -224,21 +228,27 @@ class MPPA2ExplicitPrinter extends CPrinter {
 						}
 						//System.out.print("===> " + b.name + "\n");
 						if(b.name == "Shared"){
-							puts += "	{\n"
-							puts += "		uint64_t start = __k1_read_dsu_timestamp();\n"
-							puts += "		mppa_async_put(local_buffer+" + local_offset + ", " + b.name + "+" + offset + ", MPPA_ASYNC_DDR_0, " + param.typeSize * param.size + ", NULL);\n";	
-							puts += "		total_put_cycles += __k1_read_dsu_timestamp() - start;\n"
+							puts += "{\n"
+							puts += "	uint64_t start = __k1_read_dsu_timestamp();\n"
+							puts += "	mppa_async_put(local_buffer + " + local_offset + ",\n"; 
+							puts += "	" + b.name + " + " + offset + ",\n";
+							puts += "	MPPA_ASYNC_DDR_0,\n";
+							puts += "	" + param.typeSize * param.size + ",\n";
+							puts += "	NULL);\n";
+							puts += "	__builtin_k1_afdau(&total_put_cycles[__k1_get_cpu_id()], __k1_read_dsu_timestamp() - start);\n"
 							puts += "	}\n"
 							local_offset += param.typeSize * param.size;
 							//System.out.print("==> " + b.name + " " + param.name + " size " + param.size + " port_name "+ port.getName + "\n");
 						}
 					}
 				}
+				if(local_offset > local_buffer_size)
+					local_buffer_size = local_offset
+				puts += "}\n"
 			puts}»
 		«{
 			 	IS_HIERARCHICAL = false
 			""}»
-		}
 	'''
 	
 	override printFunctionCall(FunctionCall functionCall) '''
@@ -265,7 +275,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 							gets += "	{\n"
 							gets += "		uint64_t start = __k1_read_dsu_timestamp();\n"
 							gets += "		mppa_async_get(local_buffer+" + local_offset + ", " + b.name + "+" + offset + ", MPPA_ASYNC_DDR_0, " + param.typeSize * param.size + ", NULL);\n";
-							gets += "		total_get_cycles += __k1_read_dsu_timestamp() - start;\n"
+							gets += "		__builtin_k1_afdau(&total_get_cycles[__k1_get_cpu_id()], __k1_read_dsu_timestamp() - start);\n"
 							gets += "	}\n"
 						}
 						local_offset += param.typeSize * param.size;
@@ -301,7 +311,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 							puts += "	{\n"
 							puts += "		uint64_t start = __k1_read_dsu_timestamp();\n"
 							puts += "		mppa_async_put(local_buffer+" + local_offset + ", " + b.name + "+" + offset + ", MPPA_ASYNC_DDR_0, " + param.typeSize * param.size + ", NULL);\n";	
-							puts += "		total_put_cycles += __k1_read_dsu_timestamp() - start;\n"
+							puts += "		__builtin_k1_afdau(&total_put_cycles[__k1_get_cpu_id()], __k1_read_dsu_timestamp() - start);\n"
 							puts += "	}\n"
 						}
 						local_offset += param.typeSize * param.size;
@@ -354,7 +364,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
 	void *computationTask_«(callBlock.eContainer as CoreBlock).name»(void *arg){
 	#ifdef VERBOSE
-		printf("Cluster %d runs on task «(callBlock.eContainer as CoreBlock).name»\n", __k1_get_cluster_id());
+		//printf("Cluster %d runs on task «(callBlock.eContainer as CoreBlock).name»\n", __k1_get_cluster_id());
 	#endif
 		«IF !callBlock.codeElts.empty»
 			// Initialisation(s)
@@ -368,7 +378,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 			int __iii __attribute__((unused));
 			for(__iii=0;__iii<GRAPH_ITERATION;__iii++){
 				
-				pthread_barrier_wait(&pthread_barrier);
+				//pthread_barrier_wait(&pthread_barrier);
 		#ifdef PROFILE
 				getTimeProfile();
 		#endif
@@ -380,12 +390,12 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		#ifdef VERBOSE
 				mppa_rpc_barrier_all(); /* sync all PE0 of all Clusters */
 				if(__k1_get_cpu_id() == 0 && __k1_get_cluster_id() == 0){
-					printf("C0->%d Graph Iteration %d / %d Done !\n", NB_CLUSTER, __iii+1, GRAPH_ITERATION);
+					//printf("C0->%d Graph Iteration %d / %d Done !\n", NB_CLUSTER, __iii+1, GRAPH_ITERATION);
 				}
 				mppa_rpc_barrier_all(); /* sync all PE0 of all Clusters */
 		#endif
 				/* commit local changes to the global memory */
-				pthread_barrier_wait(&pthread_barrier); /* barrier to make sure all threads have commited data in smem */
+				//pthread_barrier_wait(&pthread_barrier); /* barrier to make sure all threads have commited data in smem */
 				if(__k1_get_cpu_id() == 0){
 		#ifdef PROFILE
 					int iii;
@@ -412,7 +422,8 @@ class MPPA2ExplicitPrinter extends CPrinter {
 				}
 				
 			}
-		}	
+			return NULL;
+		}
 	'''	
 	override printFifoCall(FifoCall fifoCall) {
 		var result = "fifo" + fifoCall.operation.toString.toLowerCase.toFirstUpper + "("
