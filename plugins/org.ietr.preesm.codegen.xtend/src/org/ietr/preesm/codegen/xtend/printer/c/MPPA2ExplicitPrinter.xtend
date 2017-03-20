@@ -95,7 +95,6 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		#include <mppa_async.h>
 		#include <pthread.h>
 		#include <semaphore.h>
-		#include <HAL/hal/hal.h>
 		#ifndef __nodeos__
 		#include <utask.h>
 		#endif
@@ -115,12 +114,13 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		
 		extern long long total_get_cycles[];
 		extern long long total_put_cycles[];
+		extern mppa_async_segment_t shared_segment;
 		
 	'''
 	
 	override printBufferDefinition(Buffer buffer) '''
 		«IF buffer.name == "Shared"»
-		//#define Shared ((char*)0x84000000ULL) 	/* Shared buffer in DDR */
+		//#define Shared ((char*)0x10000000ULL) 	/* Shared buffer in DDR */
 		«ELSE»
 		/* Scratchpad buffer size */
 		int «buffer.name»_size = 
@@ -188,9 +188,10 @@ class MPPA2ExplicitPrinter extends CPrinter {
 						gets += "void *" + param.name + " = local_buffer+" + local_offset +";\n";
 						gets += "{\n"
 						gets += "	uint64_t start = __k1_read_dsu_timestamp();\n"
-						gets += "	mppa_async_get(local_buffer + " + local_offset + ",\n"; 
-						gets += "	" + b.name + " + " + offset + ",\n";
-						gets += "	MPPA_ASYNC_DDR_0,\n";
+						gets += "	mppa_async_get(local_buffer + " + local_offset + ",\n";
+						gets += "	&shared_segment,\n"; 
+						//gets += "	" + b.name + " + " + offset + ",\n";
+						gets += "	/* Shared + */ " + offset + ",\n";
 						gets += "	" + param.typeSize * param.size + ",\n";
 						gets += "	NULL);\n";
 						gets += "	__builtin_k1_afdau(&total_get_cycles[__k1_get_cpu_id()], (__k1_read_dsu_timestamp() - start));\n"
@@ -230,9 +231,9 @@ class MPPA2ExplicitPrinter extends CPrinter {
 						if(b.name == "Shared"){
 							puts += "{\n"
 							puts += "	uint64_t start = __k1_read_dsu_timestamp();\n"
-							puts += "	mppa_async_put(local_buffer + " + local_offset + ",\n"; 
-							puts += "	" + b.name + " + " + offset + ",\n";
-							puts += "	MPPA_ASYNC_DDR_0,\n";
+							puts += "	mppa_async_put(local_buffer + " + local_offset + ",\n";
+							puts += "	&shared_segment,\n";
+							puts += "	/* Shared + */" + offset + ",\n";
 							puts += "	" + param.typeSize * param.size + ",\n";
 							puts += "	NULL);\n";
 							puts += "	__builtin_k1_afdau(&total_put_cycles[__k1_get_cpu_id()], __k1_read_dsu_timestamp() - start);\n"
@@ -274,7 +275,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 						if(port.getName == "INPUT"){ /* we get data from DDR -> cluster only when INPUT */
 							gets += "	{\n"
 							gets += "		uint64_t start = __k1_read_dsu_timestamp();\n"
-							gets += "		mppa_async_get(local_buffer+" + local_offset + ", " + b.name + "+" + offset + ", MPPA_ASYNC_DDR_0, " + param.typeSize * param.size + ", NULL);\n";
+							gets += "		mppa_async_get(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL);\n";
 							gets += "		__builtin_k1_afdau(&total_get_cycles[__k1_get_cpu_id()], __k1_read_dsu_timestamp() - start);\n"
 							gets += "	}\n"
 						}
@@ -310,7 +311,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 						if(port.getName == "OUTPUT"){ /* we put data from cluster -> DDR only when OUTPUT */
 							puts += "	{\n"
 							puts += "		uint64_t start = __k1_read_dsu_timestamp();\n"
-							puts += "		mppa_async_put(local_buffer+" + local_offset + ", " + b.name + "+" + offset + ", MPPA_ASYNC_DDR_0, " + param.typeSize * param.size + ", NULL);\n";	
+							puts += "		mppa_async_put(local_buffer+" + local_offset + ", &shared_segment, /* Shared + */ " + offset + ", " + param.typeSize * param.size + ", NULL);\n";	
 							puts += "		__builtin_k1_afdau(&total_put_cycles[__k1_get_cpu_id()], __k1_read_dsu_timestamp() - start);\n"
 							puts += "	}\n"
 						}
