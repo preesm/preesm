@@ -6,7 +6,7 @@
    <feature url="features/org.ietr.dftools.feature_1.1.8.jar" id="org.ietr.dftools.feature" version="1.1.8">
       <category name="DFTools"/>
    </feature>
-   <feature url="features/org.ietr.preesm.feature_2.2.5.jar" id="org.ietr.preesm.feature" version="2.2.5">
+   <feature url="features/org.ietr.preesm.feature_2.2.6.qualifier.jar" id="org.ietr.preesm.feature" version="2.2.6.qualifier">
       <category name="PREESM"/>
    </feature>
    <category-def name="PREESM" label="PREESM">
