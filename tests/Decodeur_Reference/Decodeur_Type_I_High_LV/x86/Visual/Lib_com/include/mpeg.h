@@ -136,8 +136,8 @@ static __inline int showNbits ( const unsigned char *const RESTRICT tab, const i
 {
 #ifdef TI_OPTIM
     
-    const int       pos_bit = position & 0x7 ; // position courante dans le caractère courant 
-    const int       pos_char = position >> 3 ; // caractère courant dans le tableau  
+    const int       pos_bit = position & 0x7 ; // position courante dans le caractÃ¨re courant 
+    const int       pos_char = position >> 3 ; // caractÃ¨re courant dans le tableau  
     unsigned int    res ;
     
     res = _mem4((void *)(tab + pos_char));
@@ -147,8 +147,8 @@ static __inline int showNbits ( const unsigned char *const RESTRICT tab, const i
     return (res);
 #else 
     
-    const int       pos_bit = position & 0x7 ; /* position courante dans le caractère courant */ 
-    const int       pos_char = position >> 3 ; /* caractère courant dans le tableau */ 
+    const int       pos_bit = position & 0x7 ; /* position courante dans le caractÃ¨re courant */ 
+    const int       pos_char = position >> 3 ; /* caractÃ¨re courant dans le tableau */ 
     unsigned int    c
         = ((*(tab + pos_char) << 24 | *(tab + pos_char + 1) << 16 | *(tab + pos_char + 2)<<8 | *(tab + pos_char + 3)) & 0xffffffff >> pos_bit)
             >> (32 - pos_bit - n) ;

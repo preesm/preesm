@@ -124,7 +124,7 @@ void Send_DMAMSG(Media_DMAMSG *media,char *Buffer,const int NB_bytes, unsigned c
 int Com_Init (int direction, int PC_type_of_cible, int SenderId, int ReceiverId)
 {
 #ifdef _CCS // Code pour projet Code Composer Studio
-	//futur implémentation
+	//futur implÃ©mentation
 
 	switch(PC_type_of_cible){
 			case EDMA:  {

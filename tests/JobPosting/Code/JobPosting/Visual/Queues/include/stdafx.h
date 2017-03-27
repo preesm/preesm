@@ -1,15 +1,15 @@
-// stdafx.h : fichier Include pour les fichiers Include système standard,
-// ou les fichiers Include spécifiques aux projets qui sont utilisés fréquemment,
-// et sont rarement modifiés
+// stdafx.hÂ : fichier Include pour les fichiers Include systÃ¨me standard,
+// ou les fichiers Include spÃ©cifiques aux projets qui sont utilisÃ©s frÃ©quemment,
+// et sont rarement modifiÃ©s
 //
 
 #pragma once
 
 
-#define WIN32_LEAN_AND_MEAN		// Exclure les en-têtes Windows rarement utilisés
+#define WIN32_LEAN_AND_MEAN		// Exclure les en-tÃªtes Windows rarement utilisÃ©s
 #include <stdio.h>
 #include <tchar.h>
 
 
 
-// TODO : faites référence ici aux en-têtes supplémentaires nécessaires au programme
+// TODOÂ : faites rÃ©fÃ©rence ici aux en-tÃªtes supplÃ©mentaires nÃ©cessaires au programme
