@@ -1,7 +1,8 @@
 /*******************************************************************************
- * Copyright or © or Copr. %%LOWERDATE%% - %%UPPERDATE%% IETR/INSA:
+ * Copyright or © or Copr. 2012 - 2017 IETR/INSA:
  *
- * %%AUTHORS%%
+ * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+ * Maxime Pelcat <Maxime.Pelcat@insa-rennes.fr> (2012 - 2013)
  *
  * This software is a computer program whose purpose is to prototype
  * parallel applications.

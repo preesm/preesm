@@ -1,7 +1,8 @@
 @rem ***************************************************************************
-@rem Copyright or © or Copr. %%LOWERDATE%% - %%UPPERDATE%% IETR/INSA:
+@rem Copyright or © or Copr. 2012 - 2017 IETR/INSA:
 @rem
-@rem %%AUTHORS%%
+@rem Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+@rem Maxime Pelcat <Maxime.Pelcat@insa-rennes.fr> (2012)
 @rem
 @rem This software is a computer program whose purpose is to prototype
 @rem parallel applications.
