@@ -45,13 +45,19 @@
 	</properties> 
 	  
 	<repositories>  
-		<!-- add Mars repository to resolve dependencies -->  
-		<repository>  
-			<id>Mars</id>  
-			<layout>p2</layout>  
-			<url>http://download.eclipse.org/releases/mars/</url>  
-		</repository>  
-	</repositories> 
+		<!-- add Mars repository to resolve dependencies -->
+		<repository>
+			<id>Mars</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/releases/mars/</url>
+		</repository>
+		
+		<repository>
+			<id>PREESM</id>
+			<layout>p2</layout>
+			<url>http://preesm.sourceforge.net/eclipse/update-site/</url>
+		</repository>
+	</repositories>
 	
 	<dependencies>
 	<dependency>
