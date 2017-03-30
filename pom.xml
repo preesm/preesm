@@ -45,28 +45,20 @@
 	</properties> 
 	  
 	<repositories>  
-		<!-- add Mars repository to resolve dependencies -->
+		<!-- add Neon repository to resolve dependencies -->
 		<repository>
-			<id>Mars</id>
+			<id>Neon</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/mars/</url>
+			<url>http://download.eclipse.org/releases/neon/</url>
 		</repository>
 		
+		<!-- add Preesm repository to resolve Graphiti & DFTools -->
 		<repository>
-			<id>PREESM</id>
+			<id>Preesm</id>
 			<layout>p2</layout>
 			<url>http://preesm.sourceforge.net/eclipse/update-site/</url>
 		</repository>
 	</repositories>
-	
-	<dependencies>
-	<dependency>
-	<groupId>org.antlr</groupId>
-	<artifactId>antlr4-runtime</artifactId>
-	<version>4.3</version>
-</dependency>	
-	</dependencies>
-	
 	
 	<build>  
 		<plugins>  
@@ -164,11 +156,18 @@
 		<module>plugins/org.ietr.preesm.memory</module>
 		<module>plugins/org.ietr.preesm.pimm.algorithm</module>
 		<module>plugins/org.ietr.preesm.ui</module>
-				
-		<module>org.ietr.preesm.feature</module>
-		<module>org.ietr.preesm.complete.site</module>
-		<module>org.ietr.preesm.rcp.utils</module>
-		<module>org.ietr.preesm.product</module>
 	</modules>
 	
+	<profiles>
+		<profile>
+			<id>site</id>
+			<modules>
+				<module>releng/org.ietr.preesm.feature</module>
+				<module>releng/org.ietr.preesm.complete.site</module>
+				<!-- <module>releng/org.ietr.preesm.rcp.utils</module>
+				<module>releng/org.ietr.preesm.product</module> -->
+			</modules> 
+		</profile>
+	</profiles>
+				
 </project>
