@@ -181,7 +181,7 @@
 	
 	<profiles>
 		<profile>
-			<id>ci</id>
+			<id>releng</id>
 			<modules>
 				<module>releng/org.ietr.preesm.feature</module>
 				<module>releng/org.ietr.preesm.complete.site</module>
