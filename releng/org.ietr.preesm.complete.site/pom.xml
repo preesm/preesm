@@ -39,8 +39,19 @@
 	<artifactId>org.ietr.preesm.complete.site</artifactId>
 	<packaging>eclipse-repository</packaging>
 	
+	<parent>
+		<groupId>org.ietr.preesm</groupId>
+		<artifactId>org.ietr.preesm.parent</artifactId>
+		<version>2.2.6-SNAPSHOT</version>
+		<relativePath>../..</relativePath>
+	</parent>
+	
 	<build>
 		<plugins>
+			<!--
+				This plugins builds the update site for the current release
+				and puts all files in ${project.build.directory}/repository
+				-->
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-p2-repository-plugin</artifactId>
@@ -51,13 +62,110 @@
 					<repositoryName>IETR/INSA - Rennes Update Site</repositoryName>
 				</configuration>
 			</plugin>
+			
+			
+			<!--
+				This plugin will fetch all features and plugins
+				from the online Preesm update site (URL defined in the 
+				parent POM). This will be executed after packaging the
+				update site for the current release. It will merge the
+				features and plugins from the online update site and 
+				the ones generated for the current release, in 
+				${project.build.directory}/online-repository
+				-->
+			<plugin>
+				<groupId>org.eclipse.tycho.extras</groupId>
+				<artifactId>tycho-p2-extras-plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+					<execution>
+						<id>fetch-online-site</id>
+						<phase>package</phase>
+						<goals>
+							<goal>mirror</goal>
+						</goals>
+						<configuration>
+							<source>
+								<repository><url>${preesm.p2.repo}</url></repository>
+								<repository><url>${project.build.directory}/repository</url></repository>
+							</source>
+							<append>true</append> <!-- default = true -->
+							<compress>false</compress> <!-- default = true -->
+							<includeOptional>true</includeOptional> <!-- default = true -->
+							<destination>${project.build.directory}/update-site</destination> <!-- default = ${project.build.directory}/repository -->
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			
+			<!--
+				The following plugins print a message requesting 
+				-->
+			<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-antrun-plugin</artifactId>
+			<version>1.8</version>
+			<executions>
+				<execution>
+					<phase>deploy</phase>
+					<goals>
+						<goal>run</goal>
+					</goals>
+					<configuration>
+						<tasks>
+							<echo>############################################</echo>
+							<echo>###  In the following prompts please</echo>
+							<echo>###  enter your sourceforge</echo>
+							<echo>###  credentials for the PREESM project.</echo>
+							<echo>###  The repository will be uploaded using rsync at</echo>
+							<echo>###  login,preesm@web.sourceforge.net:/home/project-web/preesm/htdocs/eclipse/update-site</echo>
+							<echo>###  </echo>
+							<echo>###  When prompted, please do not specify ",preesm".</echo>
+							<echo>###  </echo>
+							<echo>############################################</echo>
+						</tasks>
+					</configuration>
+				</execution>
+				<execution>
+					<id>catch-new-version</id>
+					<phase>deploy</phase>
+					<goals>
+						<goal>run</goal>
+					</goals>
+					<configuration>
+						<target>
+							<input
+								message="Please enter your Sourceforge Login (without project name) : "
+								addproperty="user-login" />
+						</target>
+						<exportAntProperties>true</exportAntProperties>
+					</configuration>
+				</execution>
+			</executions>
+		</plugin>
+			<plugin>
+			  <artifactId>exec-maven-plugin</artifactId>
+			  <groupId>org.codehaus.mojo</groupId>
+			  <version>1.6.0</version>
+			  <executions>
+				<execution>
+				  <id>sf-preesm-deploy</id>
+				  <phase>deploy</phase>
+				  <goals>
+					<goal>exec</goal>
+				  </goals>
+				  <configuration>
+					<executable>rsync</executable>
+				  <arguments>
+					<argument>-auv</argument>
+					<argument>${project.build.directory}/update-site</argument>
+					<argument>${user-login},preesm@web.sourceforge.net:/home/project-web/preesm/htdocs/eclipse/</argument>
+				  </arguments>
+				  </configuration>
+				</execution>
+			  </executions>
+			</plugin>
 		</plugins>
 	</build>
-	
-	<parent>
-		<groupId>org.ietr.preesm</groupId>
-		<artifactId>org.ietr.preesm.parent</artifactId>
-		<version>2.2.6-SNAPSHOT</version>
-		<relativePath>../..</relativePath>
-	</parent>
 </project>
