@@ -112,14 +112,14 @@
 							<goal>run</goal>
 						</goals>
 						<configuration>
-							<tasks>
+							<target name="copy web resources">
 								<copy todir="${project.build.directory}/update-site/" >
 									<fileset dir="${basedir}" includes="index.html" />
 								</copy>
 								<copy todir="${project.build.directory}/update-site/web" >
 									<fileset dir="${basedir}/web" includes="*"/>
 								</copy>
-							</tasks>
+							</target>
 						</configuration>
 					</execution>
 				</executions>
