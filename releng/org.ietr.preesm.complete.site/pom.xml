@@ -107,6 +107,7 @@
 				<version>1.8</version>
 				<executions>
 					<execution>
+						<id>copy-web-resources</id>
 						<phase>package</phase>
 						<goals>
 							<goal>run</goal>
@@ -153,6 +154,7 @@
 						<version>1.8</version>
 						<executions>
 							<execution>
+								<id>print-hint-msg</id>
 								<phase>deploy</phase>
 								<goals>
 									<goal>run</goal>
@@ -173,7 +175,7 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>catch-new-version</id>
+								<id>read-SF-user-login</id>
 								<phase>deploy</phase>
 								<goals>
 									<goal>run</goal>
