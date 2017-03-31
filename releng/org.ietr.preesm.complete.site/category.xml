@@ -10,7 +10,7 @@
       <category name="Graphiti"/>
    </feature>
    
-   <feature id="org.ietr.preesm.feature.source" version="2.2.6.qualifier">
+   <feature id="org.ietr.preesm.feature.source">
       <category name="source_components"/>
    </feature>
    <category-def name="source_components" label="Developer Resources">
