@@ -10,24 +10,20 @@
 ##  
 ##  Note: this script should be used after a pass of
 ##  https://wiki.eclipse.org/Development_Resources/How_to_Use_Eclipse_Copyright_Tool
-##  and applying back the UTF-8 encoding.
+##  with the correct header (see http://www.cecill.info/placer.en.html) 
+##  with patterns (see copyright_template.txt file) and 
+##  applying back the UTF-8 encoding.
 ##	
 #########
 
+echo ""
 
-#EXTENSIONLIST=`git status --porcelain | rev | cut -d"." -f1 | rev | sort -u | tr [a-z] [A-Z]`
-#echo $EXTENSIONLIST
-#git status --porcelain | wc -l
-#exit
-
-LOWDATEPATTERN="%%LOWERDATE%%"
-UPPDATEPATTERN="%%UPPERDATE%%"
+DATEPATTERN="%%DATE%%"
 AUTHORSPATTERN="%%AUTHORS%%"
 
 TMPFILE=`mktemp --suffix=biglisttosed`
 grep "%%AUTHORS%%" -R | cut -d':' -f1 | sort -u > $TMPFILE
 
-echo ""
 echo " Starting" 
 
 while read -r line
@@ -59,11 +55,11 @@ do (
 			;;
 	esac
 	
-    FILEAUTHORLIST=`git log --date=format:'%Y' --format='%aE' "$file" | sort -u`
+    FILEAUTHORLIST=`git log --follow --date=format:'%Y' --format='%aE' "$file" | sort -u`
     #echo $file
     for AUTHOR in $FILEAUTHORLIST; do 
-		AUTHORUPPERDATE=`git log --use-mailmap --date=format:'%Y' --format='%ad' --author=$AUTHOR "$file" | sort -u | tail -n 1`
-		AUTHORLOWERDATE=`git log --use-mailmap --date=format:'%Y' --format='%ad' --author=$AUTHOR "$file" | sort -u | head -n 1`
+		AUTHORUPPERDATE=`git log --follow --use-mailmap --date=format:'%Y' --format='%ad' --author=$AUTHOR "$file" | sort -u | tail -n 1`
+		AUTHORLOWERDATE=`git log --follow --use-mailmap --date=format:'%Y' --format='%ad' --author=$AUTHOR "$file" | sort -u | head -n 1`
 		if [ "$AUTHORLOWERDATE" == "$AUTHORUPPERDATE" ]; then
 			AUTHORDATE="($AUTHORLOWERDATE)"
 		else
@@ -80,12 +76,16 @@ do (
 	cat "$file" | grep -v "$AUTHORSPATTERN" > $TMPFILE2
 	
 	
-    LOWDATE=`git log --date=format:'%Y' --format='%ad' "$file" | sort -u | head -n 1`
-    UPPDATE=`git log --date=format:'%Y' --format='%ad' "$file" | sort -u | tail -n 1`
+    LOWDATE=`git log --follow --date=format:'%Y' --format='%ad' "$file" | sort -u | head -n 1`
+    UPPDATE=`git log --follow --date=format:'%Y' --format='%ad' "$file" | sort -u | tail -n 1`
 	
-    cat "$TMPFILE2" | \
-    sed -e "s/$LOWDATEPATTERN/$LOWDATE/g" | \
-    sed -e "s/$UPPDATEPATTERN/$UPPDATE/g" > "$file" 
+	if [ "$LOWDATE" == "$UPPDATE" ]; then
+		GLOBDATE="$LOWDATE"
+	else
+		GLOBDATE="$LOWDATE - $UPPDATE"
+	fi
+		
+    cat "$TMPFILE2" | sed -e "s/$DATEPATTERN/$GLOBDATE/g" > "$file" 
     rm $TMPFILE2
 ) & done < $TMPFILE
 
