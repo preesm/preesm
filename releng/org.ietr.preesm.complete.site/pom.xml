@@ -87,7 +87,7 @@
 						<configuration>
 							<source>
 								<repository><url>${preesm.p2.repo}</url></repository>
-								<repository><url>${project.build.directory}/repository</url></repository>
+								<repository><url>${project.baseUri}/target/repository</url></repository>
 							</source>
 							<append>true</append> <!-- default = true -->
 							<compress>false</compress> <!-- default = true -->
