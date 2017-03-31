@@ -38,7 +38,7 @@ do (
 			#"@rem "
 			COMMENT="@rem "
 			;;
-		C |	CPP | H | JAVA)
+		C |	CPP | H | JAVA | XTEND)
 			#" * "
 			COMMENT=" * "
 			;;
@@ -55,21 +55,18 @@ do (
 			;;
 	esac
 	
-    FILEAUTHORLIST=`git log --follow --date=format:'%Y' --format='%aE' "$file" | sort -u`
-    #echo $file
+    FILEAUTHORLIST=`git log --follow --use-mailmap --date=format:'%Y' --format='%aE' "$file" | sort -u`
     for AUTHOR in $FILEAUTHORLIST; do 
-		AUTHORUPPERDATE=`git log --follow --use-mailmap --date=format:'%Y' --format='%ad' --author=$AUTHOR "$file" | sort -u | tail -n 1`
-		AUTHORLOWERDATE=`git log --follow --use-mailmap --date=format:'%Y' --format='%ad' --author=$AUTHOR "$file" | sort -u | head -n 1`
+		AUTHORUPPERDATE=`git log --follow --use-mailmap --date=format:'%Y' --format='%ad %aE' "$file" | sort -u | grep $AUTHOR | tail -n 1 | cut -d' ' -f1`
+		AUTHORLOWERDATE=`git log --follow --use-mailmap --date=format:'%Y' --format='%ad %aE' "$file" | sort -u | grep $AUTHOR | head -n 1 | cut -d' ' -f1`
 		if [ "$AUTHORLOWERDATE" == "$AUTHORUPPERDATE" ]; then
 			AUTHORDATE="($AUTHORLOWERDATE)"
 		else
 			AUTHORDATE="($AUTHORLOWERDATE - $AUTHORUPPERDATE)"
 		fi
 		
-		LINE=`git log --use-mailmap --author=$AUTHOR --date=format:'%Y' --format='%aN <%aE>' "$file" | sort -u | sed -r "s/$/ $AUTHORDATE/g"`
-		#echo "$LINE"
-		#perl -i -0777 -pe "s/$AUTHORSPATTERN/${LINE}\n$COMMENT$AUTHORSPATTERN/g" "$file"
-		sed -i -e "s/$AUTHORSPATTERN/${LINE}\n$COMMENT$AUTHORSPATTERN/g" "$file"
+		LINE=`git log --follow --use-mailmap --date=format:'%Y' --format='%aN <%aE>' "$file" | sort -u | grep $AUTHOR`
+		sed -i -e "s/$AUTHORSPATTERN/${LINE} ${AUTHORDATE}\n$COMMENT$AUTHORSPATTERN/g" "$file"
     done
     
 	TMPFILE2=`mktemp --suffix=tosed`
