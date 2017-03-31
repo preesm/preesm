@@ -158,6 +158,39 @@
 					<skip>true</skip>
 				</configuration>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.eclipse.tycho.extras</groupId>
+				<artifactId>tycho-source-feature-plugin</artifactId>
+				<version>${tycho-version}</version>
+
+				<executions>
+					<execution>
+						<id>source-feature</id>
+						<phase>package</phase>
+						<goals>
+							<goal>source-feature</goal>
+						</goals>
+					</execution>
+				</executions>
+
+			</plugin>
+
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-source-plugin</artifactId>
+				<version>${tycho-version}</version>
+
+				<executions>
+					<execution>
+						<id>plugin-source</id>
+						<goals>
+							<goal>plugin-source</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>  
 		
 	</build>  
@@ -183,6 +216,24 @@
 	<profiles>
 		<profile>
 			<id>releng</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-p2-plugin</artifactId>
+						<version>${tycho-version}</version>
+						<executions>
+							<execution>
+								<id>attached-p2-metadata</id>
+								<phase>package</phase>
+								<goals>
+									<goal>p2-metadata</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 			<modules>
 				<module>releng/org.ietr.preesm.feature</module>
 				<module>releng/org.ietr.preesm.complete.site</module>
@@ -191,7 +242,7 @@
 				<module>releng/org.ietr.preesm.rcp.utils</module>
 				<module>releng/org.ietr.preesm.product</module>
 				 -->
-			</modules> 
+			</modules>
 		</profile>
 	</profiles>
 				
