@@ -65,6 +65,15 @@
 	
 	<build>  
 		<plugins>  
+			
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-compiler-plugin</artifactId>
+				<version>1.0.0</version>
+				<configuration>
+					<useProjectSettings>false</useProjectSettings>
+				</configuration>
+			</plugin>
 			<plugin>  
 				<!-- enable tycho build extension -->  
 				<groupId>org.eclipse.tycho</groupId>  
