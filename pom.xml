@@ -167,7 +167,6 @@
 					<skip>true</skip>
 				</configuration>
 			</plugin>
-			<!--
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -178,15 +177,13 @@
 				<executions>
 					<execution>
 						<id>javadoc-gen</id>
-						<phase>package</phase>
+						<phase>process-classes</phase>
 						<goals>
 							<goal>javadoc</goal>
-							<goal>aggregate</goal>
 						</goals>
 					</execution>
 				</executions>
 			</plugin>
-			-->
 			<plugin>
 				<groupId>org.eclipse.tycho.extras</groupId>
 				<artifactId>tycho-source-feature-plugin</artifactId>
