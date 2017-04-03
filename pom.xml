@@ -224,6 +224,9 @@
 			-->
 		<profile>
 			<id>releng</id>
+			<modules>
+				<module>releng</module>
+			</modules>
 			<build>
 				<plugins>
 					<!--
@@ -292,15 +295,6 @@
 					</plugin>
 				</plugins>
 			</build>
-			<modules>
-				<module>releng/org.ietr.preesm.feature</module>
-				<module>releng/org.ietr.preesm.complete.site</module>
-				<!-- Following modules are not used
-
-				<module>releng/org.ietr.preesm.rcp.utils</module>
-				<module>releng/org.ietr.preesm.product</module>
-				 -->
-			</modules>
 		</profile>
 	</profiles>
 
