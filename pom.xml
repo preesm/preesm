@@ -175,6 +175,18 @@
 					<skip>true</skip>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.9</version>
+			   <executions>
+				  <execution>
+					 <goals>
+						<goal>prepare-agent</goal>
+					 </goals>
+				  </execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
