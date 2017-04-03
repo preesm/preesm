@@ -63,47 +63,9 @@
 				</configuration>
 			</plugin>
 			
-			
-			<!--
-				This plugin will fetch all features and plugins
-				from the online Preesm update site (URL defined in the 
-				parent POM). This will be executed after packaging the
-				update site for the current release. It will merge the
-				features and plugins from the online update site and 
-				the ones generated for the current release, in 
-				${project.build.directory}/online-repository
-				-->
-			<plugin>
-				<groupId>org.eclipse.tycho.extras</groupId>
-				<artifactId>tycho-p2-extras-plugin</artifactId>
-				<version>1.0.0</version>
-				<executions>
-					<execution>
-						<id>fetch-online-site</id>
-						<phase>package</phase>
-						<goals>
-							<goal>mirror</goal>
-						</goals>
-						<configuration>
-							<source>
-								<!-- Note: if the URL points to a yet-to-exist update 
-									 site, command the following line to prevent the P2
-									 mirror task to fail
-									 -->
-								<repository><url>${preesm.p2.repo}</url></repository>
-								<repository><url>${project.baseUri}/target/repository</url></repository>
-							</source>
-							<append>true</append> <!-- default = true -->
-							<compress>false</compress> <!-- default = true -->
-							<includeOptional>true</includeOptional> <!-- default = true -->
-							<destination>${project.build.directory}/update-site</destination> <!-- default = ${project.build.directory}/repository -->
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 			<!--
 				This plugin copies some additional files (index.html, web/, ...)
-				to the update site folder.
+				to the update site folders.
 				-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -118,13 +80,81 @@
 						</goals>
 						<configuration>
 							<target name="Copy web resources">
-								<copy todir="${project.build.directory}/update-site/" >
-									<fileset dir="${basedir}" includes="index.html" />
-								</copy>
-								<copy todir="${project.build.directory}/update-site/web" >
+								<!-- Web resources for the current release -->
+								<copy todir="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/web/" >
 									<fileset dir="${basedir}/web" includes="*"/>
 								</copy>
+								<copy todir="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/" >
+									<fileset dir="${basedir}" includes="index.html" />
+								</copy>
+								<copy file="${project.build.directory}/category.xml" tofile="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/site.xml"/>
+								
+								
+								<!-- Web resources for the complete site -->
+								<copy todir="${project.build.directory}/gensite/update-site/complete/web/" >
+									<fileset dir="${basedir}/web" includes="*"/>
+								</copy>
+								<copy todir="${project.build.directory}/gensite/update-site/complete/" >
+									<fileset dir="${basedir}" includes="index.html" />
+								</copy>
+								<copy file="${project.build.directory}/category.xml" tofile="${project.build.directory}/gensite/update-site/complete/site.xml"/>
 							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<!--
+				This plugin will fetch all features and plugins
+				from the online Preesm update site (URL defined in the 
+				parent POM). This will be executed after packaging the
+				update site for the current release. It will merge the
+				features and plugins from the online update site and 
+				the ones generated for the current release, in 
+				${project.build.directory}/gensite/update-site/complete.
+				It also copies the update-site for the current release
+				in ${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}
+				-->
+			<plugin>
+				<groupId>org.eclipse.tycho.extras</groupId>
+				<artifactId>tycho-p2-extras-plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+					<execution>
+						<id>copy-current</id>
+						<phase>package</phase>
+						<goals>
+							<goal>mirror</goal>
+						</goals>
+						<configuration>
+							<source>
+								<repository><url>${project.baseUri}/target/repository</url></repository>
+							</source>
+							<append>false</append>
+							<compress>false</compress>
+							<includeOptional>true</includeOptional>
+							<destination>${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}</destination>
+						</configuration>
+					</execution>
+					<execution>
+						<id>mirror-complete</id>
+						<phase>package</phase>
+						<goals>
+							<goal>mirror</goal>
+						</goals>
+						<configuration>
+							<source>
+								<!-- Note: if the URL points to a yet-to-exist update 
+									 site, command the following line to prevent the P2
+									 mirror task to fail
+									 -->
+								<repository><url>${preesm.p2.repo}</url></repository>
+								<repository><url>${project.baseUri}/target/repository</url></repository>
+							</source>
+							<append>true</append>
+							<compress>false</compress>
+							<includeOptional>true</includeOptional>
+							<destination>${project.build.directory}/gensite/update-site/complete/</destination>
 						</configuration>
 					</execution>
 				</executions>
@@ -169,8 +199,8 @@
 										<echo>###  In the following prompts please</echo>
 										<echo>###  enter your sourceforge</echo>
 										<echo>###  credentials for the PREESM project.</echo>
-										<echo>###  The repository will be uploaded using rsync at</echo>
-										<echo>###  login,preesm@web.sourceforge.net:/home/project-web/preesm/htdocs/eclipse/update-site</echo>
+										<echo>###  The generated content will be uploaded using rsync at</echo>
+										<echo>###  login,preesm@web.sourceforge.net:/home/project-web/preesm/htdocs/gensite/</echo>
 										<echo>###  </echo>
 										<echo>###  When prompted for login, please do not specify ",preesm".</echo>
 										<echo>###  </echo>
@@ -216,8 +246,8 @@
 							<executable>rsync</executable>
 						  <arguments>
 							<argument>-auv</argument>
-							<argument>${project.build.directory}/update-site</argument>
-							<argument>${user-login},preesm@web.sourceforge.net:/home/project-web/preesm/htdocs/eclipse/</argument>
+							<argument>${project.build.directory}/gensite</argument>
+							<argument>${user-login},preesm@web.sourceforge.net:/home/project-web/preesm/htdocs/</argument>
 						  </arguments>
 						  </configuration>
 						</execution>
