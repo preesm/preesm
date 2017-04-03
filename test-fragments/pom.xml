@@ -61,7 +61,7 @@
 		</plugins>
 	</build>
 	<modules>
-		<module>test-fragments</module>
+		<module>org.ietr.preesm.experiment.model.test</module>
 	</modules>
 
 </project>

@@ -46,12 +46,12 @@
 	</parent>
 	
 	<modules>
-		<module>releng/org.ietr.preesm.feature</module>
-		<module>releng/org.ietr.preesm.complete.site</module>
+		<module>org.ietr.preesm.feature</module>
+		<module>org.ietr.preesm.complete.site</module>
 		<!-- Following modules are not used
 
-		<module>releng/org.ietr.preesm.rcp.utils</module>
-		<module>releng/org.ietr.preesm.product</module>
+		<module>org.ietr.preesm.rcp.utils</module>
+		<module>org.ietr.preesm.product</module>
 		 -->
 	</modules>
 
