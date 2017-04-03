@@ -70,6 +70,9 @@ import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
+import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
+import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
+import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
@@ -79,19 +82,16 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
-import org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl;
-import org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl;
-import org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderNameGenerator;
 import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderTypeConverter;
 import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderTypeConverter.PiSDFSubType;
 
 // TODO: Find a cleaner way to setParentEdge in Interfaces
-/* 
+/*
  * Ugly workaround for setParentEdge in Interfaces. Must suppose that fifos are always obtained in the same order => Modify the C++ headers?
- * A better way would be a possibility to get edges from one building method to the other (since the parentEdge is in the outer graph), 
- * maybe a map from edgeNames to edges with a method getOutputEdgeByName in BaseVertex 
+ * A better way would be a possibility to get edges from one building method to the other (since the parentEdge is in the outer graph),
+ * maybe a map from edgeNames to edges with a method getOutputEdgeByName in BaseVertex
  */
 
 /**
@@ -114,7 +114,7 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 	private StringBuilder currentMethod;
 	private StringBuilder currentStaticDependentParams;
 	private StringBuilder currentDynamicDependentParams;
-	
+
 	private PiGraph currentGraph;
 	private List<PiGraph> currentSubGraphs;
 
@@ -230,9 +230,9 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 		prototype.append("PiSDFGraph* ");
 		prototype.append(SpiderNameGenerator.getMethodName(pg));
 		prototype.append("(");
-		
+
 		definition.append(prototype.toString());
-		
+
 		List<Parameter> l = new LinkedList<Parameter>();
 		l.addAll(pg.getAllParameters());
 		Collections.sort(l, new Comparator<Parameter>() {
@@ -241,7 +241,7 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 	            return  p1.getName().compareTo(p2.getName());
 	        }
 		});
-		
+
 		for(Parameter p : l){
 			if(p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()){
 				if(parameters_proto.length() > 0){
@@ -255,8 +255,8 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 
 		prototype.append(parameters_proto);
 		definition.append(parameters_def);
-		
-		prototype.append(");\n");	
+
+		prototype.append(");\n");
 		definition.append(")");
 		prototypes.add(prototype.toString());
 		append(definition);
@@ -308,7 +308,7 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 		}
 		currentMethod.append(currentStaticDependentParams);
 		currentMethod.append(currentDynamicDependentParams);
-		
+
 		// Generating vertices
 		append("\n\t/* Vertices */\n");
 		for (AbstractActor v : pg.getVertices()) {
@@ -379,8 +379,8 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 		append(" = Spider::addHierVertex(\n");
 		append("\t\t/*Graph*/   graph,\n");
 		append("\t\t/*Name*/    \"" + aa.getName() + "\",\n");
-		append("\t\t/*Graph*/   " + SpiderNameGenerator.getMethodName(subGraph) + "(");		
-		
+		append("\t\t/*Graph*/   " + SpiderNameGenerator.getMethodName(subGraph) + "(");
+
 		List<Parameter> l = new LinkedList<Parameter>();
 		l.addAll(subGraph.getAllParameters());
 		Collections.sort(l, new Comparator<Parameter>() {
@@ -391,10 +391,10 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 		});
 		for(Parameter p : l){
 			if(p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()){
-				append(", " + p.getName());				
+				append(", " + p.getName());
 			}
 		}
-		
+
 		append("),\n");
 		append("\t\t/*InData*/  " + aa.getDataInputPorts().size() + ",\n");
 		append("\t\t/*OutData*/ " + aa.getDataOutputPorts().size() + ",\n");
@@ -415,7 +415,7 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 		else if (aa instanceof PiGraph)
 			vertexName = generateHierarchicalVertex(aa);
 		else if (aa.getName() == "end"){
-			visitEndActor(aa);		
+			visitEndActor(aa);
 			return;
 		}else
 			vertexName = generateBodyVertex(aa);
@@ -544,11 +544,11 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 
 		AbstractVertex srcActor = (AbstractVertex) srcPort.eContainer();
 		AbstractVertex snkActor = (AbstractVertex) snkPort.eContainer();
-		
+
 		String srcProd = srcPort.getExpression().getString();
 		String snkProd = snkPort.getExpression().getString();
 
-		
+
 		/* Change port name in prod/cons/delay */
 		for(ConfigInputPort cfgPort : srcActor.getConfigInputPorts()){
 			String paramName = ((Parameter)cfgPort.getIncomingDependency().getSetter()).getName();
@@ -563,22 +563,22 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 		String delay = "0";
 		if (f.getDelay() != null){
 			delay   = f.getDelay().getExpression().getString();
-			
+
 			for(ConfigInputPort cfgPort : f.getDelay().getConfigInputPorts()){
 				String paramName = ((Parameter)cfgPort.getIncomingDependency().getSetter()).getName();
 				delay   = delay.replaceAll("\\b"+cfgPort.getName()+"\\b", paramName);
 			}
 		}
-		
+
 
 		append("\t\t/*Src*/ "
-				+ SpiderNameGenerator.getVertexName(srcActor) 
+				+ SpiderNameGenerator.getVertexName(srcActor)
 				+ ", /*SrcPrt*/ " + portMap.get(srcPort)
 //				+ ", /*Prod*/ \"(" + srcProd + ")*sizeof(" + f.getType() + ")\",\n");
 				+ ", /*Prod*/ \"(" + srcProd + ")*" + typeSize + "\",\n");
 
 		append("\t\t/*Snk*/ "
-				+ SpiderNameGenerator.getVertexName(snkActor) 
+				+ SpiderNameGenerator.getVertexName(snkActor)
 				+ ", /*SnkPrt*/ " + portMap.get(snkPort)
 //				+ ", /*Cons*/ \"(" + snkProd + ")*sizeof(" + f.getType() + ")\",\n");
 				+ ", /*Cons*/ \"(" + snkProd + ")*" + typeSize + "\",\n");
@@ -587,7 +587,7 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 //			append("\t\t/*Delay*/ \"(" + delay + ")*sizeof(" + f.getType() + ")\",0);\n\n");
 			append("\t\t/*Delay*/ \"(" + delay + ")*" + typeSize + "\",0);\n\n");
 		else
-			append("\t\t/*Delay*/ \"0\",0);\n\n");			
+			append("\t\t/*Delay*/ \"0\",0);\n\n");
 	}
 
 	/**
@@ -605,7 +605,7 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 				append("\tPiSDFParam *"
 						+ paramName
 						+ " = Spider::addDynamicParam(graph, " + "\"" + p.getName() + "\""
-						+ ");\n");				
+						+ ");\n");
 			}else{
 				/* DYNAMIC DEPENDANT */
 				currentStaticDependentParams.append(
@@ -613,7 +613,7 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 						+ paramName
 						+ " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName() + "\", \""
 						+ p.getExpression().getString()
-						+ "\");\n");				
+						+ "\");\n");
 			}
 		} else if (p.getGraphPort() instanceof ConfigInputPort) {
 			/* HERITED */
@@ -681,7 +681,7 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 		}
 		append("\n");
 	}
-	
+
 	@Override
 	public void visitJoinActor(JoinActor ja) {
 		append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(ja));
@@ -831,21 +831,21 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitFunctionParameter(
-			FunctionParameterImpl functionParameterImpl) {
+			FunctionParameter functionParameter ) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void visitFunctionPrototype(
-			FunctionPrototypeImpl functionPrototypeImpl) {
+			FunctionPrototype functionPrototype) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void visitHRefinement(HRefinementImpl hRefinementImpl) {
+	public void visitHRefinement(HRefinement hRefinement) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public void visitExecutableActor(ExecutableActor ea) {
 		throw new UnsupportedOperationException();

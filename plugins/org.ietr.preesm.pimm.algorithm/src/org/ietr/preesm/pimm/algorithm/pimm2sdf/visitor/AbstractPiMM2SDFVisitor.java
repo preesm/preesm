@@ -83,6 +83,8 @@ import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
 import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
+import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
+import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
@@ -93,9 +95,6 @@ import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
-import org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl;
-import org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl;
-import org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 import org.ietr.preesm.pimm.algorithm.pimm2sdf.PiGraphExecution;
 
@@ -125,10 +124,10 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 			int i = Integer.parseInt(str);
 			return new ConstantValue(i);
 		}catch(NumberFormatException e){
-			return new ExpressionValue(str);	
-		}	
+			return new ExpressionValue(str);
+		}
 	}
-	
+
 	public AbstractPiMM2SDFVisitor(PiGraphExecution execution) {
 		this.execution = execution;
 	}
@@ -141,7 +140,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 
 	/**
 	 * Transforms parameters from a PiGraph into graph variables of an SDFGraph
-	 * 
+	 *
 	 * @param pg
 	 *            the PiGraph from which we extract the Parameters
 	 * @param sdf
@@ -199,7 +198,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 	/**
 	 * Set the value of parameters of a PiGraph when possible (i.e., if we have
 	 * currently only one available value, or if we can compute the value)
-	 * 
+	 *
 	 * @param graph
 	 *            the PiGraph in which we want to set the values of parameters
 	 * @param execution
@@ -434,7 +433,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 	protected CodeGenParameter currentParameter;
 
 	@Override
-	public void visitHRefinement(HRefinementImpl h) {
+	public void visitHRefinement(HRefinement h) {
 		ActorPrototypes actorPrototype = new ActorPrototypes(h.getFilePath()
 				.toOSString());
 
@@ -450,7 +449,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 	}
 
 	@Override
-	public void visitFunctionPrototype(FunctionPrototypeImpl f) {
+	public void visitFunctionPrototype(FunctionPrototype f) {
 		currentPrototype = new Prototype(f.getName());
 		for (FunctionParameter p : f.getParameters()) {
 			p.accept(this);
@@ -462,7 +461,7 @@ public abstract class AbstractPiMM2SDFVisitor extends PiMMVisitor {
 	}
 
 	@Override
-	public void visitFunctionParameter(FunctionParameterImpl f) {
+	public void visitFunctionParameter(FunctionParameter f) {
 		if (f.isIsConfigurationParameter()) {
 			int direction = 0;
 			switch (f.getDirection()) {

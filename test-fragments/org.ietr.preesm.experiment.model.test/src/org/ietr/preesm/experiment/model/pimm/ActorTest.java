@@ -1,5 +1,6 @@
 package org.ietr.preesm.experiment.model.pimm;
 
+import org.ietr.preesm.experiment.model.pimm.impl.ActorImpl;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -12,6 +13,7 @@ public class ActorTest {
 		Assert.assertNull(actor);
 		actor = PiMMFactory.eINSTANCE.createActor();
 		Assert.assertNotNull(actor);
+		Assert.assertTrue(ActorImpl.class.isInstance(actor));
 		Assert.assertNull(actor.getGraph());
 	}
 

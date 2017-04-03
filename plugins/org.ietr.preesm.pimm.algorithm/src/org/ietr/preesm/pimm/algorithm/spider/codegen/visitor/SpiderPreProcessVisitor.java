@@ -59,6 +59,8 @@ import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
+import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
+import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
 import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
@@ -69,9 +71,6 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
-import org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl;
-import org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl;
-import org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
 public class SpiderPreProcessVisitor extends PiMMVisitor {
@@ -88,11 +87,11 @@ public class SpiderPreProcessVisitor extends PiMMVisitor {
 	private Map<AbstractActor, Integer> dataOutPortIndices = new HashMap<AbstractActor, Integer>();
 	private Map<AbstractActor, Integer> cfgInPortIndices = new HashMap<AbstractActor, Integer>();
 	private Map<AbstractActor, Integer> cfgOutPortIndices = new HashMap<AbstractActor, Integer>();
-	
+
 	// Variables containing the name of the currently visited AbstractActor for
 	// PortDescriptions
 	// Map linking data ports to their corresponding description
-	
+
 	public Map<Port, Integer> getPortMap() {
 		return portMap;
 	}
@@ -100,7 +99,7 @@ public class SpiderPreProcessVisitor extends PiMMVisitor {
 	public Map<String, AbstractActor> getActorNames() {
 		return actorNames;
 	}
-	
+
 	public Map<AbstractActor, Integer> getFunctionMap() {
 		return functionMap;
 	}
@@ -126,7 +125,7 @@ public class SpiderPreProcessVisitor extends PiMMVisitor {
 		dataOutPortIndices.put(aa, 0);
 		cfgInPortIndices.put(aa, 0);
 		cfgOutPortIndices.put(aa, 0);
-						
+
 		// Visit configuration input ports to fill cfgInPortMap
 		visitAbstractVertex(aa);
 		// Visit data ports to fill the dataPortMap
@@ -151,7 +150,7 @@ public class SpiderPreProcessVisitor extends PiMMVisitor {
 	}
 
 	@Override
-	public void visitActor(Actor a) {		
+	public void visitActor(Actor a) {
 		// Register associated function
 		if(!(a instanceof PiGraph)){
 			functionMap.put(a, functionMap.size());
@@ -160,9 +159,9 @@ public class SpiderPreProcessVisitor extends PiMMVisitor {
 			else if(((HRefinement)(a.getRefinement())).getInitPrototype() != null)
 				WorkflowLogger.getLogger().warning("Init function of Actor "+a.getName()+" will not be handled");
 		}
-		
+
 		actorNames.put(a.getName(), a);
-				
+
 		visitAbstractActor(a);
 	}
 
@@ -170,14 +169,14 @@ public class SpiderPreProcessVisitor extends PiMMVisitor {
 	public void visitConfigInputPort(ConfigInputPort cip) {
 		int index = cfgInPortIndices.get(currentAbstractActor);
 		cfgInPortIndices.put(currentAbstractActor, index+1);
-		portMap.put(cip, index);		
+		portMap.put(cip, index);
 	}
 
 	@Override
 	public void visitConfigOutputPort(ConfigOutputPort cop) {
 		int index = cfgOutPortIndices.get(currentAbstractActor);
 		cfgOutPortIndices.put(currentAbstractActor, index+1);
-		portMap.put(cop, index);		
+		portMap.put(cop, index);
 	}
 
 	/**
@@ -283,7 +282,7 @@ public class SpiderPreProcessVisitor extends PiMMVisitor {
 	public void visitPort(Port p) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public void visitDataPort(DataPort p) {
 		throw new UnsupportedOperationException();
@@ -296,18 +295,18 @@ public class SpiderPreProcessVisitor extends PiMMVisitor {
 
 	@Override
 	public void visitFunctionParameter(
-			FunctionParameterImpl functionParameterImpl) {
+			FunctionParameter functionParameter) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void visitFunctionPrototype(
-			FunctionPrototypeImpl functionPrototypeImpl) {
+			FunctionPrototype functionPrototype) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void visitHRefinement(HRefinementImpl hRefinementImpl) {
+	public void visitHRefinement(HRefinement hRefinement) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -334,7 +333,7 @@ public class SpiderPreProcessVisitor extends PiMMVisitor {
 		visitAbstractActor(rba);
 //		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public void visitExecutableActor(ExecutableActor ea) {
 		throw new UnsupportedOperationException();

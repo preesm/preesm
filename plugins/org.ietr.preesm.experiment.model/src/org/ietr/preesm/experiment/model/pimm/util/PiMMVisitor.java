@@ -54,6 +54,9 @@ import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
+import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
+import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
+import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
@@ -63,9 +66,6 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
-import org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl;
-import org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl;
-import org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl;
 
 public abstract class PiMMVisitor {
 	public void visit(PiMMVisitable v) {
@@ -116,18 +116,18 @@ public abstract class PiMMVisitor {
 
 	public abstract void visitRefinement(Refinement r);
 
-	public abstract void visitFunctionParameter(FunctionParameterImpl f);
+	public abstract void visitFunctionParameter(FunctionParameter f);
 
-	public abstract void visitFunctionPrototype(FunctionPrototypeImpl f);
+	public abstract void visitFunctionPrototype(FunctionPrototype f);
 
-	public abstract void visitHRefinement(HRefinementImpl h);
-	
+	public abstract void visitHRefinement(HRefinement h);
+
 	public abstract void visitDataPort(DataPort p);
-	
+
 	public abstract void visitBroadcastActor(BroadcastActor ba);
-	
+
 	public abstract void visitJoinActor(JoinActor ja);
-	
+
 	public abstract void visitForkActor(ForkActor fa);
 
 	public abstract void visitRoundBufferActor(RoundBufferActor rba) ;
