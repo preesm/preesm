@@ -169,6 +169,10 @@
 				<executions>
 					<execution>
 						<id>javadoc-gen</id>
+						<phase/>
+					</execution>
+					<execution>
+						<id>javadoc-aggregation</id>
 						<phase>package</phase>
 						<goals>
 							<goal>javadoc-no-fork</goal>
