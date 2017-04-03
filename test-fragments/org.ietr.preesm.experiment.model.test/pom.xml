@@ -6,8 +6,8 @@
 
 	<parent>
 		<groupId>org.ietr.preesm</groupId>
-		<artifactId>org.ietr.preesm.parent</artifactId>
+		<artifactId>org.ietr.preesm.test</artifactId>
 		<version>2.2.6-SNAPSHOT</version>
-		<relativePath>../..</relativePath>
+		<relativePath>..</relativePath>
 	</parent>
 </project>

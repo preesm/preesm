@@ -175,18 +175,6 @@
 					<skip>true</skip>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.9</version>
-			   <executions>
-				  <execution>
-					 <goals>
-						<goal>prepare-agent</goal>
-					 </goals>
-				  </execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 
@@ -208,10 +196,23 @@
 		<module>plugins/org.ietr.preesm.pimm.algorithm</module>
 		<module>plugins/org.ietr.preesm.ui</module>
 
-		<module>test-fragments/org.ietr.preesm.experiment.model.test</module>
 	</modules>
 
 	<profiles>
+		<!--
+			Specific profile for Testing :
+				- active by default
+				- enables test firing, code coverage (jacoco)
+			-->
+		<profile>
+			<id>testing</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<modules>
+				<module>test-fragments</module>
+			</modules>
+		</profile>
 		<!--
 			Specific profile for Release Engineering :
 				- enable source feature
