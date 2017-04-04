@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Evaluator
+Bundle-Name: Evaluator plug-in
 Bundle-SymbolicName: org.ietr.preesm.evaluator;singleton:=true
 Bundle-Version: 2.2.6.qualifier
 Bundle-Activator: org.ietr.preesm.evaluator.Activator
@@ -16,3 +16,4 @@ Bundle-ClassPath: lib/glpk-java-1.0.31.jar,
 Export-Package: org.ietr.preesm.evaluator
 Import-Package: org.ietr.preesm.algorithm.exportXml,
  org.ietr.preesm.algorithm.importSdf3Xml
+Bundle-Vendor: IETR/INSA Rennes

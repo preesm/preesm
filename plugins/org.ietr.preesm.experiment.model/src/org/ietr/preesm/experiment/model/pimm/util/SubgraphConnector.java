@@ -60,6 +60,9 @@ import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.ForkActor;
+import org.ietr.preesm.experiment.model.pimm.FunctionParameter;
+import org.ietr.preesm.experiment.model.pimm.FunctionPrototype;
+import org.ietr.preesm.experiment.model.pimm.HRefinement;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
 import org.ietr.preesm.experiment.model.pimm.JoinActor;
@@ -69,9 +72,6 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
-import org.ietr.preesm.experiment.model.pimm.impl.FunctionParameterImpl;
-import org.ietr.preesm.experiment.model.pimm.impl.FunctionPrototypeImpl;
-import org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl;
 
 /**
  * Parse and connect hierarchical sub-{@link PiGraph} to a top level {@link PiGraph}
@@ -383,13 +383,13 @@ public class SubgraphConnector extends PiMMVisitor {
 
 	@Override
 	public void visitFunctionParameter(
-			FunctionParameterImpl functionParameterImpl) {
+			FunctionParameter functionParameter) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void visitFunctionPrototype(
-			FunctionPrototypeImpl functionPrototypeImpl) {
+			FunctionPrototype functionPrototype) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -419,7 +419,7 @@ public class SubgraphConnector extends PiMMVisitor {
 	}
 
 	@Override
-	public void visitHRefinement(HRefinementImpl hRefinementImpl) {
+	public void visitHRefinement(HRefinement hRefinement) {
 		throw new UnsupportedOperationException();
 	}
 

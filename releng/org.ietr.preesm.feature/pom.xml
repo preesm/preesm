@@ -38,10 +38,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.ietr.preesm.feature</artifactId>
 	<packaging>eclipse-feature</packaging>
+
 	<parent>
 		<groupId>org.ietr.preesm</groupId>
-		<artifactId>org.ietr.preesm.parent</artifactId>
+		<artifactId>org.ietr.preesm.releng</artifactId>
 		<version>2.2.6-SNAPSHOT</version>
-		<relativePath>../..</relativePath>
+		<relativePath>..</relativePath>
 	</parent>
 </project>

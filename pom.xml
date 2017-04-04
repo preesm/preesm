@@ -195,9 +195,24 @@
 		<module>plugins/org.ietr.preesm.memory</module>
 		<module>plugins/org.ietr.preesm.pimm.algorithm</module>
 		<module>plugins/org.ietr.preesm.ui</module>
+
 	</modules>
 
 	<profiles>
+		<!--
+			Specific profile for Testing :
+				- active by default
+				- enables test firing, code coverage (jacoco)
+			-->
+		<profile>
+			<id>testing</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<modules>
+				<module>test-fragments</module>
+			</modules>
+		</profile>
 		<!--
 			Specific profile for Release Engineering :
 				- enable source feature
@@ -209,6 +224,9 @@
 			-->
 		<profile>
 			<id>releng</id>
+			<modules>
+				<module>releng</module>
+			</modules>
 			<build>
 				<plugins>
 					<!--
@@ -277,15 +295,6 @@
 					</plugin>
 				</plugins>
 			</build>
-			<modules>
-				<module>releng/org.ietr.preesm.feature</module>
-				<module>releng/org.ietr.preesm.complete.site</module>
-				<!-- Following modules are not used
-
-				<module>releng/org.ietr.preesm.rcp.utils</module>
-				<module>releng/org.ietr.preesm.product</module>
-				 -->
-			</modules>
 		</profile>
 	</profiles>
 
