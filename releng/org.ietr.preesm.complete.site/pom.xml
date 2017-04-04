@@ -1,0 +1,293 @@
+<!--
+    Copyright or © or Copr. 2015 - 2017 IETR/INSA:
+   
+    Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017)
+    Julien Heulot <julien.heulot@insa-rennes.fr> (2015 - 2016)
+    Karol Desnos <karol.desnos@insa-rennes.fr> (2015 - 2016)
+   
+    This software is a computer program whose purpose is to prototype
+    parallel applications.
+   
+    This software is governed by the CeCILL-C license under French law and
+    abiding by the rules of distribution of free software.  You can  use
+    modify and/ or redistribute the software under the terms of the CeCILL-C
+    license as circulated by CEA, CNRS and INRIA at the following URL
+    "http://www.cecill.info".
+   
+    As a counterpart to the access to the source code and  rights to copy,
+    modify and redistribute granted by the license, users are provided only
+    with a limited warranty  and the software's author,  the holder of the
+    economic rights,  and the successive licensors  have only  limited
+    liability.
+   
+    In this respect, the user's attention is drawn to the risks associated
+    with loading,  using,  modifying and/or developing or reproducing the
+    software by the user in light of its specific status of free software,
+    that may mean  that it is complicated to manipulate,  and  that  also
+    therefore means  that it is reserved for developers  and  experienced
+    professionals having in-depth computer knowledge. Users are therefore
+    encouraged to load and test the software's suitability as regards their
+    requirements in conditions enabling the security of their systems and/or
+    data to be ensured and,  more generally, to use and operate it in the
+    same conditions as regards security.
+   
+    The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL-C license and that you accept its terms.
+ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>org.ietr.preesm.complete.site</artifactId>
+	<packaging>eclipse-repository</packaging>
+	
+	<parent>
+		<groupId>org.ietr.preesm</groupId>
+		<artifactId>org.ietr.preesm.parent</artifactId>
+		<version>2.2.6-SNAPSHOT</version>
+		<relativePath>../..</relativePath>
+	</parent>
+	
+	<build>
+		<plugins>
+			<!--
+				This plugins builds the update site for the current release
+				and puts all files in ${project.build.directory}/repository
+				-->
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-p2-repository-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+					<includeAllDependencies>true</includeAllDependencies>
+					<compress>false</compress>
+					<repositoryName>IETR/INSA - Rennes Update Site</repositoryName>
+				</configuration>
+			</plugin>
+			
+			<!--
+				This plugin copies some additional files (index.html, web/, ...)
+				to the update site folders.
+				-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<id>copy-web-resources</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target name="Copy web resources">
+								<!-- Web resources for the current release -->
+								<copy todir="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/web/" >
+									<fileset dir="${basedir}/web" includes="*"/>
+								</copy>
+								<copy todir="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/" >
+									<fileset dir="${basedir}" includes="index.html" />
+								</copy>
+								<copy file="${project.build.directory}/category.xml" tofile="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/site.xml"/>
+								
+								
+								<!-- Web resources for the complete site -->
+								<copy todir="${project.build.directory}/gensite/update-site/complete/web/" >
+									<fileset dir="${basedir}/web" includes="*"/>
+								</copy>
+								<copy todir="${project.build.directory}/gensite/update-site/complete/" >
+									<fileset dir="${basedir}" includes="index.html" />
+								</copy>
+								<copy file="${project.build.directory}/category.xml" tofile="${project.build.directory}/gensite/update-site/complete/site.xml"/>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<!--
+				This plugin will fetch all features and plugins
+				from the online Preesm update site (URL defined in the 
+				parent POM). This will be executed after packaging the
+				update site for the current release. It will merge the
+				features and plugins from the online update site and 
+				the ones generated for the current release, in 
+				${project.build.directory}/gensite/update-site/complete.
+				It also copies the update-site for the current release
+				in ${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}
+				-->
+			<plugin>
+				<groupId>org.eclipse.tycho.extras</groupId>
+				<artifactId>tycho-p2-extras-plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+					<execution>
+						<id>copy-current</id>
+						<phase>package</phase>
+						<goals>
+							<goal>mirror</goal>
+						</goals>
+						<configuration>
+							<source>
+								<repository><url>${project.baseUri}/target/repository</url></repository>
+							</source>
+							<append>false</append>
+							<compress>false</compress>
+							<includeOptional>true</includeOptional>
+							<destination>${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}</destination>
+						</configuration>
+					</execution>
+					<execution>
+						<id>mirror-complete</id>
+						<phase>package</phase>
+						<goals>
+							<goal>mirror</goal>
+						</goals>
+						<configuration>
+							<source>
+								<!-- Note: if the URL points to a yet-to-exist update 
+									 site, command the following line to prevent the P2
+									 mirror task to fail
+									 -->
+								<repository><url>${preesm.p2.repo}</url></repository>
+								<repository><url>${project.baseUri}/target/repository</url></repository>
+							</source>
+							<append>true</append>
+							<compress>false</compress>
+							<includeOptional>true</includeOptional>
+							<destination>${project.build.directory}/gensite/update-site/complete/</destination>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.4</version>
+				<configuration>
+					<failOnError>false</failOnError>
+				</configuration>
+				<executions>
+					<execution>
+						<id>javadoc-gen</id>
+						<phase/>
+					</execution>
+					<execution>
+						<id>javadoc-aggregation</id>
+						<phase>package</phase>
+						<goals>
+							<goal>javadoc-no-fork</goal>
+						</goals>
+						<configuration>
+							<failOnError>false</failOnError>
+							<!-- switch on dependency-driven aggregation -->
+							<includeDependencySources>true</includeDependencySources>
+							<!-- include ONLY dependencies with same groupId -->
+							<dependencySourceIncludes>
+								<dependencySourceInclude>${project.groupId}:*</dependencySourceInclude>
+							</dependencySourceIncludes>
+							<!-- make sure aggregated javadoc is put in the complete site -->
+							<reportOutputDirectory>${project.build.directory}/gensite/API/</reportOutputDirectory>
+							<destDir>${project.groupId}-${project.version}</destDir>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+		
+	<profiles>
+		<profile>
+			<!-- 
+				Make sure the upload only activates on Unix like platform.
+				Windows is not supported since rsync does not handle windows
+				like paths (C:\....), even when using Cygwin.
+				Tested with MacOSX and Linux. Rsync must be installed on system.
+				-->
+			<activation>
+			  <os>
+				<family>!windows</family>
+			  </os>
+			</activation>
+			<build>
+				<plugins>	
+					<!--
+						The following plugins print a message informing the
+						user that it will have to enter SourceForge credentials
+						for uploading the new update site using rsync.
+						-->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.8</version>
+						<executions>
+							<execution>
+								<id>print-hint-msg</id>
+								<phase>deploy</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target name="Print hint message">
+										<echo>############################################</echo>
+										<echo>###  In the following prompts please</echo>
+										<echo>###  enter your sourceforge</echo>
+										<echo>###  credentials for the PREESM project.</echo>
+										<echo>###  The generated content will be uploaded using rsync at</echo>
+										<echo>###  login,preesm@web.sourceforge.net:/home/project-web/preesm/htdocs/gensite/</echo>
+										<echo>###  </echo>
+										<echo>###  When prompted for login, please do not specify ",preesm".</echo>
+										<echo>###  </echo>
+										<echo>############################################</echo>
+									</target>
+								</configuration>
+							</execution>
+							<execution>
+								<id>read-SF-user-login</id>
+								<phase>deploy</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target name="Read SourceForge user login">
+										<input
+											message="Please enter your Sourceforge Login (without project name) : "
+											addproperty="user-login" />
+									</target>
+									<exportAntProperties>true</exportAntProperties>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<!--
+							This plugin calls the system RSync to upload the complete
+							update site on SF website. It will fail if the binary is 
+							not present in $PATH. 
+							Disabled on windows hosts (see comment above).
+							-->
+					  <artifactId>exec-maven-plugin</artifactId>
+					  <groupId>org.codehaus.mojo</groupId>
+					  <version>1.6.0</version>
+					  <executions>
+						<execution>
+						  <id>sf-preesm-deploy</id>
+						  <phase>deploy</phase>
+						  <goals>
+							<goal>exec</goal>
+						  </goals>
+						  <configuration>
+							<executable>rsync</executable>
+						  <arguments>
+							<argument>-auv</argument>
+							<argument>${project.build.directory}/gensite</argument>
+							<argument>${user-login},preesm@web.sourceforge.net:/home/project-web/preesm/htdocs/</argument>
+						  </arguments>
+						  </configuration>
+						</execution>
+					  </executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>

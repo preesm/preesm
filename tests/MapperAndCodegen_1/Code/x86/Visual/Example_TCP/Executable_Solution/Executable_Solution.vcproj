@@ -194,7 +194,7 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Fichiers d&apos;en-tête"
+			Name="Fichiers d&apos;en-tÃªte"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
