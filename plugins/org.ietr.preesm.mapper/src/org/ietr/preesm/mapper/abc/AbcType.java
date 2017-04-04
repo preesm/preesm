@@ -40,7 +40,7 @@ import org.ietr.preesm.mapper.abc.taskscheduling.TaskSchedType;
 
 /**
  * Types of simulator to be used in parameters
- * 
+ *
  * @author mpelcat
  */
 public class AbcType {
@@ -68,7 +68,7 @@ public class AbcType {
 	 */
 	private TaskSchedType taskSchedType = null;
 
-	public AbcType(String name) {
+	protected AbcType(String name) {
 		super();
 		this.name = name;
 		this.taskSchedType = TaskSchedType.Simple;
