@@ -2,7 +2,6 @@ package org.ietr.preesm.experiment.model.pimm;
 
 import org.ietr.preesm.experiment.model.pimm.impl.ActorImpl;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ActorTest {
@@ -17,17 +16,4 @@ public class ActorTest {
 		Assert.assertNull(actor.getGraph());
 	}
 
-	@Test
-	public void testFail() {
-		Actor actor = null;
-		Assert.assertNull(actor);
-		actor = PiMMFactory.eINSTANCE.createActor();
-		Assert.assertNull(actor);
-	}
-
-	@Test
-	@Ignore
-	public void test1() {
-		//whatever ... it's skipped
-	}
 }
