@@ -118,7 +118,7 @@
 			<plugin>
 				<groupId>org.eclipse.tycho.extras</groupId>
 				<artifactId>tycho-p2-extras-plugin</artifactId>
-				<version>1.0.0</version>
+				<version>${tycho-version}</version>
 				<executions>
 					<execution>
 						<id>copy-current</id>
