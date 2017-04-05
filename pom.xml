@@ -211,6 +211,18 @@
 	</modules>
 
 	<profiles>
+		<!-- Specific arguments for tests on MacOSX platform -->
+		<profile>
+			<id>os-macosx</id>
+			<activation>
+				<os>
+					<family>mac</family>
+				</os>
+			</activation>
+			<properties>
+				<tycho.surefire.extra.vmargs>-XstartOnFirstThread</tycho.surefire.extra.vmargs>
+			</properties>
+		</profile>
 		<!--
 			Specific profile for Release Engineering :
 				- enable source feature
