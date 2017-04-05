@@ -207,23 +207,10 @@
 		<module>plugins/org.ietr.preesm.pimm.algorithm</module>
 		<module>plugins/org.ietr.preesm.ui</module>
 
+		<module>test-fragments</module>
 	</modules>
 
 	<profiles>
-		<!--
-			Specific profile for Testing :
-				- active by default
-				- enables test firing, code coverage (jacoco)
-			-->
-		<profile>
-			<id>testing</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<modules>
-				<module>test-fragments</module>
-			</modules>
-		</profile>
 		<!--
 			Specific profile for Release Engineering :
 				- enable source feature
