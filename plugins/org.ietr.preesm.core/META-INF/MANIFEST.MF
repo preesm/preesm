@@ -7,14 +7,14 @@ Bundle-Activator: org.ietr.preesm.core.Activator
 Bundle-Vendor: IETR/INSA Rennes
 Require-Bundle: org.eclipse.core.resources,
  org.eclipse.core.runtime,
- org.jgrapht;bundle-version="0.8.2",
  org.ietr.dftools.architecture;bundle-version="0.0.1",
  org.ietr.dftools.algorithm;bundle-version="0.0.1",
  org.ietr.preesm.experiment.model;bundle-version="1.0.0",
  org.ietr.dftools.workflow,
  org.eclipse.jface,
  org.eclipse.ui.workbench,
- org.ietr.preesm.utils
+ org.ietr.preesm.utils,
+ org.clojars.gilesc.jgrapht;bundle-version="0.8.2"
 Bundle-ClassPath: .,
  lib/djep-full-latest.jar,
  lib/jmatharray.jar,
