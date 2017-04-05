@@ -89,15 +89,6 @@
 								</copy>
 								<copy file="${project.build.directory}/category.xml" tofile="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/site.xml"/>
 								
-								
-								<!-- Web resources for the complete site -->
-								<copy todir="${project.build.directory}/gensite/update-site/complete/web/" >
-									<fileset dir="${basedir}/web" includes="*"/>
-								</copy>
-								<copy todir="${project.build.directory}/gensite/update-site/complete/" >
-									<fileset dir="${basedir}" includes="index.html" />
-								</copy>
-								<copy file="${project.build.directory}/category.xml" tofile="${project.build.directory}/gensite/update-site/complete/site.xml"/>
 							</target>
 						</configuration>
 					</execution>
@@ -118,7 +109,7 @@
 			<plugin>
 				<groupId>org.eclipse.tycho.extras</groupId>
 				<artifactId>tycho-p2-extras-plugin</artifactId>
-				<version>1.0.0</version>
+				<version>${tycho-version}</version>
 				<executions>
 					<execution>
 						<id>copy-current</id>

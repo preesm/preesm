@@ -14,7 +14,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.ietr.preesm.utils,
  org.ietr.dftools.algorithm,
  org.ietr.dftools.architecture,
- org.jgrapht;bundle-version="0.8.2"
+ org.clojars.gilesc.jgrapht;bundle-version="0.8.2"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: IETR/INSA Rennes
 Export-Package: org.ietr.preesm.algorithm.exportDif,

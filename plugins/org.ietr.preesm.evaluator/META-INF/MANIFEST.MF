@@ -7,8 +7,8 @@ Bundle-Activator: org.ietr.preesm.evaluator.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.ietr.dftools.workflow,
  org.ietr.dftools.algorithm,
- org.jgrapht,
- org.ietr.preesm.core
+ org.ietr.preesm.core,
+ org.clojars.gilesc.jgrapht;bundle-version="0.8.2"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/glpk-java-1.0.31.jar,
