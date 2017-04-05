@@ -84,6 +84,7 @@
 					<useProjectSettings>false</useProjectSettings>
 				</configuration>
 			</plugin>
+			<!-- Define supported target platforms -->
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>target-platform-configuration</artifactId>
@@ -131,6 +132,7 @@
 				    </environments>
 				</configuration>
 			</plugin>
+			<!-- Enable Xtend compiler -->
 			<plugin>
 				<groupId>org.eclipse.xtend</groupId>
 				<artifactId>xtend-maven-plugin</artifactId>
