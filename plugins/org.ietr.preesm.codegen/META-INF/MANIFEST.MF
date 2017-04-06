@@ -11,10 +11,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.ietr.dftools.architecture;bundle-version="0.0.1",
  org.ietr.dftools.algorithm;bundle-version="0.0.1",
  org.ietr.preesm.utils,
- org.clojars.gilesc.jgrapht;bundle-version="0.8.2"
+ org.clojars.gilesc.jgrapht;bundle-version="0.8.2",
+ org.jacorb.idl-compiler;bundle-version="2.3.1",
+ org.jacorb.idl-compiler.source;bundle-version="2.3.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .,
- lib/idl.jar
+Bundle-ClassPath: .
 Bundle-Vendor: IETR/INSA Rennes
 Export-Package: org.ietr.preesm.codegen, 
  org.ietr.preesm.codegen.idl,
