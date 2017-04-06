@@ -4,9 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/"/>
 	<classpathentry exported="true" kind="lib" path="lib/djep-full-latest.jar" sourcepath="Preesm coresrc.zip"/>
-	<classpathentry exported="true" kind="lib" path="lib/jmatharray.jar" sourcepath="Preesm coresrc.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/jxl.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jscl.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/saxon-B-9_1_0/saxon9.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
