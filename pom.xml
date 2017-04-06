@@ -44,7 +44,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- can be changed to a local repo using an URI like file:///path/to/repo
 			 Note: plain paths like '/path/to/repo' without file:// will not work-->
-		<preesm.p2.repo>http://preesm.sourceforge.net/eclipse/update-site/</preesm.p2.repo>
+		<preesm.p2.repo>http://preesm.sourceforge.net/gensite/update-site/complete/</preesm.p2.repo>
 	</properties>
 
 	<repositories>
