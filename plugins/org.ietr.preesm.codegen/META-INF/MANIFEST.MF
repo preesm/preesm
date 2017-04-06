@@ -13,12 +13,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.ietr.preesm.utils,
  org.clojars.gilesc.jgrapht;bundle-version="0.8.2"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: lib/JFlex.jar,
- lib/logkit-1.2.jar,
- .,
- lib/idl.jar,
- lib/antlr-3.3-complete.jar,
- lib/ST-4.0.4.jar
+Bundle-ClassPath: .,
+ lib/idl.jar
 Bundle-Vendor: IETR/INSA Rennes
 Export-Package: org.ietr.preesm.codegen, 
  org.ietr.preesm.codegen.idl,
