@@ -14,14 +14,11 @@ Require-Bundle: org.eclipse.core.resources,
  org.eclipse.jface,
  org.eclipse.ui.workbench,
  org.ietr.preesm.utils,
- org.clojars.gilesc.jgrapht;bundle-version="0.8.2"
+ org.clojars.gilesc.jgrapht;bundle-version="0.8.2",
+ net.sourceforge.jexcelapi.jxl;bundle-version="2.6.10"
 Bundle-ClassPath: .,
- lib/djep-full-latest.jar,
- lib/jxl.jar
-Export-Package: jxl,
- jxl.write,
- jxl.write.biff,
- org.ietr.preesm.core,
+ lib/djep-full-latest.jar
+Export-Package: org.ietr.preesm.core,
  org.ietr.preesm.core.algorithm.visitors,
  org.ietr.preesm.core.architecture.route,
  org.ietr.preesm.core.architecture.util,
