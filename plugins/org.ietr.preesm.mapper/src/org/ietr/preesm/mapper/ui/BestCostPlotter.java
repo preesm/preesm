@@ -75,7 +75,7 @@ import org.jfree.ui.RefineryUtilities;
 
 /**
  * Plots the best cost found versus scheduling time. Can be latency or else
- * 
+ *
  * @author pmenuet
  */
 public class BestCostPlotter extends ApplicationFrame implements
@@ -103,7 +103,7 @@ public class BestCostPlotter extends ApplicationFrame implements
 
 	/**
 	 * Constructs the latency plotter
-	 * 
+	 *
 	 * @param title
 	 *            the frame title.
 	 */
@@ -144,7 +144,7 @@ public class BestCostPlotter extends ApplicationFrame implements
 
 	/**
 	 * Creates a chart.
-	 * 
+	 *
 	 * @return A chart.
 	 */
 	private JFreeChart createChart(String title) {
@@ -155,8 +155,7 @@ public class BestCostPlotter extends ApplicationFrame implements
 
 		for (int i = 0; i < subplotCount; i++) {
 			this.lastValue[i] = 100.0;
-			final TimeSeries series = new TimeSeries("Real Time",
-					Millisecond.class);
+			final TimeSeries series = new TimeSeries("Real Time");
 			this.datasets[i] = new TimeSeriesCollection(series);
 			final NumberAxis rangeAxis = new NumberAxis("Schedule");
 			rangeAxis.setAutoRangeIncludesZero(false);
@@ -193,7 +192,7 @@ public class BestCostPlotter extends ApplicationFrame implements
 
 	/**
 	 * Handles a click on the button and perform the wanted action.
-	 * 
+	 *
 	 * @param e
 	 *            the action event.
 	 */
