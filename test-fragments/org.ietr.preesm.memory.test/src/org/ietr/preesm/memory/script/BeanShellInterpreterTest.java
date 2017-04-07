@@ -98,7 +98,7 @@ public class BeanShellInterpreterTest {
 	}
 
 	@Test
-	public void test1() throws EvalError, FileNotFoundException, IOException {
+	public void testDesinterleave() throws EvalError, FileNotFoundException, IOException {
 		final Interpreter interpreter = new Interpreter();
 		final String bshFileUnderTest = ScriptRunnerTest.SCRIPT_FOLDER_PATH+"/desinterleave_standalonetest.bsh";
 
@@ -130,5 +130,124 @@ public class BeanShellInterpreterTest {
 		final int size = matchList.size();
 		Assert.assertEquals(N, size);
 
+	}
+//
+//sliceHeight = (Height/NbSlice+2*Overlap);
+//sliceSize = sliceHeight*Width;
+//
+//for(i=0;i<NbSlice;i++){
+//	o_output.matchWith(((i+1)%NbSlice)*sliceSize,
+//	                   i_input,
+//                       (i*Height/NbSlice-Overlap)*Width,
+//                       sliceSize);
+//}
+
+	@Test
+	public void testShuffleSplit() throws EvalError, FileNotFoundException, IOException {
+		final Interpreter interpreter = new Interpreter();
+		final String bshFileUnderTest = ScriptRunnerTest.SCRIPT_FOLDER_PATH+"/ShuffleSplit_standalonetest.bsh";
+
+		interpreter.eval("import " + Buffer.class.getName() + ";");
+		interpreter.eval("import " + Match.class.getName() + ";");
+		interpreter.eval("import " + List.class.getName() + ";");
+		interpreter.eval("import " + ArrayList.class.getName() + ";");
+
+		Map<String,Integer> arguments = new LinkedHashMap<>();
+		final int NbSlice = 8;
+		arguments.put("Height", 1080);
+		arguments.put("Width", 1920);
+		arguments.put("NbSlice", NbSlice);
+		arguments.put("Overlap", 1);
+
+		arguments.forEach((k,v) -> {try {
+			interpreter.set(k, v.intValue());
+		} catch (EvalError e) {
+			e.printStackTrace();
+		}});
+		Buffer i = new Buffer(null, new DAGVertex("v1",null,null), "i", 1024*1024*1024, 1, true);
+		Buffer o = new Buffer(null, new DAGVertex("v1",null,null), "o", 1024*1024*1024, 1, true);
+		interpreter.set("i_input", i);
+		interpreter.set("o_output", o);
+		final Object eval = interpreter.source(bshFileUnderTest);
+		Assert.assertNotNull(eval);
+		Assert.assertTrue(eval instanceof ArrayList);
+		@SuppressWarnings("unchecked")
+		List<Match> matchList = (List<Match>)eval;
+		final int size = matchList.size();
+		Assert.assertEquals(NbSlice, size);
+
+	}
+
+	@Test
+	public void testSplit() throws EvalError, FileNotFoundException, IOException {
+		final Interpreter interpreter = new Interpreter();
+		final String bshFileUnderTest = ScriptRunnerTest.SCRIPT_FOLDER_PATH+"/split_standalonetest.bsh";
+
+		interpreter.eval("import " + Buffer.class.getName() + ";");
+		interpreter.eval("import " + Match.class.getName() + ";");
+		interpreter.eval("import " + List.class.getName() + ";");
+		interpreter.eval("import " + ArrayList.class.getName() + ";");
+
+		Map<String,Integer> arguments = new LinkedHashMap<>();
+		final int NbSlice = 80;
+		arguments.put("Height", 1080);
+		arguments.put("Width", 1920);
+		arguments.put("NbSlice", NbSlice);
+		arguments.put("Overlap", 1);
+
+		arguments.forEach((k,v) -> {try {
+			interpreter.set(k, v.intValue());
+		} catch (EvalError e) {
+			e.printStackTrace();
+		}});
+		Buffer i = new Buffer(null, new DAGVertex("v1",null,null), "i", 1024*1024*1024, 1, true);
+		Buffer o = new Buffer(null, new DAGVertex("v1",null,null), "o", 1024*1024*1024, 1, true);
+		interpreter.set("i_input", i);
+		interpreter.set("o_output", o);
+		final Object eval = interpreter.source(bshFileUnderTest);
+		Assert.assertNotNull(eval);
+		Assert.assertTrue(eval instanceof ArrayList);
+		@SuppressWarnings("unchecked")
+		List<Match> matchList = (List<Match>)eval;
+		final int size = matchList.size();
+		Assert.assertEquals(NbSlice, size);
+
+	}
+
+	@Test
+	public void testSplitFail() throws EvalError, FileNotFoundException, IOException {
+		final Interpreter interpreter = new Interpreter();
+		final String bshFileUnderTest = ScriptRunnerTest.SCRIPT_FOLDER_PATH+"/split_standalonetest.bsh";
+
+		Map<String,Integer> arguments = new LinkedHashMap<>();
+		final int NbSlice = 800;
+		arguments.put("Height", 1080);
+		arguments.put("Width", 1920);
+		arguments.put("NbSlice", NbSlice);
+		arguments.put("Overlap", 10);
+
+		arguments.forEach((k,v) -> {try {
+			interpreter.set(k, v.intValue());
+		} catch (EvalError e) {
+			e.printStackTrace();
+		}});
+		Buffer i = new Buffer(null, new DAGVertex("v1",null,null), "i", 10, 1, true);
+		Buffer o = new Buffer(null, new DAGVertex("v1",null,null), "o", 10, 1, true);
+		interpreter.set("i_input", i);
+		interpreter.set("o_output", o);
+
+		try {
+			interpreter.source(bshFileUnderTest);
+			Assert.fail();
+		} catch (EvalError e) {
+			final Throwable cause = e.getCause();
+			Assert.assertTrue(cause instanceof RuntimeException);
+			final String message = cause.getMessage();
+			Assert.assertNotNull(message);
+			Assert.assertTrue(message.startsWith("Cannot match"));
+			//success
+			return;
+		}
+		Assert.fail();
 	}
 }
