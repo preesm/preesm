@@ -313,5 +313,50 @@ public class BeanShellInterpreterTest {
 
 		final int size = resList.size();
 		Assert.assertEquals(numberOfForks, size);
+		System.out.println(resList);
+	}
+
+	/**
+	 * Requires Plugin testing
+	 *
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 * @throws EvalError
+	 */
+	@Test
+	public void testRoundBuffer() throws URISyntaxException, IOException, EvalError {
+		final String plugin_name = "org.ietr.preesm.memory";
+		final String script_path = "/scripts/roundbuffer.bsh";
+
+		final StringBuffer content = new StringBuffer();
+		final URL url = new URL("platform:/plugin/" + plugin_name + "/" + script_path);
+		final InputStream inputStream = url.openConnection().getInputStream();
+		final BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+		String inputLine;
+		// instrument code to return the list of matches
+		while ((inputLine = in.readLine()) != null) {
+			content.append(inputLine + "\n");
+		}
+		in.close();
+		Assert.assertTrue(content.toString().contains("RuntimeException"));
+
+		final int bufferToBroadcastSize = 1024 * 1024 * 8; // 8MB
+
+		final List<Buffer> inputs = new ArrayList<>(1);
+		inputs.add(new Buffer(null, new DAGVertex("v1", null, null), "inputBuffer", bufferToBroadcastSize, 1, true));
+		final List<Buffer> outputs = new ArrayList<>(1);
+		outputs.add(new Buffer(null, new DAGVertex("v1", null, null), "outputBuffer", bufferToBroadcastSize, 1, true));
+
+		final Interpreter interpreter = new Interpreter();
+		interpreter.eval("import " + Buffer.class.getName() + ";");
+		interpreter.eval("import " + Match.class.getName() + ";");
+		interpreter.eval("import " + List.class.getName() + ";");
+		interpreter.eval("import " + ArrayList.class.getName() + ";");
+		interpreter.eval("import " + Arrays.class.getName() + ".*;");
+		interpreter.set("inputs", inputs);
+		interpreter.set("outputs", outputs);
+		final Object eval = interpreter.eval(content.toString());
+		Assert.assertNotNull(eval);
+		Assert.assertTrue(eval instanceof Match);
 	}
 }
