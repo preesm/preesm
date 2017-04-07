@@ -1581,7 +1581,6 @@ class ScriptRunner {
 	 * {@link Map}, and a warning will be printed in the {@link Logger log}.
 	 */
 	def run() {
-
 		// For each vertex with a script
 		for (e : scriptedVertices.entrySet) {
 			runScript(e.key, e.value)
@@ -1596,10 +1595,9 @@ class ScriptRunner {
 
 		// Create the vertex parameter list
 		val Map<String, Integer> parameters = newHashMap
-		{
-			val arguments = sdfVertex.propertyBean.getValue(SDFAbstractVertex.ARGUMENTS) as HashMap<String, Argument>
-			if(arguments != null) arguments.entrySet.forEach[parameters.put(it.key, it.value.intValue)]
-		}
+		val arguments = sdfVertex.propertyBean.getValue(SDFAbstractVertex.ARGUMENTS) as HashMap<String, Argument>
+		if(arguments != null) arguments.entrySet.forEach[parameters.put(it.key, it.value.intValue)]
+
 		parameters.put("alignment", alignment)
 
 		// Create the input/output lists
