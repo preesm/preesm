@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class ScriptRunnerTest {
-	public static final String SCRIPT_FOLDER_PATH = "resources/BSscripts/";
+	public static final String SCRIPT_FOLDER_PATH = "resources/BSHscripts/";
 
 	/**
 	 * Make sure the tests will be able to find the test files
@@ -15,6 +15,6 @@ public class ScriptRunnerTest {
 	public void testFindScripts() {
 		File dir = new File(SCRIPT_FOLDER_PATH);
 		String[] list = dir.list();
-		Assert.assertEquals(15, list.length);
+		Assert.assertEquals(11, list.length);
 	}
 }
