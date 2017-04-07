@@ -248,21 +248,4 @@ public class IBSDFGenerator {
 
 	}
 
-
-	/**
-	 * Main method for tests and generate IBSDF graphs
-	 * @param args
-	 * @throws IOException
-	 * @throws InterruptedException
-	 * @throws SDF4JException
-	 * @throws InvalidExpressionException
-	 */
-	public static void main(String [] args) throws IOException, InterruptedException, SDF4JException, InvalidExpressionException
-	{
-		// Generate IBSDF of 50 actors
-		IBSDFGenerator x = new IBSDFGenerator(50);
-		x.graphSet_gen();
-		x.hierarchize();
-
-	}
 }
