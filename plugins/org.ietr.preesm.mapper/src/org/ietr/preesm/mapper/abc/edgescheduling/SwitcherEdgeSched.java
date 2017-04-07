@@ -47,7 +47,7 @@ import org.ietr.preesm.mapper.model.special.TransferVertex;
 /**
  * An advanced edge scheduler. It looks for the largest free interval in
  * scheduling and schedules the new communication in this slot.
- * 
+ *
  * @author mpelcat
  */
 public class SwitcherEdgeSched extends AbstractEdgeSched {
@@ -58,13 +58,6 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
 		super(orderManager);
 
 		intervalFinder = new IntervalFinder(orderManager);
-	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-
 	}
 
 	@Override

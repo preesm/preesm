@@ -74,18 +74,11 @@ import org.ietr.preesm.mapper.model.special.TransferVertex;
 /**
  * Tags an SDF with the implementation information necessary for code
  * generation, and DAG exporting
- * 
+ *
  * @author pmenuet
  * @author mpelcat
  */
 public class TagDAG {
-
-	/**
-	 * Main for test
-	 */
-	public static void main(String[] args) {
-
-	}
 
 	/**
 	 * Constructor
@@ -97,7 +90,7 @@ public class TagDAG {
 	/**
 	 * tag adds the send and receive operations necessary to the code
 	 * generation. It also adds the necessary properies.
-	 * 
+	 *
 	 * @throws InvalidExpressionException
 	 */
 	public void tag(MapperDAG dag, Design architecture,
@@ -248,7 +241,7 @@ public class TagDAG {
 
 				// Setting the task duration
 				ComponentInstance effectiveOperator = currentVertex
-						
+
 						.getEffectiveOperator();
 				long singleRepeatTime = currentVertex.getInit()
 						.getTime(effectiveOperator);
@@ -275,7 +268,7 @@ public class TagDAG {
 
 	/**
 	 * Loop on the edges to add aggregates.
-	 * 
+	 *
 	 * @throws InvalidExpressionException
 	 * @throws InvalidExpressionException
 	 */
@@ -302,7 +295,7 @@ public class TagDAG {
 	/**
 	 * Aggregate is imported from the SDF edge. An aggregate in SDF is a set of
 	 * sdf edges that were merged into one DAG edge.
-	 * 
+	 *
 	 * @throws InvalidExpressionException
 	 */
 	@SuppressWarnings("unchecked")
