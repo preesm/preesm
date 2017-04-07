@@ -18,6 +18,9 @@ import org.junit.Test;
 import bsh.EvalError;
 import bsh.Interpreter;
 
+/**
+ * Non regression tests for the BeanShell2 third party dependency.
+ */
 public class BeanShellInterpreterTest {
 
 	@Test
