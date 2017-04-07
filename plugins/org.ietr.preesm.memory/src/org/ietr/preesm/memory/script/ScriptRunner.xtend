@@ -50,7 +50,9 @@ import java.util.logging.Logger
 import org.eclipse.core.resources.IFolder
 import org.eclipse.core.resources.IProject
 import org.eclipse.core.resources.ResourcesPlugin
+import org.eclipse.core.runtime.IPath
 import org.eclipse.core.runtime.Path
+import org.eclipse.xtend.lib.annotations.Accessors
 import org.ietr.dftools.algorithm.model.dag.DAGEdge
 import org.ietr.dftools.algorithm.model.dag.DAGVertex
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph
@@ -74,7 +76,6 @@ import org.ietr.preesm.utils.files.FilesManager
 
 import static extension org.ietr.preesm.memory.script.Buffer.*
 import static extension org.ietr.preesm.memory.script.Range.*
-import org.eclipse.xtend.lib.annotations.Accessors
 
 enum CheckPolicy {
 	NONE,
@@ -83,6 +84,22 @@ enum CheckPolicy {
 }
 
 class ScriptRunner {
+
+	public static final String SCRIPT_FOLDER = "scripts"
+
+	public static final String JOIN_SCRIPT = "join.bsh"
+	public static final String FORK_SCRIPT = "fork.bsh"
+	public static final String ROUNDBUFFER_SCRIPT = "roundbuffer.bsh"
+	public static final String BROADCAST_SCRIPT = "broadcast.bsh"
+
+	// Name of bundle where to look for files (allow not to search into all projects)
+	public static final String bundleId = "org.ietr.preesm.memory"
+
+	// Name of the IProject where to extract script files
+	public static final String tmpProjectName = bundleId + "." + "temporary"
+
+	// Name of the IFolder where to extract script files
+	public static final String tmpFolderPath = IPath.SEPARATOR+SCRIPT_FOLDER+IPath.SEPARATOR
 
 	/**
 	 * Helper method to get the incoming {@link SDFEdge}s of an {@link
@@ -310,15 +327,6 @@ class ScriptRunner {
 	 *            are retrieved.
 	 */
 	def protected findScripts(DirectedAcyclicGraph dag, PreesmScenario scenario) {
-
-		// Name of bundle where to look for files (allow not to search into all projects)
-		val bundleId = "org.ietr.preesm.memory"
-
-		// Name of the IProject where to extract script files
-		val tmpProjectName = bundleId + "." + "temporary"
-
-		// Name of the IFolder where to extract script files
-		val tmpFolderPath = "/scripts/"
 
 		// Special scripts files
 		val specialScriptFiles = new HashMap<String, File>()
