@@ -1,0 +1,18 @@
+// Broadcast script
+
+inIdx=0;
+final int inSize = inputs.get(0).getNbTokens();
+for(output : outputs) {
+	remaining = output.getNbTokens();
+	outIdx=0;
+	do {		
+		// Do the match
+		matchSize = ((remaining+inIdx)<=inSize)?remaining:inSize-inIdx;
+		inputs.get(0).matchWith(inIdx,output,outIdx,matchSize);
+		
+		// Update indexes
+		inIdx = (inIdx + matchSize)%inSize;
+		outIdx = outIdx + matchSize;
+		remaining = remaining - matchSize;		
+	} while(remaining>0);
+}

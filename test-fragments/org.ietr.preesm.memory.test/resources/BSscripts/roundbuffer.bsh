@@ -1,0 +1,16 @@
+// Roundbuffers script
+
+// Test if roundbuffer is supported
+// Only roundbuffer with all inputs size equal to the outputs size are currently supported
+output = outputs.get(0);
+Buffer lastInput = null;
+for(input : inputs){
+	if(input.getNbTokens() == output.getNbTokens()){
+		lastInput = input;
+	} else {
+		throw new RuntimeException("Unsupported roundbuffer with input.nbTokens != output.nbTokens.");
+	}
+}
+
+// Match last input with output
+lastInput.matchWith(0,output,0,output.getNbTokens());
