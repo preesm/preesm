@@ -1,24 +1,24 @@
 /*******************************************************************************
  * Copyright or © or Copr. IETR/INSA: Maxime Pelcat, Jean-François Nezan,
  * Karol Desnos, Julien Heulot, Clément Guy
- * 
+ *
  * [mpelcat,jnezan,kdesnos,jheulot,cguy]@insa-rennes.fr
- * 
+ *
  * This software is a computer program whose purpose is to prototype
  * parallel applications.
- * 
+ *
  * This software is governed by the CeCILL-C license under French law and
- * abiding by the rules of distribution of free software.  You can  use, 
+ * abiding by the rules of distribution of free software.  You can  use,
  * modify and/ or redistribute the software under the terms of the CeCILL-C
  * license as circulated by CEA, CNRS and INRIA at the following URL
- * "http://www.cecill.info". 
- * 
+ * "http://www.cecill.info".
+ *
  * As a counterpart to the access to the source code and  rights to copy,
  * modify and redistribute granted by the license, users are provided only
  * with a limited warranty  and the software's author,  the holder of the
  * economic rights,  and the successive licensors  have only  limited
- * liability. 
- * 
+ * liability.
+ *
  * In this respect, the user's attention is drawn to the risks associated
  * with loading,  using,  modifying and/or developing or reproducing the
  * software by the user in light of its specific status of free software,
@@ -26,10 +26,10 @@
  * therefore means  that it is reserved for developers  and  experienced
  * professionals having in-depth computer knowledge. Users are therefore
  * encouraged to load and test the software's suitability as regards their
- * requirements in conditions enabling the security of their systems and/or 
- * data to be ensured and,  more generally, to use and operate it in the 
- * same conditions as regards security. 
- * 
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
@@ -85,7 +85,7 @@ enum CheckPolicy {
 class ScriptRunner {
 
 	/**
-	 * Helper method to get the incoming {@link SDFEdge}s of an {@link 
+	 * Helper method to get the incoming {@link SDFEdge}s of an {@link
 	 * SDFAbstractVertex}.
 	 */
 	def static Set<SDFEdge> incomingEdges(SDFAbstractVertex vertex) {
@@ -93,7 +93,7 @@ class ScriptRunner {
 	}
 
 	/**
-	 * Helper method to get the outgoing {@link SDFEdge}s of an {@link 
+	 * Helper method to get the outgoing {@link SDFEdge}s of an {@link
 	 * SDFAbstractVertex}.
 	 */
 	def static Set<SDFEdge> outgoingEdges(SDFAbstractVertex vertex) {
@@ -103,14 +103,14 @@ class ScriptRunner {
 	@Accessors CheckPolicy checkPolicy = CheckPolicy::NONE
 
 	/**
-	 * A {@link Map} that associates each {@link String} representing a type name 
-	 * with a corresponding {@link DataType}. 
+	 * A {@link Map} that associates each {@link String} representing a type name
+	 * with a corresponding {@link DataType}.
 	 */
 	@Accessors Map<String, DataType> dataTypes
 
 	/**
 	 * A {@link Map} that associates each {@link DAGVertex} from the
-	 * {@link #scriptedVertices} map to the result of the successful 
+	 * {@link #scriptedVertices} map to the result of the successful
 	 * execution of its script. The result is stored as a {@link Pair}
 	 * of {@link List} of {@link Buffer}. The first {@link List} contains
 	 * the input {@link Buffer buffers} and the second contains output
@@ -118,21 +118,21 @@ class ScriptRunner {
 	 */
 	val scriptResults = new HashMap<DAGVertex, Pair<List<Buffer>, List<Buffer>>>
 
-	/** 
+	/**
 	 * A {@link Map} that associates each {@link DAGVertex} with a
 	 * memory script to this memory script {@link File}.
 	 */
 	val scriptedVertices = new HashMap<DAGVertex, File>();
 
 	/**
-	 * Each {@link List} of {@link Buffer} stored in this {@link List} 
+	 * Each {@link List} of {@link Buffer} stored in this {@link List}
 	 * corresponds to an independent connected {@link Match} tree resulting
 	 * from the execution of the memory scripts.
 	 */
 	package val List<List<Buffer>> bufferGroups = newArrayList
 
 	@Accessors CharSequence log = ''''''
-	
+
 	@Accessors
 	public final boolean printTodo
 
@@ -145,8 +145,8 @@ class ScriptRunner {
 
 	/**
 	 * This property is used to represent the alignment of buffers in memory.
-	 * The same value, or a multiple should always be used in the memory 
-	 * allocation. 
+	 * The same value, or a multiple should always be used in the memory
+	 * allocation.
 	 */
 	@Accessors val int alignment
 
@@ -189,7 +189,7 @@ class ScriptRunner {
 	 * </ul>
 	 * If one of the checks is not valid, the method will return false and a
 	 * warning will be displayed in the {@link Logger log}.
-	 * 
+	 *
 	 * @param script
 	 *            the script {@link File} from which the result {@link Buffer
 	 *            buffers} result.
@@ -208,7 +208,7 @@ class ScriptRunner {
 		// Check that all matches are reciprocal
 		// For all buffers
 		val res1 = allBuffers.forall [ localBuffer |
-			// for all matcheSet  
+			// for all matcheSet
 			localBuffer.reciprocal
 		]
 		if (!res1 && checkPolicy == CheckPolicy::FAST) {
@@ -218,7 +218,7 @@ class ScriptRunner {
 					" Please set matches only by using Buffer.matchWith() methods.")
 		} else if (!res1 && checkPolicy == CheckPolicy::THOROUGH) {
 			allBuffers.forEach [ localBuffer |
-				// for all matcheSet  
+				// for all matcheSet
 				val res = localBuffer.reciprocal
 				if (!res && checkPolicy == CheckPolicy::THOROUGH) {
 					val logger = WorkflowLogger.logger
@@ -304,7 +304,7 @@ class ScriptRunner {
 	 * relative to the original {@link SDFGraph} file, or in the plugin project
 	 * "scripts" directory. If an invalid script path is set, a warning message
 	 * will be written in the log.
-	 * 
+	 *
 	 * @param dag
 	 *            the {@link DirectedAcyclicGraph} whose vertices memory scripts
 	 *            are retrieved.
@@ -438,10 +438,10 @@ class ScriptRunner {
 	}
 
 	/**
-	 * This method process the {@link #scriptResults} in order to simplify 
-	 * them with {@link #simplifyResult(List,List)}. Then, it extracts 
-	 * mergeable buffers. 
-	 * This method must be called after {@link #run()} and {@link #check()} 
+	 * This method process the {@link #scriptResults} in order to simplify
+	 * them with {@link #simplifyResult(List,List)}. Then, it extracts
+	 * mergeable buffers.
+	 * This method must be called after {@link #run()} and {@link #check()}
 	 * have been successfully called.
 	 */
 	def process() {
@@ -455,17 +455,17 @@ class ScriptRunner {
 		// Update output buffers for alignment
 		if (alignment > 0) {
 			scriptResults.forEach [ vertex, result |
-				// All outputs except the mergeable one linked only to read_only 
+				// All outputs except the mergeable one linked only to read_only
 				// inputs within their actor must be enlarged.
 				// In other terms, only buffers that will never be written by their
-				// producer actor or consumer actor are not enlarged since these 
-				// buffer will only be used to divide data written by other actors. 
+				// producer actor or consumer actor are not enlarged since these
+				// buffer will only be used to divide data written by other actors.
 				result.value.filter[
 					!(it.originallyMergeable && it.matchTable.values.flatten.forall [
 						it.remoteBuffer.originallyMergeable
 					])].forEach [ buffer |
-					// Enlarge the buffer 
-					// New range mergeability is automatically handled by 
+					// Enlarge the buffer
+					// New range mergeability is automatically handled by
 					// the setMinIndex(int) function
 					enlargeForAlignment(buffer)
 				]
@@ -530,12 +530,12 @@ class ScriptRunner {
 		// Since only "real" tokens of the output buffers are written back
 		// from cache (in non-coherent architectures), alignment is here
 		// only to ensure that these "real" tokens are not cached in the
-		// same cache line as other real tokens. 
-		// Consequently, enlarging buffers as follows is sufficient to 
+		// same cache line as other real tokens.
+		// Consequently, enlarging buffers as follows is sufficient to
 		// prevent cache-line alignment issues:
 		// minIdx = min(0 - (alignment -1), minIdx)
 		// maxIdx = max(maxIdx + (alignment -1), maxIdx)
-		//			 
+		//
 		}
 		val oldMinIndex = buffer.minIndex
 		if (oldMinIndex == 0 || (oldMinIndex) % alignment != 0) {
@@ -555,7 +555,7 @@ class ScriptRunner {
 
 		// Update matches of the buffer
 		// Since the updateMatches update the remote buffer matchTable of a match
-		// except the given match, we create a fake match with the current 
+		// except the given match, we create a fake match with the current
 		// buffer as a remote buffer
 		val fakeMatch = new Match(null, 0, buffer, 0, 0)
 		updateMatches(fakeMatch)
@@ -563,18 +563,18 @@ class ScriptRunner {
 	}
 
 	/**
-	 * For each {@link Buffer} passed as a parameter, this method scan the 
+	 * For each {@link Buffer} passed as a parameter, this method scan the
 	 * {@link Match} in the {@link Buffer#getMatchTable() matchTable} and set.
-	 * their {@link Match#getType() type}. Matches whose {@link 
-	 * Match#getLocalBuffer() localBuffer} and {@link Match#getRemoteBuffer() 
-	 * remoteBuffer} belong to the same {@link List} of {@link Match} will 
+	 * their {@link Match#getType() type}. Matches whose {@link
+	 * Match#getLocalBuffer() localBuffer} and {@link Match#getRemoteBuffer()
+	 * remoteBuffer} belong to the same {@link List} of {@link Match} will
 	 * cause the method to throw a {@link RuntimeError}. Other {@link Match}
 	 * are marked as <code>FORWARD</code> or <code>BACKWARD</code>.
-	 * 
+	 *
 	 * @param result
-	 * 	{@link Pair} of {@link List} of {@link Buffer}. The {@link Pair} key 
-	 * and value respectively contain input and output {@link Buffer} of an 
-	 * actor. 
+	 * 	{@link Pair} of {@link List} of {@link Buffer}. The {@link Pair} key
+	 * and value respectively contain input and output {@link Buffer} of an
+	 * actor.
 	 */
 	def private identifyMatchesType(Pair<List<Buffer>, List<Buffer>> result) {
 		result.key.forEach [
@@ -598,33 +598,33 @@ class ScriptRunner {
 		]
 	}
 
-	/** 
-	 * Also fill the {@link Buffer#getDivisibilityRequiredMatches() 
-	 * divisibilityRequiredMatches} {@link List}. 
+	/**
+	 * Also fill the {@link Buffer#getDivisibilityRequiredMatches()
+	 * divisibilityRequiredMatches} {@link List}.
 	 */
 	def private identifyDivisibleBuffers(Pair<List<Buffer>, List<Buffer>> result) {
 		val allBuffers = new ArrayList<Buffer>
 		allBuffers.addAll(result.key)
 		allBuffers.addAll(result.value)
 		val divisibleCandidates = allBuffers.filter [ buffer |
-			// A buffer is potentially divisible 	
+			// A buffer is potentially divisible
 			// If it has several matches (that were not merged by the
 			//  simplifyResult). (Because if the buffer only has one
 			// contiguous match, a divided buffer is not possible, cf
 			// Buffer.simplifyMatches() comments.)
 			buffer.matchTable.size > 1 &&
-				// if it is totally matched, so that all parts of the divided 
+				// if it is totally matched, so that all parts of the divided
 				// buffer can still be accessed in an immediately logical way.
-				// With the successive merges, unmatched ranges might become 
+				// With the successive merges, unmatched ranges might become
 				// part of an indivisible range with a matched range. However
 				// since this kind of behavior is not intuitive, we set not
-				// completely matched buffers as indivisible from the start so 
+				// completely matched buffers as indivisible from the start so
 				// that the developer knows where tokens are only by looking at
 				// its actor script.
 				buffer.completelyMatched
 		// Note that at this point, virtual tokens are always matched
-		// so this constraint ensure that future virtual tokens are 
-		// always attached to real token by an overlapping 
+		// so this constraint ensure that future virtual tokens are
+		// always attached to real token by an overlapping
 		// indivisible range !
 		]
 
@@ -648,13 +648,13 @@ class ScriptRunner {
 	}
 
 	/**
-	 * This method fills the {@link Match#getConflictCandidates() 
-	 * conflictCandidates} {@link Match} {@link List} of all the {@link Match 
-	 * matches} contained in the {@link Buffer#getMatchTable() matchTable} of 
-	 * the {@link Buffer} passed as parameter. Two {@link Match} are 
+	 * This method fills the {@link Match#getConflictCandidates()
+	 * conflictCandidates} {@link Match} {@link List} of all the {@link Match
+	 * matches} contained in the {@link Buffer#getMatchTable() matchTable} of
+	 * the {@link Buffer} passed as parameter. Two {@link Match} are
 	 * potentially conflicting if:
 	 * <ul><li>They have the same {@link Match#getRemoteBuffer()}</li></ul>
-	 * 
+	 *
 	 * @param inputs
 	 * 	{@link List} of input {@link Buffer} of an actor.
 	 * @param outputs
@@ -666,7 +666,7 @@ class ScriptRunner {
 		// For each Buffer
 		for (buffer : #{inputs, outputs}.flatten) {
 
-			// Get the matches 
+			// Get the matches
 			val matches = new ArrayList<Match>(buffer.matchTable.values.flatten.toList)
 
 			// Update the potential conflict list of all matches
@@ -717,7 +717,7 @@ class ScriptRunner {
 		var stop = false
 		do {
 
-			// Sort the buffers in alphabetical order to enforce similarities 
+			// Sort the buffers in alphabetical order to enforce similarities
 			// between successive run
 			buffers.sortInplace [ a, b |
 				val nameRes = a.dagVertex.name.compareTo(b.dagVertex.name)
@@ -725,11 +725,11 @@ class ScriptRunner {
 			]
 
 			val matchedBuffers = switch (step) {
-				// First step: Merge non-conflicting buffer with a unique match 
+				// First step: Merge non-conflicting buffer with a unique match
 				case 0:
 					processGroupStep0(buffers)
-				// Second step: Merge divisible buffers with multiple matchs 
-				// and no conflict 
+				// Second step: Merge divisible buffers with multiple matchs
+				// and no conflict
 				case 1:
 					processGroupStep1(buffers)
 				// Third step: Same as step 0, but test forward matches
@@ -740,7 +740,7 @@ class ScriptRunner {
 				// or backward only matches
 				case 3:
 					processGroupStep3(buffers)
-				// Fifth step: Mergeable buffers with a unique backward match that have conflict(s) 
+				// Fifth step: Mergeable buffers with a unique backward match that have conflict(s)
 				case 4:
 					processGroupStep4(buffers)
 				case 5:
@@ -790,17 +790,17 @@ class ScriptRunner {
 	}
 
 	/**
-	 * Match {@link Buffer buffers} with a unique {@link Match} in their 
+	 * Match {@link Buffer buffers} with a unique {@link Match} in their
 	 * {@link Buffer#getMatchTable() matchTable} if:<ul>
 	 * <li>The unique match covers the whole real token range of the buffer
 	 * </li>
-	 * <li>The match is not {@link Match#getConflictingMatches() conflicting} 
+	 * <li>The match is not {@link Match#getConflictingMatches() conflicting}
 	 * with any other match</li>
-	 * <li>The match and its {@link Match#getReciprocate() reciprocate} are 
+	 * <li>The match and its {@link Match#getReciprocate() reciprocate} are
 	 * applicable.</li></ul>
-	 * 
+	 *
 	 * @param buffers
-	 * 		{@link List} of {@link Buffer} of the processed group. Matched 
+	 * 		{@link List} of {@link Buffer} of the processed group. Matched
 	 * 		buffers will be removed from this list by the method.
 	 * @return a {@link List} of merged {@link Buffer}.
 	 */
@@ -855,13 +855,13 @@ class ScriptRunner {
 	 * Match {@link Buffer buffers} that are divisible if:<ul>
 	 * <li>The buffer is {@link Buffer#isDivisible() divisible}.</li>
 	 * <li>Its matches cover the whole real token range of the buffer</li>
-	 * <li>Its matches are not {@link Match#getConflictingMatches() 
+	 * <li>Its matches are not {@link Match#getConflictingMatches()
 	 * conflicting} with any other match.</li>
-	 * <li>The buffer has no {@link Buffer#getMultipleMatchRange(Buffer) 
+	 * <li>The buffer has no {@link Buffer#getMultipleMatchRange(Buffer)
 	 * multipleMatchRange}.</li></ul>
-	 *  
+	 *
 	 * @param buffers
-	 * 		{@link List} of {@link Buffer} of the processed group. Matched 
+	 * 		{@link List} of {@link Buffer} of the processed group. Matched
 	 * 		buffers will be removed from this list by the method.
 	 * @return a {@link List} of merged {@link Buffer}.
 	 */
@@ -871,10 +871,10 @@ class ScriptRunner {
 
 		for (candidate : buffers) {
 
-			// Find all divisible buffers with multiple match and no 
+			// Find all divisible buffers with multiple match and no
 			// conflict that are not matched in another divisible buffer
 			// (if any)
-			// Has a non-empty matchTable 
+			// Has a non-empty matchTable
 			var test = candidate.matchTable.size != 0
 
 			// is divisible
@@ -884,7 +884,7 @@ class ScriptRunner {
 				it.conflictingMatches.size == 0 && it.applicable && it.reciprocate.applicable
 			]
 
-			// Has no multiple match Range. 
+			// Has no multiple match Range.
 			test = test && candidate.multipleMatchRange.size == 0
 
 			// No need to check the divisibilityRequiredMatches since
@@ -917,18 +917,18 @@ class ScriptRunner {
 	}
 
 	/**
-	 * Match {@link Buffer buffers} with a unique <code>FORWARD</code> {@link 
-	 * Match} (or a unique <code>BACKWARD</code> {@link Match}). in their 
+	 * Match {@link Buffer buffers} with a unique <code>FORWARD</code> {@link
+	 * Match} (or a unique <code>BACKWARD</code> {@link Match}). in their
 	 * {@link Buffer#getMatchTable() matchTable} if:<ul>
 	 * <li>The unique match covers the whole real token range of the buffer
 	 * </li>
-	 * <li>The match is not {@link Match#getConflictingMatches() conflicting} 
+	 * <li>The match is not {@link Match#getConflictingMatches() conflicting}
 	 * with any other match</li>
-	 * <li>The match and its {@link Match#getReciprocate() reciprocate} are 
+	 * <li>The match and its {@link Match#getReciprocate() reciprocate} are
 	 * applicable.</li></ul>
-	 * 
+	 *
 	 * @param buffers
-	 * 		{@link List} of {@link Buffer} of the processed group. Matched 
+	 * 		{@link List} of {@link Buffer} of the processed group. Matched
 	 * 		buffers will be removed from this list by the method.
 	 * @return a {@link List} of merged {@link Buffer}.
 	 */
@@ -959,7 +959,7 @@ class ScriptRunner {
 				// and is both backward and forward applicable
 				test = test && matches.head.applicable && matches.head.reciprocate.applicable
 
-				// and remote buffer is not already involved in a match 
+				// and remote buffer is not already involved in a match
 				test = test && !involved.contains(matches.head.remoteBuffer)
 				test = test && !involved.contains(candidate)
 
@@ -990,19 +990,19 @@ class ScriptRunner {
 
 	/**
 	 * Match {@link Buffer buffers} that are divisible with their <code>FORWARD
-	 * </code> {@link Match matches} only (or a their <code>BACKWARD</code> 
+	 * </code> {@link Match matches} only (or a their <code>BACKWARD</code>
 	 * {@link Match matches} only) if:<ul>
 	 * <li>The buffer is {@link Buffer#isDivisible() divisible}.</li>
 	 * <li>Its matches cover the whole real token range of the buffer</li>
-	 * <li>Its matches are not {@link Match#getConflictingMatches() 
+	 * <li>Its matches are not {@link Match#getConflictingMatches()
 	 * conflicting} with any other match.</li>
-	 * <li>The buffer has no {@link Buffer#getMultipleMatchRange(Buffer) 
+	 * <li>The buffer has no {@link Buffer#getMultipleMatchRange(Buffer)
 	 * multipleMatchRange}.</li>
-	 * <li>The buffer verify the {@link 
+	 * <li>The buffer verify the {@link
 	 * Buffer#doesCompleteRequiredMatches(Iterable)} condition.</li></ul>
-	 * 
+	 *
 	 * @param buffers
-	 * 		{@link List} of {@link Buffer} of the processed group. Matched 
+	 * 		{@link List} of {@link Buffer} of the processed group. Matched
 	 * 		buffers will be removed from this list by the method.
 	 * @return a {@link List} of merged {@link Buffer}.
 	 */
@@ -1018,7 +1018,7 @@ class ScriptRunner {
 				val matches = candidate.matchTable.values.flatten.filter[it.type == currentType]
 
 				// Returns true if:
-				// Has a several matches 
+				// Has a several matches
 				test = matches.size != 0
 
 				// is divisible
@@ -1028,7 +1028,7 @@ class ScriptRunner {
 				test = test && matches.forall[
 					it.conflictingMatches.size == 0 && it.applicable && it.reciprocate.applicable]
 
-				// Matches have no multiple match Range. 
+				// Matches have no multiple match Range.
 				test = test && matches.overlappingRanges.size == 0
 
 				// Check divisibilityRequiredMatches
@@ -1063,18 +1063,18 @@ class ScriptRunner {
 	}
 
 	/**
-	 * Match {@link Buffer buffers} with a unique {@link Match} in their 
+	 * Match {@link Buffer buffers} with a unique {@link Match} in their
 	 * {@link Buffer#getMatchTable() matchTable} if:<ul>
 	 * <li>The unique match covers the whole real token range of the buffer
 	 * </li>
-	 * <li>The match is {@link Match#getConflictingMatches() conflicting} 
+	 * <li>The match is {@link Match#getConflictingMatches() conflicting}
 	 * with other match(es)</li>
 	 * <li>The buffer is mergeable</li>
-	 * <li>The match and its {@link Match#getReciprocate() reciprocate} are 
+	 * <li>The match and its {@link Match#getReciprocate() reciprocate} are
 	 * applicable.</li></ul>
-	 * 
+	 *
 	 * @param buffers
-	 * 		{@link List} of {@link Buffer} of the processed group. Matched 
+	 * 		{@link List} of {@link Buffer} of the processed group. Matched
 	 * 		buffers will be removed from this list by the method.
 	 * @return a {@link List} of merged {@link Buffer}.
 	 */
@@ -1141,15 +1141,15 @@ class ScriptRunner {
 	 * </code> {@link Match matches} only if:<ul>
 	 * <li>The buffer is {@link Buffer#isDivisible() divisible}.</li>
 	 * <li>Its matches cover the whole real token range of the buffer</li>
-	 * <li>Its matches are {@link Match#getConflictingMatches() 
+	 * <li>Its matches are {@link Match#getConflictingMatches()
 	 * conflicting} with other match(s) but are applicable.</li>
 	 * <li>The buffer is fully mergeable</li>
 	 * <li>The matches are not overlapping with each other.</li>
-	 * <li>The buffer verify the {@link 
+	 * <li>The buffer verify the {@link
 	 * Buffer#doesCompleteRequiredMatches(Iterable)} condition.</li></ul>
-	 * 
+	 *
 	 * @param buffers
-	 * 		{@link List} of {@link Buffer} of the processed group. Matched 
+	 * 		{@link List} of {@link Buffer} of the processed group. Matched
 	 * 		buffers will be removed from this list by the method.
 	 * @return a {@link List} of merged {@link Buffer}.
 	 */
@@ -1160,7 +1160,7 @@ class ScriptRunner {
 			val matches = candidate.matchTable.values.flatten.filter[it.type == MatchType::BACKWARD]
 
 			// Returns true if:
-			// Has a several matches 
+			// Has a several matches
 			var test = matches.size != 0
 
 			// is divisible
@@ -1180,7 +1180,7 @@ class ScriptRunner {
 					candidate.mergeableRanges.head.end == candidate.maxIndex
 			}
 
-			// Matches have no multiple match Range (on the local buffer side). 
+			// Matches have no multiple match Range (on the local buffer side).
 			test = test && matches.overlappingRanges.size == 0
 
 			// Check divisibilityRequiredMatches
@@ -1215,18 +1215,18 @@ class ScriptRunner {
 	}
 
 	/**
-	 * Match {@link Buffer buffers} with a unique {@link Match} in their 
+	 * Match {@link Buffer buffers} with a unique {@link Match} in their
 	 * {@link Buffer#getMatchTable() matchTable} if:<ul>
 	 * <li>The unique match covers the whole real token range of the buffer
 	 * </li>
-	 * <li>The match is {@link Match#getConflictingMatches() conflicting} 
+	 * <li>The match is {@link Match#getConflictingMatches() conflicting}
 	 * with other match(es) but is applicable</li>
 	 * <li>The buffer is partially or not mergeable</li>
-	 * <li>The match and its {@link Match#getReciprocate() reciprocate} are 
+	 * <li>The match and its {@link Match#getReciprocate() reciprocate} are
 	 * applicable.</li></ul>
-	 * 
+	 *
 	 * @param buffers
-	 * 		{@link List} of {@link Buffer} of the processed group. Matched 
+	 * 		{@link List} of {@link Buffer} of the processed group. Matched
 	 * 		buffers will be removed from this list by the method.
 	 * @return a {@link List} of merged {@link Buffer}.
 	 */
@@ -1310,18 +1310,18 @@ class ScriptRunner {
 
 	/**
 	 * Match {@link Buffer buffers} that are divisible with their <code>FORWARD
-	 * </code> {@link Match matches} only (or a their <code>BACKWARD</code> 
+	 * </code> {@link Match matches} only (or a their <code>BACKWARD</code>
 	 * {@link Match matches} only) if:<ul>
 	 * <li>The buffer is {@link Buffer#isDivisible() divisible}.</li>
 	 * <li>Its matches cover the whole real token range of the buffer</li>
-	 * <li>Its matches are {@link Match#getConflictingMatches() 
+	 * <li>Its matches are {@link Match#getConflictingMatches()
 	 * conflicting} with other matches but are applicable.</li>
 	 * <li>The matches are not overlapping.</li>
-	 * <li>The buffer verify the {@link 
+	 * <li>The buffer verify the {@link
 	 * Buffer#doesCompleteRequiredMatches(Iterable)} condition.</li></ul>
-	 * 
+	 *
 	 * @param buffers
-	 * 		{@link List} of {@link Buffer} of the processed group. Matched 
+	 * 		{@link List} of {@link Buffer} of the processed group. Matched
 	 * 		buffers will be removed from this list by the method.
 	 * @return a {@link List} of merged {@link Buffer}.
 	 */
@@ -1337,7 +1337,7 @@ class ScriptRunner {
 				val matches = candidate.matchTable.values.flatten.filter[it.type == currentType].toList
 
 				// Returns true if:
-				// Has a several matches 
+				// Has a several matches
 				test = matches.size != 0
 
 				// is divisible
@@ -1347,9 +1347,9 @@ class ScriptRunner {
 				test = test && matches.forall[
 					it.conflictingMatches.size != 0 && it.applicable && it.reciprocate.applicable]
 
-				// Unless the matches are backward AND the buffer is mergeable	
+				// Unless the matches are backward AND the buffer is mergeable
 				// the matches must not be conflicting with each other
-				test = test && ({ // the matches are backward AND the buffer is mergeable	
+				test = test && ({ // the matches are backward AND the buffer is mergeable
 					currentType == MatchType::BACKWARD && candidate.mergeableRanges.size == 1 &&
 						candidate.mergeableRanges.head.start == candidate.minIndex &&
 						candidate.mergeableRanges.head.end == candidate.maxIndex
@@ -1358,7 +1358,7 @@ class ScriptRunner {
 					it.conflictingMatches.forall[!matches.contains(it)]
 				])
 
-				// Matches have no multiple match Range (on the local buffer side). 
+				// Matches have no multiple match Range (on the local buffer side).
 				test = test && matches.overlappingRanges.size == 0
 
 				// Check divisibilityRequiredMatches
@@ -1407,17 +1407,17 @@ class ScriptRunner {
 	}
 
 	/**
-	 * Called only for divisible buffers with multiple match and no 
+	 * Called only for divisible buffers with multiple match and no
 	 * conflict that are not matched in another divisible buffer
 	 */
 	def applyDivisionMatch(Buffer buffer, List<Match> matches) {
 
 		// In the current version, the buffer only contains
 		// the matches necessary and sufficient for the division (i.e. no multiple matched ranges)
-		// To process this special case in the future, some matches will have 
+		// To process this special case in the future, some matches will have
 		// to be changes: e.g. siblings will become forward or things like that
-		// . For a simpler version, simply remove those other matches.	
-		// The match table will be modified by the applyMatch method, so we need a copy of it to iterate ! 
+		// . For a simpler version, simply remove those other matches.
+		// The match table will be modified by the applyMatch method, so we need a copy of it to iterate !
 		// Remove the matches from each other conflict candidates
 		matches.forEach [
 			it.conflictCandidates.removeAll(matches)
@@ -1441,11 +1441,11 @@ class ScriptRunner {
 	 * The {@link #scriptResults} attribute of the calling {@link ScriptRunner}
 	 * are updated by this method. In particular, a
 	 * {@link Buffe#matchWith(int,Buffer,int,int) match} is added between
-	 * buffers of different actors that correspond to the same SDFEdges. This 
+	 * buffers of different actors that correspond to the same SDFEdges. This
 	 * method must be called after {@link
-	 * ScriptRunner#identifyDivisibleBuffer()} as it set to indivisible the 
-	 * buffers that are on the border of groups. 
-	 * 
+	 * ScriptRunner#identifyDivisibleBuffer()} as it set to indivisible the
+	 * buffers that are on the border of groups.
+	 *
 	 * @return a {@link List} of groups. Each group is itself a {@link List} of
 	 *         {@link DAGVertex}.
 	 */
@@ -1482,7 +1482,7 @@ class ScriptRunner {
 						if (addedVertices.contains(candidate) || newVertices.contains(candidate) ||
 							dagVertices.contains(candidate)) {
 
-							// Match the buffers corresponding to the edge 
+							// Match the buffers corresponding to the edge
 							// between vertices "dagVertex" and "candidate"
 							// Get the sdfEdges
 							var dagEdge = ( dagVertex.base.getEdge(dagVertex, candidate) ?:
@@ -1496,7 +1496,7 @@ class ScriptRunner {
 
 								// Add match between the two buffers that
 								// correspond to the sdf edge(s) between vertex
-								// and it 
+								// and it
 								val bufferCandidates = newArrayList
 								for (v : #{dagVertex, candidate}) {
 									var pair = scriptResults.get(v)
@@ -1536,7 +1536,7 @@ class ScriptRunner {
 								}
 							}
 
-							// Add the vertex to the group (if not already in 
+							// Add the vertex to the group (if not already in
 							// it) and if there was valid buffers)
 							if (!group.contains(candidate) && validBuffers) {
 								group.add(candidate)
@@ -1571,7 +1571,7 @@ class ScriptRunner {
 	 * {@link #findScripts()}. As a result, the {@link #scriptResults} is
 	 * filled.<br>
 	 * <br>
-	 * 
+	 *
 	 * If the execution of a script fails, the {@link Interpreter} error message
 	 * will be printed in the {@link Logger log} as a warning.<br>
 	 * <br>
@@ -1584,86 +1584,88 @@ class ScriptRunner {
 
 		// For each vertex with a script
 		for (e : scriptedVertices.entrySet) {
-			val dagVertex = e.key
-			val script = e.value
-			val interpreter = new Interpreter();
+			runScript(e.key, e.value)
+		}
+	}
 
-			// Retrieve the corresponding sdf vertex
-			val sdfVertex = dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex) as SDFAbstractVertex
+	def runScript(DAGVertex dagVertex, File script) {
+		val interpreter = new Interpreter();
 
-			// Create the vertex parameter list
-			val Map<String, Integer> parameters = newHashMap
-			{
-				val arguments = sdfVertex.propertyBean.getValue(SDFAbstractVertex.ARGUMENTS) as HashMap<String, Argument>
-				if(arguments != null) arguments.entrySet.forEach[parameters.put(it.key, it.value.intValue)]
-			}
-			parameters.put("alignment", alignment)
+		// Retrieve the corresponding sdf vertex
+		val sdfVertex = dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex) as SDFAbstractVertex
 
-			// Create the input/output lists
-			val inputs = sdfVertex.incomingEdges.map[
-				// An input buffer is backward mergeable if it is read_only OR if it is unused
-				val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_READ_ONLY) || ((it.
-					targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED))
-				try {
-					new Buffer(it, dagVertex, it.targetLabel, it.cons.intValue, dataTypes.get(it.dataType.toString).size,
-						isMergeable)
-				} catch (NullPointerException exc) {
-					throw new WorkflowException(
-						'''SDFEdge «it.source.name»_«it.sourceLabel»->«it.target.name»_«it.targetLabel» has unknows type «it.
-							dataType.toString». Add the corresponding data type to the scenario.''')
-				}].toList
+		// Create the vertex parameter list
+		val Map<String, Integer> parameters = newHashMap
+		{
+			val arguments = sdfVertex.propertyBean.getValue(SDFAbstractVertex.ARGUMENTS) as HashMap<String, Argument>
+			if(arguments != null) arguments.entrySet.forEach[parameters.put(it.key, it.value.intValue)]
+		}
+		parameters.put("alignment", alignment)
 
-			val outputs = sdfVertex.outgoingEdges.map[
-				// An output buffer is mergeable if it is unused or if its target port is not read_only 
-				val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_READ_ONLY) || ((it.
-					targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED))
-				try {
-					new Buffer(it, dagVertex, it.sourceLabel, it.prod.intValue, dataTypes.get(it.dataType.toString).size,
-						isMergeable)
-				} catch (NullPointerException exc) {
-					throw new WorkflowException(
-						'''SDFEdge «it.source.name»_«it.sourceLabel»->«it.target.name»_«it.targetLabel» has unknows type «it.
-							dataType.toString». Add the corresponding data type to the scenario.''')
-				}].toList
-
-			// Import the necessary libraries
-			interpreter.eval("import " + Buffer.name + ";")
-			interpreter.eval("import " + List.name + ";")
-
-			// Feed the parameters/inputs/outputs to the interpreter
-			parameters.forEach[name, value|interpreter.set(name, value)]
-			inputs.forEach[interpreter.set("i_" + it.name, it)]
-			outputs.forEach[interpreter.set("o_" + it.name, it)]
-			if (interpreter.get("parameters") == null)
-				interpreter.set("parameters", parameters)
-			if (interpreter.get("inputs") == null)
-				interpreter.set("inputs", inputs)
-			if (interpreter.get("outputs") == null)
-				interpreter.set("outputs", outputs)
+		// Create the input/output lists
+		val inputs = sdfVertex.incomingEdges.map[
+			// An input buffer is backward mergeable if it is read_only OR if it is unused
+			val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_READ_ONLY) || ((it.
+				targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED))
 			try {
+				new Buffer(it, dagVertex, it.targetLabel, it.cons.intValue, dataTypes.get(it.dataType.toString).size,
+					isMergeable)
+			} catch (NullPointerException exc) {
+				throw new WorkflowException(
+					'''SDFEdge «it.source.name»_«it.sourceLabel»->«it.target.name»_«it.targetLabel» has unknows type «it.
+						dataType.toString». Add the corresponding data type to the scenario.''')
+			}].toList
 
-				// Run the script
-				interpreter.source(script.absolutePath);
+		val outputs = sdfVertex.outgoingEdges.map[
+			// An output buffer is mergeable if it is unused or if its target port is not read_only
+			val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_READ_ONLY) || ((it.
+				targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED))
+			try {
+				new Buffer(it, dagVertex, it.sourceLabel, it.prod.intValue, dataTypes.get(it.dataType.toString).size,
+					isMergeable)
+			} catch (NullPointerException exc) {
+				throw new WorkflowException(
+					'''SDFEdge «it.source.name»_«it.sourceLabel»->«it.target.name»_«it.targetLabel» has unknows type «it.
+						dataType.toString». Add the corresponding data type to the scenario.''')
+			}].toList
 
-				// Store the result if the execution was successful 
-				scriptResults.put(dagVertex, inputs -> outputs)
-			} catch (ParseException error) {
+		// Import the necessary libraries
+		interpreter.eval("import " + Buffer.name + ";")
+		interpreter.eval("import " + List.name + ";")
 
-				// Logger is used to display messages in the console
-				val logger = WorkflowLogger.getLogger
-				var message = error.rawMessage + "\n" + error.cause
-				logger.log(Level.WARNING, "Parse error in " + sdfVertex.name + " memory script:\n" + message)
-			} catch (EvalError error) {
+		// Feed the parameters/inputs/outputs to the interpreter
+		parameters.forEach[name, value|interpreter.set(name, value)]
+		inputs.forEach[interpreter.set("i_" + it.name, it)]
+		outputs.forEach[interpreter.set("o_" + it.name, it)]
+		if (interpreter.get("parameters") == null)
+			interpreter.set("parameters", parameters)
+		if (interpreter.get("inputs") == null)
+			interpreter.set("inputs", inputs)
+		if (interpreter.get("outputs") == null)
+			interpreter.set("outputs", outputs)
+		try {
 
-				// Logger is used to display messages in the console
-				val logger = WorkflowLogger.getLogger
-				var message = error.rawMessage + "\n" + error.cause
-				logger.log(Level.WARNING,
-					"Evaluation error in " + sdfVertex.name + " memory script:\n[Line " + error.errorLineNumber + "] " +
-						message)
-			} catch (IOException exception) {
-				exception.printStackTrace
-			}
+			// Run the script
+			interpreter.source(script.absolutePath);
+
+			// Store the result if the execution was successful
+			scriptResults.put(dagVertex, inputs -> outputs)
+		} catch (ParseException error) {
+
+			// Logger is used to display messages in the console
+			val logger = WorkflowLogger.getLogger
+			var message = error.rawMessage + "\n" + error.cause
+			logger.log(Level.WARNING, "Parse error in " + sdfVertex.name + " memory script:\n" + message)
+		} catch (EvalError error) {
+
+			// Logger is used to display messages in the console
+			val logger = WorkflowLogger.getLogger
+			var message = error.rawMessage + "\n" + error.cause
+			logger.log(Level.WARNING,
+				"Evaluation error in " + sdfVertex.name + " memory script:\n[Line " + error.errorLineNumber + "] " +
+					message)
+		} catch (IOException exception) {
+			exception.printStackTrace
 		}
 	}
 
@@ -1689,18 +1691,18 @@ class ScriptRunner {
 				if (mObj.weight != buffer.nbTokens * buffer.tokenSize) {
 
 					// Karol's Note:
-					// To process the aggregated dag edges, we will need to 
-					// split them in the MEG. Doing so, we still need to make 
+					// To process the aggregated dag edges, we will need to
+					// split them in the MEG. Doing so, we still need to make
 					// sure that all related information remains correct:
 					// - Exclusions
 					// - Scheduling order
 					// - Predecessors
 					// - The two Mobj must have different source and sink names.
-					// or otherwise they will be considered equals() even with 
-					// different sizes. 
+					// or otherwise they will be considered equals() even with
+					// different sizes.
 					//
 					// Also we will need to make sure that the code generation
-					// printerS are still functional 
+					// printerS are still functional
 					throw new WorkflowException(
 						'''Aggregated DAG Edge «mObj» not yet supported. Contact Preesm developers for more information.''')
 				}
@@ -1729,11 +1731,11 @@ class ScriptRunner {
 						buffer.minIndex
 					} else {
 
-						// Make sure that index aligned in the buffer are in 
+						// Make sure that index aligned in the buffer are in
 						// fact aligned
 						// NB: at this point, the minIndex of the buffer is
 						// either 0 or a negative number (if buffer were
-						// matched before the range of real tokens of the 
+						// matched before the range of real tokens of the
 						// host). This division is here to make sure that
 						// index 0 of the host buffer is still aligned !
 						((buffer.minIndex / alignment) - 1) * alignment
@@ -1757,8 +1759,8 @@ class ScriptRunner {
 				// find the root buffer(s)
 				// there might be several roots if the buffer was divided
 				// the map associates:
-				// a localRange of the buffer to 
-				// a pair of a root buffer and its range for the buffer 
+				// a localRange of the buffer to
+				// a pair of a root buffer and its range for the buffer
 				val Map<Range, Pair<Buffer, Range>> rootBuffers = newHashMap()
 				for (match : buffer.matched) {
 					rootBuffers.putAll(match.root)
@@ -1783,7 +1785,7 @@ class ScriptRunner {
 				}
 				meg.removeVertex(mObj)
 
-				// Fill the mobj properties (i.e. save the matched buffer info)	
+				// Fill the mobj properties (i.e. save the matched buffer info)
 				val List<Pair<MemoryExclusionVertex, Pair<Range, Range>>> mObjRoots = newArrayList
 				mObj.setPropertyValue(MemoryExclusionVertex::REAL_TOKEN_RANGE_PROPERTY, mObjRoots)
 				val realTokenRange = new Range(0, buffer.tokenSize * buffer.nbTokens)
@@ -1803,30 +1805,30 @@ class ScriptRunner {
 					}
 					mObjRoots.add(rootMObj -> (localRange -> remoteRange))
 				]
-				
+
 				// If the mObj is a divided buffer
 				if(rootBuffers.size > 1) {
 					// Identify and all source and destination buffers in which
-					// parts of the divided buffer are merged and store this 
+					// parts of the divided buffer are merged and store this
 					// information in the mObject properties.
-					// => This information will be used when allocating a 
-					// mObject in distributed memory to make sure that the 
-					// divided buffer remains accessible everywhere it is 
+					// => This information will be used when allocating a
+					// mObject in distributed memory to make sure that the
+					// divided buffer remains accessible everywhere it is
 					// needed, and otherwise forbid its division.
 					val sourceAndDestBuffers = new ArrayList<Buffer>
-					
+
 					// buffers in which the divided buffer is mapped
 					sourceAndDestBuffers += rootBuffers.values.map[it.key].toSet
 					// buffers mapped in the divided buffer
 					sourceAndDestBuffers += buffers.filter[it.appliedMatches.values.map[it.key].exists[it == buffer]]
-					
+
 					// Find corresponding mObjects
 					var srcAndDestMObj = sourceAndDestBuffers.map[bufferAndMObjectMap.get(it)]
-					
+
 					// Save this list in the attributes of the divided buffer
-					mObj.setPropertyValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS,srcAndDestMObj)			
+					mObj.setPropertyValue(MemoryExclusionVertex.DIVIDED_PARTS_HOSTS,srcAndDestMObj)
 				}
-				
+
 				// Sort mObjRoots in order of contiguous ranges
 				mObjRoots.sortInplaceBy[it.value.key.start]
 			}
@@ -1866,9 +1868,9 @@ class ScriptRunner {
 	}
 
 	/**
-	 * This method calls {@link Buffer#simplifyMatches()} for each 
-	 * {@link Buffer} of the {@link #scriptResults}. 
-	 * If a {@link Buffer} has an empty {@link Buffer#getMatchTable() 
+	 * This method calls {@link Buffer#simplifyMatches()} for each
+	 * {@link Buffer} of the {@link #scriptResults}.
+	 * If a {@link Buffer} has an empty {@link Buffer#getMatchTable()
 	 * matchTable} after the simplification process, it is removed from
 	 * the  {@link #scriptResults}.
 	 */
