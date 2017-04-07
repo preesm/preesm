@@ -47,8 +47,6 @@ import java.util.Map
 import java.util.Set
 import java.util.logging.Level
 import java.util.logging.Logger
-import org.eclipse.core.resources.IFolder
-import org.eclipse.core.resources.IProject
 import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.core.runtime.IPath
 import org.eclipse.core.runtime.Path
@@ -99,7 +97,15 @@ class ScriptRunner {
 	public static final String tmpProjectName = bundleId + "." + "temporary"
 
 	// Name of the IFolder where to extract script files
-	public static final String tmpFolderPath = IPath.SEPARATOR+SCRIPT_FOLDER+IPath.SEPARATOR
+	public static final String tmpFolderPath = IPath.SEPARATOR + SCRIPT_FOLDER + IPath.SEPARATOR
+
+	public static final String copiedScriptsPath = tmpProjectName + IPath.SEPARATOR + tmpFolderPath
+
+	// Paths to the special scripts files
+	public static final String JOIN = copiedScriptsPath + JOIN_SCRIPT
+	public static final String FORK = copiedScriptsPath + FORK_SCRIPT
+	public static final String ROUNDBUFFER = copiedScriptsPath + ROUNDBUFFER_SCRIPT
+	public static final String BROADCAST = copiedScriptsPath + BROADCAST_SCRIPT
 
 	/**
 	 * Helper method to get the incoming {@link SDFEdge}s of an {@link
@@ -328,26 +334,18 @@ class ScriptRunner {
 	 */
 	def protected findScripts(DirectedAcyclicGraph dag, PreesmScenario scenario) {
 
+
+		// Create temporary containers for special scripts files
+		// and extract special script files and fill the map with it
+		val project = ContainersManager.createProject(tmpProjectName)
+		ContainersManager.createFolderInto(tmpFolderPath, project)
+		FilesManager.extract(tmpFolderPath, tmpProjectName, bundleId)
+
 		// Special scripts files
 		val specialScriptFiles = new HashMap<String, File>()
 
 		// Script files already found
 		val scriptFiles = new HashMap<String, File>();
-
-		// Create temporary containers for special scripts files
-		val projectAlreadyExisting = ContainersManager.projectExists(tmpProjectName)
-		val project = ContainersManager.createProject(tmpProjectName)
-		val folderAlreadyExisting = ContainersManager.folderExistsInto(tmpFolderPath, project)
-		val folder = ContainersManager.createFolderInto(tmpFolderPath, project)
-
-		// Extract special script files and fill the map with it
-		FilesManager.extract(tmpFolderPath, tmpProjectName, bundleId)
-
-		// Paths to the special scripts files
-		val JOIN = tmpProjectName + "/" + tmpFolderPath + "join.bsh"
-		val FORK = tmpProjectName + "/" + tmpFolderPath + "fork.bsh"
-		val ROUNDBUFFER = tmpProjectName + "/" + tmpFolderPath + "roundbuffer.bsh"
-		val BROADCAST = tmpProjectName + "/" + tmpFolderPath + "broadcast.bsh"
 
 		putSpecialScriptFile(specialScriptFiles, JOIN, bundleId)
 		putSpecialScriptFile(specialScriptFiles, FORK, bundleId)
@@ -403,7 +401,7 @@ class ScriptRunner {
 		}
 
 		// Remove all temporary objects (containers created, files extracted)
-		cleanTemporaryObjects(projectAlreadyExisting, project, folderAlreadyExisting, folder, specialScriptFiles.keySet)
+		ContainersManager.deleteProject(project)
 
 		scriptedVertices.size
 	}
@@ -421,20 +419,6 @@ class ScriptRunner {
 				"Memory script of " + vertexName + " vertices not found. Please contact Preesm developers.")
 		else
 			scriptedVertices.put(dagVertex, scriptFile)
-	}
-
-	/**
-	 * Remove all temporary objects (containers created, files extracted)
-	 * depending on what was already existing before the execution of the script runner
-	 */
-	private def cleanTemporaryObjects(boolean projectAlreadyExisting, IProject project, boolean folderAlreadyExisting,
-		IFolder folder, Set<String> fileNames) {
-		if (!projectAlreadyExisting && !folderAlreadyExisting)
-			ContainersManager.deleteProject(project)
-		else if (!folderAlreadyExisting)
-			ContainersManager.deleteFolder(folder)
-		else
-			ContainersManager.deleteFilesFrom(fileNames, folder)
 	}
 
 	/**
