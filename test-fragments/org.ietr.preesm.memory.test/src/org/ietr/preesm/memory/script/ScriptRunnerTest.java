@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class ScriptRunnerTest {
-	public static final String SCRIPT_FOLDER_PATH = "resources/BSHscripts/";
+	public static final String SCRIPT_FOLDER_PATH = "resources/Code/Script/";
 
 	/**
 	 * Make sure the tests will be able to find the test files
