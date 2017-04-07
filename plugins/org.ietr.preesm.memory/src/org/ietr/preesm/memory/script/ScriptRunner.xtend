@@ -1615,7 +1615,7 @@ class ScriptRunner {
 			}].toList
 
 		val outputs = sdfVertex.outgoingEdges.map[
-			// An output buffer is mergeable if it is unused or if its target port is not read_only
+			// An output buffer is mergeable if it is unused OR if its target port is read_only
 			val isMergeable = (it.targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_READ_ONLY) || ((it.
 				targetPortModifier ?: "").toString.contains(SDFEdge::MODIFIER_UNUSED))
 			try {
