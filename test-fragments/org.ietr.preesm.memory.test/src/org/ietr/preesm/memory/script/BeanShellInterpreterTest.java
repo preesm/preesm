@@ -1,9 +1,14 @@
 package org.ietr.preesm.memory.script;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -247,5 +252,36 @@ public class BeanShellInterpreterTest {
 			return;
 		}
 		Assert.fail();
+	}
+
+	/**
+	 * Requires Plugin testing
+	 *
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 */
+	@Test
+	public void testFork() throws URISyntaxException, IOException {
+		final String plugin_name = "org.ietr.preesm.memory";
+		final String script_path = "/scripts/fork.bsh";
+
+		// load fork script
+
+//		final Bundle bundle = Platform.getBundle(plugin_name);
+//		Assert.assertNotNull(bundle);
+//		final URL fileURL = bundle.getEntry(script_path);
+//		final File file = new File(FileLocator.resolve(fileURL).toURI());
+//		final String forkScriptPath = file.getAbsolutePath();
+
+		StringBuffer content = new StringBuffer();
+		URL url = new URL("platform:/plugin/"+plugin_name+"/"+script_path);
+		InputStream inputStream = url.openConnection().getInputStream();
+		BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+		String inputLine;
+		while ((inputLine = in.readLine()) != null) {
+			content.append(inputLine+"\n");
+		}
+		in.close();
+		Assert.assertTrue(content.toString().contains("inputs.get(0).matchWith(inIdx,output,0,outSize);"));
 	}
 }
