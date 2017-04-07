@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -259,29 +260,58 @@ public class BeanShellInterpreterTest {
 	 *
 	 * @throws IOException
 	 * @throws URISyntaxException
+	 * @throws EvalError
 	 */
 	@Test
-	public void testFork() throws URISyntaxException, IOException {
+	public void testFork() throws URISyntaxException, IOException, EvalError {
 		final String plugin_name = "org.ietr.preesm.memory";
 		final String script_path = "/scripts/fork.bsh";
 
-		// load fork script
-
-//		final Bundle bundle = Platform.getBundle(plugin_name);
-//		Assert.assertNotNull(bundle);
-//		final URL fileURL = bundle.getEntry(script_path);
-//		final File file = new File(FileLocator.resolve(fileURL).toURI());
-//		final String forkScriptPath = file.getAbsolutePath();
-
-		StringBuffer content = new StringBuffer();
-		URL url = new URL("platform:/plugin/"+plugin_name+"/"+script_path);
-		InputStream inputStream = url.openConnection().getInputStream();
-		BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+		final StringBuffer content = new StringBuffer();
+		final URL url = new URL("platform:/plugin/" + plugin_name + "/" + script_path);
+		final InputStream inputStream = url.openConnection().getInputStream();
+		final BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
 		String inputLine;
+		// instrument code to return the list of matches
 		while ((inputLine = in.readLine()) != null) {
-			content.append(inputLine+"\n");
+			final boolean contains = inputLine.contains("matchWith");
+			if (contains) {
+				content.append("match = ");
+			}
+			content.append(inputLine + "\n");
+			if (contains) {
+				content.append("resList.add(match);\n");
+			}
 		}
+		content.append("resList;");
+
 		in.close();
 		Assert.assertTrue(content.toString().contains("inputs.get(0).matchWith(inIdx,output,0,outSize);"));
+
+		final int bufferToSplitSize = 1024 * 1024 * 8; // 8MB
+		final int numberOfForks = 8;
+
+		final List<Buffer> inputs = new ArrayList<>(1);
+		inputs.add(new Buffer(null, new DAGVertex("v1", null, null), "inputBuffer", bufferToSplitSize, 1, true));
+		final List<Buffer> outputs = new ArrayList<>(numberOfForks);
+		for (int i = 0; i < numberOfForks; i++) {
+			outputs.add(new Buffer(null, new DAGVertex("v1", null, null), "outputBuffer" + i, bufferToSplitSize / numberOfForks, 1, true));
+		}
+		final List<Match> resList = new ArrayList<>();
+
+		final Interpreter interpreter = new Interpreter();
+		interpreter.eval("import " + Buffer.class.getName() + ";");
+		interpreter.eval("import " + Match.class.getName() + ";");
+		interpreter.eval("import " + List.class.getName() + ";");
+		interpreter.eval("import " + ArrayList.class.getName() + ";");
+		interpreter.eval("import " + Arrays.class.getName() + ".*;");
+		interpreter.set("inputs", inputs);
+		interpreter.set("outputs", outputs);
+		interpreter.set("resList", resList);
+		final Object eval = interpreter.eval(content.toString());
+		Assert.assertEquals(resList, eval);
+
+		final int size = resList.size();
+		Assert.assertEquals(numberOfForks, size);
 	}
 }
