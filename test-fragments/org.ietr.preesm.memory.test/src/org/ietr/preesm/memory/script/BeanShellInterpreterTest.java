@@ -1,12 +1,17 @@
 package org.ietr.preesm.memory.script;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -87,5 +92,40 @@ public class BeanShellInterpreterTest {
 			return;
 		}
 		Assert.fail();
+	}
+
+	@Test
+	public void test1() throws EvalError, FileNotFoundException, IOException {
+		final Interpreter interpreter = new Interpreter();
+		final String bshFileUnderTest = ScriptRunnerTest.SCRIPT_FOLDER_PATH+"/desinterleave_standalonetest.bsh";
+
+		interpreter.eval("import " + Buffer.class.getName() + ";");
+		interpreter.eval("import " + Match.class.getName() + ";");
+		interpreter.eval("import " + List.class.getName() + ";");
+		interpreter.eval("import " + ArrayList.class.getName() + ";");
+
+		Map<String,Integer> arguments = new LinkedHashMap<>();
+		final int N = 4;
+		arguments.put("N", 4);
+		arguments.put("clusterSize", 16);
+		arguments.put("interClusterSize", 8);
+
+		arguments.forEach((k,v) -> {try {
+			interpreter.set(k, v.intValue());
+		} catch (EvalError e) {
+			e.printStackTrace();
+		}});
+		Buffer i = new Buffer(null, new DAGVertex("v1",null,null), "i", 1024, 4, true);
+		Buffer o = new Buffer(null, new DAGVertex("v1",null,null), "o", 1024, 4, true);
+		interpreter.set("i_i", i);
+		interpreter.set("o_o", o);
+		final Object eval = interpreter.source(bshFileUnderTest);
+		Assert.assertNotNull(eval);
+		Assert.assertTrue(eval instanceof ArrayList);
+		@SuppressWarnings("unchecked")
+		List<Match> matchList = (List<Match>)eval;
+		final int size = matchList.size();
+		Assert.assertEquals(N, size);
+
 	}
 }
