@@ -44,7 +44,7 @@ import org.ietr.preesm.mapper.model.special.TransferVertex;
 
 /**
  * A complex edge scheduler used for tests. Do not use it for the moment.
- * 
+ *
  * @author mpelcat
  */
 public class AdvancedEdgeSched extends AbstractEdgeSched {
@@ -55,13 +55,6 @@ public class AdvancedEdgeSched extends AbstractEdgeSched {
 		super(orderManager);
 
 		intervalFinder = new IntervalFinder(orderManager);
-	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-
 	}
 
 	@Override

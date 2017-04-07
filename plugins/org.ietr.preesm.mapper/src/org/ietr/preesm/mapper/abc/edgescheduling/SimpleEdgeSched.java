@@ -44,17 +44,13 @@ import org.ietr.preesm.mapper.model.special.TransferVertex;
 /**
  * An edge scheduler that simply adds the transfer as soon as possible after the
  * sender
- * 
+ *
  * @author mpelcat
  */
 public class SimpleEdgeSched extends AbstractEdgeSched {
 
 	public SimpleEdgeSched(OrderManager orderManager) {
 		super(orderManager);
-	}
-
-	public static void main(String[] args) {
-
 	}
 
 	@Override
