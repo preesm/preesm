@@ -1,0 +1,18 @@
+package org.ietr.preesm.core.test;
+
+import org.ietr.preesm.core.expression.ExprParser;
+import org.junit.Test;
+import org.nfunk.jep.JEP;
+
+public class ExpParserTest {
+
+	@Test
+	public void testParser() {
+		JEP jep = new JEP();
+		jep.setAllowUndeclared(true);
+		String string = "%2";
+		ExprParser exprParser = new ExprParser(string);
+		exprParser.startParser();
+	}
+
+}

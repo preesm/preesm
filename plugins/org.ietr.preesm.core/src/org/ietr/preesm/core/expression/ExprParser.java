@@ -44,14 +44,6 @@ import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
 
 public class ExprParser {
-
-	public static void main(String[] args) {
-		JEP jep = new JEP();
-		jep.setAllowUndeclared(true);
-		String string = "%2";
-		/* ExprParser test = */new ExprParser(string);
-	}
-
 	protected String toParse;
 
 	public ExprParser(String val) {
