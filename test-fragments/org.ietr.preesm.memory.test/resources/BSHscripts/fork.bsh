@@ -1,8 +1,0 @@
-// Fork script
-
-inIdx = 0;
-for(output : outputs){
-	outSize = output.getNbTokens();
-	inputs.get(0).matchWith(inIdx,output,0,outSize);
-	inIdx +=  outSize;
-}
