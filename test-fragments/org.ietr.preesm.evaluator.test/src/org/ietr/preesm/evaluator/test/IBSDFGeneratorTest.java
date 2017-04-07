@@ -67,6 +67,7 @@ public class IBSDFGeneratorTest {
 	/*
 	 * The tested class requires system specific configuration (turbine
 	 * installed and path configured ...)
+	 * TODO: ask Hamza Deroui about it
 	 */
 	@Ignore
 	public void testGenerator() throws IOException, InterruptedException, SDF4JException, InvalidExpressionException {
