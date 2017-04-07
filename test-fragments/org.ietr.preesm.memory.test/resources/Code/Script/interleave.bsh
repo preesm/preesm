@@ -1,0 +1,8 @@
+// Interleave
+
+for(i=0;i<N;i++) {
+	i_i.matchWith(i*clusterSize,
+				  o_o,
+				  i*(clusterSize+interClusterSize),
+				  clusterSize);
+}
