@@ -270,7 +270,7 @@ public class BeanShellInterpreterTest {
 		final String script_path = "/scripts/fork.bsh";
 
 		final StringBuffer content = new StringBuffer();
-		final File scriptFile = new File("../../plugins/"+plugin_name+"/"+script_path);
+		final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
 		final BufferedReader in;
 		if (scriptFile.exists()) {
 			in = new BufferedReader(new FileReader(scriptFile));
@@ -331,12 +331,78 @@ public class BeanShellInterpreterTest {
 	 * @throws EvalError
 	 */
 	@Test
+	public void testJoin() throws URISyntaxException, IOException, EvalError {
+		final String plugin_name = "org.ietr.preesm.memory";
+		final String script_path = "/scripts/join.bsh";
+
+		final StringBuffer content = new StringBuffer();
+		final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
+		final BufferedReader in;
+		if (scriptFile.exists()) {
+			in = new BufferedReader(new FileReader(scriptFile));
+		} else {
+			final URL url = new URL("platform:/plugin/" + plugin_name + "/" + script_path);
+			final InputStream inputStream = url.openConnection().getInputStream();
+			in = new BufferedReader(new InputStreamReader(inputStream));
+		}
+		String inputLine;
+		// instrument code to return the list of matches
+		while ((inputLine = in.readLine()) != null) {
+			final boolean contains = inputLine.contains("matchWith");
+			if (contains) {
+				content.append("match = ");
+			}
+			content.append(inputLine + "\n");
+			if (contains) {
+				content.append("resList.add(match);\n");
+			}
+		}
+		content.append("resList;");
+
+		in.close();
+		Assert.assertTrue(content.toString().contains("outputs.get(0).matchWith(outIdx,input,0,inSize);"));
+
+		final int bufferToSplitSize = 1024 * 1024 * 8; // 8MB
+		final int numberOfForks = 8;
+
+		final List<Buffer> inputs = new ArrayList<>(1);
+		for (int i = 0; i < numberOfForks; i++) {
+			inputs.add(new Buffer(null, new DAGVertex("v1", null, null), "inputBuffer" + i, bufferToSplitSize / numberOfForks, 1, true));
+		}
+		final List<Buffer> outputs = new ArrayList<>(1);
+		outputs.add(new Buffer(null, new DAGVertex("v1", null, null), "outputBuffer", bufferToSplitSize, 1, true));
+		final List<Match> resList = new ArrayList<>();
+
+		final Interpreter interpreter = new Interpreter();
+		interpreter.eval("import " + Buffer.class.getName() + ";");
+		interpreter.eval("import " + Match.class.getName() + ";");
+		interpreter.eval("import " + List.class.getName() + ";");
+		interpreter.eval("import " + ArrayList.class.getName() + ";");
+		interpreter.eval("import " + Arrays.class.getName() + ".*;");
+		interpreter.set("inputs", inputs);
+		interpreter.set("outputs", outputs);
+		interpreter.set("resList", resList);
+		final Object eval = interpreter.eval(content.toString());
+		Assert.assertEquals(resList, eval);
+
+		final int size = resList.size();
+		Assert.assertEquals(numberOfForks, size);
+	}
+
+	/**
+	 * Requires Plugin testing
+	 *
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 * @throws EvalError
+	 */
+	@Test
 	public void testRoundBuffer() throws URISyntaxException, IOException, EvalError {
 		final String plugin_name = "org.ietr.preesm.memory";
 		final String script_path = "/scripts/roundbuffer.bsh";
 
 		final StringBuffer content = new StringBuffer();
-		final File scriptFile = new File("../../plugins/"+plugin_name+"/"+script_path);
+		final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
 		final BufferedReader in;
 		if (scriptFile.exists()) {
 			in = new BufferedReader(new FileReader(scriptFile));
@@ -387,7 +453,7 @@ public class BeanShellInterpreterTest {
 		final String script_path = "/scripts/broadcast.bsh";
 
 		final StringBuffer content = new StringBuffer();
-		final File scriptFile = new File("../../plugins/"+plugin_name+"/"+script_path);
+		final File scriptFile = new File("../../plugins/" + plugin_name + "/" + script_path);
 		final BufferedReader in;
 		if (scriptFile.exists()) {
 			in = new BufferedReader(new FileReader(scriptFile));
@@ -421,7 +487,7 @@ public class BeanShellInterpreterTest {
 		inputs.add(new Buffer(null, new DAGVertex("v1", null, null), "inputBuffer", inputBuffersSize, 1, true));
 		final List<Buffer> outputs = new ArrayList<>(nbOutputBuffers);
 		for (int i = 0; i < nbOutputBuffers; i++) {
-			outputs.add(new Buffer(null, new DAGVertex("v1", null, null), "outputBuffer"+i, bufferToBroadcastSize, 1, true));
+			outputs.add(new Buffer(null, new DAGVertex("v1", null, null), "outputBuffer" + i, bufferToBroadcastSize, 1, true));
 		}
 		final List<Match> resList = new ArrayList<>();
 
@@ -439,6 +505,6 @@ public class BeanShellInterpreterTest {
 		Assert.assertTrue(eval instanceof List);
 		Assert.assertEquals(resList, eval);
 		final int size = resList.size();
-		Assert.assertEquals(nbOutputBuffers*ratio, size);
+		Assert.assertEquals(nbOutputBuffers * ratio, size);
 	}
 }
