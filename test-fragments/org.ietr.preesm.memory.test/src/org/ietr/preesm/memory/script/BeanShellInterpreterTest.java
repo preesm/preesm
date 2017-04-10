@@ -359,4 +359,66 @@ public class BeanShellInterpreterTest {
 		Assert.assertNotNull(eval);
 		Assert.assertTrue(eval instanceof Match);
 	}
+
+	/**
+	 * Requires Plugin testing
+	 *
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 * @throws EvalError
+	 */
+	@Test
+	public void testBroadCast() throws URISyntaxException, IOException, EvalError {
+		final String plugin_name = "org.ietr.preesm.memory";
+		final String script_path = "/scripts/broadcast.bsh";
+
+		final StringBuffer content = new StringBuffer();
+		final URL url = new URL("platform:/plugin/" + plugin_name + "/" + script_path);
+		final InputStream inputStream = url.openConnection().getInputStream();
+		final BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+		String inputLine;
+
+		// instrument code to return the list of matches
+		while ((inputLine = in.readLine()) != null) {
+			final boolean contains = inputLine.contains("inputs.get(0).matchWith(inIdx,output,outIdx,matchSize);");
+			if (contains) {
+				content.append("match = ");
+			}
+			content.append(inputLine + "\n");
+			if (contains) {
+				content.append("resList.add(match);\n");
+			}
+		}
+		content.append("resList;");
+		Assert.assertTrue(content.toString().contains("inputs.get(0).matchWith(inIdx,output,outIdx,matchSize);"));
+
+		final int nbOutputBuffers = 2;
+		final int bufferToBroadcastSize = 1024 * 1024 * 8; // 8MB
+		final int ratio = 4;
+		final int inputBuffersSize = bufferToBroadcastSize / ratio;
+
+		final List<Buffer> inputs = new ArrayList<>(1);
+		inputs.add(new Buffer(null, new DAGVertex("v1", null, null), "inputBuffer", inputBuffersSize, 1, true));
+		final List<Buffer> outputs = new ArrayList<>(nbOutputBuffers);
+		for (int i = 0; i < nbOutputBuffers; i++) {
+			outputs.add(new Buffer(null, new DAGVertex("v1", null, null), "outputBuffer"+i, bufferToBroadcastSize, 1, true));
+		}
+		final List<Match> resList = new ArrayList<>();
+
+		final Interpreter interpreter = new Interpreter();
+		interpreter.eval("import " + Buffer.class.getName() + ";");
+		interpreter.eval("import " + Match.class.getName() + ";");
+		interpreter.eval("import " + List.class.getName() + ";");
+		interpreter.eval("import " + ArrayList.class.getName() + ";");
+		interpreter.eval("import " + Arrays.class.getName() + ".*;");
+		interpreter.set("inputs", inputs);
+		interpreter.set("outputs", outputs);
+		interpreter.set("resList", resList);
+		final Object eval = interpreter.eval(content.toString());
+		Assert.assertNotNull(eval);
+		Assert.assertTrue(eval instanceof List);
+		Assert.assertEquals(resList, eval);
+		final int size = resList.size();
+		Assert.assertEquals(nbOutputBuffers*ratio, size);
+	}
 }
