@@ -5,10 +5,10 @@ Bundle-SymbolicName: org.ietr.preesm.memory;singleton:=true
 Bundle-Version: 2.2.6.qualifier
 Bundle-Activator: org.ietr.preesm.memory.Activator
 Require-Bundle: org.eclipse.core.runtime,
- org.ietr.dftools.workflow;bundle-version="0.0.1",
- org.ietr.dftools.architecture;bundle-version="0.0.1",
- org.ietr.dftools.algorithm;bundle-version="0.0.1",
- org.ietr.preesm.algorithm;bundle-version="0.6.3",
+ org.ietr.dftools.workflow,
+ org.ietr.dftools.architecture,
+ org.ietr.dftools.algorithm,
+ org.ietr.preesm.algorithm,
  org.eclipse.xtext.util,
  org.eclipse.xtend.lib;bundle-version="2.5.2",
  org.junit;bundle-version="4.5.0",
