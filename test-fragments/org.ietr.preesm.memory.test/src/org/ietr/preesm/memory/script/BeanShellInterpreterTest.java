@@ -2,7 +2,9 @@ package org.ietr.preesm.memory.script;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -268,9 +270,15 @@ public class BeanShellInterpreterTest {
 		final String script_path = "/scripts/fork.bsh";
 
 		final StringBuffer content = new StringBuffer();
-		final URL url = new URL("platform:/plugin/" + plugin_name + "/" + script_path);
-		final InputStream inputStream = url.openConnection().getInputStream();
-		final BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+		final File scriptFile = new File("../../plugins/"+plugin_name+"/"+script_path);
+		final BufferedReader in;
+		if (scriptFile.exists()) {
+			in = new BufferedReader(new FileReader(scriptFile));
+		} else {
+			final URL url = new URL("platform:/plugin/" + plugin_name + "/" + script_path);
+			final InputStream inputStream = url.openConnection().getInputStream();
+			in = new BufferedReader(new InputStreamReader(inputStream));
+		}
 		String inputLine;
 		// instrument code to return the list of matches
 		while ((inputLine = in.readLine()) != null) {
@@ -313,7 +321,6 @@ public class BeanShellInterpreterTest {
 
 		final int size = resList.size();
 		Assert.assertEquals(numberOfForks, size);
-		System.out.println(resList);
 	}
 
 	/**
@@ -329,9 +336,16 @@ public class BeanShellInterpreterTest {
 		final String script_path = "/scripts/roundbuffer.bsh";
 
 		final StringBuffer content = new StringBuffer();
-		final URL url = new URL("platform:/plugin/" + plugin_name + "/" + script_path);
-		final InputStream inputStream = url.openConnection().getInputStream();
-		final BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+		final File scriptFile = new File("../../plugins/"+plugin_name+"/"+script_path);
+		final BufferedReader in;
+		if (scriptFile.exists()) {
+			in = new BufferedReader(new FileReader(scriptFile));
+		} else {
+			final URL url = new URL("platform:/plugin/" + plugin_name + "/" + script_path);
+			final InputStream inputStream = url.openConnection().getInputStream();
+			in = new BufferedReader(new InputStreamReader(inputStream));
+		}
+
 		String inputLine;
 		// instrument code to return the list of matches
 		while ((inputLine = in.readLine()) != null) {
@@ -373,9 +387,15 @@ public class BeanShellInterpreterTest {
 		final String script_path = "/scripts/broadcast.bsh";
 
 		final StringBuffer content = new StringBuffer();
-		final URL url = new URL("platform:/plugin/" + plugin_name + "/" + script_path);
-		final InputStream inputStream = url.openConnection().getInputStream();
-		final BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+		final File scriptFile = new File("../../plugins/"+plugin_name+"/"+script_path);
+		final BufferedReader in;
+		if (scriptFile.exists()) {
+			in = new BufferedReader(new FileReader(scriptFile));
+		} else {
+			final URL url = new URL("platform:/plugin/" + plugin_name + "/" + script_path);
+			final InputStream inputStream = url.openConnection().getInputStream();
+			in = new BufferedReader(new InputStreamReader(inputStream));
+		}
 		String inputLine;
 
 		// instrument code to return the list of matches
