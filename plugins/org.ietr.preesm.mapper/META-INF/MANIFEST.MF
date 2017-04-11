@@ -16,7 +16,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.ietr.preesm.experiment.model;bundle-version="2.1.2",
  org.clojars.gilesc.jgrapht;bundle-version="0.8.2",
  jfree.jcommon;bundle-version="1.0.16",
- jfree.jcommon.source;bundle-version="1.0.16",
  jfree.chart;bundle-version="1.0.13"
 Bundle-ClassPath: .
 Bundle-ActivationPolicy: lazy

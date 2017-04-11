@@ -9,8 +9,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.ietr.dftools.algorithm,
  org.ietr.preesm.core,
  org.clojars.gilesc.jgrapht;bundle-version="0.8.2",
- org.gnu.glpk.java;bundle-version="1.0.32",
- org.gnu.glpk.java.source;bundle-version="1.0.32"
+ org.gnu.glpk.java;bundle-version="1.0.32"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
