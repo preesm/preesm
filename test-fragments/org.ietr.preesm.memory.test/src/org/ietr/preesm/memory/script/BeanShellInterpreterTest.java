@@ -23,6 +23,7 @@ import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.junit.Assert;
 import org.junit.Test;
 
+import bsh.BshClassManager;
 import bsh.EvalError;
 import bsh.Interpreter;
 
@@ -428,6 +429,8 @@ public class BeanShellInterpreterTest {
 		outputs.add(new Buffer(null, new DAGVertex("v1", null, null), "outputBuffer", bufferToBroadcastSize, 1, true));
 
 		final Interpreter interpreter = new Interpreter();
+		final BshClassManager classManager = interpreter.getClassManager();
+		classManager.cacheClassInfo("Buffer", Buffer.class);
 		interpreter.eval("import " + Buffer.class.getName() + ";");
 		interpreter.eval("import " + Match.class.getName() + ";");
 		interpreter.eval("import " + List.class.getName() + ";");
