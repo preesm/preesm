@@ -334,6 +334,7 @@ class ScriptRunner {
 	 */
 	def protected findScripts(DirectedAcyclicGraph dag, PreesmScenario scenario) {
 
+		// TODO : extract script lookup and initialization
 
 		// Create temporary containers for special scripts files
 		// and extract special script files and fill the map with it
@@ -1581,6 +1582,10 @@ class ScriptRunner {
 
 	def runScript(DAGVertex dagVertex, File script) {
 		val interpreter = new Interpreter();
+
+		// TODO : isolate Interpreter initializatino
+		val classManager = interpreter.getClassManager();
+		classManager.cacheClassInfo("Buffer", Buffer);
 
 		// Retrieve the corresponding sdf vertex
 		val sdfVertex = dagVertex.getPropertyBean().getValue(DAGVertex.SDF_VERTEX, SDFAbstractVertex) as SDFAbstractVertex
