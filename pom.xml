@@ -59,7 +59,7 @@
 		<repository>
 			<id>Preesm</id>
 			<layout>p2</layout>
-			<url>http://preesm.sourceforge.net/gensite/update-site/complete/</url>
+			<url>${preesm.p2.repo}</url>
 		</repository>
 	</repositories>
 
