@@ -45,16 +45,15 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
-
-import com.singularsys.jep.Jep;
-import com.singularsys.jep.JepException;
-import com.singularsys.jep.ParseException;
+import org.nfunk.jep.JEP;
+import org.nfunk.jep.Node;
+import org.nfunk.jep.ParseException;
 
 /**
  * A timing links a vertex (either from SDFGraph or from PiGraph) and an
  * operator definition to a time. Ids are used to make the scenario independent
  * from model implementations.
- * 
+ *
  * @author mpelcat
  */
 public class Timing {
@@ -157,7 +156,7 @@ public class Timing {
 	 * The given time is set if it is strictly positive. Otherwise, 1 is set. In
 	 * every cases, the expression is set as the corresponding string and
 	 * considered evaluated
-	 * 
+	 *
 	 * @param time
 	 *            the new time we want to set
 	 */
@@ -199,11 +198,11 @@ public class Timing {
 
 	/**
 	 * Test if the {@link Timing} can be parsed (Check Syntax Errors).
-	 * 
+	 *
 	 * @return true if it can be parsed.
 	 */
 	public boolean canParse() {
-		Jep jep = new Jep();
+		JEP jep = new JEP();
 		try {
 			jep.parse(stringValue);
 		} catch (ParseException e) {
@@ -214,18 +213,18 @@ public class Timing {
 
 	/**
 	 * Test if the {@link Timing} can be evaluated (Check Parameters Errors).
-	 * 
+	 *
 	 * @return true if it can be evaluated.
 	 */
 	public boolean canEvaluate() {
-		Jep jep = new Jep();
+		JEP jep = new JEP();
 		try {
 			for (String parameter : inputParameters)
 				jep.addVariable(parameter, 1);
-			jep.parse(stringValue);
-			jep.evaluate();
+			final Node parse = jep.parse(stringValue);
+			jep.evaluate(parse);
 			return true;
-		} catch (JepException e) {
+		} catch (ParseException e) {
 			return false;
 		}
 	}
@@ -233,21 +232,22 @@ public class Timing {
 	/**
 	 * Evaluate the timing expression with the given values for parameters. If
 	 * the evaluation is successful, isEvaluated is set to true
-	 * 
+	 *
 	 * @param parametersValues
 	 *            the map of parameters names and associated values with which
 	 *            we want to evaluate the expression
 	 */
 	public void tryToEvaluateWith(Map<String, Integer> parametersValues) {
-		Jep jep = new Jep();
+		JEP jep = new JEP();
 		try {
 			for (String parameter : parametersValues.keySet())
 				jep.addVariable(parameter, parametersValues.get(parameter));
-			jep.parse(stringValue);
-			long result = ((Double) jep.evaluate()).longValue();
+			final Node parse = jep.parse(stringValue);
+			final Object evaluate = jep.evaluate(parse);
+			long result = ((Double) evaluate).longValue();
 			this.time = result;
 			this.isEvaluated = true;
-		} catch (JepException e) {
+		} catch (ParseException e) {
 			this.isEvaluated = false;
 		}
 	}

@@ -39,16 +39,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.ietr.preesm.experiment.model.pimm.Parameter;
-
-import com.singularsys.jep.Jep;
-import com.singularsys.jep.JepException;
+import org.nfunk.jep.JEP;
+import org.nfunk.jep.Node;
+import org.nfunk.jep.ParseException;
 
 /**
  * Value(s) of a parameter in a graph. It can be: Static, Dependent or Dynamic.
- * 
+ *
  * @author jheulot
  */
-public class ParameterValue {	
+public class ParameterValue {
 	/**
 	 * Different type of Parameter.
 	 */
@@ -66,7 +66,7 @@ public class ParameterValue {
 	 * Parameter for which we keep value(s)
 	 */
 	private  Parameter parameter;
-	
+
 	/**
 	 * The name of the parameter
 	 */
@@ -187,7 +187,7 @@ public class ParameterValue {
 
 	/**
 	 * Test if the parameter value is defined correctly
-	 * 
+	 *
 	 * @return if the parameter value is defined correctly
 	 */
 	public boolean isValid() {
@@ -197,14 +197,14 @@ public class ParameterValue {
 		case ACTOR_DEPENDENT:
 			return !values.isEmpty();
 		case PARAMETER_DEPENDENT:
-			Jep jep = new Jep();
+			JEP jep = new JEP();
 			try {
 				for (String parameter : inputParameters)
 					jep.addVariable(parameter, 1);
-				jep.parse(expression);
-				jep.evaluate();
+				final Node parse = jep.parse(expression);
+				jep.evaluate(parse);
 				return true;
-			} catch (JepException e) {
+			} catch (ParseException e) {
 				return false;
 			}
 		default:
