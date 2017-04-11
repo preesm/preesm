@@ -50,11 +50,9 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
-
-import com.singularsys.jep.EvaluationException;
-import com.singularsys.jep.Jep;
-import com.singularsys.jep.JepException;
-import com.singularsys.jep.ParseException;
+import org.nfunk.jep.JEP;
+import org.nfunk.jep.Node;
+import org.nfunk.jep.ParseException;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '
@@ -67,7 +65,7 @@ import com.singularsys.jep.ParseException;
  * <em>String</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @generated
  */
 public class ExpressionImpl extends EObjectImpl implements Expression {
@@ -75,7 +73,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 	/**
 	 * The default value of the '{@link #getString() <em>String</em>}'
 	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @see #getString()
 	 * @generated
 	 * @ordered
@@ -84,7 +82,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 	/**
 	 * The cached value of the '{@link #getString() <em>String</em>}' attribute.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @see #getString()
 	 * @generated
 	 * @ordered
@@ -93,7 +91,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	protected ExpressionImpl() {
@@ -102,7 +100,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
@@ -112,7 +110,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
@@ -122,7 +120,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
@@ -137,13 +135,13 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 	/**
 	 * <!-- begin-user-doc --> Evaluate expression of the class for which it is
 	 * called. <!-- end-user-doc -->
-	 * 
+	 *
 	 * @return the result of the expression evaluated as an int.
 	 */
 	@Override
 	public String evaluate() {
 		String allExpression = getString();
-		Jep jep = new Jep();
+		JEP jep = new JEP();
 
 		Parameterizable parameterizableObj;
 		if (this.eContainer() instanceof Parameterizable) {
@@ -178,29 +176,24 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 				}
 			}
 
-			jep.parse(allExpression);
+			final Node parse = jep.parse(allExpression);
 
-			Object result = jep.evaluate();
+			final Object result = jep.evaluate(parse);
 			String evaluation;
-			
+
 			/* Display an Integer as it:
-			 *  1 instead of 1.0 
+			 *  1 instead of 1.0
 			 *  (Useful to parse them then) */
 			if(result instanceof Double && (Double)result % 1 == 0){
 				evaluation = Integer.toString((int)(double)result);
 			}else{
 				evaluation = result.toString();
-			}				
+			}
 			return evaluation;
 
 		} catch (ParseException e) {
 			return "Parsing Error, check expression syntax" + " : "
 					+ allExpression;
-		} catch (EvaluationException e) {
-			return "Evaluation Error, check parameter dependencies" + " : "
-					+ allExpression;
-		} catch (JepException e) {
-			return "Error in parameter subtitution" + " : " + allExpression;
 		} catch (NumberFormatException e) {
 			return "Evaluation Error, check parameter dependencies" + " : "
 					+ allExpression;
@@ -210,7 +203,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
@@ -224,7 +217,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
@@ -239,7 +232,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
@@ -254,7 +247,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
@@ -269,7 +262,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
