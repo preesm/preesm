@@ -39,69 +39,63 @@ package org.ietr.preesm.memory.allocation;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * This implementation of the MemoryAllocator mainly is an implementation
- * example.<br>
- * The allocation performed here simply consists in allocating each edge of the
- * graph into a dedicated memory space (i.e. there will be no re-use). This
- * memory allocation will always give the worst memory allocation possible. <br>
- * 
+ * This implementation of the MemoryAllocator mainly is an implementation example.<br>
+ * The allocation performed here simply consists in allocating each edge of the graph into a dedicated memory space (i.e. there will be no re-use). This memory
+ * allocation will always give the worst memory allocation possible. <br>
+ *
  * @author kdesnos
- * 
+ *
  */
 public class BasicAllocator extends MemoryAllocator {
 
-	/**
-	 * Constructor of the MemoryAllocator
-	 * 
-	 * @param memEx
-	 *            The exclusion graph to analyze
-	 */
-	public BasicAllocator(MemoryExclusionGraph memEx) {
-		super(memEx);
-	}
+  /**
+   * Constructor of the MemoryAllocator.
+   *
+   * @param memEx
+   *          The exclusion graph to analyze
+   */
+  public BasicAllocator(final MemoryExclusionGraph memEx) {
+    super(memEx);
+  }
 
-	/**
-	 * Each edge of the graph is given a dedicated memory space.
-	 */
-	@Override
-	public void allocate() {
-		clear();
+  /**
+   * Each edge of the graph is given a dedicated memory space.
+   */
+  @Override
+  public void allocate() {
+    clear();
 
-		int offset = 0;
+    int offset = 0;
 
-		if (inputExclusionGraph != null) {
-			// Iterate on a copy of the vertex set because the meg might be
-			// modified during graph allocation.
-			Set<MemoryExclusionVertex> vertexList = new HashSet<MemoryExclusionVertex>(
-					inputExclusionGraph.vertexSet());
-			for (MemoryExclusionVertex vertex : vertexList) {
-				// If a data alignment is required
-				Integer typeSize = (Integer) vertex.getPropertyBean().getValue(
-						MemoryExclusionVertex.TYPE_SIZE, Integer.class);
-				if (alignment == 0) {
-					offset += ((offset % typeSize) == 0) ? 0 : typeSize
-							- (offset % typeSize);
-				} else if (alignment > 0) {
-					// Fixed alignment case
-					int align = lcm(typeSize, alignment);
+    if (this.inputExclusionGraph != null) {
+      // Iterate on a copy of the vertex set because the meg might be
+      // modified during graph allocation.
+      final Set<MemoryExclusionVertex> vertexList = new HashSet<>(this.inputExclusionGraph.vertexSet());
+      for (final MemoryExclusionVertex vertex : vertexList) {
+        // If a data alignment is required
+        final Integer typeSize = (Integer) vertex.getPropertyBean().getValue(MemoryExclusionVertex.TYPE_SIZE, Integer.class);
+        if (this.alignment == 0) {
+          offset += ((offset % typeSize) == 0) ? 0 : typeSize - (offset % typeSize);
+        } else if (this.alignment > 0) {
+          // Fixed alignment case
+          final int align = MemoryAllocator.lcm(typeSize, this.alignment);
 
-					offset += ((offset % align) == 0) ? 0 : align
-							- (offset % align);
+          offset += ((offset % align) == 0) ? 0 : align - (offset % align);
 
-				}
-				// Save the verexWeight befor allocating.
-				// Since the Mobject may be the result of a merge
-				// vertex.getWeight may be changed during the call to
-				// allocateMemoryObject
-				int vertexWeight = vertex.getWeight();
-				allocateMemoryObject(vertex, offset);
-				offset += vertexWeight;
-			}
-		}
-	}
+        }
+        // Save the verexWeight befor allocating.
+        // Since the Mobject may be the result of a merge
+        // vertex.getWeight may be changed during the call to
+        // allocateMemoryObject
+        final int vertexWeight = vertex.getWeight();
+        allocateMemoryObject(vertex, offset);
+        offset += vertexWeight;
+      }
+    }
+  }
 }

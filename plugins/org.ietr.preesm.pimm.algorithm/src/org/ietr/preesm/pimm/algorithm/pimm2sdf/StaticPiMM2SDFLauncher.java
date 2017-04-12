@@ -40,83 +40,114 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.ParameterValue;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.pimm.algorithm.pimm2sdf.visitor.StaticPiMM2SDFVisitor;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class StaticPiMM2SDFLauncher.
+ */
 public class StaticPiMM2SDFLauncher {
 
-	private PreesmScenario scenario;
-	private PiGraph graph;
+  /** The scenario. */
+  private final PreesmScenario scenario;
 
-	public StaticPiMM2SDFLauncher(PreesmScenario scenario, PiGraph graph) {
-		this.scenario = scenario;
-		this.graph = graph;
-	}
+  /** The graph. */
+  private final PiGraph graph;
 
-	/**
-	 * Precondition: All
-	 * 
-	 * @return the SDFGraph obtained by visiting graph
-	 * @throws StaticPiMM2SDFException
-	 */
-	public SDFGraph launch() throws StaticPiMM2SDFException {
-		SDFGraph result;
+  /**
+   * Instantiates a new static pi MM 2 SDF launcher.
+   *
+   * @param scenario
+   *          the scenario
+   * @param graph
+   *          the graph
+   */
+  public StaticPiMM2SDFLauncher(final PreesmScenario scenario, final PiGraph graph) {
+    this.scenario = scenario;
+    this.graph = graph;
+  }
 
-		// Get all the available values for all the parameters
-		Map<String, List<Integer>> parametersValues = getParametersValues();
+  /**
+   * Precondition: All.
+   *
+   * @return the SDFGraph obtained by visiting graph
+   * @throws StaticPiMM2SDFException
+   *           the static pi MM 2 SDF exception
+   */
+  public SDFGraph launch() throws StaticPiMM2SDFException {
+    SDFGraph result;
 
-		// Visitor creating the SDFGraph
-		StaticPiMM2SDFVisitor visitor;
-		PiGraphExecution execution = new PiGraphExecution(graph, parametersValues);
-		visitor = new StaticPiMM2SDFVisitor(execution);
-		graph.accept(visitor);
+    // Get all the available values for all the parameters
+    final Map<String, List<Integer>> parametersValues = getParametersValues();
 
-		result = visitor.getResult();
-		return result;
-	}
+    // Visitor creating the SDFGraph
+    StaticPiMM2SDFVisitor visitor;
+    final PiGraphExecution execution = new PiGraphExecution(this.graph, parametersValues);
+    visitor = new StaticPiMM2SDFVisitor(execution);
+    this.graph.accept(visitor);
 
-	private Map<String, List<Integer>> getParametersValues() throws StaticPiMM2SDFException {
-		Map<String, List<Integer>> result = new HashMap<String, List<Integer>>();
+    result = visitor.getResult();
+    return result;
+  }
 
-		for (ParameterValue paramValue : scenario.getParameterValueManager().getParameterValues()) {
-			switch (paramValue.getType()) {
-			case ACTOR_DEPENDENT:
-				throw new StaticPiMM2SDFException("Parameter " + paramValue.getName()
-						+ " is depends on a configuration actor. It is thus impossible to use the Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
-			case INDEPENDENT:
-				try {
-					int value = Integer.parseInt(paramValue.getValue());
-					List<Integer> values = new ArrayList<Integer>();
-					values.add(value);
-					result.put(paramValue.getName(), values);
-					break;
-				} catch (NumberFormatException e) {
-					// The expression associated to the parameter is an
-					// expression (and not an constant int value).
-					// Leave it as it is, it will be solved later.
-					break;
-				}
-			default:
-				break;
-			}
-		}
+  /**
+   * Gets the parameters values.
+   *
+   * @return the parameters values
+   * @throws StaticPiMM2SDFException
+   *           the static pi MM 2 SDF exception
+   */
+  private Map<String, List<Integer>> getParametersValues() throws StaticPiMM2SDFException {
+    final Map<String, List<Integer>> result = new HashMap<>();
 
-		return result;
-	}
+    for (final ParameterValue paramValue : this.scenario.getParameterValueManager().getParameterValues()) {
+      switch (paramValue.getType()) {
+        case ACTOR_DEPENDENT:
+          throw new StaticPiMM2SDFException("Parameter " + paramValue.getName() + " is depends on a configuration actor. It is thus impossible to use the"
+              + " Static PiMM 2 SDF transformation. Try instead the Dynamic PiMM 2 SDF"
+              + " transformation (id: org.ietr.preesm.experiment.pimm2sdf.PiMM2SDFTask)");
+        case INDEPENDENT:
+          try {
+            final int value = Integer.parseInt(paramValue.getValue());
+            final List<Integer> values = new ArrayList<>();
+            values.add(value);
+            result.put(paramValue.getName(), values);
+            break;
+          } catch (final NumberFormatException e) {
+            // The expression associated to the parameter is an
+            // expression (and not an constant int value).
+            // Leave it as it is, it will be solved later.
+            break;
+          }
+        default:
+          break;
+      }
+    }
 
-	public class StaticPiMM2SDFException extends Exception {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 8272147472427685537L;
+    return result;
+  }
 
-		public StaticPiMM2SDFException(String message) {
-			super(message);
-		}
-	}
+  /**
+   * The Class StaticPiMM2SDFException.
+   */
+  public class StaticPiMM2SDFException extends Exception {
+
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 8272147472427685537L;
+
+    /**
+     * Instantiates a new static pi MM 2 SDF exception.
+     *
+     * @param message
+     *          the message
+     */
+    public StaticPiMM2SDFException(final String message) {
+      super(message);
+    }
+  }
 
 }

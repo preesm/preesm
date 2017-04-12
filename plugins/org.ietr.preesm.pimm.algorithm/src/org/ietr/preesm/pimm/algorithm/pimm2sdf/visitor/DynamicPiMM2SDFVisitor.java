@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-
 import org.ietr.dftools.algorithm.model.AbstractGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -57,162 +56,162 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.pimm.algorithm.pimm2sdf.PiGraphExecution;
 
+// TODO: Auto-generated Javadoc
 /**
- * This class visits a PiGraph with one value for each of the Parameters and
- * generates one SDFGraph
- * 
+ * This class visits a PiGraph with one value for each of the Parameters and generates one SDFGraph.
+ *
  * @author cguy
- * 
  */
 public class DynamicPiMM2SDFVisitor extends AbstractPiMM2SDFVisitor {
-	// Set of subgraphs to visit afterwards
-	private Set<PiGraph> subgraphs = new HashSet<PiGraph>();
 
-	public DynamicPiMM2SDFVisitor(PiGraphExecution execution) {
-		super(execution);
-	}
+  /** The subgraphs. */
+  // Set of subgraphs to visit afterwards
+  private final Set<PiGraph> subgraphs = new HashSet<>();
 
-	/**
-	 * Entry point of the visitor
-	 */
-	@Override
-	public void visitPiGraph(PiGraph pg) {
-		// If result == null, then pg is the first PiGraph we encounter
-		if (result == null) {
-			result = new SDFGraph();
-			result.setName(pg.getName());
+  /**
+   * Instantiates a new dynamic pi MM 2 SDF visitor.
+   *
+   * @param execution
+   *          the execution
+   */
+  public DynamicPiMM2SDFVisitor(final PiGraphExecution execution) {
+    super(execution);
+  }
 
-			// Save the original Path to the pigraph in the property bean (used
-			// by memory scripts)
-			result.setPropertyValue(AbstractGraph.PATH, pg.eResource().getURI()
-					.toPlatformString(false));
+  /**
+   * Entry point of the visitor.
+   *
+   * @param pg
+   *          the pg
+   */
+  @Override
+  public void visitPiGraph(final PiGraph pg) {
+    // If result == null, then pg is the first PiGraph we encounter
+    if (this.result == null) {
+      this.result = new SDFGraph();
+      this.result.setName(pg.getName());
 
-			// Set these values into the parameters of pg when possible
-			for (Parameter p : pg.getParameters()) {
-				p.accept(this);
-			}
-			computeDerivedParameterValues(pg, execution);
-			// Once the values are set, use them to put parameters as graph
-			// variables in the resulting SDF graph
-			parameters2GraphVariables(pg, result);
+      // Save the original Path to the pigraph in the property bean (used
+      // by memory scripts)
+      this.result.setPropertyValue(AbstractGraph.PATH, pg.eResource().getURI().toPlatformString(false));
 
-			// Visit each of the vertices of pg with the values set
-			// (Subgraphs of vertices will be visited)
-			for (AbstractActor aa : pg.getVertices()) {
-				aa.accept(this);
-			}
-			// And each of the data edges of pg with the values set
-			for (Fifo f : pg.getFifos()) {
-				f.accept(this);
-			}
-			
-			// Add indexes to the ports of special actor
-			// (Must be done before HSDF transfo...)
-			SpecialActorPortsIndexer.addIndexes(result);
-			
-			// Before the HSDF transfo, add roundbuffers and broadcast where 
-			// needed
-			IbsdfFlattener.addInterfaceSubstitutes(result);
+      // Set these values into the parameters of pg when possible
+      for (final Parameter p : pg.getParameters()) {
+        p.accept(this);
+      }
+      computeDerivedParameterValues(pg, this.execution);
+      // Once the values are set, use them to put parameters as graph
+      // variables in the resulting SDF graph
+      parameters2GraphVariables(pg, this.result);
 
-			// TODO This HSDF transfo is an overkill !
-			// Only Actor with subgraph implementing a reconfigurable
-			// behavior should be duplicated here, there is no need to
-			// apply the whole HSDF transfo here.
-			
-			// Pass the currentSDFGraph in Single Rate which will result in
-			// duplicating the SDFAbstractVertices when needed
-			ToHSDFVisitor toHsdf = new ToHSDFVisitor();
-			// the HSDF visitor will duplicates SDFAbstractVertices
-			// corresponding to subgraphs and we will just have to visit
-			// them afterwards with the good parameter values
-			try {
-				result.accept(toHsdf);
-			} catch (SDF4JException e) {
-				// TODO: handle the exception in order to stop the execution and
-				// inform the user
-				e.printStackTrace();
-			}
-			if (toHsdf.hasChanged())
-				result = toHsdf.getOutput();
+      // Visit each of the vertices of pg with the values set
+      // (Subgraphs of vertices will be visited)
+      for (final AbstractActor aa : pg.getVertices()) {
+        aa.accept(this);
+      }
+      // And each of the data edges of pg with the values set
+      for (final Fifo f : pg.getFifos()) {
+        f.accept(this);
+      }
 
-			// Then visit the subgraphs of pg once for each duplicates of
-			// their corresponding SDFAbstractVertex created by single rate
-			// transformation
-			visitDuplicatesOfSubgraphs(toHsdf.getMatchCopies(), execution);
+      // Add indexes to the ports of special actor
+      // (Must be done before HSDF transfo...)
+      SpecialActorPortsIndexer.addIndexes(this.result);
 
-			// Make sure all ports of special actors are indexed and ordered
-			// both in top and sub graphes
-			SpecialActorPortsIndexer.sortIndexedPorts(result);
-		}
+      // Before the HSDF transfo, add roundbuffers and broadcast where
+      // needed
+      IbsdfFlattener.addInterfaceSubstitutes(this.result);
 
-		// Otherwise (if pg is not the first PiGraph we encounter during this
-		// visit), we need to visit separately pg later
-		// This else will be met when an actor of a visited PiGraph is
-		// a hierarrchical actor, the visited graph is thus a subgraph
-		else {
-			SDFVertex v = new SDFVertex();
-			piVx2SDFVx.put(pg, v);
-			v.setName(pg.getName());
+      // TODO This HSDF transfo is an overkill !
+      // Only Actor with subgraph implementing a reconfigurable
+      // behavior should be duplicated here, there is no need to
+      // apply the whole HSDF transfo here.
 
-			visitAbstractActor(pg);
+      // Pass the currentSDFGraph in Single Rate which will result in
+      // duplicating the SDFAbstractVertices when needed
+      final ToHSDFVisitor toHsdf = new ToHSDFVisitor();
+      // the HSDF visitor will duplicates SDFAbstractVertices
+      // corresponding to subgraphs and we will just have to visit
+      // them afterwards with the good parameter values
+      try {
+        this.result.accept(toHsdf);
+      } catch (final SDF4JException e) {
+        // TODO: handle the exception in order to stop the execution and
+        // inform the user
+        e.printStackTrace();
+      }
+      if (toHsdf.hasChanged()) {
+        this.result = toHsdf.getOutput();
+      }
 
-			result.addVertex(v);
+      // Then visit the subgraphs of pg once for each duplicates of
+      // their corresponding SDFAbstractVertex created by single rate
+      // transformation
+      visitDuplicatesOfSubgraphs(toHsdf.getMatchCopies(), this.execution);
 
-			subgraphs.add(pg);
-		}
-	}
+      // Make sure all ports of special actors are indexed and ordered
+      // both in top and sub graphes
+      SpecialActorPortsIndexer.sortIndexedPorts(this.result);
+    } else {
+      // Otherwise (if pg is not the first PiGraph we encounter during this
+      // visit), we need to visit separately pg later
+      // This else will be met when an actor of a visited PiGraph is
+      // a hierarrchical actor, the visited graph is thus a subgraph
 
-	/**
-	 * Visit each subgraph of the currently visited PiGraph once for each
-	 * duplicates obtained through single rate transformation
-	 * 
-	 * @param verticesToDuplicates
-	 *            Map from the vertices of the currentSDFGraph before and its
-	 *            vertices after the single rate transformation
-	 * @param execution
-	 *            Values for the parameters of the currently visited PiGraph and
-	 *            its inner graphs
-	 */
-	private void visitDuplicatesOfSubgraphs(
-			Map<SDFAbstractVertex, Vector<SDFAbstractVertex>> verticesToDuplicates,
-			PiGraphExecution execution) {
+      final SDFVertex v = new SDFVertex();
+      this.piVx2SDFVx.put(pg, v);
+      v.setName(pg.getName());
 
-		// For each subgraph, visit it once for each duplicates of its
-		// corresponding SDFAbstractVertex, changing the value of parameters
-		// each time, and associates the result of the visits to the duplicates
-		for (PiGraph subgraph : subgraphs) {
-			// Get all the duplicates of the SDFAbstractVertex for subgraph
-			List<SDFAbstractVertex> duplicates;
-			if (verticesToDuplicates != null) {
-				duplicates = verticesToDuplicates.get(piVx2SDFVx.get(subgraph));
-			}
-			// If verticesToDuplicate is null, the graph was already in
-			// single-rate, there is no duplicates for the initially generated
-			// SDFAbstractVertex, use it directly
-			else {
-				duplicates = new ArrayList<SDFAbstractVertex>();
-				duplicates.add(piVx2SDFVx.get(subgraph));
-			}
+      visitAbstractActor(pg);
 
-			int duplicateIndex = 0;
-			// For each of the duplicates
-			for (SDFAbstractVertex duplicate : duplicates) {
-				int selector = duplicateIndex + duplicates.size()
-						* execution.getExecutionNumber();
-				// Obtain a new PiGraphExecution fixing values for Parameters
-				// directly contained by subgraph
-				PiGraphExecution innerExecution = execution
-						.extractInnerExecution(subgraph, selector);
-				// Visit subgraph with the PiGraphExecution
-				DynamicPiMM2SDFVisitor innerVisitor = new DynamicPiMM2SDFVisitor(
-						innerExecution);
-				innerVisitor.visit(subgraph);
-				// Set the obtained SDFGraph as refinement for duplicate
-				SDFGraph sdf = innerVisitor.getResult();
-				sdf.setName(sdf.getName() + innerExecution.getExecutionLabel());
-				duplicate.setGraphDescription(sdf);
-				duplicateIndex++;
-			}
-		}
-	}
+      this.result.addVertex(v);
+
+      this.subgraphs.add(pg);
+    }
+  }
+
+  /**
+   * Visit each subgraph of the currently visited PiGraph once for each duplicates obtained through single rate transformation.
+   *
+   * @param verticesToDuplicates
+   *          Map from the vertices of the currentSDFGraph before and its vertices after the single rate transformation
+   * @param execution
+   *          Values for the parameters of the currently visited PiGraph and its inner graphs
+   */
+  private void visitDuplicatesOfSubgraphs(final Map<SDFAbstractVertex, Vector<SDFAbstractVertex>> verticesToDuplicates, final PiGraphExecution execution) {
+
+    // For each subgraph, visit it once for each duplicates of its
+    // corresponding SDFAbstractVertex, changing the value of parameters
+    // each time, and associates the result of the visits to the duplicates
+    for (final PiGraph subgraph : this.subgraphs) {
+      // Get all the duplicates of the SDFAbstractVertex for subgraph
+      List<SDFAbstractVertex> duplicates;
+      if (verticesToDuplicates != null) {
+        duplicates = verticesToDuplicates.get(this.piVx2SDFVx.get(subgraph));
+      } else {
+        // If verticesToDuplicate is null, the graph was already in
+        // single-rate, there is no duplicates for the initially generated
+        // SDFAbstractVertex, use it directly
+        duplicates = new ArrayList<>();
+        duplicates.add(this.piVx2SDFVx.get(subgraph));
+      }
+
+      int duplicateIndex = 0;
+      // For each of the duplicates
+      for (final SDFAbstractVertex duplicate : duplicates) {
+        final int selector = duplicateIndex + (duplicates.size() * execution.getExecutionNumber());
+        // Obtain a new PiGraphExecution fixing values for Parameters
+        // directly contained by subgraph
+        final PiGraphExecution innerExecution = execution.extractInnerExecution(subgraph, selector);
+        // Visit subgraph with the PiGraphExecution
+        final DynamicPiMM2SDFVisitor innerVisitor = new DynamicPiMM2SDFVisitor(innerExecution);
+        innerVisitor.visit(subgraph);
+        // Set the obtained SDFGraph as refinement for duplicate
+        final SDFGraph sdf = innerVisitor.getResult();
+        sdf.setName(sdf.getName() + innerExecution.getExecutionLabel());
+        duplicate.setGraphDescription(sdf);
+        duplicateIndex++;
+      }
+    }
+  }
 }

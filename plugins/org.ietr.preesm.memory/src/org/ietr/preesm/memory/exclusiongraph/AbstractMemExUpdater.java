@@ -37,13 +37,27 @@ package org.ietr.preesm.memory.exclusiongraph;
 
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class AbstractMemExUpdater.
+ */
 public abstract class AbstractMemExUpdater extends AbstractTaskImplementation {
-	static final public String PARAM_VERBOSE = "Verbose";
 
-	static final public String PARAM_LIFETIME = "Update with MemObject lifetime";
+  /** The Constant PARAM_VERBOSE. */
+  public static final String PARAM_VERBOSE = "Verbose";
 
-	static final public String PARAM_SUPPR_FORK_JOIN = "Suppr Fork/Join";
-	static final public String VALUE_TRUE_FALSE_DEFAULT = "? C {True, False}";
-	static final public String VALUE_TRUE = "True";
-	static final public String VALUE_FALSE = "False";
+  /** The Constant PARAM_LIFETIME. */
+  public static final String PARAM_LIFETIME = "Update with MemObject lifetime";
+
+  /** The Constant PARAM_SUPPR_FORK_JOIN. */
+  public static final String PARAM_SUPPR_FORK_JOIN = "Suppr Fork/Join";
+
+  /** The Constant VALUE_TRUE_FALSE_DEFAULT. */
+  public static final String VALUE_TRUE_FALSE_DEFAULT = "? C {True, False}";
+
+  /** The Constant VALUE_TRUE. */
+  public static final String VALUE_TRUE = "True";
+
+  /** The Constant VALUE_FALSE. */
+  public static final String VALUE_FALSE = "False";
 }

@@ -39,30 +39,42 @@ package org.ietr.preesm.memory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Activator.
+ */
 public class Activator implements BundleActivator {
 
-	private static BundleContext context;
+  /** The context. */
+  private static BundleContext context;
 
-	static BundleContext getContext() {
-		return context;
-	}
+  /**
+   * Gets the context.
+   *
+   * @return the context
+   */
+  static BundleContext getContext() {
+    return Activator.context;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
-	 */
-	@Override
-	public void start(BundleContext bundleContext) throws Exception {
-		Activator.context = bundleContext;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
+   */
+  @Override
+  public void start(final BundleContext bundleContext) throws Exception {
+    Activator.context = bundleContext;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
-	 */
-	@Override
-	public void stop(BundleContext bundleContext) throws Exception {
-		Activator.context = null;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
+   */
+  @Override
+  public void stop(final BundleContext bundleContext) throws Exception {
+    Activator.context = null;
+  }
 
 }

@@ -40,14 +40,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
-
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -55,98 +53,97 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.workflow.tools.CLIWorkflowLogger;
 
+// TODO: Auto-generated Javadoc
 /**
- * This class provides methods to transform an XML file via XSLT
- * 
+ * This class provides methods to transform an XML file via XSLT.
+ *
  * @author Matthieu Wipliez
  * @author mpelcat
- * 
  */
 public class XsltTransformer {
 
-	private Transformer transformer;
+  /** The transformer. */
+  private Transformer transformer;
 
-	/**
-	 * Creates a new {@link XsltTransform}
-	 */
-	public XsltTransformer() {
-		super();
-	}
+  /**
+   * Creates a new {@link XsltTransform}.
+   */
+  public XsltTransformer() {
+    super();
+  }
 
-	/**
-	 * Sets an XSLT stylesheet contained in the file whose name is
-	 * <code>fileName</code>.
-	 * 
-	 * @param fileName
-	 *            The XSLT stylesheet file name.
-	 * @throws TransformerConfigurationException
-	 *             Thrown if there are errors when parsing the Source or it is
-	 *             not possible to create a {@link Transformer} instance.
-	 */
-	public boolean setXSLFile(String fileName)
-			throws TransformerConfigurationException {
+  /**
+   * Sets an XSLT stylesheet contained in the file whose name is <code>fileName</code>.
+   *
+   * @param fileName
+   *          The XSLT stylesheet file name.
+   * @return true, if successful
+   * @throws TransformerConfigurationException
+   *           Thrown if there are errors when parsing the Source or it is not possible to create a {@link Transformer} instance.
+   */
+  public boolean setXSLFile(final String fileName) throws TransformerConfigurationException {
 
-		TransformerFactory factory = TransformerFactory.newInstance();
+    final TransformerFactory factory = TransformerFactory.newInstance();
 
-		Path xslFilePath = new Path(fileName);
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		IFile xslFile = root.getFile(xslFilePath);
-		IPath path = xslFile.getLocation();
-		if (path != null) {
-			String xslFileLoc = xslFile.getLocation().toOSString();
-			StreamSource source = new StreamSource(xslFileLoc);
+    final Path xslFilePath = new Path(fileName);
+    final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+    final IFile xslFile = root.getFile(xslFilePath);
+    final IPath path = xslFile.getLocation();
+    if (path != null) {
+      final String xslFileLoc = xslFile.getLocation().toOSString();
+      final StreamSource source = new StreamSource(xslFileLoc);
 
-			try {
-				transformer = factory.newTransformer(source);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+      try {
+        this.transformer = factory.newTransformer(source);
+      } catch (final Exception e) {
+        e.printStackTrace();
+      }
+    }
 
-		if (transformer == null) {
-			CLIWorkflowLogger.log(Level.SEVERE,
-					"XSL sheet not found or not valid: " + fileName);
-			return false;
-		}
+    if (this.transformer == null) {
+      CLIWorkflowLogger.log(Level.SEVERE, "XSL sheet not found or not valid: " + fileName);
+      return false;
+    }
 
-		return true;
-	}
+    return true;
+  }
 
-	/**
-	 * Transforms the given input file and generates the output file
-	 */
-	public void transformFileToFile(String sourceFilePath, String destFilePath) {
+  /**
+   * Transforms the given input file and generates the output file.
+   *
+   * @param sourceFilePath
+   *          the source file path
+   * @param destFilePath
+   *          the dest file path
+   */
+  public void transformFileToFile(final String sourceFilePath, final String destFilePath) {
 
-		if (transformer != null) {
-			Path osSourceFilePath = new Path(sourceFilePath);
-			Path osDestFilePath = new Path(destFilePath);
-			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-			IFile sourceFile = root.getFile(osSourceFilePath);
-			IFile destFile = root.getFile(osDestFilePath);
-			String sourceFileLoc = sourceFile.getLocation().toOSString();
-			String destFileLoc = destFile.getLocation().toOSString();
+    if (this.transformer != null) {
+      final Path osSourceFilePath = new Path(sourceFilePath);
+      final Path osDestFilePath = new Path(destFilePath);
+      final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+      final IFile sourceFile = root.getFile(osSourceFilePath);
+      final IFile destFile = root.getFile(osDestFilePath);
+      final String sourceFileLoc = sourceFile.getLocation().toOSString();
+      final String destFileLoc = destFile.getLocation().toOSString();
 
-			try {
-				FileOutputStream outStream = new FileOutputStream(destFileLoc);
-				StreamResult outResult = new StreamResult(outStream);
-				transformer.transform(new StreamSource(sourceFileLoc),
-						outResult);
-				outStream.flush();
-				outStream.close();
+      try {
+        final FileOutputStream outStream = new FileOutputStream(destFileLoc);
+        final StreamResult outResult = new StreamResult(outStream);
+        this.transformer.transform(new StreamSource(sourceFileLoc), outResult);
+        outStream.flush();
+        outStream.close();
 
-			} catch (FileNotFoundException e1) {
-				CLIWorkflowLogger.log(
-						Level.SEVERE,
-						"Problem finding files for XSL transfo ("
-								+ osSourceFilePath + "," + osDestFilePath + ")");
-			} catch (TransformerException e1) {
-				e1.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+      } catch (final FileNotFoundException e) {
+        CLIWorkflowLogger.log(Level.SEVERE, "Problem finding files for XSL transfo (" + osSourceFilePath + "," + osDestFilePath + ")");
+      } catch (final TransformerException e) {
+        e.printStackTrace();
+      } catch (final IOException e) {
+        e.printStackTrace();
+      }
 
-		}
+    }
 
-	}
+  }
 
 }

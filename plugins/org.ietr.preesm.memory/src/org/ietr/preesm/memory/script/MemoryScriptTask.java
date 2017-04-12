@@ -39,7 +39,6 @@ package org.ietr.preesm.memory.script;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.workflow.WorkflowException;
@@ -49,58 +48,66 @@ import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MemoryScriptTask.
+ */
 public class MemoryScriptTask extends AbstractMemoryScriptTask {
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
-		// Get verbose parameter
-		boolean verbose = false;
-		verbose = parameters.get(PARAM_VERBOSE).equals(VALUE_TRUE);
 
-		// Get the log parameter
-		String log = parameters.get(PARAM_LOG);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
+    // Get verbose parameter
+    boolean verbose = false;
+    verbose = parameters.get(AbstractMemoryScriptTask.PARAM_VERBOSE).equals(AbstractMemoryScriptTask.VALUE_TRUE);
 
-		// Retrieve the alignment param
-		String valueAlignment = parameters
-				.get(AbstractMemoryAllocatorTask.PARAM_ALIGNMENT);
+    // Get the log parameter
+    final String log = parameters.get(AbstractMemoryScriptTask.PARAM_LOG);
 
-		// Retrieve the input graph
-		DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
+    // Retrieve the alignment param
+    final String valueAlignment = parameters.get(AbstractMemoryAllocatorTask.PARAM_ALIGNMENT);
 
-		// Get the data types from the scenario
-		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
-		Map<String, DataType> dataTypes = scenario.getSimulationManager()
-				.getDataTypes();
+    // Retrieve the input graph
+    final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 
-		// Get check policy
-		String checkString = parameters.get(PARAM_CHECK);
+    // Get the data types from the scenario
+    final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+    final Map<String, DataType> dataTypes = scenario.getSimulationManager().getDataTypes();
 
-		MemoryExclusionGraph meg = (MemoryExclusionGraph) inputs.get("MemEx");
+    // Get check policy
+    final String checkString = parameters.get(AbstractMemoryScriptTask.PARAM_CHECK);
 
-		// execute
-		MemoryScriptEngine engine = new MemoryScriptEngine(valueAlignment, log,
-				verbose, scenario);
-		engine.runScripts(dag, dataTypes, checkString);
-		engine.updateMemEx(meg);
+    final MemoryExclusionGraph meg = (MemoryExclusionGraph) inputs.get("MemEx");
 
-		if (!log.equals("")) {
-			// generate
-			engine.generateCode(scenario, log);
-		}
+    // execute
+    final MemoryScriptEngine engine = new MemoryScriptEngine(valueAlignment, log, verbose, scenario);
+    engine.runScripts(dag, dataTypes, checkString);
+    engine.updateMemEx(meg);
 
-		// Outputs
-		Map<String, Object> outputs = new HashMap<String, Object>();
-		outputs.put("MemEx", meg);
-		return outputs;
-	}
+    if (!log.equals("")) {
+      // generate
+      engine.generateCode(scenario, log);
+    }
 
-	/**
-	 * This method must be overridden, otherwise, the workflow validator does
-	 * not find it.
-	 */
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		return super.getDefaultParameters();
-	}
+    // Outputs
+    final Map<String, Object> outputs = new HashMap<>();
+    outputs.put("MemEx", meg);
+    return outputs;
+  }
+
+  /**
+   * This method must be overridden, otherwise, the workflow validator does not find it.
+   *
+   * @return the default parameters
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    return super.getDefaultParameters();
+  }
 }

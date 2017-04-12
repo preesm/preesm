@@ -38,11 +38,11 @@ package org.ietr.preesm.memory.multiSDFTasks;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
+import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask;
@@ -50,74 +50,88 @@ import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.ietr.preesm.memory.script.AbstractMemoryScriptTask;
 import org.ietr.preesm.memory.script.MemoryScriptEngine;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MultiMemoryScriptTask.
+ */
 public class MultiMemoryScriptTask extends AbstractMemoryScriptTask {
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
-		// Get verbose parameter
-		boolean verbose = false;
-		verbose = parameters.get(PARAM_VERBOSE).equals(VALUE_TRUE);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
+    // Get verbose parameter
+    boolean verbose = false;
+    verbose = parameters.get(AbstractMemoryScriptTask.PARAM_VERBOSE).equals(AbstractMemoryScriptTask.VALUE_TRUE);
 
-		// Get the log parameter
-		String log = parameters.get(PARAM_LOG);
+    // Get the log parameter
+    final String log = parameters.get(AbstractMemoryScriptTask.PARAM_LOG);
 
-		// Retrieve the alignment param
-		String valueAlignment = parameters
-				.get(AbstractMemoryAllocatorTask.PARAM_ALIGNMENT);
+    // Retrieve the alignment param
+    final String valueAlignment = parameters.get(AbstractMemoryAllocatorTask.PARAM_ALIGNMENT);
 
-		// Get the data types from the scenario
-		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
-		Map<String, DataType> dataTypes = scenario.getSimulationManager()
-				.getDataTypes();
+    // Get the data types from the scenario
+    final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+    final Map<String, DataType> dataTypes = scenario.getSimulationManager().getDataTypes();
 
-		// Get check policy
-		String checkString = parameters.get(PARAM_CHECK);
+    // Get check policy
+    final String checkString = parameters.get(AbstractMemoryScriptTask.PARAM_CHECK);
 
-		// Retrieve the input of the task
-		@SuppressWarnings("unchecked")
-		Map<DirectedAcyclicGraph, MemoryExclusionGraph> dagsAndMemExs = (Map<DirectedAcyclicGraph, MemoryExclusionGraph>) inputs
-				.get(KEY_DAG_AND_MEM_EX_MAP);
+    // Retrieve the input of the task
+    @SuppressWarnings("unchecked")
+    final Map<DirectedAcyclicGraph, MemoryExclusionGraph> dagsAndMemExs = (Map<DirectedAcyclicGraph, MemoryExclusionGraph>) inputs
+        .get(AbstractWorkflowNodeImplementation.KEY_DAG_AND_MEM_EX_MAP);
 
-		for (DirectedAcyclicGraph dag : dagsAndMemExs.keySet()) {
-			MemoryExclusionGraph meg = dagsAndMemExs.get(dag);
+    for (final DirectedAcyclicGraph dag : dagsAndMemExs.keySet()) {
+      final MemoryExclusionGraph meg = dagsAndMemExs.get(dag);
 
-			// execute
-			MemoryScriptEngine engine = new MemoryScriptEngine(valueAlignment,
-					log, verbose, scenario);
-			engine.runScripts(dag, dataTypes, checkString);
-			engine.updateMemEx(meg);
+      // execute
+      final MemoryScriptEngine engine = new MemoryScriptEngine(valueAlignment, log, verbose, scenario);
+      engine.runScripts(dag, dataTypes, checkString);
+      engine.updateMemEx(meg);
 
-			if (!log.equals("")) {
-				// generate
-				engine.generateCode(scenario, log + dag.getName());
-			}
-		}
+      if (!log.equals("")) {
+        // generate
+        engine.generateCode(scenario, log + dag.getName());
+      }
+    }
 
-		// Outputs
-		Map<String, Object> output = new HashMap<String, Object>();
-		output.put(KEY_DAG_AND_MEM_EX_MAP, dagsAndMemExs);
-		return output;
-	}
+    // Outputs
+    final Map<String, Object> output = new HashMap<>();
+    output.put(AbstractWorkflowNodeImplementation.KEY_DAG_AND_MEM_EX_MAP, dagsAndMemExs);
+    return output;
+  }
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> param = new HashMap<String, String>();
-		param.put(PARAM_VERBOSE, "? C {" + VALUE_TRUE + ", " + VALUE_FALSE
-				+ "}");
-		param.put(PARAM_CHECK, "? C {" + VALUE_CHECK_NONE + ", "
-				+ VALUE_CHECK_FAST + ", " + VALUE_CHECK_THOROUGH + "}");
-		param.put(AbstractMemoryAllocatorTask.PARAM_ALIGNMENT,
-				AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
-		param.put(PARAM_LOG, VALUE_LOG);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.memory.script.AbstractMemoryScriptTask#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> param = new HashMap<>();
+    param.put(AbstractMemoryScriptTask.PARAM_VERBOSE, "? C {" + AbstractMemoryScriptTask.VALUE_TRUE + ", " + AbstractMemoryScriptTask.VALUE_FALSE + "}");
+    param.put(AbstractMemoryScriptTask.PARAM_CHECK, "? C {" + AbstractMemoryScriptTask.VALUE_CHECK_NONE + ", " + AbstractMemoryScriptTask.VALUE_CHECK_FAST
+        + ", " + AbstractMemoryScriptTask.VALUE_CHECK_THOROUGH + "}");
+    param.put(AbstractMemoryAllocatorTask.PARAM_ALIGNMENT, AbstractMemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
+    param.put(AbstractMemoryScriptTask.PARAM_LOG, AbstractMemoryScriptTask.VALUE_LOG);
 
-		return param;
-	}
+    return param;
+  }
 
-	@Override
-	public String monitorMessage() {
-		return "Running Memory Optimization Scripts.";
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.memory.script.AbstractMemoryScriptTask#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Running Memory Optimization Scripts.";
+  }
 
 }

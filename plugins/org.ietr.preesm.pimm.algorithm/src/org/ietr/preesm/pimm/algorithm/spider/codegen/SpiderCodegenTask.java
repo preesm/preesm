@@ -42,7 +42,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -51,86 +50,106 @@ import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.pimm.algorithm.spider.codegen.visitor.SpiderCodegen;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class SpiderCodegenTask.
+ */
 public class SpiderCodegenTask extends AbstractTaskImplementation {
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
-		// Retrieve inputs
-		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
-		PiGraph pg = (PiGraph) inputs.get(KEY_PI_GRAPH);
+    // Retrieve inputs
+    final PreesmScenario scenario = (PreesmScenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final PiGraph pg = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
-		SpiderCodegen launcher = new SpiderCodegen(scenario);
+    final SpiderCodegen launcher = new SpiderCodegen(scenario);
 
-		launcher.initGenerator(pg);
-		String graphCode = launcher.generateGraphCode(pg);
-		String fctCode = launcher.generateFunctionCode(pg);
-		String hCode = launcher.generateHeaderCode(pg);
+    launcher.initGenerator(pg);
+    final String graphCode = launcher.generateGraphCode(pg);
+    final String fctCode = launcher.generateFunctionCode(pg);
+    final String hCode = launcher.generateHeaderCode(pg);
 
-		// Get the workspace
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    // Get the workspace
+    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-		// Get the name of the folder for code generation
-		String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + "/";
-		
-		if(codegenPath.equals("/")){
-			WorkflowLogger.getLogger().log(Level.SEVERE, "Error: A Codegen folder must be specified in Scenario");
-			return Collections.emptyMap();			
-		}
-		
-		IFolder f = workspace.getRoot().getFolder(new Path(codegenPath));
-		File folder = new File(f.getRawLocation().toOSString());
-		folder.mkdirs();
+    // Get the name of the folder for code generation
+    final String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + "/";
 
-		// Create the files
-		String hFilePath = pg.getName() + ".h";
-		File hFile = new File(folder, hFilePath);
-		
-		String piGraphfilePath = "pi_" + pg.getName() + ".cpp";
-		File piGraphFile = new File(folder, piGraphfilePath);
-		
-		String piFctfilePath = "fct_" + pg.getName() + ".cpp";
-		File piFctFile = new File(folder, piFctfilePath);
-		
-		// Write the files
-		FileWriter piGraphWriter;
-		FileWriter piFctWriter;
-		FileWriter hWriter;
-		try {
-			hWriter = new FileWriter(hFile);
-			hWriter.write(hCode);
-			hWriter.close();
-			piGraphWriter = new FileWriter(piGraphFile);
-			piGraphWriter.write(graphCode);
-			piGraphWriter.close();
-			piFctWriter = new FileWriter(piFctFile);
-			piFctWriter.write(fctCode);
-			piFctWriter.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+    if (codegenPath.equals("/")) {
+      WorkflowLogger.getLogger().log(Level.SEVERE, "Error: A Codegen folder must be specified in Scenario");
+      return Collections.emptyMap();
+    }
 
-		// Return an empty output map
-		return Collections.emptyMap();
-	}
+    final IFolder f = workspace.getRoot().getFolder(new Path(codegenPath));
+    final File folder = new File(f.getRawLocation().toOSString());
+    folder.mkdirs();
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		// Create an empty parameters map
-		Map<String, String> parameters = new HashMap<String, String>();
-		return parameters;
-	}
+    // Create the files
+    final String hFilePath = pg.getName() + ".h";
+    final File hFile = new File(folder, hFilePath);
 
-	@Override
-	public String monitorMessage() {
-		return "Generating C++ code.";
-	}
+    final String piGraphfilePath = "pi_" + pg.getName() + ".cpp";
+    final File piGraphFile = new File(folder, piGraphfilePath);
+
+    final String piFctfilePath = "fct_" + pg.getName() + ".cpp";
+    final File piFctFile = new File(folder, piFctfilePath);
+
+    // Write the files
+    FileWriter piGraphWriter;
+    FileWriter piFctWriter;
+    FileWriter hWriter;
+    try {
+      hWriter = new FileWriter(hFile);
+      hWriter.write(hCode);
+      hWriter.close();
+      piGraphWriter = new FileWriter(piGraphFile);
+      piGraphWriter.write(graphCode);
+      piGraphWriter.close();
+      piFctWriter = new FileWriter(piFctFile);
+      piFctWriter.write(fctCode);
+      piFctWriter.close();
+    } catch (final IOException e) {
+      e.printStackTrace();
+    }
+
+    // Return an empty output map
+    return Collections.emptyMap();
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    // Create an empty parameters map
+    final Map<String, String> parameters = new HashMap<>();
+    return parameters;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Generating C++ code.";
+  }
 
 }

@@ -38,7 +38,6 @@ package org.ietr.preesm.pimm.algorithm.spider.codegen.visitor;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
@@ -73,269 +72,457 @@ import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class SpiderPreProcessVisitor.
+ */
 public class SpiderPreProcessVisitor extends PiMMVisitor {
-	private AbstractActor currentAbstractActor = null;
-	private String currentAbstractVertexName = "";
 
-	private Map<Port, Integer> portMap = new HashMap<Port, Integer>();
-	private Map<ISetter, String> setterMap = new HashMap<ISetter, String>();
-	// Map from Actor names to pairs of CoreType numbers and Timing expressions
-	private Map<String, AbstractActor> actorNames = new HashMap<String, AbstractActor>();
-	private Map<AbstractActor, Integer> functionMap = new LinkedHashMap<AbstractActor, Integer>();;
+  /** The current abstract actor. */
+  private AbstractActor currentAbstractActor = null;
 
-	private Map<AbstractActor, Integer> dataInPortIndices = new HashMap<AbstractActor, Integer>();
-	private Map<AbstractActor, Integer> dataOutPortIndices = new HashMap<AbstractActor, Integer>();
-	private Map<AbstractActor, Integer> cfgInPortIndices = new HashMap<AbstractActor, Integer>();
-	private Map<AbstractActor, Integer> cfgOutPortIndices = new HashMap<AbstractActor, Integer>();
+  /** The current abstract vertex name. */
+  private String currentAbstractVertexName = "";
 
-	// Variables containing the name of the currently visited AbstractActor for
-	// PortDescriptions
-	// Map linking data ports to their corresponding description
+  /** The port map. */
+  private final Map<Port, Integer> portMap = new HashMap<>();
 
-	public Map<Port, Integer> getPortMap() {
-		return portMap;
-	}
+  /** The setter map. */
+  private final Map<ISetter, String> setterMap = new HashMap<>();
 
-	public Map<String, AbstractActor> getActorNames() {
-		return actorNames;
-	}
+  /** The actor names. */
+  // Map from Actor names to pairs of CoreType numbers and Timing expressions
+  private final Map<String, AbstractActor> actorNames = new HashMap<>();
 
-	public Map<AbstractActor, Integer> getFunctionMap() {
-		return functionMap;
-	}
+  /** The function map. */
+  private final Map<AbstractActor, Integer> functionMap = new LinkedHashMap<>();
 
-	@Override
-	public void visitPiGraph(PiGraph pg) {
-		visitAbstractActor(pg);
-		for (AbstractActor a : pg.getVertices()) {
-			a.accept(this);
-		}
-		for (Parameter p : pg.getParameters()) {
-			p.accept(this);
-		}
-	}
+  /** The data in port indices. */
+  private final Map<AbstractActor, Integer> dataInPortIndices = new HashMap<>();
 
-	@Override
-	public void visitAbstractActor(AbstractActor aa) {
-		// Fix currentAbstractActor
-		currentAbstractActor = aa;
-		// Fix currentAbstractVertexName
-		currentAbstractVertexName = "vx" + aa.getName();
-		dataInPortIndices.put(aa, 0);
-		dataOutPortIndices.put(aa, 0);
-		cfgInPortIndices.put(aa, 0);
-		cfgOutPortIndices.put(aa, 0);
+  /** The data out port indices. */
+  private final Map<AbstractActor, Integer> dataOutPortIndices = new HashMap<>();
 
-		// Visit configuration input ports to fill cfgInPortMap
-		visitAbstractVertex(aa);
-		// Visit data ports to fill the dataPortMap
-		for (DataInputPort p : aa.getDataInputPorts()) {
-			p.accept(this);
-		}
-		for (DataOutputPort p : aa.getDataOutputPorts()) {
-			p.accept(this);
-		}
-		// Visit configuration output ports to fill the setterMap
-		for (ConfigOutputPort p : aa.getConfigOutputPorts()) {
-			p.accept(this);
-		}
-	}
+  /** The cfg in port indices. */
+  private final Map<AbstractActor, Integer> cfgInPortIndices = new HashMap<>();
 
-	@Override
-	public void visitAbstractVertex(AbstractVertex av) {
-		// Visit configuration input ports to fill cfgInPortMap
-		for (ConfigInputPort p : av.getConfigInputPorts()) {
-			p.accept(this);
-		}
-	}
+  /** The cfg out port indices. */
+  private final Map<AbstractActor, Integer> cfgOutPortIndices = new HashMap<>();
 
-	@Override
-	public void visitActor(Actor a) {
-		// Register associated function
-		if(!(a instanceof PiGraph)){
-			functionMap.put(a, functionMap.size());
-			if(!(a.getRefinement() instanceof HRefinement))
-				WorkflowLogger.getLogger().warning("Actor "+a.getName()+" doesn't have correct refinement.");
-			else if(((HRefinement)(a.getRefinement())).getInitPrototype() != null)
-				WorkflowLogger.getLogger().warning("Init function of Actor "+a.getName()+" will not be handled");
-		}
+  // Variables containing the name of the currently visited AbstractActor for
+  // PortDescriptions
+  // Map linking data ports to their corresponding description
 
-		actorNames.put(a.getName(), a);
+  /**
+   * Gets the port map.
+   *
+   * @return the port map
+   */
+  public Map<Port, Integer> getPortMap() {
+    return this.portMap;
+  }
 
-		visitAbstractActor(a);
-	}
+  /**
+   * Gets the actor names.
+   *
+   * @return the actor names
+   */
+  public Map<String, AbstractActor> getActorNames() {
+    return this.actorNames;
+  }
 
-	@Override
-	public void visitConfigInputPort(ConfigInputPort cip) {
-		int index = cfgInPortIndices.get(currentAbstractActor);
-		cfgInPortIndices.put(currentAbstractActor, index+1);
-		portMap.put(cip, index);
-	}
+  /**
+   * Gets the function map.
+   *
+   * @return the function map
+   */
+  public Map<AbstractActor, Integer> getFunctionMap() {
+    return this.functionMap;
+  }
 
-	@Override
-	public void visitConfigOutputPort(ConfigOutputPort cop) {
-		int index = cfgOutPortIndices.get(currentAbstractActor);
-		cfgOutPortIndices.put(currentAbstractActor, index+1);
-		portMap.put(cop, index);
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitPiGraph(org.ietr.preesm.experiment.model.pimm.PiGraph)
+   */
+  @Override
+  public void visitPiGraph(final PiGraph pg) {
+    visitAbstractActor(pg);
+    for (final AbstractActor a : pg.getVertices()) {
+      a.accept(this);
+    }
+    for (final Parameter p : pg.getParameters()) {
+      p.accept(this);
+    }
+  }
 
-	/**
-	 * When visiting data ports, we stock the necessary informations for edge
-	 * generation into PortDescriptions
-	 */
-	@Override
-	public void visitDataInputPort(DataInputPort dip) {
-		// XXX: setParentEdge workaround (see visitDataInputInterface and
-		// visitDataOutputInterface in CPPCodeGenerationVisitor)
-		// XXX Ugly way to do this. Must suppose that fifos are always obtained
-		// in the same order => Modify the C++ headers?
-		// Get the position of the incoming fifo of dip wrt.
-		// currentAbstractActor
-		int index = dataInPortIndices.get(currentAbstractActor);
-		dataInPortIndices.put(currentAbstractActor, index+1);
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitAbstractActor(org.ietr.preesm.experiment.model.pimm.AbstractActor)
+   */
+  @Override
+  public void visitAbstractActor(final AbstractActor aa) {
+    // Fix currentAbstractActor
+    this.currentAbstractActor = aa;
+    // Fix currentAbstractVertexName
+    this.currentAbstractVertexName = "vx" + aa.getName();
+    this.dataInPortIndices.put(aa, 0);
+    this.dataOutPortIndices.put(aa, 0);
+    this.cfgInPortIndices.put(aa, 0);
+    this.cfgOutPortIndices.put(aa, 0);
 
-		// Fill dataPortMap
-		portMap.put(dip, index);
-	}
+    // Visit configuration input ports to fill cfgInPortMap
+    visitAbstractVertex(aa);
+    // Visit data ports to fill the dataPortMap
+    for (final DataInputPort p : aa.getDataInputPorts()) {
+      p.accept(this);
+    }
+    for (final DataOutputPort p : aa.getDataOutputPorts()) {
+      p.accept(this);
+    }
+    // Visit configuration output ports to fill the setterMap
+    for (final ConfigOutputPort p : aa.getConfigOutputPorts()) {
+      p.accept(this);
+    }
+  }
 
-	@Override
-	public void visitDataOutputPort(DataOutputPort dop) {
-		// XXX: setParentEdge workaround (see visitDataInputInterface and
-		// visitDataOutputInterface in CPPCodeGenerationVisitor)
-		// XXX Ugly way to do this. Must suppose that fifos are always obtained
-		// in the same order => Modify the C++ headers?
-		// Get the position of the outgoing fifo of dop wrt.
-		// currentAbstractActor
-		int index = dataOutPortIndices.get(currentAbstractActor);
-		dataOutPortIndices.put(currentAbstractActor, index+1);
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitAbstractVertex(org.ietr.preesm.experiment.model.pimm.AbstractVertex)
+   */
+  @Override
+  public void visitAbstractVertex(final AbstractVertex av) {
+    // Visit configuration input ports to fill cfgInPortMap
+    for (final ConfigInputPort p : av.getConfigInputPorts()) {
+      p.accept(this);
+    }
+  }
 
-		// Fill dataPortMap
-		portMap.put(dop, index);
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitActor(org.ietr.preesm.experiment.model.pimm.Actor)
+   */
+  @Override
+  public void visitActor(final Actor a) {
+    // Register associated function
+    if (!(a instanceof PiGraph)) {
+      this.functionMap.put(a, this.functionMap.size());
+      if (!(a.getRefinement() instanceof HRefinement)) {
+        WorkflowLogger.getLogger().warning("Actor " + a.getName() + " doesn't have correct refinement.");
+      } else if (((HRefinement) (a.getRefinement())).getInitPrototype() != null) {
+        WorkflowLogger.getLogger().warning("Init function of Actor " + a.getName() + " will not be handled");
+      }
+    }
 
-	@Override
-	public void visitParameter(Parameter p) {
-		// Fix currentAbstractVertexName
-		currentAbstractVertexName = "param_" + p.getName();
-		// Visit configuration input ports to fill cfgInPortMap
-		visitAbstractVertex(p);
-		// Fill the setterMap
-		setterMap.put(p, currentAbstractVertexName);
-	}
+    this.actorNames.put(a.getName(), a);
 
-	@Override
-	public void visitDependency(Dependency d) {
-		throw new UnsupportedOperationException();
-	}
+    visitAbstractActor(a);
+  }
 
-	@Override
-	public void visitConfigOutputInterface(ConfigOutputInterface coi) {
-		visitInterfaceActor(coi);
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigInputPort(org.ietr.preesm.experiment.model.pimm.ConfigInputPort)
+   */
+  @Override
+  public void visitConfigInputPort(final ConfigInputPort cip) {
+    final int index = this.cfgInPortIndices.get(this.currentAbstractActor);
+    this.cfgInPortIndices.put(this.currentAbstractActor, index + 1);
+    this.portMap.put(cip, index);
+  }
 
-	@Override
-	public void visitDataInputInterface(DataInputInterface dii) {
-		visitInterfaceActor(dii);
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigOutputPort(org.ietr.preesm.experiment.model.pimm.ConfigOutputPort)
+   */
+  @Override
+  public void visitConfigOutputPort(final ConfigOutputPort cop) {
+    final int index = this.cfgOutPortIndices.get(this.currentAbstractActor);
+    this.cfgOutPortIndices.put(this.currentAbstractActor, index + 1);
+    this.portMap.put(cop, index);
+  }
 
-	@Override
-	public void visitDataOutputInterface(DataOutputInterface doi) {
-		visitInterfaceActor(doi);
-	}
+  /**
+   * When visiting data ports, we stock the necessary informations for edge generation into PortDescriptions.
+   *
+   * @param dip
+   *          the dip
+   */
+  @Override
+  public void visitDataInputPort(final DataInputPort dip) {
+    // XXX: setParentEdge workaround (see visitDataInputInterface and
+    // visitDataOutputInterface in CPPCodeGenerationVisitor)
+    // XXX Ugly way to do this. Must suppose that fifos are always obtained
+    // in the same order => Modify the C++ headers?
+    // Get the position of the incoming fifo of dip wrt.
+    // currentAbstractActor
+    final int index = this.dataInPortIndices.get(this.currentAbstractActor);
+    this.dataInPortIndices.put(this.currentAbstractActor, index + 1);
 
-	@Override
-	public void visitInterfaceActor(InterfaceActor ia) {
-		visitAbstractActor(ia);
-	}
+    // Fill dataPortMap
+    this.portMap.put(dip, index);
+  }
 
-	@Override
-	public void visitConfigInputInterface(ConfigInputInterface cii) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataOutputPort(org.ietr.preesm.experiment.model.pimm.DataOutputPort)
+   */
+  @Override
+  public void visitDataOutputPort(final DataOutputPort dop) {
+    // XXX: setParentEdge workaround (see visitDataInputInterface and
+    // visitDataOutputInterface in CPPCodeGenerationVisitor)
+    // XXX Ugly way to do this. Must suppose that fifos are always obtained
+    // in the same order => Modify the C++ headers?
+    // Get the position of the outgoing fifo of dop wrt.
+    // currentAbstractActor
+    final int index = this.dataOutPortIndices.get(this.currentAbstractActor);
+    this.dataOutPortIndices.put(this.currentAbstractActor, index + 1);
 
-	@Override
-	public void visitDelay(Delay d) {
-		throw new UnsupportedOperationException();
-	}
+    // Fill dataPortMap
+    this.portMap.put(dop, index);
+  }
 
-	@Override
-	public void visitExpression(Expression e) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitParameter(org.ietr.preesm.experiment.model.pimm.Parameter)
+   */
+  @Override
+  public void visitParameter(final Parameter p) {
+    // Fix currentAbstractVertexName
+    this.currentAbstractVertexName = "param_" + p.getName();
+    // Visit configuration input ports to fill cfgInPortMap
+    visitAbstractVertex(p);
+    // Fill the setterMap
+    this.setterMap.put(p, this.currentAbstractVertexName);
+  }
 
-	@Override
-	public void visitFifo(Fifo f) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDependency(org.ietr.preesm.experiment.model.pimm.Dependency)
+   */
+  @Override
+  public void visitDependency(final Dependency d) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitISetter(ISetter is) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigOutputInterface(org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface)
+   */
+  @Override
+  public void visitConfigOutputInterface(final ConfigOutputInterface coi) {
+    visitInterfaceActor(coi);
+  }
 
-	@Override
-	public void visitParameterizable(Parameterizable p) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataInputInterface(org.ietr.preesm.experiment.model.pimm.DataInputInterface)
+   */
+  @Override
+  public void visitDataInputInterface(final DataInputInterface dii) {
+    visitInterfaceActor(dii);
+  }
 
-	@Override
-	public void visitPort(Port p) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataOutputInterface(org.ietr.preesm.experiment.model.pimm.DataOutputInterface)
+   */
+  @Override
+  public void visitDataOutputInterface(final DataOutputInterface doi) {
+    visitInterfaceActor(doi);
+  }
 
-	@Override
-	public void visitDataPort(DataPort p) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitInterfaceActor(org.ietr.preesm.experiment.model.pimm.InterfaceActor)
+   */
+  @Override
+  public void visitInterfaceActor(final InterfaceActor ia) {
+    visitAbstractActor(ia);
+  }
 
-	@Override
-	public void visitRefinement(Refinement r) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigInputInterface(org.ietr.preesm.experiment.model.pimm.ConfigInputInterface)
+   */
+  @Override
+  public void visitConfigInputInterface(final ConfigInputInterface cii) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitFunctionParameter(
-			FunctionParameter functionParameter) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDelay(org.ietr.preesm.experiment.model.pimm.Delay)
+   */
+  @Override
+  public void visitDelay(final Delay d) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitFunctionPrototype(
-			FunctionPrototype functionPrototype) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitExpression(org.ietr.preesm.experiment.model.pimm.Expression)
+   */
+  @Override
+  public void visitExpression(final Expression e) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitHRefinement(HRefinement hRefinement) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitFifo(org.ietr.preesm.experiment.model.pimm.Fifo)
+   */
+  @Override
+  public void visitFifo(final Fifo f) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitBroadcastActor(BroadcastActor ba) {
-		visitAbstractActor(ba);
-//		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitISetter(org.ietr.preesm.experiment.model.pimm.ISetter)
+   */
+  @Override
+  public void visitISetter(final ISetter is) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitJoinActor(JoinActor ja) {
-		visitAbstractActor(ja);
-//		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitParameterizable(org.ietr.preesm.experiment.model.pimm.Parameterizable)
+   */
+  @Override
+  public void visitParameterizable(final Parameterizable p) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitForkActor(ForkActor fa) {
-		visitAbstractActor(fa);
-//		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitPort(org.ietr.preesm.experiment.model.pimm.Port)
+   */
+  @Override
+  public void visitPort(final Port p) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitRoundBufferActor(RoundBufferActor rba) {
-		visitAbstractActor(rba);
-//		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataPort(org.ietr.preesm.experiment.model.pimm.DataPort)
+   */
+  @Override
+  public void visitDataPort(final DataPort p) {
+    throw new UnsupportedOperationException();
+  }
 
-	@Override
-	public void visitExecutableActor(ExecutableActor ea) {
-		throw new UnsupportedOperationException();
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitRefinement(org.ietr.preesm.experiment.model.pimm.Refinement)
+   */
+  @Override
+  public void visitRefinement(final Refinement r) {
+    throw new UnsupportedOperationException();
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitFunctionParameter(org.ietr.preesm.experiment.model.pimm.FunctionParameter)
+   */
+  @Override
+  public void visitFunctionParameter(final FunctionParameter functionParameter) {
+    throw new UnsupportedOperationException();
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitFunctionPrototype(org.ietr.preesm.experiment.model.pimm.FunctionPrototype)
+   */
+  @Override
+  public void visitFunctionPrototype(final FunctionPrototype functionPrototype) {
+    throw new UnsupportedOperationException();
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitHRefinement(org.ietr.preesm.experiment.model.pimm.HRefinement)
+   */
+  @Override
+  public void visitHRefinement(final HRefinement hRefinement) {
+    throw new UnsupportedOperationException();
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitBroadcastActor(org.ietr.preesm.experiment.model.pimm.BroadcastActor)
+   */
+  @Override
+  public void visitBroadcastActor(final BroadcastActor ba) {
+    visitAbstractActor(ba);
+    // throw new UnsupportedOperationException();
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitJoinActor(org.ietr.preesm.experiment.model.pimm.JoinActor)
+   */
+  @Override
+  public void visitJoinActor(final JoinActor ja) {
+    visitAbstractActor(ja);
+    // throw new UnsupportedOperationException();
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitForkActor(org.ietr.preesm.experiment.model.pimm.ForkActor)
+   */
+  @Override
+  public void visitForkActor(final ForkActor fa) {
+    visitAbstractActor(fa);
+    // throw new UnsupportedOperationException();
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitRoundBufferActor(org.ietr.preesm.experiment.model.pimm.RoundBufferActor)
+   */
+  @Override
+  public void visitRoundBufferActor(final RoundBufferActor rba) {
+    visitAbstractActor(rba);
+    // throw new UnsupportedOperationException();
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitExecutableActor(org.ietr.preesm.experiment.model.pimm.ExecutableActor)
+   */
+  @Override
+  public void visitExecutableActor(final ExecutableActor ea) {
+    throw new UnsupportedOperationException();
+  }
 }

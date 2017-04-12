@@ -41,7 +41,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.ParameterValue;
 import org.ietr.preesm.core.scenario.PreesmScenario;
@@ -49,90 +48,112 @@ import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.pimm.algorithm.pimm2sdf.visitor.DynamicPiMM2SDFVisitor;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class DynamicPiMM2SDFLauncher.
+ */
 public class DynamicPiMM2SDFLauncher {
 
-	private PreesmScenario scenario;
-	private PiGraph graph;
+  /** The scenario. */
+  private final PreesmScenario scenario;
 
-	public DynamicPiMM2SDFLauncher(PreesmScenario scenario, PiGraph graph) {
-		this.scenario = scenario;
-		this.graph = graph;
-	}
+  /** The graph. */
+  private final PiGraph graph;
 
-	public Set<SDFGraph> launch() {
-		Set<SDFGraph> result = new HashSet<SDFGraph>();
+  /**
+   * Instantiates a new dynamic pi MM 2 SDF launcher.
+   *
+   * @param scenario
+   *          the scenario
+   * @param graph
+   *          the graph
+   */
+  public DynamicPiMM2SDFLauncher(final PreesmScenario scenario, final PiGraph graph) {
+    this.scenario = scenario;
+    this.graph = graph;
+  }
 
-		// Get all the available values for all the parameters
-		Map<String, List<Integer>> parametersValues = getParametersValues();
-		// Get the values for Parameters directly contained by graph (top-level
-		// parameters), if any
-		Map<String, List<Integer>> outerParametersValues = new HashMap<String, List<Integer>>();
-		// The number of time we need to execute, and thus visit graph
-		int nbExecutions = scenario.getSimulationManager()
-				.getNumberOfTopExecutions();
+  /**
+   * Launch.
+   *
+   * @return the sets the
+   */
+  public Set<SDFGraph> launch() {
+    final Set<SDFGraph> result = new HashSet<>();
 
-		for (Parameter param : graph.getParameters()) {
-			List<Integer> pValues = parametersValues.get(param.getName());
-			if (pValues != null) {
-				outerParametersValues.put(param.getName(), pValues);
-			}
-		}
+    // Get all the available values for all the parameters
+    final Map<String, List<Integer>> parametersValues = getParametersValues();
+    // Get the values for Parameters directly contained by graph (top-level
+    // parameters), if any
+    final Map<String, List<Integer>> outerParametersValues = new HashMap<>();
+    // The number of time we need to execute, and thus visit graph
+    final int nbExecutions = this.scenario.getSimulationManager().getNumberOfTopExecutions();
 
-		// Visitor creating the SDFGraphs
-		DynamicPiMM2SDFVisitor visitor;
-		PiGraphExecution execution;
-		// Values for the parameters for one execution
-		Map<String, List<Integer>> currentValues;
-		for (int i = 0; i < nbExecutions; i++) {
-			// Values for one execution are parametersValues except for
-			// top-level Parameters, for which we select only one value for a
-			// given execution
-			currentValues = parametersValues;
-			for (String s : outerParametersValues.keySet()) {
-				// Value selection
-				List<Integer> availableValues = outerParametersValues.get(s);
-				int nbValues = availableValues.size();
-				if (nbValues > 0) {
-					ArrayList<Integer> value = new ArrayList<Integer>();
-					value.add(availableValues.get(i % nbValues));
-					currentValues.put(s, new ArrayList<Integer>(value));
-				}
-			}
+    for (final Parameter param : this.graph.getParameters()) {
+      final List<Integer> pValues = parametersValues.get(param.getName());
+      if (pValues != null) {
+        outerParametersValues.put(param.getName(), pValues);
+      }
+    }
 
-			execution = new PiGraphExecution(graph, currentValues, "_" + i, i);
-			visitor = new DynamicPiMM2SDFVisitor(execution);
-			graph.accept(visitor);
+    // Visitor creating the SDFGraphs
+    DynamicPiMM2SDFVisitor visitor;
+    PiGraphExecution execution;
+    // Values for the parameters for one execution
+    Map<String, List<Integer>> currentValues;
+    for (int i = 0; i < nbExecutions; i++) {
+      // Values for one execution are parametersValues except for
+      // top-level Parameters, for which we select only one value for a
+      // given execution
+      currentValues = parametersValues;
+      for (final String s : outerParametersValues.keySet()) {
+        // Value selection
+        final List<Integer> availableValues = outerParametersValues.get(s);
+        final int nbValues = availableValues.size();
+        if (nbValues > 0) {
+          final ArrayList<Integer> value = new ArrayList<>();
+          value.add(availableValues.get(i % nbValues));
+          currentValues.put(s, new ArrayList<>(value));
+        }
+      }
 
-			SDFGraph sdf = visitor.getResult();
-			
-			result.add(sdf);
-		}
+      execution = new PiGraphExecution(this.graph, currentValues, "_" + i, i);
+      visitor = new DynamicPiMM2SDFVisitor(execution);
+      this.graph.accept(visitor);
 
-		return result;
-	}
+      final SDFGraph sdf = visitor.getResult();
 
-	private Map<String, List<Integer>> getParametersValues() {
-		Map<String, List<Integer>> result = new HashMap<String, List<Integer>>();
+      result.add(sdf);
+    }
 
-		for (ParameterValue paramValue : scenario.getParameterValueManager()
-				.getParameterValues()) {
-			switch (paramValue.getType()) {
-			case ACTOR_DEPENDENT:
-				result.put(paramValue.getName(), new ArrayList<Integer>(
-						paramValue.getValues()));
-				break;
-			case INDEPENDENT:
-				List<Integer> values = new ArrayList<Integer>();
-				int value = Integer.parseInt(paramValue.getValue());
-				values.add(value);				
-				result.put(paramValue.getName(), values);
-				break;
-			default:
-				break;
-			}
-		}
+    return result;
+  }
 
-		return result;
-	}
+  /**
+   * Gets the parameters values.
+   *
+   * @return the parameters values
+   */
+  private Map<String, List<Integer>> getParametersValues() {
+    final Map<String, List<Integer>> result = new HashMap<>();
+
+    for (final ParameterValue paramValue : this.scenario.getParameterValueManager().getParameterValues()) {
+      switch (paramValue.getType()) {
+        case ACTOR_DEPENDENT:
+          result.put(paramValue.getName(), new ArrayList<>(paramValue.getValues()));
+          break;
+        case INDEPENDENT:
+          final List<Integer> values = new ArrayList<>();
+          final int value = Integer.parseInt(paramValue.getValue());
+          values.add(value);
+          result.put(paramValue.getName(), values);
+          break;
+        default:
+          break;
+      }
+    }
+
+    return result;
+  }
 
 }

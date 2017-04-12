@@ -35,6 +35,9 @@
  *******************************************************************************/
 package org.ietr.preesm.pimm.algorithm.checker.schedulability;
 
+/**
+ * The Class SchedulabilityChecker.
+ */
 public class SchedulabilityChecker {
-	// TODO
+  // TODO
 }
