@@ -46,35 +46,48 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.ide.IGotoMarker;
 
+// TODO: Auto-generated Javadoc
 /**
- * Class inheriting from the {@link DiagramEditor}. This class was created to
- * define a custom {@link DefaultMarkerBehavior} that does not reset problems
- * related to graphs on startup of the editor.
- * 
+ * Class inheriting from the {@link DiagramEditor}. This class was created to define a custom {@link DefaultMarkerBehavior} that does not reset problems related
+ * to graphs on startup of the editor.
+ *
  * @author kdesnos
  *
  */
 public class PiMMDiagramEditor extends DiagramEditor implements IGotoMarker {
-	@Override
-	protected DiagramBehavior createDiagramBehavior() {
-		return new PiMMDiagramBehavior(this);
-	}
 
-	@Override
-	public void gotoMarker(IMarker marker) {
-		// Find the pictogram element associated to the marker
-		String uriFragment = marker.getAttribute(PiMMMarkerHelper.DIAGRAM_URI, null);
-		if (uriFragment == null)
-			return;
-		EObject object = getDiagramTypeProvider().getDiagram().eResource().getEObject(uriFragment);
-		if (object == null || !(object instanceof PictogramElement))
-			return;
-		selectPictogramElements(new PictogramElement[] { (PictogramElement) object });
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.ui.editor.DiagramEditor#createDiagramBehavior()
+   */
+  @Override
+  protected DiagramBehavior createDiagramBehavior() {
+    return new PiMMDiagramBehavior(this);
+  }
 
-		// Open the property view
-		IViewPart propSheet = getWorkbenchPart().getSite().getPage().findView(IPageLayout.ID_PROP_SHEET);
-		if (propSheet != null) {
-			getWorkbenchPart().getSite().getPage().bringToTop(propSheet);
-		}
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.ui.ide.IGotoMarker#gotoMarker(org.eclipse.core.resources.IMarker)
+   */
+  @Override
+  public void gotoMarker(final IMarker marker) {
+    // Find the pictogram element associated to the marker
+    final String uriFragment = marker.getAttribute(PiMMMarkerHelper.DIAGRAM_URI, null);
+    if (uriFragment == null) {
+      return;
+    }
+    final EObject object = getDiagramTypeProvider().getDiagram().eResource().getEObject(uriFragment);
+    if ((object == null) || !(object instanceof PictogramElement)) {
+      return;
+    }
+    selectPictogramElements(new PictogramElement[] { (PictogramElement) object });
+
+    // Open the property view
+    final IViewPart propSheet = getWorkbenchPart().getSite().getPage().findView(IPageLayout.ID_PROP_SHEET);
+    if (propSheet != null) {
+      getWorkbenchPart().getSite().getPage().bringToTop(propSheet);
+    }
+  }
 }

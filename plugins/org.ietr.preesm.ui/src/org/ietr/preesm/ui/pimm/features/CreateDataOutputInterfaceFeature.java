@@ -38,6 +38,7 @@ package org.ietr.preesm.ui.pimm.features;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
+import org.eclipse.graphiti.func.ICreate;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
@@ -45,72 +46,88 @@ import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 
+// TODO: Auto-generated Javadoc
 /**
- * Create feature for {@link DataOutputInterface}
- * 
+ * Create feature for {@link DataOutputInterface}.
+ *
  * @author kdesnos
- * 
  */
 public class CreateDataOutputInterfaceFeature extends AbstractCreateFeature {
 
-	boolean hasDoneChanges = false;
+  /** The has done changes. */
+  boolean hasDoneChanges = false;
 
-	private static final String FEATURE_NAME = "Data Output Interface";
+  /** The Constant FEATURE_NAME. */
+  private static final String FEATURE_NAME = "Data Output Interface";
 
-	private static final String FEATURE_DESCRIPTION = "Create Data Output Interface";
+  /** The Constant FEATURE_DESCRIPTION. */
+  private static final String FEATURE_DESCRIPTION = "Create Data Output Interface";
 
-	/**
-	 * the Default constructor of {@link CreateDataOutputInterfaceFeature}
-	 * 
-	 * @param fp
-	 *            the feature provider
-	 */
-	public CreateDataOutputInterfaceFeature(IFeatureProvider fp) {
-		super(fp, FEATURE_NAME, FEATURE_DESCRIPTION);
-	}
+  /**
+   * the Default constructor of {@link CreateDataOutputInterfaceFeature}.
+   *
+   * @param fp
+   *          the feature provider
+   */
+  public CreateDataOutputInterfaceFeature(final IFeatureProvider fp) {
+    super(fp, CreateDataOutputInterfaceFeature.FEATURE_NAME, CreateDataOutputInterfaceFeature.FEATURE_DESCRIPTION);
+  }
 
-	@Override
-	public boolean canCreate(ICreateContext context) {
-		return context.getTargetContainer() instanceof Diagram;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.func.ICreate#canCreate(org.eclipse.graphiti.features.context.ICreateContext)
+   */
+  @Override
+  public boolean canCreate(final ICreateContext context) {
+    return context.getTargetContainer() instanceof Diagram;
+  }
 
-	@Override
-	public Object[] create(ICreateContext context) {
-		// Retrieve the graph
-		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.func.ICreate#create(org.eclipse.graphiti.features.context.ICreateContext)
+   */
+  @Override
+  public Object[] create(final ICreateContext context) {
+    // Retrieve the graph
+    final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
 
-		// Ask user for SinkInterface name until a valid name is entered.
-		String question = "Enter new Sink Interface name";
-		String newSnkName = "SnkInterfaceName";
+    // Ask user for SinkInterface name until a valid name is entered.
+    final String question = "Enter new Sink Interface name";
+    String newSnkName = "SnkInterfaceName";
 
-		newSnkName = PiMMUtil.askString("Create Sink Interface", question,
-				newSnkName, new VertexNameValidator(graph, null));
-		if (newSnkName == null || newSnkName.trim().length() == 0) {
-			this.hasDoneChanges = false; // If this is not done, the graph is
-											// considered modified.
-			return EMPTY;
-		}
+    newSnkName = PiMMUtil.askString("Create Sink Interface", question, newSnkName, new VertexNameValidator(graph, null));
+    if ((newSnkName == null) || (newSnkName.trim().length() == 0)) {
+      this.hasDoneChanges = false; // If this is not done, the graph is
+      // considered modified.
+      return ICreate.EMPTY;
+    }
 
-		// create SinkInterface
-		DataOutputInterface newSinkInterface = PiMMFactory.eINSTANCE
-				.createDataOutputInterface();
-		newSinkInterface.setName(newSnkName);
+    // create SinkInterface
+    final DataOutputInterface newSinkInterface = PiMMFactory.eINSTANCE.createDataOutputInterface();
+    newSinkInterface.setName(newSnkName);
 
-		// Add new SinkInterface to the graph.
-		if (graph.getVertices().add(newSinkInterface)) {
-			this.hasDoneChanges = true;
-		}
+    // Add new SinkInterface to the graph.
+    if (graph.getVertices().add(newSinkInterface)) {
+      this.hasDoneChanges = true;
+    }
 
-		// do the add to the Diagram
-		addGraphicalRepresentation(context, newSinkInterface);
+    // do the add to the Diagram
+    addGraphicalRepresentation(context, newSinkInterface);
 
-		// return newly created business object(s)
-		return new Object[] { newSinkInterface };
-	}
+    // return newly created business object(s)
+    return new Object[] { newSinkInterface };
+  }
 
-	@Override
-	public boolean hasDoneChanges() {
-		return this.hasDoneChanges;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
+   */
+  @Override
+  public boolean hasDoneChanges() {
+    return this.hasDoneChanges;
+  }
 
 }

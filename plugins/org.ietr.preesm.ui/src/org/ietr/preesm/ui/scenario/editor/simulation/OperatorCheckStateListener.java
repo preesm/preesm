@@ -48,90 +48,99 @@ import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
+// TODO: Auto-generated Javadoc
 /**
- * Listener of the check state of the Operator tree
- * 
+ * Listener of the check state of the Operator tree.
+ *
  * @author mpelcat
  */
-public class OperatorCheckStateListener implements ICheckStateListener,
-		PaintListener {
+public class OperatorCheckStateListener implements ICheckStateListener, PaintListener {
 
-	/**
-	 * Currently edited scenario
-	 */
-	private PreesmScenario scenario = null;
+  /** Currently edited scenario. */
+  private PreesmScenario scenario = null;
 
-	/**
-	 * Current section (necessary to diplay busy status)
-	 */
-	private Section section = null;
+  /** Current section (necessary to diplay busy status). */
+  private Section section = null;
 
-	/**
-	 * Tree viewer used to set the checked status
-	 */
-	private CheckboxTreeViewer treeViewer = null;
-	/**
-	 * Constraints page used as a property listener to change the dirty state
-	 */
-	private IPropertyListener propertyListener = null;
+  /** Tree viewer used to set the checked status. */
+  private CheckboxTreeViewer treeViewer = null;
 
-	public OperatorCheckStateListener(Section section, PreesmScenario scenario) {
-		super();
-		this.scenario = scenario;
-		this.section = section;
-	}
+  /** Constraints page used as a property listener to change the dirty state. */
+  private IPropertyListener propertyListener = null;
 
-	/**
-	 * Sets the different necessary attributes
-	 */
-	public void setTreeViewer(CheckboxTreeViewer treeViewer,
-			IPropertyListener propertyListener) {
-		this.treeViewer = treeViewer;
-		this.propertyListener = propertyListener;
-	}
+  /**
+   * Instantiates a new operator check state listener.
+   *
+   * @param section
+   *          the section
+   * @param scenario
+   *          the scenario
+   */
+  public OperatorCheckStateListener(final Section section, final PreesmScenario scenario) {
+    super();
+    this.scenario = scenario;
+    this.section = section;
+  }
 
-	/**
-	 * Fired when an element has been checked or unchecked
-	 */
-	@Override
-	public void checkStateChanged(CheckStateChangedEvent event) {
-		final Object element = event.getElement();
-		final boolean isChecked = event.getChecked();
-		BusyIndicator.showWhile(section.getDisplay(), new Runnable() {
+  /**
+   * Sets the different necessary attributes.
+   *
+   * @param treeViewer
+   *          the tree viewer
+   * @param propertyListener
+   *          the property listener
+   */
+  public void setTreeViewer(final CheckboxTreeViewer treeViewer, final IPropertyListener propertyListener) {
+    this.treeViewer = treeViewer;
+    this.propertyListener = propertyListener;
+  }
 
-			@Override
-			public void run() {
-				if (element instanceof String) {
-					String path = (String) element;
+  /**
+   * Fired when an element has been checked or unchecked.
+   *
+   * @param event
+   *          the event
+   */
+  @Override
+  public void checkStateChanged(final CheckStateChangedEvent event) {
+    final Object element = event.getElement();
+    final boolean isChecked = event.getChecked();
+    BusyIndicator.showWhile(this.section.getDisplay(), new Runnable() {
 
-					if (isChecked) {
-						scenario.getSimulationManager()
-								.addSpecialVertexOperatorId(path);
-					} else {
-						scenario.getSimulationManager()
-								.removeSpecialVertexOperatorId(path);
-					}
+      @Override
+      public void run() {
+        if (element instanceof String) {
+          final String path = (String) element;
 
-					propertyListener.propertyChanged(this,
-							IEditorPart.PROP_DIRTY);
-				}
-			}
-		});
-	}
+          if (isChecked) {
+            OperatorCheckStateListener.this.scenario.getSimulationManager().addSpecialVertexOperatorId(path);
+          } else {
+            OperatorCheckStateListener.this.scenario.getSimulationManager().removeSpecialVertexOperatorId(path);
+          }
 
-	/**
-	 * Update the check status of the whole tree
-	 */
-	public void updateCheck() {
-		if (scenario != null) {
-			treeViewer.setCheckedElements(scenario.getSimulationManager()
-					.getSpecialVertexOperatorIds().toArray());
-		}
-	}
+          OperatorCheckStateListener.this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
+        }
+      }
+    });
+  }
 
-	@Override
-	public void paintControl(PaintEvent e) {
-		updateCheck();
+  /**
+   * Update the check status of the whole tree.
+   */
+  public void updateCheck() {
+    if (this.scenario != null) {
+      this.treeViewer.setCheckedElements(this.scenario.getSimulationManager().getSpecialVertexOperatorIds().toArray());
+    }
+  }
 
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events.PaintEvent)
+   */
+  @Override
+  public void paintControl(final PaintEvent e) {
+    updateCheck();
+
+  }
 }

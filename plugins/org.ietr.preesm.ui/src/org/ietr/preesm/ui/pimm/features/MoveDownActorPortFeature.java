@@ -47,143 +47,149 @@ import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 
+// TODO: Auto-generated Javadoc
 /**
  * Custom feature to move down a port.
- * 
+ *
  * @author jheulot
  * @author kdesnos
- * 
+ *
  */
 public class MoveDownActorPortFeature extends MoveUpActorPortFeature {
 
-	protected boolean hasDoneChanges = false;
-	
-	public final static String HINT = "down";
+  /** The has done changes. */
+  protected boolean hasDoneChanges = false;
 
-	/**
-	 * Default Constructor
-	 * 
-	 * @param fp
-	 *            the feature provider
-	 */
-	public MoveDownActorPortFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /** The Constant HINT. */
+  public static final String HINT = "down";
 
-	@Override
-	public String getName() {
-		return "Move down Port\tCtrl+Down_Arrow";
-	}
+  /**
+   * Default Constructor.
+   *
+   * @param fp
+   *          the feature provider
+   */
+  public MoveDownActorPortFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	@Override
-	public String getDescription() {
-		return "Move down the Port";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature#getName()
+   */
+  @Override
+  public String getName() {
+    return "Move down Port\tCtrl+Down_Arrow";
+  }
 
-	@Override
-	public boolean canExecute(ICustomContext context) {
-		// allow move up if exactly one pictogram element
-		// representing a Port is selected
-		// and it is not the first port
-		boolean ret = false;
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes != null && pes.length == 1) {
-			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof Port) {
-				Port port = (Port) bo;
-				if (port.eContainer() instanceof ExecutableActor) {
-					ExecutableActor actor = (ExecutableActor) (port
-							.eContainer());
-					String kind = port.getKind();
-					if (kind.compareTo("input") == 0) {
-						ret = actor.getDataInputPorts().size() > 1;
-						ret = ret
-								&& actor.getDataInputPorts().indexOf(port) < actor
-										.getDataInputPorts().size() - 1;
-					} else if (kind.compareTo("output") == 0) {
-						ret = actor.getDataOutputPorts().size() > 1;
-						ret = ret
-								&& actor.getDataOutputPorts().indexOf(port) < actor
-										.getDataOutputPorts().size() - 1;
-					} else if (kind.compareTo("cfg_input") == 0) {
-						ret = actor.getConfigInputPorts().size() > 1;
-						ret = ret
-								&& actor.getConfigInputPorts().indexOf(port) < actor
-										.getConfigInputPorts().size() - 1;
-					} else if (kind.compareTo("cfg_output") == 0) {
-						ret = actor.getConfigOutputPorts().size() > 1;
-						ret = ret
-								&& actor.getConfigOutputPorts().indexOf(port) < actor
-										.getConfigOutputPorts().size() - 1;
-					}
-				}
-			}
-		}
-		return ret;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature#getDescription()
+   */
+  @Override
+  public String getDescription() {
+    return "Move down the Port";
+  }
 
-	@Override
-	public void execute(ICustomContext context) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public boolean canExecute(final ICustomContext context) {
+    // allow move up if exactly one pictogram element
+    // representing a Port is selected
+    // and it is not the first port
+    boolean ret = false;
+    final PictogramElement[] pes = context.getPictogramElements();
+    if ((pes != null) && (pes.length == 1)) {
+      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+      if (bo instanceof Port) {
+        final Port port = (Port) bo;
+        if (port.eContainer() instanceof ExecutableActor) {
+          final ExecutableActor actor = (ExecutableActor) (port.eContainer());
+          final String kind = port.getKind();
+          if (kind.compareTo("input") == 0) {
+            ret = actor.getDataInputPorts().size() > 1;
+            ret = ret && (actor.getDataInputPorts().indexOf(port) < (actor.getDataInputPorts().size() - 1));
+          } else if (kind.compareTo("output") == 0) {
+            ret = actor.getDataOutputPorts().size() > 1;
+            ret = ret && (actor.getDataOutputPorts().indexOf(port) < (actor.getDataOutputPorts().size() - 1));
+          } else if (kind.compareTo("cfg_input") == 0) {
+            ret = actor.getConfigInputPorts().size() > 1;
+            ret = ret && (actor.getConfigInputPorts().indexOf(port) < (actor.getConfigInputPorts().size() - 1));
+          } else if (kind.compareTo("cfg_output") == 0) {
+            ret = actor.getConfigOutputPorts().size() > 1;
+            ret = ret && (actor.getConfigOutputPorts().indexOf(port) < (actor.getConfigOutputPorts().size() - 1));
+          }
+        }
+      }
+    }
+    return ret;
+  }
 
-		// Re-check if only one element is selected
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes != null && pes.length == 1) {
-			PictogramElement anchorToMoveDown = pes[0];
-			Object bo = getBusinessObjectForPictogramElement(anchorToMoveDown);
-			if (bo instanceof Port) {
-				Port portToMoveDown = null, portToMoveUp = null;
-				int portToMoveDownIndex = -1;
-				ExecutableActor actor;
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.ui.pimm.features.MoveUpActorPortFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public void execute(final ICustomContext context) {
 
-				portToMoveDown = (Port) bo;
-				actor = (ExecutableActor) (portToMoveDown.eContainer());
-				String portKind = portToMoveDown.getKind();
+    // Re-check if only one element is selected
+    final PictogramElement[] pes = context.getPictogramElements();
+    if ((pes != null) && (pes.length == 1)) {
+      final PictogramElement anchorToMoveDown = pes[0];
+      final Object bo = getBusinessObjectForPictogramElement(anchorToMoveDown);
+      if (bo instanceof Port) {
+        Port portToMoveDown = null;
+        Port portToMoveUp = null;
+        int portToMoveDownIndex = -1;
+        ExecutableActor actor;
 
-				// Switch Port into Actor Object
-				switch (portKind) {
-				case PiIdentifiers.DATA_INPUT_PORT:
-					portToMoveDownIndex = actor.getDataInputPorts().indexOf(
-							portToMoveDown);
-					portToMoveUp = actor.getDataInputPorts().get(
-							portToMoveDownIndex + 1);
-					break;
-				case PiIdentifiers.DATA_OUTPUT_PORT:
-					portToMoveDownIndex = actor.getDataOutputPorts().indexOf(
-							portToMoveDown);
-					portToMoveUp = actor.getDataOutputPorts().get(
-							portToMoveDownIndex + 1);
-					break;
-				case PiIdentifiers.CONFIGURATION_INPUT_PORT:
-					portToMoveDownIndex = actor.getConfigInputPorts().indexOf(
-							portToMoveDown);
-					portToMoveUp = actor.getConfigInputPorts().get(
-							portToMoveDownIndex + 1);
-					break;
-				case PiIdentifiers.CONFIGURATION_OUPUT_PORT:
-					portToMoveDownIndex = actor.getConfigOutputPorts().indexOf(
-							portToMoveDown);
-					portToMoveUp = actor.getConfigOutputPorts().get(
-							portToMoveDownIndex + 1);
-					break;
-				}
-				// Change context to use portToMoveUp feature
-				// Get Graphical Elements
-				ContainerShape csActor = (ContainerShape) ((BoxRelativeAnchor) anchorToMoveDown)
-						.getReferencedGraphicsAlgorithm().getPictogramElement();
-				EList<Anchor> anchors = csActor.getAnchors();
+        portToMoveDown = (Port) bo;
+        actor = (ExecutableActor) (portToMoveDown.eContainer());
+        final String portKind = portToMoveDown.getKind();
 
-				Anchor anchorToMoveUp = null;
-				for (Anchor a : anchors) {
-					if (a.getLink().getBusinessObjects().get(0)
-							.equals(portToMoveUp)) {
-						anchorToMoveUp = a;
-						break;
-					}
-				}
+        // Switch Port into Actor Object
+        switch (portKind) {
+          case PiIdentifiers.DATA_INPUT_PORT:
+            portToMoveDownIndex = actor.getDataInputPorts().indexOf(portToMoveDown);
+            portToMoveUp = actor.getDataInputPorts().get(portToMoveDownIndex + 1);
+            break;
+          case PiIdentifiers.DATA_OUTPUT_PORT:
+            portToMoveDownIndex = actor.getDataOutputPorts().indexOf(portToMoveDown);
+            portToMoveUp = actor.getDataOutputPorts().get(portToMoveDownIndex + 1);
+            break;
+          case PiIdentifiers.CONFIGURATION_INPUT_PORT:
+            portToMoveDownIndex = actor.getConfigInputPorts().indexOf(portToMoveDown);
+            portToMoveUp = actor.getConfigInputPorts().get(portToMoveDownIndex + 1);
+            break;
+          case PiIdentifiers.CONFIGURATION_OUPUT_PORT:
+            portToMoveDownIndex = actor.getConfigOutputPorts().indexOf(portToMoveDown);
+            portToMoveUp = actor.getConfigOutputPorts().get(portToMoveDownIndex + 1);
+            break;
+          default:
+        }
+        // Change context to use portToMoveUp feature
+        // Get Graphical Elements
+        final ContainerShape csActor = (ContainerShape) ((BoxRelativeAnchor) anchorToMoveDown).getReferencedGraphicsAlgorithm().getPictogramElement();
+        final EList<Anchor> anchors = csActor.getAnchors();
 
-				context.getPictogramElements()[0] = anchorToMoveUp;
-				super.execute(context);
-			}
-		}
-	}
+        Anchor anchorToMoveUp = null;
+        for (final Anchor a : anchors) {
+          if (a.getLink().getBusinessObjects().get(0).equals(portToMoveUp)) {
+            anchorToMoveUp = a;
+            break;
+          }
+        }
+
+        context.getPictogramElements()[0] = anchorToMoveUp;
+        super.execute(context);
+      }
+    }
+  }
 }

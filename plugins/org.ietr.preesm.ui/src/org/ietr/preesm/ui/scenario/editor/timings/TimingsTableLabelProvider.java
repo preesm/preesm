@@ -37,7 +37,6 @@
 package org.ietr.preesm.ui.scenario.editor.timings;
 
 import java.net.URL;
-
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IInputValidator;
@@ -64,228 +63,313 @@ import org.ietr.preesm.ui.scenario.editor.Messages;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
+// TODO: Auto-generated Javadoc
 /**
  * Displays the labels for tasks timings. These labels are the time of each task
- * 
+ *
  * @author mpelcat
  */
-public class TimingsTableLabelProvider implements ITableLabelProvider,
-		SelectionListener {
+public class TimingsTableLabelProvider implements ITableLabelProvider, SelectionListener {
 
-	private PreesmScenario scenario = null;
+  /** The scenario. */
+  private PreesmScenario scenario = null;
 
-	private String currentOpDefId = null;
+  /** The current op def id. */
+  private String currentOpDefId = null;
 
-	private TableViewer tableViewer = null;
+  /** The table viewer. */
+  private TableViewer tableViewer = null;
 
-	private Image imageOk, imageError;
+  /** The image ok. */
+  private final Image imageOk;
 
-	/**
-	 * Constraints page used as a property listener to change the dirty state
-	 */
-	private IPropertyListener propertyListener = null;
+  /** The image error. */
+  private final Image imageError;
 
-	public TimingsTableLabelProvider(PreesmScenario scenario,
-			TableViewer tableViewer, IPropertyListener propertyListener) {
-		super();
-		this.scenario = scenario;
-		this.tableViewer = tableViewer;
-		this.propertyListener = propertyListener;
+  /** Constraints page used as a property listener to change the dirty state. */
+  private IPropertyListener propertyListener = null;
 
-		Bundle bundle = FrameworkUtil.getBundle(TimingsTableLabelProvider.class);
+  /**
+   * Instantiates a new timings table label provider.
+   *
+   * @param scenario
+   *          the scenario
+   * @param tableViewer
+   *          the table viewer
+   * @param propertyListener
+   *          the property listener
+   */
+  public TimingsTableLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer, final IPropertyListener propertyListener) {
+    super();
+    this.scenario = scenario;
+    this.tableViewer = tableViewer;
+    this.propertyListener = propertyListener;
 
-		URL url = FileLocator.find(bundle, new Path("icons/error.png"), null);
-		ImageDescriptor imageDcr = ImageDescriptor.createFromURL(url);
-		this.imageError = imageDcr.createImage();
+    final Bundle bundle = FrameworkUtil.getBundle(TimingsTableLabelProvider.class);
 
-		url = FileLocator.find(bundle, new Path("icons/ok.png"), null);
-		imageDcr = ImageDescriptor.createFromURL(url);
-		this.imageOk = imageDcr.createImage();
-	}
+    URL url = FileLocator.find(bundle, new Path("icons/error.png"), null);
+    ImageDescriptor imageDcr = ImageDescriptor.createFromURL(url);
+    this.imageError = imageDcr.createImage();
 
-	@Override
-	public Image getColumnImage(Object element, int columnIndex) {
-		if (scenario.isPISDFScenario()) return getPISDFColumnImage(element, columnIndex);
-		else return null;
-	}
+    url = FileLocator.find(bundle, new Path("icons/ok.png"), null);
+    imageDcr = ImageDescriptor.createFromURL(url);
+    this.imageOk = imageDcr.createImage();
+  }
 
-	private Image getPISDFColumnImage(Object element, int columnIndex) {
-		if (element instanceof AbstractActor && currentOpDefId != null) {
-			AbstractActor vertex = (AbstractActor) element;
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
+   */
+  @Override
+  public Image getColumnImage(final Object element, final int columnIndex) {
+    if (this.scenario.isPISDFScenario()) {
+      return getPISDFColumnImage(element, columnIndex);
+    } else {
+      return null;
+    }
+  }
 
-			Timing timing = scenario.getTimingManager().getTimingOrDefault(
-					vertex.getName(), currentOpDefId);
-			switch (columnIndex) {
-			case 1:// Parsing column
-				if (timing.canParse())
-					return imageOk;
-				else
-					return imageError;
-			case 2:// Evaluation column
-				if (timing.canEvaluate())
-					return imageOk;
-				else
-					return imageError;
-			default:// Others
-				break;
-			}
-		}
-		return null;
-	}
+  /**
+   * Gets the PISDF column image.
+   *
+   * @param element
+   *          the element
+   * @param columnIndex
+   *          the column index
+   * @return the PISDF column image
+   */
+  private Image getPISDFColumnImage(final Object element, final int columnIndex) {
+    if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
+      final AbstractActor vertex = (AbstractActor) element;
 
-	@Override
-	public String getColumnText(Object element, int columnIndex) {
-		if (scenario.isPISDFScenario()) return getPISDFColumnText(element, columnIndex);
-		else if (scenario.isIBSDFScenario()) return getIBSDFColumnText(element, columnIndex);
-		else return null;
-	}
+      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex.getName(), this.currentOpDefId);
+      switch (columnIndex) {
+        case 1:// Parsing column
+          if (timing.canParse()) {
+            return this.imageOk;
+          } else {
+            return this.imageError;
+          }
+        case 2:// Evaluation column
+          if (timing.canEvaluate()) {
+            return this.imageOk;
+          } else {
+            return this.imageError;
+          }
+        default:// Others
+          break;
+      }
+    }
+    return null;
+  }
 
-	private String getIBSDFColumnText(Object element, int columnIndex) {
-		String text = "";
-		if (element instanceof SDFAbstractVertex && currentOpDefId != null) {			
-			SDFAbstractVertex vertex = (SDFAbstractVertex) element;
-			
-			Timing timing = scenario.getTimingManager().getTimingOrDefault(
-					vertex.getName(), currentOpDefId);
-			switch (columnIndex) {
-			case 0:
-				return vertex.getName();	
-			case 1: // Expression Column
-				if (timing != null)
-					text = timing.getStringValue();
-				break;
-			default:// Others
-				break;
-			}
-		}
-		return text;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
+   */
+  @Override
+  public String getColumnText(final Object element, final int columnIndex) {
+    if (this.scenario.isPISDFScenario()) {
+      return getPISDFColumnText(element, columnIndex);
+    } else if (this.scenario.isIBSDFScenario()) {
+      return getIBSDFColumnText(element, columnIndex);
+    } else {
+      return null;
+    }
+  }
 
-	private String getPISDFColumnText(Object element, int columnIndex) {
-		String text = "";
-		if (element instanceof AbstractActor && currentOpDefId != null) {
-			AbstractActor vertex = (AbstractActor) element;
+  /**
+   * Gets the IBSDF column text.
+   *
+   * @param element
+   *          the element
+   * @param columnIndex
+   *          the column index
+   * @return the IBSDF column text
+   */
+  private String getIBSDFColumnText(final Object element, final int columnIndex) {
+    String text = "";
+    if ((element instanceof SDFAbstractVertex) && (this.currentOpDefId != null)) {
+      final SDFAbstractVertex vertex = (SDFAbstractVertex) element;
 
-			Timing timing = scenario.getTimingManager().getTimingOrDefault(
-					vertex.getName(), currentOpDefId);
+      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex.getName(), this.currentOpDefId);
+      switch (columnIndex) {
+        case 0:
+          return vertex.getName();
+        case 1: // Expression Column
+          if (timing != null) {
+            text = timing.getStringValue();
+          }
+          break;
+        default:// Others
+          break;
+      }
+    }
+    return text;
+  }
 
-			switch (columnIndex) {
-			case 0:
-				return vertex.getName();
-			case 1: // Parsing Column
-			case 2: // Evaluation Column
-				return null;
-			case 3: // Variables Column
-				if (timing != null) {
-					if (timing.getInputParameters().isEmpty())
-						text = "-";
-					else
-						text = timing.getInputParameters().toString();
-				}
-				break;
-			case 4: // Expression Column
-				if (timing != null)
-					text = timing.getStringValue();
-				break;
-			default:// Others
-				break;
-			}
-		}
-		return text;
-	}
+  /**
+   * Gets the PISDF column text.
+   *
+   * @param element
+   *          the element
+   * @param columnIndex
+   *          the column index
+   * @return the PISDF column text
+   */
+  private String getPISDFColumnText(final Object element, final int columnIndex) {
+    String text = "";
+    if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
+      final AbstractActor vertex = (AbstractActor) element;
 
-	@Override
-	public void addListener(ILabelProviderListener listener) {
-		// TODO Auto-generated method stub
+      final Timing timing = this.scenario.getTimingManager().getTimingOrDefault(vertex.getName(), this.currentOpDefId);
 
-	}
+      switch (columnIndex) {
+        case 0:
+          return vertex.getName();
+        case 1: // Parsing Column
+        case 2: // Evaluation Column
+          return null;
+        case 3: // Variables Column
+          if (timing != null) {
+            if (timing.getInputParameters().isEmpty()) {
+              text = "-";
+            } else {
+              text = timing.getInputParameters().toString();
+            }
+          }
+          break;
+        case 4: // Expression Column
+          if (timing != null) {
+            text = timing.getStringValue();
+          }
+          break;
+        default:// Others
+          break;
+      }
+    }
+    return text;
+  }
 
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
+   */
+  @Override
+  public void addListener(final ILabelProviderListener listener) {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public boolean isLabelProperty(Object element, String property) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
+   */
+  @Override
+  public void dispose() {
+    // TODO Auto-generated method stub
 
-	@Override
-	public void removeListener(ILabelProviderListener listener) {
-		// TODO Auto-generated method stub
+  }
 
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
+   */
+  @Override
+  public boolean isLabelProperty(final Object element, final String property) {
+    // TODO Auto-generated method stub
+    return false;
+  }
 
-	@Override
-	public void widgetDefaultSelected(SelectionEvent e) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
+   */
+  @Override
+  public void removeListener(final ILabelProviderListener listener) {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	/**
-	 * Core combo box listener that selects the current core
-	 */
-	@Override
-	public void widgetSelected(SelectionEvent e) {
-		if (e.getSource() instanceof Combo) {
-			Combo combo = ((Combo) e.getSource());
-			String item = combo.getItem(combo.getSelectionIndex());
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
+   */
+  @Override
+  public void widgetDefaultSelected(final SelectionEvent e) {
 
-			currentOpDefId = item;
-			tableViewer.refresh();
-		}
+  }
 
-	}
+  /**
+   * Core combo box listener that selects the current core.
+   *
+   * @param e
+   *          the e
+   */
+  @Override
+  public void widgetSelected(final SelectionEvent e) {
+    if (e.getSource() instanceof Combo) {
+      final Combo combo = ((Combo) e.getSource());
+      final String item = combo.getItem(combo.getSelectionIndex());
 
-	public void handleDoubleClick(IStructuredSelection selection) {
-		IInputValidator validator = new IInputValidator() {
-			@Override
-			public String isValid(String newText) {
-				String message = null;
-				// int time = 0;
-				//
-				// try {
-				// time = Integer.valueOf(newText);
-				// } catch (NumberFormatException e) {
-				// time = 0;
-				// }
-				//
-				// if (time == 0)
-				// message = Messages.getString("Timings.invalid");
+      this.currentOpDefId = item;
+      this.tableViewer.refresh();
+    }
 
-				return message;
-			}
-		};
+  }
 
-		String vertexName = null;
-		if (selection.getFirstElement() instanceof SDFVertex) {
-			vertexName = ((SDFVertex) selection.getFirstElement()).getName();
-		} else if (selection.getFirstElement() instanceof AbstractActor) {
-			vertexName = ((AbstractActor) selection.getFirstElement()).getName();
-		}
-		
-		if (vertexName != null && currentOpDefId != null) {
-			String title = Messages.getString("Timings.dialog.title");
-			String message = Messages.getString("Timings.dialog.message")
-					+ vertexName;
-			String init = scenario.getTimingManager()
-					.getTimingOrDefault(vertexName, currentOpDefId)
-					.getStringValue();
+  /**
+   * Handle double click.
+   *
+   * @param selection
+   *          the selection
+   */
+  public void handleDoubleClick(final IStructuredSelection selection) {
+    final IInputValidator validator = newText -> {
+      final String message = null;
+      // int time = 0;
+      //
+      // try {
+      // time = Integer.valueOf(newText);
+      // } catch (NumberFormatException e) {
+      // time = 0;
+      // }
+      //
+      // if (time == 0)
+      // message = Messages.getString("Timings.invalid");
 
-			InputDialog dialog = new InputDialog(PlatformUI.getWorkbench()
-					.getActiveWorkbenchWindow().getShell(), title, message,
-					init, validator);
-			if (dialog.open() == Window.OK) {
-				String value = dialog.getValue();
+      return message;
+    };
 
-				scenario.getTimingManager().setTiming(vertexName,
-						currentOpDefId, value);
+    String vertexName = null;
+    if (selection.getFirstElement() instanceof SDFVertex) {
+      vertexName = ((SDFVertex) selection.getFirstElement()).getName();
+    } else if (selection.getFirstElement() instanceof AbstractActor) {
+      vertexName = ((AbstractActor) selection.getFirstElement()).getName();
+    }
 
-				tableViewer.refresh();
-				propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
-			}
-		}
-	}
+    if ((vertexName != null) && (this.currentOpDefId != null)) {
+      final String title = Messages.getString("Timings.dialog.title");
+      final String message = Messages.getString("Timings.dialog.message") + vertexName;
+      final String init = this.scenario.getTimingManager().getTimingOrDefault(vertexName, this.currentOpDefId).getStringValue();
+
+      final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message, init, validator);
+      if (dialog.open() == Window.OK) {
+        final String value = dialog.getValue();
+
+        this.scenario.getTimingManager().setTiming(vertexName, this.currentOpDefId, value);
+
+        this.tableViewer.refresh();
+        this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
+      }
+    }
+  }
 
 }

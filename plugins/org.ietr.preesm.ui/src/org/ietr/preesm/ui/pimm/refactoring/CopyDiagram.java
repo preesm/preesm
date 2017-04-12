@@ -48,92 +48,109 @@ import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.CopyArguments;
 import org.eclipse.ltk.core.refactoring.participants.CopyParticipant;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class CopyDiagram.
+ */
 public class CopyDiagram extends CopyParticipant {
 
-	IFile refactored;
+  /** The refactored. */
+  IFile refactored;
 
-	@Override
-	protected boolean initialize(Object element) {
-		// Get the destination folder.
-		IFolder destinationFolder = (IFolder) getArguments().getDestination();
-		IFolder sourceFolder = (IFolder) ((IFile) element).getParent();
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant#initialize(java.lang.Object)
+   */
+  @Override
+  protected boolean initialize(final Object element) {
+    // Get the destination folder.
+    final IFolder destinationFolder = (IFolder) getArguments().getDestination();
+    final IFolder sourceFolder = (IFolder) ((IFile) element).getParent();
 
-		// Will participate if the destination folder and the source are
-		// identical
-		if (destinationFolder.equals(sourceFolder)) {
-			refactored = (IFile) element;
-			return true;
-		} else {
-			return false;
-		}
-	}
+    // Will participate if the destination folder and the source are
+    // identical
+    if (destinationFolder.equals(sourceFolder)) {
+      this.refactored = (IFile) element;
+      return true;
+    } else {
+      return false;
+    }
+  }
 
-	@Override
-	public String getName() {
-		return "Copy and Rename a .diagram File";
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant#getName()
+   */
+  @Override
+  public String getName() {
+    return "Copy and Rename a .diagram File";
+  }
 
-	@Override
-	public RefactoringStatus checkConditions(IProgressMonitor pm,
-			CheckConditionsContext context) throws OperationCanceledException {
-		// Nothing to do here
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant#checkConditions(org.eclipse.core.runtime.IProgressMonitor,
+   * org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext)
+   */
+  @Override
+  public RefactoringStatus checkConditions(final IProgressMonitor pm, final CheckConditionsContext context) throws OperationCanceledException {
+    // Nothing to do here
+    return null;
+  }
 
-	@Override
-	public Change createChange(IProgressMonitor pm) throws CoreException,
-			OperationCanceledException {
-		// Make arguments accessible to CompositeChange method.
-		final CopyArguments currentArgs = this.getArguments();
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant#createChange(org.eclipse.core.runtime.IProgressMonitor)
+   */
+  @Override
+  public Change createChange(final IProgressMonitor pm) throws CoreException, OperationCanceledException {
+    // Make arguments accessible to CompositeChange method.
+    final CopyArguments currentArgs = getArguments();
 
-		// Create a composite change that will automatically adapt itself
-		// to the new name of the copied file.
-		CompositeChange comp = new CompositeChange(getName()) {
+    // Create a composite change that will automatically adapt itself
+    // to the new name of the copied file.
+    final CompositeChange comp = new CompositeChange(getName()) {
 
-			final CopyArguments copyArgs = currentArgs;
+      final CopyArguments copyArgs = currentArgs;
 
-			@Override
-			public Change perform(IProgressMonitor pm) throws CoreException {
-				// Get the new name of the copied file.
-				String oldFileName = refactored.getName();
-				String newFileName = copyArgs.getExecutionLog().getNewName(
-						refactored);
+      @Override
+      public Change perform(final IProgressMonitor pm) throws CoreException {
+        // Get the new name of the copied file.
+        final String oldFileName = CopyDiagram.this.refactored.getName();
+        final String newFileName = this.copyArgs.getExecutionLog().getNewName(CopyDiagram.this.refactored);
 
-				// Check that both names end with extension ".diagram"
-				// and remove both extensions
-				final String extension = ".diagram";
-				String newName;
-				String oldName;
-				if (oldFileName.endsWith(extension) && newFileName != null
-						&& newFileName.endsWith(extension)) {
-					oldName = oldFileName.substring(0, oldFileName.length()
-							- extension.length());
-					newName = newFileName.substring(0, newFileName.length()
-							- extension.length());
-				} else {
-					return null;
-				}
+        // Check that both names end with extension ".diagram"
+        // and remove both extensions
+        final String extension = ".diagram";
+        String newName;
+        String oldName;
+        if (oldFileName.endsWith(extension) && (newFileName != null) && newFileName.endsWith(extension)) {
+          oldName = oldFileName.substring(0, oldFileName.length() - extension.length());
+          newName = newFileName.substring(0, newFileName.length() - extension.length());
+        } else {
+          return null;
+        }
 
-				// Get the new file
-				IFile newFile = ((IFolder) copyArgs.getDestination())
-						.getFile(newFileName);
-				if (newFile == null) {
-					return null;
-				}
+        // Get the new file
+        final IFile newFile = ((IFolder) this.copyArgs.getDestination()).getFile(newFileName);
+        if (newFile == null) {
+          return null;
+        }
 
-				TextFileChange change = RefactoringHelper.createChange(
-						"(<pi:Diagram.*?name=\"|<businessObjects href=\")(" + oldName
-						+ ")(\".*?>|.pi#.*?\"/>)", 2,
-						newName, newFile);
+        final TextFileChange change = RefactoringHelper.createChange("(<pi:Diagram.*?name=\"|<businessObjects href=\")(" + oldName + ")(\".*?>|.pi#.*?\"/>)", 2,
+            newName, newFile);
 
-				if (change != null) {
-					this.add(change);
-				}
-				return super.perform(pm);
-			}
-		};
+        if (change != null) {
+          add(change);
+        }
+        return super.perform(pm);
+      }
+    };
 
-		return comp;
-	}
+    return comp;
+  }
 
 }

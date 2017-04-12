@@ -48,97 +48,123 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.PortNameValidator;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 
+// TODO: Auto-generated Javadoc
 /**
  * Custom feature to rename a port.
- * 
+ *
  * @author kdesnos
- * 
+ *
  */
 public class RenameActorPortFeature extends AbstractCustomFeature {
-	
-	public static final String HINT = "rename";
 
-	protected boolean hasDoneChanges = false;
+  /** The Constant HINT. */
+  public static final String HINT = "rename";
 
-	/**
-	 * Default Constructor
-	 * 
-	 * @param fp
-	 *            the feature provider
-	 */
-	public RenameActorPortFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /** The has done changes. */
+  protected boolean hasDoneChanges = false;
 
-	@Override
-	public String getName() {
-		return "Rename Port\tF2";
-	}
+  /**
+   * Default Constructor.
+   *
+   * @param fp
+   *          the feature provider
+   */
+  public RenameActorPortFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	@Override
-	public String getDescription() {
-		return "Change the name of the Port";
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#getName()
+   */
+  @Override
+  public String getName() {
+    return "Rename Port\tF2";
+  }
 
-	@Override
-	public boolean canExecute(ICustomContext context) {
-		// allow rename if exactly one pictogram element
-		// representing a Port is selected
-		boolean ret = false;
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes != null && pes.length == 1) {
-			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof Port) {
-				if (((Port) bo).eContainer() instanceof ExecutableActor) {
-					ret = true;
-				}
-			}
-		}
-		return ret;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#getDescription()
+   */
+  @Override
+  public String getDescription() {
+    return "Change the name of the Port";
+  }
 
-	@Override
-	public void execute(ICustomContext context) {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public boolean canExecute(final ICustomContext context) {
+    // allow rename if exactly one pictogram element
+    // representing a Port is selected
+    boolean ret = false;
+    final PictogramElement[] pes = context.getPictogramElements();
+    if ((pes != null) && (pes.length == 1)) {
+      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+      if (bo instanceof Port) {
+        if (((Port) bo).eContainer() instanceof ExecutableActor) {
+          ret = true;
+        }
+      }
+    }
+    return ret;
+  }
 
-		// Re-check if only one element is selected
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes != null && pes.length == 1) {
-			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof Port) {
-				Port port = (Port) bo;
-				AbstractActor vertex = (AbstractActor) port.eContainer();
-				String currentName = port.getName();
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public void execute(final ICustomContext context) {
 
-				// Ask user for Port name until a valid name is entered.
-				String question = "Enter new port name";
-				String newPortName = port.getName();
+    // Re-check if only one element is selected
+    final PictogramElement[] pes = context.getPictogramElements();
+    if ((pes != null) && (pes.length == 1)) {
+      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+      if (bo instanceof Port) {
+        final Port port = (Port) bo;
+        final AbstractActor vertex = (AbstractActor) port.eContainer();
+        final String currentName = port.getName();
 
-				newPortName = PiMMUtil.askString(this.getName(), question,
-						newPortName, new PortNameValidator(vertex, port));
+        // Ask user for Port name until a valid name is entered.
+        final String question = "Enter new port name";
+        String newPortName = port.getName();
 
-				if (newPortName != null && !newPortName.equals(currentName)) {
-					this.hasDoneChanges = true;
-					port.setName(newPortName);
+        newPortName = PiMMUtil.askString(getName(), question, newPortName, new PortNameValidator(vertex, port));
 
-					// Layout the Port
-					layoutPictogramElement(pes[0]);
-					updatePictogramElement(pes[0]);
+        if ((newPortName != null) && !newPortName.equals(currentName)) {
+          this.hasDoneChanges = true;
+          port.setName(newPortName);
 
-					// Layout the actor
-					GraphicsAlgorithm bra = ((BoxRelativeAnchor) pes[0])
-							.getReferencedGraphicsAlgorithm();
-					layoutPictogramElement(bra.getPictogramElement());
-					updatePictogramElement(bra.getPictogramElement());
-					
-					getFeatureProvider().getDiagramTypeProvider().getDiagramBehavior().refresh();
-				}
-			}
-		}
-	}
+          // Layout the Port
+          layoutPictogramElement(pes[0]);
+          updatePictogramElement(pes[0]);
 
-	@Override
-	public boolean hasDoneChanges() {
-		return this.hasDoneChanges;
-	}
+          // Layout the actor
+          final GraphicsAlgorithm bra = ((BoxRelativeAnchor) pes[0]).getReferencedGraphicsAlgorithm();
+          layoutPictogramElement(bra.getPictogramElement());
+          updatePictogramElement(bra.getPictogramElement());
+
+          getFeatureProvider().getDiagramTypeProvider().getDiagramBehavior().refresh();
+        }
+      }
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
+   */
+  @Override
+  public boolean hasDoneChanges() {
+    return this.hasDoneChanges;
+  }
 
 }

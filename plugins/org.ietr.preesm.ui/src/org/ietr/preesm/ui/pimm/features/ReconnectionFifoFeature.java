@@ -51,159 +51,170 @@ import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
+// TODO: Auto-generated Javadoc
 /**
  * Reconnection feature for the {@link Fifo}.
- * 
+ *
  * @author kdesnos
- * 
+ *
  */
 public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
 
-	protected boolean hasDoneChanges = false;
+  /** The has done changes. */
+  protected boolean hasDoneChanges = false;
 
-	/**
-	 * Default constructor for the {@link ReconnectionFifoFeature}
-	 * 
-	 * @param fp
-	 *            the feature provider
-	 */
-	public ReconnectionFifoFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /**
+   * Default constructor for the {@link ReconnectionFifoFeature}.
+   *
+   * @param fp
+   *          the feature provider
+   */
+  public ReconnectionFifoFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#canReconnect(org.eclipse.graphiti.features.context.IReconnectionContext)
+   */
+  @Override
+  public boolean canReconnect(final IReconnectionContext context) {
 
-	@Override
-	public boolean canReconnect(IReconnectionContext context) {
+    if (context.getOldAnchor().equals(context.getNewAnchor())) {
+      return true;
+    }
 
-		if (context.getOldAnchor().equals(context.getNewAnchor())) {
-			return true;
-		}
+    final Port newPort = getPort(context.getNewAnchor());
+    final Port oldPort = getPort(context.getOldAnchor());
+    if ((newPort != null) && newPort.getClass().equals(oldPort.getClass())) {
+      // Check that no Fifo is connected to the ports
+      if (newPort instanceof DataOutputPort) {
+        if (((DataOutputPort) newPort).getOutgoingFifo() == null) {
+          return true;
+        } else {
+          return false;
+        }
+      }
 
-		Port newPort = getPort(context.getNewAnchor());
-		Port oldPort = getPort(context.getOldAnchor());
-		if (newPort != null && newPort.getClass().equals(oldPort.getClass())) {
-			// Check that no Fifo is connected to the ports
-			if (newPort instanceof DataOutputPort) {
-				if (((DataOutputPort) newPort).getOutgoingFifo() == null) {
-					return true;
-				} else {
-					return false;
-				}
-			}
+      if (newPort instanceof DataInputPort) {
+        if (((DataInputPort) newPort).getIncomingFifo() == null) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
 
-			if (newPort instanceof DataInputPort) {
-				if (((DataInputPort) newPort).getIncomingFifo() == null) {
-					return true;
-				} else {
-					return false;
-				}
-			}
-		}
+    // Also true if the TargetPictogramElement is a vertex that can create
+    // ports
+    if (CreateFifoFeature.canCreatePort(context.getTargetPictogramElement(), getFeatureProvider(), oldPort.getKind()) != null) {
+      return true;
+    }
+    return false;
+  }
 
-		// Also true if the TargetPictogramElement is a vertex that can create
-		// ports
-		if (CreateFifoFeature.canCreatePort(context.getTargetPictogramElement(), getFeatureProvider(), 
-				oldPort.getKind()) != null) {
-			return true;
-		}
-		return false;
-	}
+  /**
+   * Method to retrieve the {@link Port} corresponding to an {@link Anchor}.
+   *
+   * @param anchor
+   *          the anchor to treat
+   * @return the found {@link Port}, or <code>null</code> if no port corresponds to this {@link Anchor}
+   */
+  protected Port getPort(final Anchor anchor) {
+    if (anchor != null) {
+      final Object obj = getBusinessObjectForPictogramElement(anchor);
+      if (obj instanceof Port) {
+        return (Port) obj;
+      }
+    }
+    return null;
+  }
 
-	/**
-	 * Method to retrieve the {@link Port} corresponding to an {@link Anchor}
-	 * 
-	 * @param anchor
-	 *            the anchor to treat
-	 * @return the found {@link Port}, or <code>null</code> if no port
-	 *         corresponds to this {@link Anchor}
-	 */
-	protected Port getPort(Anchor anchor) {
-		if (anchor != null) {
-			Object obj = getBusinessObjectForPictogramElement(anchor);
-			if (obj instanceof Port) {
-				return (Port) obj;
-			}
-		}
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
+   */
+  @Override
+  public boolean hasDoneChanges() {
+    return this.hasDoneChanges;
+  }
 
-	@Override
-	public boolean hasDoneChanges() {
-		return this.hasDoneChanges;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#postReconnect(org.eclipse.graphiti.features.context.IReconnectionContext)
+   */
+  @Override
+  public void postReconnect(final IReconnectionContext context) {
+    // Apply changes to the BusinessModel
+    // If we reconnect to the same anchor: nothing to do
+    if (context.getOldAnchor().equals(context.getNewAnchor())) {
+      return;
+    }
 
-	@Override
-	public void postReconnect(IReconnectionContext context) {
-		// Apply changes to the BusinessModel
-		// If we reconnect to the same anchor: nothing to do
-		if (context.getOldAnchor().equals(context.getNewAnchor())) {
-			return;
-		}
+    // Get the Ports
+    final Port newPort = getPort(context.getNewAnchor());
+    final Port oldPort = getPort(context.getOldAnchor());
 
-		// Get the Ports
-		Port newPort = getPort(context.getNewAnchor());
-		Port oldPort = getPort(context.getOldAnchor());
+    if (oldPort instanceof DataOutputPort) {
+      final Fifo fifo = ((DataOutputPort) oldPort).getOutgoingFifo();
+      fifo.setSourcePort((DataOutputPort) newPort);
+    }
+    if (oldPort instanceof DataInputPort) {
+      final Fifo fifo = ((DataInputPort) oldPort).getIncomingFifo();
+      fifo.setTargetPort((DataInputPort) newPort);
+    }
 
-		if (oldPort instanceof DataOutputPort) {
-			Fifo fifo = ((DataOutputPort) oldPort).getOutgoingFifo();
-			fifo.setSourcePort((DataOutputPort) newPort);
-		}
-		if (oldPort instanceof DataInputPort) {
-			Fifo fifo = ((DataInputPort) oldPort).getIncomingFifo();
-			fifo.setTargetPort((DataInputPort) newPort);
-		}
+    // Call the move feature of the anchor owner to layout the connection
+    final MoveAbstractActorFeature moveFeature = new MoveAbstractActorFeature(getFeatureProvider());
+    final ContainerShape cs = (ContainerShape) context.getNewAnchor().getReferencedGraphicsAlgorithm().getPictogramElement();
+    final MoveShapeContext moveCtxt = new MoveShapeContext(cs);
+    moveCtxt.setDeltaX(0);
+    moveCtxt.setDeltaY(0);
+    final ILocation csLoc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(cs);
+    moveCtxt.setLocation(csLoc.getX(), csLoc.getY());
+    moveFeature.moveShape(moveCtxt);
 
-		// Call the move feature of the anchor owner to layout the connection
-		MoveAbstractActorFeature moveFeature = new MoveAbstractActorFeature(
-				getFeatureProvider());
-		ContainerShape cs = (ContainerShape) context.getNewAnchor()
-				.getReferencedGraphicsAlgorithm().getPictogramElement();
-		MoveShapeContext moveCtxt = new MoveShapeContext(cs);
-		moveCtxt.setDeltaX(0);
-		moveCtxt.setDeltaY(0);
-		ILocation csLoc = Graphiti.getPeLayoutService()
-				.getLocationRelativeToDiagram(cs);
-		moveCtxt.setLocation(csLoc.getX(), csLoc.getY());
-		moveFeature.moveShape(moveCtxt);
+    this.hasDoneChanges = true;
+  }
 
-		hasDoneChanges = true;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#preReconnect(org.eclipse.graphiti.features.context.IReconnectionContext)
+   */
+  @Override
+  public void preReconnect(final IReconnectionContext context) {
+    // If we reconnect to the same anchor: nothing to do
+    if (context.getOldAnchor().equals(context.getNewAnchor())) {
+      return;
+    }
 
-	@Override
-	public void preReconnect(IReconnectionContext context) {
-		// If we reconnect to the same anchor: nothing to do
-		if (context.getOldAnchor().equals(context.getNewAnchor())) {
-			return;
-		}
+    // Get the Ports
+    Port newPort = getPort(context.getNewAnchor());
+    final Port oldPort = getPort(context.getOldAnchor());
 
-		// Get the Ports
-		Port newPort = getPort(context.getNewAnchor());
-		Port oldPort = getPort(context.getOldAnchor());
+    // If the reconnection involve the creation of a new port
+    // Create it
+    if (newPort == null) {
+      final PictogramElement pe = context.getTargetPictogramElement();
+      final AbstractAddActorPortFeature addPortFeature = CreateFifoFeature.canCreatePort(pe, getFeatureProvider(), oldPort.getKind());
+      if (addPortFeature != null) {
+        final CustomContext sourceContext = new CustomContext(new PictogramElement[] { pe });
+        addPortFeature.execute(sourceContext);
+        ((ReconnectionContext) context).setNewAnchor(addPortFeature.getCreatedAnchor());
+        newPort = addPortFeature.getCreatedPort();
+      }
+    }
 
-		// If the reconnection involve the creation of a new port
-		// Create it
-		if (newPort == null) {
-			PictogramElement pe = context.getTargetPictogramElement();
-			AbstractAddActorPortFeature addPortFeature = CreateFifoFeature.canCreatePort(pe, getFeatureProvider(), 
-					oldPort.getKind());
-			if (addPortFeature != null) {
-				CustomContext sourceContext = new CustomContext(
-						new PictogramElement[] { pe });
-				addPortFeature.execute(sourceContext);
-				((ReconnectionContext) context).setNewAnchor(addPortFeature
-						.getCreatedAnchor());
-				newPort = addPortFeature.getCreatedPort();
-			}
-		}
-
-		// If the user canceled the creation of the new port, cancel the
-		// reconnection
-		if (newPort == null) {
-			((ReconnectionContext) context)
-					.setNewAnchor(context.getOldAnchor());
-		}
-		return;
-	}
+    // If the user canceled the creation of the new port, cancel the
+    // reconnection
+    if (newPort == null) {
+      ((ReconnectionContext) context).setNewAnchor(context.getOldAnchor());
+    }
+    return;
+  }
 
 }

@@ -38,6 +38,7 @@ package org.ietr.preesm.ui.pimm.features;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
+import org.eclipse.graphiti.func.ICreate;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
@@ -46,78 +47,87 @@ import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.util.VertexNameValidator;
 import org.ietr.preesm.ui.pimm.util.PiMMUtil;
 
+// TODO: Auto-generated Javadoc
 /**
- * Create Feature for {@link Parameter}s
- * 
+ * Create Feature for {@link Parameter}s.
+ *
  * @author kdesnos
  * @author jheulot
- * 
  */
 public class CreateParameterFeature extends AbstractCreateFeature {
 
-	private static final String FEATURE_NAME = "Parameter";
+  /** The Constant FEATURE_NAME. */
+  private static final String FEATURE_NAME = "Parameter";
 
-	private static final String FEATURE_DESCRIPTION = "Create Parameter";
+  /** The Constant FEATURE_DESCRIPTION. */
+  private static final String FEATURE_DESCRIPTION = "Create Parameter";
 
-	protected Boolean hasDoneChanges;
+  /** The has done changes. */
+  protected Boolean hasDoneChanges;
 
-	/**
-	 * Default constructor for the {@link CreateParameterFeature}.
-	 * 
-	 * @param fp
-	 *            the feature provider
-	 * @param name
-	 *            the name of
-	 * @param description
-	 */
-	public CreateParameterFeature(IFeatureProvider fp) {
-		super(fp, FEATURE_NAME, FEATURE_DESCRIPTION);
-		hasDoneChanges = false;
-	}
+  /**
+   * Default constructor for the {@link CreateParameterFeature}.
+   *
+   * @param fp
+   *          the feature provider
+   */
+  public CreateParameterFeature(final IFeatureProvider fp) {
+    super(fp, CreateParameterFeature.FEATURE_NAME, CreateParameterFeature.FEATURE_DESCRIPTION);
+    this.hasDoneChanges = false;
+  }
 
-	@Override
-	public boolean canCreate(ICreateContext context) {
-		return context.getTargetContainer() instanceof Diagram;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.func.ICreate#canCreate(org.eclipse.graphiti.features.context.ICreateContext)
+   */
+  @Override
+  public boolean canCreate(final ICreateContext context) {
+    return context.getTargetContainer() instanceof Diagram;
+  }
 
-	@Override
-	public Object[] create(ICreateContext context) {
-		// Retrieve the graph
-		PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.func.ICreate#create(org.eclipse.graphiti.features.context.ICreateContext)
+   */
+  @Override
+  public Object[] create(final ICreateContext context) {
+    // Retrieve the graph
+    final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
 
-		// Ask user for Parameter name until a valid name is entered.
-		String question = "Enter new parameter name";
-		String newParameterName = "ParameterName";
+    // Ask user for Parameter name until a valid name is entered.
+    final String question = "Enter new parameter name";
+    String newParameterName = "ParameterName";
 
-		// TODO create a parameter name validator
-		newParameterName = PiMMUtil.askString("Create Parameter", question,
-				newParameterName, new VertexNameValidator(graph, null));
-		if (newParameterName == null || newParameterName.trim().length() == 0) {
-			this.hasDoneChanges = false; // If this is not done, the graph is
-											// considered modified.
-			return EMPTY;
-		}
+    // TODO create a parameter name validator
+    newParameterName = PiMMUtil.askString("Create Parameter", question, newParameterName, new VertexNameValidator(graph, null));
+    if ((newParameterName == null) || (newParameterName.trim().length() == 0)) {
+      this.hasDoneChanges = false; // If this is not done, the graph is
+      // considered modified.
+      return ICreate.EMPTY;
+    }
 
-		// create Parameter
-		Parameter newParameter = PiMMFactory.eINSTANCE.createParameter();
-		Expression expr = PiMMFactory.eINSTANCE.createExpression();
-		newParameter.setExpression(expr);
-		newParameter.setName(newParameterName);
-		newParameter.setConfigurationInterface(false);
-		// newParameter.setLocallyStatic(true);
-		newParameter.setGraphPort(null); // No port of the graph corresponds to
-											// this parameter
+    // create Parameter
+    final Parameter newParameter = PiMMFactory.eINSTANCE.createParameter();
+    final Expression expr = PiMMFactory.eINSTANCE.createExpression();
+    newParameter.setExpression(expr);
+    newParameter.setName(newParameterName);
+    newParameter.setConfigurationInterface(false);
+    // newParameter.setLocallyStatic(true);
+    newParameter.setGraphPort(null); // No port of the graph corresponds to
+    // this parameter
 
-		// Add new parameter to the graph.
-		if (graph.getParameters().add(newParameter)) {
-			this.hasDoneChanges = true;
-		}
+    // Add new parameter to the graph.
+    if (graph.getParameters().add(newParameter)) {
+      this.hasDoneChanges = true;
+    }
 
-		// do the add to the Diagram
-		addGraphicalRepresentation(context, newParameter);
+    // do the add to the Diagram
+    addGraphicalRepresentation(context, newParameter);
 
-		// return newly created business object(s)
-		return new Object[] { newParameter };
-	}
+    // return newly created business object(s)
+    return new Object[] { newParameter };
+  }
 
 }

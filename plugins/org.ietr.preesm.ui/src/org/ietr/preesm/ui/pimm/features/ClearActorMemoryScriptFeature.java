@@ -41,71 +41,97 @@ import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 
+// TODO: Auto-generated Javadoc
 /**
- * Custom Feature to clear the MemoryScript of an {@link Actor}
- * 
+ * Custom Feature to clear the MemoryScript of an {@link Actor}.
+ *
  * @author jheulot
- * 
  */
 public class ClearActorMemoryScriptFeature extends AbstractCustomFeature {
 
-	protected boolean hasDoneChanges = false;
+  /** The has done changes. */
+  protected boolean hasDoneChanges = false;
 
-	/**
-	 * Default Constructor of {@link ClearActorMemoryScriptFeature}
-	 * 
-	 * @param fp
-	 *            the feature provider
-	 */
-	public ClearActorMemoryScriptFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /**
+   * Default Constructor of {@link ClearActorMemoryScriptFeature}.
+   *
+   * @param fp
+   *          the feature provider
+   */
+  public ClearActorMemoryScriptFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	@Override
-	public String getName() {
-		return "Clear memory script path";
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#getName()
+   */
+  @Override
+  public String getName() {
+    return "Clear memory script path";
+  }
 
-	@Override
-	public String getDescription() {
-		return "Clear the path of the memory script of an Actor";
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#getDescription()
+   */
+  @Override
+  public String getDescription() {
+    return "Clear the path of the memory script of an Actor";
+  }
 
-	@Override
-	public boolean canExecute(ICustomContext context) {
-		// Allow setting if exactly one pictogram element
-		// representing an Actor is selected
-		boolean ret = false;
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes != null && pes.length == 1) {
-			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof Actor && ((Actor) bo).getMemoryScriptPath() != null) {
-				ret = true;
-			}
-		}
-		return ret;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public boolean canExecute(final ICustomContext context) {
+    // Allow setting if exactly one pictogram element
+    // representing an Actor is selected
+    boolean ret = false;
+    final PictogramElement[] pes = context.getPictogramElements();
+    if ((pes != null) && (pes.length == 1)) {
+      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+      if ((bo instanceof Actor) && (((Actor) bo).getMemoryScriptPath() != null)) {
+        ret = true;
+      }
+    }
+    return ret;
+  }
 
-	@Override
-	public void execute(ICustomContext context) {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public void execute(final ICustomContext context) {
 
-		// Re-check if only one element is selected
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes != null && pes.length == 1) {
-			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof Actor) {
-				Actor actor = (Actor) bo;
-				actor.setMemoryScriptPath(null);
+    // Re-check if only one element is selected
+    final PictogramElement[] pes = context.getPictogramElements();
+    if ((pes != null) && (pes.length == 1)) {
+      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+      if (bo instanceof Actor) {
+        final Actor actor = (Actor) bo;
+        actor.setMemoryScriptPath(null);
 
-				// Call the layout feature
-				layoutPictogramElement(pes[0]);
-			}
-		}
-	}
+        // Call the layout feature
+        layoutPictogramElement(pes[0]);
+      }
+    }
+  }
 
-	@Override
-	public boolean hasDoneChanges() {
-		return this.hasDoneChanges;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
+   */
+  @Override
+  public boolean hasDoneChanges() {
+    return this.hasDoneChanges;
+  }
 
 }

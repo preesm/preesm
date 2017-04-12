@@ -38,7 +38,6 @@ package org.ietr.preesm.ui.pimm.features;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
@@ -59,199 +58,213 @@ import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 
+// TODO: Auto-generated Javadoc
 /**
  * Add feature responsible for creating and adding a delay to a {@link Fifo}.
- * 
+ *
  * @author kdesnos
  * @author jheulot
- * 
+ *
  */
 public class AddDelayFeature extends AbstractCustomFeature {
 
-	public static final int DELAY_SIZE = 16;
+  /** The Constant DELAY_SIZE. */
+  public static final int DELAY_SIZE = 16;
 
-	/**
-	 * The default constructor for {@link AddDelayFeature}
-	 * 
-	 * @param fp
-	 *            the feature provider
-	 */
-	public AddDelayFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /**
+   * The default constructor for {@link AddDelayFeature}.
+   *
+   * @param fp
+   *          the feature provider
+   */
+  public AddDelayFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	@Override
-	public String getName() {
-		return "Add Delay";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#getName()
+   */
+  @Override
+  public String getName() {
+    return "Add Delay";
+  }
 
-	@Override
-	public String getDescription() {
-		return "Add a Delay to the Fifo";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#getDescription()
+   */
+  @Override
+  public String getDescription() {
+    return "Add a Delay to the Fifo";
+  }
 
-	@Override
-	public boolean canExecute(ICustomContext context) {
-		// allow if exactly one pictogram element
-		// representing an Fifo is selected
-		boolean ret = false;
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes != null && pes.length == 1) {
-			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (bo instanceof Fifo) {
-				// Check that the Fifo has no existing delay
-				if (((Fifo) bo).getDelay() == null) {
-					ret = true;
-				}
-			}
-		}
-		return ret;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public boolean canExecute(final ICustomContext context) {
+    // allow if exactly one pictogram element
+    // representing an Fifo is selected
+    boolean ret = false;
+    final PictogramElement[] pes = context.getPictogramElements();
+    if ((pes != null) && (pes.length == 1)) {
+      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+      if (bo instanceof Fifo) {
+        // Check that the Fifo has no existing delay
+        if (((Fifo) bo).getDelay() == null) {
+          ret = true;
+        }
+      }
+    }
+    return ret;
+  }
 
-	@Override
-	public void execute(ICustomContext context) {
-		// Recheck if the execution is possible (probably useless)
-		if (!canExecute(context)) {
-			return;
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   */
+  @Override
+  public void execute(final ICustomContext context) {
+    // Recheck if the execution is possible (probably useless)
+    if (!canExecute(context)) {
+      return;
+    }
 
-		// Get the Fifo
-		PictogramElement[] pes = context.getPictogramElements();
-		FreeFormConnection connection = (FreeFormConnection) pes[0];
-		Fifo fifo = (Fifo) getBusinessObjectForPictogramElement(connection);
+    // Get the Fifo
+    final PictogramElement[] pes = context.getPictogramElements();
+    final FreeFormConnection connection = (FreeFormConnection) pes[0];
+    final Fifo fifo = (Fifo) getBusinessObjectForPictogramElement(connection);
 
-		// Create the Delay and add it to the Fifo
-		Delay delay = PiMMFactory.eINSTANCE.createDelay();
-		fifo.setDelay(delay);
+    // Create the Delay and add it to the Fifo
+    final Delay delay = PiMMFactory.eINSTANCE.createDelay();
+    fifo.setDelay(delay);
 
-		// Get the GaService
-		IGaService gaService = Graphiti.getGaService();
-		// Get the PeCreateService
-		IPeCreateService peCreateService = Graphiti.getPeCreateService();
+    // Get the GaService
+    final IGaService gaService = Graphiti.getGaService();
+    // Get the PeCreateService
+    final IPeCreateService peCreateService = Graphiti.getPeCreateService();
 
-		// Get the target Diagram
-		Diagram targetDiagram = getDiagram();
-		ContainerShape containerShape = peCreateService.createContainerShape(
-				targetDiagram, true);
+    // Get the target Diagram
+    final Diagram targetDiagram = getDiagram();
+    final ContainerShape containerShape = peCreateService.createContainerShape(targetDiagram, true);
 
-		// Create a graphical representation for the Delay
-		Ellipse ellipse;
-		{
-			ellipse = gaService.createEllipse(containerShape);
-			ellipse.setBackground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
-			ellipse.setForeground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
-			ellipse.setLineWidth(1);
-			ellipse.setLineVisible(false);
-			gaService.setLocationAndSize(ellipse, context.getX() - DELAY_SIZE
-					/ 2, context.getY() - DELAY_SIZE / 2, DELAY_SIZE,
-					DELAY_SIZE);
-		}
-		link(containerShape, delay);
+    // Create a graphical representation for the Delay
+    Ellipse ellipse;
+    {
+      ellipse = gaService.createEllipse(containerShape);
+      ellipse.setBackground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
+      ellipse.setForeground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
+      ellipse.setLineWidth(1);
+      ellipse.setLineVisible(false);
+      gaService.setLocationAndSize(ellipse, context.getX() - (AddDelayFeature.DELAY_SIZE / 2), context.getY() - (AddDelayFeature.DELAY_SIZE / 2),
+          AddDelayFeature.DELAY_SIZE, AddDelayFeature.DELAY_SIZE);
+    }
+    link(containerShape, delay);
 
-		// Add a ChopBoxAnchor for the Delay
-		ChopboxAnchor cba = peCreateService.createChopboxAnchor(containerShape);
-		link(cba, delay);
+    // Add a ChopBoxAnchor for the Delay
+    final ChopboxAnchor cba = peCreateService.createChopboxAnchor(containerShape);
+    link(cba, delay);
 
-		int posX = context.getX();
-		int posY = context.getY();
+    final int posX = context.getX();
+    final int posY = context.getY();
 
-		// Connect the polyline to the delay appropriately
-		connectDelayToFifo(connection, fifo, containerShape, cba, posX, posY);
+    // Connect the polyline to the delay appropriately
+    connectDelayToFifo(connection, fifo, containerShape, cba, posX, posY);
 
-		// Select the whole fifo
-		getDiagramBehavior().getDiagramContainer()
-				.setPictogramElementForSelection(containerShape);
+    // Select the whole fifo
+    getDiagramBehavior().getDiagramContainer().setPictogramElementForSelection(containerShape);
 
-	}
+  }
 
-	/**
-	 * @param connection
-	 * @param fifo
-	 * @param gaService
-	 * @param peCreateService
-	 * @param peLayoutService
-	 * @param containerShape
-	 * @param cba
-	 * @param posX
-	 * @param posY
-	 */
-	public void connectDelayToFifo(FreeFormConnection connection, Fifo fifo,
-			ContainerShape containerShape, ChopboxAnchor cba, int posX, int posY) {
+  /**
+   * Connect delay to fifo.
+   *
+   * @param connection
+   *          the connection
+   * @param fifo
+   *          the fifo
+   * @param containerShape
+   *          the container shape
+   * @param cba
+   *          the cba
+   * @param posX
+   *          the pos X
+   * @param posY
+   *          the pos Y
+   */
+  public void connectDelayToFifo(final FreeFormConnection connection, final Fifo fifo, final ContainerShape containerShape, final ChopboxAnchor cba,
+      final int posX, final int posY) {
 
-		IGaService gaService = Graphiti.getGaService();
+    final IGaService gaService = Graphiti.getGaService();
 
-		// Create a list of all points of the connection (including source
-		// and target anchor)
-		List<Point> points;
-		{
-			IPeLayoutService peLayoutService = Graphiti.getPeLayoutService();
+    // Create a list of all points of the connection (including source
+    // and target anchor)
+    List<Point> points;
+    {
+      final IPeLayoutService peLayoutService = Graphiti.getPeLayoutService();
 
-			ILocation srcLoc = peLayoutService
-					.getLocationRelativeToDiagram(connection.getStart());
-			Point pSrc = gaService.createPoint(srcLoc.getX(), srcLoc.getY());
-			ILocation tgtLoc = peLayoutService
-					.getLocationRelativeToDiagram(connection.getEnd());
-			Point pTgt = gaService.createPoint(tgtLoc.getX(), tgtLoc.getY());
-			points = new ArrayList<>(connection.getBendpoints());
-			points.add(0, pSrc);
-			points.add(pTgt);
-		}
+      final ILocation srcLoc = peLayoutService.getLocationRelativeToDiagram(connection.getStart());
+      final Point pSrc = gaService.createPoint(srcLoc.getX(), srcLoc.getY());
+      final ILocation tgtLoc = peLayoutService.getLocationRelativeToDiagram(connection.getEnd());
+      final Point pTgt = gaService.createPoint(tgtLoc.getX(), tgtLoc.getY());
+      points = new ArrayList<>(connection.getBendpoints());
+      points.add(0, pSrc);
+      points.add(pTgt);
+    }
 
-		// Identify between which pair of points the delay was created
-		double smallestDist = Double.MAX_VALUE;
-		// Point pBefore = points.get(0);
-		Point pAfter = points.get(points.size() - 1);
-		for (int i = 0; i < points.size() - 1; i++) {
-			Point p1 = points.get(i);
-			Point p2 = points.get(i + 1);
+    // Identify between which pair of points the delay was created
+    double smallestDist = Double.MAX_VALUE;
+    // Point pBefore = points.get(0);
+    Point pAfter = points.get(points.size() - 1);
+    for (int i = 0; i < (points.size() - 1); i++) {
+      final Point p1 = points.get(i);
+      final Point p2 = points.get(i + 1);
 
-			// Distance of the point to the line
-			double distP1 = Math.sqrt(Math.pow(posX - p1.getX(), 2)
-					+ Math.pow(posY - p1.getY(), 2));
-			double distP2 = Math.sqrt(Math.pow(posX - p2.getX(), 2)
-					+ Math.pow(posY - p2.getY(), 2));
-			double distP1P2 = Math.sqrt(Math.pow(p2.getX() - p1.getX(), 2)
-					+ Math.pow(p2.getY() - p1.getY(), 2));
+      // Distance of the point to the line
+      final double distP1 = Math.sqrt(Math.pow(posX - p1.getX(), 2) + Math.pow(posY - p1.getY(), 2));
+      final double distP2 = Math.sqrt(Math.pow(posX - p2.getX(), 2) + Math.pow(posY - p2.getY(), 2));
+      final double distP1P2 = Math.sqrt(Math.pow(p2.getX() - p1.getX(), 2) + Math.pow(p2.getY() - p1.getY(), 2));
 
-			if (distP1 <= distP1P2 && distP2 <= distP1P2) {
-				// line equation ax+by+c=0
-				int a, b, c;
-				a = p2.getY() - p1.getY();
-				b = p1.getX() - p2.getX();
-				c = -(b * p1.getY() + a * p1.getX());
+      if ((distP1 <= distP1P2) && (distP2 <= distP1P2)) {
+        // line equation ax+by+c=0
+        int a = p2.getY() - p1.getY();
+        int b = p1.getX() - p2.getX();
+        int c = -((b * p1.getY()) + (a * p1.getX()));
 
-				// Distance of the point to the line
-				double dist = Math.abs(a * posX + b * posY
-						+ c)
-						/ Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+        // Distance of the point to the line
+        final double dist = Math.abs((a * posX) + (b * posY) + c) / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
 
-				if (dist < smallestDist) {
-					smallestDist = dist;
-					// pBefore = p1;
-					pAfter = p2;
-				}
-			}
-		}
+        if (dist < smallestDist) {
+          smallestDist = dist;
+          // pBefore = p1;
+          pAfter = p2;
+        }
+      }
+    }
 
-		// Create a list of preceding and succeeding points.
-		List<Point> precedingPoints = new ArrayList<Point>(points.subList(0,
-				points.indexOf(pAfter)));
-		precedingPoints.remove(0); // remove the anchor point from the list
-		connection.getBendpoints().removeAll(precedingPoints);
+    // Create a list of preceding and succeeding points.
+    final List<Point> precedingPoints = new ArrayList<>(points.subList(0, points.indexOf(pAfter)));
+    precedingPoints.remove(0); // remove the anchor point from the list
+    connection.getBendpoints().removeAll(precedingPoints);
 
-		// Create the new connection and its polyline
-		FreeFormConnection preConnection = Graphiti.getPeCreateService()
-				.createFreeFormConnection(getDiagram());
-		preConnection.setStart(connection.getStart());
-		preConnection.setEnd(cba);
-		preConnection.getBendpoints().addAll(precedingPoints);
-		// Create the associated Polyline
-		Polyline polyline = gaService.createPolyline(preConnection);
-		polyline.setLineWidth(2);
-		polyline.setForeground(manageColor(AddFifoFeature.FIFO_FOREGROUND));
-		link(preConnection, fifo);
+    // Create the new connection and its polyline
+    final FreeFormConnection preConnection = Graphiti.getPeCreateService().createFreeFormConnection(getDiagram());
+    preConnection.setStart(connection.getStart());
+    preConnection.setEnd(cba);
+    preConnection.getBendpoints().addAll(precedingPoints);
+    // Create the associated Polyline
+    final Polyline polyline = gaService.createPolyline(preConnection);
+    polyline.setLineWidth(2);
+    polyline.setForeground(manageColor(AddFifoFeature.FIFO_FOREGROUND));
+    link(preConnection, fifo);
 
-		// Reconnect the original connection
-		connection.setStart(cba);
-	}
+    // Reconnect the original connection
+    connection.setStart(cba);
+  }
 }

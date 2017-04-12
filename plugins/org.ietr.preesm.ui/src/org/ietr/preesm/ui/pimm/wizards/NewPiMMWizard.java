@@ -47,63 +47,87 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class NewPiMMWizard.
+ */
 public class NewPiMMWizard extends Wizard implements INewWizard {
-	
-	private IStructuredSelection selection;
-	private IWorkbench workbench;
 
-	public NewPiMMWizard() {
-		super();
-		setNeedsProgressMonitor(true);
-		setWindowTitle("New Algorithm (PiMM)");
-	}
-	
-	@Override
-	public void addPages() {
-		NewPiMMPage page = new NewPiMMPage("saveGraph",selection);
-		page.setFileName("NewGraph.diagram");
-		page.setDescription("Creates a new network design.");
-		page.setFileExtension("diagram");
-		addPage(page);
-		
-		//Configuration configuration = GraphitiModelPlugin.getDefault()
-		//		.getConfiguration("IP-XACT design");
-		//ObjectType type = configuration.getGraphType("IP-XACT design");
+  /** The selection. */
+  private IStructuredSelection selection;
 
-		//page.setGraph(new Graph(configuration, type, true));
-		//page.setDescription("Create a new architecture.");
-	}
+  /** The workbench. */
+  private IWorkbench workbench;
 
-	@Override
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		this.selection = selection;
-		this.workbench = workbench;
-	}
+  /**
+   * Instantiates a new new pi MM wizard.
+   */
+  public NewPiMMWizard() {
+    super();
+    setNeedsProgressMonitor(true);
+    setWindowTitle("New Algorithm (PiMM)");
+  }
 
-	@Override
-	public boolean performFinish() {
-		final NewPiMMPage page = (NewPiMMPage) getPage("saveGraph");
-		IFile file = page.createNewFile();
-		if (file == null) {
-			return false;
-		}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.wizard.Wizard#addPages()
+   */
+  @Override
+  public void addPages() {
+    final NewPiMMPage page = new NewPiMMPage("saveGraph", this.selection);
+    page.setFileName("NewGraph.diagram");
+    page.setDescription("Creates a new network design.");
+    page.setFileExtension("diagram");
+    addPage(page);
 
-		// Open editor on new file.
-		IWorkbenchWindow dw = workbench.getActiveWorkbenchWindow();
-		try {
-			if (dw != null) {
-				BasicNewResourceWizard.selectAndReveal(file, dw);
-				IWorkbenchPage activePage = dw.getActivePage();
-				if (activePage != null) {
-					IDE.openEditor(activePage, file, true);
-				}
-			}
-		} catch (PartInitException e) {
-			MessageDialog.openError(dw.getShell(), "Problem opening editor",
-					e.getMessage());
-		}
+    // Configuration configuration = GraphitiModelPlugin.getDefault()
+    // .getConfiguration("IP-XACT design");
+    // ObjectType type = configuration.getGraphType("IP-XACT design");
 
-		return true;
-	}
+    // page.setGraph(new Graph(configuration, type, true));
+    // page.setDescription("Create a new architecture.");
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
+   */
+  @Override
+  public void init(final IWorkbench workbench, final IStructuredSelection selection) {
+    this.selection = selection;
+    this.workbench = workbench;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.wizard.Wizard#performFinish()
+   */
+  @Override
+  public boolean performFinish() {
+    final NewPiMMPage page = (NewPiMMPage) getPage("saveGraph");
+    final IFile file = page.createNewFile();
+    if (file == null) {
+      return false;
+    }
+
+    // Open editor on new file.
+    final IWorkbenchWindow dw = this.workbench.getActiveWorkbenchWindow();
+    try {
+      if (dw != null) {
+        BasicNewResourceWizard.selectAndReveal(file, dw);
+        final IWorkbenchPage activePage = dw.getActivePage();
+        if (activePage != null) {
+          IDE.openEditor(activePage, file, true);
+        }
+      }
+    } catch (final PartInitException e) {
+      MessageDialog.openError(dw.getShell(), "Problem opening editor", e.getMessage());
+    }
+
+    return true;
+  }
 
 }

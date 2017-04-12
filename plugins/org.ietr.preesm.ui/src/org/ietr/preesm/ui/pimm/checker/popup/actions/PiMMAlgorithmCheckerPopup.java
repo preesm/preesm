@@ -49,53 +49,59 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.pimm.algorithm.checker.PiMMAlgorithmChecker;
 import org.ietr.preesm.ui.Activator;
 
+// TODO: Auto-generated Javadoc
 /**
- * Class to launch a PiGraph check through pop-up menu
- * 
+ * Class to launch a PiGraph check through pop-up menu.
+ *
  * @author cguy
- * 
  */
 public class PiMMAlgorithmCheckerPopup extends AbstractHandler {
 
-	private Shell shell;
+  /** The shell. */
+  private Shell shell;
 
-	/**
-	 * Constructor.
-	 */
-	public PiMMAlgorithmCheckerPopup() {
-		super();
-	}
+  /**
+   * Constructor.
+   */
+  public PiMMAlgorithmCheckerPopup() {
+    super();
+  }
 
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		PiMMAlgorithmChecker checker = new PiMMAlgorithmChecker();
-		try {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.core.commands.IHandler#execute(org.eclipse.core.commands.ExecutionEvent)
+   */
+  @Override
+  public Object execute(final ExecutionEvent event) throws ExecutionException {
+    final PiMMAlgorithmChecker checker = new PiMMAlgorithmChecker();
+    try {
 
-			IWorkbenchPage page = Activator.getDefault().getWorkbench()
-					.getActiveWorkbenchWindow().getActivePage();
-			TreeSelection selection = (TreeSelection) page.getSelection();
-			IFile file = (IFile) selection.getFirstElement();
-			PiGraph graph = ScenarioParser.getPiGraph(file.getFullPath()
-					.toString());
+      final IWorkbenchPage page = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+      final TreeSelection selection = (TreeSelection) page.getSelection();
+      final IFile file = (IFile) selection.getFirstElement();
+      final PiGraph graph = ScenarioParser.getPiGraph(file.getFullPath().toString());
 
-			StringBuffer message = new StringBuffer();
-			if (checker.checkGraph(graph))
-				message.append(checker.getOkMsg());
-			else {
-				if (checker.isErrors()) {
-					message.append(checker.getErrorMsg());
-					if (checker.isWarnings())
-						message.append("\n");
-				}
-				if (checker.isWarnings())
-					message.append(checker.getWarningMsg());
-			}
+      final StringBuffer message = new StringBuffer();
+      if (checker.checkGraph(graph)) {
+        message.append(checker.getOkMsg());
+      } else {
+        if (checker.isErrors()) {
+          message.append(checker.getErrorMsg());
+          if (checker.isWarnings()) {
+            message.append("\n");
+          }
+        }
+        if (checker.isWarnings()) {
+          message.append(checker.getWarningMsg());
+        }
+      }
 
-			MessageDialog.openInformation(shell, "Checker", message.toString());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+      MessageDialog.openInformation(this.shell, "Checker", message.toString());
+    } catch (final Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
 
 }

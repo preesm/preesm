@@ -39,17 +39,23 @@ package org.ietr.preesm.ui.scenario.editor.timings;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 
+// TODO: Auto-generated Javadoc
 /**
- * Listener of core definition change and of table selection
- * 
+ * Listener of core definition change and of table selection.
+ *
  * @author mpelcat
  */
 public class TimingSelectionListener implements ISelectionChangedListener {
 
-	@Override
-	public void selectionChanged(SelectionChangedEvent event) {
-		// TODO Auto-generated method stub
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.viewers.ISelectionChangedListener#selectionChanged(org.eclipse.jface.viewers.SelectionChangedEvent)
+   */
+  @Override
+  public void selectionChanged(final SelectionChangedEvent event) {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
 }

@@ -43,37 +43,70 @@ import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.ISetter;
 import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 
-abstract public class AbstractSetVisibleDependencyFeature extends AbstractCustomFeature {
+// TODO: Auto-generated Javadoc
+/**
+ * The Class AbstractSetVisibleDependencyFeature.
+ */
+public abstract class AbstractSetVisibleDependencyFeature extends AbstractCustomFeature {
 
-	protected IFeatureProvider fp;
-	protected boolean visible;
-	
-	public AbstractSetVisibleDependencyFeature(IFeatureProvider fp, boolean visible) {
-		super(fp);
-		this.fp = fp;
-		this.visible = visible;
-	}
-	
-	protected void setVisible(Dependency d) {
-		PictogramElement[] depPes = fp
-				.getAllPictogramElementsForBusinessObject(d);
-		if (depPes != null) {
-			for (PictogramElement pe : depPes) {
-				if (pe.isVisible() != visible)
-					pe.setVisible(visible);
-			}
-		}
-	}
-	
-	protected void setVisibleOutgoingDependencies(ISetter setter) {
-		for (Dependency d : setter.getOutgoingDependencies()) {
-			this.setVisible(d);
-		}
-	}
-	
-	protected void setVisibleIngoingDependencies(Parameterizable param) {
-		for (ConfigInputPort p : param.getConfigInputPorts()) {
-			this.setVisible(p.getIncomingDependency());
-		}
-	}
+  /** The fp. */
+  protected IFeatureProvider fp;
+
+  /** The visible. */
+  protected boolean visible;
+
+  /**
+   * Instantiates a new abstract set visible dependency feature.
+   *
+   * @param fp
+   *          the fp
+   * @param visible
+   *          the visible
+   */
+  public AbstractSetVisibleDependencyFeature(final IFeatureProvider fp, final boolean visible) {
+    super(fp);
+    this.fp = fp;
+    this.visible = visible;
+  }
+
+  /**
+   * Sets the visible.
+   *
+   * @param d
+   *          the new visible
+   */
+  protected void setVisible(final Dependency d) {
+    final PictogramElement[] depPes = this.fp.getAllPictogramElementsForBusinessObject(d);
+    if (depPes != null) {
+      for (final PictogramElement pe : depPes) {
+        if (pe.isVisible() != this.visible) {
+          pe.setVisible(this.visible);
+        }
+      }
+    }
+  }
+
+  /**
+   * Sets the visible outgoing dependencies.
+   *
+   * @param setter
+   *          the new visible outgoing dependencies
+   */
+  protected void setVisibleOutgoingDependencies(final ISetter setter) {
+    for (final Dependency d : setter.getOutgoingDependencies()) {
+      setVisible(d);
+    }
+  }
+
+  /**
+   * Sets the visible ingoing dependencies.
+   *
+   * @param param
+   *          the new visible ingoing dependencies
+   */
+  protected void setVisibleIngoingDependencies(final Parameterizable param) {
+    for (final ConfigInputPort p : param.getConfigInputPorts()) {
+      setVisible(p.getIncomingDependency());
+    }
+  }
 }

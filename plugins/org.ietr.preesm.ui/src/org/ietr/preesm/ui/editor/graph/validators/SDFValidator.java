@@ -40,18 +40,24 @@ import org.eclipse.core.resources.IFile;
 import org.ietr.dftools.graphiti.model.Graph;
 import org.ietr.dftools.graphiti.validators.DataflowValidator;
 
+// TODO: Auto-generated Javadoc
 /**
  * This class implements a model validator.
- * 
+ *
  * @author Matthieu Wipliez
- * 
+ *
  */
 public class SDFValidator extends DataflowValidator {
 
-	@Override
-	public boolean validate(Graph graph, IFile file) {
-		// first checks dataflow rules.
-		return super.validate(graph, file);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.graphiti.validators.DataflowValidator#validate(org.ietr.dftools.graphiti.model.Graph, org.eclipse.core.resources.IFile)
+   */
+  @Override
+  public boolean validate(final Graph graph, final IFile file) {
+    // first checks dataflow rules.
+    return super.validate(graph, file);
+  }
 
 }

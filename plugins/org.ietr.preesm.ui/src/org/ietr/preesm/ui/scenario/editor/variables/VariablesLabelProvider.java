@@ -52,124 +52,162 @@ import org.ietr.dftools.algorithm.model.parameters.Variable;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 
+// TODO: Auto-generated Javadoc
 /**
- * Displays the labels for variables names and values
- * 
+ * Displays the labels for variables names and values.
+ *
  * @author mpelcat
  */
 public class VariablesLabelProvider implements ITableLabelProvider {
 
-	private PreesmScenario scenario = null;
+  /** The scenario. */
+  private PreesmScenario scenario = null;
 
-	private TableViewer tableViewer = null;
+  /** The table viewer. */
+  private TableViewer tableViewer = null;
 
-	/**
-	 * Constraints page used as a property listener to change the dirty state
-	 */
-	private IPropertyListener propertyListener = null;
+  /** Constraints page used as a property listener to change the dirty state. */
+  private IPropertyListener propertyListener = null;
 
-	public VariablesLabelProvider(PreesmScenario scenario,
-			TableViewer tableViewer, IPropertyListener propertyListener) {
-		super();
-		this.scenario = scenario;
-		this.tableViewer = tableViewer;
-		this.propertyListener = propertyListener;
-	}
+  /**
+   * Instantiates a new variables label provider.
+   *
+   * @param scenario
+   *          the scenario
+   * @param tableViewer
+   *          the table viewer
+   * @param propertyListener
+   *          the property listener
+   */
+  public VariablesLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer, final IPropertyListener propertyListener) {
+    super();
+    this.scenario = scenario;
+    this.tableViewer = tableViewer;
+    this.propertyListener = propertyListener;
+  }
 
-	@Override
-	public Image getColumnImage(Object element, int columnIndex) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
+   */
+  @Override
+  public Image getColumnImage(final Object element, final int columnIndex) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-	@Override
-	public String getColumnText(Object element, int columnIndex) {
-		String text = "";
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
+   */
+  @Override
+  public String getColumnText(final Object element, final int columnIndex) {
+    String text = "";
 
-		if (element instanceof Variable) {
-			Variable var = (Variable) element;
+    if (element instanceof Variable) {
+      final Variable var = (Variable) element;
 
-			if (columnIndex == 0)
-				text = var.getName();
-			else if (columnIndex == 1) {
-				text = var.getValue();
-			}
-		}
+      if (columnIndex == 0) {
+        text = var.getName();
+      } else if (columnIndex == 1) {
+        text = var.getValue();
+      }
+    }
 
-		return text;
-	}
+    return text;
+  }
 
-	@Override
-	public void addListener(ILabelProviderListener listener) {
-		// TODO Auto-generated method stub
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
+   */
+  @Override
+  public void addListener(final ILabelProviderListener listener) {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
+   */
+  @Override
+  public void dispose() {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public boolean isLabelProperty(Object element, String property) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
+   */
+  @Override
+  public boolean isLabelProperty(final Object element, final String property) {
+    // TODO Auto-generated method stub
+    return false;
+  }
 
-	@Override
-	public void removeListener(ILabelProviderListener listener) {
-		// TODO Auto-generated method stub
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
+   */
+  @Override
+  public void removeListener(final ILabelProviderListener listener) {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	public void handleDoubleClick(IStructuredSelection selection) {
+  /**
+   * Handle double click.
+   *
+   * @param selection
+   *          the selection
+   */
+  public void handleDoubleClick(final IStructuredSelection selection) {
 
-		IInputValidator validator = new IInputValidator() {
+    final IInputValidator validator = newText -> {
+      String message = null;
+      int size = 0;
 
-			@Override
-			public String isValid(String newText) {
-				String message = null;
-				int size = 0;
+      try {
+        size = Integer.valueOf(newText);
+      } catch (final NumberFormatException e) {
+        size = 0;
+      }
 
-				try {
-					size = Integer.valueOf(newText);
-				} catch (NumberFormatException e) {
-					size = 0;
-				}
+      if (size == 0) {
+        message = "invalid integer";
+      }
 
-				if (size == 0)
-					message = "invalid integer";
+      return message;
+    };
 
-				return message;
-			}
+    if (selection.getFirstElement() instanceof Variable) {
+      final Variable var = (Variable) selection.getFirstElement();
 
-		};
+      final String title = Messages.getString("Variables.dialog.title");
+      final String message = Messages.getString("Variables.dialog.message") + var.getName();
 
-		if (selection.getFirstElement() instanceof Variable) {
-			Variable var = (Variable) selection.getFirstElement();
+      final String init = var.getValue();
 
-			String title = Messages.getString("Variables.dialog.title");
-			String message = Messages.getString("Variables.dialog.message")
-					+ var.getName();
+      final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message, init, validator);
+      if (dialog.open() == Window.OK) {
+        final String value = dialog.getValue();
 
-			String init = var.getValue();
+        var.setValue(value);
+        this.scenario.getVariablesManager().setVariable(var.getName(), value);
 
-			InputDialog dialog = new InputDialog(PlatformUI.getWorkbench()
-					.getActiveWorkbenchWindow().getShell(), title, message,
-					init, validator);
-			if (dialog.open() == Window.OK) {
-				String value = dialog.getValue();
+        this.tableViewer.refresh();
+        this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
+      }
+    }
 
-				var.setValue(value);
-				scenario.getVariablesManager()
-						.setVariable(var.getName(), value);
-
-				tableViewer.refresh();
-				propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
-			}
-		}
-
-	}
+  }
 
 }

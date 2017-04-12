@@ -38,8 +38,6 @@
 
 package org.ietr.preesm.ui.scenario.editor.relativeconstraints;
 
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -47,8 +45,6 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -63,6 +59,7 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
@@ -78,278 +75,303 @@ import org.ietr.preesm.core.scenario.serialize.PreesmAlgorithmListContentProvide
 import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 
+// TODO: Auto-generated Javadoc
 /**
- * Relative constraints editor within the scenario editor
- * 
+ * Relative constraints editor within the scenario editor.
+ *
  * @author mpelcat
  * @author kdesnos
  */
 public class RelativeConstraintsPage extends FormPage implements IPropertyListener {
 
-	final PreesmScenario scenario;
-	TableViewer tableViewer = null;
+  /** The scenario. */
+  final PreesmScenario scenario;
 
-	public RelativeConstraintsPage(PreesmScenario scenario, FormEditor editor, String id,
-			String title) {
-		super(editor, id, title);
+  /** The table viewer. */
+  TableViewer tableViewer = null;
 
-		this.scenario = scenario;
-	}
+  /**
+   * Instantiates a new relative constraints page.
+   *
+   * @param scenario
+   *          the scenario
+   * @param editor
+   *          the editor
+   * @param id
+   *          the id
+   * @param title
+   *          the title
+   */
+  public RelativeConstraintsPage(final PreesmScenario scenario, final FormEditor editor, final String id, final String title) {
+    super(editor, id, title);
 
-	/**
-	 * Creates the elements to display
-	 */
-	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		// TODO Auto-generated method stub
-		super.createFormContent(managedForm);
+    this.scenario = scenario;
+  }
 
-		ScrolledForm form = managedForm.getForm();
-		// FormToolkit toolkit = managedForm.getToolkit();
-		form.setText(Messages.getString("RelativeConstraints.title"));
+  /**
+   * Creates the elements to display.
+   *
+   * @param managedForm
+   *          the managed form
+   */
+  @Override
+  protected void createFormContent(final IManagedForm managedForm) {
+    // TODO Auto-generated method stub
+    super.createFormContent(managedForm);
 
-		GridLayout layout = new GridLayout();
-		form.getBody().setLayout(layout);
+    final ScrolledForm form = managedForm.getForm();
+    // FormToolkit toolkit = managedForm.getToolkit();
+    form.setText(Messages.getString("RelativeConstraints.title"));
 
-		// Timing file chooser section
-		createFileSection(managedForm,
-				Messages.getString("RelativeConstraints.file"),
-				Messages.getString("RelativeConstraints.fileDescription"),
-				Messages.getString("RelativeConstraints.fileEdit"), scenario
-						.getTimingManager().getExcelFileURL(),
-				Messages.getString("RelativeConstraints.fileBrowseTitle"), "xls");
+    final GridLayout layout = new GridLayout();
+    form.getBody().setLayout(layout);
 
-		createRelativeConstraintsSection(managedForm, Messages.getString("RelativeConstraints.title"),
-				Messages.getString("RelativeConstraints.description"));
+    // Timing file chooser section
+    createFileSection(managedForm, Messages.getString("RelativeConstraints.file"), Messages.getString("RelativeConstraints.fileDescription"),
+        Messages.getString("RelativeConstraints.fileEdit"), this.scenario.getTimingManager().getExcelFileURL(),
+        Messages.getString("RelativeConstraints.fileBrowseTitle"), "xls");
 
-		managedForm.refresh();
-		managedForm.reflow(true);
+    createRelativeConstraintsSection(managedForm, Messages.getString("RelativeConstraints.title"), Messages.getString("RelativeConstraints.description"));
 
-	}
+    managedForm.refresh();
+    managedForm.reflow(true);
 
-	/**
-	 * Creates the section editing relarive constraints
-	 */
-	private void createRelativeConstraintsSection(IManagedForm managedForm, String title,
-			String desc) {
+  }
 
-		// Creates the section
-		managedForm.getForm().setLayout(new FillLayout());
-		Composite container = createSection(managedForm, title, desc, 1,
-				new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
-		FormToolkit toolkit = managedForm.getToolkit();
+  /**
+   * Creates the section editing relarive constraints.
+   *
+   * @param managedForm
+   *          the managed form
+   * @param title
+   *          the title
+   * @param desc
+   *          the desc
+   */
+  private void createRelativeConstraintsSection(final IManagedForm managedForm, final String title, final String desc) {
 
-		addTable(container, toolkit);
-	}
+    // Creates the section
+    managedForm.getForm().setLayout(new FillLayout());
+    final Composite container = createSection(managedForm, title, desc, 1, new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
+    final FormToolkit toolkit = managedForm.getToolkit();
 
-	/**
-	 * Creates a generic section
-	 */
-	public Composite createSection(IManagedForm mform, String title,
-			String desc, int numColumns, GridData gridData) {
+    addTable(container, toolkit);
+  }
 
-		final ScrolledForm form = mform.getForm();
-		FormToolkit toolkit = mform.getToolkit();
-		Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
-				| ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
-		section.setText(title);
-		section.setDescription(desc);
-		toolkit.createCompositeSeparator(section);
-		Composite client = toolkit.createComposite(section);
-		GridLayout layout = new GridLayout();
-		layout.marginWidth = layout.marginHeight = 0;
-		layout.numColumns = numColumns;
-		client.setLayout(layout);
-		section.setClient(client);
-		section.addExpansionListener(new ExpansionAdapter() {
-			@Override
-			public void expansionStateChanged(ExpansionEvent e) {
-				form.reflow(false);
-			}
-		});
-		section.setLayoutData(gridData);
-		return client;
-	}
+  /**
+   * Creates a generic section.
+   *
+   * @param mform
+   *          the mform
+   * @param title
+   *          the title
+   * @param desc
+   *          the desc
+   * @param numColumns
+   *          the num columns
+   * @param gridData
+   *          the grid data
+   * @return the composite
+   */
+  public Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns, final GridData gridData) {
 
-	/**
-	 * Adds a table to edit relative constraints
-	 */
-	protected void addTable(Composite parent, FormToolkit toolkit) {
+    final ScrolledForm form = mform.getForm();
+    final FormToolkit toolkit = mform.getToolkit();
+    final Section section = toolkit.createSection(form.getBody(),
+        ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    section.setText(title);
+    section.setDescription(desc);
+    toolkit.createCompositeSeparator(section);
+    final Composite client = toolkit.createComposite(section);
+    final GridLayout layout = new GridLayout();
+    layout.marginWidth = layout.marginHeight = 0;
+    layout.numColumns = numColumns;
+    client.setLayout(layout);
+    section.setClient(client);
+    section.addExpansionListener(new ExpansionAdapter() {
+      @Override
+      public void expansionStateChanged(final ExpansionEvent e) {
+        form.reflow(false);
+      }
+    });
+    section.setLayoutData(gridData);
+    return client;
+  }
 
-		Composite tablecps = toolkit.createComposite(parent);
-		tablecps.setVisible(true);
+  /**
+   * Adds a table to edit relative constraints.
+   *
+   * @param parent
+   *          the parent
+   * @param toolkit
+   *          the toolkit
+   */
+  protected void addTable(final Composite parent, final FormToolkit toolkit) {
 
-		tableViewer = new TableViewer(tablecps, SWT.BORDER | SWT.H_SCROLL
-				| SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
-		Table table = tableViewer.getTable();
-		table.setLayout(new GridLayout());
-		table.setLayoutData(new GridData(GridData.FILL_BOTH));
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
+    final Composite tablecps = toolkit.createComposite(parent);
+    tablecps.setVisible(true);
 
-		tableViewer.setContentProvider(new PreesmAlgorithmListContentProvider());
+    this.tableViewer = new TableViewer(tablecps, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION);
+    final Table table = this.tableViewer.getTable();
+    table.setLayout(new GridLayout());
+    table.setLayoutData(new GridData(GridData.FILL_BOTH));
+    table.setHeaderVisible(true);
+    table.setLinesVisible(true);
 
-		final SDFTableLabelProvider labelProvider = new SDFTableLabelProvider(
-				scenario, tableViewer, this);
-		tableViewer.setLabelProvider(labelProvider);
+    this.tableViewer.setContentProvider(new PreesmAlgorithmListContentProvider());
 
-		// Create columns
-		final TableColumn column1 = new TableColumn(table, SWT.NONE, 0);
-		column1.setText(Messages.getString("RelativeConstraints.taskColumn"));
+    final SDFTableLabelProvider labelProvider = new SDFTableLabelProvider(this.scenario, this.tableViewer, this);
+    this.tableViewer.setLabelProvider(labelProvider);
 
-		final TableColumn column2 = new TableColumn(table, SWT.NONE, 1);
-		column2.setText(Messages.getString("RelativeConstraints.constraintColumn"));
+    // Create columns
+    final TableColumn column1 = new TableColumn(table, SWT.NONE, 0);
+    column1.setText(Messages.getString("RelativeConstraints.taskColumn"));
 
-		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
-			@Override
-			public void doubleClick(DoubleClickEvent e) {
-				labelProvider.handleDoubleClick((IStructuredSelection) e
-						.getSelection());
-			}
-		});
+    final TableColumn column2 = new TableColumn(table, SWT.NONE, 1);
+    column2.setText(Messages.getString("RelativeConstraints.constraintColumn"));
 
-		final Table tref = table;
-		final Composite comp = tablecps;
+    this.tableViewer.addDoubleClickListener(e -> labelProvider.handleDoubleClick((IStructuredSelection) e.getSelection()));
 
-		// Setting the column width
-		tablecps.addControlListener(new ControlAdapter() {
-			@Override
-			public void controlResized(ControlEvent e) {
-				Rectangle area = comp.getClientArea();
-				Point size = tref.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-				ScrollBar vBar = tref.getVerticalBar();
-				int width = area.width - tref.computeTrim(0, 0, 0, 0).width - 2;
-				if (size.y > area.height + tref.getHeaderHeight()) {
-					Point vBarSize = vBar.getSize();
-					width -= vBarSize.x;
-				}
-				Point oldSize = tref.getSize();
-				if (oldSize.x > area.width) {
-					column1.setWidth(width / 4 - 1);
-					column2.setWidth(width - column1.getWidth());
-					tref.setSize(area.width, area.height);
-				} else {
-					tref.setSize(area.width, area.height);
-					column1.setWidth(width / 4 - 1);
-					column2.setWidth(width - column1.getWidth());
-				}
-			}
-		});
+    final Table tref = table;
+    final Composite comp = tablecps;
 
-		tableViewer.setInput(scenario);
-		tablecps.setLayoutData(new GridData(GridData.FILL_HORIZONTAL
-				| GridData.FILL_VERTICAL));
-	}
+    // Setting the column width
+    tablecps.addControlListener(new ControlAdapter() {
+      @Override
+      public void controlResized(final ControlEvent e) {
+        final Rectangle area = comp.getClientArea();
+        final Point size = tref.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+        final ScrollBar vBar = tref.getVerticalBar();
+        int width = area.width - tref.computeTrim(0, 0, 0, 0).width - 2;
+        if (size.y > (area.height + tref.getHeaderHeight())) {
+          final Point vBarSize = vBar.getSize();
+          width -= vBarSize.x;
+        }
+        final Point oldSize = tref.getSize();
+        if (oldSize.x > area.width) {
+          column1.setWidth((width / 4) - 1);
+          column2.setWidth(width - column1.getWidth());
+          tref.setSize(area.width, area.height);
+        } else {
+          tref.setSize(area.width, area.height);
+          column1.setWidth((width / 4) - 1);
+          column2.setWidth(width - column1.getWidth());
+        }
+      }
+    });
 
-	/**
-	 * Function of the property listener used to transmit the dirty property
-	 */
-	@Override
-	public void propertyChanged(Object source, int propId) {
-		if (source instanceof SDFTableLabelProvider && propId == PROP_DIRTY)
-			firePropertyChange(PROP_DIRTY);
+    this.tableViewer.setInput(this.scenario);
+    tablecps.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
+  }
 
-	}
+  /**
+   * Function of the property listener used to transmit the dirty property.
+   *
+   * @param source
+   *          the source
+   * @param propId
+   *          the prop id
+   */
+  @Override
+  public void propertyChanged(final Object source, final int propId) {
+    if ((source instanceof SDFTableLabelProvider) && (propId == IEditorPart.PROP_DIRTY)) {
+      firePropertyChange(IEditorPart.PROP_DIRTY);
+    }
 
-	/**
-	 * Creates a section to edit a file
-	 * 
-	 * @param mform
-	 *            form containing the section
-	 * @param title
-	 *            section title
-	 * @param desc
-	 *            description of the section
-	 * @param fileEdit
-	 *            text to display in text label
-	 * @param initValue
-	 *            initial value of Text
-	 * @param browseTitle
-	 *            title of file browser
-	 */
-	private void createFileSection(IManagedForm mform, String title,
-			String desc, String fileEdit, String initValue, String browseTitle,
-			String fileExtension) {
+  }
 
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.heightHint = 120;
-		Composite client = createSection(mform, title, desc, 3, gridData);
+  /**
+   * Creates a section to edit a file.
+   *
+   * @param mform
+   *          form containing the section
+   * @param title
+   *          section title
+   * @param desc
+   *          description of the section
+   * @param fileEdit
+   *          text to display in text label
+   * @param initValue
+   *          initial value of Text
+   * @param browseTitle
+   *          title of file browser
+   * @param fileExtension
+   *          the file extension
+   */
+  private void createFileSection(final IManagedForm mform, final String title, final String desc, final String fileEdit, final String initValue,
+      final String browseTitle, final String fileExtension) {
 
-		FormToolkit toolkit = mform.getToolkit();
+    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+    gridData.heightHint = 120;
+    final Composite client = createSection(mform, title, desc, 3, gridData);
 
-		GridData gd = new GridData();
-		toolkit.createLabel(client, fileEdit);
+    final FormToolkit toolkit = mform.getToolkit();
 
-		Text text = toolkit.createText(client, initValue, SWT.SINGLE);
-		text.setData(title);
+    final GridData gd = new GridData();
+    toolkit.createLabel(client, fileEdit);
 
-		// If the text is modified or Enter key pressed, relative constraints are imported
-		text.addModifyListener(new ModifyListener() {
+    final Text text = toolkit.createText(client, initValue, SWT.SINGLE);
+    text.setData(title);
 
-			@Override
-			public void modifyText(ModifyEvent e) {
-				Text text = (Text) e.getSource();
-				scenario.getTimingManager().setExcelFileURL(text.getText());
-				scenario.getTimingManager().importTimings(scenario);
-				tableViewer.refresh();
-				firePropertyChange(PROP_DIRTY);
+    // If the text is modified or Enter key pressed, relative constraints are imported
+    text.addModifyListener(e -> {
+      final Text text1 = (Text) e.getSource();
+      RelativeConstraintsPage.this.scenario.getTimingManager().setExcelFileURL(text1.getText());
+      RelativeConstraintsPage.this.scenario.getTimingManager().importTimings(RelativeConstraintsPage.this.scenario);
+      RelativeConstraintsPage.this.tableViewer.refresh();
+      firePropertyChange(IEditorPart.PROP_DIRTY);
 
-			}
-		});
-		text.addKeyListener(new KeyListener() {
+    });
+    text.addKeyListener(new KeyListener() {
 
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == SWT.CR) {
-					Text text = (Text) e.getSource();
-					scenario.getTimingManager().setExcelFileURL(text.getText());
-					scenario.getTimingManager().importTimings(scenario);
-					tableViewer.refresh();
-				}
+      @Override
+      public void keyPressed(final KeyEvent e) {
+        if (e.keyCode == SWT.CR) {
+          final Text text = (Text) e.getSource();
+          RelativeConstraintsPage.this.scenario.getTimingManager().setExcelFileURL(text.getText());
+          RelativeConstraintsPage.this.scenario.getTimingManager().importTimings(RelativeConstraintsPage.this.scenario);
+          RelativeConstraintsPage.this.tableViewer.refresh();
+        }
 
-			}
+      }
 
-			@Override
-			public void keyReleased(KeyEvent e) {
+      @Override
+      public void keyReleased(final KeyEvent e) {
 
-			}
-		});
+      }
+    });
 
-		gd.widthHint = 400;
-		text.setLayoutData(gd);
+    gd.widthHint = 400;
+    text.setLayoutData(gd);
 
-		// Add a "Refresh" button to the scenario editor
-		final Button refreshButton = toolkit.createButton(client,
-				Messages.getString("RelativeConstraints.fileRefresh"), SWT.PUSH);
-		refreshButton.addSelectionListener(new SelectionListener() {
+    // Add a "Refresh" button to the scenario editor
+    final Button refreshButton = toolkit.createButton(client, Messages.getString("RelativeConstraints.fileRefresh"), SWT.PUSH);
+    refreshButton.addSelectionListener(new SelectionListener() {
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// Cause scenario editor to import timings from excel sheet
-				scenario.getTimingManager().importTimings(scenario);
-				tableViewer.refresh();
-				// Force the "file has changed" property of scenario.
-				// Timing changes will have no effects if the scenario
-				// is not saved.
-				firePropertyChange(PROP_DIRTY);
-			}
+      @Override
+      public void widgetSelected(final SelectionEvent e) {
+        // Cause scenario editor to import timings from excel sheet
+        RelativeConstraintsPage.this.scenario.getTimingManager().importTimings(RelativeConstraintsPage.this.scenario);
+        RelativeConstraintsPage.this.tableViewer.refresh();
+        // Force the "file has changed" property of scenario.
+        // Timing changes will have no effects if the scenario
+        // is not saved.
+        firePropertyChange(IEditorPart.PROP_DIRTY);
+      }
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent arg0) {
-			}
-		});
+      @Override
+      public void widgetDefaultSelected(final SelectionEvent arg0) {
+      }
+    });
 
-		toolkit.paintBordersFor(client);
+    toolkit.paintBordersFor(client);
 
-		final Button browseButton = toolkit.createButton(client,
-				Messages.getString("Overview.browse"), SWT.PUSH);
-		SelectionAdapter browseAdapter = new FileSelectionAdapter(text,
-				client.getShell(), browseTitle, fileExtension);
-		browseButton.addSelectionListener(browseAdapter);
+    final Button browseButton = toolkit.createButton(client, Messages.getString("Overview.browse"), SWT.PUSH);
+    final SelectionAdapter browseAdapter = new FileSelectionAdapter(text, client.getShell(), browseTitle, fileExtension);
+    browseButton.addSelectionListener(browseAdapter);
 
-		final Button exportButton = toolkit.createButton(client,
-				Messages.getString("RelativeConstraints.exportExcel"), SWT.PUSH);
-		exportButton.addSelectionListener(new ExcelRelativeConstraintsWriter(scenario));
+    final Button exportButton = toolkit.createButton(client, Messages.getString("RelativeConstraints.exportExcel"), SWT.PUSH);
+    exportButton.addSelectionListener(new ExcelRelativeConstraintsWriter(this.scenario));
 
-	}
+  }
 }

@@ -49,92 +49,132 @@ import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
+// TODO: Auto-generated Javadoc
 /**
- * Add Feature for {@link DataInputPort}s
- * 
+ * Add Feature for {@link DataInputPort}s.
+ *
  * @author kdesnos
  * @author jheulot
- * 
  */
 public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
 
-	public static final IColorConstant DATA_INPUT_PORT_FOREGROUND = AddActorFeature.ACTOR_FOREGROUND;
-	public static final IColorConstant DATA_INPUT_PORT_BACKGROUND = new ColorConstant(
-			182, 215, 122);
-	public static final PortPosition DATA_INPUT_PORT_POSITION = PortPosition.LEFT;
-	public static final String DATA_INPUT_PORT_KIND = "input";
+  /** The Constant DATA_INPUT_PORT_FOREGROUND. */
+  public static final IColorConstant DATA_INPUT_PORT_FOREGROUND = AddActorFeature.ACTOR_FOREGROUND;
 
-	/**
-	 * Default constructor
-	 * 
-	 * @param fp
-	 *            the feature provider
-	 */
-	public AddDataInputPortFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /** The Constant DATA_INPUT_PORT_BACKGROUND. */
+  public static final IColorConstant DATA_INPUT_PORT_BACKGROUND = new ColorConstant(182, 215, 122);
 
-	@Override
-	public String getName() {
-		return "Add Input Port";
-	}
+  /** The Constant DATA_INPUT_PORT_POSITION. */
+  public static final PortPosition DATA_INPUT_PORT_POSITION = PortPosition.LEFT;
 
-	@Override
-	public String getDescription() {
-		return "Add an input port to the Actor";
-	}
+  /** The Constant DATA_INPUT_PORT_KIND. */
+  public static final String DATA_INPUT_PORT_KIND = "input";
 
-	@Override
-	public PortPosition getPosition() {
-		return DATA_INPUT_PORT_POSITION;
-	}
+  /**
+   * Default constructor.
+   *
+   * @param fp
+   *          the feature provider
+   */
+  public AddDataInputPortFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	@Override
-	public GraphicsAlgorithm addPortGA(GraphicsAlgorithm containerShape) {
-		// Get the GaService
-		IGaService gaService = Graphiti.getGaService();
-		// Create the port GraphicAlgorithm
-		Rectangle rectangle = gaService.createPlainRectangle(containerShape);
-		rectangle.setForeground(manageColor(DATA_INPUT_PORT_FOREGROUND));
-		rectangle.setBackground(manageColor(DATA_INPUT_PORT_BACKGROUND));
-		rectangle.setLineWidth(1);
-		int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
-		gaService.setSize(rectangle, PORT_ANCHOR_GA_SIZE, PORT_ANCHOR_GA_SIZE);
-		gaService.setLocation(rectangle, 0, 1 + (portFontHeight - PORT_ANCHOR_GA_SIZE) / 2);
-		return rectangle;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#getName()
+   */
+  @Override
+  public String getName() {
+    return "Add Input Port";
+  }
 
-	@Override
-	public GraphicsAlgorithm addPortLabel(GraphicsAlgorithm containerShape,
-			String portName) {
-		// Get the GaService
-		IGaService gaService = Graphiti.getGaService();
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#getDescription()
+   */
+  @Override
+  public String getDescription() {
+    return "Add an input port to the Actor";
+  }
 
-		// Create the text
-		final Text text = gaService.createText(containerShape);
-		text.setValue(portName);
-		text.setFont(getPortFont());
-		text.setForeground(manageColor(PORT_TEXT_FOREGROUND));
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getPosition()
+   */
+  @Override
+  public PortPosition getPosition() {
+    return AddDataInputPortFeature.DATA_INPUT_PORT_POSITION;
+  }
 
-		// Layout the text
-		int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
-		text.setHorizontalAlignment(Orientation.ALIGNMENT_RIGHT);
-		gaService.setHeight(text, portFontHeight);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#addPortGA(org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm)
+   */
+  @Override
+  public GraphicsAlgorithm addPortGA(final GraphicsAlgorithm containerShape) {
+    // Get the GaService
+    final IGaService gaService = Graphiti.getGaService();
+    // Create the port GraphicAlgorithm
+    final Rectangle rectangle = gaService.createPlainRectangle(containerShape);
+    rectangle.setForeground(manageColor(AddDataInputPortFeature.DATA_INPUT_PORT_FOREGROUND));
+    rectangle.setBackground(manageColor(AddDataInputPortFeature.DATA_INPUT_PORT_BACKGROUND));
+    rectangle.setLineWidth(1);
+    final int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
+    gaService.setSize(rectangle, AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE, AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE);
+    gaService.setLocation(rectangle, 0, 1 + ((portFontHeight - AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE) / 2));
+    return rectangle;
+  }
 
-		return text;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#addPortLabel(org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm, java.lang.String)
+   */
+  @Override
+  public GraphicsAlgorithm addPortLabel(final GraphicsAlgorithm containerShape, final String portName) {
+    // Get the GaService
+    final IGaService gaService = Graphiti.getGaService();
 
-	@Override
-	public Port getNewPort(String portName, ExecutableActor actor) {
-		DataInputPort newPort = PiMMFactory.eINSTANCE.createDataInputPort();
-		newPort.setName(portName);
-		actor.getDataInputPorts().add(newPort);
-		return newPort;
-	}
+    // Create the text
+    final Text text = gaService.createText(containerShape);
+    text.setValue(portName);
+    text.setFont(getPortFont());
+    text.setForeground(manageColor(AbstractAddActorPortFeature.PORT_TEXT_FOREGROUND));
 
-	@Override
-	public String getPortKind() {
-		return DATA_INPUT_PORT_KIND;
-	}
+    // Layout the text
+    final int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
+    text.setHorizontalAlignment(Orientation.ALIGNMENT_RIGHT);
+    gaService.setHeight(text, portFontHeight);
+
+    return text;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getNewPort(java.lang.String, org.ietr.preesm.experiment.model.pimm.ExecutableActor)
+   */
+  @Override
+  public Port getNewPort(final String portName, final ExecutableActor actor) {
+    final DataInputPort newPort = PiMMFactory.eINSTANCE.createDataInputPort();
+    newPort.setName(portName);
+    actor.getDataInputPorts().add(newPort);
+    return newPort;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getPortKind()
+   */
+  @Override
+  public String getPortKind() {
+    return AddDataInputPortFeature.DATA_INPUT_PORT_KIND;
+  }
 
 }

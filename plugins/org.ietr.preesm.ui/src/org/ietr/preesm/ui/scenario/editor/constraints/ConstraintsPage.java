@@ -38,13 +38,10 @@
 package org.ietr.preesm.ui.scenario.editor.constraints;
 
 import java.io.FileNotFoundException;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -52,6 +49,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
@@ -69,215 +67,262 @@ import org.ietr.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 import org.ietr.preesm.ui.scenario.editor.SDFTreeSection;
 
+// TODO: Auto-generated Javadoc
 /**
- * Constraint editor within the implementation editor
- * 
+ * Constraint editor within the implementation editor.
+ *
  * @author mpelcat
  */
 public class ConstraintsPage extends FormPage implements IPropertyListener {
 
-	/**
-	 * Currently edited scenario
-	 */
-	private PreesmScenario scenario = null;
-	private ConstraintsCheckStateListener checkStateListener = null;
+  /** Currently edited scenario. */
+  private PreesmScenario scenario = null;
 
-	public ConstraintsPage(PreesmScenario scenario, FormEditor editor,
-			String id, String title) {
-		super(editor, id, title);
-		this.scenario = scenario;
-	}
+  /** The check state listener. */
+  private ConstraintsCheckStateListener checkStateListener = null;
 
-	/**
-	 * Initializes the display content
-	 */
-	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		super.createFormContent(managedForm);
+  /**
+   * Instantiates a new constraints page.
+   *
+   * @param scenario
+   *          the scenario
+   * @param editor
+   *          the editor
+   * @param id
+   *          the id
+   * @param title
+   *          the title
+   */
+  public ConstraintsPage(final PreesmScenario scenario, final FormEditor editor, final String id, final String title) {
+    super(editor, id, title);
+    this.scenario = scenario;
+  }
 
-		ScrolledForm f = managedForm.getForm();
-		f.setText(Messages.getString("Constraints.title"));
-		f.getBody().setLayout(new GridLayout());
+  /**
+   * Initializes the display content.
+   *
+   * @param managedForm
+   *          the managed form
+   */
+  @Override
+  protected void createFormContent(final IManagedForm managedForm) {
+    super.createFormContent(managedForm);
 
-		// Constrints file chooser section
-		createFileSection(managedForm, Messages.getString("Constraints.file"),
-				Messages.getString("Constraints.fileDescription"),
-				Messages.getString("Constraints.fileEdit"), scenario
-						.getConstraintGroupManager().getExcelFileURL(),
-				Messages.getString("Constraints.fileBrowseTitle"), "xls");
+    final ScrolledForm f = managedForm.getForm();
+    f.setText(Messages.getString("Constraints.title"));
+    f.getBody().setLayout(new GridLayout());
 
-		createConstraintsSection(managedForm,
-				Messages.getString("Constraints.title"),
-				Messages.getString("Constraints.description"));
+    // Constrints file chooser section
+    createFileSection(managedForm, Messages.getString("Constraints.file"), Messages.getString("Constraints.fileDescription"),
+        Messages.getString("Constraints.fileEdit"), this.scenario.getConstraintGroupManager().getExcelFileURL(),
+        Messages.getString("Constraints.fileBrowseTitle"), "xls");
 
-		managedForm.refresh();
-		managedForm.reflow(true);
+    createConstraintsSection(managedForm, Messages.getString("Constraints.title"), Messages.getString("Constraints.description"));
 
-	}
+    managedForm.refresh();
+    managedForm.reflow(true);
 
-	/**
-	 * Creates a generic section
-	 */
-	public Section createSection(IManagedForm mform, String title, String desc,
-			int numColumns) {
+  }
 
-		final ScrolledForm form = mform.getForm();
-		FormToolkit toolkit = mform.getToolkit();
-		Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
-				| ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
-		section.setText(title);
-		section.setDescription(desc);
-		toolkit.createCompositeSeparator(section);
-		return section;
-	}
+  /**
+   * Creates a generic section.
+   *
+   * @param mform
+   *          the mform
+   * @param title
+   *          the title
+   * @param desc
+   *          the desc
+   * @param numColumns
+   *          the num columns
+   * @return the section
+   */
+  public Section createSection(final IManagedForm mform, final String title, final String desc, final int numColumns) {
 
-	/**
-	 * Creates a generic section
-	 */
-	public Composite createSection(IManagedForm mform, String title,
-			String desc, int numColumns, GridData gridData) {
+    final ScrolledForm form = mform.getForm();
+    final FormToolkit toolkit = mform.getToolkit();
+    final Section section = toolkit.createSection(form.getBody(),
+        ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    section.setText(title);
+    section.setDescription(desc);
+    toolkit.createCompositeSeparator(section);
+    return section;
+  }
 
-		final ScrolledForm form = mform.getForm();
-		FormToolkit toolkit = mform.getToolkit();
-		Section section = toolkit.createSection(form.getBody(), ExpandableComposite.TWISTIE
-				| ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
-		section.setText(title);
-		section.setDescription(desc);
-		toolkit.createCompositeSeparator(section);
-		Composite client = toolkit.createComposite(section);
-		GridLayout layout = new GridLayout();
-		layout.marginWidth = layout.marginHeight = 0;
-		layout.numColumns = numColumns;
-		client.setLayout(layout);
-		section.setClient(client);
-		section.addExpansionListener(new ExpansionAdapter() {
-			@Override
-			public void expansionStateChanged(ExpansionEvent e) {
-				form.reflow(false);
-			}
-		});
-		section.setLayoutData(gridData);
-		return client;
-	}
+  /**
+   * Creates a generic section.
+   *
+   * @param mform
+   *          the mform
+   * @param title
+   *          the title
+   * @param desc
+   *          the desc
+   * @param numColumns
+   *          the num columns
+   * @param gridData
+   *          the grid data
+   * @return the composite
+   */
+  public Composite createSection(final IManagedForm mform, final String title, final String desc, final int numColumns, final GridData gridData) {
 
-	/**
-	 * Creates the section editing constraints
-	 */
-	private void createConstraintsSection(IManagedForm managedForm,
-			String title, String desc) {
+    final ScrolledForm form = mform.getForm();
+    final FormToolkit toolkit = mform.getToolkit();
+    final Section section = toolkit.createSection(form.getBody(),
+        ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR | Section.DESCRIPTION | ExpandableComposite.EXPANDED);
+    section.setText(title);
+    section.setDescription(desc);
+    toolkit.createCompositeSeparator(section);
+    final Composite client = toolkit.createComposite(section);
+    final GridLayout layout = new GridLayout();
+    layout.marginWidth = layout.marginHeight = 0;
+    layout.numColumns = numColumns;
+    client.setLayout(layout);
+    section.setClient(client);
+    section.addExpansionListener(new ExpansionAdapter() {
+      @Override
+      public void expansionStateChanged(final ExpansionEvent e) {
+        form.reflow(false);
+      }
+    });
+    section.setLayoutData(gridData);
+    return client;
+  }
 
-		// Creates the section
-		managedForm.getForm().setLayout(new FillLayout());
-		Section section = createSection(managedForm, title, desc, 2);
-		section.setLayout(new ColumnLayout());
+  /**
+   * Creates the section editing constraints.
+   *
+   * @param managedForm
+   *          the managed form
+   * @param title
+   *          the title
+   * @param desc
+   *          the desc
+   */
+  private void createConstraintsSection(final IManagedForm managedForm, final String title, final String desc) {
 
-		checkStateListener = new ConstraintsCheckStateListener(section,
-				scenario);
+    // Creates the section
+    managedForm.getForm().setLayout(new FillLayout());
+    final Section section = createSection(managedForm, title, desc, 2);
+    section.setLayout(new ColumnLayout());
 
-		// Creates the section part containing the tree with SDF vertices
-		new SDFTreeSection(scenario, section, managedForm.getToolkit(),
-				Section.DESCRIPTION, this, checkStateListener);
-	}
+    this.checkStateListener = new ConstraintsCheckStateListener(section, this.scenario);
 
-	/**
-	 * Function of the property listener used to transmit the dirty property
-	 */
-	@Override
-	public void propertyChanged(Object source, int propId) {
-		if (source instanceof ConstraintsCheckStateListener
-				&& propId == PROP_DIRTY)
-			firePropertyChange(PROP_DIRTY);
+    // Creates the section part containing the tree with SDF vertices
+    new SDFTreeSection(this.scenario, section, managedForm.getToolkit(), Section.DESCRIPTION, this, this.checkStateListener);
+  }
 
-	}
+  /**
+   * Function of the property listener used to transmit the dirty property.
+   *
+   * @param source
+   *          the source
+   * @param propId
+   *          the prop id
+   */
+  @Override
+  public void propertyChanged(final Object source, final int propId) {
+    if ((source instanceof ConstraintsCheckStateListener) && (propId == IEditorPart.PROP_DIRTY)) {
+      firePropertyChange(IEditorPart.PROP_DIRTY);
+    }
 
-	/**
-	 * Creates a section to edit a file
-	 * 
-	 * @param mform
-	 *            form containing the section
-	 * @param title
-	 *            section title
-	 * @param desc
-	 *            description of the section
-	 * @param fileEdit
-	 *            text to display in text label
-	 * @param initValue
-	 *            initial value of Text
-	 * @param browseTitle
-	 *            title of file browser
-	 */
-	private void createFileSection(IManagedForm mform, String title,
-			String desc, String fileEdit, String initValue, String browseTitle,
-			String fileExtension) {
+  }
 
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.heightHint = 120;
-		Composite client = createSection(mform, title, desc, 2, gridData);
-		FormToolkit toolkit = mform.getToolkit();
+  /**
+   * Creates a section to edit a file.
+   *
+   * @param mform
+   *          form containing the section
+   * @param title
+   *          section title
+   * @param desc
+   *          description of the section
+   * @param fileEdit
+   *          text to display in text label
+   * @param initValue
+   *          initial value of Text
+   * @param browseTitle
+   *          title of file browser
+   * @param fileExtension
+   *          the file extension
+   */
+  private void createFileSection(final IManagedForm mform, final String title, final String desc, final String fileEdit, final String initValue,
+      final String browseTitle, final String fileExtension) {
 
-		GridData gd = new GridData();
-		toolkit.createLabel(client, fileEdit);
+    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+    gridData.heightHint = 120;
+    final Composite client = createSection(mform, title, desc, 2, gridData);
+    final FormToolkit toolkit = mform.getToolkit();
 
-		Text text = toolkit.createText(client, initValue, SWT.SINGLE);
-		text.setData(title);
-		text.addModifyListener(new ModifyListener() {
+    final GridData gd = new GridData();
+    toolkit.createLabel(client, fileEdit);
 
-			@Override
-			public void modifyText(ModifyEvent e) {
-				Text text = (Text) e.getSource();
+    final Text text = toolkit.createText(client, initValue, SWT.SINGLE);
+    text.setData(title);
+    text.addModifyListener(e -> {
+      final Text text1 = (Text) e.getSource();
 
-				try {
-					importData(text);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
+      try {
+        importData(text1);
+      } catch (final Exception ex) {
+        ex.printStackTrace();
+      }
 
-			}
-		});
+    });
 
-		text.addKeyListener(new KeyListener() {
+    text.addKeyListener(new KeyListener() {
 
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == SWT.CR) {
-					Text text = (Text) e.getSource();
-					try {
-						importData(text);
-					} catch (Exception e1) {
-						e1.printStackTrace();
-					}
-				}
+      @Override
+      public void keyPressed(final KeyEvent e) {
+        if (e.keyCode == SWT.CR) {
+          final Text text = (Text) e.getSource();
+          try {
+            importData(text);
+          } catch (final Exception ex) {
+            ex.printStackTrace();
+          }
+        }
 
-			}
+      }
 
-			@Override
-			public void keyReleased(KeyEvent e) {
+      @Override
+      public void keyReleased(final KeyEvent e) {
 
-			}
+      }
 
-		});
+    });
 
-		gd.widthHint = 400;
-		text.setLayoutData(gd);
+    gd.widthHint = 400;
+    text.setLayoutData(gd);
 
-		final Button button = toolkit.createButton(client,
-				Messages.getString("Overview.browse"), SWT.PUSH);
-		SelectionAdapter adapter = new FileSelectionAdapter(text,
-				client.getShell(), browseTitle, fileExtension);
-		button.addSelectionListener(adapter);
+    final Button button = toolkit.createButton(client, Messages.getString("Overview.browse"), SWT.PUSH);
+    final SelectionAdapter adapter = new FileSelectionAdapter(text, client.getShell(), browseTitle, fileExtension);
+    button.addSelectionListener(adapter);
 
-		toolkit.paintBordersFor(client);
-	}
+    toolkit.paintBordersFor(client);
+  }
 
-	private void importData(Text text) throws InvalidModelException,FileNotFoundException, CoreException {
+  /**
+   * Import data.
+   *
+   * @param text
+   *          the text
+   * @throws InvalidModelException
+   *           the invalid model exception
+   * @throws FileNotFoundException
+   *           the file not found exception
+   * @throws CoreException
+   *           the core exception
+   */
+  private void importData(final Text text) throws InvalidModelException, FileNotFoundException, CoreException {
 
-		scenario.getConstraintGroupManager().setExcelFileURL(text.getText());
-		scenario.getConstraintGroupManager().importConstraints(scenario);
+    this.scenario.getConstraintGroupManager().setExcelFileURL(text.getText());
+    this.scenario.getConstraintGroupManager().importConstraints(this.scenario);
 
-		firePropertyChange(PROP_DIRTY);
+    firePropertyChange(IEditorPart.PROP_DIRTY);
 
-		if (checkStateListener != null) {
-			checkStateListener.updateCheck();
-		}
-	}
+    if (this.checkStateListener != null) {
+      this.checkStateListener.updateCheck();
+    }
+  }
 }

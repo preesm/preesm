@@ -52,166 +52,195 @@ import org.ietr.preesm.core.scenario.MemCopySpeed;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.ui.scenario.editor.Messages;
 
+// TODO: Auto-generated Javadoc
 /**
- * Displays the labels for memcopy speed
- * 
+ * Displays the labels for memcopy speed.
+ *
  * @author mpelcat
  */
 public class MemCopySpeedLabelProvider implements ITableLabelProvider {
 
-	private PreesmScenario scenario = null;
+  /** The scenario. */
+  private PreesmScenario scenario = null;
 
-	private TableViewer tableViewer = null;
+  /** The table viewer. */
+  private TableViewer tableViewer = null;
 
-	/**
-	 * Constraints page used as a property listener to change the dirty state
-	 */
-	private IPropertyListener propertyListener = null;
+  /** Constraints page used as a property listener to change the dirty state. */
+  private IPropertyListener propertyListener = null;
 
-	public MemCopySpeedLabelProvider(PreesmScenario scenario,
-			TableViewer tableViewer, IPropertyListener propertyListener) {
-		super();
-		this.scenario = scenario;
-		this.tableViewer = tableViewer;
-		this.propertyListener = propertyListener;
-	}
+  /**
+   * Instantiates a new mem copy speed label provider.
+   *
+   * @param scenario
+   *          the scenario
+   * @param tableViewer
+   *          the table viewer
+   * @param propertyListener
+   *          the property listener
+   */
+  public MemCopySpeedLabelProvider(final PreesmScenario scenario, final TableViewer tableViewer, final IPropertyListener propertyListener) {
+    super();
+    this.scenario = scenario;
+    this.tableViewer = tableViewer;
+    this.propertyListener = propertyListener;
+  }
 
-	@Override
-	public Image getColumnImage(Object element, int columnIndex) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
+   */
+  @Override
+  public Image getColumnImage(final Object element, final int columnIndex) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-	@Override
-	public String getColumnText(Object element, int columnIndex) {
-		String text = "";
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
+   */
+  @Override
+  public String getColumnText(final Object element, final int columnIndex) {
+    String text = "";
 
-		if (element instanceof MemCopySpeed) {
-			MemCopySpeed speed = (MemCopySpeed) element;
+    if (element instanceof MemCopySpeed) {
+      final MemCopySpeed speed = (MemCopySpeed) element;
 
-			if (columnIndex == 0) {
-				text = speed.getOperatorDef();
-			} else if (columnIndex == 1) {
-				text = Long.toString(speed.getSetupTime());
-			} else if (columnIndex == 2) {
-				text = Float.toString(1.0f/speed.getTimePerUnit());
-			}
-		}
+      if (columnIndex == 0) {
+        text = speed.getOperatorDef();
+      } else if (columnIndex == 1) {
+        text = Long.toString(speed.getSetupTime());
+      } else if (columnIndex == 2) {
+        text = Float.toString(1.0f / speed.getTimePerUnit());
+      }
+    }
 
-		return text;
-	}
+    return text;
+  }
 
-	@Override
-	public void addListener(ILabelProviderListener listener) {
-		// TODO Auto-generated method stub
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
+   */
+  @Override
+  public void addListener(final ILabelProviderListener listener) {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
+   */
+  @Override
+  public void dispose() {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public boolean isLabelProperty(Object element, String property) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
+   */
+  @Override
+  public boolean isLabelProperty(final Object element, final String property) {
+    // TODO Auto-generated method stub
+    return false;
+  }
 
-	@Override
-	public void removeListener(ILabelProviderListener listener) {
-		// TODO Auto-generated method stub
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
+   */
+  @Override
+  public void removeListener(final ILabelProviderListener listener) {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	public void handleDoubleClick(IStructuredSelection selection) {
+  /**
+   * Handle double click.
+   *
+   * @param selection
+   *          the selection
+   */
+  public void handleDoubleClick(final IStructuredSelection selection) {
 
-		IInputValidator intValidator = new IInputValidator() {
+    final IInputValidator intValidator = newText -> {
+      String message = null;
+      int val = 0;
 
-			@Override
-			public String isValid(String newText) {
-				String message = null;
-				int val = 0;
+      try {
+        val = Integer.valueOf(newText);
+      } catch (final NumberFormatException e) {
+        val = 0;
+      }
 
-				try {
-					val = Integer.valueOf(newText);
-				} catch (NumberFormatException e) {
-					val = 0;
-				}
+      if (val <= 0) {
+        message = "invalid positive integer";
+      }
 
-				if (val <= 0)
-					message = "invalid positive integer";
+      return message;
+    };
 
-				return message;
-			}
+    final IInputValidator floatValidator = newText -> {
+      String message = null;
+      float val = 0;
 
-		};
-		
-		IInputValidator floatValidator = new IInputValidator() {
+      try {
+        val = Float.valueOf(newText);
+      } catch (final NumberFormatException e) {
+        val = 0;
+      }
 
-			@Override
-			public String isValid(String newText) {
-				String message = null;
-				float val = 0;
+      if (val <= 0) {
+        message = "invalid positive float";
+      }
 
-				try {
-					val = Float.valueOf(newText);
-				} catch (NumberFormatException e) {
-					val = 0;
-				}
+      return message;
+    };
 
-				if (val <= 0)
-					message = "invalid positive float";
+    if (selection.getFirstElement() instanceof MemCopySpeed) {
+      final MemCopySpeed speed = (MemCopySpeed) selection.getFirstElement();
 
-				return message;
-			}
+      String title = Messages.getString("Timings.MemcopySpeeds.dialog.setupTitle");
+      String message = Messages.getString("Timings.MemcopySpeeds.dialog.setupMessage") + speed.getOperatorDef();
 
-		};
+      final String initSetupTime = String.valueOf(speed.getSetupTime());
+      final String initSpeed = String.valueOf(1.0 / speed.getTimePerUnit());
 
-		if (selection.getFirstElement() instanceof MemCopySpeed) {
-			MemCopySpeed speed = (MemCopySpeed) selection.getFirstElement();
+      final InputDialog dialogSetupTime = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message, initSetupTime,
+          intValidator);
 
-			String title = Messages
-					.getString("Timings.MemcopySpeeds.dialog.setupTitle");
-			String message = Messages
-					.getString("Timings.MemcopySpeeds.dialog.setupMessage")
-					+ speed.getOperatorDef();
+      title = Messages.getString("Timings.MemcopySpeeds.dialog.timePerUnitTitle");
+      message = Messages.getString("Timings.MemcopySpeeds.dialog.timePerUnitMessage") + speed.getOperatorDef();
 
-			String initSetupTime = String.valueOf(speed.getSetupTime());
-			String initSpeed = String.valueOf(1.0/speed.getTimePerUnit());
+      final InputDialog dialogTimePerUnit = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message, initSpeed,
+          floatValidator);
 
-			InputDialog dialogSetupTime = new InputDialog(PlatformUI
-					.getWorkbench().getActiveWorkbenchWindow().getShell(),
-					title, message, initSetupTime, intValidator);
+      if (dialogSetupTime.open() == Window.OK) {
+        if (dialogTimePerUnit.open() == Window.OK) {
+          final String valueSetupTime = dialogSetupTime.getValue();
+          final String valueTimePerUnit = dialogTimePerUnit.getValue();
 
-			title = Messages
-					.getString("Timings.MemcopySpeeds.dialog.timePerUnitTitle");
-			message = Messages
-					.getString("Timings.MemcopySpeeds.dialog.timePerUnitMessage")
-					+ speed.getOperatorDef();
-					
-			InputDialog dialogTimePerUnit = new InputDialog(PlatformUI
-					.getWorkbench().getActiveWorkbenchWindow().getShell(),
-					title, message, initSpeed, floatValidator);
+          speed.setSetupTime(Long.valueOf(valueSetupTime));
+          // Careful! We store the time per memory unit, that is the inverse of the speed.
+          speed.setTimePerUnit(1.0f / Float.valueOf(valueTimePerUnit));
+          this.scenario.getTimingManager().putMemcpySpeed(speed);
 
-			if (dialogSetupTime.open() == Window.OK) {
-				if (dialogTimePerUnit.open() == Window.OK) {
-					String valueSetupTime = dialogSetupTime.getValue();
-					String valueTimePerUnit = dialogTimePerUnit.getValue();
+          this.tableViewer.refresh();
+          this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
+        }
+      }
+    }
 
-					speed.setSetupTime(Long.valueOf(valueSetupTime));
-					// Careful! We store the time per memory unit, that is the inverse of the speed.
-					speed.setTimePerUnit(1.0f/Float.valueOf(valueTimePerUnit));
-					scenario.getTimingManager().putMemcpySpeed(speed);
-
-					tableViewer.refresh();
-					propertyListener.propertyChanged(this,
-							IEditorPart.PROP_DIRTY);
-				}
-			}
-		}
-
-	}
+  }
 
 }

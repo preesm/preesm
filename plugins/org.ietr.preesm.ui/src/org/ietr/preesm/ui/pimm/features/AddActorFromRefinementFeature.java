@@ -50,124 +50,134 @@ import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class AddActorFromRefinementFeature.
+ */
 public class AddActorFromRefinementFeature extends AbstractAddFeature {
 
-	boolean hasDoneChanges = false;
+  /** The has done changes. */
+  boolean hasDoneChanges = false;
 
-	/**
-	 * When a file is drag and dropped on an graph, the feature attempts to
-	 * create a new {@link Actor} and to set this file as the refinement of the
-	 * actor.
-	 * 
-	 * Works only for IDL, H and PI files.
-	 * 
-	 * @author kdesnos
-	 * 
-	 */
-	public AddActorFromRefinementFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /**
+   * When a file is drag and dropped on an graph, the feature attempts to create a new {@link Actor} and to set this file as the refinement of the actor.
+   *
+   * <p>Works only for IDL, H and PI files.</p>
+   *
+   * @author kdesnos
+   * @param fp
+   *          the fp
+   */
+  public AddActorFromRefinementFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	@Override
-	public boolean canAdd(IAddContext context) {
-		if (!(context.getNewObject() instanceof IFile)) {
-			return false;
-		} else {
-			String fileExtension = ((IFile) context.getNewObject()).getFileExtension();
-			
-			
-			if (fileExtension.equals("pi") || fileExtension.equals("h")
-					|| fileExtension.equals("idl")) {
-				return true;
-			}
-			return false;
-		}
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.func.IAdd#canAdd(org.eclipse.graphiti.features.context.IAddContext)
+   */
+  @Override
+  public boolean canAdd(final IAddContext context) {
+    if (!(context.getNewObject() instanceof IFile)) {
+      return false;
+    } else {
+      final String fileExtension = ((IFile) context.getNewObject()).getFileExtension();
 
-	@Override
-	public PictogramElement add(IAddContext context) {
-		// 1- Create and Add Actor
-		CreateActorFeature createActorFeature = new CreateActorFeature(
-				getFeatureProvider());
-		CreateContext createContext = new CreateContext();
-		createContext.setLocation(context.getX(), context.getY());
-		createContext.setSize(context.getWidth(), context.getWidth());
-		createContext.setTargetContainer(context.getTargetContainer());
-		createContext.setTargetConnection(context.getTargetConnection());
-		Object[] actors = createActorFeature.create(createContext);
+      if (fileExtension.equals("pi") || fileExtension.equals("h") || fileExtension.equals("idl")) {
+        return true;
+      }
+      return false;
+    }
+  }
 
-		// Stop if actor creation was cancelled
-		if (actors.length == 0) {
-			return null;
-		} else {
-			hasDoneChanges = true;
-		}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.func.IAdd#add(org.eclipse.graphiti.features.context.IAddContext)
+   */
+  @Override
+  public PictogramElement add(final IAddContext context) {
+    // 1- Create and Add Actor
+    final CreateActorFeature createActorFeature = new CreateActorFeature(getFeatureProvider());
+    final CreateContext createContext = new CreateContext();
+    createContext.setLocation(context.getX(), context.getY());
+    createContext.setSize(context.getWidth(), context.getWidth());
+    createContext.setTargetContainer(context.getTargetContainer());
+    createContext.setTargetConnection(context.getTargetConnection());
+    final Object[] actors = createActorFeature.create(createContext);
 
-		// 2- Set Refinement
-		Actor actor = (Actor) actors[0];
-		SetActorRefinementFeature setRefinementFeature = new SetActorRefinementFeature(
-				getFeatureProvider());
-		
-		IPath newFilePath;
-		if(context.getNewObject() instanceof IFile){
-			newFilePath = ((IFile) context.getNewObject()).getFullPath();
-		} else {
-			return null;
-		}
-		setRefinementFeature.setShowOnlyValidPrototypes(false);
-		setRefinementFeature.setActorRefinement(actor, newFilePath);
+    // Stop if actor creation was cancelled
+    if (actors.length == 0) {
+      return null;
+    } else {
+      this.hasDoneChanges = true;
+    }
 
-		// 3- Create all ports corresponding to the refinement.
-		PictogramElement pictElements[] = new PictogramElement[1];
-		pictElements[0] = getFeatureProvider()
-				.getAllPictogramElementsForBusinessObject(actors[0])[0];
+    // 2- Set Refinement
+    final Actor actor = (Actor) actors[0];
+    final SetActorRefinementFeature setRefinementFeature = new SetActorRefinementFeature(getFeatureProvider());
 
-		AbstractActor protoPort = actor.getRefinement().getAbstractActor();
-		// protoPort is Null if actor creation was cancelled during refinement
-		// prototype selection
-		if (protoPort != null) {
-			// Process DataInputPorts
-			for (Port p : protoPort.getDataInputPorts()) {
-				AddDataInputPortFeature addFeature = new AddDataInputPortFeature(
-						getFeatureProvider());
-				ICustomContext portContext = new CustomContext(pictElements);
-				portContext.putProperty("name", p.getName());
-				addFeature.execute(portContext);
-			}
+    IPath newFilePath;
+    if (context.getNewObject() instanceof IFile) {
+      newFilePath = ((IFile) context.getNewObject()).getFullPath();
+    } else {
+      return null;
+    }
+    setRefinementFeature.setShowOnlyValidPrototypes(false);
+    setRefinementFeature.setActorRefinement(actor, newFilePath);
 
-			// Process DataOutputPorts
-			for (Port p : protoPort.getDataOutputPorts()) {
-				AddDataOutputPortFeature addFeature = new AddDataOutputPortFeature(
-						getFeatureProvider());
-				ICustomContext portContext = new CustomContext(pictElements);
-				portContext.putProperty("name", p.getName());
-				addFeature.execute(portContext);
-			}
+    // 3- Create all ports corresponding to the refinement.
+    final PictogramElement[] pictElements = new PictogramElement[1];
+    pictElements[0] = getFeatureProvider().getAllPictogramElementsForBusinessObject(actors[0])[0];
 
-			// Process ConfigInputPorts
-			for (Port p : protoPort.getConfigInputPorts()) {
-				AddConfigInputPortFeature addFeature = new AddConfigInputPortFeature(
-						getFeatureProvider());
-				ICustomContext portContext = new CustomContext(pictElements);
-				portContext.putProperty("name", p.getName());
-				addFeature.execute(portContext);
-			}
+    final AbstractActor protoPort = actor.getRefinement().getAbstractActor();
+    // protoPort is Null if actor creation was cancelled during refinement
+    // prototype selection
+    if (protoPort != null) {
+      // Process DataInputPorts
+      for (final Port p : protoPort.getDataInputPorts()) {
+        final AddDataInputPortFeature addFeature = new AddDataInputPortFeature(getFeatureProvider());
+        final ICustomContext portContext = new CustomContext(pictElements);
+        portContext.putProperty("name", p.getName());
+        addFeature.execute(portContext);
+      }
 
-			// Process ConfigOutputPorts
-			for (Port p : protoPort.getConfigOutputPorts()) {
-				AddConfigOutputPortFeature addFeature = new AddConfigOutputPortFeature(
-						getFeatureProvider());
-				ICustomContext portContext = new CustomContext(pictElements);
-				portContext.putProperty("name", p.getName());
-				addFeature.execute(portContext);
-			}
-		}
+      // Process DataOutputPorts
+      for (final Port p : protoPort.getDataOutputPorts()) {
+        final AddDataOutputPortFeature addFeature = new AddDataOutputPortFeature(getFeatureProvider());
+        final ICustomContext portContext = new CustomContext(pictElements);
+        portContext.putProperty("name", p.getName());
+        addFeature.execute(portContext);
+      }
 
-		return null;
-	}
+      // Process ConfigInputPorts
+      for (final Port p : protoPort.getConfigInputPorts()) {
+        final AddConfigInputPortFeature addFeature = new AddConfigInputPortFeature(getFeatureProvider());
+        final ICustomContext portContext = new CustomContext(pictElements);
+        portContext.putProperty("name", p.getName());
+        addFeature.execute(portContext);
+      }
 
-	@Override
-	public boolean hasDoneChanges() {
-		return this.hasDoneChanges;
-	}
+      // Process ConfigOutputPorts
+      for (final Port p : protoPort.getConfigOutputPorts()) {
+        final AddConfigOutputPortFeature addFeature = new AddConfigOutputPortFeature(getFeatureProvider());
+        final ICustomContext portContext = new CustomContext(pictElements);
+        portContext.putProperty("name", p.getName());
+        addFeature.execute(portContext);
+      }
+    }
+
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
+   */
+  @Override
+  public boolean hasDoneChanges() {
+    return this.hasDoneChanges;
+  }
 }

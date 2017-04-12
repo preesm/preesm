@@ -49,72 +49,77 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
+// TODO: Auto-generated Javadoc
 /**
- * Tree representing a SDF graph in the constraint page and the code generation
- * page.
- * 
+ * Tree representing a SDF graph in the constraint page and the code generation page.
+ *
  * @author mpelcat
  */
 public class SDFTreeSection extends SectionPart {
 
-	/**
-	 * Current tree viewer initialized here
-	 */
-	private CheckboxTreeViewer treeviewer = null;
+  /** Current tree viewer initialized here. */
+  private CheckboxTreeViewer treeviewer = null;
 
-	/**
-	 * Current section to which this section part corresponds
-	 */
-	private Section section = null;
+  /** Current section to which this section part corresponds. */
+  private Section section = null;
 
-	/**
-	 * Creates the tree view
-	 */
-	public SDFTreeSection(PreesmScenario scenario, Section inputSection,
-			FormToolkit toolkit, int style, IPropertyListener listener,
-			ISDFCheckStateListener checkStateListener) {
-		super(inputSection);
+  /**
+   * Creates the tree view.
+   *
+   * @param scenario
+   *          the scenario
+   * @param inputSection
+   *          the input section
+   * @param toolkit
+   *          the toolkit
+   * @param style
+   *          the style
+   * @param listener
+   *          the listener
+   * @param checkStateListener
+   *          the check state listener
+   */
+  public SDFTreeSection(final PreesmScenario scenario, final Section inputSection, final FormToolkit toolkit, final int style, final IPropertyListener listener,
+      final ISDFCheckStateListener checkStateListener) {
+    super(inputSection);
 
-		this.section = inputSection;
+    this.section = inputSection;
 
-		section.setVisible(true);
-		Composite container = toolkit.createComposite(getSection());
-		container.setLayout(new GridLayout());
+    this.section.setVisible(true);
+    final Composite container = toolkit.createComposite(getSection());
+    container.setLayout(new GridLayout());
 
-		// Creating a selector for available cores
-		checkStateListener.addComboBoxSelector(container, toolkit);
+    // Creating a selector for available cores
+    checkStateListener.addComboBoxSelector(container, toolkit);
 
-		// Creating the tree view
-		treeviewer = new CheckboxTreeViewer(toolkit.createTree(container,
-				SWT.CHECK));
+    // Creating the tree view
+    this.treeviewer = new CheckboxTreeViewer(toolkit.createTree(container, SWT.CHECK));
 
-		// The content provider fills the tree
-		PreesmAlgorithmTreeContentProvider contentProvider = new PreesmAlgorithmTreeContentProvider(
-				treeviewer);
-		treeviewer.setContentProvider(contentProvider);
+    // The content provider fills the tree
+    final PreesmAlgorithmTreeContentProvider contentProvider = new PreesmAlgorithmTreeContentProvider(this.treeviewer);
+    this.treeviewer.setContentProvider(contentProvider);
 
-		// The check state listener modifies the check status of elements
-		checkStateListener.setTreeViewer(treeviewer, contentProvider, listener);
-		treeviewer.setLabelProvider(new PreesmAlgorithmTreeLabelProvider());
-		treeviewer.setAutoExpandLevel(AbstractTreeViewer.ALL_LEVELS);
+    // The check state listener modifies the check status of elements
+    checkStateListener.setTreeViewer(this.treeviewer, contentProvider, listener);
+    this.treeviewer.setLabelProvider(new PreesmAlgorithmTreeLabelProvider());
+    this.treeviewer.setAutoExpandLevel(AbstractTreeViewer.ALL_LEVELS);
 
-		treeviewer.addCheckStateListener(checkStateListener);
+    this.treeviewer.addCheckStateListener(checkStateListener);
 
-		GridData gd = new GridData(GridData.FILL_BOTH);
-		gd.heightHint = 400;
-		gd.widthHint = 250;
-		treeviewer.getTree().setLayoutData(gd);
+    final GridData gd = new GridData(GridData.FILL_BOTH);
+    gd.heightHint = 400;
+    gd.widthHint = 250;
+    this.treeviewer.getTree().setLayoutData(gd);
 
-		treeviewer.setUseHashlookup(true);
-		treeviewer.setInput(scenario);
-		toolkit.paintBordersFor(container);
-		section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL
-				| GridData.FILL_VERTICAL));
-		section.setClient(container);
+    this.treeviewer.setUseHashlookup(true);
+    this.treeviewer.setInput(scenario);
+    toolkit.paintBordersFor(container);
+    this.section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
+    this.section.setClient(container);
 
-		// Tree is refreshed in case of algorithm modifications
-		section.addPaintListener(checkStateListener);
+    // Tree is refreshed in case of algorithm modifications
+    this.section.addPaintListener(checkStateListener);
 
-	}
+  }
 
 }

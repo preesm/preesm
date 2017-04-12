@@ -40,46 +40,55 @@ package org.ietr.preesm.ui.scenario.editor;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 
+// TODO: Auto-generated Javadoc
 /**
  * This class provides a page for the save timings as excel sheet wizard.
- * 
+ *
  * @author mpelcat
  * @author kdesnos
  */
 public class WizardSaveExcelPage extends WizardNewFileCreationPage {
 
-	private ExcelWriter writer;
-	
-	/**
-	 * Constructor for {@link WizardSaveExcelPage}.
-	 */
-	public WizardSaveExcelPage(String savedObject) {
-		super("save"+savedObject, new StructuredSelection());	
+  /** The writer. */
+  private ExcelWriter writer;
 
-		setTitle(Messages.getString("Timings.timingExport.dialog"));
-	}
+  /**
+   * Constructor for {@link WizardSaveExcelPage}.
+   *
+   * @param savedObject
+   *          the saved object
+   */
+  public WizardSaveExcelPage(final String savedObject) {
+    super("save" + savedObject, new StructuredSelection());
 
-	@Override
-	public InputStream getInitialContents() {
-		// writes graph
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
+    setTitle(Messages.getString("Timings.timingExport.dialog"));
+  }
 
-		writer.write(out);
-		return new ByteArrayInputStream(out.toByteArray());
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.ui.dialogs.WizardNewFileCreationPage#getInitialContents()
+   */
+  @Override
+  public InputStream getInitialContents() {
+    // writes graph
+    final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-	/**
-	 * Sets a new graph for this page.
-	 * 
-	 * @param graph
-	 *            A {@link Graph}.
-	 */
-	public void setWriter(ExcelWriter writer) {
-		this.writer = writer;
-	}
+    this.writer.write(out);
+    return new ByteArrayInputStream(out.toByteArray());
+  }
+
+  /**
+   * Sets a new graph for this page.
+   *
+   * @param writer
+   *          the new writer
+   */
+  public void setWriter(final ExcelWriter writer) {
+    this.writer = writer;
+  }
 
 }

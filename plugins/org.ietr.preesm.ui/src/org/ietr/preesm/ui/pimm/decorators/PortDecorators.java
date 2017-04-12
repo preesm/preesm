@@ -38,7 +38,6 @@ package org.ietr.preesm.ui.pimm.decorators;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.platform.IPlatformImageConstants;
@@ -51,88 +50,78 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.DependencyCycleDetector;
 
+// TODO: Auto-generated Javadoc
 /**
- * Class providing methods to retrieve the {@link IDecorator} of a {@link Port}
- * 
+ * Class providing methods to retrieve the {@link IDecorator} of a {@link Port}.
+ *
  * @author jheulot
- * 
  */
 public class PortDecorators {
 
-	/**
-	 * Methods that returns all the {@link IDecorator} for a given {@link Port}
-	 * .
-	 * 
-	 * @param port
-	 *            the treated {@link Port}
-	 * @param pe
-	 *            the {@link PictogramElement} to decorate
-	 * @return the {@link IDecorator} table.
-	 */
-	public static IDecorator[] getDecorators(Port port, PictogramElement pe) {
+  /**
+   * Methods that returns all the {@link IDecorator} for a given {@link Port} .
+   *
+   * @param port
+   *          the treated {@link Port}
+   * @param pe
+   *          the {@link PictogramElement} to decorate
+   * @return the {@link IDecorator} table.
+   */
+  public static IDecorator[] getDecorators(final Port port, final PictogramElement pe) {
 
-		List<IDecorator> decorators = new ArrayList<IDecorator>();
-		DependencyCycleDetector detector = new DependencyCycleDetector();
-		PiGraph graph = (PiGraph) port.eContainer().eContainer();
-		detector.doSwitch(graph);
-		if(! detector.cyclesDetected()){
-			// Check if the actor is a configuration actor
-			IDecorator portDecorator = getPortExpressionDecorator(port, pe);
-			if (portDecorator != null) {
-				decorators.add(portDecorator);
-			}
-		}
+    final List<IDecorator> decorators = new ArrayList<>();
+    final DependencyCycleDetector detector = new DependencyCycleDetector();
+    final PiGraph graph = (PiGraph) port.eContainer().eContainer();
+    detector.doSwitch(graph);
+    if (!detector.cyclesDetected()) {
+      // Check if the actor is a configuration actor
+      final IDecorator portDecorator = PortDecorators.getPortExpressionDecorator(port, pe);
+      if (portDecorator != null) {
+        decorators.add(portDecorator);
+      }
+    }
 
-		IDecorator[] result = new IDecorator[decorators.size()];
-		decorators.toArray(result);
+    final IDecorator[] result = new IDecorator[decorators.size()];
+    decorators.toArray(result);
 
-		return result;
-	}
+    return result;
+  }
 
-	/**
-	 * Get the {@link IDecorator} indicating if the {@link Port} have a valid
-	 * expression.
-	 * 
-	 * @param port
-	 *            the {@link Port} to test
-	 * @param pe
-	 *            the {@link PictogramElement} of the {@link Port}
-	 * @return the {@link IDecorator} or <code>null</code>.
-	 */
-	protected static IDecorator getPortExpressionDecorator(Port port,
-			PictogramElement pe) {
-		ImageDecorator imageRenderingDecorator = new ImageDecorator(
-				IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
-		imageRenderingDecorator.setMessage("Problems in parameter resolution");
+  /**
+   * Get the {@link IDecorator} indicating if the {@link Port} have a valid expression.
+   *
+   * @param port
+   *          the {@link Port} to test
+   * @param pe
+   *          the {@link PictogramElement} of the {@link Port}
+   * @return the {@link IDecorator} or <code>null</code>.
+   */
+  protected static IDecorator getPortExpressionDecorator(final Port port, final PictogramElement pe) {
+    final ImageDecorator imageRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
+    imageRenderingDecorator.setMessage("Problems in parameter resolution");
 
-		BoxRelativeAnchor a = (BoxRelativeAnchor) pe;
+    final BoxRelativeAnchor a = (BoxRelativeAnchor) pe;
 
-		if (port instanceof DataInputPort) {
-			String evaluation = ((DataInputPort) port).getExpression()
-					.evaluate();
+    if (port instanceof DataInputPort) {
+      final String evaluation = ((DataInputPort) port).getExpression().evaluate();
 
-			if (evaluation.contains("Error")) {
-				imageRenderingDecorator.setX(-5);
-				imageRenderingDecorator.setY((int) (a.getRelativeHeight() * a
-						.getReferencedGraphicsAlgorithm().getHeight()) - 1);
+      if (evaluation.contains("Error")) {
+        imageRenderingDecorator.setX(-5);
+        imageRenderingDecorator.setY((int) (a.getRelativeHeight() * a.getReferencedGraphicsAlgorithm().getHeight()) - 1);
 
-				return imageRenderingDecorator;
-			}
-		}
-		if (port instanceof DataOutputPort
-				&& !(port instanceof ConfigOutputPort)) {
-			String evaluation = ((DataOutputPort) port).getExpression()
-					.evaluate();
+        return imageRenderingDecorator;
+      }
+    }
+    if ((port instanceof DataOutputPort) && !(port instanceof ConfigOutputPort)) {
+      final String evaluation = ((DataOutputPort) port).getExpression().evaluate();
 
-			if (evaluation.contains("Error")) {
-				imageRenderingDecorator.setX(a.getReferencedGraphicsAlgorithm()
-						.getWidth() - 13);
-				imageRenderingDecorator.setY((int) (a.getRelativeHeight() * a
-						.getReferencedGraphicsAlgorithm().getHeight()) - 1);
+      if (evaluation.contains("Error")) {
+        imageRenderingDecorator.setX(a.getReferencedGraphicsAlgorithm().getWidth() - 13);
+        imageRenderingDecorator.setY((int) (a.getRelativeHeight() * a.getReferencedGraphicsAlgorithm().getHeight()) - 1);
 
-				return imageRenderingDecorator;
-			}
-		}
-		return null;
-	}
+        return imageRenderingDecorator;
+      }
+    }
+    return null;
+  }
 }

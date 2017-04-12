@@ -55,115 +55,119 @@ import org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
+// TODO: Auto-generated Javadoc
 /**
- * Add feature to add a new {@link ConfigOutInterface} to the {@link PiGraph}
- * 
+ * Add feature to add a new {@link ConfigOutInterface} to the {@link PiGraph}.
+ *
  * @author kdesnos
- * 
  */
 public class AddConfigOutputInterfaceFeature extends AbstractAddFeature {
 
-	public static final IColorConstant CFG_OUT_TEXT_FOREGROUND = IColorConstant.BLACK;
+  /** The Constant CFG_OUT_TEXT_FOREGROUND. */
+  public static final IColorConstant CFG_OUT_TEXT_FOREGROUND = IColorConstant.BLACK;
 
-	public static final IColorConstant CFG_OUT_FOREGROUND = AddConfigOutputPortFeature.CFG_OUTPUT_PORT_FOREGROUND;
+  /** The Constant CFG_OUT_FOREGROUND. */
+  public static final IColorConstant CFG_OUT_FOREGROUND = AddConfigOutputPortFeature.CFG_OUTPUT_PORT_FOREGROUND;
 
-	public static final IColorConstant CFG_OUT_BACKGROUND = AddConfigOutputPortFeature.CFG_OUTPUT_PORT_BACKGROUND;
+  /** The Constant CFG_OUT_BACKGROUND. */
+  public static final IColorConstant CFG_OUT_BACKGROUND = AddConfigOutputPortFeature.CFG_OUTPUT_PORT_BACKGROUND;
 
-	/**
-	 * The default constructor of {@link AddConfigOutputInterfaceFeature}
-	 * 
-	 * @param fp
-	 *            the feature provider
-	 */
-	public AddConfigOutputInterfaceFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+  /**
+   * The default constructor of {@link AddConfigOutputInterfaceFeature}.
+   *
+   * @param fp
+   *          the feature provider
+   */
+  public AddConfigOutputInterfaceFeature(final IFeatureProvider fp) {
+    super(fp);
+  }
 
-	@Override
-	public PictogramElement add(IAddContext context) {
-		ConfigOutputInterface cfgOutIf = (ConfigOutputInterface) context
-				.getNewObject();
-		DataInputPort port = cfgOutIf.getDataInputPorts().get(0);
-		Diagram targetDiagram = (Diagram) context.getTargetContainer();
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.func.IAdd#add(org.eclipse.graphiti.features.context.IAddContext)
+   */
+  @Override
+  public PictogramElement add(final IAddContext context) {
+    final ConfigOutputInterface cfgOutIf = (ConfigOutputInterface) context.getNewObject();
+    final DataInputPort port = cfgOutIf.getDataInputPorts().get(0);
+    final Diagram targetDiagram = (Diagram) context.getTargetContainer();
 
-		// CONTAINER SHAPE WITH ROUNDED RECTANGLE
-		IPeCreateService peCreateService = Graphiti.getPeCreateService();
-		ContainerShape containerShape = peCreateService.createContainerShape(
-				targetDiagram, true);
+    // CONTAINER SHAPE WITH ROUNDED RECTANGLE
+    final IPeCreateService peCreateService = Graphiti.getPeCreateService();
+    final ContainerShape containerShape = peCreateService.createContainerShape(targetDiagram, true);
 
-		// define a default size for the shape
-		int width = 16;
-		int height = 16;
-		int invisibRectHeight = 20;
-		IGaService gaService = Graphiti.getGaService();
+    // define a default size for the shape
+    final int width = 16;
+    final int height = 16;
+    final int invisibRectHeight = 20;
+    final IGaService gaService = Graphiti.getGaService();
 
-		Rectangle invisibleRectangle = gaService
-				.createInvisibleRectangle(containerShape);
-		gaService.setLocationAndSize(invisibleRectangle, context.getX(),
-				context.getY(), 200, invisibRectHeight);
+    final Rectangle invisibleRectangle = gaService.createInvisibleRectangle(containerShape);
+    gaService.setLocationAndSize(invisibleRectangle, context.getX(), context.getY(), 200, invisibRectHeight);
 
-		Polygon triangle; // need to access it later
-		{
-			final BoxRelativeAnchor boxAnchor = peCreateService
-					.createBoxRelativeAnchor(containerShape);
-			boxAnchor.setRelativeWidth(0.0);
-			boxAnchor
-					.setRelativeHeight((((double) invisibRectHeight - (double) height))
-							/ 2.0 / invisibRectHeight);
-			boxAnchor.setReferencedGraphicsAlgorithm(invisibleRectangle);
+    Polygon triangle; // need to access it later
+    {
+      final BoxRelativeAnchor boxAnchor = peCreateService.createBoxRelativeAnchor(containerShape);
+      boxAnchor.setRelativeWidth(0.0);
+      boxAnchor.setRelativeHeight((((double) invisibRectHeight - (double) height)) / 2.0 / invisibRectHeight);
+      boxAnchor.setReferencedGraphicsAlgorithm(invisibleRectangle);
 
-			// create and set graphics algorithm for the anchor
-			int xy[] = { 0, 0, width, width / 2, 0, height };
-			triangle = gaService
-					.createPolygon(boxAnchor, xy);
-			triangle.setForeground(manageColor(CFG_OUT_FOREGROUND));
-			triangle.setBackground(manageColor(CFG_OUT_BACKGROUND));
-			triangle.setLineWidth(2);
-			gaService.setLocationAndSize(triangle, 0, 0, width, height);
+      // create and set graphics algorithm for the anchor
+      final int[] xy = { 0, 0, width, width / 2, 0, height };
+      triangle = gaService.createPolygon(boxAnchor, xy);
+      triangle.setForeground(manageColor(AddConfigOutputInterfaceFeature.CFG_OUT_FOREGROUND));
+      triangle.setBackground(manageColor(AddConfigOutputInterfaceFeature.CFG_OUT_BACKGROUND));
+      triangle.setLineWidth(2);
+      gaService.setLocationAndSize(triangle, 0, 0, width, height);
 
-			// if added SinkInterface has no resource we add it to the
-			// resource of the graph
-			if (cfgOutIf.eResource() == null) {
-				PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
-				graph.getVertices().add(cfgOutIf);
-			}
-			link(boxAnchor, port);
-		}
+      // if added SinkInterface has no resource we add it to the
+      // resource of the graph
+      if (cfgOutIf.eResource() == null) {
+        final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
+        graph.getVertices().add(cfgOutIf);
+      }
+      link(boxAnchor, port);
+    }
 
-		// Name of the CfgOutInterface - SHAPE WITH TEXT
-		{
-			// create and set text graphics algorithm
-			// create shape for text
-			Shape shape = peCreateService.createShape(containerShape, false);
-			Text text = gaService.createText(shape, cfgOutIf.getName());
-			text.setForeground(manageColor(CFG_OUT_TEXT_FOREGROUND));
-			text.setHorizontalAlignment(Orientation.ALIGNMENT_RIGHT);
-			// vertical alignment has as default value "center"
-			text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
-			text.setHeight(20);
-			text.setWidth(200);
-			link(shape, cfgOutIf);
-		}
-		// create link and wire it
-		link(containerShape, cfgOutIf);
+    // Name of the CfgOutInterface - SHAPE WITH TEXT
+    {
+      // create and set text graphics algorithm
+      // create shape for text
+      final Shape shape = peCreateService.createShape(containerShape, false);
+      final Text text = gaService.createText(shape, cfgOutIf.getName());
+      text.setForeground(manageColor(AddConfigOutputInterfaceFeature.CFG_OUT_TEXT_FOREGROUND));
+      text.setHorizontalAlignment(Orientation.ALIGNMENT_RIGHT);
+      // vertical alignment has as default value "center"
+      text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
+      text.setHeight(20);
+      text.setWidth(200);
+      link(shape, cfgOutIf);
+    }
+    // create link and wire it
+    link(containerShape, cfgOutIf);
 
-		// Add a ChopBoxAnchor for dependencies
-		// ChopboxAnchor cba =
-		// peCreateService.createChopboxAnchor(containerShape);
-		// link(cba, cfgOutIf);
+    // Add a ChopBoxAnchor for dependencies
+    // ChopboxAnchor cba =
+    // peCreateService.createChopboxAnchor(containerShape);
+    // link(cba, cfgOutIf);
 
-		// Call the layout feature
-		layoutPictogramElement(containerShape);
+    // Call the layout feature
+    layoutPictogramElement(containerShape);
 
-		return containerShape;
-	}
+    return containerShape;
+  }
 
-	@Override
-	public boolean canAdd(IAddContext context) {
-		// Check that the user wants to add an ConfigOutputInterface to the
-		// Diagram
-		return context.getNewObject() instanceof ConfigOutputInterface
-				&& context.getTargetContainer() instanceof Diagram;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.func.IAdd#canAdd(org.eclipse.graphiti.features.context.IAddContext)
+   */
+  @Override
+  public boolean canAdd(final IAddContext context) {
+    // Check that the user wants to add an ConfigOutputInterface to the
+    // Diagram
+    return (context.getNewObject() instanceof ConfigOutputInterface) && (context.getTargetContainer() instanceof Diagram);
+  }
 
 }

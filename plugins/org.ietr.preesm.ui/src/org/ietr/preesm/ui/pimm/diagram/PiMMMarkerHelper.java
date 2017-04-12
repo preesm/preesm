@@ -41,32 +41,34 @@ import org.eclipse.emf.common.ui.MarkerHelper;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.edit.ui.util.EditUIMarkerHelper;
 
+// TODO: Auto-generated Javadoc
 /**
- * The purpose of this custom {@link MarkerHelper} is to associate a new
- * attribute to the {@link IMarker} created in the {@link PiMMDiagramEditor}.
- * This attribute contains a {@link String} corresponding to the uriFragment
- * that can be used to access the pictogram element to which the marker is
- * associated.
- * 
+ * The purpose of this custom {@link MarkerHelper} is to associate a new attribute to the {@link IMarker} created in the {@link PiMMDiagramEditor}. This
+ * attribute contains a {@link String} corresponding to the uriFragment that can be used to access the pictogram element to which the marker is associated.
+ *
  * @author kdesnos
  *
  */
 public class PiMMMarkerHelper extends EditUIMarkerHelper {
 
-	/**
-	 * This {@link IMarker} attribute contains a {@link String} corresponding to
-	 * the uriFragment that can be used to access the pictogram element to which
-	 * the marker is associated.
-	 */
-	public static final String DIAGRAM_URI = "Diagram_URI";
+  /**
+   * This {@link IMarker} attribute contains a {@link String} corresponding to the uriFragment that can be used to access the pictogram element to which the
+   * marker is associated.
+   */
+  public static final String DIAGRAM_URI = "Diagram_URI";
 
-	@Override
-	protected void adjustMarker(IMarker marker, Diagnostic diagnostic, Diagnostic parentDiagnostic)
-			throws CoreException {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.emf.edit.ui.util.EditUIMarkerHelper#adjustMarker(org.eclipse.core.resources.IMarker, org.eclipse.emf.common.util.Diagnostic,
+   * org.eclipse.emf.common.util.Diagnostic)
+   */
+  @Override
+  protected void adjustMarker(final IMarker marker, final Diagnostic diagnostic, final Diagnostic parentDiagnostic) throws CoreException {
 
-		super.adjustMarker(marker, diagnostic, parentDiagnostic);
-		if (diagnostic.getData().size() == 2) {
-			marker.setAttribute(DIAGRAM_URI, (diagnostic.getData().get(1)));
-		}
-	}
+    super.adjustMarker(marker, diagnostic, parentDiagnostic);
+    if (diagnostic.getData().size() == 2) {
+      marker.setAttribute(PiMMMarkerHelper.DIAGRAM_URI, (diagnostic.getData().get(1)));
+    }
+  }
 }

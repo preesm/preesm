@@ -40,20 +40,26 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.ietr.dftools.graphiti.ui.properties.MapSection;
 
+// TODO: Auto-generated Javadoc
 /**
  * This class defines a map section for SDF vertex instance arguments.
- * 
+ *
  * @author mpelcat
- * 
+ *
  */
 public class SDFVertexInstanceArgumentsMapSection extends MapSection {
 
-	@Override
-	public void createControls(Composite parent,
-			TabbedPropertySheetPage aTabbedPropertySheetPage) {
-		super.createControls(parent, aTabbedPropertySheetPage);
-		getForm().setText("Instance Arguments");
-		setParameterName("instance argument");
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.graphiti.ui.properties.MapSection#createControls(org.eclipse.swt.widgets.Composite,
+   * org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
+   */
+  @Override
+  public void createControls(final Composite parent, final TabbedPropertySheetPage aTabbedPropertySheetPage) {
+    super.createControls(parent, aTabbedPropertySheetPage);
+    getForm().setText("Instance Arguments");
+    setParameterName("instance argument");
+  }
 
 }
