@@ -36,35 +36,68 @@
 
 package org.ietr.preesm.codegen.model;
 
+// TODO: Auto-generated Javadoc
 /**
- * Representation of a buffer in a prototype
- * 
+ * Representation of a buffer in a prototype.
+ *
  * @author jpiat
  * @author mpelcat
  */
 public class CodeGenArgument extends CodeGenCallElement {
 
-	private String type;
+  /** The type. */
+  private String type;
 
-	public static final String INPUT = "INPUT";
-	public static final String OUTPUT = "OUTPUT";
-	public static final String INOUT = "INOUT";
-	private String direction;
+  /** The Constant INPUT. */
+  public static final String INPUT = "INPUT";
 
-	public CodeGenArgument(String name, String direction) {
-		super(name);
-		this.direction = direction;
-	}
+  /** The Constant OUTPUT. */
+  public static final String OUTPUT = "OUTPUT";
 
-	public void setType(String type) {
-		this.type = type;
-	}
+  /** The Constant INOUT. */
+  public static final String INOUT = "INOUT";
 
-	public String getType() {
-		return type;
-	}
+  /** The direction. */
+  private final String direction;
 
-	public String getDirection() {
-		return direction;
-	}
+  /**
+   * Instantiates a new code gen argument.
+   *
+   * @param name
+   *          the name
+   * @param direction
+   *          the direction
+   */
+  public CodeGenArgument(final String name, final String direction) {
+    super(name);
+    this.direction = direction;
+  }
+
+  /**
+   * Sets the type.
+   *
+   * @param type
+   *          the new type
+   */
+  public void setType(final String type) {
+    this.type = type;
+  }
+
+  /**
+   * Gets the type.
+   *
+   * @return the type
+   */
+  public String getType() {
+    return this.type;
+  }
+
+  /**
+   * Gets the direction.
+   *
+   * @return the direction
+   */
+  public String getDirection() {
+    return this.direction;
+  }
 }

@@ -38,7 +38,6 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm.impl;
 
-
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
@@ -50,173 +49,213 @@ import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Delay</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>Delay</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DelayImpl#getExpression <em>Expression</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DelayImpl#getExpression <em>Expression</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class DelayImpl extends ParameterizableImpl implements Delay{
+public class DelayImpl extends ParameterizableImpl implements Delay {
 
-	/**
-	 * The cached value of the '{@link #getExpression() <em>Expression</em>}' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getExpression()
-	 * @generated
-	 * @ordered
-	 */
-	protected Expression expression;
+  /**
+   * The cached value of the '{@link #getExpression() <em>Expression</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getExpression()
+   * @generated
+   * @ordered
+   */
+  protected Expression expression;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 */
-	protected DelayImpl() {
-		super();
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   */
+  protected DelayImpl() {
+    super();
 
-		this.setExpression(PiMMFactory.eINSTANCE.createExpression());
-	}
+    setExpression(PiMMFactory.eINSTANCE.createExpression());
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return PiMMPackage.Literals.DELAY;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return PiMMPackage.Literals.DELAY;
+  }
 
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the expression
+   * @generated
+   */
+  @Override
+  public Expression getExpression() {
+    return this.expression;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Expression getExpression() {
-		return expression;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newExpression
+   *          the new expression
+   * @param msgs
+   *          the msgs
+   * @return the notification chain
+   * @generated
+   */
+  public NotificationChain basicSetExpression(final Expression newExpression, NotificationChain msgs) {
+    final Expression oldExpression = this.expression;
+    this.expression = newExpression;
+    if (eNotificationRequired()) {
+      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.DELAY__EXPRESSION, oldExpression, newExpression);
+      if (msgs == null) {
+        msgs = notification;
+      } else {
+        msgs.add(notification);
+      }
+    }
+    return msgs;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public NotificationChain basicSetExpression(Expression newExpression, NotificationChain msgs) {
-		Expression oldExpression = expression;
-		expression = newExpression;
-		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.DELAY__EXPRESSION, oldExpression, newExpression);
-			if (msgs == null) msgs = notification; else msgs.add(notification);
-		}
-		return msgs;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newExpression
+   *          the new expression
+   * @generated
+   */
+  @Override
+  public void setExpression(final Expression newExpression) {
+    if (newExpression != this.expression) {
+      NotificationChain msgs = null;
+      if (this.expression != null) {
+        msgs = ((InternalEObject) this.expression).eInverseRemove(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.DELAY__EXPRESSION, null, msgs);
+      }
+      if (newExpression != null) {
+        msgs = ((InternalEObject) newExpression).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.DELAY__EXPRESSION, null, msgs);
+      }
+      msgs = basicSetExpression(newExpression, msgs);
+      if (msgs != null) {
+        msgs.dispatch();
+      }
+    } else if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DELAY__EXPRESSION, newExpression, newExpression));
+    }
+  }
 
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param otherEnd
+   *          the other end
+   * @param featureID
+   *          the feature ID
+   * @param msgs
+   *          the msgs
+   * @return the notification chain
+   * @generated
+   */
+  @Override
+  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+    switch (featureID) {
+      case PiMMPackage.DELAY__EXPRESSION:
+        return basicSetExpression(null, msgs);
+    }
+    return super.eInverseRemove(otherEnd, featureID, msgs);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setExpression(Expression newExpression) {
-		if (newExpression != expression) {
-			NotificationChain msgs = null;
-			if (expression != null)
-				msgs = ((InternalEObject)expression).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.DELAY__EXPRESSION, null, msgs);
-			if (newExpression != null)
-				msgs = ((InternalEObject)newExpression).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.DELAY__EXPRESSION, null, msgs);
-			msgs = basicSetExpression(newExpression, msgs);
-			if (msgs != null) msgs.dispatch();
-		}
-		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DELAY__EXPRESSION, newExpression, newExpression));
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param resolve
+   *          the resolve
+   * @param coreType
+   *          the core type
+   * @return the object
+   * @generated
+   */
+  @Override
+  public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
+    switch (featureID) {
+      case PiMMPackage.DELAY__EXPRESSION:
+        return getExpression();
+    }
+    return super.eGet(featureID, resolve, coreType);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case PiMMPackage.DELAY__EXPRESSION:
-				return basicSetExpression(null, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param newValue
+   *          the new value
+   * @generated
+   */
+  @Override
+  public void eSet(final int featureID, final Object newValue) {
+    switch (featureID) {
+      case PiMMPackage.DELAY__EXPRESSION:
+        setExpression((Expression) newValue);
+        return;
+    }
+    super.eSet(featureID, newValue);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-			case PiMMPackage.DELAY__EXPRESSION:
-				return getExpression();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @generated
+   */
+  @Override
+  public void eUnset(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.DELAY__EXPRESSION:
+        setExpression((Expression) null);
+        return;
+    }
+    super.eUnset(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-			case PiMMPackage.DELAY__EXPRESSION:
-				setExpression((Expression)newValue);
-				return;
-		}
-		super.eSet(featureID, newValue);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @return true, if successful
+   * @generated
+   */
+  @Override
+  public boolean eIsSet(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.DELAY__EXPRESSION:
+        return this.expression != null;
+    }
+    return super.eIsSet(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void eUnset(int featureID) {
-		switch (featureID) {
-			case PiMMPackage.DELAY__EXPRESSION:
-				setExpression((Expression)null);
-				return;
-		}
-		super.eUnset(featureID);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.impl.ParameterizableImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
+   */
+  @Override
+  public void accept(final PiMMVisitor v) {
+    v.visitDelay(this);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case PiMMPackage.DELAY__EXPRESSION:
-				return expression != null;
-		}
-		return super.eIsSet(featureID);
-	}
-
-	@Override
-	public void accept(PiMMVisitor v) {
-		v.visitDelay(this);
-	}
-
-} //DelayImpl
+} // DelayImpl

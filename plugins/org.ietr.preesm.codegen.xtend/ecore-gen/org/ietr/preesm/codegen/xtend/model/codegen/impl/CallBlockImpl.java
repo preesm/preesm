@@ -36,36 +36,37 @@
 package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
 import org.eclipse.emf.ecore.EClass;
-
 import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> An implementation of the model object '
- * <em><b>Call Block</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Call Block</b></em>'. <!-- end-user-doc -->
  * <p>
  * </p>
- * 
+ *
  * @generated
  */
 public class CallBlockImpl extends BlockImpl implements CallBlock {
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	protected CallBlockImpl() {
-		super();
-	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return CodegenPackage.Literals.CALL_BLOCK;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @generated
+   */
+  protected CallBlockImpl() {
+    super();
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return CodegenPackage.Literals.CALL_BLOCK;
+  }
 
 } // CallBlockImpl

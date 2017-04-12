@@ -40,39 +40,72 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+// TODO: Auto-generated Javadoc
 /**
- * Given a set of T, gives a subset verifying the subsetCondition
- * 
+ * Given a set of T, gives a subset verifying the subsetCondition.
+ *
  * @author mpelcat
+ * @param <T>
+ *          the generic type
+ * @param <U>
+ *          the generic type
  */
 public abstract class SubsetFinder<T, U> {
 
-	private U comparedValue;
+  /** The compared value. */
+  private U comparedValue;
 
-	private Set<T> inputset;
+  /** The inputset. */
+  private Set<T> inputset;
 
-	public SubsetFinder() {
-		super();
-	}
+  /**
+   * Instantiates a new subset finder.
+   */
+  public SubsetFinder() {
+    super();
+  }
 
-	public SubsetFinder(Set<T> inputset, U comparedValue) {
-		this.inputset = inputset;
-		this.comparedValue = comparedValue;
-	}
+  /**
+   * Instantiates a new subset finder.
+   *
+   * @param inputset
+   *          the inputset
+   * @param comparedValue
+   *          the compared value
+   */
+  public SubsetFinder(final Set<T> inputset, final U comparedValue) {
+    this.inputset = inputset;
+    this.comparedValue = comparedValue;
+  }
 
-	public Set<T> subset() {
-		Set<T> subset = new HashSet<T>();
+  /**
+   * Subset.
+   *
+   * @return the sets the
+   */
+  public Set<T> subset() {
+    final Set<T> subset = new HashSet<>();
 
-		Iterator<T> iterator = inputset.iterator();
+    final Iterator<T> iterator = this.inputset.iterator();
 
-		while (iterator.hasNext()) {
-			T next = iterator.next();
+    while (iterator.hasNext()) {
+      final T next = iterator.next();
 
-			if (subsetCondition(next, comparedValue))
-				subset.add(next);
-		}
-		return subset;
-	}
+      if (subsetCondition(next, this.comparedValue)) {
+        subset.add(next);
+      }
+    }
+    return subset;
+  }
 
-	protected abstract boolean subsetCondition(T tested, U comparedValue);
+  /**
+   * Subset condition.
+   *
+   * @param tested
+   *          the tested
+   * @param comparedValue
+   *          the compared value
+   * @return true, if successful
+   */
+  protected abstract boolean subsetCondition(T tested, U comparedValue);
 }

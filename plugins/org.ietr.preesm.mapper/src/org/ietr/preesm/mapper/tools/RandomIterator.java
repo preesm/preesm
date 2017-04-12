@@ -42,88 +42,102 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+// TODO: Auto-generated Javadoc
 /**
- * This iterator iterates any list of objects with type E
- * 
+ * This iterator iterates any list of objects with type E.
+ *
  * @author pmenuet
+ * @param <E> the element type
  */
 
 /**
  * Provides a random iteration over the given list of unknown object.
- * 
- * 
+ *
+ * @param <E> The generic type to iterate over.
  */
 public class RandomIterator<E> implements Iterator<E> {
 
-	// variables
+  // variables
 
-	// the index of the chosen element
-	private int index;
+  /** The index. */
+  // the index of the chosen element
+  private int index;
 
-	// the list which is iterated
-	private List<E> list = null;
+  /** The list. */
+  // the list which is iterated
+  private List<E> list = null;
 
-	// size of the list where the iterator is set
-	private final int listSize;
+  /** The list size. */
+  // size of the list where the iterator is set
+  private final int listSize;
 
-	// random
-	private final Random rand;
+  /** The rand. */
+  // random
+  private final Random rand;
 
-	/**
-	 * RandomIterator constructor
-	 * 
-	 * @param list
-	 * @param rand
-	 */
-	public RandomIterator(List<E> list, Random rand) {
+  /**
+   * RandomIterator constructor.
+   *
+   * @param list
+   *          the list
+   * @param rand
+   *          the rand
+   */
+  public RandomIterator(final List<E> list, final Random rand) {
 
-		this.list = list;
-		this.listSize = list.size();
-		long seed = System.nanoTime();
-		rand.setSeed(seed);
-		this.rand = rand;
-	}
+    this.list = list;
+    this.listSize = list.size();
+    final long seed = System.nanoTime();
+    rand.setSeed(seed);
+    this.rand = rand;
+  }
 
-	/**
-	 * RandomIterator constructor
-	 * 
-	 * @param list
-	 * @param rand
-	 */
-	public RandomIterator(Set<E> set, Random rand) {
+  /**
+   * RandomIterator constructor.
+   *
+   * @param set
+   *          the set
+   * @param rand
+   *          the rand
+   */
+  public RandomIterator(final Set<E> set, final Random rand) {
 
-		this.list = new ArrayList<E>(set);
-		this.listSize = set.size();
-		long seed = System.nanoTime();
-		rand.setSeed(seed);
-		this.rand = rand;
-	}
+    this.list = new ArrayList<>(set);
+    this.listSize = set.size();
+    final long seed = System.nanoTime();
+    rand.setSeed(seed);
+    this.rand = rand;
+  }
 
-	/**
-	 * Impossible to know because there is a next always
-	 */
-	@Override
-	public boolean hasNext() {
-		throw new UnsupportedOperationException();
-	}
+  /**
+   * Impossible to know because there is a next always.
+   *
+   * @return true, if successful
+   */
+  @Override
+  public boolean hasNext() {
+    throw new UnsupportedOperationException();
+  }
 
-	/**
-	 * determine the next random index and return the designated object
-	 */
-	@Override
-	public E next() {
+  /**
+   * determine the next random index and return the designated object.
+   *
+   * @return the e
+   */
+  @Override
+  public E next() {
 
-		index = rand.nextInt(listSize);
+    this.index = this.rand.nextInt(this.listSize);
 
-		return list.get(index);
-	}
+    return this.list.get(this.index);
+  }
 
-	/**
-	 * Useless in this case
-	 */
-	@Override
-	public void remove() {
-		throw new UnsupportedOperationException();
-	}
+  /**
+   * Useless in this case.
+   */
+  @Override
+  public void remove() {
+    throw new UnsupportedOperationException();
+  }
 
 }

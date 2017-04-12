@@ -41,7 +41,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
@@ -54,159 +53,185 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * The edge adder automatically generates edges between vertices successive on a
- * single operator. It can also remove all the edges of type PrecedenceEdgeAdder
- * from the graph
- * 
+ * The edge adder automatically generates edges between vertices successive on a single operator. It
+ * can also remove all the edges of type PrecedenceEdgeAdder from the graph
+ *
  * @author mpelcat
  */
 public class PrecedenceEdgeAdder {
 
-	private OrderManager orderManager;
-	private MapperDAG implementation;
-	private TransactionManager transactionManager;
+  /** The order manager. */
+  private final OrderManager orderManager;
 
-	public PrecedenceEdgeAdder(OrderManager orderManager,
-			MapperDAG implementation) {
-		super();
-		this.orderManager = orderManager;
-		this.implementation = implementation;
-		this.transactionManager = new TransactionManager();
-	}
+  /** The implementation. */
+  private final MapperDAG implementation;
 
-	/**
-	 * Removes all schedule edges
-	 */
-	public void removePrecedenceEdges() {
+  /** The transaction manager. */
+  private final TransactionManager transactionManager;
 
-		for (DAGEdge e : implementation.edgeSet()) {
-			if (e instanceof PrecedenceEdge) {
-				transactionManager.add(new RemoveEdgeTransaction(
-						(MapperDAGEdge) e, implementation));
-			}
-		}
-		transactionManager.execute();
-		transactionManager.clear();
-	}
+  /**
+   * Instantiates a new precedence edge adder.
+   *
+   * @param orderManager
+   *          the order manager
+   * @param implementation
+   *          the implementation
+   */
+  public PrecedenceEdgeAdder(final OrderManager orderManager, final MapperDAG implementation) {
+    super();
+    this.orderManager = orderManager;
+    this.implementation = implementation;
+    this.transactionManager = new TransactionManager();
+  }
 
-	/**
-	 * Adds all necessary precedence edges to an implementation respecting the
-	 * order given by the scheduling order manager.
-	 */
-	public void addPrecedenceEdges() {
+  /**
+   * Removes all schedule edges.
+   */
+  public void removePrecedenceEdges() {
 
-		TransactionManager localTransactionManager = new TransactionManager();
-		Iterator<ComponentInstance> opIt = orderManager
-				.getArchitectureComponents().iterator();
+    for (final DAGEdge e : this.implementation.edgeSet()) {
+      if (e instanceof PrecedenceEdge) {
+        this.transactionManager
+            .add(new RemoveEdgeTransaction((MapperDAGEdge) e, this.implementation));
+      }
+    }
+    this.transactionManager.execute();
+    this.transactionManager.clear();
+  }
 
-		// Iterates the schedules
-		while (opIt.hasNext()) {
-			List<MapperDAGVertex> schedule = orderManager.getVertexList(opIt
-					.next());
+  /**
+   * Adds all necessary precedence edges to an implementation respecting the order given by the
+   * scheduling order manager.
+   */
+  public void addPrecedenceEdges() {
 
-			Iterator<MapperDAGVertex> schedit = schedule.iterator();
+    final TransactionManager localTransactionManager = new TransactionManager();
+    final Iterator<ComponentInstance> opIt = this.orderManager.getArchitectureComponents()
+        .iterator();
 
-			MapperDAGVertex src;
+    // Iterates the schedules
+    while (opIt.hasNext()) {
+      final List<MapperDAGVertex> schedule = this.orderManager.getVertexList(opIt.next());
 
-			// Iterates all vertices in each schedule
-			if (schedit.hasNext()) {
-				MapperDAGVertex dst = schedit.next();
+      final Iterator<MapperDAGVertex> schedit = schedule.iterator();
 
-				while (schedit.hasNext()) {
+      MapperDAGVertex src;
 
-					src = dst;
-					dst = schedit.next();
+      // Iterates all vertices in each schedule
+      if (schedit.hasNext()) {
+        MapperDAGVertex dst = schedit.next();
 
-					if (implementation.getAllEdges(src, dst).isEmpty()) {
-						// Adds a transaction
-						Transaction transaction = new AddPrecedenceEdgeTransaction(
-								implementation, src, dst);
-						localTransactionManager.add(transaction);
-					}
-				}
-			}
-		}
+        while (schedit.hasNext()) {
 
-		// Executes the transactions
-		localTransactionManager.execute();
-	}
+          src = dst;
+          dst = schedit.next();
 
-	public PrecedenceEdge addPrecedenceEdge(MapperDAGVertex v1,
-			MapperDAGVertex v2) {
-		PrecedenceEdge precedenceEdge = new PrecedenceEdge(v1, v2);
-		precedenceEdge.getTiming().setCost(0);
-		implementation.addEdge(v1, v2, precedenceEdge);
-		return precedenceEdge;
-	}
+          if (this.implementation.getAllEdges(src, dst).isEmpty()) {
+            // Adds a transaction
+            final Transaction transaction = new AddPrecedenceEdgeTransaction(this.implementation,
+                src, dst);
+            localTransactionManager.add(transaction);
+          }
+        }
+      }
+    }
 
-	public void removePrecedenceEdge(MapperDAGVertex v1, MapperDAGVertex v2) {
-		Set<DAGEdge> edges = implementation.getAllEdges(v1, v2);
+    // Executes the transactions
+    localTransactionManager.execute();
+  }
 
-		if (edges != null) {
-			if (edges.size() >= 2)
-				WorkflowLogger.getLogger().log(
-						Level.SEVERE,
-						"too many edges between " + v1.toString() + " and "
-								+ v2.toString());
+  /**
+   * Adds the precedence edge.
+   *
+   * @param v1
+   *          the v 1
+   * @param v2
+   *          the v 2
+   * @return the precedence edge
+   */
+  public PrecedenceEdge addPrecedenceEdge(final MapperDAGVertex v1, final MapperDAGVertex v2) {
+    final PrecedenceEdge precedenceEdge = new PrecedenceEdge(v1, v2);
+    precedenceEdge.getTiming().setCost(0);
+    this.implementation.addEdge(v1, v2, precedenceEdge);
+    return precedenceEdge;
+  }
 
-			for (DAGEdge edge : edges) {
-				if (edge instanceof PrecedenceEdge) {
-					implementation.removeEdge(edge);
-				}
-			}
-		}
-	}
+  /**
+   * Removes the precedence edge.
+   *
+   * @param v1
+   *          the v 1
+   * @param v2
+   *          the v 2
+   */
+  public void removePrecedenceEdge(final MapperDAGVertex v1, final MapperDAGVertex v2) {
+    final Set<DAGEdge> edges = this.implementation.getAllEdges(v1, v2);
 
-	/**
-	 * For Debug purposes, checks that all necessary precedence edges are
-	 * present
-	 */
-	/*
-	 * public static void checkPrecedences(SchedOrderManager orderManager,
-	 * MapperDAG implementation, MultiCoreArchitecture archi) {
-	 * 
-	 * Set<ArchitectureComponent> cmpSet = new HashSet<ArchitectureComponent>();
-	 * cmpSet.addAll(archi.getComponents(ArchitectureComponentType.medium));
-	 * cmpSet.addAll(archi.getComponents(ArchitectureComponentType.operator));
-	 * 
-	 * for (ArchitectureComponent o : cmpSet) { List<MapperDAGVertex> schedule =
-	 * orderManager.getVertexList(o); if (schedule != null) { MapperDAGVertex pv
-	 * = null; for (IScheduleElement v : schedule) { if (pv != null) { if
-	 * (implementation.getAllEdges(pv, (MapperDAGVertex)v) == null ||
-	 * implementation.getAllEdges(pv, (MapperDAGVertex)v).isEmpty()) {
-	 * 
-	 * PreesmLogger.getLogger().log( Level.SEVERE,
-	 * "Lacking precedence edge between " + pv.toString() + " and " +
-	 * v.toString()); } } pv = (MapperDAGVertex)v; } } } }
-	 */
+    if (edges != null) {
+      if (edges.size() >= 2) {
+        WorkflowLogger.getLogger().log(Level.SEVERE,
+            "too many edges between " + v1.toString() + " and " + v2.toString());
+      }
 
-	/**
-	 * Schedules a given vertex
-	 */
-	public void scheduleVertex(MapperDAGVertex newVertex) {
+      for (final DAGEdge edge : edges) {
+        if (edge instanceof PrecedenceEdge) {
+          this.implementation.removeEdge(edge);
+        }
+      }
+    }
+  }
 
-		MapperDAGVertex prev = orderManager.getPrevious(newVertex);
-		MapperDAGVertex next = orderManager.getNext(newVertex);
+  /**
+   * For Debug purposes, checks that all necessary precedence edges are present.
+   *
+   * @param newVertex
+   *          the new vertex
+   */
+  /*
+   * public static void checkPrecedences(SchedOrderManager orderManager, MapperDAG implementation,
+   * MultiCoreArchitecture archi) {
+   *
+   * Set<ArchitectureComponent> cmpSet = new HashSet<ArchitectureComponent>();
+   * cmpSet.addAll(archi.getComponents(ArchitectureComponentType.medium));
+   * cmpSet.addAll(archi.getComponents(ArchitectureComponentType.operator));
+   *
+   * for (ArchitectureComponent o : cmpSet) { List<MapperDAGVertex> schedule =
+   * orderManager.getVertexList(o); if (schedule != null) { MapperDAGVertex pv = null; for
+   * (IScheduleElement v : schedule) { if (pv != null) { if (implementation.getAllEdges(pv,
+   * (MapperDAGVertex)v) == null || implementation.getAllEdges(pv, (MapperDAGVertex)v).isEmpty()) {
+   *
+   * PreesmLogger.getLogger().log( Level.SEVERE, "Lacking precedence edge between " + pv.toString()
+   * + " and " + v.toString()); } } pv = (MapperDAGVertex)v; } } } }
+   */
 
-		Set<DAGEdge> prevEdges = implementation.getAllEdges(prev, newVertex);
-		Set<DAGEdge> nextEdges = implementation.getAllEdges(newVertex, next);
+  /**
+   * Schedules a given vertex
+   */
+  public void scheduleVertex(final MapperDAGVertex newVertex) {
 
-		boolean prevAndNewLinked = (prevEdges != null && !prevEdges.isEmpty());
-		boolean newAndNextLinked = (nextEdges != null && !nextEdges.isEmpty());
+    final MapperDAGVertex prev = this.orderManager.getPrevious(newVertex);
+    final MapperDAGVertex next = this.orderManager.getNext(newVertex);
 
-		if ((prev != null && newVertex != null) && !prevAndNewLinked) {
-			addPrecedenceEdge(prev, newVertex);
-			prevAndNewLinked = true;
-		}
+    final Set<DAGEdge> prevEdges = this.implementation.getAllEdges(prev, newVertex);
+    final Set<DAGEdge> nextEdges = this.implementation.getAllEdges(newVertex, next);
 
-		if ((newVertex != null && next != null) && !newAndNextLinked) {
-			addPrecedenceEdge(newVertex, next);
-			newAndNextLinked = true;
-		}
+    boolean prevAndNewLinked = ((prevEdges != null) && !prevEdges.isEmpty());
+    boolean newAndNextLinked = ((nextEdges != null) && !nextEdges.isEmpty());
 
-		if (prevAndNewLinked && newAndNextLinked) {
-			removePrecedenceEdge(prev, next);
-		}
-	}
+    if (((prev != null) && (newVertex != null)) && !prevAndNewLinked) {
+      addPrecedenceEdge(prev, newVertex);
+      prevAndNewLinked = true;
+    }
+
+    if (((newVertex != null) && (next != null)) && !newAndNextLinked) {
+      addPrecedenceEdge(newVertex, next);
+      newAndNextLinked = true;
+    }
+
+    if (prevAndNewLinked && newAndNextLinked) {
+      removePrecedenceEdge(prev, next);
+    }
+  }
 }

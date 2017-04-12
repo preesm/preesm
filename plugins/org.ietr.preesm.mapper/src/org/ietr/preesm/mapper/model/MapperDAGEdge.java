@@ -41,42 +41,78 @@ import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.preesm.mapper.model.property.EdgeInit;
 import org.ietr.preesm.mapper.model.property.EdgeTiming;
 
+// TODO: Auto-generated Javadoc
 /**
- * Represents an edge in a DAG of type {@link MapperDAG} used in the mapper
- * 
+ * Represents an edge in a DAG of type {@link MapperDAG} used in the mapper.
+ *
  * @author mpelcat
  */
 public class MapperDAGEdge extends DAGEdge {
 
-	protected EdgeInit initialEdgeProperty;
+  /** The initial edge property. */
+  protected EdgeInit initialEdgeProperty;
 
-	protected EdgeTiming timingEdgeProperty;
+  /** The timing edge property. */
+  protected EdgeTiming timingEdgeProperty;
 
-	/**
-	 */
-	public MapperDAGEdge(MapperDAGVertex source, MapperDAGVertex destination) {
-		initialEdgeProperty = new EdgeInit();
-		timingEdgeProperty = new EdgeTiming();
-	}
+  /**
+   * Instantiates a new mapper DAG edge.
+   *
+   * @param source
+   *          the source
+   * @param destination
+   *          the destination
+   */
+  public MapperDAGEdge(final MapperDAGVertex source, final MapperDAGVertex destination) {
+    this.initialEdgeProperty = new EdgeInit();
+    this.timingEdgeProperty = new EdgeTiming();
+  }
 
-	public EdgeInit getInit() {
-		return initialEdgeProperty;
-	}
+  /**
+   * Gets the inits the.
+   *
+   * @return the inits the
+   */
+  public EdgeInit getInit() {
+    return this.initialEdgeProperty;
+  }
 
-	public void setInit(EdgeInit initialEdgeProperty) {
-		this.initialEdgeProperty = initialEdgeProperty;
-	}
+  /**
+   * Sets the inits the.
+   *
+   * @param initialEdgeProperty
+   *          the new inits the
+   */
+  public void setInit(final EdgeInit initialEdgeProperty) {
+    this.initialEdgeProperty = initialEdgeProperty;
+  }
 
-	public EdgeTiming getTiming() {
-		return timingEdgeProperty;
-	}
+  /**
+   * Gets the timing.
+   *
+   * @return the timing
+   */
+  public EdgeTiming getTiming() {
+    return this.timingEdgeProperty;
+  }
 
-	public void setTiming(EdgeTiming timingEdgeProperty) {
-		this.timingEdgeProperty = timingEdgeProperty;
-	}
+  /**
+   * Sets the timing.
+   *
+   * @param timingEdgeProperty
+   *          the new timing
+   */
+  public void setTiming(final EdgeTiming timingEdgeProperty) {
+    this.timingEdgeProperty = timingEdgeProperty;
+  }
 
-	@Override
-	public String toString() {
-		return "<" + getSource().getName() + "," + getTarget().getName() + ">";
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.algorithm.model.dag.DAGEdge#toString()
+   */
+  @Override
+  public String toString() {
+    return "<" + getSource().getName() + "," + getTarget().getName() + ">";
+  }
 }

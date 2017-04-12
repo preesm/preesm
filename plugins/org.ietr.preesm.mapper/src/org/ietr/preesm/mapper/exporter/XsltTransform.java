@@ -41,9 +41,7 @@ package org.ietr.preesm.mapper.exporter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-
 import javax.xml.transform.TransformerConfigurationException;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.ietr.dftools.workflow.WorkflowException;
@@ -53,70 +51,83 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.utils.paths.PathTools;
 import org.ietr.preesm.utils.xml.XsltTransformer;
 
+// TODO: Auto-generated Javadoc
 /**
- * This class provides methods to transform an XML file or a DOM element to a
- * string in a workflow
- * 
+ * This class provides methods to transform an XML file or a DOM element to a string in a workflow.
+ *
  * @author Matthieu Wipliez
  * @author mpelcat
- * 
  */
 public class XsltTransform extends AbstractTaskImplementation {
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
-		
-		String sInputPath = PathTools.getAbsolutePath(parameters.get("inputFile"),
-				workflow.getProjectName());		
-		if(parameters.get("inputFile").equals("")){
-			sInputPath =  PathTools.getAbsolutePath((String)inputs.get("xml"),
-					workflow.getProjectName());
-		}		
-		Path inputPath = new Path(sInputPath);
-		
-		String sOutputPath = PathTools.getAbsolutePath(parameters.get("outputFile"),
-				workflow.getProjectName());		
-		Path outputPath = new Path(sOutputPath);
-		
-		String sxslPath = PathTools.getAbsolutePath(parameters.get("xslFile"),
-				workflow.getProjectName());		
-		Path xslPath = new Path(sxslPath);
-		
-		if (!inputPath.isEmpty() && !outputPath.isEmpty() && !xslPath.isEmpty()) {
-			try {
-				XsltTransformer xsltTransfo = new XsltTransformer();
-				if (xsltTransfo.setXSLFile(xslPath.toOSString())) {
-					WorkflowLogger.getLogger().log(Level.INFO,
-							"Generating file: " + outputPath.toOSString());
-					xsltTransfo.transformFileToFile(inputPath.toOSString(),
-							outputPath.toOSString());
-				}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
+   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs,
+      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
+      final Workflow workflow) throws WorkflowException {
 
-				// xsltTransfo.
-			} catch (TransformerConfigurationException e) {
-				e.printStackTrace();
-			}
-		}
-		HashMap<String, Object> outputs = new HashMap<String, Object>();
-		outputs.put("xml", parameters.get("outputFile"));
+    String sInputPath = PathTools.getAbsolutePath(parameters.get("inputFile"),
+        workflow.getProjectName());
+    if (parameters.get("inputFile").equals("")) {
+      sInputPath = PathTools.getAbsolutePath((String) inputs.get("xml"), workflow.getProjectName());
+    }
+    final Path inputPath = new Path(sInputPath);
 
-		return outputs;
-	}
+    final String sOutputPath = PathTools.getAbsolutePath(parameters.get("outputFile"),
+        workflow.getProjectName());
+    final Path outputPath = new Path(sOutputPath);
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = new HashMap<String, String>();
+    final String sxslPath = PathTools.getAbsolutePath(parameters.get("xslFile"),
+        workflow.getProjectName());
+    final Path xslPath = new Path(sxslPath);
 
-		parameters.put("inputFile", "");
-		parameters.put("outputFile", "");
-		parameters.put("xslFile", "");
-		return parameters;
-	}
+    if (!inputPath.isEmpty() && !outputPath.isEmpty() && !xslPath.isEmpty()) {
+      try {
+        final XsltTransformer xsltTransfo = new XsltTransformer();
+        if (xsltTransfo.setXSLFile(xslPath.toOSString())) {
+          WorkflowLogger.getLogger().log(Level.INFO, "Generating file: " + outputPath.toOSString());
+          xsltTransfo.transformFileToFile(inputPath.toOSString(), outputPath.toOSString());
+        }
 
-	@Override
-	public String monitorMessage() {
-		return "XSL Transformation.";
-	}
+        // xsltTransfo.
+      } catch (final TransformerConfigurationException e) {
+        e.printStackTrace();
+      }
+    }
+    final HashMap<String, Object> outputs = new HashMap<>();
+    outputs.put("xml", parameters.get("outputFile"));
+
+    return outputs;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new HashMap<>();
+
+    parameters.put("inputFile", "");
+    parameters.put("outputFile", "");
+    parameters.put("xslFile", "");
+    return parameters;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "XSL Transformation.";
+  }
 }

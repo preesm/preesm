@@ -36,10 +36,9 @@
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
 /**
- * <!-- begin-user-doc --> An {@link ActorCall} represents a {@link Call} to a
- * non-flattened hierarchical actor. <!-- end-user-doc -->
- * 
- * 
+ * <!-- begin-user-doc --> An {@link ActorCall} represents a {@link Call} to a non-flattened hierarchical actor. <!-- end-user-doc -->
+ *
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getActorCall()
  * @model
  * @generated

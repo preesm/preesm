@@ -38,45 +38,54 @@
 package org.ietr.preesm.mapper.tools;
 
 import java.util.logging.Level;
-
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * Iterates an implementation in the rank order
- * 
+ * Iterates an implementation in the rank order.
+ *
  * @author mpelcat
  */
 public class SchedulingOrderIterator extends ImplementationIterator {
 
-	IAbc abc = null;
+  /** The abc. */
+  IAbc abc = null;
 
-	public SchedulingOrderIterator(MapperDAG implementation, IAbc abc,
-			boolean directOrder) {
-		this.abc = abc;
-		super.initParams(null, implementation, directOrder);
-	}
+  /**
+   * Instantiates a new scheduling order iterator.
+   *
+   * @param implementation
+   *          the implementation
+   * @param abc
+   *          the abc
+   * @param directOrder
+   *          the direct order
+   */
+  public SchedulingOrderIterator(final MapperDAG implementation, final IAbc abc,
+      final boolean directOrder) {
+    this.abc = abc;
+    super.initParams(null, implementation, directOrder);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.ietr.preesm.plugin.mapper.tools.ImplantationIterator#compare(org.
-	 * ietr.preesm.plugin.mapper.model.MapperDAGVertex,
-	 * org.ietr.preesm.plugin.mapper.model.MapperDAGVertex)
-	 */
-	@Override
-	public int compare(MapperDAGVertex arg0, MapperDAGVertex arg1) {
-		int dif = abc.getSchedTotalOrder(arg0) - abc.getSchedTotalOrder(arg1);
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.plugin.mapper.tools.ImplantationIterator#compare(org.
+   * ietr.preesm.plugin.mapper.model.MapperDAGVertex,
+   * org.ietr.preesm.plugin.mapper.model.MapperDAGVertex)
+   */
+  @Override
+  public int compare(final MapperDAGVertex arg0, final MapperDAGVertex arg1) {
+    final int dif = this.abc.getSchedTotalOrder(arg0) - this.abc.getSchedTotalOrder(arg1);
 
-		// Preventing equal scheduling order element discard
-		if (dif == 0) {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
-					"Found two vertices with the same total order");
-		}
-		return (dif);
-	}
+    // Preventing equal scheduling order element discard
+    if (dif == 0) {
+      WorkflowLogger.getLogger().log(Level.SEVERE, "Found two vertices with the same total order");
+    }
+    return (dif);
+  }
 
 }

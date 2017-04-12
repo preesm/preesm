@@ -39,9 +39,9 @@ package org.ietr.preesm.experiment.model.pimm;
 
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> A representation of the model object '
- * <em><b>Config Output Interface</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A representation of the model object ' <em><b>Config Output Interface</b></em>'. <!-- end-user-doc -->
  *
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getConfigOutputInterface()
@@ -49,5 +49,7 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  * @generated
  */
 public interface ConfigOutputInterface extends InterfaceActor, PiMMVisitable {
-	public static final String KIND = "cfg_out_iface";
+
+  /** The Constant KIND. */
+  public static final String KIND = "cfg_out_iface";
 } // ConfigOutputInterface

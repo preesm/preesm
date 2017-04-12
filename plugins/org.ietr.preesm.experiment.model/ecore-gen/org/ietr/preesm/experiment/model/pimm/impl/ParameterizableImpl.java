@@ -40,7 +40,6 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
@@ -55,151 +54,185 @@ import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Parameterizable</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>Parameterizable</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterizableImpl#getConfigInputPorts <em>Config Input Ports</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ParameterizableImpl#getConfigInputPorts <em>Config Input Ports</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
 public abstract class ParameterizableImpl extends EObjectImpl implements Parameterizable {
-	/**
-	 * The cached value of the '{@link #getConfigInputPorts() <em>Config Input Ports</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getConfigInputPorts()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<ConfigInputPort> configInputPorts;
+  /**
+   * The cached value of the '{@link #getConfigInputPorts() <em>Config Input Ports</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
+   *
+   * @see #getConfigInputPorts()
+   * @generated
+   * @ordered
+   */
+  protected EList<ConfigInputPort> configInputPorts;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected ParameterizableImpl() {
-		super();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @generated
+   */
+  protected ParameterizableImpl() {
+    super();
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return PiMMPackage.Literals.PARAMETERIZABLE;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return PiMMPackage.Literals.PARAMETERIZABLE;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EList<ConfigInputPort> getConfigInputPorts() {
-		if (configInputPorts == null) {
-			configInputPorts = new EObjectContainmentEList<ConfigInputPort>(ConfigInputPort.class, this, PiMMPackage.PARAMETERIZABLE__CONFIG_INPUT_PORTS);
-		}
-		return configInputPorts;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the config input ports
+   * @generated
+   */
+  @Override
+  public EList<ConfigInputPort> getConfigInputPorts() {
+    if (this.configInputPorts == null) {
+      this.configInputPorts = new EObjectContainmentEList<>(ConfigInputPort.class, this, PiMMPackage.PARAMETERIZABLE__CONFIG_INPUT_PORTS);
+    }
+    return this.configInputPorts;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case PiMMPackage.PARAMETERIZABLE__CONFIG_INPUT_PORTS:
-				return ((InternalEList<?>)getConfigInputPorts()).basicRemove(otherEnd, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param otherEnd
+   *          the other end
+   * @param featureID
+   *          the feature ID
+   * @param msgs
+   *          the msgs
+   * @return the notification chain
+   * @generated
+   */
+  @Override
+  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+    switch (featureID) {
+      case PiMMPackage.PARAMETERIZABLE__CONFIG_INPUT_PORTS:
+        return ((InternalEList<?>) getConfigInputPorts()).basicRemove(otherEnd, msgs);
+    }
+    return super.eInverseRemove(otherEnd, featureID, msgs);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-			case PiMMPackage.PARAMETERIZABLE__CONFIG_INPUT_PORTS:
-				return getConfigInputPorts();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param resolve
+   *          the resolve
+   * @param coreType
+   *          the core type
+   * @return the object
+   * @generated
+   */
+  @Override
+  public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
+    switch (featureID) {
+      case PiMMPackage.PARAMETERIZABLE__CONFIG_INPUT_PORTS:
+        return getConfigInputPorts();
+    }
+    return super.eGet(featureID, resolve, coreType);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-			case PiMMPackage.PARAMETERIZABLE__CONFIG_INPUT_PORTS:
-				getConfigInputPorts().clear();
-				getConfigInputPorts().addAll((Collection<? extends ConfigInputPort>)newValue);
-				return;
-		}
-		super.eSet(featureID, newValue);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param newValue
+   *          the new value
+   * @generated
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  public void eSet(final int featureID, final Object newValue) {
+    switch (featureID) {
+      case PiMMPackage.PARAMETERIZABLE__CONFIG_INPUT_PORTS:
+        getConfigInputPorts().clear();
+        getConfigInputPorts().addAll((Collection<? extends ConfigInputPort>) newValue);
+        return;
+    }
+    super.eSet(featureID, newValue);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void eUnset(int featureID) {
-		switch (featureID) {
-			case PiMMPackage.PARAMETERIZABLE__CONFIG_INPUT_PORTS:
-				getConfigInputPorts().clear();
-				return;
-		}
-		super.eUnset(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @generated
+   */
+  @Override
+  public void eUnset(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.PARAMETERIZABLE__CONFIG_INPUT_PORTS:
+        getConfigInputPorts().clear();
+        return;
+    }
+    super.eUnset(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case PiMMPackage.PARAMETERIZABLE__CONFIG_INPUT_PORTS:
-				return configInputPorts != null && !configInputPorts.isEmpty();
-		}
-		return super.eIsSet(featureID);
-	}
-	
-	@Override
-	public void accept(PiMMVisitor v) {
-		v.visitParameterizable(this);
-	}
-	
-	@Override
-	public Set<Parameter> getInputParameters() {
-		Set<Parameter> result = new HashSet<Parameter>();
-		for (ConfigInputPort in : getConfigInputPorts()) {
-			ISetter setter = in.getIncomingDependency().getSetter();
-			if (setter instanceof Parameter) {
-				result.add((Parameter) setter);
-			}
-		}
-		return result;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @return true, if successful
+   * @generated
+   */
+  @Override
+  public boolean eIsSet(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.PARAMETERIZABLE__CONFIG_INPUT_PORTS:
+        return (this.configInputPorts != null) && !this.configInputPorts.isEmpty();
+    }
+    return super.eIsSet(featureID);
+  }
 
-} //ParameterizableImpl
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
+   */
+  @Override
+  public void accept(final PiMMVisitor v) {
+    v.visitParameterizable(this);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.Parameterizable#getInputParameters()
+   */
+  @Override
+  public Set<Parameter> getInputParameters() {
+    final Set<Parameter> result = new HashSet<>();
+    for (final ConfigInputPort in : getConfigInputPorts()) {
+      final ISetter setter = in.getIncomingDependency().getSetter();
+      if (setter instanceof Parameter) {
+        result.add((Parameter) setter);
+      }
+    }
+    return result;
+  }
+
+} // ParameterizableImpl

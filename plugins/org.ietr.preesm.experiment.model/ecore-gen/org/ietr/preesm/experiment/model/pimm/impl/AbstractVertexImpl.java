@@ -39,7 +39,6 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
@@ -48,164 +47,206 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> An implementation of the model object '
- * <em><b>Abstract Vertex</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Abstract Vertex</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#getName <em>Name</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#getName <em>Name</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public abstract class AbstractVertexImpl extends ParameterizableImpl implements
-		AbstractVertex {
-	/**
-	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @see #getName()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String NAME_EDEFAULT = null;
+public abstract class AbstractVertexImpl extends ParameterizableImpl implements AbstractVertex {
+  /**
+   * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getName()
+   * @generated
+   * @ordered
+   */
+  protected static final String NAME_EDEFAULT = null;
 
-	/**
-	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @see #getName()
-	 * @generated
-	 * @ordered
-	 */
-	protected String name = NAME_EDEFAULT;
+  /**
+   * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getName()
+   * @generated
+   * @ordered
+   */
+  protected String name = AbstractVertexImpl.NAME_EDEFAULT;
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected AbstractVertexImpl() {
-		super();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @generated
+   */
+  protected AbstractVertexImpl() {
+    super();
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return PiMMPackage.Literals.ABSTRACT_VERTEX;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return PiMMPackage.Literals.ABSTRACT_VERTEX;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public String getName() {
-		return name;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the name
+   * @generated
+   */
+  @Override
+  public String getName() {
+    return this.name;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setName(String newName) {
-		String oldName = name;
-		name = newName;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.ABSTRACT_VERTEX__NAME, oldName, name));
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newName
+   *          the new name
+   * @generated
+   */
+  @Override
+  public void setName(final String newName) {
+    final String oldName = this.name;
+    this.name = newName;
+    if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.ABSTRACT_VERTEX__NAME, oldName, this.name));
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-			case PiMMPackage.ABSTRACT_VERTEX__NAME:
-				return getName();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param resolve
+   *          the resolve
+   * @param coreType
+   *          the core type
+   * @return the object
+   * @generated
+   */
+  @Override
+  public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
+    switch (featureID) {
+      case PiMMPackage.ABSTRACT_VERTEX__NAME:
+        return getName();
+    }
+    return super.eGet(featureID, resolve, coreType);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-			case PiMMPackage.ABSTRACT_VERTEX__NAME:
-				setName((String)newValue);
-				return;
-		}
-		super.eSet(featureID, newValue);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param newValue
+   *          the new value
+   * @generated
+   */
+  @Override
+  public void eSet(final int featureID, final Object newValue) {
+    switch (featureID) {
+      case PiMMPackage.ABSTRACT_VERTEX__NAME:
+        setName((String) newValue);
+        return;
+    }
+    super.eSet(featureID, newValue);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void eUnset(int featureID) {
-		switch (featureID) {
-			case PiMMPackage.ABSTRACT_VERTEX__NAME:
-				setName(NAME_EDEFAULT);
-				return;
-		}
-		super.eUnset(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @generated
+   */
+  @Override
+  public void eUnset(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.ABSTRACT_VERTEX__NAME:
+        setName(AbstractVertexImpl.NAME_EDEFAULT);
+        return;
+    }
+    super.eUnset(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case PiMMPackage.ABSTRACT_VERTEX__NAME:
-				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
-		}
-		return super.eIsSet(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @return true, if successful
+   * @generated
+   */
+  @Override
+  public boolean eIsSet(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.ABSTRACT_VERTEX__NAME:
+        return AbstractVertexImpl.NAME_EDEFAULT == null ? this.name != null : !AbstractVertexImpl.NAME_EDEFAULT.equals(this.name);
+    }
+    return super.eIsSet(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public String toString() {
-		if (eIsProxy()) return super.toString();
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the string
+   * @generated
+   */
+  @Override
+  public String toString() {
+    if (eIsProxy()) {
+      return super.toString();
+    }
 
-		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (name: ");
-		result.append(name);
-		result.append(')');
-		return result.toString();
-	}
+    final StringBuffer result = new StringBuffer(super.toString());
+    result.append(" (name: ");
+    result.append(this.name);
+    result.append(')');
+    return result.toString();
+  }
 
-	@Override
-	public Port getPortNamed(String portName) {
-		List<Port> ports = new ArrayList<Port>(getConfigInputPorts());
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.AbstractVertex#getPortNamed(java.lang.String)
+   */
+  @Override
+  public Port getPortNamed(final String portName) {
+    final List<Port> ports = new ArrayList<>(getConfigInputPorts());
 
-		for (Object port : ports) {
-			String name = ((Port) port).getName();
-			if (name == null && portName == null) {
-				return (Port) port;
-			}
-			if (name != null && name.equals(portName)) {
-				return (Port) port;
-			}
-		}
-		return null;
-	}
-	
-	@Override
-	public void accept(PiMMVisitor v) {
-		v.visitAbstractVertex(this);
-	}
+    for (final Object port : ports) {
+      final String name = ((Port) port).getName();
+      if ((name == null) && (portName == null)) {
+        return (Port) port;
+      }
+      if ((name != null) && name.equals(portName)) {
+        return (Port) port;
+      }
+    }
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.impl.ParameterizableImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
+   */
+  @Override
+  public void accept(final PiMMVisitor v) {
+    v.visitAbstractVertex(this);
+  }
 
 } // AbstractVertexImpl

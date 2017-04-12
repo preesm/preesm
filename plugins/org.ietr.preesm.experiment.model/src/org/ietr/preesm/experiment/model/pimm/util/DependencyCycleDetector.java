@@ -45,8 +45,9 @@ import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
+// TODO: Auto-generated Javadoc
 /**
- * This class provide an Ecore switch to detect cycle dependencies
+ * This class provide an Ecore switch to detect cycle dependencies.
  */
 public class DependencyCycleDetector extends PiMMSwitch<Void> {
 
@@ -82,6 +83,7 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
   }
 
   /**
+   * Instantiates a new dependency cycle detector.
    *
    * @param fastDetection
    *          whether the detection will stop at the first detected cycle (true) or list all cycles (false)
@@ -123,6 +125,11 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
     this.cycles.add(cycle);
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#casePiGraph(org.ietr.preesm.experiment.model.pimm.PiGraph)
+   */
   @Override
   public Void casePiGraph(final PiGraph graph) {
 
@@ -144,6 +151,11 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
     return null;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseParameter(org.ietr.preesm.experiment.model.pimm.Parameter)
+   */
   @Override
   public Void caseParameter(final Parameter parameter) {
     // Visit the parameter and its successors if it was not already done
@@ -180,6 +192,11 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
     return null;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseConfigInputPort(org.ietr.preesm.experiment.model.pimm.ConfigInputPort)
+   */
   @Override
   public Void caseConfigInputPort(final ConfigInputPort port) {
     // Visit the owner of the config input port only if it is a parameter
@@ -200,6 +217,11 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
     this.cycles.clear();
   }
 
+  /**
+   * Gets the cycles.
+   *
+   * @return the cycles
+   */
   public List<List<Parameter>> getCycles() {
     return this.cycles;
   }

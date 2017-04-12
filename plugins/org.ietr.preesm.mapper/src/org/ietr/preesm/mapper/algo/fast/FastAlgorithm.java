@@ -44,7 +44,6 @@ import java.util.Random;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
@@ -69,326 +68,385 @@ import org.ietr.preesm.mapper.ui.BestCostPlotter;
 import org.ietr.preesm.mapper.ui.bestcost.BestCostEditor;
 import org.ietr.preesm.mapper.ui.gantt.GanttEditorRunnable;
 
+// TODO: Auto-generated Javadoc
 /**
- * Fast Algorithm
- * 
+ * Fast Algorithm.
+ *
  * @author pmenuet
  * @author mpelcat
  */
 public class FastAlgorithm extends Observable {
 
-	/**
-	 * The scheduling (total order of tasks) for the best found solution.
-	 */
-	private VertexOrderList bestTotalOrder = null;
+  /**
+   * The scheduling (total order of tasks) for the best found solution.
+   */
+  private VertexOrderList bestTotalOrder = null;
 
-	private InitialLists initialLists = null;
-	private PreesmScenario scenario = null;
+  /** The initial lists. */
+  private InitialLists initialLists = null;
 
-	/**
-	 * Constructor
-	 */
-	public FastAlgorithm(InitialLists initialLists, PreesmScenario scenario) {
-		super();
-		this.initialLists = initialLists;
-		this.scenario = scenario;
-	}
+  /** The scenario. */
+  private PreesmScenario scenario = null;
 
-	public MapperDAG map(String threadName, AbcParameters abcParams,
-			FastAlgoParameters fastParams, MapperDAG dag, Design archi,
-			boolean alreadyMapped, boolean pfastused, boolean displaySolutions,
-			IProgressMonitor monitor, AbstractTaskSched taskSched) throws WorkflowException {
+  /**
+   * Constructor.
+   *
+   * @param initialLists
+   *          the initial lists
+   * @param scenario
+   *          the scenario
+   */
+  public FastAlgorithm(final InitialLists initialLists, final PreesmScenario scenario) {
+    super();
+    this.initialLists = initialLists;
+    this.scenario = scenario;
+  }
 
-		List<MapperDAGVertex> cpnDominantList = initialLists.getCpnDominant();
-		List<MapperDAGVertex> blockingNodesList = initialLists
-				.getBlockingNodes();
-		List<MapperDAGVertex> finalcriticalpathList = initialLists
-				.getCriticalpath();
+  /**
+   * Map.
+   *
+   * @param threadName
+   *          the thread name
+   * @param abcParams
+   *          the abc params
+   * @param fastParams
+   *          the fast params
+   * @param dag
+   *          the dag
+   * @param archi
+   *          the archi
+   * @param alreadyMapped
+   *          the already mapped
+   * @param pfastused
+   *          the pfastused
+   * @param displaySolutions
+   *          the display solutions
+   * @param monitor
+   *          the monitor
+   * @param taskSched
+   *          the task sched
+   * @return the mapper DAG
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+  public MapperDAG map(final String threadName, final AbcParameters abcParams,
+      final FastAlgoParameters fastParams, final MapperDAG dag, final Design archi,
+      final boolean alreadyMapped, final boolean pfastused, final boolean displaySolutions,
+      final IProgressMonitor monitor, final AbstractTaskSched taskSched) throws WorkflowException {
 
-		return map(threadName, abcParams, fastParams, dag, archi,
-				alreadyMapped, pfastused, displaySolutions, monitor,
-				cpnDominantList, blockingNodesList, finalcriticalpathList,
-				taskSched);
-	}
+    final List<MapperDAGVertex> cpnDominantList = this.initialLists.getCpnDominant();
+    final List<MapperDAGVertex> blockingNodesList = this.initialLists.getBlockingNodes();
+    final List<MapperDAGVertex> finalcriticalpathList = this.initialLists.getCriticalpath();
 
-	/**
-	 * map : do the FAST algorithm by Kwok without the initialization of the
-	 * list which must be done before this algorithm
-	 * 
-	 * @param maxcount
-	 *            nb max of tested neighborhoods
-	 * @param maxstep
-	 *            nb max solutions tested in neighborhood
-	 * @param margin
-	 *            nb max better solutions found in neighborhood
-	 * 
-	 */
-	public MapperDAG map(String threadName, AbcParameters abcParams,
-			FastAlgoParameters fastParams, MapperDAG dag, Design archi,
-			boolean alreadyMapped, boolean pfastused, boolean displaySolutions,
-			IProgressMonitor monitor, List<MapperDAGVertex> cpnDominantList,
-			List<MapperDAGVertex> blockingNodesList,
-			List<MapperDAGVertex> finalcriticalpathList,
-			AbstractTaskSched taskSched) throws WorkflowException {
+    return map(threadName, abcParams, fastParams, dag, archi, alreadyMapped, pfastused,
+        displaySolutions, monitor, cpnDominantList, blockingNodesList, finalcriticalpathList,
+        taskSched);
+  }
 
-		Random randomGenerator = new Random(System.nanoTime());
+  /**
+   * map : do the FAST algorithm by Kwok without the initialization of the list which must be done
+   * before this algorithm.
+   *
+   * @param threadName
+   *          the thread name
+   * @param abcParams
+   *          the abc params
+   * @param fastParams
+   *          the fast params
+   * @param dag
+   *          the dag
+   * @param archi
+   *          the archi
+   * @param alreadyMapped
+   *          the already mapped
+   * @param pfastused
+   *          the pfastused
+   * @param displaySolutions
+   *          the display solutions
+   * @param monitor
+   *          the monitor
+   * @param cpnDominantList
+   *          the cpn dominant list
+   * @param blockingNodesList
+   *          the blocking nodes list
+   * @param finalcriticalpathList
+   *          the finalcriticalpath list
+   * @param taskSched
+   *          the task sched
+   * @return the mapper DAG
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+  public MapperDAG map(final String threadName, final AbcParameters abcParams,
+      final FastAlgoParameters fastParams, final MapperDAG dag, final Design archi,
+      final boolean alreadyMapped, final boolean pfastused, final boolean displaySolutions,
+      final IProgressMonitor monitor, final List<MapperDAGVertex> cpnDominantList,
+      final List<MapperDAGVertex> blockingNodesList,
+      final List<MapperDAGVertex> finalcriticalpathList, final AbstractTaskSched taskSched)
+      throws WorkflowException {
 
-		Semaphore pauseSemaphore = new Semaphore(1);
-		final BestCostPlotter costPlotter = new BestCostPlotter(
-				"FastAlgorithm", pauseSemaphore);
+    final Random randomGenerator = new Random(System.nanoTime());
 
-		// initialing the data window if this is necessary
-		if (!pfastused) {
+    final Semaphore pauseSemaphore = new Semaphore(1);
+    final BestCostPlotter costPlotter = new BestCostPlotter("FastAlgorithm", pauseSemaphore);
 
-			costPlotter.setSUBPLOT_COUNT(1);
-			// demo.display();
-			BestCostEditor.createEditor(costPlotter);
+    // initialing the data window if this is necessary
+    if (!pfastused) {
 
-			this.addObserver(costPlotter);
-		}
+      costPlotter.setSUBPLOT_COUNT(1);
+      // demo.display();
+      BestCostEditor.createEditor(costPlotter);
 
-		// Variables
-		IAbc simulator = AbstractAbc.getInstance(abcParams, dag, archi,
-				scenario);
+      addObserver(costPlotter);
+    }
 
-		// A topological task scheduler is chosen for the list scheduling.
-		// It schedules the tasks in topological order and, if they are on
-		// the same level, in alphabetical name order
-		simulator.setTaskScheduler(taskSched);
+    // Variables
+    final IAbc simulator = AbstractAbc.getInstance(abcParams, dag, archi, this.scenario);
 
-		Iterator<MapperDAGVertex> vertexiter = new RandomIterator<MapperDAGVertex>(
-				blockingNodesList, randomGenerator);
+    // A topological task scheduler is chosen for the list scheduling.
+    // It schedules the tasks in topological order and, if they are on
+    // the same level, in alphabetical name order
+    simulator.setTaskScheduler(taskSched);
 
-		RandomIterator<MapperDAGVertex> iter = new RandomIterator<MapperDAGVertex>(
-				finalcriticalpathList, randomGenerator);
-		MapperDAGVertex currentvertex = null;
-		MapperDAGVertex fcpvertex = null;
-		ComponentInstance operatortest;
-		ComponentInstance operatorfcp;
-		ComponentInstance operatorprec;
-		Logger logger = WorkflowLogger.getLogger();
+    final Iterator<MapperDAGVertex> vertexiter = new RandomIterator<>(blockingNodesList,
+        randomGenerator);
 
-		// these steps are linked to the description of the FAST algorithm to
-		// understand the steps, please refer to the Kwok thesis
+    final RandomIterator<MapperDAGVertex> iter = new RandomIterator<>(finalcriticalpathList,
+        randomGenerator);
+    MapperDAGVertex currentvertex = null;
+    MapperDAGVertex fcpvertex = null;
+    ComponentInstance operatortest;
+    ComponentInstance operatorfcp;
+    ComponentInstance operatorprec;
+    final Logger logger = WorkflowLogger.getLogger();
 
-		// step 3
-		long bestSL = Long.MAX_VALUE;
+    // these steps are linked to the description of the FAST algorithm to
+    // understand the steps, please refer to the Kwok thesis
 
-		KwokListScheduler listscheduler = new KwokListScheduler();
+    // step 3
 
-		// step 1
-		if (!alreadyMapped) {
-			listscheduler.schedule(dag, cpnDominantList, simulator, null, null);
-		} else {
-			simulator.setDAG(dag);
-		}
-		// display initial time after the list scheduling
-		simulator.updateFinalCosts();
-		long initial = simulator.getFinalCost();
+    final KwokListScheduler listscheduler = new KwokListScheduler();
 
-		bestTotalOrder = simulator.getTotalOrder();
+    // step 1
+    if (!alreadyMapped) {
+      listscheduler.schedule(dag, cpnDominantList, simulator, null, null);
+    } else {
+      simulator.setDAG(dag);
+    }
+    // display initial time after the list scheduling
+    simulator.updateFinalCosts();
+    final long initial = simulator.getFinalCost();
 
-		if (displaySolutions) {
-			GanttData ganttData = simulator.getGanttData();
-			launchEditor(ganttData, "Cost:"
-					+ initial + " List");
-		}
+    this.bestTotalOrder = simulator.getTotalOrder();
 
-		WorkflowLogger.getLogger().log(Level.INFO,
-				"Found List solution; Cost:" + initial);
+    if (displaySolutions) {
+      final GanttData ganttData = simulator.getGanttData();
+      launchEditor(ganttData, "Cost:" + initial + " List");
+    }
 
-		logger.log(Level.FINE, "InitialSP " + initial);
+    WorkflowLogger.getLogger().log(Level.INFO, "Found List solution; Cost:" + initial);
 
-		long SL = initial;
-		dag.setScheduleCost(initial);
-		if (blockingNodesList.size() < 2)
-			return simulator.getDAG().clone();
-		bestSL = initial;
-		Long iBest;
-		MapperDAG dagfinal = simulator.getDAG().clone();
-		dagfinal.setScheduleCost(bestSL);
+    logger.log(Level.FINE, "InitialSP " + initial);
 
-		// A switcher task scheduler is chosen for the fast refinement
-		simulator.setTaskScheduler(new TaskSwitcher());
+    long SL = initial;
+    dag.setScheduleCost(initial);
+    if (blockingNodesList.size() < 2) {
+      return simulator.getDAG().clone();
+    }
+    long bestSL = initial;
+    Long iBest;
+    MapperDAG dagfinal = simulator.getDAG().clone();
+    dagfinal.setScheduleCost(bestSL);
 
-		// FAST parameters
-		// FAST is stopped after a time given in seconds
-		long fastStopTime = System.currentTimeMillis() + 1000
-				* fastParams.getFastTime();
-		// the number of local solutions searched in a neighborhood is the size
-		// of the graph
-		int maxStep = dag.vertexSet().size()
-				* DesignTools.getNumberOfOperatorInstances(archi);
-		// the number of better solutions found in a neighborhood is limited
-		int margin = Math.max(maxStep / 10, 1);
-		
-		//TODO: Remove, debug only
-		System.out.println("start fast neighborhood search.");
+    // A switcher task scheduler is chosen for the fast refinement
+    simulator.setTaskScheduler(new TaskSwitcher());
 
-		// step 4/17
-		// Stopping after the given time in seconds is reached
-		while (fastParams.getFastTime() < 0
-				|| System.currentTimeMillis() < fastStopTime) {
+    // FAST parameters
+    // FAST is stopped after a time given in seconds
+    final long fastStopTime = System.currentTimeMillis() + (1000 * fastParams.getFastTime());
+    // the number of local solutions searched in a neighborhood is the size
+    // of the graph
+    final int maxStep = dag.vertexSet().size() * DesignTools.getNumberOfOperatorInstances(archi);
+    // the number of better solutions found in a neighborhood is limited
+    final int margin = Math.max(maxStep / 10, 1);
 
-			// Notifying display
-			iBest = (Long) bestSL;
-			setChanged();
-			notifyObservers(iBest);
+    // TODO: Remove, debug only
+    System.out.println("start fast neighborhood search.");
 
-			// step 5
-			int searchStep = 0;
-			int localCounter = 0;
-			simulator.updateFinalCosts();
+    // step 4/17
+    // Stopping after the given time in seconds is reached
+    while ((fastParams.getFastTime() < 0) || (System.currentTimeMillis() < fastStopTime)) {
 
-			// FAST local search is stopped after a time given in seconds
-			long fastLocalSearchStopTime = System.currentTimeMillis() + 1000
-					* fastParams.getFastLocalSearchTime();
+      // Notifying display
+      iBest = bestSL;
+      setChanged();
+      notifyObservers(iBest);
 
-			// step 6 : neighborhood search
-			do {
-				// Mode stop
-				if (costPlotter.getActionType() == 1
-						|| (monitor != null && monitor.isCanceled())) {
+      // step 5
+      int searchStep = 0;
+      int localCounter = 0;
+      simulator.updateFinalCosts();
 
-					return dagfinal.clone();
-				} else if (costPlotter.getActionType() == 2) {
-					// Mode Pause
-					try {
-						pauseSemaphore.acquire();
-						pauseSemaphore.release();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
+      // FAST local search is stopped after a time given in seconds
+      final long fastLocalSearchStopTime = System.currentTimeMillis()
+          + (1000 * fastParams.getFastLocalSearchTime());
 
-				// step 7
-				// Selecting random vertex with operator set of size > 1
-				List<ComponentInstance> operatorList = null;
-				int nonBlockingIndex = 0;
+      // step 6 : neighborhood search
+      do {
+        // Mode stop
+        if ((costPlotter.getActionType() == 1) || ((monitor != null) && monitor.isCanceled())) {
 
-				do {
-					nonBlockingIndex++;
-					currentvertex = (MapperDAGVertex) vertexiter.next();
-					operatorList = simulator
-							.getCandidateOperators(currentvertex, false);
-				} while (operatorList.size() < 2 && nonBlockingIndex < 100);
+          return dagfinal.clone();
+        } else if (costPlotter.getActionType() == 2) {
+          // Mode Pause
+          try {
+            pauseSemaphore.acquire();
+            pauseSemaphore.release();
+          } catch (final InterruptedException e) {
+            e.printStackTrace();
+          }
+        }
 
-				SL = simulator.getFinalCost();
+        // step 7
+        // Selecting random vertex with operator set of size > 1
+        List<ComponentInstance> operatorList = null;
+        int nonBlockingIndex = 0;
 
-				// step 8
+        do {
+          nonBlockingIndex++;
+          currentvertex = vertexiter.next();
+          operatorList = simulator.getCandidateOperators(currentvertex, false);
+        } while ((operatorList.size() < 2) && (nonBlockingIndex < 100));
 
-				// The mapping can reaffect the same operator as before,
-				// refining the edge scheduling
-				int randomIndex = randomGenerator.nextInt(operatorList.size());
-				operatortest = (ComponentInstance) operatorList.toArray()[randomIndex];
+        SL = simulator.getFinalCost();
 
-				operatorprec = simulator.getEffectiveComponent(currentvertex);
+        // step 8
 
-				if (operatortest == null){
-					WorkflowLogger.getLogger().log(Level.SEVERE, "FAST algorithm has difficulties to find a valid component for vertex: " + currentvertex);
-				}
-				
-				// step 9 
-				simulator.map(currentvertex, operatortest, false, true);
+        // The mapping can reaffect the same operator as before,
+        // refining the edge scheduling
+        final int randomIndex = randomGenerator.nextInt(operatorList.size());
+        operatortest = (ComponentInstance) operatorList.toArray()[randomIndex];
 
-				
-				if(!currentvertex.hasEffectiveComponent()){
-					WorkflowLogger.getLogger().log(Level.SEVERE, "FAST algorithm has difficulties to find a valid component for vertex: " + currentvertex);
-				}
-				
-				// step 10
-				simulator.updateFinalCosts();
-				long newSL = simulator.getFinalCost();
+        operatorprec = simulator.getEffectiveComponent(currentvertex);
 
-				if (newSL >= SL) {
-					// TODO: check if ok to use mapWithGroup
-					// simulator.map(currentvertex, operatorprec, false);
-					simulator.map(currentvertex, operatorprec, false, true);
-					simulator.updateFinalCosts();
-					localCounter++;
-				} else {
-					localCounter = 0;
-					SL = newSL;
-				}
+        if (operatortest == null) {
+          WorkflowLogger.getLogger().log(Level.SEVERE,
+              "FAST algorithm has difficulties to find a valid component for vertex: "
+                  + currentvertex);
+        }
 
-				searchStep++;
-				// step 11
-			} while (searchStep < maxStep && localCounter < margin
-					&& System.currentTimeMillis() < fastLocalSearchStopTime);
+        // step 9
+        simulator.map(currentvertex, operatortest, false, true);
 
-			// step 12
-			simulator.updateFinalCosts();
+        if (!currentvertex.hasEffectiveComponent()) {
+          WorkflowLogger.getLogger().log(Level.SEVERE,
+              "FAST algorithm has difficulties to find a valid component for vertex: "
+                  + currentvertex);
+        }
 
-			if (bestSL > simulator.getFinalCost()) {
+        // step 10
+        simulator.updateFinalCosts();
+        final long newSL = simulator.getFinalCost();
 
-				// step 13
-				dagfinal = simulator.getDAG().clone();
-				// step 14
+        if (newSL >= SL) {
+          // TODO: check if ok to use mapWithGroup
+          // simulator.map(currentvertex, operatorprec, false);
+          simulator.map(currentvertex, operatorprec, false, true);
+          simulator.updateFinalCosts();
+          localCounter++;
+        } else {
+          localCounter = 0;
+          SL = newSL;
+        }
 
-				bestSL = simulator.getFinalCost();
+        searchStep++;
+        // step 11
+      } while ((searchStep < maxStep) && (localCounter < margin)
+          && (System.currentTimeMillis() < fastLocalSearchStopTime));
 
-				bestTotalOrder = simulator.getTotalOrder();
-				
-				if (displaySolutions) {
+      // step 12
+      simulator.updateFinalCosts();
 
-					GanttData ganttData = simulator.getGanttData();
-					launchEditor(ganttData, "Cost:" + bestSL + " Fast");
-				}
+      if (bestSL > simulator.getFinalCost()) {
 
-				WorkflowLogger.getLogger().log(Level.INFO,
-						"Found Fast solution; Cost:" + bestSL);
+        // step 13
+        dagfinal = simulator.getDAG().clone();
+        // step 14
 
-				dagfinal.setScheduleCost(bestSL);
-			}
+        bestSL = simulator.getFinalCost();
 
-			// step 16
-			// Choosing a vertex in critical path with an operator set of more
-			// than 1 element
-			List<ComponentInstance> operatorList = null;
-			int nonBlockingIndex = 0;
+        this.bestTotalOrder = simulator.getTotalOrder();
 
-			do {
-				nonBlockingIndex++;
-				fcpvertex = (MapperDAGVertex) iter.next();
-				operatorList = simulator.getCandidateOperators(fcpvertex, false);
-			} while (operatorList.size() < 2 && nonBlockingIndex < 100);
+        if (displaySolutions) {
 
-			// Choosing an operator different from the current vertex operator
-			ComponentInstance currentOp = dagfinal
-					.getMapperDAGVertex(fcpvertex.getName())
-					.getEffectiveOperator();
+          final GanttData ganttData = simulator.getGanttData();
+          launchEditor(ganttData, "Cost:" + bestSL + " Fast");
+        }
 
-			do {
-				int randomIndex = randomGenerator.nextInt(operatorList.size());
-				operatorfcp = (ComponentInstance) operatorList.toArray()[randomIndex];
-			} while (operatorfcp.getInstanceName().equals(
-					currentOp.getInstanceName())
-					&& operatorList.size() > 1);
+        WorkflowLogger.getLogger().log(Level.INFO, "Found Fast solution; Cost:" + bestSL);
 
-			// step 15
-			List<MapperDAGVertex> toRemapList = cpnDominantList;
-			toRemapList = toRemapList.subList(toRemapList.indexOf(fcpvertex),
-					toRemapList.size());
+        dagfinal.setScheduleCost(bestSL);
+      }
 
-			simulator.resetDAG();
+      // step 16
+      // Choosing a vertex in critical path with an operator set of more
+      // than 1 element
+      List<ComponentInstance> operatorList = null;
+      int nonBlockingIndex = 0;
 
-			// Reschedule the whole dag
-			listscheduler.schedule(dag, cpnDominantList, simulator,
-					operatorfcp, fcpvertex);
+      do {
+        nonBlockingIndex++;
+        fcpvertex = iter.next();
+        operatorList = simulator.getCandidateOperators(fcpvertex, false);
+      } while ((operatorList.size() < 2) && (nonBlockingIndex < 100));
 
-		}
+      // Choosing an operator different from the current vertex operator
+      final ComponentInstance currentOp = dagfinal.getMapperDAGVertex(fcpvertex.getName())
+          .getEffectiveOperator();
 
-		return dagfinal;
-	}
+      do {
+        final int randomIndex = randomGenerator.nextInt(operatorList.size());
+        operatorfcp = (ComponentInstance) operatorList.toArray()[randomIndex];
+      } while (operatorfcp.getInstanceName().equals(currentOp.getInstanceName())
+          && (operatorList.size() > 1));
 
-	public VertexOrderList getBestTotalOrder() {
-		return bestTotalOrder;
-	}
+      // step 15
+      List<MapperDAGVertex> toRemapList = cpnDominantList;
+      toRemapList = toRemapList.subList(toRemapList.indexOf(fcpvertex), toRemapList.size());
 
-	public void launchEditor(GanttData ganttData, String name) throws WorkflowException {
-		
-		GanttEditorRunnable.run(ganttData, name);
+      simulator.resetDAG();
 
-	}
+      // Reschedule the whole dag
+      listscheduler.schedule(dag, cpnDominantList, simulator, operatorfcp, fcpvertex);
+
+    }
+
+    return dagfinal;
+  }
+
+  /**
+   * Gets the best total order.
+   *
+   * @return the best total order
+   */
+  public VertexOrderList getBestTotalOrder() {
+    return this.bestTotalOrder;
+  }
+
+  /**
+   * Launch editor.
+   *
+   * @param ganttData
+   *          the gantt data
+   * @param name
+   *          the name
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+  public void launchEditor(final GanttData ganttData, final String name) throws WorkflowException {
+
+    GanttEditorRunnable.run(ganttData, name);
+
+  }
 
 }

@@ -42,12 +42,10 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
-
 import jxl.Cell;
 import jxl.CellType;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -65,189 +63,229 @@ import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 
+// TODO: Auto-generated Javadoc
 /**
- * Importing timings in a scenario from an excel file. task names are rows while
- * operator types are columns
- * 
+ * Importing timings in a scenario from an excel file. task names are rows while operator types are columns
+ *
  * @author mpelcat
  */
 public class ExcelTimingParser {
 
-	private PreesmScenario scenario = null;
+  /** The scenario. */
+  private PreesmScenario scenario = null;
 
-	public ExcelTimingParser(PreesmScenario scenario) {
-		super();
-		this.scenario = scenario;
-	}
+  /**
+   * Instantiates a new excel timing parser.
+   *
+   * @param scenario
+   *          the scenario
+   */
+  public ExcelTimingParser(final PreesmScenario scenario) {
+    super();
+    this.scenario = scenario;
+  }
 
-	public void parse(String url, Set<String> opDefIds)
-			throws InvalidModelException, FileNotFoundException {
-		WorkflowLogger
-				.getLogger()
-				.log(Level.INFO,
-						"Importing timings from an excel sheet. Non precised timings are kept unmodified.");
+  /**
+   * Parses the.
+   *
+   * @param url
+   *          the url
+   * @param opDefIds
+   *          the op def ids
+   * @throws InvalidModelException
+   *           the invalid model exception
+   * @throws FileNotFoundException
+   *           the file not found exception
+   */
+  public void parse(final String url, final Set<String> opDefIds) throws InvalidModelException, FileNotFoundException {
+    WorkflowLogger.getLogger().log(Level.INFO, "Importing timings from an excel sheet. Non precised timings are kept unmodified.");
 
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-		Activator.updateWorkspace();
+    Activator.updateWorkspace();
 
-		Path path = new Path(url);
-		IFile file = workspace.getRoot().getFile(path);
-		try {
-			Workbook w = Workbook.getWorkbook(file.getContents());
+    final Path path = new Path(url);
+    final IFile file = workspace.getRoot().getFile(path);
+    try {
+      final Workbook w = Workbook.getWorkbook(file.getContents());
 
-			// Warnings are displayed once for each missing operator or vertex
-			// in the excel sheet
-			Set<String> missingVertices = new HashSet<String>();
-			Set<String> missingOperatorTypes = new HashSet<String>();
+      // Warnings are displayed once for each missing operator or vertex
+      // in the excel sheet
+      final Set<String> missingVertices = new HashSet<>();
+      final Set<String> missingOperatorTypes = new HashSet<>();
 
-			parseTimings(w, opDefIds, missingVertices, missingOperatorTypes);
+      parseTimings(w, opDefIds, missingVertices, missingOperatorTypes);
 
-		} catch (BiffException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
-	}
+    } catch (final BiffException e) {
+      e.printStackTrace();
+    } catch (final IOException e) {
+      e.printStackTrace();
+    } catch (final CoreException e) {
+      e.printStackTrace();
+    }
+  }
 
-	private void parseTimings(Workbook w, Set<String> opDefIds,
-			Set<String> missingVertices, Set<String> missingOperatorTypes)
-			throws FileNotFoundException, InvalidModelException, CoreException {
-		// Depending on the type of SDF graph we process (IBSDF or PISDF), call
-		// one or the other method
-		if (scenario.isIBSDFScenario()) {
-			SDFGraph currentGraph = ScenarioParser.getSDFGraph(scenario
-					.getAlgorithmURL());
-			parseTimingsForIBSDFGraph(w, currentGraph, opDefIds,
-					missingVertices, missingOperatorTypes);
-		}
+  /**
+   * Parses the timings.
+   *
+   * @param w
+   *          the w
+   * @param opDefIds
+   *          the op def ids
+   * @param missingVertices
+   *          the missing vertices
+   * @param missingOperatorTypes
+   *          the missing operator types
+   * @throws FileNotFoundException
+   *           the file not found exception
+   * @throws InvalidModelException
+   *           the invalid model exception
+   * @throws CoreException
+   *           the core exception
+   */
+  private void parseTimings(final Workbook w, final Set<String> opDefIds, final Set<String> missingVertices, final Set<String> missingOperatorTypes)
+      throws FileNotFoundException, InvalidModelException, CoreException {
+    // Depending on the type of SDF graph we process (IBSDF or PISDF), call
+    // one or the other method
+    if (this.scenario.isIBSDFScenario()) {
+      final SDFGraph currentGraph = ScenarioParser.getSDFGraph(this.scenario.getAlgorithmURL());
+      parseTimingsForIBSDFGraph(w, currentGraph, opDefIds, missingVertices, missingOperatorTypes);
+    } else if (this.scenario.isPISDFScenario()) {
+      final PiGraph currentGraph = ScenarioParser.getPiGraph(this.scenario.getAlgorithmURL());
+      parseTimingsForPISDFGraph(w, currentGraph, opDefIds, missingVertices, missingOperatorTypes);
+    }
 
-		else if (scenario.isPISDFScenario()) {
-			PiGraph currentGraph = ScenarioParser.getPiGraph(scenario
-					.getAlgorithmURL());
-			parseTimingsForPISDFGraph(w, currentGraph, opDefIds,
-					missingVertices, missingOperatorTypes);
-		}
+  }
 
-	}
+  /**
+   * Parses the timings for PISDF graph.
+   *
+   * @param w
+   *          the w
+   * @param currentGraph
+   *          the current graph
+   * @param opDefIds
+   *          the op def ids
+   * @param missingVertices
+   *          the missing vertices
+   * @param missingOperatorTypes
+   *          the missing operator types
+   */
+  private void parseTimingsForPISDFGraph(final Workbook w, final PiGraph currentGraph, final Set<String> opDefIds, final Set<String> missingVertices,
+      final Set<String> missingOperatorTypes) {
+    // Each of the vertices of the graph is either itself a graph
+    // (hierarchical vertex), in which case we call recursively this method;
+    // a standard actor, in which case we parser its timing; or a special
+    // vertex, in which case we do nothing
+    for (final AbstractActor vertex : currentGraph.getVertices()) {
+      // Handle connected graphs from hierarchical vertices
+      if (vertex instanceof PiGraph) {
+        parseTimingsForPISDFGraph(w, (PiGraph) vertex, opDefIds, missingVertices, missingOperatorTypes);
+      } else if (vertex instanceof Actor) {
+        final Actor actor = (Actor) vertex;
 
-	private void parseTimingsForPISDFGraph(Workbook w, PiGraph currentGraph,
-			Set<String> opDefIds, Set<String> missingVertices,
-			Set<String> missingOperatorTypes) {
-		// Each of the vertices of the graph is either itself a graph
-		// (hierarchical vertex), in which case we call recursively this method;
-		// a standard actor, in which case we parser its timing; or a special
-		// vertex, in which case we do nothing
-		for (AbstractActor vertex : currentGraph.getVertices()) {
-			// Handle connected graphs from hierarchical vertices
-			if (vertex instanceof PiGraph) {
-				parseTimingsForPISDFGraph(w, (PiGraph) vertex, opDefIds,
-						missingVertices, missingOperatorTypes);
-			} else if (vertex instanceof Actor) {
-				Actor actor = (Actor) vertex;
+        // Handle unconnected graphs from hierarchical vertices
+        final Refinement refinement = actor.getRefinement();
+        AbstractActor subgraph = null;
+        if (refinement != null) {
+          subgraph = refinement.getAbstractActor();
+        }
 
-				// Handle unconnected graphs from hierarchical vertices
-				Refinement refinement = actor.getRefinement();
-				AbstractActor subgraph = null;
-				if (refinement != null)
-					subgraph = refinement.getAbstractActor();
+        if ((subgraph != null) && (subgraph instanceof PiGraph)) {
+          parseTimingsForPISDFGraph(w, (PiGraph) subgraph, opDefIds, missingVertices, missingOperatorTypes);
+        } else {
+          // If the actor is not hierarchical, parse its timing
+          parseTimingForVertex(w, vertex.getName(), opDefIds, missingVertices, missingOperatorTypes);
+        }
+      }
+    }
 
-				if (subgraph != null && subgraph instanceof PiGraph) {
-					parseTimingsForPISDFGraph(w, (PiGraph) subgraph, opDefIds,
-							missingVertices, missingOperatorTypes);
-				}
-				// If the actor is not hierarchical, parse its timing
-				else {
-					parseTimingForVertex(w, vertex.getName(), opDefIds,
-							missingVertices, missingOperatorTypes);
-				}
-			}
-		}
+  }
 
-	}
+  /**
+   * Parses the timing for vertex.
+   *
+   * @param w
+   *          the w
+   * @param vertexName
+   *          the vertex name
+   * @param opDefIds
+   *          the op def ids
+   * @param missingVertices
+   *          the missing vertices
+   * @param missingOperatorTypes
+   *          the missing operator types
+   */
+  private void parseTimingForVertex(final Workbook w, final String vertexName, final Set<String> opDefIds, final Set<String> missingVertices,
+      final Set<String> missingOperatorTypes) {
+    // For each kind of processing elements, we look for a timing for given
+    // vertex
+    for (final String opDefId : opDefIds) {
+      if (!opDefId.isEmpty() && !vertexName.isEmpty()) {
+        // Get row and column for the timing we are looking for
+        final Cell vertexCell = w.getSheet(0).findCell(vertexName);
+        final Cell operatorCell = w.getSheet(0).findCell(opDefId);
 
-	private void parseTimingForVertex(Workbook w, String vertexName,
-			Set<String> opDefIds, Set<String> missingVertices,
-			Set<String> missingOperatorTypes) {
-		// For each kind of processing elements, we look for a timing for given
-		// vertex
-		for (String opDefId : opDefIds) {
-			if (!opDefId.isEmpty() && !vertexName.isEmpty()) {
-				// Get row and column for the timing we are looking for
-				Cell vertexCell = w.getSheet(0).findCell(vertexName);
-				Cell operatorCell = w.getSheet(0).findCell(opDefId);
+        if ((vertexCell != null) && (operatorCell != null)) {
+          // Get the cell containing the timing
+          final Cell timingCell = w.getSheet(0).getCell(operatorCell.getColumn(), vertexCell.getRow());
 
-				if (vertexCell != null && operatorCell != null) {
-					// Get the cell containing the timing
-					Cell timingCell = w.getSheet(0).getCell(
-							operatorCell.getColumn(), vertexCell.getRow());
+          if (timingCell.getType().equals(CellType.NUMBER) || timingCell.getType().equals(CellType.NUMBER_FORMULA)) {
 
-					if (timingCell.getType().equals(CellType.NUMBER)
-							|| timingCell.getType().equals(
-									CellType.NUMBER_FORMULA)) {
+            String stringTiming = timingCell.getContents();
+            // Removing useless characters (spaces...)
+            stringTiming = stringTiming.replaceAll(" ", "");
 
-						String stringTiming = timingCell.getContents();
-						// Removing useless characters (spaces...)
-						stringTiming = stringTiming.replaceAll(" ", "");
+            try {
+              final Timing timing = new Timing(opDefId, vertexName, Long.valueOf(timingCell.getContents()));
 
-						try {
-							Timing timing = new Timing(opDefId, vertexName,
-									Long.valueOf(timingCell.getContents()));
+              this.scenario.getTimingManager().addTiming(timing);
 
-							scenario.getTimingManager().addTiming(timing);
+              WorkflowLogger.getLogger().log(Level.INFO, "Importing timing: " + timing.toString());
+            } catch (final NumberFormatException e) {
+              WorkflowLogger.getLogger().log(Level.SEVERE, "Problem importing timing of " + vertexName + " on " + opDefId
+                  + ". Integer with no space or special character needed. Be careful on the special number formats.");
+            }
+          }
+        } else {
+          if ((vertexCell == null) && !missingVertices.contains(vertexName)) {
+            WorkflowLogger.getLogger().log(Level.WARNING, "No line found in excel sheet for vertex: " + vertexName);
+            missingVertices.add(vertexName);
+          } else if ((operatorCell == null) && !missingOperatorTypes.contains(opDefId)) {
+            WorkflowLogger.getLogger().log(Level.WARNING, "No column found in excel sheet for operator type: " + opDefId);
+            missingOperatorTypes.add(opDefId);
+          }
+        }
+      }
+    }
+  }
 
-							WorkflowLogger.getLogger().log(Level.INFO,
-									"Importing timing: " + timing.toString());
-						} catch (NumberFormatException e) {
-							WorkflowLogger
-									.getLogger()
-									.log(Level.SEVERE,
-											"Problem importing timing of "
-													+ vertexName
-													+ " on "
-													+ opDefId
-													+ ". Integer with no space or special character needed. Be careful on the special number formats.");
-						}
-					}
-				} else {
-					if (vertexCell == null
-							&& !missingVertices.contains(vertexName)) {
-						WorkflowLogger.getLogger().log(
-								Level.WARNING,
-								"No line found in excel sheet for vertex: "
-										+ vertexName);
-						missingVertices.add(vertexName);
-					} else if (operatorCell == null
-							&& !missingOperatorTypes.contains(opDefId)) {
-						WorkflowLogger.getLogger().log(
-								Level.WARNING,
-								"No column found in excel sheet for operator type: "
-										+ opDefId);
-						missingOperatorTypes.add(opDefId);
-					}
-				}
-			}
-		}
-	}
-
-	private void parseTimingsForIBSDFGraph(Workbook w, SDFGraph currentGraph,
-			Set<String> opDefIds, Set<String> missingVertices,
-			Set<String> missingOperatorTypes) {
-		// Each of the vertices of the graph is either itself a graph
-		// (hierarchical vertex), in which case we call recursively this method;
-		// a standard vertex, in which case we parser its timing; or another
-		// kind of vertex, in which case we do nothing
-		for (SDFAbstractVertex vertex : currentGraph.vertexSet()) {
-			if (vertex.getGraphDescription() != null) {
-				parseTimingsForIBSDFGraph(w,
-						(SDFGraph) vertex.getGraphDescription(), opDefIds,
-						missingVertices, missingOperatorTypes);
-			} else if (vertex.getKind().equalsIgnoreCase("vertex")) {
-				parseTimingForVertex(w, vertex.getName(), opDefIds,
-						missingVertices, missingOperatorTypes);
-			}
-		}
-	}
+  /**
+   * Parses the timings for IBSDF graph.
+   *
+   * @param w
+   *          the w
+   * @param currentGraph
+   *          the current graph
+   * @param opDefIds
+   *          the op def ids
+   * @param missingVertices
+   *          the missing vertices
+   * @param missingOperatorTypes
+   *          the missing operator types
+   */
+  private void parseTimingsForIBSDFGraph(final Workbook w, final SDFGraph currentGraph, final Set<String> opDefIds, final Set<String> missingVertices,
+      final Set<String> missingOperatorTypes) {
+    // Each of the vertices of the graph is either itself a graph
+    // (hierarchical vertex), in which case we call recursively this method;
+    // a standard vertex, in which case we parser its timing; or another
+    // kind of vertex, in which case we do nothing
+    for (final SDFAbstractVertex vertex : currentGraph.vertexSet()) {
+      if (vertex.getGraphDescription() != null) {
+        parseTimingsForIBSDFGraph(w, (SDFGraph) vertex.getGraphDescription(), opDefIds, missingVertices, missingOperatorTypes);
+      } else if (vertex.getKind().equalsIgnoreCase("vertex")) {
+        parseTimingForVertex(w, vertex.getName(), opDefIds, missingVertices, missingOperatorTypes);
+      }
+    }
+  }
 }

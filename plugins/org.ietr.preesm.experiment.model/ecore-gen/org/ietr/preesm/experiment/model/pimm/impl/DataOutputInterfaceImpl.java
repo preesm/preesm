@@ -38,59 +38,69 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.ecore.EClass;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
+import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
-import org.ietr.preesm.experiment.model.pimm.DataOutputInterface;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> An implementation of the model object '
- * <em><b>Sink Interface</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Sink Interface</b></em>'. <!-- end-user-doc -->
  * <p>
  * </p>
  *
  * @generated
  */
-public class DataOutputInterfaceImpl extends InterfaceActorImpl implements
-		DataOutputInterface {
-	
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 */
-	protected DataOutputInterfaceImpl() {
-		super();
+public class DataOutputInterfaceImpl extends InterfaceActorImpl implements DataOutputInterface {
 
-		kind = PiIdentifiers.DATA_OUTPUT_INTERFACE;
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   */
+  protected DataOutputInterfaceImpl() {
+    super();
 
-		// Add the unique input port of the Sink Interface
-		// The port intentionally has no name
-		DataInputPort port = PiMMFactory.eINSTANCE.createDataInputPort();
-		port.setName(null);
-		this.getDataInputPorts().add(port);
-	}
+    this.kind = PiIdentifiers.DATA_OUTPUT_INTERFACE;
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return PiMMPackage.Literals.DATA_OUTPUT_INTERFACE;
-	}
-	
-	@Override
-	public void accept(PiMMVisitor v) {
-		v.visitDataOutputInterface(this);
-	}
-	
-	@Override
-	public void setName(String value) {
-		super.setName(value);
-		for (DataInputPort p : getDataInputPorts()) {
-			p.setName(value);
-		}
-	}
+    // Add the unique input port of the Sink Interface
+    // The port intentionally has no name
+    final DataInputPort port = PiMMFactory.eINSTANCE.createDataInputPort();
+    port.setName(null);
+    getDataInputPorts().add(port);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return PiMMPackage.Literals.DATA_OUTPUT_INTERFACE;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
+   */
+  @Override
+  public void accept(final PiMMVisitor v) {
+    v.visitDataOutputInterface(this);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#setName(java.lang.String)
+   */
+  @Override
+  public void setName(final String value) {
+    super.setName(value);
+    for (final DataInputPort p : getDataInputPorts()) {
+      p.setName(value);
+    }
+  }
 
 } // SinkInterfaceImpl

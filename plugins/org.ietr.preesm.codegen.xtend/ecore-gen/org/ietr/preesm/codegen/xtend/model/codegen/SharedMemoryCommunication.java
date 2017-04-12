@@ -35,52 +35,46 @@
  *******************************************************************************/
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> A representation of the model object '
- * <em><b>Shared Memory Communication</b></em>'. <!-- end-user-doc -->
- * 
+ * <!-- begin-user-doc --> A representation of the model object ' <em><b>Shared Memory Communication</b></em>'. <!-- end-user-doc -->
+ *
  * <p>
  * The following features are supported:
  * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication#getSemaphore
- * <em>Semaphore</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication#getSemaphore <em>Semaphore</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSharedMemoryCommunication()
  * @model
  * @generated
  */
 public interface SharedMemoryCommunication extends Communication {
-	/**
-	 * Returns the value of the '<em><b>Semaphore</b></em>' reference. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Semaphore</em>' reference isn't clear, there
-	 * really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Semaphore</em>' reference.
-	 * @see #setSemaphore(Semaphore)
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSharedMemoryCommunication_Semaphore()
-	 * @model required="true"
-	 * @generated
-	 */
-	Semaphore getSemaphore();
+  /**
+   * Returns the value of the '<em><b>Semaphore</b></em>' reference. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Semaphore</em>' reference isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Semaphore</em>' reference.
+   * @see #setSemaphore(Semaphore)
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSharedMemoryCommunication_Semaphore()
+   * @model required="true"
+   * @generated
+   */
+  Semaphore getSemaphore();
 
-	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication#getSemaphore
-	 * <em>Semaphore</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Semaphore</em>' reference.
-	 * @see #getSemaphore()
-	 * @generated
-	 */
-	void setSemaphore(Semaphore value);
+  /**
+   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication#getSemaphore <em>Semaphore</em>}' reference. <!--
+   * begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @param value
+   *          the new value of the '<em>Semaphore</em>' reference.
+   * @see #getSemaphore()
+   * @generated
+   */
+  void setSemaphore(Semaphore value);
 
 } // SharedMemoryCommunication

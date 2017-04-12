@@ -35,86 +35,74 @@
  *******************************************************************************/
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> An {@link ActorBlock} is a {@link Block} containing
- * all information needed to generate the source code associated to an IBSDF
- * Actor. <!-- end-user-doc -->
- * 
+ * <!-- begin-user-doc --> An {@link ActorBlock} is a {@link Block} containing all information needed to generate the source code associated to an IBSDF Actor.
+ * <!-- end-user-doc -->
+ *
  * <p>
  * The following features are supported:
  * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock#getLoopBlock
- * <em>Loop Block</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock#getInitBlock
- * <em>Init Block</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock#getLoopBlock <em>Loop Block</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock#getInitBlock <em>Init Block</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getActorBlock()
  * @model
  * @generated
  */
 public interface ActorBlock extends Block {
 
-	/**
-	 * Returns the value of the '<em><b>Loop Block</b></em>' reference. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Loop Block</em>' reference isn't clear, there
-	 * really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Loop Block</em>' reference.
-	 * @see #setLoopBlock(LoopBlock)
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getActorBlock_LoopBlock()
-	 * @model required="true"
-	 * @generated
-	 */
-	LoopBlock getLoopBlock();
+  /**
+   * Returns the value of the '<em><b>Loop Block</b></em>' reference. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Loop Block</em>' reference isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Loop Block</em>' reference.
+   * @see #setLoopBlock(LoopBlock)
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getActorBlock_LoopBlock()
+   * @model required="true"
+   * @generated
+   */
+  LoopBlock getLoopBlock();
 
-	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock#getLoopBlock
-	 * <em>Loop Block</em>}' reference. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Loop Block</em>' reference.
-	 * @see #getLoopBlock()
-	 * @generated
-	 */
-	void setLoopBlock(LoopBlock value);
+  /**
+   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock#getLoopBlock <em>Loop Block</em>}' reference. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   *
+   * @param value
+   *          the new value of the '<em>Loop Block</em>' reference.
+   * @see #getLoopBlock()
+   * @generated
+   */
+  void setLoopBlock(LoopBlock value);
 
-	/**
-	 * Returns the value of the '<em><b>Init Block</b></em>' reference. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Init Block</em>' reference isn't clear, there
-	 * really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Init Block</em>' reference.
-	 * @see #setInitBlock(CallBlock)
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getActorBlock_InitBlock()
-	 * @model required="true"
-	 * @generated
-	 */
-	CallBlock getInitBlock();
+  /**
+   * Returns the value of the '<em><b>Init Block</b></em>' reference. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Init Block</em>' reference isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Init Block</em>' reference.
+   * @see #setInitBlock(CallBlock)
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getActorBlock_InitBlock()
+   * @model required="true"
+   * @generated
+   */
+  CallBlock getInitBlock();
 
-	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock#getInitBlock
-	 * <em>Init Block</em>}' reference. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Init Block</em>' reference.
-	 * @see #getInitBlock()
-	 * @generated
-	 */
-	void setInitBlock(CallBlock value);
+  /**
+   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock#getInitBlock <em>Init Block</em>}' reference. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   *
+   * @param value
+   *          the new value of the '<em>Init Block</em>' reference.
+   * @see #getInitBlock()
+   * @generated
+   */
+  void setInitBlock(CallBlock value);
 } // ActorBlock

@@ -36,11 +36,10 @@
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
 /**
- * <!-- begin-user-doc -->a {@link CallBlock} is a {@link Block} whose
- * {@link #getCodeElts() code element list} should contain only {@link Call} but
- * no {@link Block}. <!-- end-user-doc -->
- * 
- * 
+ * <!-- begin-user-doc -->a {@link CallBlock} is a {@link Block} whose {@link #getCodeElts() code element list} should contain only {@link Call} but no
+ * {@link Block}. <!-- end-user-doc -->
+ *
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getCallBlock()
  * @model
  * @generated

@@ -42,94 +42,126 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
-
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.abc.order.VertexOrderList;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * Scheduling the tasks in topological order and alphabetical order
- * 
+ * Scheduling the tasks in topological order and alphabetical order.
+ *
  * @author mpelcat
  */
 public class TopologicalTaskSched extends AbstractTaskSched {
 
-	private VertexOrderList initList = null;
-	private List<MapperDAGVertex> topolist = null;
+  /** The init list. */
+  private VertexOrderList initList = null;
 
-	private static class InitListComparator implements
-			Comparator<MapperDAGVertex> {
+  /** The topolist. */
+  private List<MapperDAGVertex> topolist = null;
 
-		private VertexOrderList initList = null;
+  /**
+   * The Class InitListComparator.
+   */
+  private static class InitListComparator implements Comparator<MapperDAGVertex> {
 
-		public InitListComparator(VertexOrderList initlist) {
-			super();
-			this.initList = initlist;
-		}
+    /** The init list. */
+    private VertexOrderList initList = null;
 
-		@Override
-		public int compare(MapperDAGVertex v0, MapperDAGVertex v1) {
-			int compare;
+    /**
+     * Instantiates a new inits the list comparator.
+     *
+     * @param initlist
+     *          the initlist
+     */
+    public InitListComparator(final VertexOrderList initlist) {
+      super();
+      this.initList = initlist;
+    }
 
-			compare = initList.orderOf(v0.getName())
-					- initList.orderOf(v1.getName());
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+     */
+    @Override
+    public int compare(final MapperDAGVertex v0, final MapperDAGVertex v1) {
+      int compare;
 
-			return compare;
-		}
+      compare = this.initList.orderOf(v0.getName()) - this.initList.orderOf(v1.getName());
 
-	}
+      return compare;
+    }
 
-	public TopologicalTaskSched(VertexOrderList initlist) {
-		this.initList = initlist;
-	}
+  }
 
-	/**
-	 * Reuse infinite homogeneous order
-	 */
+  /**
+   * Instantiates a new topological task sched.
+   *
+   * @param initlist
+   *          the initlist
+   */
+  public TopologicalTaskSched(final VertexOrderList initlist) {
+    this.initList = initlist;
+  }
 
-	public List<MapperDAGVertex> createTopology(MapperDAG dag) {
-		topolist = new ArrayList<MapperDAGVertex>();
+  /**
+   * Reuse infinite homogeneous order.
+   *
+   * @param dag
+   *          the dag
+   * @return the list
+   */
 
-		for (DAGVertex v : dag.vertexSet()) {
-			topolist.add((MapperDAGVertex) v);
+  public List<MapperDAGVertex> createTopology(final MapperDAG dag) {
+    this.topolist = new ArrayList<>();
 
-			if (!initList.contains(v.getName())) {
-				WorkflowLogger.getLogger().log(Level.SEVERE,
-						"problem with topological ordering.");
-			}
-		}
+    for (final DAGVertex v : dag.vertexSet()) {
+      this.topolist.add((MapperDAGVertex) v);
 
-		Collections.sort(topolist, new InitListComparator(initList));
+      if (!this.initList.contains(v.getName())) {
+        WorkflowLogger.getLogger().log(Level.SEVERE, "problem with topological ordering.");
+      }
+    }
 
-		return topolist;
-	}
+    Collections.sort(this.topolist, new InitListComparator(this.initList));
 
-	@Override
-	public void insertVertex(MapperDAGVertex vertex) {
-		int topoOrder = topolist.indexOf(vertex);
-		boolean inserted = false;
+    return this.topolist;
+  }
 
-		if (topolist != null && topoOrder >= 0) {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#insertVertex(org.ietr.preesm.mapper
+   * .model.MapperDAGVertex)
+   */
+  @Override
+  public void insertVertex(final MapperDAGVertex vertex) {
+    int topoOrder = this.topolist.indexOf(vertex);
+    boolean inserted = false;
 
-			topoOrder--;
-			while (topoOrder >= 0) {
-				MapperDAGVertex previousCandidate = topolist.get(topoOrder);
-				int totalOrder = orderManager.totalIndexOf(previousCandidate);
-				if (totalOrder >= 0) {
-					orderManager.insertAtIndex(totalOrder + 1, vertex);
-					inserted = true;
-					break;
-				}
-				topoOrder--;
-			}
+    if ((this.topolist != null) && (topoOrder >= 0)) {
 
-			if (!inserted && vertex.getPredecessors(false).isEmpty()) {
-				orderManager.addFirst(vertex);
-			}
-		} else {
-			orderManager.addLast(vertex);
-		}
-	}
+      topoOrder--;
+      while (topoOrder >= 0) {
+        final MapperDAGVertex previousCandidate = this.topolist.get(topoOrder);
+        final int totalOrder = this.orderManager.totalIndexOf(previousCandidate);
+        if (totalOrder >= 0) {
+          this.orderManager.insertAtIndex(totalOrder + 1, vertex);
+          inserted = true;
+          break;
+        }
+        topoOrder--;
+      }
+
+      if (!inserted && vertex.getPredecessors(false).isEmpty()) {
+        this.orderManager.addFirst(vertex);
+      }
+    } else {
+      this.orderManager.addLast(vertex);
+    }
+  }
 }

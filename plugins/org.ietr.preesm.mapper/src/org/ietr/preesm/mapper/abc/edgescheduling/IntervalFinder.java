@@ -40,7 +40,6 @@ package org.ietr.preesm.mapper.abc.edgescheduling;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
-
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
@@ -48,301 +47,389 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.property.VertexTiming;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * During edge scheduling, one needs to find intervals to fit the transfers.
- * This class deals with intervals in the transfer scheduling
- * 
+ * During edge scheduling, one needs to find intervals to fit the transfers. This class deals with
+ * intervals in the transfer scheduling
+ *
  * @author mpelcat
  */
 public class IntervalFinder {
 
-	/**
-	 * Contains the rank list of all the vertices in an implementation
-	 */
-	private OrderManager orderManager = null;
-	private Random random;
+  /** Contains the rank list of all the vertices in an implementation. */
+  private OrderManager orderManager = null;
 
-	private static class FindType {
-		public static final FindType largestFreeInterval = new FindType();
-		public static final FindType earliestBigEnoughInterval = new FindType();
+  /** The random. */
+  private final Random random;
 
-		@Override
-		public String toString() {
-			if (this == largestFreeInterval)
-				return "largestFreeInterval";
-			if (this == earliestBigEnoughInterval)
-				return "largestFreeInterval";
-			return "";
-		}
-	}
+  /**
+   * The Class FindType.
+   */
+  private static class FindType {
 
-	public IntervalFinder(OrderManager orderManager) {
-		super();
-		this.orderManager = orderManager;
-		random = new Random(System.nanoTime());
-	}
+    /** The Constant largestFreeInterval. */
+    public static final FindType largestFreeInterval = new FindType();
 
-	/**
-	 * Finds the largest free interval in a schedule
-	 */
-	public Interval findLargestFreeInterval(ComponentInstance component,
-			MapperDAGVertex minVertex, MapperDAGVertex maxVertex) {
+    /** The Constant earliestBigEnoughInterval. */
+    public static final FindType earliestBigEnoughInterval = new FindType();
 
-		return findInterval(component, minVertex, maxVertex,
-				FindType.largestFreeInterval, 0);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+      if (this == FindType.largestFreeInterval) {
+        return "largestFreeInterval";
+      }
+      if (this == FindType.earliestBigEnoughInterval) {
+        return "largestFreeInterval";
+      }
+      return "";
+    }
+  }
 
-	}
+  /**
+   * Instantiates a new interval finder.
+   *
+   * @param orderManager
+   *          the order manager
+   */
+  public IntervalFinder(final OrderManager orderManager) {
+    super();
+    this.orderManager = orderManager;
+    this.random = new Random(System.nanoTime());
+  }
 
-	public Interval findEarliestNonNullInterval(ComponentInstance component,
-			MapperDAGVertex minVertex, MapperDAGVertex maxVertex) {
+  /**
+   * Finds the largest free interval in a schedule.
+   *
+   * @param component
+   *          the component
+   * @param minVertex
+   *          the min vertex
+   * @param maxVertex
+   *          the max vertex
+   * @return the interval
+   */
+  public Interval findLargestFreeInterval(final ComponentInstance component,
+      final MapperDAGVertex minVertex, final MapperDAGVertex maxVertex) {
 
-		return findInterval(component, minVertex, maxVertex,
-				FindType.earliestBigEnoughInterval, 0);
+    return findInterval(component, minVertex, maxVertex, FindType.largestFreeInterval, 0);
 
-	}
+  }
 
-	public Interval findEarliestBigEnoughInterval(ComponentInstance component,
-			MapperDAGVertex minVertex, MapperDAGVertex maxVertex, long size) {
+  /**
+   * Find earliest non null interval.
+   *
+   * @param component
+   *          the component
+   * @param minVertex
+   *          the min vertex
+   * @param maxVertex
+   *          the max vertex
+   * @return the interval
+   */
+  public Interval findEarliestNonNullInterval(final ComponentInstance component,
+      final MapperDAGVertex minVertex, final MapperDAGVertex maxVertex) {
 
-		return findInterval(component, minVertex, maxVertex,
-				FindType.earliestBigEnoughInterval, size);
+    return findInterval(component, minVertex, maxVertex, FindType.earliestBigEnoughInterval, 0);
 
-	}
+  }
 
-	/**
-	 * Finds the largest free interval in a schedule between a minVertex and a
-	 * maxVertex
-	 */
-	public Interval findInterval(ComponentInstance component,
-			MapperDAGVertex minVertex, MapperDAGVertex maxVertex,
-			FindType type, long data) {
+  /**
+   * Find earliest big enough interval.
+   *
+   * @param component
+   *          the component
+   * @param minVertex
+   *          the min vertex
+   * @param maxVertex
+   *          the max vertex
+   * @param size
+   *          the size
+   * @return the interval
+   */
+  public Interval findEarliestBigEnoughInterval(final ComponentInstance component,
+      final MapperDAGVertex minVertex, final MapperDAGVertex maxVertex, final long size) {
 
-		List<MapperDAGVertex> schedule = orderManager.getVertexList(component);
+    return findInterval(component, minVertex, maxVertex, FindType.earliestBigEnoughInterval, size);
 
-		long minIndexVertexEndTime = -1;
-		int minIndex = -1;
+  }
 
-		if (minVertex != null) {
-			minIndex = orderManager.totalIndexOf(minVertex);
+  /**
+   * Finds the largest free interval in a schedule between a minVertex and a maxVertex.
+   *
+   * @param component
+   *          the component
+   * @param minVertex
+   *          the min vertex
+   * @param maxVertex
+   *          the max vertex
+   * @param type
+   *          the type
+   * @param data
+   *          the data
+   * @return the interval
+   */
+  public Interval findInterval(final ComponentInstance component, final MapperDAGVertex minVertex,
+      final MapperDAGVertex maxVertex, final FindType type, final long data) {
 
-			VertexTiming props = minVertex.getTiming();
-			if (props.getTLevel() >= 0) {
-				minIndexVertexEndTime = props.getTLevel() + props.getCost();
-			}
-		}
+    final List<MapperDAGVertex> schedule = this.orderManager.getVertexList(component);
 
-		int maxIndex = Integer.MAX_VALUE;
-		if (maxVertex != null) {
-			maxIndex = orderManager.totalIndexOf(maxVertex);
-		} else {
-			maxIndex = orderManager.getTotalOrder().size();
-		}
+    long minIndexVertexEndTime = -1;
+    int minIndex = -1;
 
-		Interval oldInt = new Interval(0, 0, -1);
-		Interval newInt = null;
-		Interval freeInterval = new Interval(-1, -1, 0);
+    if (minVertex != null) {
+      minIndex = this.orderManager.totalIndexOf(minVertex);
 
-		if (schedule != null) {
-			for (MapperDAGVertex v : schedule) {
-				VertexTiming props = v.getTiming();
+      final VertexTiming props = minVertex.getTiming();
+      if (props.getTLevel() >= 0) {
+        minIndexVertexEndTime = props.getTLevel() + props.getCost();
+      }
+    }
 
-				// If we have the current vertex tLevel
-				if (props.getTLevel() >= 0) {
+    int maxIndex = Integer.MAX_VALUE;
+    if (maxVertex != null) {
+      maxIndex = this.orderManager.totalIndexOf(maxVertex);
+    } else {
+      maxIndex = this.orderManager.getTotalOrder().size();
+    }
 
-					// newInt is the interval corresponding to the execution of
-					// the vertex v: a non free interval
-					newInt = new Interval(props.getCost(),
-							props.getTLevel(), orderManager.totalIndexOf(v));
+    Interval oldInt = new Interval(0, 0, -1);
+    Interval newInt = null;
+    Interval freeInterval = new Interval(-1, -1, 0);
 
-					// end of the preceding non free interval
-					long oldEnd = oldInt.getStartTime() + oldInt.getDuration();
-					// latest date between the end of minVertex and the end of
-					// oldInt
-					long available = Math.max(minIndexVertexEndTime, oldEnd);
-					// Computing the size of the free interval
-					long freeIntervalSize = newInt.getStartTime() - available;
+    if (schedule != null) {
+      for (final MapperDAGVertex v : schedule) {
+        final VertexTiming props = v.getTiming();
 
-					if (type == FindType.largestFreeInterval) {
-						// Verifying that newInt is in the interval of search
-						if (newInt.getTotalOrderIndex() > minIndex
-								&& newInt.getTotalOrderIndex() <= maxIndex) {
+        // If we have the current vertex tLevel
+        if (props.getTLevel() >= 0) {
 
-							if (freeIntervalSize > freeInterval.getDuration()) {
-								// The free interval takes the index of its
-								// following task v.
-								// Inserting a vertex in this interval means
-								// inserting it before v.
-								freeInterval = new Interval(freeIntervalSize,
-										available, newInt.getTotalOrderIndex());
-							}
-						}
-					} else if (type == FindType.earliestBigEnoughInterval) {
-						if (newInt.getTotalOrderIndex() > minIndex
-								&& newInt.getTotalOrderIndex() <= maxIndex) {
+          // newInt is the interval corresponding to the execution of
+          // the vertex v: a non free interval
+          newInt = new Interval(props.getCost(), props.getTLevel(),
+              this.orderManager.totalIndexOf(v));
 
-							if (freeIntervalSize >= data) {
-								// The free interval takes the index of its
-								// following task v.
-								// Inserting a vertex in this interval means
-								// inserting it before v.
-								freeInterval = new Interval(freeIntervalSize,
-										available, newInt.getTotalOrderIndex());
-								break;
-							}
-						}
-					}
-					oldInt = newInt;
-				}
-			}
-		}
+          // end of the preceding non free interval
+          final long oldEnd = oldInt.getStartTime() + oldInt.getDuration();
+          // latest date between the end of minVertex and the end of
+          // oldInt
+          final long available = Math.max(minIndexVertexEndTime, oldEnd);
+          // Computing the size of the free interval
+          final long freeIntervalSize = newInt.getStartTime() - available;
 
-		return freeInterval;
+          if (type == FindType.largestFreeInterval) {
+            // Verifying that newInt is in the interval of search
+            if ((newInt.getTotalOrderIndex() > minIndex)
+                && (newInt.getTotalOrderIndex() <= maxIndex)) {
 
-	}
+              if (freeIntervalSize > freeInterval.getDuration()) {
+                // The free interval takes the index of its
+                // following task v.
+                // Inserting a vertex in this interval means
+                // inserting it before v.
+                freeInterval = new Interval(freeIntervalSize, available,
+                    newInt.getTotalOrderIndex());
+              }
+            }
+          } else if (type == FindType.earliestBigEnoughInterval) {
+            if ((newInt.getTotalOrderIndex() > minIndex)
+                && (newInt.getTotalOrderIndex() <= maxIndex)) {
 
-	public void displayCurrentSchedule(TransferVertex vertex,
-			MapperDAGVertex source) {
+              if (freeIntervalSize >= data) {
+                // The free interval takes the index of its
+                // following task v.
+                // Inserting a vertex in this interval means
+                // inserting it before v.
+                freeInterval = new Interval(freeIntervalSize, available,
+                    newInt.getTotalOrderIndex());
+                break;
+              }
+            }
+          }
+          oldInt = newInt;
+        }
+      }
+    }
 
-		ComponentInstance component = vertex
-				.getEffectiveComponent();
-		List<MapperDAGVertex> schedule = orderManager.getVertexList(component);
+    return freeInterval;
 
-		VertexTiming sourceProps = source.getTiming();
-		long availability = sourceProps.getTLevel() + sourceProps.getCost();
-		if (sourceProps.getTLevel() < 0)
-			availability = -1;
+  }
 
-		String trace = "schedule of " + vertex.getName() + " available at "
-				+ availability + ": ";
+  /**
+   * Display current schedule.
+   *
+   * @param vertex
+   *          the vertex
+   * @param source
+   *          the source
+   */
+  public void displayCurrentSchedule(final TransferVertex vertex, final MapperDAGVertex source) {
 
-		if (schedule != null) {
-			for (MapperDAGVertex v : schedule) {
-				VertexTiming props = v.getTiming();
-				if (props.getTLevel() >= 0)
-					trace += "<" + props.getTLevel() + ","
-							+ (props.getTLevel() + props.getCost()) + ">";
-			}
-		}
+    final ComponentInstance component = vertex.getEffectiveComponent();
+    final List<MapperDAGVertex> schedule = this.orderManager.getVertexList(component);
 
-		WorkflowLogger.getLogger().log(Level.INFO, trace);
-	}
+    final VertexTiming sourceProps = source.getTiming();
+    long availability = sourceProps.getTLevel() + sourceProps.getCost();
+    if (sourceProps.getTLevel() < 0) {
+      availability = -1;
+    }
 
-	public OrderManager getOrderManager() {
-		return orderManager;
-	}
+    String trace = "schedule of " + vertex.getName() + " available at " + availability + ": ";
 
-	/**
-	 * Returns the best index to schedule vertex in total order
-	 */
-	public int getBestIndex(MapperDAGVertex vertex, long minimalHoleSize) {
-		int index = -1;
-		int latePred = getLatestPredecessorIndex(vertex);
-		int earlySuc = getEarliestsuccessorIndex(vertex);
+    if (schedule != null) {
+      for (final MapperDAGVertex v : schedule) {
+        final VertexTiming props = v.getTiming();
+        if (props.getTLevel() >= 0) {
+          trace += "<" + props.getTLevel() + "," + (props.getTLevel() + props.getCost()) + ">";
+        }
+      }
+    }
 
-		ComponentInstance op = vertex
-				.getEffectiveOperator();
-		MapperDAGVertex source = (latePred == -1) ? null : orderManager
-				.get(latePred);
-		MapperDAGVertex target = (earlySuc == -1) ? null : orderManager
-				.get(earlySuc);
+    WorkflowLogger.getLogger().log(Level.INFO, trace);
+  }
 
-		// Finds the largest free hole after the latest predecessor
-		if (op != null) {
-			Interval largestInterval = findLargestFreeInterval(op, source,
-					target);
+  /**
+   * Gets the order manager.
+   *
+   * @return the order manager
+   */
+  public OrderManager getOrderManager() {
+    return this.orderManager;
+  }
 
-			// If it is big enough, use it
-			if (largestInterval.getDuration() > minimalHoleSize) {
-				index = largestInterval.getTotalOrderIndex();
-			} else if (latePred != -1) {
-				// Otherwise, place the vertex randomly
-				int sourceIndex = latePred + 1;
-				int targetIndex = earlySuc;
-				if (targetIndex == -1) {
-					targetIndex = orderManager.getTotalOrder().size();
-				}
+  /**
+   * Returns the best index to schedule vertex in total order.
+   *
+   * @param vertex
+   *          the vertex
+   * @param minimalHoleSize
+   *          the minimal hole size
+   * @return the best index
+   */
+  public int getBestIndex(final MapperDAGVertex vertex, final long minimalHoleSize) {
+    int index = -1;
+    final int latePred = getLatestPredecessorIndex(vertex);
+    final int earlySuc = getEarliestsuccessorIndex(vertex);
 
-				if (targetIndex - sourceIndex > 0) {
-					int randomVal = random.nextInt(targetIndex - sourceIndex);
-					index = sourceIndex + randomVal;
-				}
-			}
+    final ComponentInstance op = vertex.getEffectiveOperator();
+    final MapperDAGVertex source = (latePred == -1) ? null : this.orderManager.get(latePred);
+    final MapperDAGVertex target = (earlySuc == -1) ? null : this.orderManager.get(earlySuc);
 
-		}
+    // Finds the largest free hole after the latest predecessor
+    if (op != null) {
+      final Interval largestInterval = findLargestFreeInterval(op, source, target);
 
-		return index;
-	}
+      // If it is big enough, use it
+      if (largestInterval.getDuration() > minimalHoleSize) {
+        index = largestInterval.getTotalOrderIndex();
+      } else if (latePred != -1) {
+        // Otherwise, place the vertex randomly
+        final int sourceIndex = latePred + 1;
+        int targetIndex = earlySuc;
+        if (targetIndex == -1) {
+          targetIndex = this.orderManager.getTotalOrder().size();
+        }
 
-	/**
-	 * Returns the best index to schedule vertex in total order
-	 */
-	public int getIndexOfFirstBigEnoughHole(MapperDAGVertex vertex, long size) {
-		int index = -1;
-		int latePred = getLatestPredecessorIndex(vertex);
-		int earlySuc = getEarliestsuccessorIndex(vertex);
+        if ((targetIndex - sourceIndex) > 0) {
+          final int randomVal = this.random.nextInt(targetIndex - sourceIndex);
+          index = sourceIndex + randomVal;
+        }
+      }
 
-		ComponentInstance op = vertex
-				.getEffectiveOperator();
-		MapperDAGVertex source = (latePred == -1) ? null : orderManager
-				.get(latePred);
-		MapperDAGVertex target = (earlySuc == -1) ? null : orderManager
-				.get(earlySuc);
+    }
 
-		// Finds the largest free hole after the latest predecessor
-		if (op != null) {
-			Interval largestInterval = findEarliestBigEnoughInterval(op,
-					source, target, size);
+    return index;
+  }
 
-			// If it is big enough, use it
-			if (largestInterval.getDuration() >= 0) {
-				index = largestInterval.getTotalOrderIndex();
-			} else {
-				index = -1;
-			}
+  /**
+   * Returns the best index to schedule vertex in total order.
+   *
+   * @param vertex
+   *          the vertex
+   * @param size
+   *          the size
+   * @return the index of first big enough hole
+   */
+  public int getIndexOfFirstBigEnoughHole(final MapperDAGVertex vertex, final long size) {
+    int index = -1;
+    final int latePred = getLatestPredecessorIndex(vertex);
+    final int earlySuc = getEarliestsuccessorIndex(vertex);
 
-		}
+    final ComponentInstance op = vertex.getEffectiveOperator();
+    final MapperDAGVertex source = (latePred == -1) ? null : this.orderManager.get(latePred);
+    final MapperDAGVertex target = (earlySuc == -1) ? null : this.orderManager.get(earlySuc);
 
-		return index;
-	}
+    // Finds the largest free hole after the latest predecessor
+    if (op != null) {
+      final Interval largestInterval = findEarliestBigEnoughInterval(op, source, target, size);
 
-	/**
-	 * Returns the earliest index after the last predecessor
-	 */
-	public int getEarliestIndex(MapperDAGVertex vertex) {
-		int latePred = getLatestPredecessorIndex(vertex);
+      // If it is big enough, use it
+      if (largestInterval.getDuration() >= 0) {
+        index = largestInterval.getTotalOrderIndex();
+      } else {
+        index = -1;
+      }
 
-		if (latePred != -1) {
-			latePred++;
-		}
-		return latePred;
-	}
+    }
 
-	/**
-	 * Returns the highest index of vertex predecessors
-	 */
-	private int getLatestPredecessorIndex(MapperDAGVertex testVertex) {
-		int index = -1;
+    return index;
+  }
 
-		for (MapperDAGVertex v : testVertex.getPredecessors(true).keySet()) {
-			index = Math.max(index, orderManager.totalIndexOf(v));
-		}
+  /**
+   * Returns the earliest index after the last predecessor.
+   *
+   * @param vertex
+   *          the vertex
+   * @return the earliest index
+   */
+  public int getEarliestIndex(final MapperDAGVertex vertex) {
+    int latePred = getLatestPredecessorIndex(vertex);
 
-		return index;
-	}
+    if (latePred != -1) {
+      latePred++;
+    }
+    return latePred;
+  }
 
-	/**
-	 * Returns the lowest index of vertex successors
-	 */
-	private int getEarliestsuccessorIndex(MapperDAGVertex testVertex) {
-		int index = Integer.MAX_VALUE;
+  /**
+   * Returns the highest index of vertex predecessors.
+   *
+   * @param testVertex
+   *          the test vertex
+   * @return the latest predecessor index
+   */
+  private int getLatestPredecessorIndex(final MapperDAGVertex testVertex) {
+    int index = -1;
 
-		for (MapperDAGVertex v : testVertex.getSuccessors(true).keySet()) {
-			index = Math.min(index, orderManager.totalIndexOf(v));
-		}
+    for (final MapperDAGVertex v : testVertex.getPredecessors(true).keySet()) {
+      index = Math.max(index, this.orderManager.totalIndexOf(v));
+    }
 
-		if (index == Integer.MAX_VALUE)
-			index = -1;
+    return index;
+  }
 
-		return index;
-	}
+  /**
+   * Returns the lowest index of vertex successors.
+   *
+   * @param testVertex
+   *          the test vertex
+   * @return the earliestsuccessor index
+   */
+  private int getEarliestsuccessorIndex(final MapperDAGVertex testVertex) {
+    int index = Integer.MAX_VALUE;
+
+    for (final MapperDAGVertex v : testVertex.getSuccessors(true).keySet()) {
+      index = Math.min(index, this.orderManager.totalIndexOf(v));
+    }
+
+    if (index == Integer.MAX_VALUE) {
+      index = -1;
+    }
+
+    return index;
+  }
 }

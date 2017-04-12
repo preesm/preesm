@@ -41,30 +41,47 @@ import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * A precedence edge is automatically generated and expresses the sequential
- * execution of successive vertices in a single component
- * 
+ * A precedence edge is automatically generated and expresses the sequential execution of successive
+ * vertices in a single component.
+ *
  * @author mpelcat
  */
 public class PrecedenceEdge extends MapperDAGEdge {
 
-	@Override
-	public String toString() {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.model.MapperDAGEdge#toString()
+   */
+  @Override
+  public String toString() {
 
-		String sourceName = "null", destName = "null";
+    String sourceName = "null";
+    String destName = "null";
 
-		if (getSource() != null)
-			sourceName = getSource().getName();
-		if (getSource() != null)
-			destName = getTarget().getName();
+    if (getSource() != null) {
+      sourceName = getSource().getName();
+    }
+    if (getSource() != null) {
+      destName = getTarget().getName();
+    }
 
-		return "precedence(" + sourceName + "," + destName + ")";
-	}
+    return "precedence(" + sourceName + "," + destName + ")";
+  }
 
-	public PrecedenceEdge(MapperDAGVertex source, MapperDAGVertex destination) {
-		super(source, destination);
-		setBase((DirectedAcyclicGraph)source.getBase());
-		getTiming().setCost(0);
-	}
+  /**
+   * Instantiates a new precedence edge.
+   *
+   * @param source
+   *          the source
+   * @param destination
+   *          the destination
+   */
+  public PrecedenceEdge(final MapperDAGVertex source, final MapperDAGVertex destination) {
+    super(source, destination);
+    setBase((DirectedAcyclicGraph) source.getBase());
+    getTiming().setCost(0);
+  }
 }

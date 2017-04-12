@@ -39,134 +39,171 @@ package org.ietr.preesm.core.architecture.route;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.component.ComNode;
 import org.ietr.dftools.architecture.slam.component.Component;
 import org.ietr.dftools.architecture.slam.component.impl.ComNodeImpl;
 
+// TODO: Auto-generated Javadoc
 /**
- * Represents a single step in a route between two operators separated by
- * communication nodes
- * 
+ * Represents a single step in a route between two operators separated by communication nodes.
+ *
  * @author mpelcat
  */
 public class MessageRouteStep extends AbstractRouteStep {
 
-	/**
-	 * Communication nodes separating the sender and the receiver
-	 */
-	protected List<ComponentInstance> nodes = null;
+  /** Communication nodes separating the sender and the receiver. */
+  protected List<ComponentInstance> nodes = null;
 
-	/**
-	 * The route step type determines how the communication will be simulated.
-	 */
-	public static final String type = "NodeRouteStep";
+  /**
+   * The route step type determines how the communication will be simulated.
+   */
+  public static final String type = "NodeRouteStep";
 
-	public MessageRouteStep(ComponentInstance sender,
-			List<ComponentInstance> inNodes, ComponentInstance receiver) {
-		super(sender, receiver);
-		nodes = new ArrayList<ComponentInstance>();
+  /**
+   * Instantiates a new message route step.
+   *
+   * @param sender
+   *          the sender
+   * @param inNodes
+   *          the in nodes
+   * @param receiver
+   *          the receiver
+   */
+  public MessageRouteStep(final ComponentInstance sender, final List<ComponentInstance> inNodes, final ComponentInstance receiver) {
+    super(sender, receiver);
+    this.nodes = new ArrayList<>();
 
-		for (ComponentInstance node : inNodes) {
-			this.nodes.add(node);
-		}
-	}
+    for (final ComponentInstance node : inNodes) {
+      this.nodes.add(node);
+    }
+  }
 
-	/**
-	 * The route step type determines how the communication will be simulated.
-	 */
-	@Override
-	public String getType() {
-		return type;
-	}
+  /**
+   * The route step type determines how the communication will be simulated.
+   *
+   * @return the type
+   */
+  @Override
+  public String getType() {
+    return MessageRouteStep.type;
+  }
 
-	/**
-	 * The id is given to code generation. It selects the communication
-	 * functions to use
-	 */
-	@Override
-	public String getId() {
-		String id = "";
-		for (ComponentInstance node : nodes) {
-			id += node.getComponent().getVlnv().getName();
-		}
-		return id;
-	}
+  /**
+   * The id is given to code generation. It selects the communication functions to use
+   *
+   * @return the id
+   */
+  @Override
+  public String getId() {
+    String id = "";
+    for (final ComponentInstance node : this.nodes) {
+      id += node.getComponent().getVlnv().getName();
+    }
+    return id;
+  }
 
-	/**
-	 * The name of the step node is retrieved
-	 */
-	@Override
-	public String getName() {
-		String name = "";
-		for (ComponentInstance node : nodes) {
-			name += node.getInstanceName();
-		}
-		return name;
-	}
+  /**
+   * The name of the step node is retrieved.
+   *
+   * @return the name
+   */
+  @Override
+  public String getName() {
+    String name = "";
+    for (final ComponentInstance node : this.nodes) {
+      name += node.getInstanceName();
+    }
+    return name;
+  }
 
-	public List<ComponentInstance> getContentionNodes() {
-		List<ComponentInstance> contentionNodes = new ArrayList<ComponentInstance>();
-		for (ComponentInstance node : nodes) {
-			if (node.getComponent() instanceof ComNodeImpl) {
-				if (!((ComNode) node.getComponent()).isParallel()) {
-					contentionNodes.add(node);
-				}
-			}
-		}
-		return contentionNodes;
-	}
+  /**
+   * Gets the contention nodes.
+   *
+   * @return the contention nodes
+   */
+  public List<ComponentInstance> getContentionNodes() {
+    final List<ComponentInstance> contentionNodes = new ArrayList<>();
+    for (final ComponentInstance node : this.nodes) {
+      if (node.getComponent() instanceof ComNodeImpl) {
+        if (!((ComNode) node.getComponent()).isParallel()) {
+          contentionNodes.add(node);
+        }
+      }
+    }
+    return contentionNodes;
+  }
 
-	public List<ComponentInstance> getNodes() {
-		return nodes;
-	}
+  /**
+   * Gets the nodes.
+   *
+   * @return the nodes
+   */
+  public List<ComponentInstance> getNodes() {
+    return this.nodes;
+  }
 
-	/**
-	 * Returns the longest time a node needs to transfer the data
-	 */
-	@Override
-	public final long getWorstTransferTime(long transfersSize) {
-		long time = 0;
+  /**
+   * Returns the longest time a node needs to transfer the data.
+   *
+   * @param transfersSize
+   *          the transfers size
+   * @return the worst transfer time
+   */
+  @Override
+  public final long getWorstTransferTime(final long transfersSize) {
+    long time = 0;
 
-		for (ComponentInstance node : nodes) {
-			Component def = node.getComponent();
-			if (def instanceof ComNodeImpl) {
-				time = Math.max(time,
-						(long) (transfersSize / ((ComNode) def).getSpeed()));
-			}
-		}
+    for (final ComponentInstance node : this.nodes) {
+      final Component def = node.getComponent();
+      if (def instanceof ComNodeImpl) {
+        time = Math.max(time, (long) (transfersSize / ((ComNode) def).getSpeed()));
+      }
+    }
 
-		// No zero transfer time is alloweds
-		if (time <= 0) {
-			time = 1;
-		}
+    // No zero transfer time is alloweds
+    if (time <= 0) {
+      time = 1;
+    }
 
-		return time;
-	}
+    return time;
+  }
 
-	/**
-	 * Evaluates the cost of a data transfer with size transferSize. Can include
-	 * overheads, additional cost...
-	 */
-	@Override
-	public long getTransferCost(long transfersSize) {
-		return getWorstTransferTime(transfersSize);
-	}
+  /**
+   * Evaluates the cost of a data transfer with size transferSize. Can include overheads, additional cost...
+   *
+   * @param transfersSize
+   *          the transfers size
+   * @return the transfer cost
+   */
+  @Override
+  public long getTransferCost(final long transfersSize) {
+    return getWorstTransferTime(transfersSize);
+  }
 
-	@Override
-	public String toString() {
-		String trace = "{" + getSender().toString() + " -> ";
-		for (ComponentInstance node : nodes) {
-			trace += node.getInstanceName() + " ";
-		}
-		trace += "-> " + getReceiver().toString() + "}";
-		return trace;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    String trace = "{" + getSender().toString() + " -> ";
+    for (final ComponentInstance node : this.nodes) {
+      trace += node.getInstanceName() + " ";
+    }
+    trace += "-> " + getReceiver().toString() + "}";
+    return trace;
+  }
 
-	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		return new MessageRouteStep(getSender(), nodes, getReceiver());
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.core.architecture.route.AbstractRouteStep#clone()
+   */
+  @Override
+  protected Object clone() throws CloneNotSupportedException {
+    return new MessageRouteStep(getSender(), this.nodes, getReceiver());
+  }
 
 }

@@ -43,93 +43,95 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+// TODO: Auto-generated Javadoc
 /**
- * The activator class controls the plug-in life cycle
+ * The activator class controls the plug-in life cycle.
  */
 public class Activator extends AbstractUIPlugin {
 
-	// The shared instance
-	private static Activator plugin;
+  /** The plugin. */
+  // The shared instance
+  private static Activator plugin;
 
-	// The plug-in ID
-	public static final String PLUGIN_ID = "org.ietr.preesm.plugin.mapper";
+  /** The Constant PLUGIN_ID. */
+  // The plug-in ID
+  public static final String PLUGIN_ID = "org.ietr.preesm.plugin.mapper";
 
-	/**
-	 * Returns the shared instance
-	 * 
-	 * @return the shared instance
-	 */
-	public static Activator getDefault() {
-		return plugin;
-	}
+  /**
+   * Returns the shared instance.
+   *
+   * @return the shared instance
+   */
+  public static Activator getDefault() {
+    return Activator.plugin;
+  }
 
-	/**
-	 * The constructor
-	 */
-	public Activator() {
-	}
+  /**
+   * The constructor.
+   */
+  public Activator() {
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
-	 */
-	@Override
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		plugin = this;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
+   */
+  @Override
+  public void start(final BundleContext context) throws Exception {
+    super.start(context);
+    Activator.plugin = this;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
-	 */
-	@Override
-	public void stop(BundleContext context) throws Exception {
-		plugin = null;
-		super.stop(context);
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
+   */
+  @Override
+  public void stop(final BundleContext context) throws Exception {
+    Activator.plugin = null;
+    super.stop(context);
+  }
 
-	/**
-	 * Returns an image for the image file at the given plug-in relative path.
-	 * 
-	 * @param path
-	 *            the path
-	 * @return the image
-	 */
-	public static Image getImage(String path) {
-		ImageRegistry ir = plugin.getImageRegistry();
-		Image image = ir.get(path);
-		if (image == null) {
-			ImageDescriptor id = imageDescriptorFromPlugin(PLUGIN_ID, path);
-			image = id.createImage();
-			ir.put(path, image);
-		}
+  /**
+   * Returns an image for the image file at the given plug-in relative path.
+   *
+   * @param path
+   *          the path
+   * @return the image
+   */
+  public static Image getImage(final String path) {
+    final ImageRegistry ir = Activator.plugin.getImageRegistry();
+    Image image = ir.get(path);
+    if (image == null) {
+      final ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID,
+          path);
+      image = id.createImage();
+      ir.put(path, image);
+    }
 
-		return image;
-	}
+    return image;
+  }
 
-	/**
-	 * Returns an image for the image file at the given plug-in relative path.
-	 * 
-	 * @param path
-	 *            the path
-	 * @return the image
-	 */
-	public static ImageDescriptor getImageDescriptor(String path) {
-		ImageRegistry ir = plugin.getImageRegistry();
-		Image image = ir.get(path);
-		ImageDescriptor id = null;
-		if (image == null) {
-			id = imageDescriptorFromPlugin(PLUGIN_ID, path);
-			image = id.createImage();
-			ir.put(path, image);
-		}
+  /**
+   * Returns an image for the image file at the given plug-in relative path.
+   *
+   * @param path
+   *          the path
+   * @return the image
+   */
+  public static ImageDescriptor getImageDescriptor(final String path) {
+    final ImageRegistry ir = Activator.plugin.getImageRegistry();
+    Image image = ir.get(path);
+    ImageDescriptor id = null;
+    if (image == null) {
+      id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, path);
+      image = id.createImage();
+      ir.put(path, image);
+    }
 
-		return id;
-	}
+    return id;
+  }
 
 }

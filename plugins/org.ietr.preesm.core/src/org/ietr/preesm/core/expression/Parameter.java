@@ -39,44 +39,89 @@ package org.ietr.preesm.core.expression;
 
 import org.nfunk.jep.Variable;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Parameter.
+ */
 public class Parameter extends Variable {
 
-	public int sdxIndex;
+  /** The sdx index. */
+  public int sdxIndex;
 
-	public Parameter(String name) {
-		super(name);
-		// TODO Auto-generated constructor stub
-	}
+  /**
+   * Instantiates a new parameter.
+   *
+   * @param name
+   *          the name
+   */
+  public Parameter(final String name) {
+    super(name);
+    // TODO Auto-generated constructor stub
+  }
 
-	public Parameter(String name, Object value) {
-		super(name, value);
-		// TODO Auto-generated constructor stub
-	}
+  /**
+   * Instantiates a new parameter.
+   *
+   * @param name
+   *          the name
+   * @param value
+   *          the value
+   */
+  public Parameter(final String name, final Object value) {
+    super(name, value);
+    // TODO Auto-generated constructor stub
+  }
 
-	@Override
-	public Parameter clone() {
-		Parameter newParam = new Parameter(this.name);
-		newParam.setValue(this.getValue());
-		newParam.setSdxIndex(this.getSdxIndex());
-		return newParam;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#clone()
+   */
+  @Override
+  public Parameter clone() {
+    final Parameter newParam = new Parameter(this.name);
+    newParam.setValue(getValue());
+    newParam.setSdxIndex(getSdxIndex());
+    return newParam;
+  }
 
-	public int getSdxIndex() {
-		return sdxIndex;
-	}
+  /**
+   * Gets the sdx index.
+   *
+   * @return the sdx index
+   */
+  public int getSdxIndex() {
+    return this.sdxIndex;
+  }
 
-	@Override
-	public Object getValue() {
-		return super.getValue();
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.nfunk.jep.Variable#getValue()
+   */
+  @Override
+  public Object getValue() {
+    return super.getValue();
+  }
 
-	public void setSdxIndex(int index) {
-		sdxIndex = index;
-	}
+  /**
+   * Sets the sdx index.
+   *
+   * @param index
+   *          the new sdx index
+   */
+  public void setSdxIndex(final int index) {
+    this.sdxIndex = index;
+  }
 
-	@Override
-	public boolean setValue(Object value) {
-		return super.setValue(value);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.nfunk.jep.Variable#setValue(java.lang.Object)
+   */
+  @Override
+  public boolean setValue(final Object value) {
+    return super.setValue(value);
+  }
 
 }

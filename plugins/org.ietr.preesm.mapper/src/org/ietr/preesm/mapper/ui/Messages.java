@@ -39,30 +39,41 @@ package org.ietr.preesm.mapper.ui;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+// TODO: Auto-generated Javadoc
 /**
- * This class is used to gather all texts displayed in scenario editor. The
- * strings are stored in message.properties and retrieved through
- * {@link Messages}
- * 
+ * This class is used to gather all texts displayed in scenario editor. The strings are stored in
+ * message.properties and retrieved through {@link Messages}
+ *
  * @author mpelcat
  */
 public class Messages {
-	// messages.properties is researched in the same directory as the Messages
-	// class
-	private static final String BUNDLE_NAME = "messages"; //$NON-NLS-1$
+  // messages.properties is researched in the same directory as the Messages
+  /** The Constant BUNDLE_NAME. */
+  // class
+  private static final String BUNDLE_NAME = "messages"; //$NON-NLS-1$
 
-	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
-			.getBundle(Messages.class.getPackage().getName() + "."
-					+ BUNDLE_NAME);
+  /** The Constant RESOURCE_BUNDLE. */
+  private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
+      .getBundle(Messages.class.getPackage().getName() + "." + Messages.BUNDLE_NAME);
 
-	private Messages() {
-	}
+  /**
+   * Instantiates a new messages.
+   */
+  private Messages() {
+  }
 
-	public static String getString(String key) {
-		try {
-			return RESOURCE_BUNDLE.getString(key);
-		} catch (MissingResourceException e) {
-			return '!' + key + '!';
-		}
-	}
+  /**
+   * Gets the string.
+   *
+   * @param key
+   *          the key
+   * @return the string
+   */
+  public static String getString(final String key) {
+    try {
+      return Messages.RESOURCE_BUNDLE.getString(key);
+    } catch (final MissingResourceException e) {
+      return '!' + key + '!';
+    }
+  }
 }

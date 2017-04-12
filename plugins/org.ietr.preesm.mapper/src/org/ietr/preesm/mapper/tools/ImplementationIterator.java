@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.model.MapperDAG;
@@ -50,80 +49,121 @@ import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.jgrapht.traverse.AbstractGraphIterator;
 
+// TODO: Auto-generated Javadoc
 /**
- * Iterates the graph in ascending or descending order using the given compare
- * function that respects topological order. If an ABC is given, the implementation iterator
- * makes it available for the compare method
- * 
+ * Iterates the graph in ascending or descending order using the given compare function that
+ * respects topological order. If an ABC is given, the implementation iterator makes it available
+ * for the compare method
+ *
  * @author mpelcat
  */
 public abstract class ImplementationIterator extends
-		AbstractGraphIterator<MapperDAGVertex, MapperDAGEdge> implements
-		Comparator<MapperDAGVertex> {
+    AbstractGraphIterator<MapperDAGVertex, MapperDAGEdge> implements Comparator<MapperDAGVertex> {
 
-	/**
-	 * Ordered vertex list parsed by the iterator
-	 */
-	private int currentIndex = -1;
+  /** Ordered vertex list parsed by the iterator. */
+  private int currentIndex = -1;
 
-	/**
-	 * Iteration in ascending or descending iteration order
-	 */
-	protected boolean directOrder;
+  /** Iteration in ascending or descending iteration order. */
+  protected boolean directOrder;
 
-	/**
-	 * ABC made available for the compare method
-	 */
-	protected IAbc abc = null;
+  /** ABC made available for the compare method. */
+  protected IAbc abc = null;
 
-	/**
-	 * Ordered vertex list parsed by the iterator
-	 */
-	private List<MapperDAGVertex> orderedlist;
+  /** Ordered vertex list parsed by the iterator. */
+  private List<MapperDAGVertex> orderedlist;
 
-	public ImplementationIterator() {
-		super();
-	}
+  /**
+   * Instantiates a new implementation iterator.
+   */
+  public ImplementationIterator() {
+    super();
+  }
 
-	public ImplementationIterator(IAbc abc, MapperDAG dag, boolean directOrder) {
-		super();
-		initParams(abc, dag, directOrder);
-	}
+  /**
+   * Instantiates a new implementation iterator.
+   *
+   * @param abc
+   *          the abc
+   * @param dag
+   *          the dag
+   * @param directOrder
+   *          the direct order
+   */
+  public ImplementationIterator(final IAbc abc, final MapperDAG dag, final boolean directOrder) {
+    super();
+    initParams(abc, dag, directOrder);
+  }
 
-	public void initParams(IAbc abc, MapperDAG dag, boolean directOrder) {
-		this.directOrder = directOrder;
-		this.abc = abc;
-		createOrderedList(dag);
-		currentIndex = 0;
-	}
+  /**
+   * Inits the params.
+   *
+   * @param abc
+   *          the abc
+   * @param dag
+   *          the dag
+   * @param directOrder
+   *          the direct order
+   */
+  public void initParams(final IAbc abc, final MapperDAG dag, final boolean directOrder) {
+    this.directOrder = directOrder;
+    this.abc = abc;
+    createOrderedList(dag);
+    this.currentIndex = 0;
+  }
 
-	@Override
-	public abstract int compare(MapperDAGVertex arg0, MapperDAGVertex arg1);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+   */
+  @Override
+  public abstract int compare(MapperDAGVertex arg0, MapperDAGVertex arg1);
 
-	public void createOrderedList(MapperDAG implementation) {
-		// Creating a sorted list using the current class as a comparator
-		orderedlist = new ArrayList<MapperDAGVertex>();
-		for(DAGVertex dv :  implementation.vertexSet()){
-			orderedlist.add((MapperDAGVertex) dv);
-		}
-		
-		Collections.sort(orderedlist, this);		
-	}
+  /**
+   * Creates the ordered list.
+   *
+   * @param implementation
+   *          the implementation
+   */
+  public void createOrderedList(final MapperDAG implementation) {
+    // Creating a sorted list using the current class as a comparator
+    this.orderedlist = new ArrayList<>();
+    for (final DAGVertex dv : implementation.vertexSet()) {
+      this.orderedlist.add((MapperDAGVertex) dv);
+    }
 
-	public List<MapperDAGVertex> getOrderedlist() {
-		return orderedlist;
-	}
+    Collections.sort(this.orderedlist, this);
+  }
 
-	@Override
-	public boolean hasNext() {
-		// TODO Auto-generated method stub
-		return (currentIndex < orderedlist.size());
-	}
+  /**
+   * Gets the orderedlist.
+   *
+   * @return the orderedlist
+   */
+  public List<MapperDAGVertex> getOrderedlist() {
+    return this.orderedlist;
+  }
 
-	@Override
-	public MapperDAGVertex next() {
-		// TODO Auto-generated method stub
-		return orderedlist.get(currentIndex++);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.util.Iterator#hasNext()
+   */
+  @Override
+  public boolean hasNext() {
+    // TODO Auto-generated method stub
+    return (this.currentIndex < this.orderedlist.size());
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.util.Iterator#next()
+   */
+  @Override
+  public MapperDAGVertex next() {
+    // TODO Auto-generated method stub
+    return this.orderedlist.get(this.currentIndex++);
+  }
 
 }

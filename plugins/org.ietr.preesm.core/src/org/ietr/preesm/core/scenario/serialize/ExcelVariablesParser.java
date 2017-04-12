@@ -40,12 +40,10 @@ package org.ietr.preesm.core.scenario.serialize;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
-
 import jxl.Cell;
 import jxl.CellType;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -57,72 +55,89 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
+// TODO: Auto-generated Javadoc
 /**
  * Importing variables in a scenario from an excel file.
- * 
+ *
  * @author mpelcat
  */
 public class ExcelVariablesParser {
 
-	private PreesmScenario scenario = null;
+  /** The scenario. */
+  private PreesmScenario scenario = null;
 
-	public ExcelVariablesParser(PreesmScenario scenario) {
-		super();
-		this.scenario = scenario;
-	}
+  /**
+   * Instantiates a new excel variables parser.
+   *
+   * @param scenario
+   *          the scenario
+   */
+  public ExcelVariablesParser(final PreesmScenario scenario) {
+    super();
+    this.scenario = scenario;
+  }
 
-	public void parse(String url) throws InvalidModelException,
-			FileNotFoundException {
-		WorkflowLogger.getLogger().log(Level.INFO,
-				"Importing variables from an excel sheet.");
+  /**
+   * Parses the.
+   *
+   * @param url
+   *          the url
+   * @throws InvalidModelException
+   *           the invalid model exception
+   * @throws FileNotFoundException
+   *           the file not found exception
+   */
+  public void parse(final String url) throws InvalidModelException, FileNotFoundException {
+    WorkflowLogger.getLogger().log(Level.INFO, "Importing variables from an excel sheet.");
 
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-		Activator.updateWorkspace();
+    Activator.updateWorkspace();
 
-		SDFGraph currentGraph = ScenarioParser.getSDFGraph(scenario
-				.getAlgorithmURL());
+    final SDFGraph currentGraph = ScenarioParser.getSDFGraph(this.scenario.getAlgorithmURL());
 
-		Path path = new Path(url);
-		IFile file = workspace.getRoot().getFile(path);
-		try {
-			Workbook w = Workbook.getWorkbook(file.getContents());
+    final Path path = new Path(url);
+    final IFile file = workspace.getRoot().getFile(path);
+    try {
+      final Workbook w = Workbook.getWorkbook(file.getContents());
 
-			parseVariables(w, currentGraph);
+      parseVariables(w, currentGraph);
 
-		} catch (BiffException | IOException | CoreException e) {
-			e.printStackTrace();
-		}
-	}
+    } catch (BiffException | IOException | CoreException e) {
+      e.printStackTrace();
+    }
+  }
 
-	private void parseVariables(Workbook w, SDFGraph currentGraph) {
+  /**
+   * Parses the variables.
+   *
+   * @param w
+   *          the w
+   * @param currentGraph
+   *          the current graph
+   */
+  private void parseVariables(final Workbook w, final SDFGraph currentGraph) {
 
-		for (String varName : currentGraph.getVariables().keySet()) {
+    for (final String varName : currentGraph.getVariables().keySet()) {
 
-			Cell varCell = w.getSheet(0).findCell(varName);
+      final Cell varCell = w.getSheet(0).findCell(varName);
 
-			if (varCell != null) {
-				Cell valueCell = w.getSheet(0).getCell(varCell.getColumn() + 1,
-						varCell.getRow());
+      if (varCell != null) {
+        final Cell valueCell = w.getSheet(0).getCell(varCell.getColumn() + 1, varCell.getRow());
 
-				if (valueCell.getType().equals(CellType.NUMBER)
-						|| valueCell.getType().equals(CellType.NUMBER_FORMULA)) {
+        if (valueCell.getType().equals(CellType.NUMBER) || valueCell.getType().equals(CellType.NUMBER_FORMULA)) {
 
-					String value = valueCell.getContents();
-					value = value.replaceAll(" ", "");
+          String value = valueCell.getContents();
+          value = value.replaceAll(" ", "");
 
-					scenario.getVariablesManager().setVariable(varName, value);
+          this.scenario.getVariablesManager().setVariable(varName, value);
 
-					WorkflowLogger.getLogger().log(Level.INFO,
-							"Importing variable: " + varName);
-				}
-			} else {
-				WorkflowLogger.getLogger()
-						.log(Level.WARNING,
-								"No cell found in excel sheet for variable: "
-										+ varName);
-			}
+          WorkflowLogger.getLogger().log(Level.INFO, "Importing variable: " + varName);
+        }
+      } else {
+        WorkflowLogger.getLogger().log(Level.WARNING, "No cell found in excel sheet for variable: " + varName);
+      }
 
-		}
-	}
+    }
+  }
 }

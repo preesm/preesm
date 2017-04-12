@@ -40,86 +40,112 @@ package org.ietr.preesm.core.architecture.route;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 
+// TODO: Auto-generated Javadoc
 /**
- * A route contains several Route Steps. It links operators. To operators
- * directly connected have a route with one route step.
- * 
+ * A route contains several Route Steps. It links operators. To operators directly connected have a route with one route step.
+ *
  * @author mpelcat
  */
 public class Route extends ArrayList<AbstractRouteStep> {
 
-	/**
-	 * ID used to reference the element in a property bean
-	 */
-	public static final String propertyBeanName = "route";
+  /** ID used to reference the element in a property bean. */
+  public static final String propertyBeanName = "route";
 
-	public static final int averageTransfer = 1000;
+  /** The Constant averageTransfer. */
+  public static final int averageTransfer = 1000;
 
-	private static final long serialVersionUID = 1L;
+  /** The Constant serialVersionUID. */
+  private static final long serialVersionUID = 1L;
 
-	public Route(AbstractRouteStep step) {
-		super();
-		this.add(step);
-	}
+  /**
+   * Instantiates a new route.
+   *
+   * @param step
+   *          the step
+   */
+  public Route(final AbstractRouteStep step) {
+    super();
+    this.add(step);
+  }
 
-	public Route(Route r1, Route r2) {
-		super();
-		for (AbstractRouteStep step : r1) {
-			this.add(step);
-		}
-		for (AbstractRouteStep step : r2) {
-			this.add(step);
-		}
-	}
+  /**
+   * Instantiates a new route.
+   *
+   * @param r1
+   *          the r 1
+   * @param r2
+   *          the r 2
+   */
+  public Route(final Route r1, final Route r2) {
+    super();
+    for (final AbstractRouteStep step : r1) {
+      this.add(step);
+    }
+    for (final AbstractRouteStep step : r2) {
+      this.add(step);
+    }
+  }
 
-	public Route() {
-		super();
-	}
+  /**
+   * Instantiates a new route.
+   */
+  public Route() {
+    super();
+  }
 
-	/**
-	 * Evaluates the cost of a data transfer with size transferSize along the
-	 * route
-	 */
-	public long evaluateTransferCost(long transferSize) {
-		long cost = 0;
-		// Iterating the route and incrementing transfer cost
-		for (AbstractRouteStep step : this) {
-			cost += step.getTransferCost(transferSize);
-		}
+  /**
+   * Evaluates the cost of a data transfer with size transferSize along the route.
+   *
+   * @param transferSize
+   *          the transfer size
+   * @return the long
+   */
+  public long evaluateTransferCost(final long transferSize) {
+    long cost = 0;
+    // Iterating the route and incrementing transfer cost
+    for (final AbstractRouteStep step : this) {
+      cost += step.getTransferCost(transferSize);
+    }
 
-		return cost;
-	}
+    return cost;
+  }
 
-	/**
-	 * Returns true if each operator in the route appears only once
-	 */
-	public boolean isSingleAppearance() {
-		boolean isIt = true;
-		Set<ComponentInstance> opSet = new HashSet<ComponentInstance>();
-		// Iterating the route and testing number of occurences in sender
-		for (AbstractRouteStep step : this) {
-			if (opSet.contains(step.getSender())) {
-				isIt = false;
-			}
-			opSet.add(step.getSender());
-		}
+  /**
+   * Returns true if each operator in the route appears only once.
+   *
+   * @return true, if is single appearance
+   */
+  public boolean isSingleAppearance() {
+    boolean isIt = true;
+    final Set<ComponentInstance> opSet = new HashSet<>();
+    // Iterating the route and testing number of occurences in sender
+    for (final AbstractRouteStep step : this) {
+      if (opSet.contains(step.getSender())) {
+        isIt = false;
+      }
+      opSet.add(step.getSender());
+    }
 
-		// Testing last step receiver
-		if (opSet.contains(this.get(this.size() - 1).getReceiver())) {
-			isIt = false;
-		}
-		return isIt;
-	}
+    // Testing last step receiver
+    if (opSet.contains(get(size() - 1).getReceiver())) {
+      isIt = false;
+    }
+    return isIt;
+  }
 
-	@Override
-	public String toString() {
-		String trace = "";
-		for (AbstractRouteStep step : this) {
-			trace += step + " ";
-		}
-		return trace;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.util.AbstractCollection#toString()
+   */
+  @Override
+  public String toString() {
+    String trace = "";
+    for (final AbstractRouteStep step : this) {
+      trace += step + " ";
+    }
+    return trace;
+  }
 }

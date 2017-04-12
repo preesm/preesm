@@ -42,6 +42,7 @@ import org.eclipse.jface.dialogs.IInputValidator;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
+// TODO: Auto-generated Javadoc
 /**
  * This validator is used to check whether a port in a vertex already has a given name.
  *
@@ -50,12 +51,17 @@ import org.ietr.preesm.experiment.model.pimm.Port;
  */
 public class PortNameValidator implements IInputValidator {
 
+  /** The vertex. */
   protected AbstractActor vertex;
-  protected Port          renamedPort;
-  protected Set<String>   portsNames;
+
+  /** The renamed port. */
+  protected Port renamedPort;
+
+  /** The ports names. */
+  protected Set<String> portsNames;
 
   /**
-   * Default constructor of the {@link PortNameValidator}
+   * Default constructor of the {@link PortNameValidator}.
    *
    * @param vertex
    *          the port to which we add/rename a port
@@ -90,6 +96,11 @@ public class PortNameValidator implements IInputValidator {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.dialogs.IInputValidator#isValid(java.lang.String)
+   */
   @Override
   public String isValid(final String newPortName) {
     String message = null;

@@ -40,74 +40,95 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+// TODO: Auto-generated Javadoc
 /**
- * Manager of the relative constraints
- * 
+ * Manager of the relative constraints.
+ *
  * @author mpelcat
- * 
  */
 public class RelativeConstraintManager {
 
-	/**
-	 * Integer representing no relative constraint
-	 */
-	public static final int NONE = -1;
-	
-	/**
-	 * List of all relative constraints as groups represented by integers and linked to 
-	 * vertices represented by their ID
-	 */
-	private Map<String, Integer> relativeConstraints;
+  /** Integer representing no relative constraint. */
+  public static final int NONE = -1;
 
-	/**
-	 * Path to a file containing relative constraints
-	 */
-	private String excelFileURL = "";
+  /** List of all relative constraints as groups represented by integers and linked to vertices represented by their ID. */
+  private final Map<String, Integer> relativeConstraints;
 
-	public RelativeConstraintManager() {
-		relativeConstraints = new HashMap<String, Integer>();
-	}
+  /** Path to a file containing relative constraints. */
+  private String excelFileURL = "";
 
-	/**
-	 * Set the group of a given vertex represented by its ID.
-	 */
-	public void addConstraint(String sdfVertexId, int groupId) {
-		if(groupId != NONE){
-			relativeConstraints.put(sdfVertexId, groupId);
-		}
-	}
-	
-	/**
-	 * Gets the group if any, associated with the vertex ID, or NONE otherwise.
-	 */
-	public int getConstraintOrDefault(String sdfVertexId){
-		if(relativeConstraints.keySet().contains(sdfVertexId)){
-			return relativeConstraints.get(sdfVertexId);
-		}
-		else{
-			return NONE;
-		}
-	}
-	
-	/**
-	 * Checks if the vertex is associated to a group.
-	 */
-	public boolean hasRelativeConstraint(String sdfVertexId){
-		return relativeConstraints.keySet().contains(sdfVertexId);
-	}
-	
-	/**
-	 * Get the IDs of all vertices having a group.
-	 */
-	public Set<String> getExplicitConstraintIds() {
-		return relativeConstraints.keySet();
-	}
+  /**
+   * Instantiates a new relative constraint manager.
+   */
+  public RelativeConstraintManager() {
+    this.relativeConstraints = new HashMap<>();
+  }
 
-	public String getExcelFileURL() {
-		return excelFileURL;
-	}
+  /**
+   * Set the group of a given vertex represented by its ID.
+   *
+   * @param sdfVertexId
+   *          the sdf vertex id
+   * @param groupId
+   *          the group id
+   */
+  public void addConstraint(final String sdfVertexId, final int groupId) {
+    if (groupId != RelativeConstraintManager.NONE) {
+      this.relativeConstraints.put(sdfVertexId, groupId);
+    }
+  }
 
-	public void setExcelFileURL(String excelFileURL) {
-		this.excelFileURL = excelFileURL;
-	}
+  /**
+   * Gets the group if any, associated with the vertex ID, or NONE otherwise.
+   *
+   * @param sdfVertexId
+   *          the sdf vertex id
+   * @return the constraint or default
+   */
+  public int getConstraintOrDefault(final String sdfVertexId) {
+    if (this.relativeConstraints.keySet().contains(sdfVertexId)) {
+      return this.relativeConstraints.get(sdfVertexId);
+    } else {
+      return RelativeConstraintManager.NONE;
+    }
+  }
+
+  /**
+   * Checks if the vertex is associated to a group.
+   *
+   * @param sdfVertexId
+   *          the sdf vertex id
+   * @return true, if successful
+   */
+  public boolean hasRelativeConstraint(final String sdfVertexId) {
+    return this.relativeConstraints.keySet().contains(sdfVertexId);
+  }
+
+  /**
+   * Get the IDs of all vertices having a group.
+   *
+   * @return the explicit constraint ids
+   */
+  public Set<String> getExplicitConstraintIds() {
+    return this.relativeConstraints.keySet();
+  }
+
+  /**
+   * Gets the excel file URL.
+   *
+   * @return the excel file URL
+   */
+  public String getExcelFileURL() {
+    return this.excelFileURL;
+  }
+
+  /**
+   * Sets the excel file URL.
+   *
+   * @param excelFileURL
+   *          the new excel file URL
+   */
+  public void setExcelFileURL(final String excelFileURL) {
+    this.excelFileURL = excelFileURL;
+  }
 }

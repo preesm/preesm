@@ -39,90 +39,101 @@ package org.ietr.preesm.mapper.params;
 
 import java.util.Map;
 import java.util.logging.Level;
-
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
+// TODO: Auto-generated Javadoc
 /**
- * Class which purpose is setting the parameters for the fast algorithm
- * 
+ * Class which purpose is setting the parameters for the fast algorithm.
+ *
  * @author pmenuet
  * @author mpelcat
  */
 
 public class FastAlgoParameters {
 
-	/**
-	 * true if we need to display the intermediate solutions
-	 */
-	private boolean displaySolutions;
+  /** true if we need to display the intermediate solutions. */
+  private boolean displaySolutions;
 
-	/**
-	 * Time in seconds we want to run FAST
-	 */
-	private int fastTime = 200;
+  /** Time in seconds we want to run FAST. */
+  private int fastTime = 200;
 
-	/**
-	 * Time in seconds spent in one FAST local neighborhood
-	 */
-	private int fastLocalSearchTime = 10;
+  /** Time in seconds spent in one FAST local neighborhood. */
+  private int fastLocalSearchTime = 10;
 
-	public FastAlgoParameters(Map<String, String> textParameters) {
+  /**
+   * Instantiates a new fast algo parameters.
+   *
+   * @param textParameters
+   *          the text parameters
+   */
+  public FastAlgoParameters(final Map<String, String> textParameters) {
 
-		this.displaySolutions = Boolean.valueOf(textParameters
-				.get("displaySolutions"));
-		if (Integer.valueOf(textParameters.get("fastTime")) > 0) {
-			this.fastTime = Integer.valueOf(textParameters.get("fastTime"));
-		}
-		if (Integer.valueOf(textParameters.get("fastLocalSearchTime")) > 0) {
-			this.fastLocalSearchTime = Integer.valueOf(textParameters
-					.get("fastLocalSearchTime"));
-		}
+    this.displaySolutions = Boolean.valueOf(textParameters.get("displaySolutions"));
+    if (Integer.valueOf(textParameters.get("fastTime")) > 0) {
+      this.fastTime = Integer.valueOf(textParameters.get("fastTime"));
+    }
+    if (Integer.valueOf(textParameters.get("fastLocalSearchTime")) > 0) {
+      this.fastLocalSearchTime = Integer.valueOf(textParameters.get("fastLocalSearchTime"));
+    }
 
-		WorkflowLogger
-				.getLogger()
-				.log(Level.INFO,
-						"The Fast algo parameters are: displaySolutions=true/false; fastTime in seconds; fastLocalSearchTime in seconds");
-	}
+    WorkflowLogger.getLogger().log(Level.INFO,
+        "The Fast algo parameters are: displaySolutions=true/false; fastTime in seconds; fastLocalSearchTime in seconds");
+  }
 
-	/**
-	 * 
-	 * Constructors
-	 * 
-	 */
+  /**
+   * Constructors.
+   *
+   * @param fastTime
+   *          the fast time
+   * @param fastLocalSearchTime
+   *          the fast local search time
+   * @param displaySolutions
+   *          the display solutions
+   */
 
-	public FastAlgoParameters(int fastTime, int fastLocalSearchTime,
-			boolean displaySolutions) {
+  public FastAlgoParameters(final int fastTime, final int fastLocalSearchTime,
+      final boolean displaySolutions) {
 
-		this.displaySolutions = displaySolutions;
-		this.fastTime = fastTime;
-		this.fastLocalSearchTime = fastLocalSearchTime;
-	}
+    this.displaySolutions = displaySolutions;
+    this.fastTime = fastTime;
+    this.fastLocalSearchTime = fastLocalSearchTime;
+  }
 
-	/**
-	 * 
-	 * Getters and setters
-	 * 
-	 */
+  /**
+   * Getters and setters.
+   *
+   * @return true, if is display solutions
+   */
 
-	public boolean isDisplaySolutions() {
-		return displaySolutions;
-	}
+  public boolean isDisplaySolutions() {
+    return this.displaySolutions;
+  }
 
-	public void setDisplaySolutions(boolean displaySolutions) {
-		this.displaySolutions = displaySolutions;
-	}
+  /**
+   * Sets the display solutions.
+   *
+   * @param displaySolutions
+   *          the new display solutions
+   */
+  public void setDisplaySolutions(final boolean displaySolutions) {
+    this.displaySolutions = displaySolutions;
+  }
 
-	/**
-	 * Returns the time in seconds for the whole FAST process
-	 */
-	public int getFastTime() {
-		return fastTime;
-	}
+  /**
+   * Returns the time in seconds for the whole FAST process.
+   *
+   * @return the fast time
+   */
+  public int getFastTime() {
+    return this.fastTime;
+  }
 
-	/**
-	 * Returns the time in seconds spent in one FAST local neighborhood
-	 */
-	public int getFastLocalSearchTime() {
-		return fastLocalSearchTime;
-	}
+  /**
+   * Returns the time in seconds spent in one FAST local neighborhood.
+   *
+   * @return the fast local search time
+   */
+  public int getFastLocalSearchTime() {
+    return this.fastLocalSearchTime;
+  }
 }

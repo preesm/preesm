@@ -39,20 +39,25 @@ package org.ietr.preesm.codegen.xtend.task;
 
 import org.ietr.dftools.workflow.WorkflowException;
 
+// TODO: Auto-generated Javadoc
 /**
  * Exception thrown when an error has occured during the codegen.
- * 
+ *
  * @author kdesnos
  */
 public class CodegenException extends WorkflowException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 277244171165787353L;
+  /** The Constant serialVersionUID. */
+  private static final long serialVersionUID = 277244171165787353L;
 
-	public CodegenException(String msg) {
-		super(msg);
-	}
+  /**
+   * Instantiates a new codegen exception.
+   *
+   * @param msg
+   *          the msg
+   */
+  public CodegenException(final String msg) {
+    super(msg);
+  }
 
 }

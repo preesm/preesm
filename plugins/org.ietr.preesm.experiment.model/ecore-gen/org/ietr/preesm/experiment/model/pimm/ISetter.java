@@ -42,15 +42,14 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>ISetter</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A representation of the model object '<em><b>ISetter</b></em>'. <!-- end-user-doc -->
  *
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.ISetter#getOutgoingDependencies <em>Outgoing Dependencies</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.ISetter#getOutgoingDependencies <em>Outgoing Dependencies</em>}</li>
  * </ul>
  * </p>
  *
@@ -60,29 +59,29 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  */
 public interface ISetter extends EObject, PiMMVisitable {
 
-	/**
-	 * Returns the value of the '<em><b>Outgoing Dependencies</b></em>' reference list.
-	 * The list contents are of type {@link org.ietr.preesm.experiment.model.pimm.Dependency}.
-	 * It is bidirectional and its opposite is '{@link org.ietr.preesm.experiment.model.pimm.Dependency#getSetter <em>Setter</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Outgoing Dependencies</em>' reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Outgoing Dependencies</em>' reference list.
-	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getISetter_OutgoingDependencies()
-	 * @see org.ietr.preesm.experiment.model.pimm.Dependency#getSetter
-	 * @model opposite="setter"
-	 * @generated
-	 */
-	EList<Dependency> getOutgoingDependencies();
+  /**
+   * Returns the value of the '<em><b>Outgoing Dependencies</b></em>' reference list. The list contents are of type
+   * {@link org.ietr.preesm.experiment.model.pimm.Dependency}. It is bidirectional and its opposite is
+   * '{@link org.ietr.preesm.experiment.model.pimm.Dependency#getSetter <em>Setter</em>}'. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Outgoing Dependencies</em>' reference list isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Outgoing Dependencies</em>' reference list.
+   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getISetter_OutgoingDependencies()
+   * @see org.ietr.preesm.experiment.model.pimm.Dependency#getSetter
+   * @model opposite="setter"
+   * @generated
+   */
+  EList<Dependency> getOutgoingDependencies();
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @model kind="operation"
-	 * @generated
-	 */
-	int getValue();
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the value
+   * @model kind="operation"
+   * @generated
+   */
+  int getValue();
 } // ISetter

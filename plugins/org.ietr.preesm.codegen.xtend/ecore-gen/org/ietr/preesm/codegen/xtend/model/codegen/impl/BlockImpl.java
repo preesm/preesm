@@ -53,304 +53,317 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CodeElt;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> An implementation of the model object '
- * <em><b>Block</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Block</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BlockImpl#getCodeElts
- * <em>Code Elts</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BlockImpl#getDeclarations
- * <em>Declarations</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BlockImpl#getName
- * <em>Name</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BlockImpl#getDefinitions
- * <em>Definitions</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BlockImpl#getCodeElts <em>Code Elts</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BlockImpl#getDeclarations <em>Declarations</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BlockImpl#getName <em>Name</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BlockImpl#getDefinitions <em>Definitions</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @generated
  */
 public class BlockImpl extends EObjectImpl implements Block {
-	/**
-	 * The cached value of the '{@link #getCodeElts() <em>Code Elts</em>}'
-	 * containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getCodeElts()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<CodeElt> codeElts;
+  /**
+   * The cached value of the '{@link #getCodeElts() <em>Code Elts</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getCodeElts()
+   * @generated
+   * @ordered
+   */
+  protected EList<CodeElt> codeElts;
 
-	/**
-	 * The cached value of the '{@link #getDeclarations() <em>Declarations</em>}
-	 * ' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
-	 * 
-	 * @see #getDeclarations()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<Variable> declarations;
+  /**
+   * The cached value of the '{@link #getDeclarations() <em>Declarations</em>} ' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getDeclarations()
+   * @generated
+   * @ordered
+   */
+  protected EList<Variable> declarations;
 
-	/**
-	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getName()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String NAME_EDEFAULT = null;
+  /**
+   * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getName()
+   * @generated
+   * @ordered
+   */
+  protected static final String NAME_EDEFAULT = null;
 
-	/**
-	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getName()
-	 * @generated
-	 * @ordered
-	 */
-	protected String name = NAME_EDEFAULT;
+  /**
+   * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getName()
+   * @generated
+   * @ordered
+   */
+  protected String name = BlockImpl.NAME_EDEFAULT;
 
-	/**
-	 * The cached value of the '{@link #getDefinitions() <em>Definitions</em>}'
-	 * containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getDefinitions()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<Variable> definitions;
+  /**
+   * The cached value of the '{@link #getDefinitions() <em>Definitions</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getDefinitions()
+   * @generated
+   * @ordered
+   */
+  protected EList<Variable> definitions;
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	protected BlockImpl() {
-		super();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @generated
+   */
+  protected BlockImpl() {
+    super();
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return CodegenPackage.Literals.BLOCK;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return CodegenPackage.Literals.BLOCK;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public EList<CodeElt> getCodeElts() {
-		if (codeElts == null) {
-			codeElts = new EObjectContainmentEList<CodeElt>(CodeElt.class,
-					this, CodegenPackage.BLOCK__CODE_ELTS);
-		}
-		return codeElts;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the code elts
+   * @generated
+   */
+  @Override
+  public EList<CodeElt> getCodeElts() {
+    if (this.codeElts == null) {
+      this.codeElts = new EObjectContainmentEList<>(CodeElt.class, this, CodegenPackage.BLOCK__CODE_ELTS);
+    }
+    return this.codeElts;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public EList<Variable> getDeclarations() {
-		if (declarations == null) {
-			declarations = new EObjectWithInverseResolvingEList.ManyInverse<Variable>(
-					Variable.class, this, CodegenPackage.BLOCK__DECLARATIONS,
-					CodegenPackage.VARIABLE__USERS);
-		}
-		return declarations;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the declarations
+   * @generated
+   */
+  @Override
+  public EList<Variable> getDeclarations() {
+    if (this.declarations == null) {
+      this.declarations = new EObjectWithInverseResolvingEList.ManyInverse<>(Variable.class, this, CodegenPackage.BLOCK__DECLARATIONS,
+          CodegenPackage.VARIABLE__USERS);
+    }
+    return this.declarations;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public String getName() {
-		return name;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the name
+   * @generated
+   */
+  @Override
+  public String getName() {
+    return this.name;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public void setName(String newName) {
-		String oldName = name;
-		name = newName;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.BLOCK__NAME, oldName, name));
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newName
+   *          the new name
+   * @generated
+   */
+  @Override
+  public void setName(final String newName) {
+    final String oldName = this.name;
+    this.name = newName;
+    if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.BLOCK__NAME, oldName, this.name));
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public EList<Variable> getDefinitions() {
-		if (definitions == null) {
-			definitions = new EObjectContainmentWithInverseEList<Variable>(
-					Variable.class, this, CodegenPackage.BLOCK__DEFINITIONS,
-					CodegenPackage.VARIABLE__CREATOR);
-		}
-		return definitions;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the definitions
+   * @generated
+   */
+  @Override
+  public EList<Variable> getDefinitions() {
+    if (this.definitions == null) {
+      this.definitions = new EObjectContainmentWithInverseEList<>(Variable.class, this, CodegenPackage.BLOCK__DEFINITIONS, CodegenPackage.VARIABLE__CREATOR);
+    }
+    return this.definitions;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public NotificationChain eInverseAdd(InternalEObject otherEnd,
-			int featureID, NotificationChain msgs) {
-		switch (featureID) {
-		case CodegenPackage.BLOCK__DECLARATIONS:
-			return ((InternalEList<InternalEObject>) (InternalEList<?>) getDeclarations())
-					.basicAdd(otherEnd, msgs);
-		case CodegenPackage.BLOCK__DEFINITIONS:
-			return ((InternalEList<InternalEObject>) (InternalEList<?>) getDefinitions())
-					.basicAdd(otherEnd, msgs);
-		}
-		return super.eInverseAdd(otherEnd, featureID, msgs);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param otherEnd
+   *          the other end
+   * @param featureID
+   *          the feature ID
+   * @param msgs
+   *          the msgs
+   * @return the notification chain
+   * @generated
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+    switch (featureID) {
+      case CodegenPackage.BLOCK__DECLARATIONS:
+        return ((InternalEList<InternalEObject>) (InternalEList<?>) getDeclarations()).basicAdd(otherEnd, msgs);
+      case CodegenPackage.BLOCK__DEFINITIONS:
+        return ((InternalEList<InternalEObject>) (InternalEList<?>) getDefinitions()).basicAdd(otherEnd, msgs);
+    }
+    return super.eInverseAdd(otherEnd, featureID, msgs);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd,
-			int featureID, NotificationChain msgs) {
-		switch (featureID) {
-		case CodegenPackage.BLOCK__CODE_ELTS:
-			return ((InternalEList<?>) getCodeElts()).basicRemove(otherEnd,
-					msgs);
-		case CodegenPackage.BLOCK__DECLARATIONS:
-			return ((InternalEList<?>) getDeclarations()).basicRemove(otherEnd,
-					msgs);
-		case CodegenPackage.BLOCK__DEFINITIONS:
-			return ((InternalEList<?>) getDefinitions()).basicRemove(otherEnd,
-					msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param otherEnd
+   *          the other end
+   * @param featureID
+   *          the feature ID
+   * @param msgs
+   *          the msgs
+   * @return the notification chain
+   * @generated
+   */
+  @Override
+  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+    switch (featureID) {
+      case CodegenPackage.BLOCK__CODE_ELTS:
+        return ((InternalEList<?>) getCodeElts()).basicRemove(otherEnd, msgs);
+      case CodegenPackage.BLOCK__DECLARATIONS:
+        return ((InternalEList<?>) getDeclarations()).basicRemove(otherEnd, msgs);
+      case CodegenPackage.BLOCK__DEFINITIONS:
+        return ((InternalEList<?>) getDefinitions()).basicRemove(otherEnd, msgs);
+    }
+    return super.eInverseRemove(otherEnd, featureID, msgs);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-		case CodegenPackage.BLOCK__CODE_ELTS:
-			return getCodeElts();
-		case CodegenPackage.BLOCK__DECLARATIONS:
-			return getDeclarations();
-		case CodegenPackage.BLOCK__NAME:
-			return getName();
-		case CodegenPackage.BLOCK__DEFINITIONS:
-			return getDefinitions();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param resolve
+   *          the resolve
+   * @param coreType
+   *          the core type
+   * @return the object
+   * @generated
+   */
+  @Override
+  public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
+    switch (featureID) {
+      case CodegenPackage.BLOCK__CODE_ELTS:
+        return getCodeElts();
+      case CodegenPackage.BLOCK__DECLARATIONS:
+        return getDeclarations();
+      case CodegenPackage.BLOCK__NAME:
+        return getName();
+      case CodegenPackage.BLOCK__DEFINITIONS:
+        return getDefinitions();
+    }
+    return super.eGet(featureID, resolve, coreType);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-		case CodegenPackage.BLOCK__NAME:
-			setName((String) newValue);
-			return;
-		case CodegenPackage.BLOCK__DEFINITIONS:
-			getDefinitions().clear();
-			getDefinitions().addAll((Collection<? extends Variable>) newValue);
-			return;
-		}
-		super.eSet(featureID, newValue);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param newValue
+   *          the new value
+   * @generated
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  public void eSet(final int featureID, final Object newValue) {
+    switch (featureID) {
+      case CodegenPackage.BLOCK__NAME:
+        setName((String) newValue);
+        return;
+      case CodegenPackage.BLOCK__DEFINITIONS:
+        getDefinitions().clear();
+        getDefinitions().addAll((Collection<? extends Variable>) newValue);
+        return;
+    }
+    super.eSet(featureID, newValue);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public void eUnset(int featureID) {
-		switch (featureID) {
-		case CodegenPackage.BLOCK__NAME:
-			setName(NAME_EDEFAULT);
-			return;
-		case CodegenPackage.BLOCK__DEFINITIONS:
-			getDefinitions().clear();
-			return;
-		}
-		super.eUnset(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @generated
+   */
+  @Override
+  public void eUnset(final int featureID) {
+    switch (featureID) {
+      case CodegenPackage.BLOCK__NAME:
+        setName(BlockImpl.NAME_EDEFAULT);
+        return;
+      case CodegenPackage.BLOCK__DEFINITIONS:
+        getDefinitions().clear();
+        return;
+    }
+    super.eUnset(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-		case CodegenPackage.BLOCK__CODE_ELTS:
-			return codeElts != null && !codeElts.isEmpty();
-		case CodegenPackage.BLOCK__DECLARATIONS:
-			return declarations != null && !declarations.isEmpty();
-		case CodegenPackage.BLOCK__NAME:
-			return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT
-					.equals(name);
-		case CodegenPackage.BLOCK__DEFINITIONS:
-			return definitions != null && !definitions.isEmpty();
-		}
-		return super.eIsSet(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @return true, if successful
+   * @generated
+   */
+  @Override
+  public boolean eIsSet(final int featureID) {
+    switch (featureID) {
+      case CodegenPackage.BLOCK__CODE_ELTS:
+        return (this.codeElts != null) && !this.codeElts.isEmpty();
+      case CodegenPackage.BLOCK__DECLARATIONS:
+        return (this.declarations != null) && !this.declarations.isEmpty();
+      case CodegenPackage.BLOCK__NAME:
+        return BlockImpl.NAME_EDEFAULT == null ? this.name != null : !BlockImpl.NAME_EDEFAULT.equals(this.name);
+      case CodegenPackage.BLOCK__DEFINITIONS:
+        return (this.definitions != null) && !this.definitions.isEmpty();
+    }
+    return super.eIsSet(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public String toString() {
-		if (eIsProxy())
-			return super.toString();
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the string
+   * @generated
+   */
+  @Override
+  public String toString() {
+    if (eIsProxy()) {
+      return super.toString();
+    }
 
-		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (name: ");
-		result.append(name);
-		result.append(')');
-		return result.toString();
-	}
+    final StringBuffer result = new StringBuffer(super.toString());
+    result.append(" (name: ");
+    result.append(this.name);
+    result.append(')');
+    return result.toString();
+  }
 
 } // BlockImpl

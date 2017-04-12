@@ -38,25 +38,29 @@ package org.ietr.preesm.mapper.ui;
 
 import java.text.FieldPosition;
 import java.util.Date;
-
 import org.jfree.chart.util.RelativeDateFormat;
 
+// TODO: Auto-generated Javadoc
 /**
- * Time display format for Gantt charts
- * 
+ * Time display format for Gantt charts.
+ *
  * @author mpelcat
  */
 public class VertexDateFormat extends RelativeDateFormat {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 9164797353964241418L;
+  /** The Constant serialVersionUID. */
+  private static final long serialVersionUID = 9164797353964241418L;
 
-	@Override
-	public StringBuffer format(Date date, StringBuffer toAppendTo,
-			FieldPosition fieldPosition) {
-		return new StringBuffer(String.format("%d cycles", date.getTime()));
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.jfree.chart.util.RelativeDateFormat#format(java.util.Date, java.lang.StringBuffer,
+   * java.text.FieldPosition)
+   */
+  @Override
+  public StringBuffer format(final Date date, final StringBuffer toAppendTo,
+      final FieldPosition fieldPosition) {
+    return new StringBuffer(String.format("%d cycles", date.getTime()));
+  }
 
 }

@@ -36,25 +36,45 @@
 
 package org.ietr.preesm.codegen.model;
 
+// TODO: Auto-generated Javadoc
 /**
- * A fixed parameter in a preesm generated function call
- * 
+ * A fixed parameter in a preesm generated function call.
+ *
  * @author mpelcat
  */
 public class CodeGenParameter extends CodeGenCallElement {
 
-	private int dir;
+  /** The dir. */
+  private final int dir;
 
-	public CodeGenParameter(String name, int dir) {
-		super(name);
-		this.dir = dir;
-	}
+  /**
+   * Instantiates a new code gen parameter.
+   *
+   * @param name
+   *          the name
+   * @param dir
+   *          the dir
+   */
+  public CodeGenParameter(final String name, final int dir) {
+    super(name);
+    this.dir = dir;
+  }
 
-	public boolean isInput() {
-		return dir == 0;
-	}
+  /**
+   * Checks if is input.
+   *
+   * @return true, if is input
+   */
+  public boolean isInput() {
+    return this.dir == 0;
+  }
 
-	public boolean isOutput() {
-		return dir == 1;
-	}
+  /**
+   * Checks if is output.
+   *
+   * @return true, if is output
+   */
+  public boolean isOutput() {
+    return this.dir == 1;
+  }
 }

@@ -40,37 +40,43 @@ import org.ietr.preesm.experiment.model.pimm.JoinActor;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Join Actor</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>Join Actor</b></em>'. <!-- end-user-doc -->
  * <p>
  * </p>
  *
  * @generated
  */
 public class JoinActorImpl extends ExecutableActorImpl implements JoinActor {
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected JoinActorImpl() {
-		super();
-	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return PiMMPackage.Literals.JOIN_ACTOR;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @generated
+   */
+  protected JoinActorImpl() {
+    super();
+  }
 
-	@Override
-	public void accept(PiMMVisitor v) {
-		v.visitJoinActor(this);
-	}
-} //JoinActorImpl
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return PiMMPackage.Literals.JOIN_ACTOR;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.impl.ExecutableActorImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
+   */
+  @Override
+  public void accept(final PiMMVisitor v) {
+    v.visitJoinActor(this);
+  }
+} // JoinActorImpl

@@ -40,7 +40,6 @@ package org.ietr.preesm.mapper.abc.transaction;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
@@ -52,166 +51,168 @@ import org.ietr.preesm.mapper.model.special.PrecedenceEdge;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 
+// TODO: Auto-generated Javadoc
 /**
  * Transaction executing the addition of an involvement vertex.
- * 
+ *
  * @author mpelcat
  */
 public class AddInvolvementVertexTransaction extends Transaction {
 
-	// Inputs
-	/**
-	 * Determining if the current involvement is executed by the sender or by
-	 * the receiver of the transfer
-	 */
-	private boolean isSender;
+  // Inputs
+  /**
+   * Determining if the current involvement is executed by the sender or by the receiver of the
+   * transfer.
+   */
+  private final boolean isSender;
 
-	/**
-	 * Implementation DAG to which the vertex is added
-	 */
-	private MapperDAG implementation = null;
+  /** Implementation DAG to which the vertex is added. */
+  private MapperDAG implementation = null;
 
-	/**
-	 * Route step corresponding to this involvement
-	 */
-	private AbstractRouteStep step = null;
+  /** Route step corresponding to this involvement. */
+  private AbstractRouteStep step = null;
 
-	/**
-	 * time of this involvement
-	 */
-	long involvementTime = 0;
+  /** time of this involvement. */
+  long involvementTime = 0;
 
-	/**
-	 * Original edge and transfer corresponding to this involvement
-	 */
-	private MapperDAGEdge edge = null;
+  /** Original edge and transfer corresponding to this involvement. */
+  private MapperDAGEdge edge = null;
 
-	/**
-	 * manager keeping scheduling orders
-	 */
-	private OrderManager orderManager = null;
+  /** manager keeping scheduling orders. */
+  private OrderManager orderManager = null;
 
-	// Generated objects
-	/**
-	 * involvement vertex added
-	 */
-	private InvolvementVertex iVertex = null;
+  // Generated objects
+  /** involvement vertex added. */
+  private InvolvementVertex iVertex = null;
 
-	// private MapperDAGEdge newOutEdge = null;
+  // private MapperDAGEdge newOutEdge = null;
 
-	public AddInvolvementVertexTransaction(boolean isSender,
-			MapperDAGEdge edge, MapperDAG implementation,
-			AbstractRouteStep step, long involvementTime,
-			OrderManager orderManager) {
-		super();
-		this.isSender = isSender;
-		this.edge = edge;
-		this.implementation = implementation;
-		this.step = step;
-		this.orderManager = orderManager;
-		this.involvementTime = involvementTime;
-	}
+  /**
+   * Instantiates a new adds the involvement vertex transaction.
+   *
+   * @param isSender
+   *          the is sender
+   * @param edge
+   *          the edge
+   * @param implementation
+   *          the implementation
+   * @param step
+   *          the step
+   * @param involvementTime
+   *          the involvement time
+   * @param orderManager
+   *          the order manager
+   */
+  public AddInvolvementVertexTransaction(final boolean isSender, final MapperDAGEdge edge,
+      final MapperDAG implementation, final AbstractRouteStep step, final long involvementTime,
+      final OrderManager orderManager) {
+    super();
+    this.isSender = isSender;
+    this.edge = edge;
+    this.implementation = implementation;
+    this.step = step;
+    this.orderManager = orderManager;
+    this.involvementTime = involvementTime;
+  }
 
-	@Override
-	public void execute(List<Object> resultList) {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.mapper.abc.transaction.Transaction#execute(java.util.List)
+   */
+  @Override
+  public void execute(final List<Object> resultList) {
 
-		super.execute(resultList);
+    super.execute(resultList);
 
-		MapperDAGVertex currentSource = (MapperDAGVertex) edge.getSource();
-		MapperDAGVertex currentTarget = (MapperDAGVertex) edge.getTarget();
+    final MapperDAGVertex currentSource = (MapperDAGVertex) this.edge.getSource();
+    final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();
 
-		if (edge instanceof PrecedenceEdge) {
-			WorkflowLogger.getLogger().log(Level.INFO,
-					"no involvement vertex corresponding to a schedule edge");
-			return;
-		}
+    if (this.edge instanceof PrecedenceEdge) {
+      WorkflowLogger.getLogger().log(Level.INFO,
+          "no involvement vertex corresponding to a schedule edge");
+      return;
+    }
 
-		String ivertexID = "__involvement (" + currentSource.getName() + ","
-				+ currentTarget.getName() + ")";
+    final String ivertexID = "__involvement (" + currentSource.getName() + ","
+        + currentTarget.getName() + ")";
 
-		if (involvementTime > 0) {
-			iVertex = new InvolvementVertex(ivertexID, implementation);
-			implementation.getTimings().dedicate(iVertex);
-			implementation.getMappings().dedicate(iVertex);
+    if (this.involvementTime > 0) {
+      this.iVertex = new InvolvementVertex(ivertexID, this.implementation);
+      this.implementation.getTimings().dedicate(this.iVertex);
+      this.implementation.getMappings().dedicate(this.iVertex);
 
-			implementation.addVertex(iVertex);
-			iVertex.getTiming().setCost(involvementTime);
+      this.implementation.addVertex(this.iVertex);
+      this.iVertex.getTiming().setCost(this.involvementTime);
 
-			if (isSender) {
-				iVertex.setEffectiveOperator(
-						step.getSender());
-				((TransferVertex) currentTarget).setInvolvementVertex(iVertex);
-			} else {
-				iVertex.setEffectiveOperator(
-						step.getReceiver());
-				((TransferVertex) currentSource).setInvolvementVertex(iVertex);
-			}
+      if (this.isSender) {
+        this.iVertex.setEffectiveOperator(this.step.getSender());
+        ((TransferVertex) currentTarget).setInvolvementVertex(this.iVertex);
+      } else {
+        this.iVertex.setEffectiveOperator(this.step.getReceiver());
+        ((TransferVertex) currentSource).setInvolvementVertex(this.iVertex);
+      }
 
-			if (isSender) {
-				MapperDAGEdge newInEdge = (MapperDAGEdge) implementation
-						.addEdge(currentSource, iVertex);
-				newInEdge.setInit(edge.getInit()
-						.clone());
-				newInEdge.getTiming().setCost(0);
+      if (this.isSender) {
+        final MapperDAGEdge newInEdge = (MapperDAGEdge) this.implementation.addEdge(currentSource,
+            this.iVertex);
+        newInEdge.setInit(this.edge.getInit().clone());
+        newInEdge.getTiming().setCost(0);
 
-				MapperDAGVertex receiverVertex = currentTarget;
-				do {
-					Set<MapperDAGVertex> succs = receiverVertex
-							.getSuccessors(false).keySet();
-					if (succs.isEmpty()
-							&& receiverVertex instanceof TransferVertex) {
-						WorkflowLogger.getLogger().log(
-								Level.SEVERE,
-								"Transfer has no successor: "
-										+ receiverVertex.getName());
-					}
+        MapperDAGVertex receiverVertex = currentTarget;
+        do {
+          final Set<MapperDAGVertex> succs = receiverVertex.getSuccessors(false).keySet();
+          if (succs.isEmpty() && (receiverVertex instanceof TransferVertex)) {
+            WorkflowLogger.getLogger().log(Level.SEVERE,
+                "Transfer has no successor: " + receiverVertex.getName());
+          }
 
-					for (MapperDAGVertex next : receiverVertex
-							.getSuccessors(false).keySet()) {
-						if (next != null) {
-							receiverVertex = next;
-						}
-					}
-				} while (receiverVertex instanceof TransferVertex);
+          for (final MapperDAGVertex next : receiverVertex.getSuccessors(false).keySet()) {
+            if (next != null) {
+              receiverVertex = next;
+            }
+          }
+        } while (receiverVertex instanceof TransferVertex);
 
-				MapperDAGEdge newoutEdge = (MapperDAGEdge) implementation
-						.addEdge(iVertex, receiverVertex);
-				newoutEdge.setInit(edge.getInit()
-						.clone());
-				newoutEdge.getTiming().setCost(0);
+        final MapperDAGEdge newoutEdge = (MapperDAGEdge) this.implementation.addEdge(this.iVertex,
+            receiverVertex);
+        newoutEdge.setInit(this.edge.getInit().clone());
+        newoutEdge.getTiming().setCost(0);
 
-				// TODO: Look at switching possibilities
-				/*
-				 * if (false) { TaskSwitcher taskSwitcher = new TaskSwitcher();
-				 * taskSwitcher.setOrderManager(orderManager);
-				 * taskSwitcher.insertVertexBefore(currentTarget, iVertex); }
-				 * else
-				 */
-				orderManager.insertBefore(currentTarget, iVertex);
+        // TODO: Look at switching possibilities
+        /*
+         * if (false) { TaskSwitcher taskSwitcher = new TaskSwitcher();
+         * taskSwitcher.setOrderManager(orderManager);
+         * taskSwitcher.insertVertexBefore(currentTarget, iVertex); } else
+         */
+        this.orderManager.insertBefore(currentTarget, this.iVertex);
 
-			} else {
-				MapperDAGEdge newOutEdge = (MapperDAGEdge) implementation
-						.addEdge(iVertex, currentTarget);
-				newOutEdge.setInit(edge.getInit()
-						.clone());
-				newOutEdge.getTiming().setCost(0);
+      } else {
+        final MapperDAGEdge newOutEdge = (MapperDAGEdge) this.implementation.addEdge(this.iVertex,
+            currentTarget);
+        newOutEdge.setInit(this.edge.getInit().clone());
+        newOutEdge.getTiming().setCost(0);
 
-				orderManager.insertAfter(currentSource, iVertex);
-			}
+        this.orderManager.insertAfter(currentSource, this.iVertex);
+      }
 
-			// Scheduling involvement vertex
-			new PrecedenceEdgeAdder(orderManager, implementation)
-					.scheduleVertex(iVertex);
+      // Scheduling involvement vertex
+      new PrecedenceEdgeAdder(this.orderManager, this.implementation).scheduleVertex(this.iVertex);
 
-			if (resultList != null) {
-				resultList.add(iVertex);
-			}
-		}
-	}
+      if (resultList != null) {
+        resultList.add(this.iVertex);
+      }
+    }
+  }
 
-	@Override
-	public String toString() {
-		return ("AddInvolvement(" + iVertex.toString() + ")");
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.mapper.abc.transaction.Transaction#toString()
+   */
+  @Override
+  public String toString() {
+    return ("AddInvolvement(" + this.iVertex.toString() + ")");
+  }
 
 }

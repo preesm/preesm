@@ -38,16 +38,23 @@ package org.ietr.preesm.mapper.params;
 
 import java.util.Map;
 
+// TODO: Auto-generated Javadoc
 /**
- * Parameters for list scheduling
- * 
+ * Parameters for list scheduling.
+ *
  * @author pmenuet
  * @author mpelcat
  */
 public class ListSchedulingParameters {
 
-	public ListSchedulingParameters(Map<String, String> textParameters) {
+  /**
+   * Instantiates a new list scheduling parameters.
+   *
+   * @param textParameters
+   *          the text parameters
+   */
+  public ListSchedulingParameters(final Map<String, String> textParameters) {
 
-	}
+  }
 
 }

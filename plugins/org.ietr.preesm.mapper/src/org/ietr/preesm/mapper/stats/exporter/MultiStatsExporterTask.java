@@ -39,7 +39,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -48,58 +47,82 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.ScenarioUtils;
 import org.ietr.preesm.mapper.abc.IAbc;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MultiStatsExporterTask.
+ */
 public class MultiStatsExporterTask extends AbstractTaskImplementation {
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
+   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs,
+      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
+      final Workflow workflow) throws WorkflowException {
 
-		@SuppressWarnings("unchecked")
-		Set<IAbc> simulators = (Set<IAbc>) inputs.get(KEY_SDF_ABC_SET);
-		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
-		String folderPath = parameters.get("path");
+    @SuppressWarnings("unchecked")
+    final Set<IAbc> simulators = (Set<IAbc>) inputs
+        .get(AbstractWorkflowNodeImplementation.KEY_SDF_ABC_SET);
+    final PreesmScenario scenario = (PreesmScenario) inputs
+        .get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    String folderPath = parameters.get("path");
 
-		// Get the root of the workspace
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IWorkspaceRoot root = workspace.getRoot();
-		// Get the project
-		String projectName = workflow.getProjectName();
-		IProject project = root.getProject(projectName);
+    // Get the root of the workspace
+    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    final IWorkspaceRoot root = workspace.getRoot();
+    // Get the project
+    final String projectName = workflow.getProjectName();
+    final IProject project = root.getProject(projectName);
 
-		// Get a complete valid path with all folders existing
-		folderPath = project.getLocation() + folderPath;
-		File parent = new File(folderPath);
-		parent.mkdirs();
+    // Get a complete valid path with all folders existing
+    folderPath = project.getLocation() + folderPath;
+    final File parent = new File(folderPath);
+    parent.mkdirs();
 
-		int i = 0;
-		String scenarioName = ScenarioUtils.getScenarioName(scenario);
-		for (IAbc abc : simulators) {
-			// Create a file from filePath
-			String filePath = scenarioName + "_stats_" + i + ".pgantt";
-			File file = new File(parent, filePath);
-			i++;
-			// Generate the stats from the abc and write them in file
-			XMLStatsExporter exporter = new XMLStatsExporter();
-			exporter.exportXMLStats(abc, file);
-		}
+    int i = 0;
+    final String scenarioName = ScenarioUtils.getScenarioName(scenario);
+    for (final IAbc abc : simulators) {
+      // Create a file from filePath
+      final String filePath = scenarioName + "_stats_" + i + ".pgantt";
+      final File file = new File(parent, filePath);
+      i++;
+      // Generate the stats from the abc and write them in file
+      final XMLStatsExporter exporter = new XMLStatsExporter();
+      exporter.exportXMLStats(abc, file);
+    }
 
-		return new HashMap<String, Object>();
-	}
+    return new HashMap<>();
+  }
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put("path", "/stats/xml/");
-		return parameters;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new HashMap<>();
+    parameters.put("path", "/stats/xml/");
+    return parameters;
+  }
 
-	@Override
-	public String monitorMessage() {
-		return "Generate the stats";
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Generate the stats";
+  }
 }

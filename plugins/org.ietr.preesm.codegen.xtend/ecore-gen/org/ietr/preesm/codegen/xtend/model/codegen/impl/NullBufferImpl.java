@@ -39,33 +39,33 @@ import org.eclipse.emf.ecore.EClass;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> An implementation of the model object '
- * <em><b>Null Buffer</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Null Buffer</b></em>'. <!-- end-user-doc -->
  * <p>
  * </p>
- * 
+ *
  * @generated
  */
 public class NullBufferImpl extends SubBufferImpl implements NullBuffer {
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * 
-	 */
-	protected NullBufferImpl() {
-		super();
-		setName("NULL");
-	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return CodegenPackage.Literals.NULL_BUFFER;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   */
+  protected NullBufferImpl() {
+    super();
+    setName("NULL");
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return CodegenPackage.Literals.NULL_BUFFER;
+  }
 
 } // NullBufferImpl

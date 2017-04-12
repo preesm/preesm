@@ -39,121 +39,144 @@ package org.ietr.preesm.mapper.abc;
 
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * The special vertices are special to the mapper because they have additional
- * mapping rules.
- * 
+ * The special vertices are special to the mapper because they have additional mapping rules.
+ *
  * @author mpelcat
  */
 public class SpecialVertexManager {
 
-	// Not ready to use. Needs some improvements on scheduling before
-	public static final long dissuasiveCost = 10000000000l;
+  /** The Constant dissuasiveCost. */
+  // Not ready to use. Needs some improvements on scheduling before
+  public static final long dissuasiveCost = 10000000000L;
 
-	/**
-	 * Tests if a vertex is of type broadcast
-	 */
-	static public boolean isSpecial(DAGVertex vertex) {
+  /**
+   * Tests if a vertex is of type broadcast.
+   *
+   * @param vertex
+   *          the vertex
+   * @return true, if is special
+   */
+  public static boolean isSpecial(final DAGVertex vertex) {
 
-		String kind = vertex.getKind();
-		if (kind == null) {
-			return false;
-		}
+    final String kind = vertex.getKind();
+    if (kind == null) {
+      return false;
+    }
 
-		if (kind.equalsIgnoreCase("dag_broadcast_vertex")
-				|| kind.equalsIgnoreCase("dag_fork_vertex")
-				|| kind.equalsIgnoreCase("dag_join_vertex")
-				|| kind.equalsIgnoreCase("dag_init_vertex")
-				|| kind.equalsIgnoreCase("dag_end_vertex")) {
-			return true;
-		}
+    if (kind.equalsIgnoreCase("dag_broadcast_vertex") || kind.equalsIgnoreCase("dag_fork_vertex")
+        || kind.equalsIgnoreCase("dag_join_vertex") || kind.equalsIgnoreCase("dag_init_vertex")
+        || kind.equalsIgnoreCase("dag_end_vertex")) {
+      return true;
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	/**
-	 * Tests if a vertex is of type broadcast
-	 */
-	static public boolean isBroadCast(DAGVertex vertex) {
+  /**
+   * Tests if a vertex is of type broadcast.
+   *
+   * @param vertex
+   *          the vertex
+   * @return true, if is broad cast
+   */
+  public static boolean isBroadCast(final DAGVertex vertex) {
 
-		String kind = vertex.getKind();
-		if (kind == null) {
-			return false;
-		}
+    final String kind = vertex.getKind();
+    if (kind == null) {
+      return false;
+    }
 
-		if (kind.equalsIgnoreCase("dag_broadcast_vertex")) {
-			return true;
-		}
+    if (kind.equalsIgnoreCase("dag_broadcast_vertex")) {
+      return true;
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	/**
-	 * Tests if a vertex is of type fork
-	 */
-	static public boolean isFork(DAGVertex vertex) {
+  /**
+   * Tests if a vertex is of type fork.
+   *
+   * @param vertex
+   *          the vertex
+   * @return true, if is fork
+   */
+  public static boolean isFork(final DAGVertex vertex) {
 
-		String kind = vertex.getKind();
-		if (kind == null) {
-			return false;
-		}
+    final String kind = vertex.getKind();
+    if (kind == null) {
+      return false;
+    }
 
-		if (kind.equalsIgnoreCase("dag_fork_vertex")) {
-			return true;
-		}
+    if (kind.equalsIgnoreCase("dag_fork_vertex")) {
+      return true;
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	/**
-	 * Tests if a vertex is of type join
-	 */
-	static public boolean isJoin(DAGVertex vertex) {
+  /**
+   * Tests if a vertex is of type join.
+   *
+   * @param vertex
+   *          the vertex
+   * @return true, if is join
+   */
+  public static boolean isJoin(final DAGVertex vertex) {
 
-		String kind = vertex.getKind();
-		if (kind == null) {
-			return false;
-		}
+    final String kind = vertex.getKind();
+    if (kind == null) {
+      return false;
+    }
 
-		if (kind.equalsIgnoreCase("dag_join_vertex")) {
-			return true;
-		}
+    if (kind.equalsIgnoreCase("dag_join_vertex")) {
+      return true;
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	/**
-	 * Tests if a vertex is of type init
-	 */
-	static public boolean isInit(DAGVertex vertex) {
+  /**
+   * Tests if a vertex is of type init.
+   *
+   * @param vertex
+   *          the vertex
+   * @return true, if is inits the
+   */
+  public static boolean isInit(final DAGVertex vertex) {
 
-		String kind = vertex.getKind();
-		if (kind == null) {
-			return false;
-		}
+    final String kind = vertex.getKind();
+    if (kind == null) {
+      return false;
+    }
 
-		if (kind.equalsIgnoreCase("dag_init_vertex")) {
-			return true;
-		}
+    if (kind.equalsIgnoreCase("dag_init_vertex")) {
+      return true;
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	/**
-	 * Tests if a vertex is of type init
-	 */
-	static public boolean isEnd(DAGVertex vertex) {
+  /**
+   * Tests if a vertex is of type init.
+   *
+   * @param vertex
+   *          the vertex
+   * @return true, if is end
+   */
+  public static boolean isEnd(final DAGVertex vertex) {
 
-		String kind = vertex.getKind();
-		if (kind == null) {
-			return false;
-		}
+    final String kind = vertex.getKind();
+    if (kind == null) {
+      return false;
+    }
 
-		if (kind.equalsIgnoreCase("dag_end_vertex")) {
-			return true;
-		}
+    if (kind.equalsIgnoreCase("dag_end_vertex")) {
+      return true;
+    }
 
-		return false;
-	}
+    return false;
+  }
 
 }

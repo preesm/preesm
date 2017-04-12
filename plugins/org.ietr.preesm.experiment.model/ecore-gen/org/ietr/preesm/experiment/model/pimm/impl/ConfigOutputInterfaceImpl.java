@@ -45,47 +45,50 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Config Output Interface</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>Config Output Interface</b></em>'. <!-- end-user-doc -->
  * <p>
  * </p>
  *
  * @generated
  */
 public class ConfigOutputInterfaceImpl extends InterfaceActorImpl implements ConfigOutputInterface {
-	
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 */
-	protected ConfigOutputInterfaceImpl() {
-		super();
-		
-		kind = PiIdentifiers.CONFIGURATION_OUTPUT_INTERFACE;
 
-		// Add the unique input port of the ConfigOutputInterface
-		// The port intentionally has no name
-		DataInputPort port = PiMMFactory.eINSTANCE.createDataInputPort();
-		port.setName(null);
-		this.getDataInputPorts().add(port);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   */
+  protected ConfigOutputInterfaceImpl() {
+    super();
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return PiMMPackage.Literals.CONFIG_OUTPUT_INTERFACE;
-	}
-	
-	@Override
-	public void accept(PiMMVisitor v) {
-		v.visitConfigOutputInterface(this);
-	}
+    this.kind = PiIdentifiers.CONFIGURATION_OUTPUT_INTERFACE;
 
-} //ConfigOutputInterfaceImpl
+    // Add the unique input port of the ConfigOutputInterface
+    // The port intentionally has no name
+    final DataInputPort port = PiMMFactory.eINSTANCE.createDataInputPort();
+    port.setName(null);
+    getDataInputPorts().add(port);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return PiMMPackage.Literals.CONFIG_OUTPUT_INTERFACE;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
+   */
+  @Override
+  public void accept(final PiMMVisitor v) {
+    v.visitConfigOutputInterface(this);
+  }
+
+} // ConfigOutputInterfaceImpl

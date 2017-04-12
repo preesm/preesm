@@ -38,33 +38,40 @@
 package org.ietr.preesm.mapper.abc.order;
 
 import java.util.Comparator;
-
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * Compares two SDF vertices using their scheduling orders
- * 
+ * Compares two SDF vertices using their scheduling orders.
+ *
  * @author mpelcat
  */
 public class SchedulingOrderComparator implements Comparator<DAGVertex> {
 
-	/**
-	 * @Override compare
-	 */
-	@Override
-	public int compare(DAGVertex v1, DAGVertex v2) {
+  /**
+   * Compare.
+   *
+   * @param v1
+   *          the v 1
+   * @param v2
+   *          the v 2
+   * @return the int
+   * @Override compare
+   */
+  @Override
+  public int compare(final DAGVertex v1, final DAGVertex v2) {
 
-		int difference = 0;
+    int difference = 0;
 
-		difference = ((MapperDAGVertex) v1).getTotalOrder();
-		difference -= ((MapperDAGVertex) v2).getTotalOrder();
+    difference = ((MapperDAGVertex) v1).getTotalOrder();
+    difference -= ((MapperDAGVertex) v2).getTotalOrder();
 
-		// Avoiding the discard of vertices with same order
-		if (difference == 0) {
-			difference = 1;
-		}
-		return difference;
-	}
+    // Avoiding the discard of vertices with same order
+    if (difference == 0) {
+      difference = 1;
+    }
+    return difference;
+  }
 
 }

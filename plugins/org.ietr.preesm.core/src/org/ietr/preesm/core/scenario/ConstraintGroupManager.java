@@ -40,185 +40,279 @@ package org.ietr.preesm.core.scenario;
 import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.dftools.algorithm.importer.InvalidModelException;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.preesm.core.scenario.serialize.ExcelConstraintsParser;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
 
+// TODO: Auto-generated Javadoc
 /**
- * container and manager of Constraint groups. It can load and store constraint
- * groups
- * 
+ * container and manager of Constraint groups. It can load and store constraint groups
+ *
  * @author mpelcat
  */
 public class ConstraintGroupManager {
 
-	/**
-	 * List of all constraint groups
-	 */
-	private Set<ConstraintGroup> constraintgroups;
+  /** List of all constraint groups. */
+  private final Set<ConstraintGroup> constraintgroups;
 
-	/**
-	 * Path to a file containing constraints
-	 */
-	private String excelFileURL = "";
+  /** Path to a file containing constraints. */
+  private String excelFileURL = "";
 
-	public ConstraintGroupManager() {
-		constraintgroups = new HashSet<ConstraintGroup>();
-	}
+  /**
+   * Instantiates a new constraint group manager.
+   */
+  public ConstraintGroupManager() {
+    this.constraintgroups = new HashSet<>();
+  }
 
-	public void addConstraintGroup(ConstraintGroup cg) {
+  /**
+   * Adds the constraint group.
+   *
+   * @param cg
+   *          the cg
+   */
+  public void addConstraintGroup(final ConstraintGroup cg) {
 
-		constraintgroups.add(cg);
-	}
+    this.constraintgroups.add(cg);
+  }
 
-	/**
-	 * Adding a simple constraint on one vertex and one operator
-	 */
-	public void addConstraint(String opId, SDFAbstractVertex vertex) {
+  /**
+   * Adding a simple constraint on one vertex and one operator.
+   *
+   * @param opId
+   *          the op id
+   * @param vertex
+   *          the vertex
+   */
+  public void addConstraint(final String opId, final SDFAbstractVertex vertex) {
 
-		Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
+    final Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
 
-		if (cgSet.isEmpty()) {
-			ConstraintGroup cg = new ConstraintGroup();
-			cg.addOperatorId(opId);
-			cg.addActorPath(vertex.getInfo());
-			constraintgroups.add(cg);
-		} else {
-			((ConstraintGroup) cgSet.toArray()[0]).addActorPath(vertex
-					.getInfo());
-		}
-	}
+    if (cgSet.isEmpty()) {
+      final ConstraintGroup cg = new ConstraintGroup();
+      cg.addOperatorId(opId);
+      cg.addActorPath(vertex.getInfo());
+      this.constraintgroups.add(cg);
+    } else {
+      ((ConstraintGroup) cgSet.toArray()[0]).addActorPath(vertex.getInfo());
+    }
+  }
 
-	public void addConstraint(String opId, AbstractActor vertex) {
+  /**
+   * Adds the constraint.
+   *
+   * @param opId
+   *          the op id
+   * @param vertex
+   *          the vertex
+   */
+  public void addConstraint(final String opId, final AbstractActor vertex) {
 
-		Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
+    final Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
 
-		if (cgSet.isEmpty()) {
-			ConstraintGroup cg = new ConstraintGroup();
-			cg.addOperatorId(opId);
-			cg.addActorPath(vertex.getPath());
-			constraintgroups.add(cg);
-		} else {
-			((ConstraintGroup) cgSet.toArray()[0]).addActorPath(vertex.getPath());
-		}
-	}
+    if (cgSet.isEmpty()) {
+      final ConstraintGroup cg = new ConstraintGroup();
+      cg.addOperatorId(opId);
+      cg.addActorPath(vertex.getPath());
+      this.constraintgroups.add(cg);
+    } else {
+      ((ConstraintGroup) cgSet.toArray()[0]).addActorPath(vertex.getPath());
+    }
+  }
 
-	/**
-	 * Adding a constraint group on several vertices and one core
-	 */
-	public void addConstraints(String opId, Set<String> vertexSet) {
+  /**
+   * Adding a constraint group on several vertices and one core.
+   *
+   * @param opId
+   *          the op id
+   * @param vertexSet
+   *          the vertex set
+   */
+  public void addConstraints(final String opId, final Set<String> vertexSet) {
 
-		Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
+    final Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
 
-		if (cgSet.isEmpty()) {
-			ConstraintGroup cg = new ConstraintGroup();
-			cg.addOperatorId(opId);
-			cg.addVertexPaths(vertexSet);
-			constraintgroups.add(cg);
-		} else {
-			((ConstraintGroup) cgSet.toArray()[0]).addVertexPaths(vertexSet);
-		}
-	}
+    if (cgSet.isEmpty()) {
+      final ConstraintGroup cg = new ConstraintGroup();
+      cg.addOperatorId(opId);
+      cg.addVertexPaths(vertexSet);
+      this.constraintgroups.add(cg);
+    } else {
+      ((ConstraintGroup) cgSet.toArray()[0]).addVertexPaths(vertexSet);
+    }
+  }
 
-	/**
-	 * Removing a simple constraint on one vertex and one core
-	 */
-	public void removeConstraint(String opId, SDFAbstractVertex vertex) {
+  /**
+   * Removing a simple constraint on one vertex and one core.
+   *
+   * @param opId
+   *          the op id
+   * @param vertex
+   *          the vertex
+   */
+  public void removeConstraint(final String opId, final SDFAbstractVertex vertex) {
 
-		Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
+    final Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
 
-		if (!cgSet.isEmpty()) {
-			for (ConstraintGroup cg : cgSet) {
-				cg.removeVertexPath(vertex.getInfo());
-			}
-		}
-	}
-	
-	public void removeConstraint(String opId, AbstractActor vertex) {
-		Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
+    if (!cgSet.isEmpty()) {
+      for (final ConstraintGroup cg : cgSet) {
+        cg.removeVertexPath(vertex.getInfo());
+      }
+    }
+  }
 
-		if (!cgSet.isEmpty()) {
-			for (ConstraintGroup cg : cgSet) {
-				cg.removeVertexPath(vertex.getPath());
-			}
-		}
-	}
+  /**
+   * Removes the constraint.
+   *
+   * @param opId
+   *          the op id
+   * @param vertex
+   *          the vertex
+   */
+  public void removeConstraint(final String opId, final AbstractActor vertex) {
+    final Set<ConstraintGroup> cgSet = getOpConstraintGroups(opId);
 
-	public Set<ConstraintGroup> getConstraintGroups() {
+    if (!cgSet.isEmpty()) {
+      for (final ConstraintGroup cg : cgSet) {
+        cg.removeVertexPath(vertex.getPath());
+      }
+    }
+  }
 
-		return new HashSet<ConstraintGroup>(constraintgroups);
-	}
+  /**
+   * Gets the constraint groups.
+   *
+   * @return the constraint groups
+   */
+  public Set<ConstraintGroup> getConstraintGroups() {
 
-	public Set<ConstraintGroup> getGraphConstraintGroups(
-			SDFAbstractVertex vertex) {
-		Set<ConstraintGroup> graphConstraintGroups = new HashSet<ConstraintGroup>();
+    return new HashSet<>(this.constraintgroups);
+  }
 
-		for (ConstraintGroup cg : constraintgroups) {
-			if (cg.hasVertexPath(vertex.getInfo()))
-				graphConstraintGroups.add(cg);
-		}
+  /**
+   * Gets the graph constraint groups.
+   *
+   * @param vertex
+   *          the vertex
+   * @return the graph constraint groups
+   */
+  public Set<ConstraintGroup> getGraphConstraintGroups(final SDFAbstractVertex vertex) {
+    final Set<ConstraintGroup> graphConstraintGroups = new HashSet<>();
 
-		return graphConstraintGroups;
-	}
+    for (final ConstraintGroup cg : this.constraintgroups) {
+      if (cg.hasVertexPath(vertex.getInfo())) {
+        graphConstraintGroups.add(cg);
+      }
+    }
 
-	public Set<ConstraintGroup> getOpConstraintGroups(String opId) {
-		Set<ConstraintGroup> graphConstraintGroups = new HashSet<ConstraintGroup>();
+    return graphConstraintGroups;
+  }
 
-		for (ConstraintGroup cg : constraintgroups) {
-			if (cg.hasOperatorId(opId))
-				graphConstraintGroups.add(cg);
-		}
+  /**
+   * Gets the op constraint groups.
+   *
+   * @param opId
+   *          the op id
+   * @return the op constraint groups
+   */
+  public Set<ConstraintGroup> getOpConstraintGroups(final String opId) {
+    final Set<ConstraintGroup> graphConstraintGroups = new HashSet<>();
 
-		return graphConstraintGroups;
-	}
+    for (final ConstraintGroup cg : this.constraintgroups) {
+      if (cg.hasOperatorId(opId)) {
+        graphConstraintGroups.add(cg);
+      }
+    }
 
-	public boolean isCompatibleToConstraints(SDFAbstractVertex vertex,
-			String opId) {
-		Set<ConstraintGroup> opGroups = getOpConstraintGroups(opId);
-		Set<ConstraintGroup> graphGroups = getGraphConstraintGroups(vertex);
+    return graphConstraintGroups;
+  }
 
-		opGroups.retainAll(graphGroups);
+  /**
+   * Checks if is compatible to constraints.
+   *
+   * @param vertex
+   *          the vertex
+   * @param opId
+   *          the op id
+   * @return true, if is compatible to constraints
+   */
+  public boolean isCompatibleToConstraints(final SDFAbstractVertex vertex, final String opId) {
+    final Set<ConstraintGroup> opGroups = getOpConstraintGroups(opId);
+    final Set<ConstraintGroup> graphGroups = getGraphConstraintGroups(vertex);
 
-		return !opGroups.isEmpty();
-	}
+    opGroups.retainAll(graphGroups);
 
-	public void removeAll() {
+    return !opGroups.isEmpty();
+  }
 
-		constraintgroups.clear();
-	}
+  /**
+   * Removes the all.
+   */
+  public void removeAll() {
 
-	@Override
-	public String toString() {
-		String s = "";
+    this.constraintgroups.clear();
+  }
 
-		for (ConstraintGroup cg : constraintgroups) {
-			s += cg.toString();
-		}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    String s = "";
 
-		return s;
-	}
+    for (final ConstraintGroup cg : this.constraintgroups) {
+      s += cg.toString();
+    }
 
-	public String getExcelFileURL() {
-		return excelFileURL;
-	}
+    return s;
+  }
 
-	public void setExcelFileURL(String excelFileURL) {
-		this.excelFileURL = excelFileURL;
-	}
+  /**
+   * Gets the excel file URL.
+   *
+   * @return the excel file URL
+   */
+  public String getExcelFileURL() {
+    return this.excelFileURL;
+  }
 
-	public void importConstraints(PreesmScenario currentScenario)
-			throws InvalidModelException, FileNotFoundException, CoreException {
-		if (!excelFileURL.isEmpty() && currentScenario != null) {
-			ExcelConstraintsParser parser = new ExcelConstraintsParser(
-					currentScenario);
-			parser.parse(excelFileURL, currentScenario.getOperatorIds());
-		}
-	}
+  /**
+   * Sets the excel file URL.
+   *
+   * @param excelFileURL
+   *          the new excel file URL
+   */
+  public void setExcelFileURL(final String excelFileURL) {
+    this.excelFileURL = excelFileURL;
+  }
 
-	public void update() {
-		removeAll();
-	}
+  /**
+   * Import constraints.
+   *
+   * @param currentScenario
+   *          the current scenario
+   * @throws InvalidModelException
+   *           the invalid model exception
+   * @throws FileNotFoundException
+   *           the file not found exception
+   * @throws CoreException
+   *           the core exception
+   */
+  public void importConstraints(final PreesmScenario currentScenario) throws InvalidModelException, FileNotFoundException, CoreException {
+    if (!this.excelFileURL.isEmpty() && (currentScenario != null)) {
+      final ExcelConstraintsParser parser = new ExcelConstraintsParser(currentScenario);
+      parser.parse(this.excelFileURL, currentScenario.getOperatorIds());
+    }
+  }
+
+  /**
+   * Update.
+   */
+  public void update() {
+    removeAll();
+  }
 }

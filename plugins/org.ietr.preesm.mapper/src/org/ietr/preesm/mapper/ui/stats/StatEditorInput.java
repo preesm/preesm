@@ -39,7 +39,6 @@
 package org.ietr.preesm.mapper.ui.stats;
 
 import java.util.Map;
-
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
@@ -49,81 +48,146 @@ import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc;
 import org.ietr.preesm.mapper.activator.Activator;
 
+// TODO: Auto-generated Javadoc
 /**
- * Input of the editor of implementation statistics
- * 
+ * Input of the editor of implementation statistics.
+ *
  * @author mpelcat
  */
 public class StatEditorInput implements IEditorInput {
 
-	private IAbc abc = null;
-	private PreesmScenario scenario = null;
-	private Map<String, String> params = null;
+  /** The abc. */
+  private IAbc abc = null;
 
-	public StatEditorInput(IAbc abc, PreesmScenario scenario,
-			Map<String, String> params) {
-		super();
-		this.abc = abc;
-		this.params = params;
-		this.scenario = scenario;
-	}
+  /** The scenario. */
+  private PreesmScenario scenario = null;
 
-	public PreesmScenario getScenario() {
-		return scenario;
-	}
+  /** The params. */
+  private Map<String, String> params = null;
 
-	public Map<String, String> getParams() {
-		return params;
-	}
+  /**
+   * Instantiates a new stat editor input.
+   *
+   * @param abc
+   *          the abc
+   * @param scenario
+   *          the scenario
+   * @param params
+   *          the params
+   */
+  public StatEditorInput(final IAbc abc, final PreesmScenario scenario,
+      final Map<String, String> params) {
+    super();
+    this.abc = abc;
+    this.params = params;
+    this.scenario = scenario;
+  }
 
-	public IAbc getAbc() {
-		return abc;
-	}
+  /**
+   * Gets the scenario.
+   *
+   * @return the scenario
+   */
+  public PreesmScenario getScenario() {
+    return this.scenario;
+  }
 
-	public void setAbc(IAbc abc) {
-		this.abc = abc;
-	}
+  /**
+   * Gets the params.
+   *
+   * @return the params
+   */
+  public Map<String, String> getParams() {
+    return this.params;
+  }
 
-	@Override
-	public boolean exists() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+  /**
+   * Gets the abc.
+   *
+   * @return the abc
+   */
+  public IAbc getAbc() {
+    return this.abc;
+  }
 
-	@Override
-	public ImageDescriptor getImageDescriptor() {
-		ImageDescriptor img = Activator
-				.getImageDescriptor("icons/preesm1mini.PNG");
-		return img;
-	}
+  /**
+   * Sets the abc.
+   *
+   * @param abc
+   *          the new abc
+   */
+  public void setAbc(final IAbc abc) {
+    this.abc = abc;
+  }
 
-	@Override
-	public String getName() {
-		if (abc instanceof LatencyAbc) {
-			abc.updateFinalCosts();
-			return "Latency:" + ((LatencyAbc) abc).getFinalLatency() + " Cost:"
-					+ abc.getFinalCost() + " "
-					+ WorkflowLogger.getFormattedTime();
-		} else {
-			return "Stats " + WorkflowLogger.getFormattedTime();
-		}
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.ui.IEditorInput#exists()
+   */
+  @Override
+  public boolean exists() {
+    // TODO Auto-generated method stub
+    return false;
+  }
 
-	@Override
-	public IPersistableElement getPersistable() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.ui.IEditorInput#getImageDescriptor()
+   */
+  @Override
+  public ImageDescriptor getImageDescriptor() {
+    final ImageDescriptor img = Activator.getImageDescriptor("icons/preesm1mini.PNG");
+    return img;
+  }
 
-	@Override
-	public String getToolTipText() {
-		return "Implementation";
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.ui.IEditorInput#getName()
+   */
+  @Override
+  public String getName() {
+    if (this.abc instanceof LatencyAbc) {
+      this.abc.updateFinalCosts();
+      return "Latency:" + ((LatencyAbc) this.abc).getFinalLatency() + " Cost:"
+          + this.abc.getFinalCost() + " " + WorkflowLogger.getFormattedTime();
+    } else {
+      return "Stats " + WorkflowLogger.getFormattedTime();
+    }
+  }
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
-	public Object getAdapter(Class adapter) {
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.ui.IEditorInput#getPersistable()
+   */
+  @Override
+  public IPersistableElement getPersistable() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.ui.IEditorInput#getToolTipText()
+   */
+  @Override
+  public String getToolTipText() {
+    return "Implementation";
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+   */
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @Override
+  public Object getAdapter(final Class adapter) {
+    return null;
+  }
 
 }

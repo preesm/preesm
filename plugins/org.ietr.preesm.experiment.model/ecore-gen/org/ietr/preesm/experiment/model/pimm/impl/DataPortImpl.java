@@ -37,245 +37,285 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-
 import org.ietr.preesm.experiment.model.pimm.DataPort;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.PortMemoryAnnotation;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Data Port</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>Data Port</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DataPortImpl#getExpression <em>Expression</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DataPortImpl#getAnnotation <em>Annotation</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DataPortImpl#getExpression <em>Expression</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DataPortImpl#getAnnotation <em>Annotation</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
 public abstract class DataPortImpl extends PortImpl implements DataPort {
-	/**
-	 * The cached value of the '{@link #getExpression() <em>Expression</em>}' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getExpression()
-	 * @generated
-	 * @ordered
-	 */
-	protected Expression expression;
+  /**
+   * The cached value of the '{@link #getExpression() <em>Expression</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getExpression()
+   * @generated
+   * @ordered
+   */
+  protected Expression expression;
 
-	/**
-	 * The default value of the '{@link #getAnnotation() <em>Annotation</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getAnnotation()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final PortMemoryAnnotation ANNOTATION_EDEFAULT = PortMemoryAnnotation.NONE;
+  /**
+   * The default value of the '{@link #getAnnotation() <em>Annotation</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getAnnotation()
+   * @generated
+   * @ordered
+   */
+  protected static final PortMemoryAnnotation ANNOTATION_EDEFAULT = PortMemoryAnnotation.NONE;
 
-	/**
-	 * The cached value of the '{@link #getAnnotation() <em>Annotation</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getAnnotation()
-	 * @generated
-	 * @ordered
-	 */
-	protected PortMemoryAnnotation annotation = ANNOTATION_EDEFAULT;
+  /**
+   * The cached value of the '{@link #getAnnotation() <em>Annotation</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getAnnotation()
+   * @generated
+   * @ordered
+   */
+  protected PortMemoryAnnotation annotation = DataPortImpl.ANNOTATION_EDEFAULT;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected DataPortImpl() {
-		super();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @generated
+   */
+  protected DataPortImpl() {
+    super();
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return PiMMPackage.Literals.DATA_PORT;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return PiMMPackage.Literals.DATA_PORT;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Expression getExpression() {
-		return expression;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the expression
+   * @generated
+   */
+  @Override
+  public Expression getExpression() {
+    return this.expression;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public NotificationChain basicSetExpression(Expression newExpression, NotificationChain msgs) {
-		Expression oldExpression = expression;
-		expression = newExpression;
-		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_PORT__EXPRESSION, oldExpression, newExpression);
-			if (msgs == null) msgs = notification; else msgs.add(notification);
-		}
-		return msgs;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newExpression
+   *          the new expression
+   * @param msgs
+   *          the msgs
+   * @return the notification chain
+   * @generated
+   */
+  public NotificationChain basicSetExpression(final Expression newExpression, NotificationChain msgs) {
+    final Expression oldExpression = this.expression;
+    this.expression = newExpression;
+    if (eNotificationRequired()) {
+      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_PORT__EXPRESSION, oldExpression, newExpression);
+      if (msgs == null) {
+        msgs = notification;
+      } else {
+        msgs.add(notification);
+      }
+    }
+    return msgs;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setExpression(Expression newExpression) {
-		if (newExpression != expression) {
-			NotificationChain msgs = null;
-			if (expression != null)
-				msgs = ((InternalEObject)expression).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.DATA_PORT__EXPRESSION, null, msgs);
-			if (newExpression != null)
-				msgs = ((InternalEObject)newExpression).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.DATA_PORT__EXPRESSION, null, msgs);
-			msgs = basicSetExpression(newExpression, msgs);
-			if (msgs != null) msgs.dispatch();
-		}
-		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_PORT__EXPRESSION, newExpression, newExpression));
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newExpression
+   *          the new expression
+   * @generated
+   */
+  @Override
+  public void setExpression(final Expression newExpression) {
+    if (newExpression != this.expression) {
+      NotificationChain msgs = null;
+      if (this.expression != null) {
+        msgs = ((InternalEObject) this.expression).eInverseRemove(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.DATA_PORT__EXPRESSION, null, msgs);
+      }
+      if (newExpression != null) {
+        msgs = ((InternalEObject) newExpression).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.DATA_PORT__EXPRESSION, null, msgs);
+      }
+      msgs = basicSetExpression(newExpression, msgs);
+      if (msgs != null) {
+        msgs.dispatch();
+      }
+    } else if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_PORT__EXPRESSION, newExpression, newExpression));
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public PortMemoryAnnotation getAnnotation() {
-		return annotation;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the annotation
+   * @generated
+   */
+  @Override
+  public PortMemoryAnnotation getAnnotation() {
+    return this.annotation;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setAnnotation(PortMemoryAnnotation newAnnotation) {
-		PortMemoryAnnotation oldAnnotation = annotation;
-		annotation = newAnnotation == null ? ANNOTATION_EDEFAULT : newAnnotation;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_PORT__ANNOTATION, oldAnnotation, annotation));
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newAnnotation
+   *          the new annotation
+   * @generated
+   */
+  @Override
+  public void setAnnotation(final PortMemoryAnnotation newAnnotation) {
+    final PortMemoryAnnotation oldAnnotation = this.annotation;
+    this.annotation = newAnnotation == null ? DataPortImpl.ANNOTATION_EDEFAULT : newAnnotation;
+    if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_PORT__ANNOTATION, oldAnnotation, this.annotation));
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case PiMMPackage.DATA_PORT__EXPRESSION:
-				return basicSetExpression(null, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param otherEnd
+   *          the other end
+   * @param featureID
+   *          the feature ID
+   * @param msgs
+   *          the msgs
+   * @return the notification chain
+   * @generated
+   */
+  @Override
+  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+    switch (featureID) {
+      case PiMMPackage.DATA_PORT__EXPRESSION:
+        return basicSetExpression(null, msgs);
+    }
+    return super.eInverseRemove(otherEnd, featureID, msgs);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-			case PiMMPackage.DATA_PORT__EXPRESSION:
-				return getExpression();
-			case PiMMPackage.DATA_PORT__ANNOTATION:
-				return getAnnotation();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param resolve
+   *          the resolve
+   * @param coreType
+   *          the core type
+   * @return the object
+   * @generated
+   */
+  @Override
+  public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
+    switch (featureID) {
+      case PiMMPackage.DATA_PORT__EXPRESSION:
+        return getExpression();
+      case PiMMPackage.DATA_PORT__ANNOTATION:
+        return getAnnotation();
+    }
+    return super.eGet(featureID, resolve, coreType);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-			case PiMMPackage.DATA_PORT__EXPRESSION:
-				setExpression((Expression)newValue);
-				return;
-			case PiMMPackage.DATA_PORT__ANNOTATION:
-				setAnnotation((PortMemoryAnnotation)newValue);
-				return;
-		}
-		super.eSet(featureID, newValue);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param newValue
+   *          the new value
+   * @generated
+   */
+  @Override
+  public void eSet(final int featureID, final Object newValue) {
+    switch (featureID) {
+      case PiMMPackage.DATA_PORT__EXPRESSION:
+        setExpression((Expression) newValue);
+        return;
+      case PiMMPackage.DATA_PORT__ANNOTATION:
+        setAnnotation((PortMemoryAnnotation) newValue);
+        return;
+    }
+    super.eSet(featureID, newValue);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void eUnset(int featureID) {
-		switch (featureID) {
-			case PiMMPackage.DATA_PORT__EXPRESSION:
-				setExpression((Expression)null);
-				return;
-			case PiMMPackage.DATA_PORT__ANNOTATION:
-				setAnnotation(ANNOTATION_EDEFAULT);
-				return;
-		}
-		super.eUnset(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @generated
+   */
+  @Override
+  public void eUnset(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.DATA_PORT__EXPRESSION:
+        setExpression((Expression) null);
+        return;
+      case PiMMPackage.DATA_PORT__ANNOTATION:
+        setAnnotation(DataPortImpl.ANNOTATION_EDEFAULT);
+        return;
+    }
+    super.eUnset(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case PiMMPackage.DATA_PORT__EXPRESSION:
-				return expression != null;
-			case PiMMPackage.DATA_PORT__ANNOTATION:
-				return annotation != ANNOTATION_EDEFAULT;
-		}
-		return super.eIsSet(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @return true, if successful
+   * @generated
+   */
+  @Override
+  public boolean eIsSet(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.DATA_PORT__EXPRESSION:
+        return this.expression != null;
+      case PiMMPackage.DATA_PORT__ANNOTATION:
+        return this.annotation != DataPortImpl.ANNOTATION_EDEFAULT;
+    }
+    return super.eIsSet(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public String toString() {
-		if (eIsProxy()) return super.toString();
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the string
+   * @generated
+   */
+  @Override
+  public String toString() {
+    if (eIsProxy()) {
+      return super.toString();
+    }
 
-		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (annotation: ");
-		result.append(annotation);
-		result.append(')');
-		return result.toString();
-	}
+    final StringBuffer result = new StringBuffer(super.toString());
+    result.append(" (annotation: ");
+    result.append(this.annotation);
+    result.append(')');
+    return result.toString();
+  }
 
-} //DataPortImpl
+} // DataPortImpl

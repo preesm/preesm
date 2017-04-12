@@ -38,6 +38,7 @@
 
 package org.ietr.preesm.mapper.model.special;
 
+import org.ietr.dftools.algorithm.model.AbstractVertex;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.dftools.algorithm.model.dag.DirectedAcyclicGraph;
 import org.ietr.preesm.core.architecture.route.AbstractRouteStep;
@@ -45,118 +46,175 @@ import org.ietr.preesm.core.types.ImplementationPropertyNames;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * A transfer vertex represents a route step
- * 
+ * A transfer vertex represents a route step.
+ *
  * @author mpelcat
  */
 public class TransferVertex extends MapperDAGVertex {
 
-	public static final long SEND_RECEIVE_COST = 100;
+  /** The Constant SEND_RECEIVE_COST. */
+  public static final long SEND_RECEIVE_COST = 100;
 
-	private AbstractRouteStep step;
+  /** The step. */
+  private AbstractRouteStep step;
 
-	/**
-	 * Source and target of the vertex that originated this transfer
-	 */
-	private MapperDAGVertex source;
-	private MapperDAGVertex target;
+  /** Source and target of the vertex that originated this transfer. */
+  private final MapperDAGVertex source;
 
-	/**
-	 * Index of the route step corresponding to this transfer in the route
-	 */
-	private int routeStepIndex;
+  /** The target. */
+  private final MapperDAGVertex target;
 
-	/**
-	 * Index of the node corresponding to this transfer in the route step
-	 */
-	private int nodeIndex;
+  /** Index of the route step corresponding to this transfer in the route. */
+  private final int routeStepIndex;
 
-	/**
-	 * Sets the involvement (if any) corresponding to this transfer
-	 */
-	private InvolvementVertex involvementVertex = null;
+  /** Index of the node corresponding to this transfer in the route step. */
+  private final int nodeIndex;
 
-	static {
-		{
-			public_properties
-					.add(ImplementationPropertyNames.SendReceive_OperatorDef);
-			public_properties
-					.add(ImplementationPropertyNames.SendReceive_dataSize);
-		}
-	};
+  /** Sets the involvement (if any) corresponding to this transfer. */
+  private InvolvementVertex involvementVertex = null;
 
-	public TransferVertex(String id, MapperDAG base, MapperDAGVertex source,
-			MapperDAGVertex target, int routeStepIndex, int nodeIndex) {
-		super(id, base);
-		this.source = source;
-		this.target = target;
-		this.routeStepIndex = routeStepIndex;
-		this.nodeIndex = nodeIndex;
-		
-		// Retrieve and Save the corresponding DAGEdge in the properties
-		DAGEdge dagEdge = base.getEdge(source, target);
-		this.setPropertyValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge, dagEdge);
-	}
+  static {
+    {
+      AbstractVertex.public_properties.add(ImplementationPropertyNames.SendReceive_OperatorDef);
+      AbstractVertex.public_properties.add(ImplementationPropertyNames.SendReceive_dataSize);
+    }
+  }
 
-	public AbstractRouteStep getRouteStep() {
-		return step;
-	}
+  /**
+   * Instantiates a new transfer vertex.
+   *
+   * @param id
+   *          the id
+   * @param base
+   *          the base
+   * @param source
+   *          the source
+   * @param target
+   *          the target
+   * @param routeStepIndex
+   *          the route step index
+   * @param nodeIndex
+   *          the node index
+   */
+  public TransferVertex(final String id, final MapperDAG base, final MapperDAGVertex source,
+      final MapperDAGVertex target, final int routeStepIndex, final int nodeIndex) {
+    super(id, base);
+    this.source = source;
+    this.target = target;
+    this.routeStepIndex = routeStepIndex;
+    this.nodeIndex = nodeIndex;
 
-	public void setRouteStep(AbstractRouteStep step) {
-		this.step = step;
-	}
+    // Retrieve and Save the corresponding DAGEdge in the properties
+    final DAGEdge dagEdge = base.getEdge(source, target);
+    setPropertyValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge, dagEdge);
+  }
 
-	/**
-	 * A transfer vertex follows only one vertex. Returning the transfer
-	 * predecessor if it is an overhead vertex
-	 */
-	public OverheadVertex getPrecedingOverhead() {
-		for (DAGEdge incomingEdge : ((DirectedAcyclicGraph) getBase())
-				.incomingEdgesOf(this)) {
-			if (!(incomingEdge instanceof PrecedenceEdge)) {
-				MapperDAGVertex precV = (MapperDAGVertex) incomingEdge
-						.getSource();
-				if (precV instanceof OverheadVertex)
-					return (OverheadVertex) precV;
-			}
-		}
+  /**
+   * Gets the route step.
+   *
+   * @return the route step
+   */
+  public AbstractRouteStep getRouteStep() {
+    return this.step;
+  }
 
-		return null;
-	}
+  /**
+   * Sets the route step.
+   *
+   * @param step
+   *          the new route step
+   */
+  public void setRouteStep(final AbstractRouteStep step) {
+    this.step = step;
+  }
 
-	public MapperDAGVertex getSource() {
-		return source;
-	}
+  /**
+   * A transfer vertex follows only one vertex. Returning the transfer predecessor if it is an
+   * overhead vertex
+   *
+   * @return the preceding overhead
+   */
+  public OverheadVertex getPrecedingOverhead() {
+    for (final DAGEdge incomingEdge : ((DirectedAcyclicGraph) getBase()).incomingEdgesOf(this)) {
+      if (!(incomingEdge instanceof PrecedenceEdge)) {
+        final MapperDAGVertex precV = (MapperDAGVertex) incomingEdge.getSource();
+        if (precV instanceof OverheadVertex) {
+          return (OverheadVertex) precV;
+        }
+      }
+    }
 
-	public MapperDAGVertex getTarget() {
-		return target;
-	}
+    return null;
+  }
 
-	public int getRouteStepIndex() {
-		return routeStepIndex;
-	}
+  /**
+   * Gets the source.
+   *
+   * @return the source
+   */
+  public MapperDAGVertex getSource() {
+    return this.source;
+  }
 
-	public int getNodeIndex() {
-		return nodeIndex;
-	}
+  /**
+   * Gets the target.
+   *
+   * @return the target
+   */
+  public MapperDAGVertex getTarget() {
+    return this.target;
+  }
 
-	public InvolvementVertex getInvolvementVertex() {
-		return involvementVertex;
-	}
+  /**
+   * Gets the route step index.
+   *
+   * @return the route step index
+   */
+  public int getRouteStepIndex() {
+    return this.routeStepIndex;
+  }
 
-	public void setInvolvementVertex(InvolvementVertex involvementVertex) {
-		this.involvementVertex = involvementVertex;
-	}
+  /**
+   * Gets the node index.
+   *
+   * @return the node index
+   */
+  public int getNodeIndex() {
+    return this.nodeIndex;
+  }
 
-	@Override
-	public String getPropertyStringValue(String propertyName) {
-		if (propertyName
-				.equals(ImplementationPropertyNames.SendReceive_OperatorDef)) {
-			return getEffectiveOperator()
-					.getComponent().getVlnv().getName();
-		}
-		return super.getPropertyStringValue(propertyName);
-	}
+  /**
+   * Gets the involvement vertex.
+   *
+   * @return the involvement vertex
+   */
+  public InvolvementVertex getInvolvementVertex() {
+    return this.involvementVertex;
+  }
+
+  /**
+   * Sets the involvement vertex.
+   *
+   * @param involvementVertex
+   *          the new involvement vertex
+   */
+  public void setInvolvementVertex(final InvolvementVertex involvementVertex) {
+    this.involvementVertex = involvementVertex;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.mapper.model.MapperDAGVertex#getPropertyStringValue(java.lang.String)
+   */
+  @Override
+  public String getPropertyStringValue(final String propertyName) {
+    if (propertyName.equals(ImplementationPropertyNames.SendReceive_OperatorDef)) {
+      return getEffectiveOperator().getComponent().getVlnv().getName();
+    }
+    return super.getPropertyStringValue(propertyName);
+  }
 
 }

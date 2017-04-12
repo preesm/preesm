@@ -39,7 +39,6 @@ package org.ietr.preesm.core.workflow;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -51,87 +50,92 @@ import org.ietr.dftools.algorithm.model.sdf.transformations.SpecialActorPortsInd
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.implement.AbstractScenarioImplementation;
+import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.serialize.ScenarioParser;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
+// TODO: Auto-generated Javadoc
 /**
- * Implementing the new DFTools scenario node behavior for Preesm. This version
- * generates an architecture with the S-LAM2 meta-model type and an algorithm
- * with the IBSDF type
- * 
+ * Implementing the new DFTools scenario node behavior for Preesm. This version generates an architecture with the S-LAM2 meta-model type and an algorithm with
+ * the IBSDF type
+ *
  * @author mpelcat
  * @author kdesnos
- * 
+ *
  */
-public class AlgorithmAndArchitectureScenarioNode extends
-		AbstractScenarioImplementation {
+public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplementation {
 
-	/**
-	 * The scenario node in Preesm outputs three elements: Algorithm (SDF or
-	 * PiMM), architecture and scenario
-	 */
-	@Override
-	public Map<String, Object> extractData(String path)
-			throws WorkflowException {
+  /**
+   * The scenario node in Preesm outputs three elements: Algorithm (SDF or PiMM), architecture and scenario.
+   *
+   * @param path
+   *          the path
+   * @return the map
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+  @Override
+  public Map<String, Object> extractData(final String path) throws WorkflowException {
 
-		Map<String, Object> outputs = new HashMap<String, Object>();
+    final Map<String, Object> outputs = new HashMap<>();
 
-		// Retrieving the scenario from the given path
-		ScenarioParser scenarioParser = new ScenarioParser();
+    // Retrieving the scenario from the given path
+    final ScenarioParser scenarioParser = new ScenarioParser();
 
-		Path relativePath = new Path(path);
-		IFile file = ResourcesPlugin.getWorkspace().getRoot()
-				.getFile(relativePath);
+    final Path relativePath = new Path(path);
+    final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
 
-		PreesmScenario scenario;
-		// Retrieving the algorithm
-		SDFGraph sdfAlgorithm = null;
-		PiGraph piAlgorithm = null;
+    PreesmScenario scenario;
+    // Retrieving the algorithm
+    SDFGraph sdfAlgorithm = null;
+    PiGraph piAlgorithm = null;
 
-		try {
-			scenario = scenarioParser.parseXmlFile(file);
-			String url = scenario.getAlgorithmURL();
-			if (scenario.isIBSDFScenario()) {
-				// Parse the graph
-				sdfAlgorithm = ScenarioParser.getSDFGraph(url);
-				// Add indexes to all its special actor ports
-				SpecialActorPortsIndexer.addIndexes(sdfAlgorithm);
-				SpecialActorPortsIndexer.sortIndexedPorts(sdfAlgorithm);
-			}
-			else if (scenario.isPISDFScenario())
-				piAlgorithm = ScenarioParser.getPiGraph(url);
-		} catch (FileNotFoundException | InvalidModelException | CoreException e) {
-			throw new WorkflowException(e.getMessage());
-		}
+    try {
+      scenario = scenarioParser.parseXmlFile(file);
+      final String url = scenario.getAlgorithmURL();
+      if (scenario.isIBSDFScenario()) {
+        // Parse the graph
+        sdfAlgorithm = ScenarioParser.getSDFGraph(url);
+        // Add indexes to all its special actor ports
+        SpecialActorPortsIndexer.addIndexes(sdfAlgorithm);
+        SpecialActorPortsIndexer.sortIndexedPorts(sdfAlgorithm);
+      } else if (scenario.isPISDFScenario()) {
+        piAlgorithm = ScenarioParser.getPiGraph(url);
+      }
+    } catch (FileNotFoundException | InvalidModelException | CoreException e) {
+      throw new WorkflowException(e.getMessage());
+    }
 
-		// Apply to the algorithm the values of variables
-		// defined in the scenario
-		if (scenario.isIBSDFScenario()) {
-			VariableSet variablesGraph = sdfAlgorithm.getVariables();
-			VariableSet variablesScenario = scenario.getVariablesManager()
-					.getVariables();
+    // Apply to the algorithm the values of variables
+    // defined in the scenario
+    if (scenario.isIBSDFScenario()) {
+      final VariableSet variablesGraph = sdfAlgorithm.getVariables();
+      final VariableSet variablesScenario = scenario.getVariablesManager().getVariables();
 
-			for (String variableName : variablesScenario.keySet()) {
-				String newValue = variablesScenario.get(variableName)
-						.getValue();
-				variablesGraph.getVariable(variableName).setValue(newValue);
-			}
-		}
-		// Retrieving the architecture
-		Design slamDesign = ScenarioParser.parseSlamDesign(scenario
-				.getArchitectureURL());
+      for (final String variableName : variablesScenario.keySet()) {
+        final String newValue = variablesScenario.get(variableName).getValue();
+        variablesGraph.getVariable(variableName).setValue(newValue);
+      }
+    }
+    // Retrieving the architecture
+    final Design slamDesign = ScenarioParser.parseSlamDesign(scenario.getArchitectureURL());
 
-		outputs.put(KEY_SCENARIO, scenario);
-		outputs.put(KEY_SDF_GRAPH, sdfAlgorithm);
-		outputs.put(KEY_PI_GRAPH, piAlgorithm);
-		outputs.put(KEY_ARCHITECTURE, slamDesign);
-		return outputs;
-	}
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH, sdfAlgorithm);
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, piAlgorithm);
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, slamDesign);
+    return outputs;
+  }
 
-	@Override
-	public String monitorMessage() {
-		return "Scenario, algorithm and architecture parsing.";
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Scenario, algorithm and architecture parsing.";
+  }
 
 }

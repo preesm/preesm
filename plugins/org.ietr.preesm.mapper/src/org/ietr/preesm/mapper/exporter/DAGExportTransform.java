@@ -40,7 +40,6 @@ package org.ietr.preesm.mapper.exporter;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -53,58 +52,75 @@ import org.ietr.preesm.core.Activator;
 import org.ietr.preesm.utils.files.ContainersManager;
 import org.ietr.preesm.utils.paths.PathTools;
 
+// TODO: Auto-generated Javadoc
 /**
- * Block in workflow exporting a DAG that can be displayed in Graphiti
- * 
+ * Block in workflow exporting a DAG that can be displayed in Graphiti.
+ *
  * @author mpelcat
- * 
  */
 public class DAGExportTransform extends AbstractTaskImplementation {
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
+   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs,
+      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
+      final Workflow workflow) throws WorkflowException {
 
-		DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
+    final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 
-		String sGraphmlPath = PathTools.getAbsolutePath(parameters.get("path"),
-				workflow.getProjectName());
-		IPath graphmlPath = new Path(sGraphmlPath);
-		// Get a complete valid path with all folders existing
-		try {
-			if (graphmlPath.getFileExtension() != null)
-				ContainersManager.createMissingFolders(graphmlPath
-						.removeFileExtension().removeLastSegments(1));
-			else {
-				ContainersManager.createMissingFolders(graphmlPath);
-				graphmlPath = graphmlPath.append(dag.getName() + ".graphml");
-			}
-		} catch (CoreException | IllegalArgumentException e) {
-			throw new WorkflowException("Path " + sGraphmlPath
-					+ " is not a valid path for export.\n"+ e.getMessage());
-		}
-		// Exporting the DAG in a GraphML
-		if (graphmlPath != null) {
-			DAGExporter exporter = new DAGExporter();
-			exporter.exportDAG(dag, graphmlPath);
-		}
+    final String sGraphmlPath = PathTools.getAbsolutePath(parameters.get("path"),
+        workflow.getProjectName());
+    IPath graphmlPath = new Path(sGraphmlPath);
+    // Get a complete valid path with all folders existing
+    try {
+      if (graphmlPath.getFileExtension() != null) {
+        ContainersManager
+            .createMissingFolders(graphmlPath.removeFileExtension().removeLastSegments(1));
+      } else {
+        ContainersManager.createMissingFolders(graphmlPath);
+        graphmlPath = graphmlPath.append(dag.getName() + ".graphml");
+      }
+    } catch (CoreException | IllegalArgumentException e) {
+      throw new WorkflowException(
+          "Path " + sGraphmlPath + " is not a valid path for export.\n" + e.getMessage());
+    }
+    // Exporting the DAG in a GraphML
+    if (graphmlPath != null) {
+      final DAGExporter exporter = new DAGExporter();
+      exporter.exportDAG(dag, graphmlPath);
+    }
 
-		Activator.updateWorkspace();
+    Activator.updateWorkspace();
 
-		return new HashMap<String, Object>();
-	}
+    return new HashMap<>();
+  }
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = new HashMap<String, String>();
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new HashMap<>();
 
-		parameters.put("path", "");
-		return parameters;
-	}
+    parameters.put("path", "");
+    return parameters;
+  }
 
-	@Override
-	public String monitorMessage() {
-		return "Exporting DAG.";
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Exporting DAG.";
+  }
 }

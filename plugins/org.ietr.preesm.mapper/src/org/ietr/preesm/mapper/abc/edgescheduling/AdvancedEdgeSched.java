@@ -42,6 +42,7 @@ import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.TransferVertex;
 
+// TODO: Auto-generated Javadoc
 /**
  * A complex edge scheduler used for tests. Do not use it for the moment.
  *
@@ -49,36 +50,54 @@ import org.ietr.preesm.mapper.model.special.TransferVertex;
  */
 public class AdvancedEdgeSched extends AbstractEdgeSched {
 
-	private IntervalFinder intervalFinder = null;
+  /** The interval finder. */
+  private IntervalFinder intervalFinder = null;
 
-	public AdvancedEdgeSched(OrderManager orderManager) {
-		super(orderManager);
+  /**
+   * Instantiates a new advanced edge sched.
+   *
+   * @param orderManager
+   *          the order manager
+   */
+  public AdvancedEdgeSched(final OrderManager orderManager) {
+    super(orderManager);
 
-		intervalFinder = new IntervalFinder(orderManager);
-	}
+    this.intervalFinder = new IntervalFinder(orderManager);
+  }
 
-	@Override
-	public void schedule(TransferVertex vertex, MapperDAGVertex source,
-			MapperDAGVertex target) {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched#schedule(org.ietr.preesm.mapper.model.
+   * special.TransferVertex, org.ietr.preesm.mapper.model.MapperDAGVertex,
+   * org.ietr.preesm.mapper.model.MapperDAGVertex)
+   */
+  @Override
+  public void schedule(final TransferVertex vertex, final MapperDAGVertex source,
+      final MapperDAGVertex target) {
 
-		ComponentInstance component = vertex
-				.getEffectiveComponent();
-		// intervalFinder.displayCurrentSchedule(vertex, source);
-		Interval earliestInterval = intervalFinder.findEarliestNonNullInterval(
-				component, source, target);
+    final ComponentInstance component = vertex.getEffectiveComponent();
+    // intervalFinder.displayCurrentSchedule(vertex, source);
+    final Interval earliestInterval = this.intervalFinder.findEarliestNonNullInterval(component,
+        source, target);
 
-		if (earliestInterval.getDuration() >= 0) {
-			orderManager.insertAtIndex(earliestInterval.getTotalOrderIndex(),
-					vertex);
-		} else {
-			orderManager.insertAfter(source, vertex);
-		}
+    if (earliestInterval.getDuration() >= 0) {
+      this.orderManager.insertAtIndex(earliestInterval.getTotalOrderIndex(), vertex);
+    } else {
+      this.orderManager.insertAfter(source, vertex);
+    }
 
-	}
+  }
 
-	@Override
-	public EdgeSchedType getEdgeSchedType() {
-		return EdgeSchedType.Advanced;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched#getEdgeSchedType()
+   */
+  @Override
+  public EdgeSchedType getEdgeSchedType() {
+    return EdgeSchedType.Advanced;
+  }
 
 }

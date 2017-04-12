@@ -38,20 +38,18 @@
 package org.ietr.preesm.experiment.model.pimm;
 
 import java.util.Set;
-
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Parameterizable</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A representation of the model object '<em><b>Parameterizable</b></em>'. <!-- end-user-doc -->
  *
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.Parameterizable#getConfigInputPorts <em>Config Input Ports</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.Parameterizable#getConfigInputPorts <em>Config Input Ports</em>}</li>
  * </ul>
  * </p>
  *
@@ -60,22 +58,26 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  * @generated
  */
 public interface Parameterizable extends EObject, PiMMVisitable {
-	/**
-	 * Returns the value of the '<em><b>Config Input Ports</b></em>' containment reference list.
-	 * The list contents are of type {@link org.ietr.preesm.experiment.model.pimm.ConfigInputPort}.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Config Input Ports</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Config Input Ports</em>' containment reference list.
-	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameterizable_ConfigInputPorts()
-	 * @model containment="true"
-	 * @generated
-	 */
-	EList<ConfigInputPort> getConfigInputPorts();
-	
-	public Set<Parameter> getInputParameters();
+  /**
+   * Returns the value of the '<em><b>Config Input Ports</b></em>' containment reference list. The list contents are of type
+   * {@link org.ietr.preesm.experiment.model.pimm.ConfigInputPort}. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Config Input Ports</em>' containment reference list isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Config Input Ports</em>' containment reference list.
+   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getParameterizable_ConfigInputPorts()
+   * @model containment="true"
+   * @generated
+   */
+  EList<ConfigInputPort> getConfigInputPorts();
+
+  /**
+   * Gets the input parameters.
+   *
+   * @return the input parameters
+   */
+  public Set<Parameter> getInputParameters();
 
 } // Parameterizable

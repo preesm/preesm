@@ -42,7 +42,6 @@ import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -67,185 +66,245 @@ import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.w3c.dom.Element;
 
+// TODO: Auto-generated Javadoc
 /**
- * Exporter for the DAG graph that enters the mapping process. This DAG can be
- * opened in Graphiti.
- * 
+ * Exporter for the DAG graph that enters the mapping process. This DAG can be opened in Graphiti.
+ *
  * @author mpelcat
- * 
+ *
  */
 public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 
-	// Map to keep the number of ports for each DAGVertex
-	private Map<DAGVertex, Integer> inPortNb;
-	private Map<DAGVertex, Integer> outPortNb;
+  /** The in port nb. */
+  // Map to keep the number of ports for each DAGVertex
+  private Map<DAGVertex, Integer> inPortNb;
 
-	/**
-	 * Builds a new DAGExporter
-	 */
-	public DAGExporter() {
-		super();
-	}
+  /** The out port nb. */
+  private Map<DAGVertex, Integer> outPortNb;
 
-	@Override
-	protected Element exportNode(DAGVertex vertex, Element parentELement) {
+  /**
+   * Builds a new DAGExporter.
+   */
+  public DAGExporter() {
+    super();
+  }
 
-		Element vertexElt = createNode(parentELement, vertex.getName());
-		String kind;
-		if (vertex.getKind() == null)
-			kind = "vertex";
-		else {
-			switch (vertex.getKind()) {
-			case DAGVertex.DAG_VERTEX:
-				kind = "vertex";
-				break;
-			case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
-				kind = SDFBroadcastVertex.BROADCAST;
-				break;
-			case DAGEndVertex.DAG_END_VERTEX:
-				kind = SDFEndVertex.END;
-				break;
-			case DAGForkVertex.DAG_FORK_VERTEX:
-				kind = SDFForkVertex.FORK;
-				break;
-			case DAGInitVertex.DAG_INIT_VERTEX:
-				kind = SDFInitVertex.INIT;
-				break;
-			case DAGJoinVertex.DAG_JOIN_VERTEX:
-				kind = SDFJoinVertex.JOIN;
-				break;
-			default:
-				kind = "vertex";
-			}
-		}
-		vertexElt.setAttribute(AbstractVertex.KIND, kind);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.ietr.dftools.algorithm.exporter.GMLExporter#exportNode(org.ietr.dftools.algorithm.model.
+   * AbstractVertex, org.w3c.dom.Element)
+   */
+  @Override
+  protected Element exportNode(final DAGVertex vertex, final Element parentELement) {
 
-		exportKeys(vertex, "node", vertexElt);
+    final Element vertexElt = createNode(parentELement, vertex.getName());
+    String kind;
+    if (vertex.getKind() == null) {
+      kind = "vertex";
+    } else {
+      switch (vertex.getKind()) {
+        case DAGVertex.DAG_VERTEX:
+          kind = "vertex";
+          break;
+        case DAGBroadcastVertex.DAG_BROADCAST_VERTEX:
+          kind = SDFBroadcastVertex.BROADCAST;
+          break;
+        case DAGEndVertex.DAG_END_VERTEX:
+          kind = SDFEndVertex.END;
+          break;
+        case DAGForkVertex.DAG_FORK_VERTEX:
+          kind = SDFForkVertex.FORK;
+          break;
+        case DAGInitVertex.DAG_INIT_VERTEX:
+          kind = SDFInitVertex.INIT;
+          break;
+        case DAGJoinVertex.DAG_JOIN_VERTEX:
+          kind = SDFJoinVertex.JOIN;
+          break;
+        default:
+          kind = "vertex";
+      }
+    }
+    vertexElt.setAttribute(AbstractVertex.KIND, kind);
 
-		Element data = appendChild(vertexElt, "data");
-		data.setAttribute("key", "graph_desc");
-		data = appendChild(vertexElt, "data");
-		data.setAttribute("key", "arguments");
-		return vertexElt;
-	}
+    exportKeys(vertex, "node", vertexElt);
 
-	@Override
-	protected Element exportEdge(DAGEdge edge, Element parentELement) {
-		// TODO: add port number (maps from vertex to int?)
-		String sourcePort = getOutPortName(edge.getSource());
-		String targetPort = getInPortName(edge.getTarget());
-		Element edgeElt = createEdge(parentELement, edge.getSource().getName(),
-				edge.getTarget().getName(), sourcePort, targetPort);
-		exportKeys(edge, "edge", edgeElt);
+    Element data = appendChild(vertexElt, "data");
+    data.setAttribute("key", "graph_desc");
+    data = appendChild(vertexElt, "data");
+    data.setAttribute("key", "arguments");
+    return vertexElt;
+  }
 
-		Element data = appendChild(edgeElt, "data");
-		data.setAttribute("key", "edge_prod");
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.ietr.dftools.algorithm.exporter.GMLExporter#exportEdge(org.ietr.dftools.algorithm.model.
+   * AbstractEdge, org.w3c.dom.Element)
+   */
+  @Override
+  protected Element exportEdge(final DAGEdge edge, final Element parentELement) {
+    // TODO: add port number (maps from vertex to int?)
+    final String sourcePort = getOutPortName(edge.getSource());
+    final String targetPort = getInPortName(edge.getTarget());
+    final Element edgeElt = createEdge(parentELement, edge.getSource().getName(),
+        edge.getTarget().getName(), sourcePort, targetPort);
+    exportKeys(edge, "edge", edgeElt);
 
-		if (edge.getWeight() != null) {
-			data.setTextContent(edge.getWeight().toString());
-		} else {
-			data.setTextContent("0");
-		}
+    Element data = appendChild(edgeElt, "data");
+    data.setAttribute("key", "edge_prod");
 
-		data = appendChild(edgeElt, "data");
-		data.setAttribute("key", "edge_delay");
-		data.setTextContent("0");
+    if (edge.getWeight() != null) {
+      data.setTextContent(edge.getWeight().toString());
+    } else {
+      data.setTextContent("0");
+    }
 
-		data = appendChild(edgeElt, "data");
-		data.setAttribute("key", "edge_cons");
+    data = appendChild(edgeElt, "data");
+    data.setAttribute("key", "edge_delay");
+    data.setTextContent("0");
 
-		if (edge.getWeight() != null) {
-			data.setTextContent(edge.getWeight().toString());
-		} else {
-			data.setTextContent("0");
-		}
+    data = appendChild(edgeElt, "data");
+    data.setAttribute("key", "edge_cons");
 
-		data = appendChild(edgeElt, "data");
-		data.setAttribute("key", "data_type");
-		data.setTextContent("memUnit");
+    if (edge.getWeight() != null) {
+      data.setTextContent(edge.getWeight().toString());
+    } else {
+      data.setTextContent("0");
+    }
 
-		return edgeElt;
-	}
+    data = appendChild(edgeElt, "data");
+    data.setAttribute("key", "data_type");
+    data.setTextContent("memUnit");
 
-	@Override
-	public Element exportGraph(AbstractGraph<DAGVertex, DAGEdge> graph) {
-		// Instantiate maps
-		inPortNb = new HashMap<DAGVertex, Integer>();
-		outPortNb = new HashMap<DAGVertex, Integer>();
+    return edgeElt;
+  }
 
-		addKeySet(rootElt);
-		MapperDAG myGraph = (MapperDAG) graph;
-		Element graphElt = createGraph(rootElt, true);
-		graphElt.setAttribute("edgedefault", "directed");
-		graphElt.setAttribute("kind", "sdf");
-		exportKeys(myGraph, "graph", graphElt);
-		if (myGraph.getParameters() != null) {
-			exportParameters(myGraph.getParameters(), graphElt);
-		}
-		if (myGraph.getVariables() != null) {
-			exportVariables(myGraph.getVariables(), graphElt);
-		}
-		for (DAGVertex child : myGraph.vertexSet()) {
-			exportNode(child, graphElt);
-		}
-		for (DAGEdge edge : myGraph.edgeSet()) {
-			exportEdge(edge, graphElt);
-		}
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.ietr.dftools.algorithm.exporter.GMLExporter#exportGraph(org.ietr.dftools.algorithm.model.
+   * AbstractGraph)
+   */
+  @Override
+  public Element exportGraph(final AbstractGraph<DAGVertex, DAGEdge> graph) {
+    // Instantiate maps
+    this.inPortNb = new HashMap<>();
+    this.outPortNb = new HashMap<>();
 
-	@Override
-	public void export(AbstractGraph<DAGVertex, DAGEdge> graph, String path) {
-		this.path = path;
-		try {
-			exportGraph(graph);
-			transform(new FileOutputStream(path));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
+    addKeySet(this.rootElt);
+    final MapperDAG myGraph = (MapperDAG) graph;
+    final Element graphElt = createGraph(this.rootElt, true);
+    graphElt.setAttribute("edgedefault", "directed");
+    graphElt.setAttribute("kind", "sdf");
+    exportKeys(myGraph, "graph", graphElt);
+    if (myGraph.getParameters() != null) {
+      exportParameters(myGraph.getParameters(), graphElt);
+    }
+    if (myGraph.getVariables() != null) {
+      exportVariables(myGraph.getVariables(), graphElt);
+    }
+    for (final DAGVertex child : myGraph.vertexSet()) {
+      exportNode(child, graphElt);
+    }
+    for (final DAGEdge edge : myGraph.edgeSet()) {
+      exportEdge(edge, graphElt);
+    }
+    return null;
+  }
 
-	@Override
-	protected Element exportPort(DAGVertex interfaceVertex,
-			Element parentELement) {
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.algorithm.exporter.GMLExporter#export(org.ietr.dftools.algorithm.model.
+   * AbstractGraph, java.lang.String)
+   */
+  @Override
+  public void export(final AbstractGraph<DAGVertex, DAGEdge> graph, final String path) {
+    this.path = path;
+    try {
+      exportGraph(graph);
+      transform(new FileOutputStream(path));
+    } catch (final FileNotFoundException e) {
+      e.printStackTrace();
+    }
+  }
 
-	public void exportDAG(DirectedAcyclicGraph dag, IPath path) {
-		// XXX: Why are cloning the dag for a simple serialization (we should
-		// not modify the dag)?
-		MapperDAG mapperDag = (MapperDAG) dag;
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.ietr.dftools.algorithm.exporter.GMLExporter#exportPort(org.ietr.dftools.algorithm.model.
+   * AbstractVertex, org.w3c.dom.Element)
+   */
+  @Override
+  protected Element exportPort(final DAGVertex interfaceVertex, final Element parentELement) {
+    return null;
+  }
 
-		MapperDAG clone = mapperDag.clone();
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IFile iGraphMLFile = workspace.getRoot().getFile(path);
+  /**
+   * Export DAG.
+   *
+   * @param dag
+   *          the dag
+   * @param path
+   *          the path
+   */
+  public void exportDAG(final DirectedAcyclicGraph dag, final IPath path) {
+    // XXX: Why are cloning the dag for a simple serialization (we should
+    // not modify the dag)?
+    final MapperDAG mapperDag = (MapperDAG) dag;
 
-		if (iGraphMLFile.getLocation() != null) {
-			this.export(clone, iGraphMLFile.getLocation().toOSString());
-		} else {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
-					"The output file " + path + " can not be written.");
-		}
-	}
+    final MapperDAG clone = mapperDag.clone();
+    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    final IFile iGraphMLFile = workspace.getRoot().getFile(path);
 
-	private String getOutPortName(DAGVertex vertex) {
-		if (!(outPortNb.containsKey(vertex)))
-			outPortNb.put(vertex, 0);
-		int nb = outPortNb.get(vertex);
-		String result = "out" + nb;
-		nb++;
-		outPortNb.put(vertex, nb);
-		return result;
-	}
+    if (iGraphMLFile.getLocation() != null) {
+      export(clone, iGraphMLFile.getLocation().toOSString());
+    } else {
+      WorkflowLogger.getLogger().log(Level.SEVERE,
+          "The output file " + path + " can not be written.");
+    }
+  }
 
-	private String getInPortName(DAGVertex vertex) {
-		if (!(inPortNb.containsKey(vertex)))
-			inPortNb.put(vertex, 0);
-		int nb = inPortNb.get(vertex);
-		String result = "in" + nb;
-		nb++;
-		inPortNb.put(vertex, nb);
-		return result;
-	}
+  /**
+   * Gets the out port name.
+   *
+   * @param vertex
+   *          the vertex
+   * @return the out port name
+   */
+  private String getOutPortName(final DAGVertex vertex) {
+    if (!(this.outPortNb.containsKey(vertex))) {
+      this.outPortNb.put(vertex, 0);
+    }
+    int nb = this.outPortNb.get(vertex);
+    final String result = "out" + nb;
+    nb++;
+    this.outPortNb.put(vertex, nb);
+    return result;
+  }
+
+  /**
+   * Gets the in port name.
+   *
+   * @param vertex
+   *          the vertex
+   * @return the in port name
+   */
+  private String getInPortName(final DAGVertex vertex) {
+    if (!(this.inPortNb.containsKey(vertex))) {
+      this.inPortNb.put(vertex, 0);
+    }
+    int nb = this.inPortNb.get(vertex);
+    final String result = "in" + nb;
+    nb++;
+    this.inPortNb.put(vertex, nb);
+    return result;
+  }
 
 }

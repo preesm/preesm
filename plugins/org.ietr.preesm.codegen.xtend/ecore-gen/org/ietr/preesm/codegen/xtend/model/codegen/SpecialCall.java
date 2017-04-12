@@ -37,162 +37,159 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
 
 import org.eclipse.emf.common.util.EList;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> A representation of the model object '
- * <em><b>Special Call</b></em>'. <!-- end-user-doc -->
- * 
+ * <!-- begin-user-doc --> A representation of the model object ' <em><b>Special Call</b></em>'. <!-- end-user-doc -->
+ *
  * <p>
  * The following features are supported:
  * <ul>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall#getType
- * <em>Type</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall#getInputBuffers
- * <em>Input Buffers</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall#getOutputBuffers
- * <em>Output Buffers</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall#getType <em>Type</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall#getInputBuffers <em>Input Buffers</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall#getOutputBuffers <em>Output Buffers</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSpecialCall()
  * @model
  * @generated
  */
 public interface SpecialCall extends Call {
-	/**
-	 * Returns the value of the '<em><b>Type</b></em>' attribute. The literals
-	 * are from the enumeration
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialType}. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Type</em>' attribute isn't clear, there really
-	 * should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Type</em>' attribute.
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.SpecialType
-	 * @see #setType(SpecialType)
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSpecialCall_Type()
-	 * @model required="true"
-	 * @generated
-	 */
-	SpecialType getType();
+  /**
+   * Returns the value of the '<em><b>Type</b></em>' attribute. The literals are from the enumeration
+   * {@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialType}. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Type</em>' attribute isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Type</em>' attribute.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.SpecialType
+   * @see #setType(SpecialType)
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSpecialCall_Type()
+   * @model required="true"
+   * @generated
+   */
+  SpecialType getType();
 
-	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall#getType
-	 * <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Type</em>' attribute.
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.SpecialType
-	 * @see #getType()
-	 * @generated
-	 */
-	void setType(SpecialType value);
+  /**
+   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall#getType <em>Type</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   *
+   * @param value
+   *          the new value of the '<em>Type</em>' attribute.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.SpecialType
+   * @see #getType()
+   * @generated
+   */
+  void setType(SpecialType value);
 
-	/**
-	 * Returns the value of the '<em><b>Input Buffers</b></em>' reference list.
-	 * The list contents are of type
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer}. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Input Buffers</em>' reference list isn't
-	 * clear, there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Input Buffers</em>' reference list.
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSpecialCall_InputBuffers()
-	 * @model required="true" changeable="false"
-	 * @generated
-	 * 
-	 */
-	EList<Buffer> getInputBuffers();
+  /**
+   * Returns the value of the '<em><b>Input Buffers</b></em>' reference list. The list contents are of type
+   * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer}. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Input Buffers</em>' reference list isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Input Buffers</em>' reference list.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSpecialCall_InputBuffers()
+   * @model required="true" changeable="false"
+   * @generated
+   *
+   */
+  EList<Buffer> getInputBuffers();
 
-	/**
-	 * Returns the value of the '<em><b>Output Buffers</b></em>' reference list.
-	 * The list contents are of type
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer}. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Output Buffers</em>' reference list isn't
-	 * clear, there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Output Buffers</em>' reference list.
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSpecialCall_OutputBuffers()
-	 * @model resolveProxies="false" required="true" changeable="false"
-	 * @generated
-	 * 
-	 */
-	EList<Buffer> getOutputBuffers();
+  /**
+   * Returns the value of the '<em><b>Output Buffers</b></em>' reference list. The list contents are of type
+   * {@link org.ietr.preesm.codegen.xtend.model.codegen.Buffer}. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Output Buffers</em>' reference list isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Output Buffers</em>' reference list.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getSpecialCall_OutputBuffers()
+   * @model resolveProxies="false" required="true" changeable="false"
+   * @generated
+   *
+   */
+  EList<Buffer> getOutputBuffers();
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @model kind="operation"
-	 * @generated
-	 */
-	boolean isFork();
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return true, if is fork
+   * @model kind="operation"
+   * @generated
+   */
+  boolean isFork();
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @model kind="operation"
-	 * @generated
-	 */
-	boolean isJoin();
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return true, if is join
+   * @model kind="operation"
+   * @generated
+   */
+  boolean isJoin();
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @model kind="operation"
-	 * @generated
-	 */
-	boolean isBroadcast();
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return true, if is broadcast
+   * @model kind="operation"
+   * @generated
+   */
+  boolean isBroadcast();
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @model kind="operation"
-	 * @generated
-	 */
-	boolean isRoundBuffer();
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return true, if is round buffer
+   * @model kind="operation"
+   * @generated
+   */
+  boolean isRoundBuffer();
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @model
-	 * @generated
-	 */
-	void addInputBuffer(Buffer buffer);
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param buffer
+   *          the buffer
+   * @model
+   * @generated
+   */
+  void addInputBuffer(Buffer buffer);
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @model
-	 * @generated
-	 */
-	void addOutputBuffer(Buffer buffer);
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param buffer
+   *          the buffer
+   * @model
+   * @generated
+   */
+  void addOutputBuffer(Buffer buffer);
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @model
-	 * @generated
-	 */
-	void removeInputBuffer(Buffer buffer);
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param buffer
+   *          the buffer
+   * @model
+   * @generated
+   */
+  void removeInputBuffer(Buffer buffer);
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @model
-	 * @generated
-	 */
-	void removeOutputBuffer(Buffer buffer);
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param buffer
+   *          the buffer
+   * @model
+   * @generated
+   */
+  void removeOutputBuffer(Buffer buffer);
 
 } // SpecialCall

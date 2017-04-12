@@ -43,89 +43,101 @@ import org.eclipse.ui.IPersistableElement;
 import org.ietr.preesm.mapper.activator.Activator;
 import org.ietr.preesm.mapper.ui.BestCostPlotter;
 
+// TODO: Auto-generated Javadoc
 /**
- * Input of the editor displaying the best cost found in time
- * 
+ * Input of the editor displaying the best cost found in time.
+ *
  * @author mpelcat
  */
 public class BestCostEditorInput implements IEditorInput {
 
-	private BestCostPlotter plotter = null;
+  /** The plotter. */
+  private BestCostPlotter plotter = null;
 
-	public BestCostEditorInput(BestCostPlotter plotter) {
-		super();
-		this.plotter = plotter;
-	}
+  /**
+   * Instantiates a new best cost editor input.
+   *
+   * @param plotter
+   *          the plotter
+   */
+  public BestCostEditorInput(final BestCostPlotter plotter) {
+    super();
+    this.plotter = plotter;
+  }
 
-	public BestCostPlotter getPlotter() {
-		return plotter;
-	}
+  /**
+   * Gets the plotter.
+   *
+   * @return the plotter
+   */
+  public BestCostPlotter getPlotter() {
+    return this.plotter;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.IEditorInput#exists()
-	 */
-	@Override
-	public boolean exists() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.IEditorInput#exists()
+   */
+  @Override
+  public boolean exists() {
+    // TODO Auto-generated method stub
+    return false;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.IEditorInput#getImageDescriptor()
-	 */
-	@Override
-	public ImageDescriptor getImageDescriptor() {
-		ImageDescriptor img = Activator
-				.getImageDescriptor("icons/preesm2mini.PNG");
-		return img;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.IEditorInput#getImageDescriptor()
+   */
+  @Override
+  public ImageDescriptor getImageDescriptor() {
+    final ImageDescriptor img = Activator.getImageDescriptor("icons/preesm2mini.PNG");
+    return img;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.IEditorInput#getName()
-	 */
-	@Override
-	public String getName() {
-		return "Best found cost";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.IEditorInput#getName()
+   */
+  @Override
+  public String getName() {
+    return "Best found cost";
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.IEditorInput#getPersistable()
-	 */
-	@Override
-	public IPersistableElement getPersistable() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.IEditorInput#getPersistable()
+   */
+  @Override
+  public IPersistableElement getPersistable() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.IEditorInput#getToolTipText()
-	 */
-	@Override
-	public String getToolTipText() {
-		return "Best Latency";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.IEditorInput#getToolTipText()
+   */
+  @Override
+  public String getToolTipText() {
+    return "Best Latency";
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 */
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
-	public Object getAdapter(Class adapter) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+   */
+
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @Override
+  public Object getAdapter(final Class adapter) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
 }

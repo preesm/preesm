@@ -38,11 +38,9 @@ package org.ietr.preesm.experiment.model.pimm;
 
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
 
-
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Sink Interface</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A representation of the model object '<em><b>Sink Interface</b></em>'. <!-- end-user-doc -->
  *
  *
  * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDataOutputInterface()
@@ -50,5 +48,7 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  * @generated
  */
 public interface DataOutputInterface extends InterfaceActor, PiMMVisitable {
-	public static final String KIND = "snk";
+
+  /** The Constant KIND. */
+  public static final String KIND = "snk";
 } // SinkInterface

@@ -41,7 +41,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.architecture.slam.attributes.Parameter;
@@ -50,271 +49,337 @@ import org.ietr.dftools.architecture.slam.component.Operator;
 import org.ietr.dftools.architecture.slam.component.impl.ComNodeImpl;
 import org.ietr.dftools.architecture.slam.link.Link;
 
+// TODO: Auto-generated Javadoc
 /**
- * Provides specific getters and setters for S-LAM architecture
- * 
+ * Provides specific getters and setters for S-LAM architecture.
+ *
  * @author mpelcat
  */
 public class DesignTools {
 
-	/**
-	 * Value used to state a non-existing component
-	 */
-	public static ComponentInstance NO_COMPONENT_INSTANCE = null;
+  /** Value used to state a non-existing component. */
+  public static ComponentInstance NO_COMPONENT_INSTANCE = null;
 
-	/**
-	 * Key of instance parameter used to store a property used in Preesm
-	 */
-	public static String OPERATOR_BASE_ADDRESS = "BaseAddress";
+  /** Key of instance parameter used to store a property used in Preesm. */
+  public static String OPERATOR_BASE_ADDRESS = "BaseAddress";
 
-	/**
-	 * Comparing two components using their names
-	 */
-	public static class ComponentInstanceComparator implements
-			Comparator<ComponentInstance> {
+  /**
+   * Comparing two components using their names.
+   */
+  public static class ComponentInstanceComparator implements Comparator<ComponentInstance> {
 
-		@Override
-		public int compare(ComponentInstance o1, ComponentInstance o2) {
-			return o1.getInstanceName().compareTo(o2.getInstanceName());
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+     */
+    @Override
+    public int compare(final ComponentInstance o1, final ComponentInstance o2) {
+      return o1.getInstanceName().compareTo(o2.getInstanceName());
+    }
 
-	}
+  }
 
-	/**
-	 * Getting all operator instance ids in architecture
-	 */
-	public static Set<String> getOperatorInstanceIds(Design design) {
-		Set<String> operatorInstanceIds = new HashSet<String>();
+  /**
+   * Getting all operator instance ids in architecture.
+   *
+   * @param design
+   *          the design
+   * @return the operator instance ids
+   */
+  public static Set<String> getOperatorInstanceIds(final Design design) {
+    final Set<String> operatorInstanceIds = new HashSet<>();
 
-		for (ComponentInstance cmpInstance : design.getComponentInstances()) {
-			if (cmpInstance.getComponent() instanceof Operator) {
-				operatorInstanceIds.add(cmpInstance.getInstanceName());
-			}
-		}
+    for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
+      if (cmpInstance.getComponent() instanceof Operator) {
+        operatorInstanceIds.add(cmpInstance.getInstanceName());
+      }
+    }
 
-		return operatorInstanceIds;
-	}
+    return operatorInstanceIds;
+  }
 
-	/**
-	 * Getting all communication node instance ids in architecture
-	 */
-	public static Set<String> getComNodeInstanceIds(Design design) {
-		Set<String> operatorInstanceIds = new HashSet<String>();
+  /**
+   * Getting all communication node instance ids in architecture.
+   *
+   * @param design
+   *          the design
+   * @return the com node instance ids
+   */
+  public static Set<String> getComNodeInstanceIds(final Design design) {
+    final Set<String> operatorInstanceIds = new HashSet<>();
 
-		for (ComponentInstance cmpInstance : design.getComponentInstances()) {
-			if (cmpInstance.getComponent() instanceof ComNodeImpl) {
-				operatorInstanceIds.add(cmpInstance.getInstanceName());
-			}
-		}
+    for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
+      if (cmpInstance.getComponent() instanceof ComNodeImpl) {
+        operatorInstanceIds.add(cmpInstance.getInstanceName());
+      }
+    }
 
-		return operatorInstanceIds;
-	}
+    return operatorInstanceIds;
+  }
 
-	/**
-	 * Getting all operator instances in architecture
-	 */
-	public static Set<ComponentInstance> getOperatorInstances(Design design) {
-		Set<ComponentInstance> operatorInstances = new HashSet<ComponentInstance>();
+  /**
+   * Getting all operator instances in architecture.
+   *
+   * @param design
+   *          the design
+   * @return the operator instances
+   */
+  public static Set<ComponentInstance> getOperatorInstances(final Design design) {
+    final Set<ComponentInstance> operatorInstances = new HashSet<>();
 
-		for (ComponentInstance cmpInstance : design.getComponentInstances()) {
-			if (cmpInstance.getComponent() instanceof Operator) {
-				operatorInstances.add(cmpInstance);
-			}
-		}
+    for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
+      if (cmpInstance.getComponent() instanceof Operator) {
+        operatorInstances.add(cmpInstance);
+      }
+    }
 
-		return operatorInstances;
-	}
+    return operatorInstances;
+  }
 
-	/**
-	 * Getting all operator ids in architecture
-	 */
-	public static Set<String> getOperatorComponentIds(Design design) {
-		Set<String> operatorIds = new HashSet<String>();
+  /**
+   * Getting all operator ids in architecture.
+   *
+   * @param design
+   *          the design
+   * @return the operator component ids
+   */
+  public static Set<String> getOperatorComponentIds(final Design design) {
+    final Set<String> operatorIds = new HashSet<>();
 
-		for (org.ietr.dftools.architecture.slam.component.Component component : design
-				.getComponentHolder().getComponents()) {
-			if (component instanceof Operator) {
-				operatorIds.add(component.getVlnv().getName());
-			}
-		}
+    for (final org.ietr.dftools.architecture.slam.component.Component component : design.getComponentHolder().getComponents()) {
+      if (component instanceof Operator) {
+        operatorIds.add(component.getVlnv().getName());
+      }
+    }
 
-		return operatorIds;
-	}
+    return operatorIds;
+  }
 
-	/**
-	 * Getting all operator instances in architecture
-	 */
-	public static Set<Component> getOperatorComponents(Design design) {
-		Set<Component> operators = new HashSet<Component>();
+  /**
+   * Getting all operator instances in architecture.
+   *
+   * @param design
+   *          the design
+   * @return the operator components
+   */
+  public static Set<Component> getOperatorComponents(final Design design) {
+    final Set<Component> operators = new HashSet<>();
 
-		for (org.ietr.dftools.architecture.slam.component.Component component : design
-				.getComponentHolder().getComponents()) {
-			if (component instanceof Operator) {
-				operators.add(component);
-			}
-		}
+    for (final org.ietr.dftools.architecture.slam.component.Component component : design.getComponentHolder().getComponents()) {
+      if (component instanceof Operator) {
+        operators.add(component);
+      }
+    }
 
-		return operators;
-	}
+    return operators;
+  }
 
-	/**
-	 * Getting all component instances in architecture
-	 */
-	public static Set<ComponentInstance> getComponentInstances(Design design) {
-		Set<ComponentInstance> instances = new HashSet<ComponentInstance>();
+  /**
+   * Getting all component instances in architecture.
+   *
+   * @param design
+   *          the design
+   * @return the component instances
+   */
+  public static Set<ComponentInstance> getComponentInstances(final Design design) {
+    final Set<ComponentInstance> instances = new HashSet<>();
 
-		for (ComponentInstance cmpInstance : design.getComponentInstances()) {
-			instances.add(cmpInstance);
-		}
+    for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
+      instances.add(cmpInstance);
+    }
 
-		return instances;
-	}
+    return instances;
+  }
 
-	/**
-	 * Getting the number of operator instances in architecture
-	 */
-	public static int getNumberOfOperatorInstances(Design design) {
-		return getOperatorInstances(design).size();
-	}
+  /**
+   * Getting the number of operator instances in architecture.
+   *
+   * @param design
+   *          the design
+   * @return the number of operator instances
+   */
+  public static int getNumberOfOperatorInstances(final Design design) {
+    return DesignTools.getOperatorInstances(design).size();
+  }
 
-	/**
-	 * Testing the presence of an instance in a list based on instance names
-	 */
-	public static boolean contains(List<ComponentInstance> instances,
-			ComponentInstance instance) {
-		for (ComponentInstance cmpInstance : instances) {
-			if (instance != null
-					&& cmpInstance.getInstanceName().equals(
-							instance.getInstanceName())) {
-				return true;
-			}
-		}
-		return false;
-	}
+  /**
+   * Testing the presence of an instance in a list based on instance names.
+   *
+   * @param instances
+   *          the instances
+   * @param instance
+   *          the instance
+   * @return true, if successful
+   */
+  public static boolean contains(final List<ComponentInstance> instances, final ComponentInstance instance) {
+    for (final ComponentInstance cmpInstance : instances) {
+      if ((instance != null) && cmpInstance.getInstanceName().equals(instance.getInstanceName())) {
+        return true;
+      }
+    }
+    return false;
+  }
 
-	/**
-	 * Intersecting lists based on instance names
-	 */
-	public static void retainAll(List<ComponentInstance> instances,
-			List<ComponentInstance> intersectInstances) {
-		Iterator<ComponentInstance> iterator = instances.iterator();
-		while (iterator.hasNext()) {
-			ComponentInstance current = iterator.next();
+  /**
+   * Intersecting lists based on instance names.
+   *
+   * @param instances
+   *          the instances
+   * @param intersectInstances
+   *          the intersect instances
+   */
+  public static void retainAll(final List<ComponentInstance> instances, final List<ComponentInstance> intersectInstances) {
+    final Iterator<ComponentInstance> iterator = instances.iterator();
+    while (iterator.hasNext()) {
+      final ComponentInstance current = iterator.next();
 
-			if (!contains(intersectInstances, current)) {
-				iterator.remove();
-			}
-		}
-	}
+      if (!DesignTools.contains(intersectInstances, current)) {
+        iterator.remove();
+      }
+    }
+  }
 
-	/**
-	 * Getting the instance of the given name
-	 */
-	public static ComponentInstance getComponentInstance(Design design,
-			String name) {
+  /**
+   * Getting the instance of the given name.
+   *
+   * @param design
+   *          the design
+   * @param name
+   *          the name
+   * @return the component instance
+   */
+  public static ComponentInstance getComponentInstance(final Design design, final String name) {
 
-		for (ComponentInstance cmpInstance : design.getComponentInstances()) {
-			if (cmpInstance.getInstanceName().equals(name)) {
-				return cmpInstance;
-			}
-		}
+    for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
+      if (cmpInstance.getInstanceName().equals(name)) {
+        return cmpInstance;
+      }
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	/**
-	 * Getting all instances of a given component
-	 */
-	public static Set<ComponentInstance> getInstancesOfComponent(Design design,
-			Component component) {
-		Set<ComponentInstance> instances = new HashSet<ComponentInstance>();
+  /**
+   * Getting all instances of a given component.
+   *
+   * @param design
+   *          the design
+   * @param component
+   *          the component
+   * @return the instances of component
+   */
+  public static Set<ComponentInstance> getInstancesOfComponent(final Design design, final Component component) {
+    final Set<ComponentInstance> instances = new HashSet<>();
 
-		for (ComponentInstance cmpInstance : design.getComponentInstances()) {
-			if (cmpInstance.getComponent().getVlnv().getName()
-					.equals(component.getVlnv().getName())) {
-				instances.add(cmpInstance);
-			}
-		}
+    for (final ComponentInstance cmpInstance : design.getComponentInstances()) {
+      if (cmpInstance.getComponent().getVlnv().getName().equals(component.getVlnv().getName())) {
+        instances.add(cmpInstance);
+      }
+    }
 
-		return instances;
-	}
+    return instances;
+  }
 
-	/**
-	 * Getting a component parameter corresponding to the given key
-	 */
-	public static String getParameter(ComponentInstance instance, String key) {
-		for (Parameter p : instance.getParameters()) {
-			if (p.getKey().equals(key)) {
-				return p.getValue();
-			}
-		}
-		return null;
-	}
+  /**
+   * Getting a component parameter corresponding to the given key.
+   *
+   * @param instance
+   *          the instance
+   * @param key
+   *          the key
+   * @return the parameter
+   */
+  public static String getParameter(final ComponentInstance instance, final String key) {
+    for (final Parameter p : instance.getParameters()) {
+      if (p.getKey().equals(key)) {
+        return p.getValue();
+      }
+    }
+    return null;
+  }
 
-	/**
-	 * Getting the other extremity component of a link
-	 */
-	public static ComponentInstance getOtherEnd(Link link, ComponentInstance c) {
-		if (!link.getDestinationComponentInstance().getInstanceName()
-				.equals(c.getInstanceName()))
-			return link.getDestinationComponentInstance();
-		else
-			return link.getSourceComponentInstance();
-	}
+  /**
+   * Getting the other extremity component of a link.
+   *
+   * @param link
+   *          the link
+   * @param c
+   *          the c
+   * @return the other end
+   */
+  public static ComponentInstance getOtherEnd(final Link link, final ComponentInstance c) {
+    if (!link.getDestinationComponentInstance().getInstanceName().equals(c.getInstanceName())) {
+      return link.getDestinationComponentInstance();
+    } else {
+      return link.getSourceComponentInstance();
+    }
+  }
 
-	/**
-	 * All undirected links linked to instance c
-	 */
-	public static Set<Link> getUndirectedLinks(Design design,
-			ComponentInstance c) {
-		Set<Link> undirectedLinks = new HashSet<Link>();
+  /**
+   * All undirected links linked to instance c.
+   *
+   * @param design
+   *          the design
+   * @param c
+   *          the c
+   * @return the undirected links
+   */
+  public static Set<Link> getUndirectedLinks(final Design design, final ComponentInstance c) {
+    final Set<Link> undirectedLinks = new HashSet<>();
 
-		for (Link link : design.getLinks()) {
-			if (!link.isDirected()) {
-				if (link.getDestinationComponentInstance().getInstanceName()
-						.equals(c.getInstanceName())
-						|| link.getSourceComponentInstance().getInstanceName()
-								.equals(c.getInstanceName())) {
-					undirectedLinks.add(link);
-				}
-			}
-		}
-		return undirectedLinks;
-	}
+    for (final Link link : design.getLinks()) {
+      if (!link.isDirected()) {
+        if (link.getDestinationComponentInstance().getInstanceName().equals(c.getInstanceName())
+            || link.getSourceComponentInstance().getInstanceName().equals(c.getInstanceName())) {
+          undirectedLinks.add(link);
+        }
+      }
+    }
+    return undirectedLinks;
+  }
 
-	/**
-	 * All undirected links linked to instance c
-	 */
-	public static Set<Link> getOutgoingDirectedLinks(Design design,
-			ComponentInstance c) {
-		Set<Link> directedLinks = new HashSet<Link>();
+  /**
+   * All undirected links linked to instance c.
+   *
+   * @param design
+   *          the design
+   * @param c
+   *          the c
+   * @return the outgoing directed links
+   */
+  public static Set<Link> getOutgoingDirectedLinks(final Design design, final ComponentInstance c) {
+    final Set<Link> directedLinks = new HashSet<>();
 
-		for (Link link : design.getLinks()) {
-			if (link.isDirected()) {
-				if (link.getSourceComponentInstance().getInstanceName()
-						.equals(c.getInstanceName())) {
-					directedLinks.add(link);
-				}
-			}
-		}
-		return directedLinks;
-	}
+    for (final Link link : design.getLinks()) {
+      if (link.isDirected()) {
+        if (link.getSourceComponentInstance().getInstanceName().equals(c.getInstanceName())) {
+          directedLinks.add(link);
+        }
+      }
+    }
+    return directedLinks;
+  }
 
-	/**
-	 * All undirected links linked to instance c
-	 */
-	public static Set<Link> getIncomingDirectedLinks(Design design,
-			ComponentInstance c) {
-		Set<Link> directedLinks = new HashSet<Link>();
+  /**
+   * All undirected links linked to instance c.
+   *
+   * @param design
+   *          the design
+   * @param c
+   *          the c
+   * @return the incoming directed links
+   */
+  public static Set<Link> getIncomingDirectedLinks(final Design design, final ComponentInstance c) {
+    final Set<Link> directedLinks = new HashSet<>();
 
-		for (Link link : design.getLinks()) {
-			if (link.isDirected()) {
-				if (link.getDestinationComponentInstance().getInstanceName()
-						.equals(c.getInstanceName())) {
-					directedLinks.add(link);
-				}
-			}
-		}
-		return directedLinks;
-	}
+    for (final Link link : design.getLinks()) {
+      if (link.isDirected()) {
+        if (link.getDestinationComponentInstance().getInstanceName().equals(c.getInstanceName())) {
+          directedLinks.add(link);
+        }
+      }
+    }
+    return directedLinks;
+  }
 }

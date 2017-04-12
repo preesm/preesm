@@ -45,6 +45,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
+// TODO: Auto-generated Javadoc
 /**
  * This class defines a resource implementation for the PiMM model which is used to serialize/deserialize from Pi.
  *
@@ -56,13 +57,15 @@ public class PiResourceImpl extends ResourceImpl {
   /**
    * Default constructor of the {@link PiResourceImpl}
    *
-   * <p>This constructor is protected and should not be used.</p>
+   * <p>
+   * This constructor is protected and should not be used.
+   * </p>
    */
   protected PiResourceImpl() {
   }
 
   /**
-   * Constructor of the {@link PiResourceImpl}
+   * Constructor of the {@link PiResourceImpl}.
    *
    * @param uri
    *          The URI of the resource
@@ -71,6 +74,11 @@ public class PiResourceImpl extends ResourceImpl {
     super(uri);
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.emf.ecore.resource.impl.ResourceImpl#doSave(java.io.OutputStream, java.util.Map)
+   */
   @Override
   protected void doSave(final OutputStream outputStream, final Map<?, ?> options) throws IOException {
     // Get the unique graph of the resource
@@ -80,6 +88,11 @@ public class PiResourceImpl extends ResourceImpl {
     new PiWriter(this.uri).write(graph, outputStream);
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.emf.ecore.resource.impl.ResourceImpl#doLoad(java.io.InputStream, java.util.Map)
+   */
   @Override
   protected void doLoad(final InputStream inputStream, final Map<?, ?> options) throws IOException {
     // Parse the Graph from the InputStream using the Pi format

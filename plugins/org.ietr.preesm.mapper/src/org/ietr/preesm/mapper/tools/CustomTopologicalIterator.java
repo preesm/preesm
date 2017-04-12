@@ -39,74 +39,91 @@ package org.ietr.preesm.mapper.tools;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.jgrapht.traverse.AbstractGraphIterator;
 
+// TODO: Auto-generated Javadoc
 /**
- * Iterates the graph in ascending or descending topological order
- * 
+ * Iterates the graph in ascending or descending topological order.
+ *
  * @author mpelcat
  */
-public class CustomTopologicalIterator extends
-		AbstractGraphIterator<MapperDAGVertex, MapperDAGEdge> {
+public class CustomTopologicalIterator
+    extends AbstractGraphIterator<MapperDAGVertex, MapperDAGEdge> {
 
-	protected boolean directOrder;
+  /** The direct order. */
+  protected boolean directOrder;
 
-	MapperDAG dag;
+  /** The dag. */
+  MapperDAG dag;
 
-	private Set<MapperDAGVertex> visitedVertices = null;
+  /** The visited vertices. */
+  private Set<MapperDAGVertex> visitedVertices = null;
 
-	public CustomTopologicalIterator(MapperDAG dag, boolean directOrder) {
-		this.directOrder = directOrder;
-		this.dag = dag;
-		visitedVertices = new HashSet<MapperDAGVertex>();
-	}
+  /**
+   * Instantiates a new custom topological iterator.
+   *
+   * @param dag
+   *          the dag
+   * @param directOrder
+   *          the direct order
+   */
+  public CustomTopologicalIterator(final MapperDAG dag, final boolean directOrder) {
+    this.directOrder = directOrder;
+    this.dag = dag;
+    this.visitedVertices = new HashSet<>();
+  }
 
-	@Override
-	public boolean hasNext() {
-		return (visitedVertices.size() < dag.vertexSet().size());
-	}
-	
-	@Override
-	public MapperDAGVertex next() {
-		if (directOrder) {
-			for (DAGVertex v : dag.vertexSet()) {
-				MapperDAGVertex mv = (MapperDAGVertex) v;
-				if (mv.incomingEdges().isEmpty()
-						&& !visitedVertices.contains(mv)) {
-					visitedVertices.add(mv);
-					return mv;
-				} else {
-					Set<MapperDAGVertex> preds = mv.getPredecessors(true)
-							.keySet();
-					if (visitedVertices.containsAll(preds) && ! visitedVertices.contains(mv)) {
-						visitedVertices.add(mv);
-						return mv;
-					}
-				}
-			}
-		} else {
-			for (DAGVertex v : dag.vertexSet()) {
-				MapperDAGVertex mv = (MapperDAGVertex) v;
-				if (mv.outgoingEdges().isEmpty()
-						&& !visitedVertices.contains(mv)) {
-					visitedVertices.add(mv);
-					return mv;
-				} else {
-					Set<MapperDAGVertex> succs = mv.getSuccessors(true)
-							.keySet();
-					if (visitedVertices.containsAll(succs) && !visitedVertices.contains(mv)) {
-						visitedVertices.add(mv);
-						return mv;
-					}
-				}
-			}
-		}
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.util.Iterator#hasNext()
+   */
+  @Override
+  public boolean hasNext() {
+    return (this.visitedVertices.size() < this.dag.vertexSet().size());
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.util.Iterator#next()
+   */
+  @Override
+  public MapperDAGVertex next() {
+    if (this.directOrder) {
+      for (final DAGVertex v : this.dag.vertexSet()) {
+        final MapperDAGVertex mv = (MapperDAGVertex) v;
+        if (mv.incomingEdges().isEmpty() && !this.visitedVertices.contains(mv)) {
+          this.visitedVertices.add(mv);
+          return mv;
+        } else {
+          final Set<MapperDAGVertex> preds = mv.getPredecessors(true).keySet();
+          if (this.visitedVertices.containsAll(preds) && !this.visitedVertices.contains(mv)) {
+            this.visitedVertices.add(mv);
+            return mv;
+          }
+        }
+      }
+    } else {
+      for (final DAGVertex v : this.dag.vertexSet()) {
+        final MapperDAGVertex mv = (MapperDAGVertex) v;
+        if (mv.outgoingEdges().isEmpty() && !this.visitedVertices.contains(mv)) {
+          this.visitedVertices.add(mv);
+          return mv;
+        } else {
+          final Set<MapperDAGVertex> succs = mv.getSuccessors(true).keySet();
+          if (this.visitedVertices.containsAll(succs) && !this.visitedVertices.contains(mv)) {
+            this.visitedVertices.add(mv);
+            return mv;
+          }
+        }
+      }
+    }
+    return null;
+  }
 
 }

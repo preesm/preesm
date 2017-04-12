@@ -49,217 +49,274 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Output Port</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>Output Port</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DataOutputPortImpl#getOutgoingFifo <em>Outgoing Fifo</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DataOutputPortImpl#getOutgoingFifo <em>Outgoing Fifo</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
 public class DataOutputPortImpl extends DataPortImpl implements DataOutputPort {
-	/**
-	 * The cached value of the '{@link #getOutgoingFifo() <em>Outgoing Fifo</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getOutgoingFifo()
-	 * @generated
-	 * @ordered
-	 */
-	protected Fifo outgoingFifo;
+  /**
+   * The cached value of the '{@link #getOutgoingFifo() <em>Outgoing Fifo</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getOutgoingFifo()
+   * @generated
+   * @ordered
+   */
+  protected Fifo outgoingFifo;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * 
-	 */
-	protected DataOutputPortImpl() {
-		super();
-		kind = PiIdentifiers.DATA_OUTPUT_PORT;
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   */
+  protected DataOutputPortImpl() {
+    super();
+    this.kind = PiIdentifiers.DATA_OUTPUT_PORT;
 
-		this.setExpression(PiMMFactory.eINSTANCE.createExpression());
-	}
+    setExpression(PiMMFactory.eINSTANCE.createExpression());
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return PiMMPackage.Literals.DATA_OUTPUT_PORT;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return PiMMPackage.Literals.DATA_OUTPUT_PORT;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Fifo getOutgoingFifo() {
-		if (outgoingFifo != null && outgoingFifo.eIsProxy()) {
-			InternalEObject oldOutgoingFifo = (InternalEObject)outgoingFifo;
-			outgoingFifo = (Fifo)eResolveProxy(oldOutgoingFifo);
-			if (outgoingFifo != oldOutgoingFifo) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO, oldOutgoingFifo, outgoingFifo));
-			}
-		}
-		return outgoingFifo;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the outgoing fifo
+   * @generated
+   */
+  @Override
+  public Fifo getOutgoingFifo() {
+    if ((this.outgoingFifo != null) && this.outgoingFifo.eIsProxy()) {
+      final InternalEObject oldOutgoingFifo = (InternalEObject) this.outgoingFifo;
+      this.outgoingFifo = (Fifo) eResolveProxy(oldOutgoingFifo);
+      if (this.outgoingFifo != oldOutgoingFifo) {
+        if (eNotificationRequired()) {
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO, oldOutgoingFifo, this.outgoingFifo));
+        }
+      }
+    }
+    return this.outgoingFifo;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public Fifo basicGetOutgoingFifo() {
-		return outgoingFifo;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the fifo
+   * @generated
+   */
+  public Fifo basicGetOutgoingFifo() {
+    return this.outgoingFifo;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public NotificationChain basicSetOutgoingFifo(Fifo newOutgoingFifo, NotificationChain msgs) {
-		Fifo oldOutgoingFifo = outgoingFifo;
-		outgoingFifo = newOutgoingFifo;
-		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO, oldOutgoingFifo, newOutgoingFifo);
-			if (msgs == null) msgs = notification; else msgs.add(notification);
-		}
-		return msgs;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newOutgoingFifo
+   *          the new outgoing fifo
+   * @param msgs
+   *          the msgs
+   * @return the notification chain
+   * @generated
+   */
+  public NotificationChain basicSetOutgoingFifo(final Fifo newOutgoingFifo, NotificationChain msgs) {
+    final Fifo oldOutgoingFifo = this.outgoingFifo;
+    this.outgoingFifo = newOutgoingFifo;
+    if (eNotificationRequired()) {
+      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO, oldOutgoingFifo,
+          newOutgoingFifo);
+      if (msgs == null) {
+        msgs = notification;
+      } else {
+        msgs.add(notification);
+      }
+    }
+    return msgs;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setOutgoingFifo(Fifo newOutgoingFifo) {
-		if (newOutgoingFifo != outgoingFifo) {
-			NotificationChain msgs = null;
-			if (outgoingFifo != null)
-				msgs = ((InternalEObject)outgoingFifo).eInverseRemove(this, PiMMPackage.FIFO__SOURCE_PORT, Fifo.class, msgs);
-			if (newOutgoingFifo != null)
-				msgs = ((InternalEObject)newOutgoingFifo).eInverseAdd(this, PiMMPackage.FIFO__SOURCE_PORT, Fifo.class, msgs);
-			msgs = basicSetOutgoingFifo(newOutgoingFifo, msgs);
-			if (msgs != null) msgs.dispatch();
-		}
-		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO, newOutgoingFifo, newOutgoingFifo));
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newOutgoingFifo
+   *          the new outgoing fifo
+   * @generated
+   */
+  @Override
+  public void setOutgoingFifo(final Fifo newOutgoingFifo) {
+    if (newOutgoingFifo != this.outgoingFifo) {
+      NotificationChain msgs = null;
+      if (this.outgoingFifo != null) {
+        msgs = ((InternalEObject) this.outgoingFifo).eInverseRemove(this, PiMMPackage.FIFO__SOURCE_PORT, Fifo.class, msgs);
+      }
+      if (newOutgoingFifo != null) {
+        msgs = ((InternalEObject) newOutgoingFifo).eInverseAdd(this, PiMMPackage.FIFO__SOURCE_PORT, Fifo.class, msgs);
+      }
+      msgs = basicSetOutgoingFifo(newOutgoingFifo, msgs);
+      if (msgs != null) {
+        msgs.dispatch();
+      }
+    } else if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO, newOutgoingFifo, newOutgoingFifo));
+    }
+  }
 
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param otherEnd
+   *          the other end
+   * @param featureID
+   *          the feature ID
+   * @param msgs
+   *          the msgs
+   * @return the notification chain
+   * @generated
+   */
+  @Override
+  public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, NotificationChain msgs) {
+    switch (featureID) {
+      case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
+        if (this.outgoingFifo != null) {
+          msgs = ((InternalEObject) this.outgoingFifo).eInverseRemove(this, PiMMPackage.FIFO__SOURCE_PORT, Fifo.class, msgs);
+        }
+        return basicSetOutgoingFifo((Fifo) otherEnd, msgs);
+    }
+    return super.eInverseAdd(otherEnd, featureID, msgs);
+  }
 
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param otherEnd
+   *          the other end
+   * @param featureID
+   *          the feature ID
+   * @param msgs
+   *          the msgs
+   * @return the notification chain
+   * @generated
+   */
+  @Override
+  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+    switch (featureID) {
+      case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
+        return basicSetOutgoingFifo(null, msgs);
+    }
+    return super.eInverseRemove(otherEnd, featureID, msgs);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
-				if (outgoingFifo != null)
-					msgs = ((InternalEObject)outgoingFifo).eInverseRemove(this, PiMMPackage.FIFO__SOURCE_PORT, Fifo.class, msgs);
-				return basicSetOutgoingFifo((Fifo)otherEnd, msgs);
-		}
-		return super.eInverseAdd(otherEnd, featureID, msgs);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param resolve
+   *          the resolve
+   * @param coreType
+   *          the core type
+   * @return the object
+   * @generated
+   */
+  @Override
+  public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
+    switch (featureID) {
+      case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
+        if (resolve) {
+          return getOutgoingFifo();
+        }
+        return basicGetOutgoingFifo();
+    }
+    return super.eGet(featureID, resolve, coreType);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
-				return basicSetOutgoingFifo(null, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param newValue
+   *          the new value
+   * @generated
+   */
+  @Override
+  public void eSet(final int featureID, final Object newValue) {
+    switch (featureID) {
+      case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
+        setOutgoingFifo((Fifo) newValue);
+        return;
+    }
+    super.eSet(featureID, newValue);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-			case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
-				if (resolve) return getOutgoingFifo();
-				return basicGetOutgoingFifo();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @generated
+   */
+  @Override
+  public void eUnset(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
+        setOutgoingFifo((Fifo) null);
+        return;
+    }
+    super.eUnset(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-			case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
-				setOutgoingFifo((Fifo)newValue);
-				return;
-		}
-		super.eSet(featureID, newValue);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @return true, if successful
+   * @generated
+   */
+  @Override
+  public boolean eIsSet(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
+        return this.outgoingFifo != null;
+    }
+    return super.eIsSet(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void eUnset(int featureID) {
-		switch (featureID) {
-			case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
-				setOutgoingFifo((Fifo)null);
-				return;
-		}
-		super.eUnset(featureID);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PortImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
+   */
+  @Override
+  public void accept(final PiMMVisitor v) {
+    v.visitDataOutputPort(this);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case PiMMPackage.DATA_OUTPUT_PORT__OUTGOING_FIFO:
-				return outgoingFifo != null;
-		}
-		return super.eIsSet(featureID);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.impl.PortImpl#getName()
+   */
+  @Override
+  public String getName() {
+    String name = super.getName();
+    if ((name == null) && (this.eContainer instanceof DataInputInterface)) {
+      name = ((DataInputInterface) this.eContainer).getName();
+    }
+    return name;
+  }
 
-	@Override
-	public void accept(PiMMVisitor v) {
-		v.visitDataOutputPort(this);
-	}
-	
-	@Override
-	public String getName() {
-		String name = super.getName();
-		if (name == null && this.eContainer instanceof DataInputInterface) {
-			name = ((DataInputInterface) this.eContainer).getName();
-		}
-		return name;
-	}
-
-} //OutputPortImpl
+} // OutputPortImpl

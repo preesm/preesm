@@ -38,10 +38,20 @@ package org.ietr.preesm.codegen.model;
 
 import org.ietr.preesm.codegen.idl.ActorPrototypes;
 
-
+// TODO: Auto-generated Javadoc
 /**
+ * A factory for creating IFunction objects.
+ *
  * @author jpiat
  */
 public interface IFunctionFactory {
-	public ActorPrototypes create(String calPath);
+
+  /**
+   * Creates the.
+   *
+   * @param calPath
+   *          the cal path
+   * @return the actor prototypes
+   */
+  public ActorPrototypes create(String calPath);
 }

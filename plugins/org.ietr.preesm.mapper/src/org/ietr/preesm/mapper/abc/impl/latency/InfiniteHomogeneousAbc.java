@@ -53,165 +53,206 @@ import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.params.AbcParameters;
 import org.ietr.preesm.mapper.tools.TLevelIterator;
 
+// TODO: Auto-generated Javadoc
 /**
- * Simulates an architecture having as many cores as necessary to execute one
- * operation on one core. All core have the main operator definition. These
- * cores are all interconnected with media corresponding to the main medium
- * definition.
- * 
+ * Simulates an architecture having as many cores as necessary to execute one operation on one core.
+ * All core have the main operator definition. These cores are all interconnected with media
+ * corresponding to the main medium definition.
+ *
  * @author mpelcat
  */
 public class InfiniteHomogeneousAbc extends LatencyAbc {
 
-	/**
-	 * Constructor
-	 */
-	public InfiniteHomogeneousAbc(AbcParameters params, MapperDAG dag,
-			Design archi, PreesmScenario scenario) throws WorkflowException {
-		this(params, dag, archi, TaskSchedType.Simple, scenario);
-	}
+  /**
+   * Constructor.
+   *
+   * @param params
+   *          the params
+   * @param dag
+   *          the dag
+   * @param archi
+   *          the archi
+   * @param scenario
+   *          the scenario
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+  public InfiniteHomogeneousAbc(final AbcParameters params, final MapperDAG dag, final Design archi,
+      final PreesmScenario scenario) throws WorkflowException {
+    this(params, dag, archi, TaskSchedType.Simple, scenario);
+  }
 
-	/**
-	 * Constructor of the simulator from a "blank" implementation where every
-	 * vertex has not been mapped yet.
-	 */
-	public InfiniteHomogeneousAbc(AbcParameters params, MapperDAG dag,
-			Design archi, TaskSchedType taskSchedType, PreesmScenario scenario) throws WorkflowException {
-		super(params, dag, archi, AbcType.InfiniteHomogeneous, scenario);
-		this.getType().setTaskSchedType(taskSchedType);
+  /**
+   * Constructor of the simulator from a "blank" implementation where every vertex has not been
+   * mapped yet.
+   *
+   * @param params
+   *          the params
+   * @param dag
+   *          the dag
+   * @param archi
+   *          the archi
+   * @param taskSchedType
+   *          the task sched type
+   * @param scenario
+   *          the scenario
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+  public InfiniteHomogeneousAbc(final AbcParameters params, final MapperDAG dag, final Design archi,
+      final TaskSchedType taskSchedType, final PreesmScenario scenario) throws WorkflowException {
+    super(params, dag, archi, AbcType.InfiniteHomogeneous, scenario);
+    getType().setTaskSchedType(taskSchedType);
 
-		ComponentInstance mainComNode = DesignTools.getComponentInstance(archi,
-				scenario.getSimulationManager().getMainComNodeName());
+    final ComponentInstance mainComNode = DesignTools.getComponentInstance(archi,
+        scenario.getSimulationManager().getMainComNodeName());
 
-		ComponentInstance mainOperator = DesignTools.getComponentInstance(archi,
-				scenario.getSimulationManager().getMainOperatorName());
-		
-		if (mainComNode != null) {
-			WorkflowLogger.getLogger().info("Infinite homogeneous simulation");
-		} else {
-			WorkflowLogger
-					.getLogger()
-					.severe("Current architecture has no main communication node. Please set a main communication node.");
-		}
-		
-		if (mainOperator == null) {
-			WorkflowLogger
-					.getLogger()
-					.severe("Current architecture has no main operator. Please set a main operator.");
-		}
+    final ComponentInstance mainOperator = DesignTools.getComponentInstance(archi,
+        scenario.getSimulationManager().getMainOperatorName());
 
-		// The InfiniteHomogeneousArchitectureSimulator is specifically done
-		// to map all vertices on the main operator definition but consider
-		// as many cores as there are tasks.
-		mapAllVerticesOnOperator(mainOperator);
+    if (mainComNode != null) {
+      WorkflowLogger.getLogger().info("Infinite homogeneous simulation");
+    } else {
+      WorkflowLogger.getLogger().severe(
+          "Current architecture has no main communication node. Please set a main communication node.");
+    }
 
-		updateFinalCosts();
-		orderManager.resetTotalOrder();
-		TLevelIterator iterator = new TLevelIterator(implementation, true);
+    if (mainOperator == null) {
+      WorkflowLogger.getLogger()
+          .severe("Current architecture has no main operator. Please set a main operator.");
+    }
 
-		while (iterator.hasNext()) {
-			MapperDAGVertex v = iterator.next();
-			orderManager.addLast(v);
-		}
+    // The InfiniteHomogeneousArchitectureSimulator is specifically done
+    // to map all vertices on the main operator definition but consider
+    // as many cores as there are tasks.
+    mapAllVerticesOnOperator(mainOperator);
 
-		retrieveTotalOrder();
-	}
+    updateFinalCosts();
+    this.orderManager.resetTotalOrder();
+    final TLevelIterator iterator = new TLevelIterator(this.implementation, true);
 
-	@Override
-	protected void fireNewMappedVertex(MapperDAGVertex vertex,
-			boolean updateRank) {
+    while (iterator.hasNext()) {
+      final MapperDAGVertex v = iterator.next();
+      this.orderManager.addLast(v);
+    }
 
-		ComponentInstance effectiveOp = vertex
-				.getEffectiveOperator();
+    retrieveTotalOrder();
+  }
 
-		/*
-		 * mapping a vertex sets the cost of the current vertex and its edges
-		 * 
-		 * As we have an infinite homogeneous architecture, each communication
-		 * is done through the unique type of medium
-		 */
-		if (effectiveOp == DesignTools.NO_COMPONENT_INSTANCE) {
-			WorkflowLogger.getLogger().severe(
-					"implementation of " + vertex.getName() + " failed. No operator was assigned.");
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#fireNewMappedVertex(org.ietr.preesm.mapper.
+   * model.MapperDAGVertex, boolean)
+   */
+  @Override
+  protected void fireNewMappedVertex(final MapperDAGVertex vertex, final boolean updateRank) {
 
-			vertex.getTiming().setCost(0);
+    final ComponentInstance effectiveOp = vertex.getEffectiveOperator();
 
-		} else {
+    /*
+     * mapping a vertex sets the cost of the current vertex and its edges
+     *
+     * As we have an infinite homogeneous architecture, each communication is done through the
+     * unique type of medium
+     */
+    if (effectiveOp == DesignTools.NO_COMPONENT_INSTANCE) {
+      WorkflowLogger.getLogger()
+          .severe("implementation of " + vertex.getName() + " failed. No operator was assigned.");
 
-			// Setting vertex time
-			long vertextime = vertex.getInit().getTime(
-					effectiveOp);
-			vertex.getTiming().setCost(vertextime);
+      vertex.getTiming().setCost(0);
 
-			// Setting edges times
+    } else {
 
-			setEdgesCosts(vertex.incomingEdges());
-			setEdgesCosts(vertex.outgoingEdges());
+      // Setting vertex time
+      final long vertextime = vertex.getInit().getTime(effectiveOp);
+      vertex.getTiming().setCost(vertextime);
 
-			if (updateRank) {
-				nTimeKeeper.updateTLevels();
-				taskScheduler.insertVertex(vertex);
-			} else {
-				orderManager.insertGivenTotalOrder(vertex);
-			}
+      // Setting edges times
 
-		}
-	}
+      setEdgesCosts(vertex.incomingEdges());
+      setEdgesCosts(vertex.outgoingEdges());
 
-	@Override
-	protected void fireNewUnmappedVertex(MapperDAGVertex vertex) {
+      if (updateRank) {
+        this.nTimeKeeper.updateTLevels();
+        this.taskScheduler.insertVertex(vertex);
+      } else {
+        this.orderManager.insertGivenTotalOrder(vertex);
+      }
 
-		// unmapping a vertex resets the cost of the current vertex
-		// and its edges
+    }
+  }
 
-		// Keeps the total order
-		orderManager.remove(vertex, false);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#fireNewUnmappedVertex(org.ietr.preesm.mapper
+   * .model.MapperDAGVertex)
+   */
+  @Override
+  protected void fireNewUnmappedVertex(final MapperDAGVertex vertex) {
 
-		vertex.getTiming().reset();
-		resetCost(vertex.incomingEdges());
-		resetCost(vertex.outgoingEdges());
+    // unmapping a vertex resets the cost of the current vertex
+    // and its edges
 
-	}
+    // Keeps the total order
+    this.orderManager.remove(vertex, false);
 
-	/**
-	 * Asks the time keeper to update timings. Crucial and costly operation.
-	 * Depending on the king of timings we want, calls the necessary updates.
-	 */
-	@Override
-	public final void updateTimings() {
-		nTimeKeeper.updateTandBLevels();
-	}
+    vertex.getTiming().reset();
+    resetCost(vertex.incomingEdges());
+    resetCost(vertex.outgoingEdges());
 
-	@Override
-	protected void setEdgeCost(MapperDAGEdge edge) {
+  }
 
-		long edgesize = edge.getInit().getDataSize();
+  /**
+   * Asks the time keeper to update timings. Crucial and costly operation. Depending on the king of
+   * timings we want, calls the necessary updates.
+   */
+  @Override
+  public final void updateTimings() {
+    this.nTimeKeeper.updateTandBLevels();
+  }
 
-		/**
-		 * In a Infinite Homogeneous Architecture, each communication is
-		 * supposed to be done on the main medium. The communication cost is
-		 * simply calculated from the main medium speed.
-		 */
-		String mainComName = scenario.getSimulationManager()
-				.getMainComNodeName();
-		ComponentInstance mainCom = DesignTools.getComponentInstance(archi,
-				mainComName);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#setEdgeCost(org.ietr.preesm.mapper.model.
+   * MapperDAGEdge)
+   */
+  @Override
+  protected void setEdgeCost(final MapperDAGEdge edge) {
 
-		if (mainCom != null) {
+    final long edgesize = edge.getInit().getDataSize();
 
-			long cost = (long) (edgesize / ((ComNode) mainCom.getComponent())
-					.getSpeed());
+    /**
+     * In a Infinite Homogeneous Architecture, each communication is supposed to be done on the main
+     * medium. The communication cost is simply calculated from the main medium speed.
+     */
+    final String mainComName = this.scenario.getSimulationManager().getMainComNodeName();
+    final ComponentInstance mainCom = DesignTools.getComponentInstance(this.archi, mainComName);
 
-			edge.getTiming().setCost(cost);
-		} else {
-			Float speed = 1f;
-			speed = edgesize * speed;
-			edge.getTiming().setCost(speed.intValue());
-		}
-	}
+    if (mainCom != null) {
 
-	@Override
-	public EdgeSchedType getEdgeSchedType() {
-		return null;
-	}
+      final long cost = (long) (edgesize / ((ComNode) mainCom.getComponent()).getSpeed());
+
+      edge.getTiming().setCost(cost);
+    } else {
+      Float speed = 1f;
+      speed = edgesize * speed;
+      edge.getTiming().setCost(speed.intValue());
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#getEdgeSchedType()
+   */
+  @Override
+  public EdgeSchedType getEdgeSchedType() {
+    return null;
+  }
 }

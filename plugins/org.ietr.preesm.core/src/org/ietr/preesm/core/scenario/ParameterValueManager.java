@@ -35,123 +35,182 @@
  *******************************************************************************/
 package org.ietr.preesm.core.scenario;
 
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
-
 import org.eclipse.emf.ecore.EObject;
 import org.ietr.preesm.core.scenario.ParameterValue.ParameterType;
 import org.ietr.preesm.experiment.model.pimm.Parameter;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
+// TODO: Auto-generated Javadoc
 /**
- * Manager class for parameters, storing values given by the user to parameters
- * 
+ * Manager class for parameters, storing values given by the user to parameters.
+ *
  * @author cguy
- * 
  */
 public class ParameterValueManager {
-	// Set of ParameterValues
-	private Set<ParameterValue> parameterValues;
 
-	public ParameterValueManager() {
-		this.parameterValues = new HashSet<ParameterValue>();
-	}
+  /** The parameter values. */
+  // Set of ParameterValues
+  private Set<ParameterValue> parameterValues;
 
-	public Set<ParameterValue> getParameterValues() {
-		return parameterValues;
-	}
-	
-	public Set<ParameterValue> getSortedParameterValues() {
-		Set<ParameterValue> result = new ConcurrentSkipListSet<ParameterValue>(new Comparator<ParameterValue>() {
-			@Override
-			public int compare(ParameterValue o1, ParameterValue o2) {
-				return o1.getName().compareTo(o2.getName());
-			}			
-		});
-		result.addAll(parameterValues);
-		return result;
-	}
+  /**
+   * Instantiates a new parameter value manager.
+   */
+  public ParameterValueManager() {
+    this.parameterValues = new HashSet<>();
+  }
 
-	public void setParameterValues(Set<ParameterValue> parameterValues) {
-		this.parameterValues = parameterValues;
-	}
+  /**
+   * Gets the parameter values.
+   *
+   * @return the parameter values
+   */
+  public Set<ParameterValue> getParameterValues() {
+    return this.parameterValues;
+  }
 
-	public void addIndependentParameterValue(Parameter parameter, String value,
-			String parent) {
-		ParameterValue pValue = new ParameterValue(parameter,
-				ParameterType.INDEPENDENT, parent);
-		pValue.setValue(value);
-		this.parameterValues.add(pValue);
-	}
+  /**
+   * Gets the sorted parameter values.
+   *
+   * @return the sorted parameter values
+   */
+  public Set<ParameterValue> getSortedParameterValues() {
+    final Set<ParameterValue> result = new ConcurrentSkipListSet<>((o1, o2) -> o1.getName().compareTo(o2.getName()));
+    result.addAll(this.parameterValues);
+    return result;
+  }
 
-	public void addActorDependentParameterValue(Parameter parameter,
-			Set<Integer> values, String parent) {
-		ParameterValue pValue = new ParameterValue(parameter,
-				ParameterType.ACTOR_DEPENDENT, parent);
-		pValue.setValues(values);
-		this.parameterValues.add(pValue);
-	}
+  /**
+   * Sets the parameter values.
+   *
+   * @param parameterValues
+   *          the new parameter values
+   */
+  public void setParameterValues(final Set<ParameterValue> parameterValues) {
+    this.parameterValues = parameterValues;
+  }
 
-	public void addParameterDependentParameterValue(Parameter parameter,
-			String expression, Set<String> inputParameters, String parent) {
-		ParameterValue pValue = new ParameterValue(parameter,
-				ParameterType.PARAMETER_DEPENDENT, parent);
-		pValue.setExpression(expression);
-		pValue.setInputParameters(inputParameters);
-		this.parameterValues.add(pValue);
-	}
+  /**
+   * Adds the independent parameter value.
+   *
+   * @param parameter
+   *          the parameter
+   * @param value
+   *          the value
+   * @param parent
+   *          the parent
+   */
+  public void addIndependentParameterValue(final Parameter parameter, final String value, final String parent) {
+    final ParameterValue pValue = new ParameterValue(parameter, ParameterType.INDEPENDENT, parent);
+    pValue.setValue(value);
+    this.parameterValues.add(pValue);
+  }
 
-	public void addParameterValue(Parameter param) {
-		EObject container = param.eContainer();
-		String parent = "";
-		if (container instanceof PiGraph) {
-			parent = ((PiGraph) container).getName();
-		}
-		Set<Parameter> inputParameters = new HashSet<Parameter>();
-		inputParameters = param.getInputParameters();
+  /**
+   * Adds the actor dependent parameter value.
+   *
+   * @param parameter
+   *          the parameter
+   * @param values
+   *          the values
+   * @param parent
+   *          the parent
+   */
+  public void addActorDependentParameterValue(final Parameter parameter, final Set<Integer> values, final String parent) {
+    final ParameterValue pValue = new ParameterValue(parameter, ParameterType.ACTOR_DEPENDENT, parent);
+    pValue.setValues(values);
+    this.parameterValues.add(pValue);
+  }
 
-		if (param.isLocallyStatic()) {
-			if (param.isDependent()) {
-				// Add a parameter dependent value (a locally static parameter
-				// cannot be actor dependent)
-				addParameterDependentParameterValue(param, parent);
-			} else {
-				// Add an independent parameter value
-				addIndependentParameterValue(param, param.getExpression().getString(), parent);
-			}
-		} else {
-			boolean isActorDependent = inputParameters.size() < param
-					.getConfigInputPorts().size();
+  /**
+   * Adds the parameter dependent parameter value.
+   *
+   * @param param
+   *          the param
+   * @param parent
+   *          the parent
+   */
+  private void addParameterDependentParameterValue(final Parameter param, final String parent) {
+    final Set<String> inputParametersNames = new HashSet<>();
+    for (final Parameter p : param.getInputParameters()) {
+      inputParametersNames.add(p.getName());
+    }
 
-			if (isActorDependent) {
-				Set<Integer> values = new HashSet<Integer>();
-				values.add(1);
-				// Add an actor dependent value
-				addActorDependentParameterValue(param, values, parent);
-			} else {
-				// Add a parameter dependent value
-				addParameterDependentParameterValue(param, parent);
-			}
-		}
-	}
+    addParameterDependentParameterValue(param, param.getExpression().getString(), inputParametersNames, parent);
+  }
 
-	private void addParameterDependentParameterValue(Parameter param,
-			String parent) {
-		Set<String> inputParametersNames = new HashSet<String>();
-		for (Parameter p : param.getInputParameters())
-			inputParametersNames.add(p.getName());
+  /**
+   * Adds the parameter dependent parameter value.
+   *
+   * @param parameter
+   *          the parameter
+   * @param expression
+   *          the expression
+   * @param inputParameters
+   *          the input parameters
+   * @param parent
+   *          the parent
+   */
+  public void addParameterDependentParameterValue(final Parameter parameter, final String expression, final Set<String> inputParameters, final String parent) {
+    final ParameterValue pValue = new ParameterValue(parameter, ParameterType.PARAMETER_DEPENDENT, parent);
+    pValue.setExpression(expression);
+    pValue.setInputParameters(inputParameters);
+    this.parameterValues.add(pValue);
+  }
 
-		addParameterDependentParameterValue(param, param
-				.getExpression().getString(), inputParametersNames, parent);
-	}
+  /**
+   * Adds the parameter value.
+   *
+   * @param param
+   *          the param
+   */
+  public void addParameterValue(final Parameter param) {
+    final EObject container = param.eContainer();
+    String parent = "";
+    if (container instanceof PiGraph) {
+      parent = ((PiGraph) container).getName();
+    }
+    Set<Parameter> inputParameters = new HashSet<>();
+    inputParameters = param.getInputParameters();
 
-	public void updateWith(PiGraph graph) {
-		getParameterValues().clear();
-		for (Parameter p : graph.getAllParameters()) {
-			if (!p.isConfigurationInterface())
-				addParameterValue(p);
-		}
-	}
+    if (param.isLocallyStatic()) {
+      if (param.isDependent()) {
+        // Add a parameter dependent value (a locally static parameter
+        // cannot be actor dependent)
+        addParameterDependentParameterValue(param, parent);
+      } else {
+        // Add an independent parameter value
+        addIndependentParameterValue(param, param.getExpression().getString(), parent);
+      }
+    } else {
+      final boolean isActorDependent = inputParameters.size() < param.getConfigInputPorts().size();
+
+      if (isActorDependent) {
+        final Set<Integer> values = new HashSet<>();
+        values.add(1);
+        // Add an actor dependent value
+        addActorDependentParameterValue(param, values, parent);
+      } else {
+        // Add a parameter dependent value
+        addParameterDependentParameterValue(param, parent);
+      }
+    }
+  }
+
+  /**
+   * Update with.
+   *
+   * @param graph
+   *          the graph
+   */
+  public void updateWith(final PiGraph graph) {
+    getParameterValues().clear();
+    for (final Parameter p : graph.getAllParameters()) {
+      if (!p.isConfigurationInterface()) {
+        addParameterValue(p);
+      }
+    }
+  }
 }

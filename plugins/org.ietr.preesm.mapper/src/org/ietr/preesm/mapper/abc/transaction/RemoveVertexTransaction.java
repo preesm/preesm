@@ -39,80 +39,93 @@ package org.ietr.preesm.mapper.abc.transaction;
 
 import java.util.List;
 import java.util.Set;
-
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 import org.ietr.preesm.mapper.model.special.PrecedenceEdgeAdder;
 
+// TODO: Auto-generated Javadoc
 /**
- * A transaction that removes one vertex in an implementation
- * 
+ * A transaction that removes one vertex in an implementation.
+ *
  * @author mpelcat
  */
 public class RemoveVertexTransaction extends Transaction {
-	// Inputs
-	/**
-	 * Implementation DAG from which the vertex is removed
-	 */
-	private MapperDAG implementation = null;
+  // Inputs
+  /** Implementation DAG from which the vertex is removed. */
+  private MapperDAG implementation = null;
 
-	/**
-	 * vertex removed
-	 */
-	private MapperDAGVertex vertex = null;
+  /** vertex removed. */
+  private MapperDAGVertex vertex = null;
 
-	/**
-	 * Order manager
-	 */
-	private OrderManager orderManager = null;
+  /** Order manager. */
+  private OrderManager orderManager = null;
 
-	public RemoveVertexTransaction(MapperDAGVertex vertex,
-			MapperDAG implementation, OrderManager orderManager) {
-		super();
-		this.vertex = vertex;
-		this.implementation = implementation;
-		this.orderManager = orderManager;
-	}
+  /**
+   * Instantiates a new removes the vertex transaction.
+   *
+   * @param vertex
+   *          the vertex
+   * @param implementation
+   *          the implementation
+   * @param orderManager
+   *          the order manager
+   */
+  public RemoveVertexTransaction(final MapperDAGVertex vertex, final MapperDAG implementation,
+      final OrderManager orderManager) {
+    super();
+    this.vertex = vertex;
+    this.implementation = implementation;
+    this.orderManager = orderManager;
+  }
 
-	@Override
-	public void execute(List<Object> resultList) {
-		super.execute(resultList);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.mapper.abc.transaction.Transaction#execute(java.util.List)
+   */
+  @Override
+  public void execute(final List<Object> resultList) {
+    super.execute(resultList);
 
-		// Unscheduling first
-		MapperDAGVertex prev = orderManager.getPrevious(vertex);
-		MapperDAGVertex next = orderManager.getNext(vertex);
-		PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(orderManager,
-				implementation);
+    // Unscheduling first
+    final MapperDAGVertex prev = this.orderManager.getPrevious(this.vertex);
+    final MapperDAGVertex next = this.orderManager.getNext(this.vertex);
+    final PrecedenceEdgeAdder adder = new PrecedenceEdgeAdder(this.orderManager,
+        this.implementation);
 
-		if (prev != null) {
-			adder.removePrecedenceEdge(prev, vertex);
-		}
+    if (prev != null) {
+      adder.removePrecedenceEdge(prev, this.vertex);
+    }
 
-		if (next != null) {
-			adder.removePrecedenceEdge(vertex, next);
-		}
+    if (next != null) {
+      adder.removePrecedenceEdge(this.vertex, next);
+    }
 
-		// Adding precedence between predecessor and sucessor if they don't
-		// share data
-		Set<DAGEdge> edges = implementation.getAllEdges(prev, next);
-		if ((prev != null && next != null)
-				&& (edges == null || edges.isEmpty())) {
-			adder.addPrecedenceEdge(prev, next);
-		}
+    // Adding precedence between predecessor and sucessor if they don't
+    // share data
+    final Set<DAGEdge> edges = this.implementation.getAllEdges(prev, next);
+    if (((prev != null) && (next != null)) && ((edges == null) || edges.isEmpty())) {
+      adder.addPrecedenceEdge(prev, next);
+    }
 
-		orderManager.remove(vertex, true);
-		
-		implementation.getTimings().remove(vertex);
-		implementation.getMappings().remove(vertex);
-		// Removing vertex
-		implementation.removeVertex(vertex);
-	}
+    this.orderManager.remove(this.vertex, true);
 
-	@Override
-	public String toString() {
-		return ("RemoveVertex(" + vertex.toString() + ")");
-	}
+    this.implementation.getTimings().remove(this.vertex);
+    this.implementation.getMappings().remove(this.vertex);
+    // Removing vertex
+    this.implementation.removeVertex(this.vertex);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.mapper.abc.transaction.Transaction#toString()
+   */
+  @Override
+  public String toString() {
+    return ("RemoveVertex(" + this.vertex.toString() + ")");
+  }
 
 }

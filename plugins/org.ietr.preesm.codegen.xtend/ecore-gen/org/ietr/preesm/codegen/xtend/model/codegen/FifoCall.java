@@ -35,185 +35,157 @@
  *******************************************************************************/
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> A representation of the model object '
- * <em><b>Fifo Call</b></em>'. <!-- end-user-doc -->
- * 
+ * <!-- begin-user-doc --> A representation of the model object ' <em><b>Fifo Call</b></em>'. <!-- end-user-doc -->
+ *
  * <p>
  * The following features are supported:
  * <ul>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getOperation
- * <em>Operation</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getFifoHead
- * <em>Fifo Head</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getFifoTail
- * <em>Fifo Tail</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getHeadBuffer
- * <em>Head Buffer</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getBodyBuffer
- * <em>Body Buffer</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getOperation <em>Operation</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getFifoHead <em>Fifo Head</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getFifoTail <em>Fifo Tail</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getHeadBuffer <em>Head Buffer</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getBodyBuffer <em>Body Buffer</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFifoCall()
  * @model
  * @generated
  */
 public interface FifoCall extends Call {
-	/**
-	 * Returns the value of the '<em><b>Operation</b></em>' attribute. The
-	 * literals are from the enumeration
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation}. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Operation</em>' attribute isn't clear, there
-	 * really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Operation</em>' attribute.
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
-	 * @see #setOperation(FifoOperation)
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFifoCall_Operation()
-	 * @model required="true"
-	 * @generated
-	 */
-	FifoOperation getOperation();
+  /**
+   * Returns the value of the '<em><b>Operation</b></em>' attribute. The literals are from the enumeration
+   * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation}. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Operation</em>' attribute isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Operation</em>' attribute.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
+   * @see #setOperation(FifoOperation)
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFifoCall_Operation()
+   * @model required="true"
+   * @generated
+   */
+  FifoOperation getOperation();
 
-	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getOperation
-	 * <em>Operation</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Operation</em>' attribute.
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
-	 * @see #getOperation()
-	 * @generated
-	 */
-	void setOperation(FifoOperation value);
+  /**
+   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getOperation <em>Operation</em>}' attribute. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   *
+   * @param value
+   *          the new value of the '<em>Operation</em>' attribute.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation
+   * @see #getOperation()
+   * @generated
+   */
+  void setOperation(FifoOperation value);
 
-	/**
-	 * Returns the value of the '<em><b>Fifo Head</b></em>' reference. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Fifo Head</em>' reference isn't clear, there
-	 * really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Fifo Head</em>' reference.
-	 * @see #setFifoHead(FifoCall)
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFifoCall_FifoHead()
-	 * @model transient="true"
-	 * @generated
-	 */
-	FifoCall getFifoHead();
+  /**
+   * Returns the value of the '<em><b>Fifo Head</b></em>' reference. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Fifo Head</em>' reference isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Fifo Head</em>' reference.
+   * @see #setFifoHead(FifoCall)
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFifoCall_FifoHead()
+   * @model transient="true"
+   * @generated
+   */
+  FifoCall getFifoHead();
 
-	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getFifoHead
-	 * <em>Fifo Head</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Fifo Head</em>' reference.
-	 * @see #getFifoHead()
-	 * @generated
-	 */
-	void setFifoHead(FifoCall value);
+  /**
+   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getFifoHead <em>Fifo Head</em>}' reference. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   *
+   * @param value
+   *          the new value of the '<em>Fifo Head</em>' reference.
+   * @see #getFifoHead()
+   * @generated
+   */
+  void setFifoHead(FifoCall value);
 
-	/**
-	 * Returns the value of the '<em><b>Fifo Tail</b></em>' reference. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Fifo Tail</em>' reference isn't clear, there
-	 * really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Fifo Tail</em>' reference.
-	 * @see #setFifoTail(FifoCall)
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFifoCall_FifoTail()
-	 * @model transient="true"
-	 * @generated
-	 */
-	FifoCall getFifoTail();
+  /**
+   * Returns the value of the '<em><b>Fifo Tail</b></em>' reference. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Fifo Tail</em>' reference isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Fifo Tail</em>' reference.
+   * @see #setFifoTail(FifoCall)
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFifoCall_FifoTail()
+   * @model transient="true"
+   * @generated
+   */
+  FifoCall getFifoTail();
 
-	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getFifoTail
-	 * <em>Fifo Tail</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Fifo Tail</em>' reference.
-	 * @see #getFifoTail()
-	 * @generated
-	 */
-	void setFifoTail(FifoCall value);
+  /**
+   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getFifoTail <em>Fifo Tail</em>}' reference. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   *
+   * @param value
+   *          the new value of the '<em>Fifo Tail</em>' reference.
+   * @see #getFifoTail()
+   * @generated
+   */
+  void setFifoTail(FifoCall value);
 
-	/**
-	 * Returns the value of the '<em><b>Storage Buffer</b></em>' reference. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Storage Buffer</em>' reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Storage Buffer</em>' reference.
-	 * @see #setHeadBuffer(Buffer)
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFifoCall_StorageBuffer()
-	 * @model
-	 * @generated
-	 */
-	Buffer getHeadBuffer();
+  /**
+   * Returns the value of the '<em><b>Storage Buffer</b></em>' reference. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Storage Buffer</em>' reference isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Storage Buffer</em>' reference.
+   * @see #setHeadBuffer(Buffer)
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFifoCall_StorageBuffer()
+   * @model
+   * @generated
+   */
+  Buffer getHeadBuffer();
 
-	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getHeadBuffer
-	 * <em>Head Buffer</em>}' reference. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Head Buffer</em>' reference.
-	 * @see #getHeadBuffer()
-	 * @generated
-	 */
-	void setHeadBuffer(Buffer value);
+  /**
+   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getHeadBuffer <em>Head Buffer</em>}' reference. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   *
+   * @param value
+   *          the new value of the '<em>Head Buffer</em>' reference.
+   * @see #getHeadBuffer()
+   * @generated
+   */
+  void setHeadBuffer(Buffer value);
 
-	/**
-	 * Returns the value of the '<em><b>Body Buffer</b></em>' reference. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Body Buffer</em>' reference isn't clear, there
-	 * really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Body Buffer</em>' reference.
-	 * @see #setBodyBuffer(Buffer)
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFifoCall_BodyBuffer()
-	 * @model
-	 * @generated
-	 */
-	Buffer getBodyBuffer();
+  /**
+   * Returns the value of the '<em><b>Body Buffer</b></em>' reference. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Body Buffer</em>' reference isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Body Buffer</em>' reference.
+   * @see #setBodyBuffer(Buffer)
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getFifoCall_BodyBuffer()
+   * @model
+   * @generated
+   */
+  Buffer getBodyBuffer();
 
-	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getBodyBuffer
-	 * <em>Body Buffer</em>}' reference. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Body Buffer</em>' reference.
-	 * @see #getBodyBuffer()
-	 * @generated
-	 */
-	void setBodyBuffer(Buffer value);
+  /**
+   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.FifoCall#getBodyBuffer <em>Body Buffer</em>}' reference. <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   *
+   * @param value
+   *          the new value of the '<em>Body Buffer</em>' reference.
+   * @see #getBodyBuffer()
+   * @generated
+   */
+  void setBodyBuffer(Buffer value);
 
 } // FifoCall

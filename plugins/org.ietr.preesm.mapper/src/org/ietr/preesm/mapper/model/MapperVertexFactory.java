@@ -43,42 +43,68 @@ import org.ietr.dftools.algorithm.model.IInterface;
 import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.w3c.dom.Element;
 
+// TODO: Auto-generated Javadoc
 /**
- * Creates vertices of type {@link MapperDAGVertex}
- * 
+ * Creates vertices of type {@link MapperDAGVertex}.
+ *
  * @author mpelcat
  */
 public class MapperVertexFactory extends ModelVertexFactory<DAGVertex> {
 
-	private static MapperVertexFactory instance;
+  /** The instance. */
+  private static MapperVertexFactory instance;
 
-	private MapperVertexFactory() {
-		super();
-	}
+  /**
+   * Instantiates a new mapper vertex factory.
+   */
+  private MapperVertexFactory() {
+    super();
+  }
 
-	public static MapperVertexFactory getInstance() {
-		if (instance == null) {
-			instance = new MapperVertexFactory();
-		}
-		return instance;
-	}
+  /**
+   * Gets the single instance of MapperVertexFactory.
+   *
+   * @return single instance of MapperVertexFactory
+   */
+  public static MapperVertexFactory getInstance() {
+    if (MapperVertexFactory.instance == null) {
+      MapperVertexFactory.instance = new MapperVertexFactory();
+    }
+    return MapperVertexFactory.instance;
+  }
 
-	@Override
-	public DAGVertex createVertex(String kind) {
-		DAGVertex result = new MapperDAGVertex();
-		result.setKind(kind);
-		return result;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.algorithm.factories.ModelVertexFactory#createVertex(java.lang.String)
+   */
+  @Override
+  public DAGVertex createVertex(final String kind) {
+    final DAGVertex result = new MapperDAGVertex();
+    result.setKind(kind);
+    return result;
+  }
 
-	@Override
-	public DAGVertex createVertex(Element vertexElt) {
-		String kind = this.getProperty(vertexElt, AbstractVertex.KIND);
-		return this.createVertex(kind);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.algorithm.factories.ModelVertexFactory#createVertex(org.w3c.dom.Element)
+   */
+  @Override
+  public DAGVertex createVertex(final Element vertexElt) {
+    final String kind = getProperty(vertexElt, AbstractVertex.KIND);
+    return this.createVertex(kind);
+  }
 
-	@Override
-	public IInterface createInterface(String name, int dir) {
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.algorithm.factories.ModelVertexFactory#createInterface(java.lang.String,
+   * int)
+   */
+  @Override
+  public IInterface createInterface(final String name, final int dir) {
+    return null;
+  }
 
 }

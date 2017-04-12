@@ -40,18 +40,16 @@ package org.ietr.preesm.experiment.model.pimm;
 import org.eclipse.core.runtime.IPath;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
 
-
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Actor</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A representation of the model object '<em><b>Actor</b></em>'. <!-- end-user-doc -->
  *
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.Actor#getRefinement <em>Refinement</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.Actor#isConfigurationActor <em>Configuration Actor</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.Actor#getMemoryScriptPath <em>Memory Script Path</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.Actor#getRefinement <em>Refinement</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.Actor#isConfigurationActor <em>Configuration Actor</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.Actor#getMemoryScriptPath <em>Memory Script Path</em>}</li>
  * </ul>
  * </p>
  *
@@ -61,93 +59,94 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  */
 public interface Actor extends ExecutableActor, PiMMVisitable {
 
-	/**
-	 * Returns the value of the '<em><b>Refinement</b></em>' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Refinement</em>' containment reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Refinement</em>' containment reference.
-	 * @see #setRefinement(Refinement)
-	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getActor_Refinement()
-	 * @model containment="true" required="true"
-	 * @generated
-	 */
-	Refinement getRefinement();
+  /**
+   * Returns the value of the '<em><b>Refinement</b></em>' containment reference. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Refinement</em>' containment reference isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Refinement</em>' containment reference.
+   * @see #setRefinement(Refinement)
+   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getActor_Refinement()
+   * @model containment="true" required="true"
+   * @generated
+   */
+  Refinement getRefinement();
 
-	/**
-	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Actor#getRefinement <em>Refinement</em>}' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Refinement</em>' containment reference.
-	 * @see #getRefinement()
-	 * @generated
-	 */
-	void setRefinement(Refinement value);
+  /**
+   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Actor#getRefinement <em>Refinement</em>}' containment reference. <!-- begin-user-doc
+   * --> <!-- end-user-doc -->
+   *
+   * @param value
+   *          the new value of the '<em>Refinement</em>' containment reference.
+   * @see #getRefinement()
+   * @generated
+   */
+  void setRefinement(Refinement value);
 
-	/**
-	 * Returns the value of the '<em><b>Configuration Actor</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Configuration Actor</em>' attribute isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Configuration Actor</em>' attribute.
-	 * @see #isSetConfigurationActor()
-	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getActor_ConfigurationActor()
-	 * @model unsettable="true" required="true" changeable="false" volatile="true"
-	 * @generated
-	 */
-	boolean isConfigurationActor();
+  /**
+   * Returns the value of the '<em><b>Configuration Actor</b></em>' attribute. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Configuration Actor</em>' attribute isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Configuration Actor</em>' attribute.
+   * @see #isSetConfigurationActor()
+   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getActor_ConfigurationActor()
+   * @model unsettable="true" required="true" changeable="false" volatile="true"
+   * @generated
+   */
+  boolean isConfigurationActor();
 
-	/**
-	 * Returns whether the value of the '{@link org.ietr.preesm.experiment.model.pimm.Actor#isConfigurationActor <em>Configuration Actor</em>}' attribute is set.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return whether the value of the '<em>Configuration Actor</em>' attribute is set.
-	 * @see #isConfigurationActor()
-	 * @generated
-	 */
-	boolean isSetConfigurationActor();
-	
-	/**
-	 * Returns the value of the '<em><b>Memory Script Path</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Memory Script Path</em>' attribute isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Memory Script Path</em>' attribute.
-	 * @see #setMemoryScriptPath(IPath)
-	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getActor_MemoryScriptPath()
-	 * @model dataType="org.ietr.preesm.experiment.model.pimm.IPath"
-	 * @generated
-	 */
-	IPath getMemoryScriptPath();
+  /**
+   * Returns whether the value of the '{@link org.ietr.preesm.experiment.model.pimm.Actor#isConfigurationActor <em>Configuration Actor</em>}' attribute is set.
+   * <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @return whether the value of the '<em>Configuration Actor</em>' attribute is set.
+   * @see #isConfigurationActor()
+   * @generated
+   */
+  boolean isSetConfigurationActor();
 
-	/**
-	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Actor#getMemoryScriptPath <em>Memory Script Path</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Memory Script Path</em>' attribute.
-	 * @see #getMemoryScriptPath()
-	 * @generated
-	 */
-	void setMemoryScriptPath(IPath value);
+  /**
+   * Returns the value of the '<em><b>Memory Script Path</b></em>' attribute. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Memory Script Path</em>' attribute isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Memory Script Path</em>' attribute.
+   * @see #setMemoryScriptPath(IPath)
+   * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getActor_MemoryScriptPath()
+   * @model dataType="org.ietr.preesm.experiment.model.pimm.IPath"
+   * @generated
+   */
+  IPath getMemoryScriptPath();
 
-	/**
-	 * Test if the actor is a hierarchical one.
-	 * @return true, if it is.
-	 */
-	public boolean isHierarchical();
-	
-	/**
-	 * Get the graph from hierarchy.
-	 * @return The {@link PiGraph}
-	 */
-	public PiGraph getGraph();
+  /**
+   * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Actor#getMemoryScriptPath <em>Memory Script Path</em>}' attribute. <!-- begin-user-doc
+   * --> <!-- end-user-doc -->
+   *
+   * @param value
+   *          the new value of the '<em>Memory Script Path</em>' attribute.
+   * @see #getMemoryScriptPath()
+   * @generated
+   */
+  void setMemoryScriptPath(IPath value);
+
+  /**
+   * Test if the actor is a hierarchical one.
+   *
+   * @return true, if it is.
+   */
+  public boolean isHierarchical();
+
+  /**
+   * Get the graph from hierarchy.
+   *
+   * @return The {@link PiGraph}
+   */
+  public PiGraph getGraph();
 } // Actor

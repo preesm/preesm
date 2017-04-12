@@ -39,7 +39,6 @@ package org.ietr.preesm.mapper.abc.route;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.ietr.preesm.core.architecture.route.Route;
 import org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched;
 import org.ietr.preesm.mapper.abc.order.OrderManager;
@@ -47,88 +46,149 @@ import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGEdge;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
  * Routes a communication and creates the necessary communication vertices.
- * 
+ *
  * @author mpelcat
  */
 public abstract class AbstractCommunicationRouter {
 
-	/**
-	 * Several ways to simulate a communication depending on which Route is
-	 * taken into account.
-	 */
-	private Map<String, CommunicationRouterImplementer> implementers;
+  /**
+   * Several ways to simulate a communication depending on which Route is taken into account.
+   */
+  private final Map<String, CommunicationRouterImplementer> implementers;
 
-	/**
-	 * DAG with communication vertices
-	 */
-	protected MapperDAG implementation = null;
+  /** DAG with communication vertices. */
+  protected MapperDAG implementation = null;
 
-	/**
-	 * manager of the generated transfers scheduling
-	 */
-	protected IEdgeSched edgeScheduler = null;
+  /** manager of the generated transfers scheduling. */
+  protected IEdgeSched edgeScheduler = null;
 
-	/**
-	 * manager of the vertices order in general
-	 */
-	protected OrderManager orderManager = null;
+  /** manager of the vertices order in general. */
+  protected OrderManager orderManager = null;
 
-	public AbstractCommunicationRouter(MapperDAG implementation,
-			IEdgeSched edgeScheduler, OrderManager orderManager) {
-		super();
-		this.implementers = new HashMap<String, CommunicationRouterImplementer>();
-		setManagers(implementation, edgeScheduler, orderManager);
-	}
+  /**
+   * Instantiates a new abstract communication router.
+   *
+   * @param implementation
+   *          the implementation
+   * @param edgeScheduler
+   *          the edge scheduler
+   * @param orderManager
+   *          the order manager
+   */
+  public AbstractCommunicationRouter(final MapperDAG implementation, final IEdgeSched edgeScheduler,
+      final OrderManager orderManager) {
+    super();
+    this.implementers = new HashMap<>();
+    setManagers(implementation, edgeScheduler, orderManager);
+  }
 
-	protected void addImplementer(String name,
-			CommunicationRouterImplementer implementer) {
-		implementers.put(name, implementer);
-	}
+  /**
+   * Adds the implementer.
+   *
+   * @param name
+   *          the name
+   * @param implementer
+   *          the implementer
+   */
+  protected void addImplementer(final String name,
+      final CommunicationRouterImplementer implementer) {
+    this.implementers.put(name, implementer);
+  }
 
-	protected CommunicationRouterImplementer getImplementer(String name) {
-		return implementers.get(name);
-	}
+  /**
+   * Gets the implementer.
+   *
+   * @param name
+   *          the name
+   * @return the implementer
+   */
+  protected CommunicationRouterImplementer getImplementer(final String name) {
+    return this.implementers.get(name);
+  }
 
-	public MapperDAG getImplementation() {
-		return implementation;
-	}
+  /**
+   * Gets the implementation.
+   *
+   * @return the implementation
+   */
+  public MapperDAG getImplementation() {
+    return this.implementation;
+  }
 
-	public IEdgeSched getEdgeScheduler() {
-		return edgeScheduler;
-	}
+  /**
+   * Gets the edge scheduler.
+   *
+   * @return the edge scheduler
+   */
+  public IEdgeSched getEdgeScheduler() {
+    return this.edgeScheduler;
+  }
 
-	public OrderManager getOrderManager() {
-		return orderManager;
-	}
+  /**
+   * Gets the order manager.
+   *
+   * @return the order manager
+   */
+  public OrderManager getOrderManager() {
+    return this.orderManager;
+  }
 
-	public void setManagers(MapperDAG implementation, IEdgeSched edgeScheduler,
-			OrderManager orderManager) {
-		this.implementation = implementation;
-		this.edgeScheduler = edgeScheduler;
-		this.orderManager = orderManager;
-	}
+  /**
+   * Sets the managers.
+   *
+   * @param implementation
+   *          the implementation
+   * @param edgeScheduler
+   *          the edge scheduler
+   * @param orderManager
+   *          the order manager
+   */
+  public void setManagers(final MapperDAG implementation, final IEdgeSched edgeScheduler,
+      final OrderManager orderManager) {
+    this.implementation = implementation;
+    this.edgeScheduler = edgeScheduler;
+    this.orderManager = orderManager;
+  }
 
-	/**
-	 * adds all the necessary communication vertices with the given type
-	 */
-	public abstract void routeAll(MapperDAG implementation, Integer type);
+  /**
+   * adds all the necessary communication vertices with the given type.
+   *
+   * @param implementation
+   *          the implementation
+   * @param type
+   *          the type
+   */
+  public abstract void routeAll(MapperDAG implementation, Integer type);
 
-	/**
-	 * adds all the necessary communication vertices with the given type
-	 * affected by the mapping of newVertex
-	 */
-	public abstract void routeNewVertex(MapperDAGVertex newVertex,
-			List<Integer> types);
+  /**
+   * adds all the necessary communication vertices with the given type affected by the mapping of
+   * newVertex.
+   *
+   * @param newVertex
+   *          the new vertex
+   * @param types
+   *          the types
+   */
+  public abstract void routeNewVertex(MapperDAGVertex newVertex, List<Integer> types);
 
-	/**
-	 * Evaluates the cost of a routed edge
-	 */
-	public abstract long evaluateTransferCost(MapperDAGEdge edge);
+  /**
+   * Evaluates the cost of a routed edge.
+   *
+   * @param edge
+   *          the edge
+   * @return the long
+   */
+  public abstract long evaluateTransferCost(MapperDAGEdge edge);
 
-	/**
-	 * Gets the route of a routed edge
-	 */
-	public abstract Route getRoute(MapperDAGEdge edge);
+  /**
+   * Gets the route of a routed edge.
+   *
+   * @param edge
+   *          the edge
+   * @return the route
+   */
+  public abstract Route getRoute(MapperDAGEdge edge);
 }

@@ -54,15 +54,13 @@ import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> An implementation of the model object '
- * <em><b>Expression</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Expression</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>
- * {@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl#getString
- * <em>String</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl#getString <em>String</em>}</li>
  * </ul>
  * </p>
  *
@@ -70,216 +68,231 @@ import org.nfunk.jep.ParseException;
  */
 public class ExpressionImpl extends EObjectImpl implements Expression {
 
-	/**
-	 * The default value of the '{@link #getString() <em>String</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @see #getString()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String STRING_EDEFAULT = "0";
-	/**
-	 * The cached value of the '{@link #getString() <em>String</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @see #getString()
-	 * @generated
-	 * @ordered
-	 */
-	protected String string = STRING_EDEFAULT;
+  /**
+   * The default value of the '{@link #getString() <em>String</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getString()
+   * @generated
+   * @ordered
+   */
+  protected static final String STRING_EDEFAULT = "0";
+  /**
+   * The cached value of the '{@link #getString() <em>String</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getString()
+   * @generated
+   * @ordered
+   */
+  protected String              string          = ExpressionImpl.STRING_EDEFAULT;
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated
-	 */
-	protected ExpressionImpl() {
-		super();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @generated
+   */
+  protected ExpressionImpl() {
+    super();
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return PiMMPackage.Literals.EXPRESSION;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return PiMMPackage.Literals.EXPRESSION;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated
-	 */
-	@Override
-	public String getString() {
-		return string;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the string
+   * @generated
+   */
+  @Override
+  public String getString() {
+    return this.string;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated
-	 */
-	@Override
-	public void setString(String newString) {
-		String oldString = string;
-		string = newString;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					PiMMPackage.EXPRESSION__STRING, oldString, string));
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newString
+   *          the new string
+   * @generated
+   */
+  @Override
+  public void setString(final String newString) {
+    final String oldString = this.string;
+    this.string = newString;
+    if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.EXPRESSION__STRING, oldString, this.string));
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc --> Evaluate expression of the class for which it is
-	 * called. <!-- end-user-doc -->
-	 *
-	 * @return the result of the expression evaluated as an int.
-	 */
-	@Override
-	public String evaluate() {
-		String allExpression = getString();
-		JEP jep = new JEP();
+  /**
+   * <!-- begin-user-doc --> Evaluate expression of the class for which it is called. <!-- end-user-doc -->
+   *
+   * @return the result of the expression evaluated as an int.
+   */
+  @Override
+  public String evaluate() {
+    final String allExpression = getString();
+    final JEP jep = new JEP();
 
-		Parameterizable parameterizableObj;
-		if (this.eContainer() instanceof Parameterizable) {
-			parameterizableObj = (Parameterizable) this.eContainer();
-		} else if (this.eContainer().eContainer() instanceof Parameterizable) {
-			parameterizableObj = (Parameterizable) this.eContainer()
-					.eContainer();
-		} else {
-			return "Neither a child of Parameterizable nor a child of a child of Parameterizable";
-		}
+    Parameterizable parameterizableObj;
+    if (eContainer() instanceof Parameterizable) {
+      parameterizableObj = (Parameterizable) eContainer();
+    } else if (eContainer().eContainer() instanceof Parameterizable) {
+      parameterizableObj = (Parameterizable) eContainer().eContainer();
+    } else {
+      return "Neither a child of Parameterizable nor a child of a child of Parameterizable";
+    }
 
-		try {
-			for (ConfigInputPort port : parameterizableObj
-					.getConfigInputPorts()) {
-				if (port.getIncomingDependency() != null
-						&& port.getIncomingDependency().getSetter() instanceof Parameter) {
-					Parameter p = (Parameter) port.getIncomingDependency()
-							.getSetter();
+    try {
+      for (final ConfigInputPort port : parameterizableObj.getConfigInputPorts()) {
+        if ((port.getIncomingDependency() != null) && (port.getIncomingDependency().getSetter() instanceof Parameter)) {
+          final Parameter p = (Parameter) port.getIncomingDependency().getSetter();
 
-					String parameterName;
-					if (parameterizableObj instanceof Parameter
-							|| parameterizableObj instanceof Delay
-							|| parameterizableObj instanceof InterfaceActor)
-						parameterName = p.getName();
-					else
-						parameterName = port.getName();
+          String parameterName;
+          if ((parameterizableObj instanceof Parameter) || (parameterizableObj instanceof Delay) || (parameterizableObj instanceof InterfaceActor)) {
+            parameterName = p.getName();
+          } else {
+            parameterName = port.getName();
+          }
 
-					String evaluatedParam = p.getExpression().evaluate();
+          final String evaluatedParam = p.getExpression().evaluate();
 
-					jep.addVariable(parameterName,
-							Double.parseDouble(evaluatedParam));
-				}
-			}
+          jep.addVariable(parameterName, Double.parseDouble(evaluatedParam));
+        }
+      }
 
-			final Node parse = jep.parse(allExpression);
+      final Node parse = jep.parse(allExpression);
 
-			final Object result = jep.evaluate(parse);
-			String evaluation;
+      final Object result = jep.evaluate(parse);
+      String evaluation;
 
-			/* Display an Integer as it:
-			 *  1 instead of 1.0
-			 *  (Useful to parse them then) */
-			if(result instanceof Double && (Double)result % 1 == 0){
-				evaluation = Integer.toString((int)(double)result);
-			}else{
-				evaluation = result.toString();
-			}
-			return evaluation;
+      /*
+       * Display an Integer as it: 1 instead of 1.0 (Useful to parse them then)
+       */
+      if ((result instanceof Double) && (((Double) result % 1) == 0)) {
+        evaluation = Integer.toString((int) (double) result);
+      } else {
+        evaluation = result.toString();
+      }
+      return evaluation;
 
-		} catch (ParseException e) {
-			return "Parsing Error, check expression syntax" + " : "
-					+ allExpression;
-		} catch (NumberFormatException e) {
-			return "Evaluation Error, check parameter dependencies" + " : "
-					+ allExpression;
-		}
+    } catch (final ParseException e) {
+      return "Parsing Error, check expression syntax" + " : " + allExpression;
+    } catch (final NumberFormatException e) {
+      return "Evaluation Error, check parameter dependencies" + " : " + allExpression;
+    }
 
-	}
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated
-	 */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-		case PiMMPackage.EXPRESSION__STRING:
-			return getString();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param resolve
+   *          the resolve
+   * @param coreType
+   *          the core type
+   * @return the object
+   * @generated
+   */
+  @Override
+  public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
+    switch (featureID) {
+      case PiMMPackage.EXPRESSION__STRING:
+        return getString();
+    }
+    return super.eGet(featureID, resolve, coreType);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated
-	 */
-	@Override
-	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-		case PiMMPackage.EXPRESSION__STRING:
-			setString((String) newValue);
-			return;
-		}
-		super.eSet(featureID, newValue);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param newValue
+   *          the new value
+   * @generated
+   */
+  @Override
+  public void eSet(final int featureID, final Object newValue) {
+    switch (featureID) {
+      case PiMMPackage.EXPRESSION__STRING:
+        setString((String) newValue);
+        return;
+    }
+    super.eSet(featureID, newValue);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated
-	 */
-	@Override
-	public void eUnset(int featureID) {
-		switch (featureID) {
-		case PiMMPackage.EXPRESSION__STRING:
-			setString(STRING_EDEFAULT);
-			return;
-		}
-		super.eUnset(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @generated
+   */
+  @Override
+  public void eUnset(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.EXPRESSION__STRING:
+        setString(ExpressionImpl.STRING_EDEFAULT);
+        return;
+    }
+    super.eUnset(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated
-	 */
-	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-		case PiMMPackage.EXPRESSION__STRING:
-			return STRING_EDEFAULT == null ? string != null : !STRING_EDEFAULT
-					.equals(string);
-		}
-		return super.eIsSet(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @return true, if successful
+   * @generated
+   */
+  @Override
+  public boolean eIsSet(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.EXPRESSION__STRING:
+        return ExpressionImpl.STRING_EDEFAULT == null ? this.string != null : !ExpressionImpl.STRING_EDEFAULT.equals(this.string);
+    }
+    return super.eIsSet(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated
-	 */
-	@Override
-	public String toString() {
-		if (eIsProxy())
-			return super.toString();
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the string
+   * @generated
+   */
+  @Override
+  public String toString() {
+    if (eIsProxy()) {
+      return super.toString();
+    }
 
-		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (string: ");
-		result.append(string);
-		result.append(')');
-		return result.toString();
-	}
+    final StringBuffer result = new StringBuffer(super.toString());
+    result.append(" (string: ");
+    result.append(this.string);
+    result.append(')');
+    return result.toString();
+  }
 
-	@Override
-	public void accept(PiMMVisitor v) {
-		v.visitExpression(this);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
+   */
+  @Override
+  public void accept(final PiMMVisitor v) {
+    v.visitExpression(this);
+  }
 
 } // ExpressionImpl

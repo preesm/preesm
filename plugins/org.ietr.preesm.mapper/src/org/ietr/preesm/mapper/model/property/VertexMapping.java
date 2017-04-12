@@ -42,89 +42,106 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.architecture.util.DesignTools;
 import org.ietr.preesm.mapper.model.MapperDAG;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * Properties of a mapped vertex. Can be shared by multiple vertices that have
- * the same relative constraints
- * 
+ * Properties of a mapped vertex. Can be shared by multiple vertices that have the same relative
+ * constraints
+ *
  * @author mpelcat
  */
 public class VertexMapping extends GroupProperty {
 
-	public VertexMapping() {
-		super();
-	}
+  /**
+   * Instantiates a new vertex mapping.
+   */
+  public VertexMapping() {
+    super();
+  }
 
-	@Override
-	public VertexMapping clone() {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.mapper.model.property.GroupProperty#clone()
+   */
+  @Override
+  public VertexMapping clone() {
 
-		VertexMapping property = (VertexMapping) super.clone();
-		return property;
-	}
+    final VertexMapping property = (VertexMapping) super.clone();
+    return property;
+  }
 
-	/**
-	 * Returns a list of components, computed from initial and relative
-	 * constraints. If the boolean considerGroupMapping is true, one mapped
-	 * vertex in the group causes the return of its effective operator.
-	 */
-	public List<ComponentInstance> getCandidateComponents(
-			MapperDAGVertex vertex, boolean considerGroupMapping) {
+  /**
+   * Returns a list of components, computed from initial and relative constraints. If the boolean
+   * considerGroupMapping is true, one mapped vertex in the group causes the return of its effective
+   * operator.
+   *
+   * @param vertex
+   *          the vertex
+   * @param considerGroupMapping
+   *          the consider group mapping
+   * @return the candidate components
+   */
+  public List<ComponentInstance> getCandidateComponents(final MapperDAGVertex vertex,
+      final boolean considerGroupMapping) {
 
-		List<ComponentInstance> operators = new ArrayList<ComponentInstance>();
-		MapperDAG dag = (MapperDAG) vertex.getBase();
+    final List<ComponentInstance> operators = new ArrayList<>();
+    final MapperDAG dag = (MapperDAG) vertex.getBase();
 
-		// Gets all vertices corresponding to the relative constraint group
-		List<MapperDAGVertex> relatedVertices = getVertices(dag);
+    // Gets all vertices corresponding to the relative constraint group
+    final List<MapperDAGVertex> relatedVertices = getVertices(dag);
 
-		if (relatedVertices.size() < 1) {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
-					"Relative constraint with no vertex.");
+    if (relatedVertices.size() < 1) {
+      WorkflowLogger.getLogger().log(Level.SEVERE, "Relative constraint with no vertex.");
 
-			return operators;
-		}
+      return operators;
+    }
 
-		MapperDAGVertex firstVertex = relatedVertices.get(0);
-		
-		// Adding to the list all candidate components of the first vertex
-		operators.addAll(firstVertex.getInit().getInitialOperatorList());
+    final MapperDAGVertex firstVertex = relatedVertices.get(0);
 
-		// computing intersection with other initial operator lists
-		for (MapperDAGVertex locVertex : relatedVertices) {
-			DesignTools.retainAll(operators, locVertex.getInit()
-					.getInitialOperatorList());
-			
-		}
-		
-		// If we consider group mapping and a vertex in the group is mapped, we keep its operator only
-		if(considerGroupMapping){
-			for (MapperDAGVertex locVertex : relatedVertices) {
-				ComponentInstance op = locVertex.getEffectiveComponent();
-				if(op != null){
-					Set<ComponentInstance> effectiveOp = new HashSet<ComponentInstance>();
-					effectiveOp.add(op);
-					operators.retainAll(effectiveOp);
-				}
-			}
-		}
+    // Adding to the list all candidate components of the first vertex
+    operators.addAll(firstVertex.getInit().getInitialOperatorList());
 
-		if (operators.isEmpty()) {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
-					"Relative constraint with no operator." + relatedVertices);
-		}
+    // computing intersection with other initial operator lists
+    for (final MapperDAGVertex locVertex : relatedVertices) {
+      DesignTools.retainAll(operators, locVertex.getInit().getInitialOperatorList());
 
-		return operators;
-	}
+    }
 
-	@Override
-	public String toString() {
-		// TODO Auto-generated method stub
-		return "<" + super.toString() + ">";
-	}
+    // If we consider group mapping and a vertex in the group is mapped, we keep its operator only
+    if (considerGroupMapping) {
+      for (final MapperDAGVertex locVertex : relatedVertices) {
+        final ComponentInstance op = locVertex.getEffectiveComponent();
+        if (op != null) {
+          final Set<ComponentInstance> effectiveOp = new HashSet<>();
+          effectiveOp.add(op);
+          operators.retainAll(effectiveOp);
+        }
+      }
+    }
+
+    if (operators.isEmpty()) {
+      WorkflowLogger.getLogger().log(Level.SEVERE,
+          "Relative constraint with no operator." + relatedVertices);
+    }
+
+    return operators;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.mapper.model.property.GroupProperty#toString()
+   */
+  @Override
+  public String toString() {
+    // TODO Auto-generated method stub
+    return "<" + super.toString() + ">";
+  }
 
 }

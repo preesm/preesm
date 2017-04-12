@@ -42,202 +42,251 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> An implementation of the model object '
- * <em><b>Interface Vertex</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Interface Vertex</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#getGraphPort <em>Graph Port</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#getKind <em>Kind</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#getGraphPort <em>Graph Port</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#getKind <em>Kind</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class InterfaceActorImpl extends AbstractActorImpl implements
-		InterfaceActor {
-	/**
-	 * The cached value of the '{@link #getGraphPort() <em>Graph Port</em>}' reference.
-	 * <!-- begin-user-doc --> This {@link Port} is the corresponding
-	 * {@link Port} of the {@link PiGraph} containing this {@link Interface}
-	 * instance. <!-- end-user-doc -->
-	 * @see #getGraphPort()
-	 * @generated
-	 * @ordered
-	 */
-	protected Port graphPort;
+public class InterfaceActorImpl extends AbstractActorImpl implements InterfaceActor {
+  /**
+   * The cached value of the '{@link #getGraphPort() <em>Graph Port</em>}' reference. <!-- begin-user-doc --> This {@link Port} is the corresponding
+   * {@link Port} of the {@link PiGraph} containing this {@link Interface} instance. <!-- end-user-doc -->
+   *
+   * @see #getGraphPort()
+   * @generated
+   * @ordered
+   */
+  protected Port graphPort;
 
-	/**
-	 * The default value of the '{@link #getKind() <em>Kind</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @see #getKind()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String KIND_EDEFAULT = null;
+  /**
+   * The default value of the '{@link #getKind() <em>Kind</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getKind()
+   * @generated
+   * @ordered
+   */
+  protected static final String KIND_EDEFAULT = null;
 
-	/**
-	 * The cached value of the '{@link #getKind() <em>Kind</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @see #getKind()
-	 * @generated
-	 * @ordered
-	 */
-	protected String kind = KIND_EDEFAULT;
+  /**
+   * The cached value of the '{@link #getKind() <em>Kind</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getKind()
+   * @generated
+   * @ordered
+   */
+  protected String kind = InterfaceActorImpl.KIND_EDEFAULT;
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected InterfaceActorImpl() {
-		super();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @generated
+   */
+  protected InterfaceActorImpl() {
+    super();
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	public Port basicGetGraphPort() {
-		return graphPort;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the port
+   * @generated
+   */
+  public Port basicGetGraphPort() {
+    return this.graphPort;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-			case PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT:
-				if (resolve) return getGraphPort();
-				return basicGetGraphPort();
-			case PiMMPackage.INTERFACE_ACTOR__KIND:
-				return getKind();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param resolve
+   *          the resolve
+   * @param coreType
+   *          the core type
+   * @return the object
+   * @generated
+   */
+  @Override
+  public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
+    switch (featureID) {
+      case PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT:
+        if (resolve) {
+          return getGraphPort();
+        }
+        return basicGetGraphPort();
+      case PiMMPackage.INTERFACE_ACTOR__KIND:
+        return getKind();
+    }
+    return super.eGet(featureID, resolve, coreType);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT:
-				return graphPort != null;
-			case PiMMPackage.INTERFACE_ACTOR__KIND:
-				return KIND_EDEFAULT == null ? kind != null : !KIND_EDEFAULT.equals(kind);
-		}
-		return super.eIsSet(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @return true, if successful
+   * @generated
+   */
+  @Override
+  public boolean eIsSet(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT:
+        return this.graphPort != null;
+      case PiMMPackage.INTERFACE_ACTOR__KIND:
+        return InterfaceActorImpl.KIND_EDEFAULT == null ? this.kind != null : !InterfaceActorImpl.KIND_EDEFAULT.equals(this.kind);
+    }
+    return super.eIsSet(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-			case PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT:
-				setGraphPort((Port)newValue);
-				return;
-		}
-		super.eSet(featureID, newValue);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param newValue
+   *          the new value
+   * @generated
+   */
+  @Override
+  public void eSet(final int featureID, final Object newValue) {
+    switch (featureID) {
+      case PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT:
+        setGraphPort((Port) newValue);
+        return;
+    }
+    super.eSet(featureID, newValue);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return PiMMPackage.Literals.INTERFACE_ACTOR;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return PiMMPackage.Literals.INTERFACE_ACTOR;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void eUnset(int featureID) {
-		switch (featureID) {
-			case PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT:
-				setGraphPort((Port)null);
-				return;
-		}
-		super.eUnset(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @generated
+   */
+  @Override
+  public void eUnset(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT:
+        setGraphPort((Port) null);
+        return;
+    }
+    super.eUnset(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Port getGraphPort() {
-		if (graphPort != null && graphPort.eIsProxy()) {
-			InternalEObject oldGraphPort = (InternalEObject)graphPort;
-			graphPort = (Port)eResolveProxy(oldGraphPort);
-			if (graphPort != oldGraphPort) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT, oldGraphPort, graphPort));
-			}
-		}
-		return graphPort;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the graph port
+   * @generated
+   */
+  @Override
+  public Port getGraphPort() {
+    if ((this.graphPort != null) && this.graphPort.eIsProxy()) {
+      final InternalEObject oldGraphPort = (InternalEObject) this.graphPort;
+      this.graphPort = (Port) eResolveProxy(oldGraphPort);
+      if (this.graphPort != oldGraphPort) {
+        if (eNotificationRequired()) {
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT, oldGraphPort, this.graphPort));
+        }
+      }
+    }
+    return this.graphPort;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public String getKind() {
-		return kind;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the kind
+   * @generated
+   */
+  @Override
+  public String getKind() {
+    return this.kind;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setGraphPort(Port newGraphPort) {
-		Port oldGraphPort = graphPort;
-		graphPort = newGraphPort;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT, oldGraphPort, graphPort));
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newGraphPort
+   *          the new graph port
+   * @generated
+   */
+  @Override
+  public void setGraphPort(final Port newGraphPort) {
+    final Port oldGraphPort = this.graphPort;
+    this.graphPort = newGraphPort;
+    if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.INTERFACE_ACTOR__GRAPH_PORT, oldGraphPort, this.graphPort));
+    }
+  }
 
-	@Override
-	public void setName(String newName) {
-		super.setName(newName);
-		if (this.getGraphPort() != null) {
-			this.getGraphPort().setName(newName);
-		}
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#setName(java.lang.String)
+   */
+  @Override
+  public void setName(final String newName) {
+    super.setName(newName);
+    if (getGraphPort() != null) {
+      getGraphPort().setName(newName);
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public String toString() {
-		if (eIsProxy()) return super.toString();
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the string
+   * @generated
+   */
+  @Override
+  public String toString() {
+    if (eIsProxy()) {
+      return super.toString();
+    }
 
-		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (kind: ");
-		result.append(kind);
-		result.append(')');
-		return result.toString();
-	}
+    final StringBuffer result = new StringBuffer(super.toString());
+    result.append(" (kind: ");
+    result.append(this.kind);
+    result.append(')');
+    return result.toString();
+  }
 
-	@Override
-	public void accept(PiMMVisitor v) {
-		v.visitInterfaceActor(this);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
+   */
+  @Override
+  public void accept(final PiMMVisitor v) {
+    v.visitInterfaceActor(this);
+  }
 
 } // InterfaceVertexImpl

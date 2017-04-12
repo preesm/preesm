@@ -48,11 +48,9 @@ import java.awt.event.WindowEvent;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.Semaphore;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.layout.FillLayout;
@@ -73,254 +71,288 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
+// TODO: Auto-generated Javadoc
 /**
  * Plots the best cost found versus scheduling time. Can be latency or else
  *
  * @author pmenuet
  */
-public class BestCostPlotter extends ApplicationFrame implements
-		ActionListener, Observer {
+public class BestCostPlotter extends ApplicationFrame implements ActionListener, Observer {
 
-	private static final long serialVersionUID = -6939533490316310961L;
+  /** The Constant serialVersionUID. */
+  private static final long serialVersionUID = -6939533490316310961L;
 
-	/** The number of subplots. */
-	private int subplotCount = 1;
-	private int actionType = 0;
+  /** The number of subplots. */
+  private int subplotCount = 1;
 
-	/** The datasets. */
-	private TimeSeriesCollection[] datasets;
+  /** The action type. */
+  private int actionType = 0;
 
-	/** The most recent value added to series 1. */
-	private double[] lastValue = new double[subplotCount];
+  /** The datasets. */
+  private TimeSeriesCollection[] datasets;
 
-	/** Display panel. */
-	private ChartPanel chartPanel;
+  /** The most recent value added to series 1. */
+  private final double[] lastValue = new double[this.subplotCount];
 
-	/**
-	 * Semaphore de pause
-	 */
-	private Semaphore pauseSemaphore = null;
+  /** Display panel. */
+  private final ChartPanel chartPanel;
 
-	/**
-	 * Constructs the latency plotter
-	 *
-	 * @param title
-	 *            the frame title.
-	 */
-	public BestCostPlotter(final String title, Semaphore pauseSemaphore) {
+  /** Semaphore de pause. */
+  private Semaphore pauseSemaphore = null;
 
-		super(title);
+  /**
+   * Constructs the latency plotter.
+   *
+   * @param title
+   *          the frame title.
+   * @param pauseSemaphore
+   *          the pause semaphore
+   */
+  public BestCostPlotter(final String title, final Semaphore pauseSemaphore) {
 
-		JFreeChart chart = createChart(title);
-		final JPanel content = new JPanel(new BorderLayout());
+    super(title);
 
-		chartPanel = new ChartPanel(chart);
-		content.add(chartPanel);
+    final JFreeChart chart = createChart(title);
+    final JPanel content = new JPanel(new BorderLayout());
 
-		final JPanel buttonPanel = new JPanel(new FlowLayout());
+    this.chartPanel = new ChartPanel(chart);
+    content.add(this.chartPanel);
 
-		final JButton buttonPause = new JButton("Pause");
-		buttonPause.setActionCommand("pause");
-		buttonPause.addActionListener(this);
-		buttonPanel.add(buttonPause);
+    final JPanel buttonPanel = new JPanel(new FlowLayout());
 
-		final JButton buttonAll = new JButton("Stop");
-		buttonAll.setActionCommand("ADD_ALL");
-		buttonAll.addActionListener(this);
-		buttonPanel.add(buttonAll);
+    final JButton buttonPause = new JButton("Pause");
+    buttonPause.setActionCommand("pause");
+    buttonPause.addActionListener(this);
+    buttonPanel.add(buttonPause);
 
-		final JButton buttonLecture = new JButton("Resume");
-		buttonLecture.setActionCommand("Resume");
-		buttonLecture.addActionListener(this);
-		buttonPanel.add(buttonLecture);
+    final JButton buttonAll = new JButton("Stop");
+    buttonAll.setActionCommand("ADD_ALL");
+    buttonAll.addActionListener(this);
+    buttonPanel.add(buttonAll);
 
-		content.add(buttonPanel, BorderLayout.SOUTH);
-		chartPanel.setPreferredSize(new java.awt.Dimension(500, 470));
-		chartPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		setContentPane(content);
+    final JButton buttonLecture = new JButton("Resume");
+    buttonLecture.setActionCommand("Resume");
+    buttonLecture.addActionListener(this);
+    buttonPanel.add(buttonLecture);
 
-		this.pauseSemaphore = pauseSemaphore;
-	}
+    content.add(buttonPanel, BorderLayout.SOUTH);
+    this.chartPanel.setPreferredSize(new java.awt.Dimension(500, 470));
+    this.chartPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    setContentPane(content);
 
-	/**
-	 * Creates a chart.
-	 *
-	 * @return A chart.
-	 */
-	private JFreeChart createChart(String title) {
+    this.pauseSemaphore = pauseSemaphore;
+  }
 
-		final CombinedDomainXYPlot plot = new CombinedDomainXYPlot(
-				new DateAxis("Time"));
-		this.datasets = new TimeSeriesCollection[subplotCount];
+  /**
+   * Creates a chart.
+   *
+   * @param title
+   *          the title
+   * @return A chart.
+   */
+  private JFreeChart createChart(final String title) {
 
-		for (int i = 0; i < subplotCount; i++) {
-			this.lastValue[i] = 100.0;
-			final TimeSeries series = new TimeSeries("Real Time");
-			this.datasets[i] = new TimeSeriesCollection(series);
-			final NumberAxis rangeAxis = new NumberAxis("Schedule");
-			rangeAxis.setAutoRangeIncludesZero(false);
-			final XYPlot subplot = new XYPlot(this.datasets[i], null,
-					rangeAxis, new XYLineAndShapeRenderer());
+    final CombinedDomainXYPlot plot = new CombinedDomainXYPlot(new DateAxis("Time"));
+    this.datasets = new TimeSeriesCollection[this.subplotCount];
 
-			subplot.setBackgroundPaint(Color.white);
-			subplot.setDomainGridlinePaint(Color.lightGray);
-			subplot.setRangeGridlinePaint(Color.lightGray);
-			plot.add(subplot);
-		}
+    for (int i = 0; i < this.subplotCount; i++) {
+      this.lastValue[i] = 100.0;
+      final TimeSeries series = new TimeSeries("Real Time");
+      this.datasets[i] = new TimeSeriesCollection(series);
+      final NumberAxis rangeAxis = new NumberAxis("Schedule");
+      rangeAxis.setAutoRangeIncludesZero(false);
+      final XYPlot subplot = new XYPlot(this.datasets[i], null, rangeAxis,
+          new XYLineAndShapeRenderer());
 
-		final JFreeChart chart = new JFreeChart(title, plot);
+      subplot.setBackgroundPaint(Color.white);
+      subplot.setDomainGridlinePaint(Color.lightGray);
+      subplot.setRangeGridlinePaint(Color.lightGray);
+      plot.add(subplot);
+    }
 
-		chart.removeLegend();
-		// chart.getLegend().setPosition(RectangleEdge.BOTTOM);
+    final JFreeChart chart = new JFreeChart(title, plot);
 
-		chart.setBorderPaint(Color.lightGray);
-		chart.setBorderVisible(true);
+    chart.removeLegend();
+    // chart.getLegend().setPosition(RectangleEdge.BOTTOM);
 
-		Paint p = GanttPlotter.getBackgroundColorGradient();
-		chart.setBackgroundPaint(p);
+    chart.setBorderPaint(Color.lightGray);
+    chart.setBorderVisible(true);
 
-		plot.setBackgroundPaint(Color.white);
-		plot.setDomainGridlinePaint(Color.white);
-		plot.setRangeGridlinePaint(Color.black);
+    final Paint p = GanttPlotter.getBackgroundColorGradient();
+    chart.setBackgroundPaint(p);
 
-		final ValueAxis axis = plot.getDomainAxis();
-		axis.setAutoRange(true);
+    plot.setBackgroundPaint(Color.white);
+    plot.setDomainGridlinePaint(Color.white);
+    plot.setRangeGridlinePaint(Color.black);
 
-		return chart;
+    final ValueAxis axis = plot.getDomainAxis();
+    axis.setAutoRange(true);
 
-	}
+    return chart;
 
-	/**
-	 * Handles a click on the button and perform the wanted action.
-	 *
-	 * @param e
-	 *            the action event.
-	 */
-	@Override
-	public void actionPerformed(final ActionEvent e) {
+  }
 
-		for (int i = 0; i < subplotCount; i++) {
-			if (e.getActionCommand().endsWith(String.valueOf(i))) {
-				// final Millisecond now = new Millisecond();
-				// System.out.println("Now = " + now.toString());
-				this.lastValue[i] = this.lastValue[i]
-						* (0.90 + 0.2 * Math.random());
-				this.datasets[i].getSeries(0).add(new Millisecond(),
-						this.lastValue[i]);
-			}
-		}
+  /**
+   * Handles a click on the button and perform the wanted action.
+   *
+   * @param e
+   *          the action event.
+   */
+  @Override
+  public void actionPerformed(final ActionEvent e) {
 
-		if (e.getActionCommand().equals("pause")) {
+    for (int i = 0; i < this.subplotCount; i++) {
+      if (e.getActionCommand().endsWith(String.valueOf(i))) {
+        // final Millisecond now = new Millisecond();
+        // System.out.println("Now = " + now.toString());
+        this.lastValue[i] = this.lastValue[i] * (0.90 + (0.2 * Math.random()));
+        this.datasets[i].getSeries(0).add(new Millisecond(), this.lastValue[i]);
+      }
+    }
 
-			this.setActionType(2);
+    if (e.getActionCommand().equals("pause")) {
 
-		}
+      setActionType(2);
 
-		if (e.getActionCommand().equals("ADD_ALL")) {
-			this.setActionType(1);
-		}
+    }
 
-		if (e.getActionCommand().equals("Lecture")) {
-			this.setActionType(0);
-		}
-	}
+    if (e.getActionCommand().equals("ADD_ALL")) {
+      setActionType(1);
+    }
 
-	@Override
-	public void update(Observable o, Object arg) {
+    if (e.getActionCommand().equals("Lecture")) {
+      setActionType(0);
+    }
+  }
 
-		// FAST
-		if (o instanceof FastAlgorithm) {
-			FastAlgorithm fast = (FastAlgorithm) o;
-			fast.countObservers();
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
+   */
+  @Override
+  public void update(final Observable o, final Object arg) {
 
-			if (arg instanceof Long) {
+    // FAST
+    if (o instanceof FastAlgorithm) {
+      final FastAlgorithm fast = (FastAlgorithm) o;
+      fast.countObservers();
 
-				int i = 0;
-				// final Millisecond now = new Millisecond();
-				// System.out.println("Now = " + now.toString());
-				this.lastValue[i] = ((Long) arg).doubleValue();
+      if (arg instanceof Long) {
 
-				Millisecond milli = new Millisecond();
+        final int i = 0;
+        // final Millisecond now = new Millisecond();
+        // System.out.println("Now = " + now.toString());
+        this.lastValue[i] = ((Long) arg).doubleValue();
 
-				this.datasets[i].getSeries(0).addOrUpdate(milli,
-						this.lastValue[i]);
+        final Millisecond milli = new Millisecond();
 
-			}
-		}
+        this.datasets[i].getSeries(0).addOrUpdate(milli, this.lastValue[i]);
 
-		// PFAST
-		if (o instanceof PFastAlgorithm) {
-			PFastAlgorithm pfast = (PFastAlgorithm) o;
-			pfast.countObservers();
+      }
+    }
 
-			if (arg instanceof Long) {
+    // PFAST
+    if (o instanceof PFastAlgorithm) {
+      final PFastAlgorithm pfast = (PFastAlgorithm) o;
+      pfast.countObservers();
 
-				int i = 0;
-				// final Millisecond now = new Millisecond();
-				// System.out.println("Now = " + now.toString());
-				this.lastValue[i] = ((Long) arg).doubleValue();
-				this.datasets[i].getSeries(0).addOrUpdate(new Millisecond(),
-						this.lastValue[i]);
+      if (arg instanceof Long) {
 
-			}
-		}
+        final int i = 0;
+        // final Millisecond now = new Millisecond();
+        // System.out.println("Now = " + now.toString());
+        this.lastValue[i] = ((Long) arg).doubleValue();
+        this.datasets[i].getSeries(0).addOrUpdate(new Millisecond(), this.lastValue[i]);
 
-	}
+      }
+    }
 
-	/**
-	 * Getters and setters
-	 */
+  }
 
-	public int getSubplotCount() {
-		return subplotCount;
-	}
+  /**
+   * Getters and setters.
+   *
+   * @return the subplot count
+   */
 
-	public int getActionType() {
-		return actionType;
-	}
+  public int getSubplotCount() {
+    return this.subplotCount;
+  }
 
-	public void setActionType(int actionType) {
-		this.actionType = actionType;
+  /**
+   * Gets the action type.
+   *
+   * @return the action type
+   */
+  public int getActionType() {
+    return this.actionType;
+  }
 
-		if (pauseSemaphore != null) {
-			if (actionType == 2) {
-				pauseSemaphore.tryAcquire();
-			} else {
-				pauseSemaphore.release();
-			}
-		}
-	}
+  /**
+   * Sets the action type.
+   *
+   * @param actionType
+   *          the new action type
+   */
+  public void setActionType(final int actionType) {
+    this.actionType = actionType;
 
-	public void setSUBPLOT_COUNT(int subplot_count) {
-		subplotCount = subplot_count;
-	}
+    if (this.pauseSemaphore != null) {
+      if (actionType == 2) {
+        this.pauseSemaphore.tryAcquire();
+      } else {
+        this.pauseSemaphore.release();
+      }
+    }
+  }
 
-	@Override
-	public void windowClosing(WindowEvent event) {
-		if (event.equals(WindowEvent.WINDOW_CLOSING)) {
+  /**
+   * Sets the subplot count.
+   *
+   * @param subplot_count
+   *          the new subplot count
+   */
+  public void setSUBPLOT_COUNT(final int subplot_count) {
+    this.subplotCount = subplot_count;
+  }
 
-		}
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jfree.ui.ApplicationFrame#windowClosing(java.awt.event.WindowEvent)
+   */
+  @Override
+  public void windowClosing(final WindowEvent event) {
+  }
 
-	public void display(Composite parentComposite) {
+  /**
+   * Display.
+   *
+   * @param parentComposite
+   *          the parent composite
+   */
+  public void display(final Composite parentComposite) {
 
-		Composite composite = new Composite(parentComposite, SWT.EMBEDDED
-				| SWT.FILL);
-		parentComposite.setLayout(new FillLayout());
-		Frame frame = SWT_AWT.new_Frame(composite);
-		frame.add(this.getContentPane());
+    final Composite composite = new Composite(parentComposite, SWT.EMBEDDED | SWT.FILL);
+    parentComposite.setLayout(new FillLayout());
+    final Frame frame = SWT_AWT.new_Frame(composite);
+    frame.add(getContentPane());
 
-		MouseClickedListener listener = new MouseClickedListener(frame);
-		chartPanel.addChartMouseListener(listener);
-		chartPanel.addMouseMotionListener(listener);
-		chartPanel.addMouseListener(listener);
-	}
+    final MouseClickedListener listener = new MouseClickedListener(frame);
+    this.chartPanel.addChartMouseListener(listener);
+    this.chartPanel.addMouseMotionListener(listener);
+    this.chartPanel.addMouseListener(listener);
+  }
 
-	public void display() {
+  /**
+   * Display.
+   */
+  public void display() {
 
-		this.pack();
-		RefineryUtilities.centerFrameOnScreen(this);
-		this.setVisible(true);
-	}
+    pack();
+    RefineryUtilities.centerFrameOnScreen(this);
+    setVisible(true);
+  }
 
 }

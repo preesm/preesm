@@ -40,7 +40,6 @@ package org.ietr.preesm.experiment.model.pimm.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
@@ -55,240 +54,286 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> An implementation of the model object '
- * <em><b>Abstract Vertex</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Abstract Vertex</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#getDataInputPorts <em>Data Input Ports</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#getDataOutputPorts <em>Data Output Ports</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#getConfigOutputPorts <em>Config Output Ports</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#getDataInputPorts <em>Data Input Ports</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#getDataOutputPorts <em>Data Output Ports</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#getConfigOutputPorts <em>Config Output Ports</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public abstract class AbstractActorImpl extends AbstractVertexImpl implements
-		AbstractActor {
-	/**
-	 * The cached value of the '{@link #getDataInputPorts() <em>Data Input Ports</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getDataInputPorts()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<DataInputPort> dataInputPorts;
+public abstract class AbstractActorImpl extends AbstractVertexImpl implements AbstractActor {
+  /**
+   * The cached value of the '{@link #getDataInputPorts() <em>Data Input Ports</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getDataInputPorts()
+   * @generated
+   * @ordered
+   */
+  protected EList<DataInputPort> dataInputPorts;
 
-	/**
-	 * The cached value of the '{@link #getDataOutputPorts() <em>Data Output Ports</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getDataOutputPorts()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<DataOutputPort> dataOutputPorts;
+  /**
+   * The cached value of the '{@link #getDataOutputPorts() <em>Data Output Ports</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc
+   * -->
+   *
+   * @see #getDataOutputPorts()
+   * @generated
+   * @ordered
+   */
+  protected EList<DataOutputPort> dataOutputPorts;
 
-	/**
-	 * The cached value of the '{@link #getConfigOutputPorts() <em>Config Output Ports</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getConfigOutputPorts()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<ConfigOutputPort> configOutputPorts;
+  /**
+   * The cached value of the '{@link #getConfigOutputPorts() <em>Config Output Ports</em>}' containment reference list. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   *
+   * @see #getConfigOutputPorts()
+   * @generated
+   * @ordered
+   */
+  protected EList<ConfigOutputPort> configOutputPorts;
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected AbstractActorImpl() {
-		super();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @generated
+   */
+  protected AbstractActorImpl() {
+    super();
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-			case PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS:
-				return getDataInputPorts();
-			case PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS:
-				return getDataOutputPorts();
-			case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
-				return getConfigOutputPorts();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param resolve
+   *          the resolve
+   * @param coreType
+   *          the core type
+   * @return the object
+   * @generated
+   */
+  @Override
+  public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
+    switch (featureID) {
+      case PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS:
+        return getDataInputPorts();
+      case PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS:
+        return getDataOutputPorts();
+      case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
+        return getConfigOutputPorts();
+    }
+    return super.eGet(featureID, resolve, coreType);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd,
-			int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS:
-				return ((InternalEList<?>)getDataInputPorts()).basicRemove(otherEnd, msgs);
-			case PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS:
-				return ((InternalEList<?>)getDataOutputPorts()).basicRemove(otherEnd, msgs);
-			case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
-				return ((InternalEList<?>)getConfigOutputPorts()).basicRemove(otherEnd, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param otherEnd
+   *          the other end
+   * @param featureID
+   *          the feature ID
+   * @param msgs
+   *          the msgs
+   * @return the notification chain
+   * @generated
+   */
+  @Override
+  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+    switch (featureID) {
+      case PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS:
+        return ((InternalEList<?>) getDataInputPorts()).basicRemove(otherEnd, msgs);
+      case PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS:
+        return ((InternalEList<?>) getDataOutputPorts()).basicRemove(otherEnd, msgs);
+      case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
+        return ((InternalEList<?>) getConfigOutputPorts()).basicRemove(otherEnd, msgs);
+    }
+    return super.eInverseRemove(otherEnd, featureID, msgs);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS:
-				return dataInputPorts != null && !dataInputPorts.isEmpty();
-			case PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS:
-				return dataOutputPorts != null && !dataOutputPorts.isEmpty();
-			case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
-				return configOutputPorts != null && !configOutputPorts.isEmpty();
-		}
-		return super.eIsSet(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @return true, if successful
+   * @generated
+   */
+  @Override
+  public boolean eIsSet(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS:
+        return (this.dataInputPorts != null) && !this.dataInputPorts.isEmpty();
+      case PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS:
+        return (this.dataOutputPorts != null) && !this.dataOutputPorts.isEmpty();
+      case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
+        return (this.configOutputPorts != null) && !this.configOutputPorts.isEmpty();
+    }
+    return super.eIsSet(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-			case PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS:
-				getDataInputPorts().clear();
-				getDataInputPorts().addAll((Collection<? extends DataInputPort>)newValue);
-				return;
-			case PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS:
-				getDataOutputPorts().clear();
-				getDataOutputPorts().addAll((Collection<? extends DataOutputPort>)newValue);
-				return;
-			case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
-				getConfigOutputPorts().clear();
-				getConfigOutputPorts().addAll((Collection<? extends ConfigOutputPort>)newValue);
-				return;
-		}
-		super.eSet(featureID, newValue);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param newValue
+   *          the new value
+   * @generated
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  public void eSet(final int featureID, final Object newValue) {
+    switch (featureID) {
+      case PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS:
+        getDataInputPorts().clear();
+        getDataInputPorts().addAll((Collection<? extends DataInputPort>) newValue);
+        return;
+      case PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS:
+        getDataOutputPorts().clear();
+        getDataOutputPorts().addAll((Collection<? extends DataOutputPort>) newValue);
+        return;
+      case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
+        getConfigOutputPorts().clear();
+        getConfigOutputPorts().addAll((Collection<? extends ConfigOutputPort>) newValue);
+        return;
+    }
+    super.eSet(featureID, newValue);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return PiMMPackage.Literals.ABSTRACT_ACTOR;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return PiMMPackage.Literals.ABSTRACT_ACTOR;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EList<DataInputPort> getDataInputPorts() {
-		if (dataInputPorts == null) {
-			dataInputPorts = new EObjectContainmentEList<DataInputPort>(DataInputPort.class, this, PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS);
-		}
-		return dataInputPorts;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the data input ports
+   * @generated
+   */
+  @Override
+  public EList<DataInputPort> getDataInputPorts() {
+    if (this.dataInputPorts == null) {
+      this.dataInputPorts = new EObjectContainmentEList<>(DataInputPort.class, this, PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS);
+    }
+    return this.dataInputPorts;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EList<DataOutputPort> getDataOutputPorts() {
-		if (dataOutputPorts == null) {
-			dataOutputPorts = new EObjectContainmentEList<DataOutputPort>(DataOutputPort.class, this, PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS);
-		}
-		return dataOutputPorts;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the data output ports
+   * @generated
+   */
+  @Override
+  public EList<DataOutputPort> getDataOutputPorts() {
+    if (this.dataOutputPorts == null) {
+      this.dataOutputPorts = new EObjectContainmentEList<>(DataOutputPort.class, this, PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS);
+    }
+    return this.dataOutputPorts;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void eUnset(int featureID) {
-		switch (featureID) {
-			case PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS:
-				getDataInputPorts().clear();
-				return;
-			case PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS:
-				getDataOutputPorts().clear();
-				return;
-			case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
-				getConfigOutputPorts().clear();
-				return;
-		}
-		super.eUnset(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @generated
+   */
+  @Override
+  public void eUnset(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.ABSTRACT_ACTOR__DATA_INPUT_PORTS:
+        getDataInputPorts().clear();
+        return;
+      case PiMMPackage.ABSTRACT_ACTOR__DATA_OUTPUT_PORTS:
+        getDataOutputPorts().clear();
+        return;
+      case PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS:
+        getConfigOutputPorts().clear();
+        return;
+    }
+    super.eUnset(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EList<ConfigOutputPort> getConfigOutputPorts() {
-		if (configOutputPorts == null) {
-			configOutputPorts = new EObjectContainmentEList<ConfigOutputPort>(ConfigOutputPort.class, this, PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS);
-		}
-		return configOutputPorts;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the config output ports
+   * @generated
+   */
+  @Override
+  public EList<ConfigOutputPort> getConfigOutputPorts() {
+    if (this.configOutputPorts == null) {
+      this.configOutputPorts = new EObjectContainmentEList<>(ConfigOutputPort.class, this, PiMMPackage.ABSTRACT_ACTOR__CONFIG_OUTPUT_PORTS);
+    }
+    return this.configOutputPorts;
+  }
 
-	@Override
-	public Port getPortNamed(String portName) {
-		// If the super method return a port, return it
-		Port p = super.getPortNamed(portName);
-		if (p != null) {
-			return p;
-		}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#getPortNamed(java.lang.String)
+   */
+  @Override
+  public Port getPortNamed(final String portName) {
+    // If the super method return a port, return it
+    final Port p = super.getPortNamed(portName);
+    if (p != null) {
+      return p;
+    }
 
-		List<Port> ports = new ArrayList<Port>(getDataInputPorts());
+    final List<Port> ports = new ArrayList<>(getDataInputPorts());
 
-		ports.addAll(getDataOutputPorts());
-		ports.addAll(getConfigOutputPorts());
+    ports.addAll(getDataOutputPorts());
+    ports.addAll(getConfigOutputPorts());
 
-		for (Object port : ports) {
-			String name = ((Port) port).getName();
-			if (name == null && portName == null) {
-				return (Port) port;
-			}
-			if (name != null && name.equals(portName)) {
-				return (Port) port;
-			}
-		}
-		return null;
-	}
+    for (final Object port : ports) {
+      final String name = ((Port) port).getName();
+      if ((name == null) && (portName == null)) {
+        return (Port) port;
+      }
+      if ((name != null) && name.equals(portName)) {
+        return (Port) port;
+      }
+    }
+    return null;
+  }
 
-	@Override
-	public String getPath() {
-		if (eContainer != null && eContainer instanceof AbstractActor) {
-			return ((AbstractActor) eContainer).getPath() + "/" + getName();
-		}
-		return getName();
-	}
-	
-	@Override
-	public void accept(PiMMVisitor v) {
-		v.visitAbstractActor(this);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.AbstractActor#getPath()
+   */
+  @Override
+  public String getPath() {
+    if ((this.eContainer != null) && (this.eContainer instanceof AbstractActor)) {
+      return ((AbstractActor) this.eContainer).getPath() + "/" + getName();
+    }
+    return getName();
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
+   */
+  @Override
+  public void accept(final PiMMVisitor v) {
+    v.visitAbstractActor(this);
+  }
 
 } // AbstractActoImpl

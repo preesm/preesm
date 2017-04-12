@@ -37,11 +37,9 @@
 package org.ietr.preesm.core.scenario.serialize;
 
 import java.io.FileNotFoundException;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -56,130 +54,160 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.utils.sdf.NameComparator;
 
+// TODO: Auto-generated Javadoc
 /**
- * Provides the elements contained in the timing editor
- * 
+ * Provides the elements contained in the timing editor.
+ *
  * @author mpelcat
  */
-public class PreesmAlgorithmListContentProvider implements
-		IStructuredContentProvider {
+public class PreesmAlgorithmListContentProvider implements IStructuredContentProvider {
 
-	@Override
-	public Object[] getElements(Object inputElement) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
+   */
+  @Override
+  public Object[] getElements(final Object inputElement) {
 
-		Object[] elementTable = null;
+    Object[] elementTable = null;
 
-		if (inputElement instanceof PreesmScenario) {
-			PreesmScenario inputScenario = (PreesmScenario) inputElement;
+    if (inputElement instanceof PreesmScenario) {
+      final PreesmScenario inputScenario = (PreesmScenario) inputElement;
 
-			try {
-				if (inputScenario.isIBSDFScenario())
-					elementTable = getSortedIBSDFVertices(inputScenario)
-							.toArray();
-				else if (inputScenario.isPISDFScenario())
-					elementTable = getSortedPISDFVertices(inputScenario)
-							.toArray();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return elementTable;
-	}
+      try {
+        if (inputScenario.isIBSDFScenario()) {
+          elementTable = getSortedIBSDFVertices(inputScenario).toArray();
+        } else if (inputScenario.isPISDFScenario()) {
+          elementTable = getSortedPISDFVertices(inputScenario).toArray();
+        }
+      } catch (final Exception e) {
+        e.printStackTrace();
+      }
+    }
+    return elementTable;
+  }
 
-	public Set<AbstractActor> getSortedPISDFVertices(
-			PreesmScenario inputScenario) throws InvalidModelException,
-			CoreException {
-		PiGraph currentGraph = ScenarioParser.getPiGraph(inputScenario
-				.getAlgorithmURL());
-		return filterVertices(currentGraph.getAllVertices());
-	}
+  /**
+   * Gets the sorted PISDF vertices.
+   *
+   * @param inputScenario
+   *          the input scenario
+   * @return the sorted PISDF vertices
+   * @throws InvalidModelException
+   *           the invalid model exception
+   * @throws CoreException
+   *           the core exception
+   */
+  public Set<AbstractActor> getSortedPISDFVertices(final PreesmScenario inputScenario) throws InvalidModelException, CoreException {
+    final PiGraph currentGraph = ScenarioParser.getPiGraph(inputScenario.getAlgorithmURL());
+    return filterVertices(currentGraph.getAllVertices());
+  }
 
-	/**
-	 * Filter out special actors and hierarchical actors
-	 * 
-	 * @param vertices
-	 *            the set of AbstractActor to filter
-	 * @return a set of Actors, with none of them being a hierarchical actor
-	 */
-	private Set<AbstractActor> filterVertices(EList<AbstractActor> vertices) {
-		Set<AbstractActor> result = new ConcurrentSkipListSet<AbstractActor>(new Comparator<AbstractActor>() {
-			@Override
-			public int compare(AbstractActor o1, AbstractActor o2) {
-				return o1.getName().compareTo(o2.getName());
-			}			
-		});
-		for (AbstractActor vertex : vertices) {
-			if (vertex instanceof Actor) {
-				Refinement refinement = ((Actor) vertex).getRefinement();
-				if (refinement == null) result.add(vertex);
-				else {
-					AbstractActor subGraph = refinement.getAbstractActor();
-					if (subGraph == null) result.add(vertex);
-					else if (!(subGraph instanceof PiGraph)) result.add(vertex);
-				}
-			}
-		}
-		return result;
-	}
+  /**
+   * Filter out special actors and hierarchical actors.
+   *
+   * @param vertices
+   *          the set of AbstractActor to filter
+   * @return a set of Actors, with none of them being a hierarchical actor
+   */
+  private Set<AbstractActor> filterVertices(final EList<AbstractActor> vertices) {
+    final Set<AbstractActor> result = new ConcurrentSkipListSet<>((o1, o2) -> o1.getName().compareTo(o2.getName()));
+    for (final AbstractActor vertex : vertices) {
+      if (vertex instanceof Actor) {
+        final Refinement refinement = ((Actor) vertex).getRefinement();
+        if (refinement == null) {
+          result.add(vertex);
+        } else {
+          final AbstractActor subGraph = refinement.getAbstractActor();
+          if (subGraph == null) {
+            result.add(vertex);
+          } else if (!(subGraph instanceof PiGraph)) {
+            result.add(vertex);
+          }
+        }
+      }
+    }
+    return result;
+  }
 
-	public Set<SDFAbstractVertex> getSortedIBSDFVertices(
-			PreesmScenario inputScenario) throws InvalidModelException,
-			FileNotFoundException {
-		Set<SDFAbstractVertex> sortedVertices = null;
-		// Opening algorithm from file
-		SDFGraph currentGraph = ScenarioParser.getSDFGraph(inputScenario
-				.getAlgorithmURL());
+  /**
+   * Depending on the kind of vertex, timings are edited or not.
+   *
+   * @param vertices
+   *          the vertices
+   */
+  public void filterVertices(final Set<SDFAbstractVertex> vertices) {
 
-		// Displays the task names in alphabetical order
-		if (currentGraph != null) {
+    final Iterator<SDFAbstractVertex> iterator = vertices.iterator();
 
-			// lists the vertices in hierarchy
-			Set<SDFAbstractVertex> vertices = currentGraph
-					.getHierarchicalVertexSet();
+    while (iterator.hasNext()) {
+      final SDFAbstractVertex vertex = iterator.next();
 
-			// Filters the results
-			filterVertices(vertices);
+      if (vertex.getKind().equalsIgnoreCase("Broadcast")) {
+        iterator.remove();
+      } else if (vertex.getKind().equalsIgnoreCase("port")) {
+        iterator.remove();
+      } else if (vertex.getGraphDescription() != null) {
+        // Timings of vertices with graph description are deduced and
+        // not entered in scenario
+        iterator.remove();
+      }
+    }
+  }
 
-			sortedVertices = new ConcurrentSkipListSet<SDFAbstractVertex>(
-					new NameComparator());
-			sortedVertices.addAll(vertices);
-		}
+  /**
+   * Gets the sorted IBSDF vertices.
+   *
+   * @param inputScenario
+   *          the input scenario
+   * @return the sorted IBSDF vertices
+   * @throws InvalidModelException
+   *           the invalid model exception
+   * @throws FileNotFoundException
+   *           the file not found exception
+   */
+  public Set<SDFAbstractVertex> getSortedIBSDFVertices(final PreesmScenario inputScenario) throws InvalidModelException, FileNotFoundException {
+    Set<SDFAbstractVertex> sortedVertices = null;
+    // Opening algorithm from file
+    final SDFGraph currentGraph = ScenarioParser.getSDFGraph(inputScenario.getAlgorithmURL());
 
-		return sortedVertices;
-	}
+    // Displays the task names in alphabetical order
+    if (currentGraph != null) {
 
-	/**
-	 * Depending on the kind of vertex, timings are edited or not
-	 */
-	public void filterVertices(Set<SDFAbstractVertex> vertices) {
+      // lists the vertices in hierarchy
+      final Set<SDFAbstractVertex> vertices = currentGraph.getHierarchicalVertexSet();
 
-		Iterator<SDFAbstractVertex> iterator = vertices.iterator();
+      // Filters the results
+      filterVertices(vertices);
 
-		while (iterator.hasNext()) {
-			SDFAbstractVertex vertex = iterator.next();
+      sortedVertices = new ConcurrentSkipListSet<>(new NameComparator());
+      sortedVertices.addAll(vertices);
+    }
 
-			if (vertex.getKind().equalsIgnoreCase("Broadcast")) {
-				iterator.remove();
-			} else if (vertex.getKind().equalsIgnoreCase("port")) {
-				iterator.remove();
-			} else if (vertex.getGraphDescription() != null) {
-				// Timings of vertices with graph description are deduced and
-				// not entered in scenario
-				iterator.remove();
-			}
-		}
-	}
+    return sortedVertices;
+  }
 
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.IContentProvider#dispose()
+   */
+  @Override
+  public void dispose() {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		// TODO Auto-generated method stub
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
+   */
+  @Override
+  public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
 }

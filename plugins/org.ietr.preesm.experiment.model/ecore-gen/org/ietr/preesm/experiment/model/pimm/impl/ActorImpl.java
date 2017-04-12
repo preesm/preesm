@@ -38,7 +38,6 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import java.util.List;
-
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -58,319 +57,373 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> An implementation of the model object '
- * <em><b>Actor</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Actor</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#getRefinement <em>Refinement</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#isConfigurationActor <em>Configuration Actor</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#getMemoryScriptPath <em>Memory Script Path</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#getRefinement <em>Refinement</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#isConfigurationActor <em>Configuration Actor</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.ActorImpl#getMemoryScriptPath <em>Memory Script Path</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
 public class ActorImpl extends ExecutableActorImpl implements Actor {
-	/**
-	 * The cached value of the '{@link #getRefinement() <em>Refinement</em>}' containment reference.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @see #getRefinement()
-	 * @generated
-	 * @ordered
-	 */
-	protected Refinement refinement;
+  /**
+   * The cached value of the '{@link #getRefinement() <em>Refinement</em>}' containment reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getRefinement()
+   * @generated
+   * @ordered
+   */
+  protected Refinement refinement;
 
-	/**
-	 * The default value of the '{@link #isConfigurationActor() <em>Configuration Actor</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #isConfigurationActor()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final boolean CONFIGURATION_ACTOR_EDEFAULT = false;
+  /**
+   * The default value of the '{@link #isConfigurationActor() <em>Configuration Actor</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #isConfigurationActor()
+   * @generated
+   * @ordered
+   */
+  protected static final boolean CONFIGURATION_ACTOR_EDEFAULT = false;
 
-	/**
-	 * The default value of the '{@link #getMemoryScriptPath() <em>Memory Script Path</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getMemoryScriptPath()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final IPath MEMORY_SCRIPT_PATH_EDEFAULT = null;
+  /**
+   * The default value of the '{@link #getMemoryScriptPath() <em>Memory Script Path</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getMemoryScriptPath()
+   * @generated
+   * @ordered
+   */
+  protected static final IPath MEMORY_SCRIPT_PATH_EDEFAULT = null;
 
-	/**
-	 * The cached value of the '{@link #getMemoryScriptPath() <em>Memory Script Path</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getMemoryScriptPath()
-	 * @generated
-	 * @ordered
-	 */
-	protected IPath memoryScriptPath = MEMORY_SCRIPT_PATH_EDEFAULT;
+  /**
+   * The cached value of the '{@link #getMemoryScriptPath() <em>Memory Script Path</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getMemoryScriptPath()
+   * @generated
+   * @ordered
+   */
+  protected IPath memoryScriptPath = ActorImpl.MEMORY_SCRIPT_PATH_EDEFAULT;
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 */
-	protected ActorImpl() {
-		super();
-		this.setRefinement(PiMMFactory.eINSTANCE.createRefinement());
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   */
+  protected ActorImpl() {
+    super();
+    setRefinement(PiMMFactory.eINSTANCE.createRefinement());
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return PiMMPackage.Literals.ACTOR;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return PiMMPackage.Literals.ACTOR;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Refinement getRefinement() {
-		return refinement;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the refinement
+   * @generated
+   */
+  @Override
+  public Refinement getRefinement() {
+    return this.refinement;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	public NotificationChain basicSetRefinement(Refinement newRefinement,
-			NotificationChain msgs) {
-		Refinement oldRefinement = refinement;
-		refinement = newRefinement;
-		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.ACTOR__REFINEMENT, oldRefinement, newRefinement);
-			if (msgs == null) msgs = notification; else msgs.add(notification);
-		}
-		return msgs;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newRefinement
+   *          the new refinement
+   * @param msgs
+   *          the msgs
+   * @return the notification chain
+   * @generated
+   */
+  public NotificationChain basicSetRefinement(final Refinement newRefinement, NotificationChain msgs) {
+    final Refinement oldRefinement = this.refinement;
+    this.refinement = newRefinement;
+    if (eNotificationRequired()) {
+      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.ACTOR__REFINEMENT, oldRefinement, newRefinement);
+      if (msgs == null) {
+        msgs = notification;
+      } else {
+        msgs.add(notification);
+      }
+    }
+    return msgs;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setRefinement(Refinement newRefinement) {
-		if (newRefinement != refinement) {
-			NotificationChain msgs = null;
-			if (refinement != null)
-				msgs = ((InternalEObject)refinement).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.ACTOR__REFINEMENT, null, msgs);
-			if (newRefinement != null)
-				msgs = ((InternalEObject)newRefinement).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.ACTOR__REFINEMENT, null, msgs);
-			msgs = basicSetRefinement(newRefinement, msgs);
-			if (msgs != null) msgs.dispatch();
-		}
-		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.ACTOR__REFINEMENT, newRefinement, newRefinement));
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newRefinement
+   *          the new refinement
+   * @generated
+   */
+  @Override
+  public void setRefinement(final Refinement newRefinement) {
+    if (newRefinement != this.refinement) {
+      NotificationChain msgs = null;
+      if (this.refinement != null) {
+        msgs = ((InternalEObject) this.refinement).eInverseRemove(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.ACTOR__REFINEMENT, null, msgs);
+      }
+      if (newRefinement != null) {
+        msgs = ((InternalEObject) newRefinement).eInverseAdd(this, InternalEObject.EOPPOSITE_FEATURE_BASE - PiMMPackage.ACTOR__REFINEMENT, null, msgs);
+      }
+      msgs = basicSetRefinement(newRefinement, msgs);
+      if (msgs != null) {
+        msgs.dispatch();
+      }
+    } else if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.ACTOR__REFINEMENT, newRefinement, newRefinement));
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc --> Check whether the {@link Actor} is a
-	 * configuration {@link Actor}.<br>
-	 * <br>
-	 * An {@link Actor} is a configuration {@link Actor} if it sets a
-	 * {@link Parameter} value through a {@link ConfigOutputPort}.
-	 * 
-	 * @return <code>true</code> if the {@link Actor} is a configuration
-	 *         {@link Actor} <code>false</code> else.<!-- end-user-doc -->
-	 * 
-	 */
-	@Override
-	public boolean isConfigurationActor() {
-		boolean result = false;
+  /**
+   * <!-- begin-user-doc --> Check whether the {@link Actor} is a configuration {@link Actor}.<br>
+   * <br>
+   * An {@link Actor} is a configuration {@link Actor} if it sets a {@link Parameter} value through a {@link ConfigOutputPort}.
+   *
+   * @return <code>true</code> if the {@link Actor} is a configuration {@link Actor} <code>false</code> else.<!-- end-user-doc -->
+   *
+   */
+  @Override
+  public boolean isConfigurationActor() {
+    boolean result = false;
 
-		List<ConfigOutputPort> ports = this.getConfigOutputPorts();
-		for (ConfigOutputPort port : ports) {
-			// If the port has an outgoing dependency
-			if (!port.getOutgoingDependencies().isEmpty()) {
-				// As soon as there is one dependency, the actor is a
-				// configuration actor
-				Dependency dependency = port.getOutgoingDependencies().get(0);
-				Parameterizable parameterizable = (Parameterizable) dependency
-						.getGetter().eContainer();
+    final List<ConfigOutputPort> ports = getConfigOutputPorts();
+    for (final ConfigOutputPort port : ports) {
+      // If the port has an outgoing dependency
+      if (!port.getOutgoingDependencies().isEmpty()) {
+        // As soon as there is one dependency, the actor is a
+        // configuration actor
+        final Dependency dependency = port.getOutgoingDependencies().get(0);
+        final Parameterizable parameterizable = (Parameterizable) dependency.getGetter().eContainer();
 
-				// Should always be the case
-				if (parameterizable instanceof Parameter) {
-					result = true;
-				} else {
-					throw new RuntimeException(
-							"Actor configuration output ports can"
-									+ " only set the value of a Parameter. "
-									+ parameterizable.eClass()
-									+ " cannot be set directly.");
-				}
-			}
-		}
+        // Should always be the case
+        if (parameterizable instanceof Parameter) {
+          result = true;
+        } else {
+          throw new RuntimeException(
+              "Actor configuration output ports can" + " only set the value of a Parameter. " + parameterizable.eClass() + " cannot be set directly.");
+        }
+      }
+    }
 
-		return result;
-	}
+    return result;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public boolean isSetConfigurationActor() {
-		// TODO: implement this method to return whether the 'Configuration Actor' attribute is set
-		// Ensure that you remove @generated or mark it @generated NOT
-		throw new UnsupportedOperationException();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return true, if is sets the configuration actor
+   * @generated
+   */
+  @Override
+  public boolean isSetConfigurationActor() {
+    // TODO: implement this method to return whether the 'Configuration Actor' attribute is set
+    // Ensure that you remove @generated or mark it @generated NOT
+    throw new UnsupportedOperationException();
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public IPath getMemoryScriptPath() {
-		return memoryScriptPath;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the memory script path
+   * @generated
+   */
+  @Override
+  public IPath getMemoryScriptPath() {
+    return this.memoryScriptPath;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setMemoryScriptPath(IPath newMemoryScriptPath) {
-		IPath oldMemoryScriptPath = memoryScriptPath;
-		memoryScriptPath = newMemoryScriptPath;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH, oldMemoryScriptPath, memoryScriptPath));
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newMemoryScriptPath
+   *          the new memory script path
+   * @generated
+   */
+  @Override
+  public void setMemoryScriptPath(final IPath newMemoryScriptPath) {
+    final IPath oldMemoryScriptPath = this.memoryScriptPath;
+    this.memoryScriptPath = newMemoryScriptPath;
+    if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH, oldMemoryScriptPath, this.memoryScriptPath));
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd,
-			int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case PiMMPackage.ACTOR__REFINEMENT:
-				return basicSetRefinement(null, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param otherEnd
+   *          the other end
+   * @param featureID
+   *          the feature ID
+   * @param msgs
+   *          the msgs
+   * @return the notification chain
+   * @generated
+   */
+  @Override
+  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+    switch (featureID) {
+      case PiMMPackage.ACTOR__REFINEMENT:
+        return basicSetRefinement(null, msgs);
+    }
+    return super.eInverseRemove(otherEnd, featureID, msgs);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-			case PiMMPackage.ACTOR__REFINEMENT:
-				return getRefinement();
-			case PiMMPackage.ACTOR__CONFIGURATION_ACTOR:
-				return isConfigurationActor();
-			case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
-				return getMemoryScriptPath();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param resolve
+   *          the resolve
+   * @param coreType
+   *          the core type
+   * @return the object
+   * @generated
+   */
+  @Override
+  public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
+    switch (featureID) {
+      case PiMMPackage.ACTOR__REFINEMENT:
+        return getRefinement();
+      case PiMMPackage.ACTOR__CONFIGURATION_ACTOR:
+        return isConfigurationActor();
+      case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
+        return getMemoryScriptPath();
+    }
+    return super.eGet(featureID, resolve, coreType);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-			case PiMMPackage.ACTOR__REFINEMENT:
-				setRefinement((Refinement)newValue);
-				return;
-			case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
-				setMemoryScriptPath((IPath)newValue);
-				return;
-		}
-		super.eSet(featureID, newValue);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param newValue
+   *          the new value
+   * @generated
+   */
+  @Override
+  public void eSet(final int featureID, final Object newValue) {
+    switch (featureID) {
+      case PiMMPackage.ACTOR__REFINEMENT:
+        setRefinement((Refinement) newValue);
+        return;
+      case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
+        setMemoryScriptPath((IPath) newValue);
+        return;
+    }
+    super.eSet(featureID, newValue);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void eUnset(int featureID) {
-		switch (featureID) {
-			case PiMMPackage.ACTOR__REFINEMENT:
-				setRefinement((Refinement)null);
-				return;
-			case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
-				setMemoryScriptPath(MEMORY_SCRIPT_PATH_EDEFAULT);
-				return;
-		}
-		super.eUnset(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @generated
+   */
+  @Override
+  public void eUnset(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.ACTOR__REFINEMENT:
+        setRefinement((Refinement) null);
+        return;
+      case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
+        setMemoryScriptPath(ActorImpl.MEMORY_SCRIPT_PATH_EDEFAULT);
+        return;
+    }
+    super.eUnset(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case PiMMPackage.ACTOR__REFINEMENT:
-				return refinement != null;
-			case PiMMPackage.ACTOR__CONFIGURATION_ACTOR:
-				return isSetConfigurationActor();
-			case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
-				return MEMORY_SCRIPT_PATH_EDEFAULT == null ? memoryScriptPath != null : !MEMORY_SCRIPT_PATH_EDEFAULT.equals(memoryScriptPath);
-		}
-		return super.eIsSet(featureID);
-	}
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public String toString() {
-		if (eIsProxy()) return super.toString();
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @return true, if successful
+   * @generated
+   */
+  @Override
+  public boolean eIsSet(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.ACTOR__REFINEMENT:
+        return this.refinement != null;
+      case PiMMPackage.ACTOR__CONFIGURATION_ACTOR:
+        return isSetConfigurationActor();
+      case PiMMPackage.ACTOR__MEMORY_SCRIPT_PATH:
+        return ActorImpl.MEMORY_SCRIPT_PATH_EDEFAULT == null ? this.memoryScriptPath != null
+            : !ActorImpl.MEMORY_SCRIPT_PATH_EDEFAULT.equals(this.memoryScriptPath);
+    }
+    return super.eIsSet(featureID);
+  }
 
-		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (memoryScriptPath: ");
-		result.append(memoryScriptPath);
-		result.append(')');
-		return result.toString();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the string
+   * @generated
+   */
+  @Override
+  public String toString() {
+    if (eIsProxy()) {
+      return super.toString();
+    }
 
-	/**
-	 * Test if the actor is a hierarchical one.
-	 * @return true, if it is.
-	 */
-	@Override
-	public boolean isHierarchical() {
-		return !(this.getRefinement().getFilePath() == null || this.getRefinement().getFilePath().isEmpty()) 
-				&& !(this.getRefinement() instanceof HRefinement);
-	}
-	
-	/**
-	 * Get the graph from hierarchy.
-	 * @return The {@link PiGraph}
-	 */
-	@Override
-	public PiGraph getGraph() {
-		AbstractActor subgraph = this.getRefinement().getAbstractActor();		
-		if(subgraph instanceof PiGraph) 
-			return (PiGraph) subgraph;
-		else			
-			return null;
-	}
+    final StringBuffer result = new StringBuffer(super.toString());
+    result.append(" (memoryScriptPath: ");
+    result.append(this.memoryScriptPath);
+    result.append(')');
+    return result.toString();
+  }
 
-	@Override
-	public void accept(PiMMVisitor v) {
-		v.visitActor(this);
-	}
+  /**
+   * Test if the actor is a hierarchical one.
+   *
+   * @return true, if it is.
+   */
+  @Override
+  public boolean isHierarchical() {
+    return !((getRefinement().getFilePath() == null) || getRefinement().getFilePath().isEmpty()) && !(getRefinement() instanceof HRefinement);
+  }
+
+  /**
+   * Get the graph from hierarchy.
+   *
+   * @return The {@link PiGraph}
+   */
+  @Override
+  public PiGraph getGraph() {
+    final AbstractActor subgraph = getRefinement().getAbstractActor();
+    if (subgraph instanceof PiGraph) {
+      return (PiGraph) subgraph;
+    } else {
+      return null;
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.impl.ExecutableActorImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
+   */
+  @Override
+  public void accept(final PiMMVisitor v) {
+    v.visitActor(this);
+  }
 
 } // ActorImpl

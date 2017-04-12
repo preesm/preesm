@@ -41,125 +41,169 @@ import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+// TODO: Auto-generated Javadoc
 /**
- * Represents a single step in a route between two operators
- * 
+ * Represents a single step in a route between two operators.
+ *
  * @author mpelcat
  */
 public abstract class AbstractRouteStep {
 
-	/**
-	 * The sender of the route step. A route step is always directed.
-	 */
-	private ComponentInstance sender;
+  /**
+   * The sender of the route step. A route step is always directed.
+   */
+  private ComponentInstance sender;
 
-	/**
-	 * The receiver of the route step
-	 */
-	private ComponentInstance receiver;
+  /** The receiver of the route step. */
+  private ComponentInstance receiver;
 
-	public AbstractRouteStep(ComponentInstance sender,
-			ComponentInstance receiver) {
-		super();
-		this.sender = sender;
-		this.receiver = receiver;
-	}
+  /**
+   * Instantiates a new abstract route step.
+   *
+   * @param sender
+   *          the sender
+   * @param receiver
+   *          the receiver
+   */
+  public AbstractRouteStep(final ComponentInstance sender, final ComponentInstance receiver) {
+    super();
+    this.sender = sender;
+    this.receiver = receiver;
+  }
 
-	public ComponentInstance getReceiver() {
-		return receiver;
-	}
+  /**
+   * Gets the receiver.
+   *
+   * @return the receiver
+   */
+  public ComponentInstance getReceiver() {
+    return this.receiver;
+  }
 
-	public ComponentInstance getSender() {
-		return sender;
-	}
+  /**
+   * Gets the sender.
+   *
+   * @return the sender
+   */
+  public ComponentInstance getSender() {
+    return this.sender;
+  }
 
-	public void setReceiver(ComponentInstance receiver) {
-		this.receiver = receiver;
-	}
+  /**
+   * Sets the receiver.
+   *
+   * @param receiver
+   *          the new receiver
+   */
+  public void setReceiver(final ComponentInstance receiver) {
+    this.receiver = receiver;
+  }
 
-	public void setSender(ComponentInstance sender) {
-		this.sender = sender;
-	}
+  /**
+   * Sets the sender.
+   *
+   * @param sender
+   *          the new sender
+   */
+  public void setSender(final ComponentInstance sender) {
+    this.sender = sender;
+  }
 
-	/**
-	 * The route step type determines how the communication will be simulated.
-	 */
-	public abstract String getType();
+  /**
+   * The route step type determines how the communication will be simulated.
+   *
+   * @return the type
+   */
+  public abstract String getType();
 
-	/**
-	 * The id is given to code generation. It selects the communication
-	 * functions to use
-	 */
-	public abstract String getId();
+  /**
+   * The id is given to code generation. It selects the communication functions to use
+   *
+   * @return the id
+   */
+  public abstract String getId();
 
-	/**
-	 * The name of the step node is retrieved
-	 */
-	public abstract String getName();
+  /**
+   * The name of the step node is retrieved.
+   *
+   * @return the name
+   */
+  public abstract String getName();
 
-	/**
-	 * Evaluates the cost of a data transfer with size transferSize. This cost
-	 * can include overheads, involvements...
-	 */
-	public abstract long getTransferCost(long transfersSize);
+  /**
+   * Evaluates the cost of a data transfer with size transferSize. This cost can include overheads, involvements...
+   *
+   * @param transfersSize
+   *          the transfers size
+   * @return the transfer cost
+   */
+  public abstract long getTransferCost(long transfersSize);
 
-	/**
-	 * Returns the longest time a contention node needs to transfer the data
-	 */
-	public abstract long getWorstTransferTime(long transfersSize);
+  /**
+   * Returns the longest time a contention node needs to transfer the data.
+   *
+   * @param transfersSize
+   *          the transfers size
+   * @return the worst transfer time
+   */
+  public abstract long getWorstTransferTime(long transfersSize);
 
-	@Override
-	protected abstract Object clone() throws CloneNotSupportedException;
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#clone()
+   */
+  @Override
+  protected abstract Object clone() throws CloneNotSupportedException;
 
-	/**
-	 * Appends the route step informations to a dom3 xml file
-	 */
-	public void appendRouteStep(Document dom, Element comFct) {
+  /**
+   * Appends the route step informations to a dom3 xml file.
+   *
+   * @param dom
+   *          the dom
+   * @param comFct
+   *          the com fct
+   */
+  public void appendRouteStep(final Document dom, final Element comFct) {
 
-		Element routeStep = dom.createElement("routeStep");
-		comFct.appendChild(routeStep);
+    final Element routeStep = dom.createElement("routeStep");
+    comFct.appendChild(routeStep);
 
-		Element sender = dom.createElement("sender");
-		sender.setAttribute("name", this.getSender().getInstanceName());
-		sender.setAttribute("def", this.getSender().getComponent().getVlnv()
-				.getName());
-		routeStep.appendChild(sender);
+    final Element sender = dom.createElement("sender");
+    sender.setAttribute("name", getSender().getInstanceName());
+    sender.setAttribute("def", getSender().getComponent().getVlnv().getName());
+    routeStep.appendChild(sender);
 
-		Element receiver = dom.createElement("receiver");
-		receiver.setAttribute("name", this.getReceiver().getInstanceName());
-		receiver.setAttribute("def", this.getReceiver().getComponent()
-				.getVlnv().getName());
-		routeStep.appendChild(receiver);
+    final Element receiver = dom.createElement("receiver");
+    receiver.setAttribute("name", getReceiver().getInstanceName());
+    receiver.setAttribute("def", getReceiver().getComponent().getVlnv().getName());
+    routeStep.appendChild(receiver);
 
-		if (this.getType() == DmaRouteStep.type) {
-			routeStep.setAttribute("type", "dma");
-			DmaRouteStep dStep = (DmaRouteStep) this;
-			routeStep
-					.setAttribute("dmaDef", dStep.getDma().getVlnv().getName());
+    if (getType() == DmaRouteStep.type) {
+      routeStep.setAttribute("type", "dma");
+      final DmaRouteStep dStep = (DmaRouteStep) this;
+      routeStep.setAttribute("dmaDef", dStep.getDma().getVlnv().getName());
 
-			for (ComponentInstance node : dStep.getNodes()) {
-				Element eNode = dom.createElement("node");
-				eNode.setAttribute("name", node.getInstanceName());
-				eNode.setAttribute("def", node.getComponent().getVlnv()
-						.getName());
-				routeStep.appendChild(eNode);
-			}
-		} else if (this.getType() == MessageRouteStep.type) {
-			routeStep.setAttribute("type", "msg");
-			MessageRouteStep nStep = (MessageRouteStep) this;
+      for (final ComponentInstance node : dStep.getNodes()) {
+        final Element eNode = dom.createElement("node");
+        eNode.setAttribute("name", node.getInstanceName());
+        eNode.setAttribute("def", node.getComponent().getVlnv().getName());
+        routeStep.appendChild(eNode);
+      }
+    } else if (getType() == MessageRouteStep.type) {
+      routeStep.setAttribute("type", "msg");
+      final MessageRouteStep nStep = (MessageRouteStep) this;
 
-			for (ComponentInstance node : nStep.getNodes()) {
-				Element eNode = dom.createElement("node");
-				eNode.setAttribute("name", node.getInstanceName());
-				eNode.setAttribute("def", node.getComponent().getVlnv()
-						.getName());
-				routeStep.appendChild(eNode);
-			}
-		} else if (this.getType() == MemRouteStep.type) {
-			routeStep.setAttribute("type", "ram");
-			MemRouteStep rStep = (MemRouteStep) this;
-			routeStep
-					.setAttribute("ramDef", rStep.getMem().getVlnv().getName());
-		}
-	}
+      for (final ComponentInstance node : nStep.getNodes()) {
+        final Element eNode = dom.createElement("node");
+        eNode.setAttribute("name", node.getInstanceName());
+        eNode.setAttribute("def", node.getComponent().getVlnv().getName());
+        routeStep.appendChild(eNode);
+      }
+    } else if (getType() == MemRouteStep.type) {
+      routeStep.setAttribute("type", "ram");
+      final MemRouteStep rStep = (MemRouteStep) this;
+      routeStep.setAttribute("ramDef", rStep.getMem().getVlnv().getName());
+    }
+  }
 }

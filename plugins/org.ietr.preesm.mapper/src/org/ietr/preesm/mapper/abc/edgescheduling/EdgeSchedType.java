@@ -36,43 +36,59 @@
 
 package org.ietr.preesm.mapper.abc.edgescheduling;
 
+// TODO: Auto-generated Javadoc
 /**
- * Types of edge scheduler to be used in parameters
- * 
+ * Types of edge scheduler to be used in parameters.
+ *
  * @author mpelcat
  */
 public enum EdgeSchedType {
 
-	Simple,
+  /** The Simple. */
+  Simple,
 
-	Switcher,
+  /** The Switcher. */
+  Switcher,
 
-	Advanced;
+  /** The Advanced. */
+  Advanced;
 
-	@Override
-	public String toString() {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Enum#toString()
+   */
+  @Override
+  public String toString() {
 
-		if (this == Simple) {
-			return "Simple";
-		} else if (this == Switcher) {
-			return "Switcher";
-		} else if (this == Advanced) {
-			return "Advanced";
-		}
+    if (this == Simple) {
+      return "Simple";
+    } else if (this == Switcher) {
+      return "Switcher";
+    } else if (this == Advanced) {
+      return "Advanced";
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	public static EdgeSchedType fromString(String type) {
+  /**
+   * From string.
+   *
+   * @param type
+   *          the type
+   * @return the edge sched type
+   */
+  public static EdgeSchedType fromString(final String type) {
 
-		if (type.equalsIgnoreCase("Simple")) {
-			return Simple;
-		} else if (type.equalsIgnoreCase("Switcher")) {
-			return Switcher;
-		} else if (type.equalsIgnoreCase("Advanced")) {
-			return Advanced;
-		}
+    if (type.equalsIgnoreCase("Simple")) {
+      return Simple;
+    } else if (type.equalsIgnoreCase("Switcher")) {
+      return Switcher;
+    } else if (type.equalsIgnoreCase("Advanced")) {
+      return Advanced;
+    }
 
-		return null;
-	}
+    return null;
+  }
 }

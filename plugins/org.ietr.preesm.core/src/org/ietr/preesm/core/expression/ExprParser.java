@@ -37,61 +37,71 @@
 package org.ietr.preesm.core.expression;
 
 import java.util.UUID;
-
 import org.nfunk.jep.ASTVarNode;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ExprParser.
+ */
 public class ExprParser {
-	protected String toParse;
 
-	public ExprParser(String val) {
-		toParse = val;
-	}
+  /** The to parse. */
+  protected String toParse;
 
-	public Node startParser() {
-		try {
-			JEP jep = new JEP();
-			jep.setAllowUndeclared(true);
-			try {
-				jep.addStandardFunctions();
-				jep.addStandardConstants();
-				if (toParse.contains("\"")) {
-					toParse = toParse.replace("\"", "");
-					ASTVarNode var = new ASTVarNode(UUID.randomUUID()
-							.hashCode());
-					var.setVar(new Parameter(toParse));
-					return var;
-				}
+  /**
+   * Instantiates a new expr parser.
+   *
+   * @param val
+   *          the val
+   */
+  public ExprParser(final String val) {
+    this.toParse = val;
+  }
 
-				System.out.println("Chain to parse : " + toParse);
-				toParse = toParse.replace(" ", "");
-				if (toParse.charAt(0) == '%') {
-					toParse = "ceil(" + toParse.substring(1) + ")";
-				}
-				for (int i = 1; i < toParse.length(); i++) {
-					if (toParse.charAt(i) == '%'
-							&& (toParse.charAt(i - 1) == '*'
-									|| toParse.charAt(i - 1) == '/'
-									|| toParse.charAt(i - 1) == '+'
-									|| toParse.charAt(i - 1) == '-' || toParse
-									.charAt(i - 1) == '(')) {
-						toParse = toParse.substring(0, i) + "ceil"
-								+ toParse.substring(i + 1);
-					}
-				}
-				System.out.println("Chain to parse : " + toParse);
-				jep.addFunction("ceil", new CeilFunction());
-				Node mainNode = jep.parse(toParse);
-				return mainNode;
+  /**
+   * Start parser.
+   *
+   * @return the node
+   */
+  public Node startParser() {
+    try {
+      final JEP jep = new JEP();
+      jep.setAllowUndeclared(true);
+      try {
+        jep.addStandardFunctions();
+        jep.addStandardConstants();
+        if (this.toParse.contains("\"")) {
+          this.toParse = this.toParse.replace("\"", "");
+          final ASTVarNode var = new ASTVarNode(UUID.randomUUID().hashCode());
+          var.setVar(new Parameter(this.toParse));
+          return var;
+        }
 
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+        System.out.println("Chain to parse : " + this.toParse);
+        this.toParse = this.toParse.replace(" ", "");
+        if (this.toParse.charAt(0) == '%') {
+          this.toParse = "ceil(" + this.toParse.substring(1) + ")";
+        }
+        for (int i = 1; i < this.toParse.length(); i++) {
+          if ((this.toParse.charAt(i) == '%') && ((this.toParse.charAt(i - 1) == '*') || (this.toParse.charAt(i - 1) == '/')
+              || (this.toParse.charAt(i - 1) == '+') || (this.toParse.charAt(i - 1) == '-') || (this.toParse.charAt(i - 1) == '('))) {
+            this.toParse = this.toParse.substring(0, i) + "ceil" + this.toParse.substring(i + 1);
+          }
+        }
+        System.out.println("Chain to parse : " + this.toParse);
+        jep.addFunction("ceil", new CeilFunction());
+        final Node mainNode = jep.parse(this.toParse);
+        return mainNode;
+
+      } catch (final ParseException e) {
+        e.printStackTrace();
+      }
+    } catch (final Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
 }

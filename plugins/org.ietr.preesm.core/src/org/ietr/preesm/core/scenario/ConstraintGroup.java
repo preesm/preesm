@@ -41,118 +41,178 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+// TODO: Auto-generated Javadoc
 /**
- * A ConstraintGroup associates a set of graph definitions and a set of
- * processing units on which they can be matched
- * 
+ * A ConstraintGroup associates a set of graph definitions and a set of processing units on which they can be matched.
+ *
  * @author mpelcat
  */
 public class ConstraintGroup {
 
-	/**
-	 * The set of processing units available for the constraint group
-	 */
-	private Set<String> operatorIds;
+  /** The set of processing units available for the constraint group. */
+  private final Set<String> operatorIds;
 
-	/**
-	 * The set of graphs belonging to the constraint group
-	 */
-	private Set<String> actorsPaths;
+  /** The set of graphs belonging to the constraint group. */
+  private final Set<String> actorsPaths;
 
-	public ConstraintGroup() {
-		operatorIds = new HashSet<String>();
-		actorsPaths = new HashSet<String>();
+  /**
+   * Instantiates a new constraint group.
+   */
+  public ConstraintGroup() {
+    this.operatorIds = new HashSet<>();
+    this.actorsPaths = new HashSet<>();
 
-	}
+  }
 
-	public void addOperatorId(String opId) {
-		if (!hasOperatorId(opId)) {
-			operatorIds.add(opId);
-		}
+  /**
+   * Adds the operator id.
+   *
+   * @param opId
+   *          the op id
+   */
+  public void addOperatorId(final String opId) {
+    if (!hasOperatorId(opId)) {
+      this.operatorIds.add(opId);
+    }
 
-	}
+  }
 
-	/**
-	 * When a vertex is added to the constraints, its hierarchical path is added
-	 * in its properties in order to separate distinct vertices with same name
-	 */
-	public void addActorPath(String vertexId) {
-		if (!hasVertexPath(vertexId)) {
-			actorsPaths.add(vertexId);
+  /**
+   * When a vertex is added to the constraints, its hierarchical path is added in its properties in order to separate distinct vertices with same name.
+   *
+   * @param vertexId
+   *          the vertex id
+   */
+  public void addActorPath(final String vertexId) {
+    if (!hasVertexPath(vertexId)) {
+      this.actorsPaths.add(vertexId);
 
-		}
-	}
+    }
+  }
 
-	public void addVertexPaths(Set<String> vertexIdSet) {
-		for (String vertexId : vertexIdSet) {
-			addActorPath(vertexId);
-		}
-	}
+  /**
+   * Adds the vertex paths.
+   *
+   * @param vertexIdSet
+   *          the vertex id set
+   */
+  public void addVertexPaths(final Set<String> vertexIdSet) {
+    for (final String vertexId : vertexIdSet) {
+      addActorPath(vertexId);
+    }
+  }
 
-	public void removeVertexPaths(Set<String> vertexIdSet) {
-		for (String vertexId : vertexIdSet) {
-			removeVertexPath(vertexId);
-		}
-	}
+  /**
+   * Removes the vertex paths.
+   *
+   * @param vertexIdSet
+   *          the vertex id set
+   */
+  public void removeVertexPaths(final Set<String> vertexIdSet) {
+    for (final String vertexId : vertexIdSet) {
+      removeVertexPath(vertexId);
+    }
+  }
 
-	public Set<String> getOperatorIds() {
-		return new HashSet<String>(operatorIds);
-	}
+  /**
+   * Gets the operator ids.
+   *
+   * @return the operator ids
+   */
+  public Set<String> getOperatorIds() {
+    return new HashSet<>(this.operatorIds);
+  }
 
-	public Set<String> getVertexPaths() {
-		return new HashSet<String>(actorsPaths);
-	}
+  /**
+   * Gets the vertex paths.
+   *
+   * @return the vertex paths
+   */
+  public Set<String> getVertexPaths() {
+    return new HashSet<>(this.actorsPaths);
+  }
 
-	public boolean hasOperatorId(String operatorId) {
+  /**
+   * Checks for operator id.
+   *
+   * @param operatorId
+   *          the operator id
+   * @return true, if successful
+   */
+  public boolean hasOperatorId(final String operatorId) {
 
-		for (String opId : operatorIds) {
-			if (opId.equals(operatorId)) {
-				return true;
-			}
-		}
+    for (final String opId : this.operatorIds) {
+      if (opId.equals(operatorId)) {
+        return true;
+      }
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	public boolean hasVertexPath(String vertexInfo) {
+  /**
+   * Checks for vertex path.
+   *
+   * @param vertexInfo
+   *          the vertex info
+   * @return true, if successful
+   */
+  public boolean hasVertexPath(final String vertexInfo) {
 
-		for (String vId : actorsPaths) {
-			if (vId.equals(vertexInfo)) {
-				return true;
-			}
-		}
+    for (final String vId : this.actorsPaths) {
+      if (vId.equals(vertexInfo)) {
+        return true;
+      }
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	public void removeOperatorId(String operatorId) {
-		Iterator<String> it = operatorIds.iterator();
-		while (it.hasNext()) {
-			String currentopId = it.next();
-			if (currentopId.equals(operatorId)) {
-				it.remove();
-			}
-		}
-	}
+  /**
+   * Removes the operator id.
+   *
+   * @param operatorId
+   *          the operator id
+   */
+  public void removeOperatorId(final String operatorId) {
+    final Iterator<String> it = this.operatorIds.iterator();
+    while (it.hasNext()) {
+      final String currentopId = it.next();
+      if (currentopId.equals(operatorId)) {
+        it.remove();
+      }
+    }
+  }
 
-	public void removeVertexPath(String sdfVertexInfo) {
-		Iterator<String> it = actorsPaths.iterator();
-		while (it.hasNext()) {
-			String v = it.next();
-			if ((v.equals(sdfVertexInfo))) {
-				it.remove();
-			}
-		}
+  /**
+   * Removes the vertex path.
+   *
+   * @param sdfVertexInfo
+   *          the sdf vertex info
+   */
+  public void removeVertexPath(final String sdfVertexInfo) {
+    final Iterator<String> it = this.actorsPaths.iterator();
+    while (it.hasNext()) {
+      final String v = it.next();
+      if ((v.equals(sdfVertexInfo))) {
+        it.remove();
+      }
+    }
 
-	}
+  }
 
-	@Override
-	public String toString() {
-		String s = "<";
-		s += operatorIds.toString();
-		s += actorsPaths.toString();
-		s += ">";
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    String s = "<";
+    s += this.operatorIds.toString();
+    s += this.actorsPaths.toString();
+    s += ">";
 
-		return s;
-	}
+    return s;
+  }
 }

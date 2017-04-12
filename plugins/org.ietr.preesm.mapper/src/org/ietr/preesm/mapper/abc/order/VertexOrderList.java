@@ -43,84 +43,165 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * Association of a rank and a vertex name to export a graph total ordering
- * 
+ * Association of a rank and a vertex name to export a graph total ordering.
+ *
  * @author mpelcat
  */
 public class VertexOrderList {
-	public class OrderProperty {
-		private String name;
-		private int order;
 
-		public OrderProperty(String name, int order) {
-			super();
-			this.name = name;
-			this.order = order;
-		}
+  /**
+   * The Class OrderProperty.
+   */
+  public class OrderProperty {
 
-		public String getName() {
-			return name;
-		}
+    /** The name. */
+    private final String name;
 
-		public int getOrder() {
-			return order;
-		}
+    /** The order. */
+    private final int order;
 
-		public boolean correspondsTo(MapperDAGVertex v) {
-			return v.getName().equals(name);
-		}
+    /**
+     * Instantiates a new order property.
+     *
+     * @param name
+     *          the name
+     * @param order
+     *          the order
+     */
+    public OrderProperty(final String name, final int order) {
+      super();
+      this.name = name;
+      this.order = order;
+    }
 
-		@Override
-		public String toString() {
-			return name;
-		}
-	}
+    /**
+     * Gets the name.
+     *
+     * @return the name
+     */
+    public String getName() {
+      return this.name;
+    }
 
-	// Maintaining a list of the properties for iterating purpose in the given
-	// order
-	private List<OrderProperty> orderedList;
-	// Maintaining a map of the properties for research purpose of a given name
-	private Map<String, OrderProperty> nameMap;
+    /**
+     * Gets the order.
+     *
+     * @return the order
+     */
+    public int getOrder() {
+      return this.order;
+    }
 
-	public VertexOrderList() {
-		super();
-		orderedList = new ArrayList<OrderProperty>();
-		nameMap = new HashMap<String, OrderProperty>();
-	}
+    /**
+     * Corresponds to.
+     *
+     * @param v
+     *          the v
+     * @return true, if successful
+     */
+    public boolean correspondsTo(final MapperDAGVertex v) {
+      return v.getName().equals(this.name);
+    }
 
-	public int indexOf(OrderProperty p) {
-		return orderedList.indexOf(p);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+      return this.name;
+    }
+  }
 
-	public List<OrderProperty> elements() {
-		return Collections.unmodifiableList(orderedList);
-	}
+  // Maintaining a list of the properties for iterating purpose in the given
+  /** The ordered list. */
+  // order
+  private final List<OrderProperty> orderedList;
 
-	public int orderOf(String name) {
-		if(nameMap.get(name) == null){
-			WorkflowLogger.getLogger().log(Level.SEVERE,"Vertex could not be scheduled, check constraints: " + name);
-		}
-		else{
-			return nameMap.get(name).getOrder();
-		}
-		return -1;
-	}
+  /** The name map. */
+  // Maintaining a map of the properties for research purpose of a given name
+  private final Map<String, OrderProperty> nameMap;
 
-	public boolean contains(String name) {
-		return nameMap.containsKey(name);
-	}
+  /**
+   * Instantiates a new vertex order list.
+   */
+  public VertexOrderList() {
+    super();
+    this.orderedList = new ArrayList<>();
+    this.nameMap = new HashMap<>();
+  }
 
-	public void addLast(OrderProperty p) {
-		orderedList.add(p);
-		nameMap.put(p.getName(), p);
-	}
+  /**
+   * Index of.
+   *
+   * @param p
+   *          the p
+   * @return the int
+   */
+  public int indexOf(final OrderProperty p) {
+    return this.orderedList.indexOf(p);
+  }
 
-	public List<OrderProperty> getOrderedList() {
-		return Collections.unmodifiableList(orderedList);
-	}
+  /**
+   * Elements.
+   *
+   * @return the list
+   */
+  public List<OrderProperty> elements() {
+    return Collections.unmodifiableList(this.orderedList);
+  }
+
+  /**
+   * Order of.
+   *
+   * @param name
+   *          the name
+   * @return the int
+   */
+  public int orderOf(final String name) {
+    if (this.nameMap.get(name) == null) {
+      WorkflowLogger.getLogger().log(Level.SEVERE,
+          "Vertex could not be scheduled, check constraints: " + name);
+    } else {
+      return this.nameMap.get(name).getOrder();
+    }
+    return -1;
+  }
+
+  /**
+   * Contains.
+   *
+   * @param name
+   *          the name
+   * @return true, if successful
+   */
+  public boolean contains(final String name) {
+    return this.nameMap.containsKey(name);
+  }
+
+  /**
+   * Adds the last.
+   *
+   * @param p
+   *          the p
+   */
+  public void addLast(final OrderProperty p) {
+    this.orderedList.add(p);
+    this.nameMap.put(p.getName(), p);
+  }
+
+  /**
+   * Gets the ordered list.
+   *
+   * @return the ordered list
+   */
+  public List<OrderProperty> getOrderedList() {
+    return Collections.unmodifiableList(this.orderedList);
+  }
 }

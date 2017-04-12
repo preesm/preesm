@@ -42,16 +42,22 @@ import org.ietr.dftools.algorithm.model.dag.DAGVertex;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
+// TODO: Auto-generated Javadoc
 /**
- * Topological DAG Iterator respecting synchronized vertices
- * 
+ * Topological DAG Iterator respecting synchronized vertices.
+ *
  * @author mpelcat
  */
-public class TopologicalDAGIterator extends
-		TopologicalOrderIterator<DAGVertex, DAGEdge> {
+public class TopologicalDAGIterator extends TopologicalOrderIterator<DAGVertex, DAGEdge> {
 
-	public TopologicalDAGIterator(DirectedGraph<DAGVertex, DAGEdge> dag) {
+  /**
+   * Instantiates a new topological DAG iterator.
+   *
+   * @param dag
+   *          the dag
+   */
+  public TopologicalDAGIterator(final DirectedGraph<DAGVertex, DAGEdge> dag) {
 
-		super(dag);
-	}
+    super(dag);
+  }
 }

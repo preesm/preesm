@@ -45,11 +45,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -84,730 +82,825 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+// TODO: Auto-generated Javadoc
 /**
- * An xml parser retrieving scenario data
- * 
+ * An xml parser retrieving scenario data.
+ *
  * @author mpelcat
  */
 public class ScenarioParser {
 
-	/**
-	 * xml tree
-	 */
-	private Document dom = null;
-
-	/**
-	 * scenario being retrieved
-	 */
-	private PreesmScenario scenario = null;
-
-	/**
-	 * current algorithm
-	 */
-	private SDFGraph algoSDF = null;
-	private PiGraph algoPi = null;
-
-	public ScenarioParser() {
-
-		scenario = new PreesmScenario();
-	}
-
-	public Document getDom() {
-		return dom;
-	}
-
-	/**
-	 * Retrieves the DOM document
-	 */
-	public PreesmScenario parseXmlFile(IFile file) throws InvalidModelException, FileNotFoundException, CoreException {
-		// get the factory
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-
-		try {
-			// Using factory get an instance of document builder
-			DocumentBuilder db = dbf.newDocumentBuilder();
-
-			// parse using builder to get DOM representation of the XML file
-			dom = db.parse(file.getContents());
-		} catch (ParserConfigurationException pce) {
-			pce.printStackTrace();
-		} catch (SAXException se) {
-			se.printStackTrace();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
-
-		if (dom != null) {
-			// get the root elememt
-			Element docElt = dom.getDocumentElement();
-
-			Node node = docElt.getFirstChild();
-
-			while (node != null) {
-
-				if (node instanceof Element) {
-					Element elt = (Element) node;
-					String type = elt.getTagName();
-					switch (type) {
-					case "files":
-						parseFileNames(elt);
-						break;
-					case "constraints":
-						parseConstraintGroups(elt);
-						break;
-					case "relativeconstraints":
-						parseRelativeConstraints(elt);
-						break;
-					case "timings":
-						parseTimings(elt);
-						break;
-					case "simuParams":
-						parseSimuParams(elt);
-						break;
-					case "variables":
-						parseVariables(elt);
-						break;
-					case "parameterValues":
-						parseParameterValues(elt);
-						break;
-					}
-				}
-
-				node = node.getNextSibling();
-			}
-		}
-
-		scenario.setScenarioURL(file.getFullPath().toString());
-		return scenario;
-	}
-
-	/**
-	 * Retrieves all the parameter values
-	 */
-	private void parseParameterValues(Element paramValuesElt) {
-
-		Node node = paramValuesElt.getFirstChild();
-
-		PiGraph graph = null;
-		try {
-			graph = ScenarioParser.getPiGraph(scenario.getAlgorithmURL());
-		} catch (InvalidModelException | CoreException e1) {
-			e1.printStackTrace();
-		}
-		if (scenario.isPISDFScenario() && graph != null) {
-			Set<Parameter> parameters = new HashSet<Parameter>();
-			for (Parameter p : graph.getAllParameters()) {
-				if (!p.isConfigurationInterface())
-					parameters.add(p);
-			}
-
-			while (node != null) {
-				if (node instanceof Element) {
-					Element elt = (Element) node;
-					String type = elt.getTagName();
-					if (type.equals("parameter")) {
-						Parameter justParsed = parseParameterValue(elt, graph);
-						parameters.remove(justParsed);
-					}
-				}
-
-				node = node.getNextSibling();
-			}
-
-			// Create a parameter value foreach parameter not yet in the
-			// scenario
-			for (Parameter p : parameters) {
-				scenario.getParameterValueManager().addParameterValue(p);
-			}
-		}
-	}
-
-	/**
-	 * Retrieve a ParameterValue
-	 */
-	private Parameter parseParameterValue(Element paramValueElt, PiGraph graph) {
-		Parameter currentParameter = null;
-
-		String type = paramValueElt.getAttribute("type");
-		String parent = paramValueElt.getAttribute("parent");
-		String name = paramValueElt.getAttribute("name");
-		String stringValue = paramValueElt.getAttribute("value");
-
-		currentParameter = graph.getParameterNamedWithParent(name, parent);
-
-		switch (type) {
-		case "INDEPENDENT":
-		case "STATIC": // Retro-compatibility
-			scenario.getParameterValueManager().addIndependentParameterValue(currentParameter, stringValue, parent);
-			break;
-		case "ACTOR_DEPENDENT":
-		case "DYNAMIC": // Retro-compatibility
-			if (stringValue.charAt(0) == '[' && stringValue.charAt(stringValue.length() - 1) == ']') {
-				stringValue = stringValue.substring(1, stringValue.length() - 1);
-				String[] values = stringValue.split(",");
-
-				Set<Integer> newValues = new HashSet<Integer>();
-
-				try {
-					for (String val : values) {
-						newValues.add(Integer.parseInt(val.trim()));
-					}
-				} catch (NumberFormatException e) {
-					// TODO: Do smthg?
-				}
-				scenario.getParameterValueManager().addActorDependentParameterValue(currentParameter, newValues,
-						parent);
-			}
-			break;
-		case "PARAMETER_DEPENDENT":
-		case "DEPENDENT": // Retro-compatibility
-			Set<String> inputParameters = new HashSet<String>();
-			if (graph != null) {
-
-				for (Parameter input : currentParameter.getInputParameters()) {
-					inputParameters.add(input.getName());
-				}
-			}
-			scenario.getParameterValueManager().addParameterDependentParameterValue(currentParameter, stringValue,
-					inputParameters, parent);
-			break;
-		default:
-			throw new RuntimeException("Unknown Parameter type: " + type + " for Parameter: " + name);
-		}
-
-		return currentParameter;
-	}
-
-	/**
-	 * Retrieves the timings
-	 */
-	private void parseRelativeConstraints(Element relConsElt) {
-
-		String relConsFileUrl = relConsElt.getAttribute("excelUrl");
-		scenario.getTimingManager().setExcelFileURL(relConsFileUrl);
-
-		Node node = relConsElt.getFirstChild();
-
-		while (node != null) {
-
-			if (node instanceof Element) {
-				Element elt = (Element) node;
-				String type = elt.getTagName();
-				if (type.equals("relativeconstraint")) {
-					parseRelativeConstraint(elt);
-				}
-			}
-
-			node = node.getNextSibling();
-		}
-	}
-
-	/**
-	 * Retrieves one timing
-	 */
-	private void parseRelativeConstraint(Element timingElt) {
-
-		int group = -1;
-
-		if (algoSDF != null) {
-			String type = timingElt.getTagName();
-			if (type.equals("relativeconstraint")) {
-				String vertexpath = timingElt.getAttribute("vertexname");
-
-				try {
-					group = Integer.parseInt(timingElt.getAttribute("group"));
-				} catch (NumberFormatException e) {
-					group = -1;
-				}
-
-				scenario.getRelativeconstraintManager().addConstraint(vertexpath, group);
-			}
-
-		}
-	}
-
-	/**
-	 * Retrieves the timings
-	 */
-	private void parseVariables(Element varsElt) {
-
-		String excelFileUrl = varsElt.getAttribute("excelUrl");
-		scenario.getVariablesManager().setExcelFileURL(excelFileUrl);
-
-		Node node = varsElt.getFirstChild();
-
-		while (node != null) {
-
-			if (node instanceof Element) {
-				Element elt = (Element) node;
-				String type = elt.getTagName();
-				if (type.equals("variable")) {
-					String name = elt.getAttribute("name");
-					String value = elt.getAttribute("value");
-
-					scenario.getVariablesManager().setVariable(name, value);
-				}
-			}
-
-			node = node.getNextSibling();
-		}
-	}
-
-	/**
-	 * Parses the simulation parameters
-	 */
-	private void parseSimuParams(Element filesElt) {
-
-		Node node = filesElt.getFirstChild();
-
-		while (node != null) {
-
-			if (node instanceof Element) {
-				Element elt = (Element) node;
-				String type = elt.getTagName();
-				String content = elt.getTextContent();
-				switch (type) {
-				case "mainCore":
-					scenario.getSimulationManager().setMainOperatorName(content);
-					break;
-				case "mainComNode":
-					scenario.getSimulationManager().setMainComNodeName(content);
-					break;
-				case "averageDataSize":
-					scenario.getSimulationManager().setAverageDataSize(Long.valueOf(content));
-					break;
-				case "dataTypes":
-					parseDataTypes(elt);
-					break;
-				case "specialVertexOperators":
-					parseSpecialVertexOperators(elt);
-					break;
-				case "numberOfTopExecutions":
-					scenario.getSimulationManager().setNumberOfTopExecutions(Integer.parseInt(content));
-					break;
-				}
-			}
-
-			node = node.getNextSibling();
-		}
-	}
-
-	/**
-	 * Retrieves the data types
-	 */
-	private void parseDataTypes(Element dataTypeElt) {
-
-		Node node = dataTypeElt.getFirstChild();
-
-		while (node != null) {
-
-			if (node instanceof Element) {
-				Element elt = (Element) node;
-				String type = elt.getTagName();
-				if (type.equals("dataType")) {
-					String name = elt.getAttribute("name");
-					String size = elt.getAttribute("size");
-
-					if (!name.isEmpty() && !size.isEmpty()) {
-						DataType dataType = new DataType(name, Integer.parseInt(size));
-						scenario.getSimulationManager().putDataType(dataType);
-					}
-				}
-			}
-
-			node = node.getNextSibling();
-		}
-	}
-
-	/**
-	 * Retrieves the operators able to execute fork/join/broadcast
-	 */
-	private void parseSpecialVertexOperators(Element spvElt) {
-
-		Node node = spvElt.getFirstChild();
-
-		while (node != null) {
-
-			if (node instanceof Element) {
-				Element elt = (Element) node;
-				String type = elt.getTagName();
-				if (type.equals("specialVertexOperator")) {
-					String path = elt.getAttribute("path");
-
-					if (path != null) {
-						scenario.getSimulationManager().addSpecialVertexOperatorId(path);
-					}
-				}
-			}
-
-			node = node.getNextSibling();
-		}
-
-		/*
-		 * It is not possible to remove all operators from special vertex
-		 * executors: if no operator is selected, all of them are!!
-		 */
-		if (scenario.getSimulationManager().getSpecialVertexOperatorIds().isEmpty()
-				&& scenario.getOperatorIds() != null) {
-			for (String opId : scenario.getOperatorIds()) {
-				scenario.getSimulationManager().addSpecialVertexOperatorId(opId);
-			}
-		}
-	}
-
-	/**
-	 * Parses the archi and algo files and retrieves the file contents
-	 */
-	private void parseFileNames(Element filesElt) throws InvalidModelException, FileNotFoundException, CoreException {
-
-		Node node = filesElt.getFirstChild();
-
-		while (node != null) {
-
-			if (node instanceof Element) {
-				Element elt = (Element) node;
-				String type = elt.getTagName();
-				String url = elt.getAttribute("url");
-				if (url.length() > 0) {
-					if (type.equals("algorithm")) {
-						scenario.setAlgorithmURL(url);
-						if (url.endsWith(".graphml")) {
-							algoSDF = getSDFGraph(url);
-							algoPi = null;
-						} else if (url.endsWith(".pi")) {
-							algoPi = getPiGraph(url);
-							algoSDF = null;
-						}
-					} else if (type.equals("architecture")) {
-						scenario.setArchitectureURL(url);
-						initializeArchitectureInformation(url);
-					} else if (type.equals("codegenDirectory")) {
-						scenario.getCodegenManager().setCodegenDirectory(url);
-					}
-				}
-			}
-
-			node = node.getNextSibling();
-		}
-	}
-
-	/**
-	 * Depending on the architecture model, parses the model and populates the
-	 * scenario
-	 */
-	private void initializeArchitectureInformation(String url) {
-		if (url.contains(".design")) {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
-					"SLAM architecture 1.0 is no more supported. Use .slam architecture files.");
-		} else if (url.contains(".slam")) {
-
-			Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
-			Object instance = extToFactoryMap.get("slam");
-			if (instance == null) {
-				instance = new IPXACTResourceFactoryImpl();
-				extToFactoryMap.put("slam", instance);
-			}
-
-			if (!EPackage.Registry.INSTANCE.containsKey(SlamPackage.eNS_URI)) {
-				EPackage.Registry.INSTANCE.put(SlamPackage.eNS_URI, SlamPackage.eINSTANCE);
-			}
-
-			// Extract the root object from the resource.
-			Design design = parseSlamDesign(url);
-
-			scenario.setOperatorIds(DesignTools.getOperatorInstanceIds(design));
-			scenario.setComNodeIds(DesignTools.getComNodeInstanceIds(design));
-			scenario.setOperatorDefinitionIds(DesignTools.getOperatorComponentIds(design));
-		}
-	}
-
-	public static Design parseSlamDesign(String url) {
-		// Demand load the resource into the resource set.
-		ResourceSet resourceSet = new ResourceSetImpl();
-
-		Path relativePath = new Path(url);
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
-		String completePath = file.getLocation().toString();
-
-		// resourceSet.
-		Resource resource = null;
-		Design design = null;
-
-		try {
-			resource = resourceSet.getResource(URI.createFileURI(completePath), true);
-
-			// Extract the root object from the resource.
-			design = (Design) resource.getContents().get(0);
-		} catch (WrappedException e) {
-			WorkflowLogger.getLogger().log(Level.SEVERE, "The architecture file \"" + completePath
-					+ "\" specified by the scenario does not exist any more.");
-		}
-
-		return design;
-	}
-
-	public static SDFGraph getSDFGraph(String path) throws InvalidModelException, FileNotFoundException {
-		SDFGraph algorithm = null;
-		GMLSDFImporter importer = new GMLSDFImporter();
-
-		Path relativePath = new Path(path);
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
-
-		try {
-			algorithm = importer.parse(new File(file.getLocation().toOSString()));
-
-			addVertexPathProperties(algorithm, "");
-		} catch (InvalidModelException e) {
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			throw e;
-		}
-
-		return algorithm;
-	}
-
-	/**
-	 * 
-	 * @param url
-	 *            URL of the Algorithm.
-	 * @return the {@link PiGraph} algorithm.
-	 * @throws InvalidModelException
-	 * @throws CoreException
-	 */
-	public static PiGraph getPiGraph(String url) throws InvalidModelException, CoreException {
-		PiGraph pigraph = null;
-		ResourceSet resourceSet = new ResourceSetImpl();
-
-		URI uri = URI.createPlatformResourceURI(url, true);
-		if (uri.fileExtension() == null || !uri.fileExtension().contentEquals("pi"))
-			return null;
-		Resource ressource;
-		try {
-			ressource = resourceSet.getResource(uri, true);
-			pigraph = (PiGraph) (ressource.getContents().get(0));
-
-			SubgraphConnector connector = new SubgraphConnector();
-			connector.connectSubgraphs(pigraph);
-		} catch (WrappedException e) {
-			WorkflowLogger.getLogger().log(Level.SEVERE,
-					"The algorithm file \"" + uri + "\" specified by the scenario does not exist any more.");
-		}
-
-		return pigraph;
-	}
-
-	/**
-	 * Adding an information that keeps the path of each vertex relative to the
-	 * hierarchy
-	 */
-	private static void addVertexPathProperties(SDFGraph algorithm, String currentPath) {
-
-		for (SDFAbstractVertex vertex : algorithm.vertexSet()) {
-			String newPath = currentPath + vertex.getName();
-			vertex.setInfo(newPath);
-			newPath += "/";
-			if (vertex.getGraphDescription() != null) {
-				addVertexPathProperties((SDFGraph) vertex.getGraphDescription(), newPath);
-			}
-		}
-	}
-
-	/**
-	 * Retrieves all the constraint groups
-	 */
-	private void parseConstraintGroups(Element cstGroupsElt) {
-
-		String excelFileUrl = cstGroupsElt.getAttribute("excelUrl");
-		scenario.getConstraintGroupManager().setExcelFileURL(excelFileUrl);
-
-		Node node = cstGroupsElt.getFirstChild();
-
-		while (node != null) {
-
-			if (node instanceof Element) {
-				Element elt = (Element) node;
-				String type = elt.getTagName();
-				if (type.equals("constraintGroup")) {
-					ConstraintGroup cg = getConstraintGroup(elt);
-					scenario.getConstraintGroupManager().addConstraintGroup(cg);
-				}
-			}
-
-			node = node.getNextSibling();
-		}
-	}
-
-	/**
-	 * Retrieves a constraint group
-	 */
-	private ConstraintGroup getConstraintGroup(Element cstGroupElt) {
-
-		ConstraintGroup cg = new ConstraintGroup();
-
-		if (algoSDF != null || algoPi != null) {
-			Node node = cstGroupElt.getFirstChild();
-
-			while (node != null) {
-				if (node instanceof Element) {
-					Element elt = (Element) node;
-					String type = elt.getTagName();
-					String name = elt.getAttribute("name");
-					if (type.equals("task")) {
-						if (getActorFromPath(name) != null)
-							cg.addActorPath(name);
-					} else if (type.equals("operator") && scenario.getOperatorIds() != null) {
-						if (scenario.getOperatorIds().contains(name))
-							cg.addOperatorId(name);
-					}
-				}
-				node = node.getNextSibling();
-			}
-			return cg;
-		}
-
-		return cg;
-	}
-
-	/**
-	 * Retrieves the timings
-	 */
-	private void parseTimings(Element timingsElt) {
-
-		String timingFileUrl = timingsElt.getAttribute("excelUrl");
-		scenario.getTimingManager().setExcelFileURL(timingFileUrl);
-
-		Node node = timingsElt.getFirstChild();
-
-		while (node != null) {
-
-			if (node instanceof Element) {
-				Element elt = (Element) node;
-				String type = elt.getTagName();
-				if (type.equals("timing")) {
-					Timing timing = getTiming(elt);
-					if (timing != null)
-						scenario.getTimingManager().addTiming(timing);
-				} else if (type.equals("memcpyspeed")) {
-					retrieveMemcpySpeed(scenario.getTimingManager(), elt);
-				}
-			}
-
-			node = node.getNextSibling();
-		}
-	}
-
-	/**
-	 * Retrieves one timing
-	 */
-	private Timing getTiming(Element timingElt) {
-
-		Timing timing = null;
-
-		if (algoSDF != null || algoPi != null) {
-
-			String type = timingElt.getTagName();
-			if (type.equals("timing")) {
-				String vertexpath = timingElt.getAttribute("vertexname");
-				String opdefname = timingElt.getAttribute("opname");
-				long time;
-				String stringValue = timingElt.getAttribute("time");
-				boolean isEvaluated = false;
-				try {
-					time = Long.parseLong(stringValue);
-					isEvaluated = true;
-				} catch (NumberFormatException e) {
-					time = -1;
-				}
-
-				String actorName;
-				if (vertexpath.contains("/"))
-					actorName = getActorNameFromPath(vertexpath);
-				else
-					actorName = vertexpath;
-
-				if (actorName != null && scenario.getOperatorDefinitionIds().contains(opdefname)) {
-					if (isEvaluated) {
-						timing = new Timing(opdefname, actorName, time);
-					} else {
-						timing = new Timing(opdefname, actorName, stringValue);
-					}
-				}
-			}
-		}
-
-		return timing;
-	}
-
-	/**
-	 * Returns an actor Object (either SDFAbstractVertex from SDFGraph or
-	 * AbstractActor from PiGraph) from the path in its container graph
-	 * 
-	 * @param path
-	 *            the path to the actor, where its segment is the name of an
-	 *            actor and separators are "/"
-	 * @return the wanted actor, if existing, null otherwise
-	 */
-	private Object getActorFromPath(String path) {
-		Object result = null;
-		if (algoSDF != null)
-			result = algoSDF.getHierarchicalVertexFromPath(path);
-		else if (algoPi != null)
-			result = algoPi.getHierarchicalActorFromPath(path);
-		return result;
-	}
-
-	/**
-	 * Returns the name of an actor (either SDFAbstractVertex from SDFGraph or
-	 * AbstractActor from PiGraph) from the path in its container graph
-	 * 
-	 * @param path
-	 *            the path to the actor, where its segment is the name of an
-	 *            actor and separators are "/"
-	 * @return the name of the wanted actor, if we found it
-	 */
-	private String getActorNameFromPath(String path) {
-		Object actor = getActorFromPath(path);
-		if (actor != null) {
-			if (actor instanceof SDFAbstractVertex)
-				return ((SDFAbstractVertex) actor).getName();
-			else if (actor instanceof AbstractActor)
-				return ((AbstractActor) actor).getName();
-		}
-		return null;
-	}
-
-	/**
-	 * Retrieves one memcopy speed composed of integer setup time and
-	 * timeperunit
-	 */
-	private void retrieveMemcpySpeed(TimingManager timingManager, Element timingElt) {
-
-		if (algoSDF != null || algoPi != null) {
-
-			String type = timingElt.getTagName();
-			if (type.equals("memcpyspeed")) {
-				String opdefname = timingElt.getAttribute("opname");
-				String sSetupTime = timingElt.getAttribute("setuptime");
-				String sTimePerUnit = timingElt.getAttribute("timeperunit");
-				int setupTime;
-				float timePerUnit;
-
-				try {
-					setupTime = Integer.parseInt(sSetupTime);
-					timePerUnit = Float.parseFloat(sTimePerUnit);
-				} catch (NumberFormatException e) {
-					setupTime = -1;
-					timePerUnit = -1;
-				}
-
-				if (scenario.getOperatorDefinitionIds().contains(opdefname) && setupTime >= 0 && timePerUnit >= 0) {
-					MemCopySpeed speed = new MemCopySpeed(opdefname, setupTime, timePerUnit);
-					timingManager.putMemcpySpeed(speed);
-				}
-			}
-
-		}
-	}
+  /** xml tree. */
+  private Document dom = null;
+
+  /** scenario being retrieved. */
+  private PreesmScenario scenario = null;
+
+  /** current algorithm. */
+  private SDFGraph algoSDF = null;
+
+  /** The algo pi. */
+  private PiGraph algoPi = null;
+
+  /**
+   * Instantiates a new scenario parser.
+   */
+  public ScenarioParser() {
+
+    this.scenario = new PreesmScenario();
+  }
+
+  /**
+   * Gets the dom.
+   *
+   * @return the dom
+   */
+  public Document getDom() {
+    return this.dom;
+  }
+
+  /**
+   * Retrieves the DOM document.
+   *
+   * @param file
+   *          the file
+   * @return the preesm scenario
+   * @throws InvalidModelException
+   *           the invalid model exception
+   * @throws FileNotFoundException
+   *           the file not found exception
+   * @throws CoreException
+   *           the core exception
+   */
+  public PreesmScenario parseXmlFile(final IFile file) throws InvalidModelException, FileNotFoundException, CoreException {
+    // get the factory
+    final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+
+    try {
+      // Using factory get an instance of document builder
+      final DocumentBuilder db = dbf.newDocumentBuilder();
+
+      // parse using builder to get DOM representation of the XML file
+      this.dom = db.parse(file.getContents());
+    } catch (final ParserConfigurationException pce) {
+      pce.printStackTrace();
+    } catch (final SAXException e) {
+      e.printStackTrace();
+    } catch (final IOException e) {
+      e.printStackTrace();
+    } catch (final CoreException e) {
+      e.printStackTrace();
+    }
+
+    if (this.dom != null) {
+      // get the root elememt
+      final Element docElt = this.dom.getDocumentElement();
+
+      Node node = docElt.getFirstChild();
+
+      while (node != null) {
+
+        if (node instanceof Element) {
+          final Element elt = (Element) node;
+          final String type = elt.getTagName();
+          switch (type) {
+            case "files":
+              parseFileNames(elt);
+              break;
+            case "constraints":
+              parseConstraintGroups(elt);
+              break;
+            case "relativeconstraints":
+              parseRelativeConstraints(elt);
+              break;
+            case "timings":
+              parseTimings(elt);
+              break;
+            case "simuParams":
+              parseSimuParams(elt);
+              break;
+            case "variables":
+              parseVariables(elt);
+              break;
+            case "parameterValues":
+              parseParameterValues(elt);
+              break;
+            default:
+          }
+        }
+
+        node = node.getNextSibling();
+      }
+    }
+
+    this.scenario.setScenarioURL(file.getFullPath().toString());
+    return this.scenario;
+  }
+
+  /**
+   * Retrieves all the parameter values.
+   *
+   * @param paramValuesElt
+   *          the param values elt
+   */
+  private void parseParameterValues(final Element paramValuesElt) {
+
+    Node node = paramValuesElt.getFirstChild();
+
+    PiGraph graph = null;
+    try {
+      graph = ScenarioParser.getPiGraph(this.scenario.getAlgorithmURL());
+    } catch (InvalidModelException | CoreException e) {
+      e.printStackTrace();
+    }
+    if (this.scenario.isPISDFScenario() && (graph != null)) {
+      final Set<Parameter> parameters = new HashSet<>();
+      for (final Parameter p : graph.getAllParameters()) {
+        if (!p.isConfigurationInterface()) {
+          parameters.add(p);
+        }
+      }
+
+      while (node != null) {
+        if (node instanceof Element) {
+          final Element elt = (Element) node;
+          final String type = elt.getTagName();
+          if (type.equals("parameter")) {
+            final Parameter justParsed = parseParameterValue(elt, graph);
+            parameters.remove(justParsed);
+          }
+        }
+
+        node = node.getNextSibling();
+      }
+
+      // Create a parameter value foreach parameter not yet in the
+      // scenario
+      for (final Parameter p : parameters) {
+        this.scenario.getParameterValueManager().addParameterValue(p);
+      }
+    }
+  }
+
+  /**
+   * Retrieve a ParameterValue.
+   *
+   * @param paramValueElt
+   *          the param value elt
+   * @param graph
+   *          the graph
+   * @return the parameter
+   */
+  private Parameter parseParameterValue(final Element paramValueElt, final PiGraph graph) {
+    Parameter currentParameter = null;
+
+    final String type = paramValueElt.getAttribute("type");
+    final String parent = paramValueElt.getAttribute("parent");
+    final String name = paramValueElt.getAttribute("name");
+    String stringValue = paramValueElt.getAttribute("value");
+
+    currentParameter = graph.getParameterNamedWithParent(name, parent);
+
+    switch (type) {
+      case "INDEPENDENT":
+      case "STATIC": // Retro-compatibility
+        this.scenario.getParameterValueManager().addIndependentParameterValue(currentParameter, stringValue, parent);
+        break;
+      case "ACTOR_DEPENDENT":
+      case "DYNAMIC": // Retro-compatibility
+        if ((stringValue.charAt(0) == '[') && (stringValue.charAt(stringValue.length() - 1) == ']')) {
+          stringValue = stringValue.substring(1, stringValue.length() - 1);
+          final String[] values = stringValue.split(",");
+
+          final Set<Integer> newValues = new HashSet<>();
+
+          try {
+            for (final String val : values) {
+              newValues.add(Integer.parseInt(val.trim()));
+            }
+          } catch (final NumberFormatException e) {
+            // TODO: Do smthg?
+          }
+          this.scenario.getParameterValueManager().addActorDependentParameterValue(currentParameter, newValues, parent);
+        }
+        break;
+      case "PARAMETER_DEPENDENT":
+      case "DEPENDENT": // Retro-compatibility
+        final Set<String> inputParameters = new HashSet<>();
+        if (graph != null) {
+
+          for (final Parameter input : currentParameter.getInputParameters()) {
+            inputParameters.add(input.getName());
+          }
+        }
+        this.scenario.getParameterValueManager().addParameterDependentParameterValue(currentParameter, stringValue, inputParameters, parent);
+        break;
+      default:
+        throw new RuntimeException("Unknown Parameter type: " + type + " for Parameter: " + name);
+    }
+
+    return currentParameter;
+  }
+
+  /**
+   * Retrieves the timings.
+   *
+   * @param relConsElt
+   *          the rel cons elt
+   */
+  private void parseRelativeConstraints(final Element relConsElt) {
+
+    final String relConsFileUrl = relConsElt.getAttribute("excelUrl");
+    this.scenario.getTimingManager().setExcelFileURL(relConsFileUrl);
+
+    Node node = relConsElt.getFirstChild();
+
+    while (node != null) {
+
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        final String type = elt.getTagName();
+        if (type.equals("relativeconstraint")) {
+          parseRelativeConstraint(elt);
+        }
+      }
+
+      node = node.getNextSibling();
+    }
+  }
+
+  /**
+   * Retrieves one timing.
+   *
+   * @param timingElt
+   *          the timing elt
+   */
+  private void parseRelativeConstraint(final Element timingElt) {
+
+    int group = -1;
+
+    if (this.algoSDF != null) {
+      final String type = timingElt.getTagName();
+      if (type.equals("relativeconstraint")) {
+        final String vertexpath = timingElt.getAttribute("vertexname");
+
+        try {
+          group = Integer.parseInt(timingElt.getAttribute("group"));
+        } catch (final NumberFormatException e) {
+          group = -1;
+        }
+
+        this.scenario.getRelativeconstraintManager().addConstraint(vertexpath, group);
+      }
+
+    }
+  }
+
+  /**
+   * Retrieves the timings.
+   *
+   * @param varsElt
+   *          the vars elt
+   */
+  private void parseVariables(final Element varsElt) {
+
+    final String excelFileUrl = varsElt.getAttribute("excelUrl");
+    this.scenario.getVariablesManager().setExcelFileURL(excelFileUrl);
+
+    Node node = varsElt.getFirstChild();
+
+    while (node != null) {
+
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        final String type = elt.getTagName();
+        if (type.equals("variable")) {
+          final String name = elt.getAttribute("name");
+          final String value = elt.getAttribute("value");
+
+          this.scenario.getVariablesManager().setVariable(name, value);
+        }
+      }
+
+      node = node.getNextSibling();
+    }
+  }
+
+  /**
+   * Parses the simulation parameters.
+   *
+   * @param filesElt
+   *          the files elt
+   */
+  private void parseSimuParams(final Element filesElt) {
+
+    Node node = filesElt.getFirstChild();
+
+    while (node != null) {
+
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        final String type = elt.getTagName();
+        final String content = elt.getTextContent();
+        switch (type) {
+          case "mainCore":
+            this.scenario.getSimulationManager().setMainOperatorName(content);
+            break;
+          case "mainComNode":
+            this.scenario.getSimulationManager().setMainComNodeName(content);
+            break;
+          case "averageDataSize":
+            this.scenario.getSimulationManager().setAverageDataSize(Long.valueOf(content));
+            break;
+          case "dataTypes":
+            parseDataTypes(elt);
+            break;
+          case "specialVertexOperators":
+            parseSpecialVertexOperators(elt);
+            break;
+          case "numberOfTopExecutions":
+            this.scenario.getSimulationManager().setNumberOfTopExecutions(Integer.parseInt(content));
+            break;
+          default:
+        }
+      }
+
+      node = node.getNextSibling();
+    }
+  }
+
+  /**
+   * Retrieves the data types.
+   *
+   * @param dataTypeElt
+   *          the data type elt
+   */
+  private void parseDataTypes(final Element dataTypeElt) {
+
+    Node node = dataTypeElt.getFirstChild();
+
+    while (node != null) {
+
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        final String type = elt.getTagName();
+        if (type.equals("dataType")) {
+          final String name = elt.getAttribute("name");
+          final String size = elt.getAttribute("size");
+
+          if (!name.isEmpty() && !size.isEmpty()) {
+            final DataType dataType = new DataType(name, Integer.parseInt(size));
+            this.scenario.getSimulationManager().putDataType(dataType);
+          }
+        }
+      }
+
+      node = node.getNextSibling();
+    }
+  }
+
+  /**
+   * Retrieves the operators able to execute fork/join/broadcast.
+   *
+   * @param spvElt
+   *          the spv elt
+   */
+  private void parseSpecialVertexOperators(final Element spvElt) {
+
+    Node node = spvElt.getFirstChild();
+
+    while (node != null) {
+
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        final String type = elt.getTagName();
+        if (type.equals("specialVertexOperator")) {
+          final String path = elt.getAttribute("path");
+
+          if (path != null) {
+            this.scenario.getSimulationManager().addSpecialVertexOperatorId(path);
+          }
+        }
+      }
+
+      node = node.getNextSibling();
+    }
+
+    /*
+     * It is not possible to remove all operators from special vertex executors: if no operator is selected, all of them are!!
+     */
+    if (this.scenario.getSimulationManager().getSpecialVertexOperatorIds().isEmpty() && (this.scenario.getOperatorIds() != null)) {
+      for (final String opId : this.scenario.getOperatorIds()) {
+        this.scenario.getSimulationManager().addSpecialVertexOperatorId(opId);
+      }
+    }
+  }
+
+  /**
+   * Parses the archi and algo files and retrieves the file contents.
+   *
+   * @param filesElt
+   *          the files elt
+   * @throws InvalidModelException
+   *           the invalid model exception
+   * @throws FileNotFoundException
+   *           the file not found exception
+   * @throws CoreException
+   *           the core exception
+   */
+  private void parseFileNames(final Element filesElt) throws InvalidModelException, FileNotFoundException, CoreException {
+
+    Node node = filesElt.getFirstChild();
+
+    while (node != null) {
+
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        final String type = elt.getTagName();
+        final String url = elt.getAttribute("url");
+        if (url.length() > 0) {
+          if (type.equals("algorithm")) {
+            this.scenario.setAlgorithmURL(url);
+            if (url.endsWith(".graphml")) {
+              this.algoSDF = ScenarioParser.getSDFGraph(url);
+              this.algoPi = null;
+            } else if (url.endsWith(".pi")) {
+              this.algoPi = ScenarioParser.getPiGraph(url);
+              this.algoSDF = null;
+            }
+          } else if (type.equals("architecture")) {
+            this.scenario.setArchitectureURL(url);
+            initializeArchitectureInformation(url);
+          } else if (type.equals("codegenDirectory")) {
+            this.scenario.getCodegenManager().setCodegenDirectory(url);
+          }
+        }
+      }
+
+      node = node.getNextSibling();
+    }
+  }
+
+  /**
+   * Depending on the architecture model, parses the model and populates the scenario.
+   *
+   * @param url
+   *          the url
+   */
+  private void initializeArchitectureInformation(final String url) {
+    if (url.contains(".design")) {
+      WorkflowLogger.getLogger().log(Level.SEVERE, "SLAM architecture 1.0 is no more supported. Use .slam architecture files.");
+    } else if (url.contains(".slam")) {
+
+      final Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
+      Object instance = extToFactoryMap.get("slam");
+      if (instance == null) {
+        instance = new IPXACTResourceFactoryImpl();
+        extToFactoryMap.put("slam", instance);
+      }
+
+      if (!EPackage.Registry.INSTANCE.containsKey(SlamPackage.eNS_URI)) {
+        EPackage.Registry.INSTANCE.put(SlamPackage.eNS_URI, SlamPackage.eINSTANCE);
+      }
+
+      // Extract the root object from the resource.
+      final Design design = ScenarioParser.parseSlamDesign(url);
+
+      this.scenario.setOperatorIds(DesignTools.getOperatorInstanceIds(design));
+      this.scenario.setComNodeIds(DesignTools.getComNodeInstanceIds(design));
+      this.scenario.setOperatorDefinitionIds(DesignTools.getOperatorComponentIds(design));
+    }
+  }
+
+  /**
+   * Parses the slam design.
+   *
+   * @param url
+   *          the url
+   * @return the design
+   */
+  public static Design parseSlamDesign(final String url) {
+    // Demand load the resource into the resource set.
+    final ResourceSet resourceSet = new ResourceSetImpl();
+
+    final Path relativePath = new Path(url);
+    final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
+    final String completePath = file.getLocation().toString();
+
+    // resourceSet.
+    Resource resource = null;
+    Design design = null;
+
+    try {
+      resource = resourceSet.getResource(URI.createFileURI(completePath), true);
+
+      // Extract the root object from the resource.
+      design = (Design) resource.getContents().get(0);
+    } catch (final WrappedException e) {
+      WorkflowLogger.getLogger().log(Level.SEVERE, "The architecture file \"" + completePath + "\" specified by the scenario does not exist any more.");
+    }
+
+    return design;
+  }
+
+  /**
+   * Gets the SDF graph.
+   *
+   * @param path
+   *          the path
+   * @return the SDF graph
+   * @throws InvalidModelException
+   *           the invalid model exception
+   * @throws FileNotFoundException
+   *           the file not found exception
+   */
+  public static SDFGraph getSDFGraph(final String path) throws InvalidModelException, FileNotFoundException {
+    SDFGraph algorithm = null;
+    final GMLSDFImporter importer = new GMLSDFImporter();
+
+    final Path relativePath = new Path(path);
+    final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(relativePath);
+
+    try {
+      algorithm = importer.parse(new File(file.getLocation().toOSString()));
+
+      ScenarioParser.addVertexPathProperties(algorithm, "");
+    } catch (final InvalidModelException e) {
+      e.printStackTrace();
+    } catch (final FileNotFoundException e) {
+      throw e;
+    }
+
+    return algorithm;
+  }
+
+  /**
+   * Gets the pi graph.
+   *
+   * @param url
+   *          URL of the Algorithm.
+   * @return the {@link PiGraph} algorithm.
+   * @throws InvalidModelException
+   *           the invalid model exception
+   * @throws CoreException
+   *           the core exception
+   */
+  public static PiGraph getPiGraph(final String url) throws InvalidModelException, CoreException {
+    PiGraph pigraph = null;
+    final ResourceSet resourceSet = new ResourceSetImpl();
+
+    final URI uri = URI.createPlatformResourceURI(url, true);
+    if ((uri.fileExtension() == null) || !uri.fileExtension().contentEquals("pi")) {
+      return null;
+    }
+    Resource ressource;
+    try {
+      ressource = resourceSet.getResource(uri, true);
+      pigraph = (PiGraph) (ressource.getContents().get(0));
+
+      final SubgraphConnector connector = new SubgraphConnector();
+      connector.connectSubgraphs(pigraph);
+    } catch (final WrappedException e) {
+      WorkflowLogger.getLogger().log(Level.SEVERE, "The algorithm file \"" + uri + "\" specified by the scenario does not exist any more.");
+    }
+
+    return pigraph;
+  }
+
+  /**
+   * Adding an information that keeps the path of each vertex relative to the hierarchy.
+   *
+   * @param algorithm
+   *          the algorithm
+   * @param currentPath
+   *          the current path
+   */
+  private static void addVertexPathProperties(final SDFGraph algorithm, final String currentPath) {
+
+    for (final SDFAbstractVertex vertex : algorithm.vertexSet()) {
+      String newPath = currentPath + vertex.getName();
+      vertex.setInfo(newPath);
+      newPath += "/";
+      if (vertex.getGraphDescription() != null) {
+        ScenarioParser.addVertexPathProperties((SDFGraph) vertex.getGraphDescription(), newPath);
+      }
+    }
+  }
+
+  /**
+   * Retrieves all the constraint groups.
+   *
+   * @param cstGroupsElt
+   *          the cst groups elt
+   */
+  private void parseConstraintGroups(final Element cstGroupsElt) {
+
+    final String excelFileUrl = cstGroupsElt.getAttribute("excelUrl");
+    this.scenario.getConstraintGroupManager().setExcelFileURL(excelFileUrl);
+
+    Node node = cstGroupsElt.getFirstChild();
+
+    while (node != null) {
+
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        final String type = elt.getTagName();
+        if (type.equals("constraintGroup")) {
+          final ConstraintGroup cg = getConstraintGroup(elt);
+          this.scenario.getConstraintGroupManager().addConstraintGroup(cg);
+        }
+      }
+
+      node = node.getNextSibling();
+    }
+  }
+
+  /**
+   * Retrieves a constraint group.
+   *
+   * @param cstGroupElt
+   *          the cst group elt
+   * @return the constraint group
+   */
+  private ConstraintGroup getConstraintGroup(final Element cstGroupElt) {
+
+    final ConstraintGroup cg = new ConstraintGroup();
+
+    if ((this.algoSDF != null) || (this.algoPi != null)) {
+      Node node = cstGroupElt.getFirstChild();
+
+      while (node != null) {
+        if (node instanceof Element) {
+          final Element elt = (Element) node;
+          final String type = elt.getTagName();
+          final String name = elt.getAttribute("name");
+          if (type.equals("task")) {
+            if (getActorFromPath(name) != null) {
+              cg.addActorPath(name);
+            }
+          } else if (type.equals("operator") && (this.scenario.getOperatorIds() != null)) {
+            if (this.scenario.getOperatorIds().contains(name)) {
+              cg.addOperatorId(name);
+            }
+          }
+        }
+        node = node.getNextSibling();
+      }
+      return cg;
+    }
+
+    return cg;
+  }
+
+  /**
+   * Retrieves the timings.
+   *
+   * @param timingsElt
+   *          the timings elt
+   */
+  private void parseTimings(final Element timingsElt) {
+
+    final String timingFileUrl = timingsElt.getAttribute("excelUrl");
+    this.scenario.getTimingManager().setExcelFileURL(timingFileUrl);
+
+    Node node = timingsElt.getFirstChild();
+
+    while (node != null) {
+
+      if (node instanceof Element) {
+        final Element elt = (Element) node;
+        final String type = elt.getTagName();
+        if (type.equals("timing")) {
+          final Timing timing = getTiming(elt);
+          if (timing != null) {
+            this.scenario.getTimingManager().addTiming(timing);
+          }
+        } else if (type.equals("memcpyspeed")) {
+          retrieveMemcpySpeed(this.scenario.getTimingManager(), elt);
+        }
+      }
+
+      node = node.getNextSibling();
+    }
+  }
+
+  /**
+   * Retrieves one timing.
+   *
+   * @param timingElt
+   *          the timing elt
+   * @return the timing
+   */
+  private Timing getTiming(final Element timingElt) {
+
+    Timing timing = null;
+
+    if ((this.algoSDF != null) || (this.algoPi != null)) {
+
+      final String type = timingElt.getTagName();
+      if (type.equals("timing")) {
+        final String vertexpath = timingElt.getAttribute("vertexname");
+        final String opdefname = timingElt.getAttribute("opname");
+        long time;
+        final String stringValue = timingElt.getAttribute("time");
+        boolean isEvaluated = false;
+        try {
+          time = Long.parseLong(stringValue);
+          isEvaluated = true;
+        } catch (final NumberFormatException e) {
+          time = -1;
+        }
+
+        String actorName;
+        if (vertexpath.contains("/")) {
+          actorName = getActorNameFromPath(vertexpath);
+        } else {
+          actorName = vertexpath;
+        }
+
+        if ((actorName != null) && this.scenario.getOperatorDefinitionIds().contains(opdefname)) {
+          if (isEvaluated) {
+            timing = new Timing(opdefname, actorName, time);
+          } else {
+            timing = new Timing(opdefname, actorName, stringValue);
+          }
+        }
+      }
+    }
+
+    return timing;
+  }
+
+  /**
+   * Returns an actor Object (either SDFAbstractVertex from SDFGraph or AbstractActor from PiGraph) from the path in its container graph.
+   *
+   * @param path
+   *          the path to the actor, where its segment is the name of an actor and separators are "/"
+   * @return the wanted actor, if existing, null otherwise
+   */
+  private Object getActorFromPath(final String path) {
+    Object result = null;
+    if (this.algoSDF != null) {
+      result = this.algoSDF.getHierarchicalVertexFromPath(path);
+    } else if (this.algoPi != null) {
+      result = this.algoPi.getHierarchicalActorFromPath(path);
+    }
+    return result;
+  }
+
+  /**
+   * Returns the name of an actor (either SDFAbstractVertex from SDFGraph or AbstractActor from PiGraph) from the path in its container graph.
+   *
+   * @param path
+   *          the path to the actor, where its segment is the name of an actor and separators are "/"
+   * @return the name of the wanted actor, if we found it
+   */
+  private String getActorNameFromPath(final String path) {
+    final Object actor = getActorFromPath(path);
+    if (actor != null) {
+      if (actor instanceof SDFAbstractVertex) {
+        return ((SDFAbstractVertex) actor).getName();
+      } else if (actor instanceof AbstractActor) {
+        return ((AbstractActor) actor).getName();
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Retrieves one memcopy speed composed of integer setup time and timeperunit.
+   *
+   * @param timingManager
+   *          the timing manager
+   * @param timingElt
+   *          the timing elt
+   */
+  private void retrieveMemcpySpeed(final TimingManager timingManager, final Element timingElt) {
+
+    if ((this.algoSDF != null) || (this.algoPi != null)) {
+
+      final String type = timingElt.getTagName();
+      if (type.equals("memcpyspeed")) {
+        final String opdefname = timingElt.getAttribute("opname");
+        final String sSetupTime = timingElt.getAttribute("setuptime");
+        final String sTimePerUnit = timingElt.getAttribute("timeperunit");
+        int setupTime;
+        float timePerUnit;
+
+        try {
+          setupTime = Integer.parseInt(sSetupTime);
+          timePerUnit = Float.parseFloat(sTimePerUnit);
+        } catch (final NumberFormatException e) {
+          setupTime = -1;
+          timePerUnit = -1;
+        }
+
+        if (this.scenario.getOperatorDefinitionIds().contains(opdefname) && (setupTime >= 0) && (timePerUnit >= 0)) {
+          final MemCopySpeed speed = new MemCopySpeed(opdefname, setupTime, timePerUnit);
+          timingManager.putMemcpySpeed(speed);
+        }
+      }
+
+    }
+  }
 }

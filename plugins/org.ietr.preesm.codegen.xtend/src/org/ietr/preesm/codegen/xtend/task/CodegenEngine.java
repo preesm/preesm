@@ -45,9 +45,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
-
+import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IWorkspace;
@@ -68,207 +67,232 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
 import org.ietr.preesm.codegen.xtend.printer.CodegenAbstractPrinter;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class CodegenEngine.
+ */
 public class CodegenEngine {
 
-	private PreesmScenario scenario;
-	private IWorkspace workspace;
-	private String codegenPath;
-	private List<Block> codeBlocks;
-	private Map<IConfigurationElement, List<Block>> registeredPrintersAndBlocks;
-	private Map<IConfigurationElement, CodegenAbstractPrinter> realPrinters;
+  /** The scenario. */
+  private final PreesmScenario scenario;
 
-	public CodegenEngine(PreesmScenario scenario, IWorkspace workspace,
-			String codegenPath, List<Block> codeBlocks) {
-		this.scenario = scenario;
-		this.workspace = workspace;
-		this.codegenPath = codegenPath;
-		this.codeBlocks = codeBlocks;
-	}
+  /** The workspace. */
+  private final IWorkspace workspace;
 
-	public void initializePrinterIR(String codegenPath) {
+  /** The codegen path. */
+  private final String codegenPath;
 
-		// Save the intermediate model
-		// Register the XMI resource factory for the .codegen extension
-		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
-		Map<String, Object> m = reg.getExtensionToFactoryMap();
-		m.put("codegen", new XMIResourceFactoryImpl());
+  /** The code blocks. */
+  private final List<Block> codeBlocks;
 
-		// Obtain a new resource set
-		ResourceSet resSet = new ResourceSetImpl();
+  /** The registered printers and blocks. */
+  private Map<IConfigurationElement, List<Block>> registeredPrintersAndBlocks;
 
-		for (Block b : codeBlocks) {
-			// Create a resource
-			scenario.getCodegenManager().getCodegenDirectory();
-			Resource resource = resSet.createResource(URI.createURI(codegenPath
-					+ b.getName() + ".codegen"));
-			// Get the first model element and cast it to the right type, in
-			// my example everything is hierarchical included in this first
-			// node
-			resource.getContents().add(b);
-		}
+  /** The real printers. */
+  private Map<IConfigurationElement, CodegenAbstractPrinter> realPrinters;
 
-		// Now save the content.
-		for (Resource resource : resSet.getResources()) {
-			try {
-				resource.save(Collections.EMPTY_MAP);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+  /**
+   * Instantiates a new codegen engine.
+   *
+   * @param scenario
+   *          the scenario
+   * @param workspace
+   *          the workspace
+   * @param codegenPath
+   *          the codegen path
+   * @param codeBlocks
+   *          the code blocks
+   */
+  public CodegenEngine(final PreesmScenario scenario, final IWorkspace workspace, final String codegenPath, final List<Block> codeBlocks) {
+    this.scenario = scenario;
+    this.workspace = workspace;
+    this.codegenPath = codegenPath;
+    this.codeBlocks = codeBlocks;
+  }
 
-	}
+  /**
+   * Initialize printer IR.
+   *
+   * @param codegenPath
+   *          the codegen path
+   */
+  public void initializePrinterIR(final String codegenPath) {
 
-	public void registerPrintersAndBlocks(String selectedPrinter)
-			throws WorkflowException {
-		registeredPrintersAndBlocks = new HashMap<IConfigurationElement, List<Block>>();
+    // Save the intermediate model
+    // Register the XMI resource factory for the .codegen extension
+    final Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+    final Map<String, Object> m = reg.getExtensionToFactoryMap();
+    m.put("codegen", new XMIResourceFactoryImpl());
 
-		// 1. Get the printers of the desired "language"
-		Set<IConfigurationElement> usablePrinters = new HashSet<IConfigurationElement>();
-		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IConfigurationElement[] elements = registry
-				.getConfigurationElementsFor("org.ietr.preesm.codegen.xtend.printers");
-		for (IConfigurationElement element : elements) {
-			if (element.getAttribute("language").equals(selectedPrinter)) {
-				for (IConfigurationElement child : element.getChildren()) {
-					if (child.getName().equals("printer")) {
-						usablePrinters.add(child);
-					}
-				}
-			}
-		}
+    // Obtain a new resource set
+    final ResourceSet resSet = new ResourceSetImpl();
 
-		// 2. Get a printer for each Block
-		for (Block b : codeBlocks) {
-			IConfigurationElement foundPrinter = null;
-			if (b instanceof CoreBlock) {
-				String coreType = ((CoreBlock) b).getCoreType();
-				for (IConfigurationElement printer : usablePrinters) {
-					IConfigurationElement[] supportedCores = printer
-							.getChildren();
-					for (IConfigurationElement supportedCore : supportedCores) {
-						if (supportedCore.getAttribute("type").equals(coreType)) {
-							foundPrinter = printer;
-							break;
-						}
-					}
-					if (foundPrinter != null) {
-						break;
-					}
-				}
-				if (foundPrinter != null) {
-					List<Block> blocks = registeredPrintersAndBlocks
-							.get(foundPrinter);
-					if (blocks == null) {
-						blocks = new ArrayList<Block>();
-						registeredPrintersAndBlocks.put(foundPrinter, blocks);
-					}
-					blocks.add(b);
-				} else {
-					throw new WorkflowException(
-							"Could not find a printer for language \""
-									+ selectedPrinter + "\" and core type \""
-									+ coreType + "\".");
-				}
-			} else {
-				throw new WorkflowException(
-						"Only CoreBlock CodeBlocks can be printed in the current version of Preesm.");
-			}
-		}
-	}
+    for (final Block b : this.codeBlocks) {
+      // Create a resource
+      this.scenario.getCodegenManager().getCodegenDirectory();
+      final Resource resource = resSet.createResource(URI.createURI(codegenPath + b.getName() + ".codegen"));
+      // Get the first model element and cast it to the right type, in
+      // my example everything is hierarchical included in this first
+      // node
+      resource.getContents().add(b);
+    }
 
-	public void preprocessPrinters() throws WorkflowException {
-		// Pre-process the printers one by one to:
-		// - Erase file with the same extension from the destination directory
-		// - Do the pre-processing
-		// - Save the printers in a map
-		realPrinters = new HashMap<IConfigurationElement, CodegenAbstractPrinter>();
-		for (Entry<IConfigurationElement, List<Block>> printerAndBlocks : registeredPrintersAndBlocks
-				.entrySet()) {
-			String extension = printerAndBlocks.getKey().getAttribute(
-					"extension");
-			CodegenAbstractPrinter printer = null;
-			try {
-				printer = (CodegenAbstractPrinter) printerAndBlocks.getKey()
-						.createExecutableExtension("class");
-			} catch (CoreException e) {
-				throw new WorkflowException(e.getMessage());
-			}
+    // Now save the content.
+    for (final Resource resource : resSet.getResources()) {
+      try {
+        resource.save(Collections.EMPTY_MAP);
+      } catch (final IOException e) {
+        e.printStackTrace();
+      }
+    }
 
-			// Erase previous files with extension
-			// Lists all files in folder
-			IFolder f = workspace.getRoot().getFolder(new Path(codegenPath));
-			File folder = new File(f.getRawLocation().toOSString());
-			File fList[] = folder.listFiles();
-			if (fList != null) {
-				// Searches .extension
-				for (int i = 0; i < fList.length; i++) {
-					String pes = fList[i].getName();
-					if (pes.endsWith(extension)) {
-						// and deletes
-						fList[i].delete();
-					}
-				}
-			} else {
-				throw new WorkflowException(
-						"The code generation directory was not found.");
-			}
+  }
 
-			// Do the pre-processing
-			printer.preProcessing(printerAndBlocks.getValue(), codeBlocks);
-			realPrinters.put(printerAndBlocks.getKey(), printer);
-		}
-	}
+  /**
+   * Register printers and blocks.
+   *
+   * @param selectedPrinter
+   *          the selected printer
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+  public void registerPrintersAndBlocks(final String selectedPrinter) throws WorkflowException {
+    this.registeredPrintersAndBlocks = new HashMap<>();
 
-	public void print() {
-		for (Entry<IConfigurationElement, List<Block>> printerAndBlocks : registeredPrintersAndBlocks
-				.entrySet()) {
-			String extension = printerAndBlocks.getKey().getAttribute(
-					"extension");
-			CodegenAbstractPrinter printer = realPrinters.get(printerAndBlocks
-					.getKey());
+    // 1. Get the printers of the desired "language"
+    final Set<IConfigurationElement> usablePrinters = new HashSet<>();
+    final IExtensionRegistry registry = Platform.getExtensionRegistry();
+    final IConfigurationElement[] elements = registry.getConfigurationElementsFor("org.ietr.preesm.codegen.xtend.printers");
+    for (final IConfigurationElement element : elements) {
+      if (element.getAttribute("language").equals(selectedPrinter)) {
+        for (final IConfigurationElement child : element.getChildren()) {
+          if (child.getName().equals("printer")) {
+            usablePrinters.add(child);
+          }
+        }
+      }
+    }
 
-			for (Block b : printerAndBlocks.getValue()) {
-				IFile iFile = workspace.getRoot().getFile(
-						new Path(codegenPath + b.getName() + extension));
-				try {
-					IFolder iFolder = workspace.getRoot().getFolder(new Path(codegenPath));
-					if(!iFolder.exists()){
-						iFolder.create(false, true, new NullProgressMonitor());
-					}
-					if (!iFile.exists()) {
-						iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
-					}
-					iFile.setContents(new ByteArrayInputStream(printer
-							.doSwitch(b).toString().getBytes()), true, false,
-							new NullProgressMonitor());
-				} catch (CoreException e1) {
-					e1.printStackTrace();
-				}
-			}
+    // 2. Get a printer for each Block
+    for (final Block b : this.codeBlocks) {
+      IConfigurationElement foundPrinter = null;
+      if (b instanceof CoreBlock) {
+        final String coreType = ((CoreBlock) b).getCoreType();
+        for (final IConfigurationElement printer : usablePrinters) {
+          final IConfigurationElement[] supportedCores = printer.getChildren();
+          for (final IConfigurationElement supportedCore : supportedCores) {
+            if (supportedCore.getAttribute("type").equals(coreType)) {
+              foundPrinter = printer;
+              break;
+            }
+          }
+          if (foundPrinter != null) {
+            break;
+          }
+        }
+        if (foundPrinter != null) {
+          List<Block> blocks = this.registeredPrintersAndBlocks.get(foundPrinter);
+          if (blocks == null) {
+            blocks = new ArrayList<>();
+            this.registeredPrintersAndBlocks.put(foundPrinter, blocks);
+          }
+          blocks.add(b);
+        } else {
+          throw new WorkflowException("Could not find a printer for language \"" + selectedPrinter + "\" and core type \"" + coreType + "\".");
+        }
+      } else {
+        throw new WorkflowException("Only CoreBlock CodeBlocks can be printed in the current version of Preesm.");
+      }
+    }
+  }
 
-			// Print secondary files
-			for (Entry<String, CharSequence> entry : printer
-					.createSecondaryFiles(printerAndBlocks.getValue(),
-							codeBlocks).entrySet()) {
-				IFile iFile = workspace.getRoot().getFile(
-						new Path(codegenPath + entry.getKey()));
-				try {
-					IFolder iFolder = workspace.getRoot().getFolder(new Path(codegenPath));
-					if(!iFolder.exists()){
-						iFolder.create(false, true, new NullProgressMonitor());
-					}
-					if (!iFile.exists()) {
-						iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
-					}
-					iFile.setContents(new ByteArrayInputStream(entry.getValue()
-							.toString().getBytes()), true, false,
-							new NullProgressMonitor());
-				} catch (CoreException e1) {
-					e1.printStackTrace();
-				}
+  /**
+   * Preprocess printers.
+   *
+   * @throws WorkflowException
+   *           the workflow exception
+   */
+  public void preprocessPrinters() throws WorkflowException {
+    // Pre-process the printers one by one to:
+    // - Erase file with the same extension from the destination directory
+    // - Do the pre-processing
+    // - Save the printers in a map
+    this.realPrinters = new HashMap<>();
+    for (final Entry<IConfigurationElement, List<Block>> printerAndBlocks : this.registeredPrintersAndBlocks.entrySet()) {
+      final String extension = printerAndBlocks.getKey().getAttribute("extension");
+      CodegenAbstractPrinter printer = null;
+      try {
+        printer = (CodegenAbstractPrinter) printerAndBlocks.getKey().createExecutableExtension("class");
+      } catch (final CoreException e) {
+        throw new WorkflowException(e.getMessage());
+      }
 
-			}
+      // Erase previous files with extension
+      // Lists all files in folder
+      final IFolder f = this.workspace.getRoot().getFolder(new Path(this.codegenPath));
+      final File folder = new File(f.getRawLocation().toOSString());
+      final File[] fList = folder.listFiles();
+      if (fList != null) {
+        // Searches .extension
+        for (final File element : fList) {
+          final String pes = element.getName();
+          if (pes.endsWith(extension)) {
+            // and deletes
+            element.delete();
+          }
+        }
+      } else {
+        throw new WorkflowException("The code generation directory was not found.");
+      }
 
-		}
-	}
+      // Do the pre-processing
+      printer.preProcessing(printerAndBlocks.getValue(), this.codeBlocks);
+      this.realPrinters.put(printerAndBlocks.getKey(), printer);
+    }
+  }
+
+  /**
+   * Prints the.
+   */
+  public void print() {
+    for (final Entry<IConfigurationElement, List<Block>> printerAndBlocks : this.registeredPrintersAndBlocks.entrySet()) {
+      final String extension = printerAndBlocks.getKey().getAttribute("extension");
+      final CodegenAbstractPrinter printer = this.realPrinters.get(printerAndBlocks.getKey());
+
+      for (final Block b : printerAndBlocks.getValue()) {
+        final IFile iFile = this.workspace.getRoot().getFile(new Path(this.codegenPath + b.getName() + extension));
+        try {
+          final IFolder iFolder = this.workspace.getRoot().getFolder(new Path(this.codegenPath));
+          if (!iFolder.exists()) {
+            iFolder.create(false, true, new NullProgressMonitor());
+          }
+          if (!iFile.exists()) {
+            iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
+          }
+          iFile.setContents(new ByteArrayInputStream(printer.doSwitch(b).toString().getBytes()), true, false, new NullProgressMonitor());
+        } catch (final CoreException ex) {
+          ex.printStackTrace();
+        }
+      }
+
+      // Print secondary files
+      for (final Entry<String, CharSequence> entry : printer.createSecondaryFiles(printerAndBlocks.getValue(), this.codeBlocks).entrySet()) {
+        final IFile iFile = this.workspace.getRoot().getFile(new Path(this.codegenPath + entry.getKey()));
+        try {
+          final IFolder iFolder = this.workspace.getRoot().getFolder(new Path(this.codegenPath));
+          if (!iFolder.exists()) {
+            iFolder.create(false, true, new NullProgressMonitor());
+          }
+          if (!iFile.exists()) {
+            iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
+          }
+          iFile.setContents(new ByteArrayInputStream(entry.getValue().toString().getBytes()), true, false, new NullProgressMonitor());
+        } catch (final CoreException ex) {
+          ex.printStackTrace();
+        }
+
+      }
+
+    }
+  }
 }

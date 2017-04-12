@@ -43,7 +43,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -59,96 +58,106 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Block;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.memory.exclusiongraph.MemoryExclusionGraph;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class CodegenTask.
+ */
 public class CodegenTask extends AbstractTaskImplementation {
 
-	public static final String PARAM_PRINTER = "Printer";
-	public static final String VALUE_PRINTER_IR = "IR";
+  /** The Constant PARAM_PRINTER. */
+  public static final String PARAM_PRINTER = "Printer";
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(
-	 * java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
-	 * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
-	 */
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /** The Constant VALUE_PRINTER_IR. */
+  public static final String VALUE_PRINTER_IR = "IR";
 
-		// Retrieve inputs
-		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
-		Design archi = (Design) inputs.get("architecture");
-		@SuppressWarnings("unchecked")
-		Map<String,MemoryExclusionGraph> megs = (Map<String,MemoryExclusionGraph>) inputs.get("MEGs");
-		DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute( java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
 
-		// Generate intermediate model
-		CodegenModelGenerator generator = new CodegenModelGenerator(archi, dag,
-				megs, scenario, workflow);
+    // Retrieve inputs
+    final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+    final Design archi = (Design) inputs.get("architecture");
+    @SuppressWarnings("unchecked")
+    final Map<String, MemoryExclusionGraph> megs = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");
+    final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) inputs.get("DAG");
 
-		List<Block> codeBlocks = new ArrayList<>(generator.generate());
+    // Generate intermediate model
+    final CodegenModelGenerator generator = new CodegenModelGenerator(archi, dag, megs, scenario, workflow);
 
-		// Retrieve the desired printer
-		String selectedPrinter = parameters.get(PARAM_PRINTER);
+    final List<Block> codeBlocks = new ArrayList<>(generator.generate());
 
-		// Do the print
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		workspace.getRoot().getLocation();
-		String codegenPath = scenario.getCodegenManager().getCodegenDirectory()
-				+ "/";
+    // Retrieve the desired printer
+    final String selectedPrinter = parameters.get(CodegenTask.PARAM_PRINTER);
 
-		// Create the codegen engine
-		CodegenEngine engine = new CodegenEngine(scenario, workspace,
-				codegenPath, codeBlocks);
+    // Do the print
+    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    workspace.getRoot().getLocation();
+    final String codegenPath = scenario.getCodegenManager().getCodegenDirectory() + "/";
 
-		if (selectedPrinter.equals(VALUE_PRINTER_IR)) {
-			engine.initializePrinterIR(codegenPath);
-		}
+    // Create the codegen engine
+    final CodegenEngine engine = new CodegenEngine(scenario, workspace, codegenPath, codeBlocks);
 
-		// Fill a map associating printers with printed files
-		engine.registerPrintersAndBlocks(selectedPrinter);
+    if (selectedPrinter.equals(CodegenTask.VALUE_PRINTER_IR)) {
+      engine.initializePrinterIR(codegenPath);
+    }
 
-		// Pre-process the printers one by one to:
-		engine.preprocessPrinters();
+    // Fill a map associating printers with printed files
+    engine.registerPrintersAndBlocks(selectedPrinter);
 
-		// Do the print for all Blocks
-		engine.print();
+    // Pre-process the printers one by one to:
+    engine.preprocessPrinters();
 
-		// Create empty output map
-		Map<String, Object> output = new HashMap<String, Object>();
-		return output;
-	}
+    // Do the print for all Blocks
+    engine.print();
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = new HashMap<String, String>();
-		String avilableLanguages = "? C {";
+    // Create empty output map
+    final Map<String, Object> output = new HashMap<>();
+    return output;
+  }
 
-		// Retrieve the languages registered with the printers
-		Set<String> languages = new HashSet<String>();
-		IExtensionRegistry registry = Platform.getExtensionRegistry();
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new HashMap<>();
+    String avilableLanguages = "? C {";
 
-		IConfigurationElement[] elements = registry
-				.getConfigurationElementsFor("org.ietr.preesm.codegen.xtend.printers");
-		for (IConfigurationElement element : elements) {
-			languages.add(element.getAttribute("language"));
-		}
+    // Retrieve the languages registered with the printers
+    final Set<String> languages = new HashSet<>();
+    final IExtensionRegistry registry = Platform.getExtensionRegistry();
 
-		for (String lang : languages) {
-			avilableLanguages += lang + ", ";
-		}
+    final IConfigurationElement[] elements = registry.getConfigurationElementsFor("org.ietr.preesm.codegen.xtend.printers");
+    for (final IConfigurationElement element : elements) {
+      languages.add(element.getAttribute("language"));
+    }
 
-		avilableLanguages += VALUE_PRINTER_IR + "}";
+    for (final String lang : languages) {
+      avilableLanguages += lang + ", ";
+    }
 
-		parameters.put(PARAM_PRINTER, avilableLanguages);
-		return parameters;
-	}
+    avilableLanguages += CodegenTask.VALUE_PRINTER_IR + "}";
 
-	@Override
-	public String monitorMessage() {
-		return "Generate xtend code";
-	}
+    parameters.put(CodegenTask.PARAM_PRINTER, avilableLanguages);
+    return parameters;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Generate xtend code";
+  }
 
 }

@@ -40,129 +40,157 @@ package org.ietr.preesm.mapper.gantt;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
-
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
+// TODO: Auto-generated Javadoc
 /**
- * A Gantt component is the information for 1 line in a Gantt chart
- * 
+ * A Gantt component is the information for 1 line in a Gantt chart.
+ *
  * @author mpelcat
  */
 public class GanttComponent {
 
-	/**
-	 * Unique ID.
-	 */
-	private String id;
+  /**
+   * Unique ID.
+   */
+  private final String id;
 
-	/**
-	 * List of the tasks in the order of their start times.
-	 */
-	private LinkedList<GanttTask> tasks;
+  /**
+   * List of the tasks in the order of their start times.
+   */
+  private final LinkedList<GanttTask> tasks;
 
-	public GanttComponent(String id) {
-		super();
-		this.id = id;
-		tasks = new LinkedList<GanttTask>();
-	}
+  /**
+   * Instantiates a new gantt component.
+   *
+   * @param id
+   *          the id
+   */
+  public GanttComponent(final String id) {
+    super();
+    this.id = id;
+    this.tasks = new LinkedList<>();
+  }
 
-	/**
-	 * Inserting a task in the order of start times. Checking any
-	 * incompatibility in the Gantt
-	 */
-	public boolean insertTask(GanttTask task) {
+  /**
+   * Inserting a task in the order of start times. Checking any incompatibility in the Gantt
+   *
+   * @param task
+   *          the task
+   * @return true, if successful
+   */
+  public boolean insertTask(final GanttTask task) {
 
-		if (tasks.size() != 0) {
-			int index = tasks.size();
-			// Looking where to insert the new task element
-			for (int i = 0; i < tasks.size(); i++) {
-				GanttTask t = tasks.get(i);
-				// If t is after task, need to insert task
-				if (t.getStartTime() > task.getStartTime() + task.getDuration()) {
-					index = i;
-				}
-				// Checking for multiple concurrent insertions
-				if (t.equals(task)) {
-					WorkflowLogger.getLogger().log(
-							Level.SEVERE,
-							"Gantt: Trying to add to the Gantt chart several identical tasks: "
-									+ t + " and " + task);
-					return false;
-				}
-			}
+    if (this.tasks.size() != 0) {
+      int index = this.tasks.size();
+      // Looking where to insert the new task element
+      for (int i = 0; i < this.tasks.size(); i++) {
+        final GanttTask t = this.tasks.get(i);
+        // If t is after task, need to insert task
+        if (t.getStartTime() > (task.getStartTime() + task.getDuration())) {
+          index = i;
+        }
+        // Checking for multiple concurrent insertions
+        if (t.equals(task)) {
+          WorkflowLogger.getLogger().log(Level.SEVERE,
+              "Gantt: Trying to add to the Gantt chart several identical tasks: " + t + " and "
+                  + task);
+          return false;
+        }
+      }
 
-			if (index == tasks.size()) {
-				// task is added last
-				tasks.addLast(task);
-			} else {
-				
-				// Looking for overlaps with existing tasks
-				// new task is added just before taskList.get(index), it should
-				// not overlap with the previous taskList.get(index-1)
-				if (index > 0) {
-					GanttTask precedingTask = tasks.get(index-1);
-					if (precedingTask.getStartTime() + precedingTask.getDuration() > task.getStartTime()) {
-						WorkflowLogger.getLogger().log(
-								Level.SEVERE,
-								"Gantt: Two tasks are overlapping: " + precedingTask
-										+ " and " + task);
-						return false;
-					}
-				}
-				
-				tasks.add(index, task);
-			}
+      if (index == this.tasks.size()) {
+        // task is added last
+        this.tasks.addLast(task);
+      } else {
 
-		} else {
-			tasks.add(task);
-		}
+        // Looking for overlaps with existing tasks
+        // new task is added just before taskList.get(index), it should
+        // not overlap with the previous taskList.get(index-1)
+        if (index > 0) {
+          final GanttTask precedingTask = this.tasks.get(index - 1);
+          if ((precedingTask.getStartTime() + precedingTask.getDuration()) > task.getStartTime()) {
+            WorkflowLogger.getLogger().log(Level.SEVERE,
+                "Gantt: Two tasks are overlapping: " + precedingTask + " and " + task);
+            return false;
+          }
+        }
 
-		return true;
-	}
+        this.tasks.add(index, task);
+      }
 
-	public String getId() {
-		return id;
-	}
+    } else {
+      this.tasks.add(task);
+    }
 
-	/**
-	 * Comparing IDs to determine if two components are equal
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if ((obj instanceof GanttComponent)
-				&& (((GanttComponent) obj).getId().equals(id))) {
-			return true;
-		}
-		return false;
-	}
+    return true;
+  }
 
-	@Override
-	public String toString() {
-		return id;
-	}
+  /**
+   * Gets the id.
+   *
+   * @return the id
+   */
+  public String getId() {
+    return this.id;
+  }
 
-	/**
-	 * End time of the last task associated to the component
-	 */
-	public long getEndTime() {
-		if (tasks.getLast() != null) {
-			GanttTask last = tasks.getLast();
-			return last.getStartTime() + last.getDuration();
-		}
-		return 0l;
-	}
+  /**
+   * Comparing IDs to determine if two components are equal.
+   *
+   * @param obj
+   *          the obj
+   * @return true, if successful
+   */
+  @Override
+  public boolean equals(final Object obj) {
+    if ((obj instanceof GanttComponent) && (((GanttComponent) obj).getId().equals(this.id))) {
+      return true;
+    }
+    return false;
+  }
 
-	/**
-	 * Start time of the first task associated to the component
-	 */
-	public long getStartTime() {
-		if (tasks.getFirst() != null) {
-			return tasks.getFirst().getStartTime();
-		}
-		return 0l;
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return this.id;
+  }
 
-	public List<GanttTask> getTasks() {
-		return tasks;
-	}
+  /**
+   * End time of the last task associated to the component.
+   *
+   * @return the end time
+   */
+  public long getEndTime() {
+    if (this.tasks.getLast() != null) {
+      final GanttTask last = this.tasks.getLast();
+      return last.getStartTime() + last.getDuration();
+    }
+    return 0L;
+  }
+
+  /**
+   * Start time of the first task associated to the component.
+   *
+   * @return the start time
+   */
+  public long getStartTime() {
+    if (this.tasks.getFirst() != null) {
+      return this.tasks.getFirst().getStartTime();
+    }
+    return 0L;
+  }
+
+  /**
+   * Gets the tasks.
+   *
+   * @return the tasks
+   */
+  public List<GanttTask> getTasks() {
+    return this.tasks;
+  }
 }

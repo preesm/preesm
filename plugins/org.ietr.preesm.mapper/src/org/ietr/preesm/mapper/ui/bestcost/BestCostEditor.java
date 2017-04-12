@@ -45,89 +45,133 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
 import org.ietr.preesm.mapper.ui.BestCostPlotter;
 
+// TODO: Auto-generated Javadoc
 /**
- * Editor displaying the best cost found in time
- * 
+ * Editor displaying the best cost found in time.
+ *
  * @author mpelcat
  */
 public class BestCostEditor extends EditorPart {
 
-	private BestCostPlotter plotter = null;
+  /** The plotter. */
+  private BestCostPlotter plotter = null;
 
-	public BestCostEditor() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+  /**
+   * Instantiates a new best cost editor.
+   */
+  public BestCostEditor() {
+    super();
+    // TODO Auto-generated constructor stub
+  }
 
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-		// TODO Auto-generated method stub
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
+   */
+  @Override
+  public void doSave(final IProgressMonitor monitor) {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public void doSaveAs() {
-		// TODO Auto-generated method stub
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.ui.part.EditorPart#doSaveAs()
+   */
+  @Override
+  public void doSaveAs() {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.ui.part.EditorPart#init(org.eclipse.ui.IEditorSite,
+   * org.eclipse.ui.IEditorInput)
+   */
+  @Override
+  public void init(final IEditorSite site, final IEditorInput input) throws PartInitException {
 
-		try {
-			setSite(site);
-			setInput(input);
-			setPartName(input.getName());
+    try {
+      setSite(site);
+      setInput(input);
+      setPartName(input.getName());
 
-			if (input instanceof BestCostEditorInput) {
-				BestCostEditorInput implinput = (BestCostEditorInput) input;
-				this.plotter = implinput.getPlotter();
-			}
+      if (input instanceof BestCostEditorInput) {
+        final BestCostEditorInput implinput = (BestCostEditorInput) input;
+        this.plotter = implinput.getPlotter();
+      }
 
-		} catch (Exception e) {
-			// Editor might not exist anymore if switching databases. So
-			// just close it.
-			this.getEditorSite().getPage().closeEditor(this, false);
-			throw new PartInitException("File " + input.getName()
-					+ " does not exist.");
-		}
+    } catch (final Exception e) {
+      // Editor might not exist anymore if switching databases. So
+      // just close it.
+      getEditorSite().getPage().closeEditor(this, false);
+      throw new PartInitException("File " + input.getName() + " does not exist.");
+    }
 
-	}
+  }
 
-	@Override
-	public boolean isDirty() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.ui.part.EditorPart#isDirty()
+   */
+  @Override
+  public boolean isDirty() {
+    // TODO Auto-generated method stub
+    return false;
+  }
 
-	@Override
-	public boolean isSaveAsAllowed() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.ui.part.EditorPart#isSaveAsAllowed()
+   */
+  @Override
+  public boolean isSaveAsAllowed() {
+    // TODO Auto-generated method stub
+    return false;
+  }
 
-	@Override
-	public void createPartControl(Composite parent) {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
+   */
+  @Override
+  public void createPartControl(final Composite parent) {
 
-		if (plotter != null) {
+    if (this.plotter != null) {
 
-			plotter.display(parent);
-		}
+      this.plotter.display(parent);
+    }
 
-	}
+  }
 
-	@Override
-	public void setFocus() {
-		// TODO Auto-generated method stub
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
+   */
+  @Override
+  public void setFocus() {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	public static void createEditor(BestCostPlotter plotter) {
-		IEditorInput input = new BestCostEditorInput(plotter);
+  /**
+   * Creates the editor.
+   *
+   * @param plotter
+   *          the plotter
+   */
+  public static void createEditor(final BestCostPlotter plotter) {
+    final IEditorInput input = new BestCostEditorInput(plotter);
 
-		PlatformUI.getWorkbench().getDisplay()
-				.asyncExec(new BestCostEditorRunnable(input));
+    PlatformUI.getWorkbench().getDisplay().asyncExec(new BestCostEditorRunnable(input));
 
-	}
+  }
 }

@@ -42,38 +42,48 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
+// TODO: Auto-generated Javadoc
 /**
  * Class used by mapper editors. Useful to run editor in display thread.
- * 
+ *
  * @author mpelcat
  */
 public class EditorRunnable implements Runnable {
 
-	private IEditorInput input;
+  /** The input. */
+  private final IEditorInput input;
 
-	public EditorRunnable(IEditorInput input) {
-		super();
-		this.input = input;
-	}
+  /**
+   * Instantiates a new editor runnable.
+   *
+   * @param input
+   *          the input
+   */
+  public EditorRunnable(final IEditorInput input) {
+    super();
+    this.input = input;
+  }
 
-	@Override
-	public void run() {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Runnable#run()
+   */
+  @Override
+  public void run() {
 
-		IWorkbenchWindow dwindow = PlatformUI.getWorkbench()
-				.getWorkbenchWindows()[0];
+    final IWorkbenchWindow dwindow = PlatformUI.getWorkbench().getWorkbenchWindows()[0];
 
-		if (dwindow != null && input instanceof StatEditorInput) {
-			IWorkbenchPage page = dwindow.getActivePage();
+    if ((dwindow != null) && (this.input instanceof StatEditorInput)) {
+      final IWorkbenchPage page = dwindow.getActivePage();
 
-			try {
-				page.openEditor(input,
-						"org.ietr.preesm.plugin.mapper.plot.stats.StatEditor",
-						false);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+      try {
+        page.openEditor(this.input, "org.ietr.preesm.plugin.mapper.plot.stats.StatEditor", false);
+      } catch (final Exception e) {
+        e.printStackTrace();
+      }
+    }
 
-	}
+  }
 
 }

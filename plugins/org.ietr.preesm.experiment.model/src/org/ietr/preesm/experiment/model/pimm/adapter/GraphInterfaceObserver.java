@@ -56,6 +56,7 @@ import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.Port;
 
+// TODO: Auto-generated Javadoc
 /**
  * The purpose of this {@link Adapter} is to observe the {@link PiGraph#getVertices()} list of a {@link PiGraph} to detect the addition, the deletion and the
  * renaming of {@link PiGraph} interfaces in order to automatically compute the repercussions on {@link PiGraph#getInputPorts()},
@@ -150,6 +151,11 @@ public class GraphInterfaceObserver extends AdapterImpl {
     param.setGraphPort(port);
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.emf.common.notify.impl.AdapterImpl#notifyChanged(org.eclipse.emf.common.notify.Notification)
+   */
   @Override
   public void notifyChanged(final Notification notification) {
     super.notifyChanged(notification);

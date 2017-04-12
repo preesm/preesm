@@ -44,47 +44,69 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.ietr.preesm.mapper.abc.IAbc;
 import org.ietr.preesm.mapper.ui.GanttPlotter;
 
+// TODO: Auto-generated Javadoc
 /**
- * This page contains the gantt display
- * 
+ * This page contains the gantt display.
+ *
  * @author mpelcat
  */
 public class GanttPage extends FormPage {
 
-	private StatGenerator statGen = null;
+  /** The stat gen. */
+  private StatGenerator statGen = null;
 
-	public GanttPage(StatGenerator statGen, FormEditor editor, String id,
-			String title) {
-		super(editor, id, title);
+  /**
+   * Instantiates a new gantt page.
+   *
+   * @param statGen
+   *          the stat gen
+   * @param editor
+   *          the editor
+   * @param id
+   *          the id
+   * @param title
+   *          the title
+   */
+  public GanttPage(final StatGenerator statGen, final FormEditor editor, final String id,
+      final String title) {
+    super(editor, id, title);
 
-		this.statGen = statGen;
-	}
+    this.statGen = statGen;
+  }
 
-	/**
-	 * Creation of the sections and their initialization
-	 */
-	@Override
-	protected void createFormContent(IManagedForm managedForm) {
+  /**
+   * Creation of the sections and their initialization.
+   *
+   * @param managedForm
+   *          the managed form
+   */
+  @Override
+  protected void createFormContent(final IManagedForm managedForm) {
 
-		ScrolledForm form = managedForm.getForm();
-		ColumnLayout layout = new ColumnLayout();
-		layout.topMargin = 0;
-		layout.bottomMargin = 5;
-		layout.leftMargin = 10;
-		layout.rightMargin = 10;
-		layout.horizontalSpacing = 10;
-		layout.verticalSpacing = 10;
-		layout.maxNumColumns = 4;
-		layout.minNumColumns = 1;
-		form.getBody().setLayout(layout);
+    final ScrolledForm form = managedForm.getForm();
+    final ColumnLayout layout = new ColumnLayout();
+    layout.topMargin = 0;
+    layout.bottomMargin = 5;
+    layout.leftMargin = 10;
+    layout.rightMargin = 10;
+    layout.horizontalSpacing = 10;
+    layout.verticalSpacing = 10;
+    layout.maxNumColumns = 4;
+    layout.minNumColumns = 1;
+    form.getBody().setLayout(layout);
 
-		IAbc abc = statGen.getAbc();
+    final IAbc abc = this.statGen.getAbc();
 
-		GanttPlotter.plotDeployment(abc.getGanttData(),form.getBody());
+    GanttPlotter.plotDeployment(abc.getGanttData(), form.getBody());
 
-	}
+  }
 
-	public StatGenerator getStatGen() {
-		return statGen;
-	}
+  /**
+   * Gets the stat gen.
+   *
+   * @return the stat gen
+   */
+  public StatGenerator getStatGen() {
+    return this.statGen;
+  }
 }

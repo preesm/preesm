@@ -83,20 +83,19 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+// TODO: Auto-generated Javadoc
 /**
- * Writer for the PiMM Model in the Pi format
+ * Writer for the PiMM Model in the Pi format.
  *
  * @author kdesnos
  * @author jheulot
- *
  */
 public class PiWriter {
 
-  /**
-   * The document created by this writer
-   */
+  /** The document created by this writer. */
   protected Document domDocument;
 
+  /** The document URI. */
   // URI where the document will be saved
   private final URI documentURI;
 
@@ -106,18 +105,14 @@ public class PiWriter {
    */
   protected HashMap<String, List<Key>> elementKeys;
 
-  /**
-   * Graph {@link Element} of the DOM {@link Document} of this Writer
-   */
+  /** Graph {@link Element} of the DOM {@link Document} of this Writer. */
   protected Element graphElement;
 
-  /**
-   * Root {@link Element} of the DOM {@link Document} of this Writer
-   */
+  /** Root {@link Element} of the DOM {@link Document} of this Writer. */
   protected Element rootElement;
 
   /**
-   * Default constructor of the {@link PiWriter}
+   * Default constructor of the {@link PiWriter}.
    *
    * @param uri
    *          the output document URI
@@ -133,7 +128,7 @@ public class PiWriter {
   }
 
   /**
-   * Creates and appends the Graph Element of the document
+   * Creates and appends the Graph Element of the document.
    *
    * @param parentElement
    *          The parent element of the graph
@@ -182,15 +177,14 @@ public class PiWriter {
   }
 
   /**
-   * Creates a new child for the given parent Element with the name "name"
+   * Creates a new child for the given parent Element with the name "name".
    *
+   * @author Jonathan Piat
    * @param parentElement
    *          The element to add a child
    * @param name
    *          The name of this Element
    * @return The created Element
-   *
-   * @author Jonathan Piat
    */
   protected Element appendChild(final Node parentElement, final String name) {
     final Element newElt = this.domDocument.createElement(name);
@@ -199,18 +193,11 @@ public class PiWriter {
   }
 
   /**
-   * Check if the key already exists
+   * Check if the key already exists.
    *
-   * @param id
-   *          Id of the key (identical to name or null)
-   * @param name
-   *          The Name of the key
-   * @param elt
-   *          The Class this key applies to (can be null)
-   * @param type
-   *          The value type of this key (can be null)
-   * @param desc
-   *          This key description (can be null)
+   * @param key
+   *          the key
+   * @return the element
    */
   protected Element createKeyElt(final Key key) {
     // Check if the element already has a Key list
@@ -447,7 +434,7 @@ public class PiWriter {
   }
 
   /**
-   * Create the Graph Element of the document and fill it
+   * Create the Graph Element of the document and fill it.
    *
    * @param rootElt
    *          The parent element of the Graph element (i.e. the root of the document)
@@ -545,7 +532,7 @@ public class PiWriter {
   }
 
   /**
-   * Fill the {@link Element} with a description of the input {@link PiGraph}
+   * Fill the {@link Element} with a description of the input {@link PiGraph}.
    *
    * @param parentElt
    *          The Element to fill (could be removed later if it is always rootElt)
@@ -563,12 +550,12 @@ public class PiWriter {
   }
 
   /**
-   * Write the {@link Port} in the given {@link Element}
+   * Write the {@link Port} in the given {@link Element}.
    *
    * @param vertexElt
    *          the {@link Element} to write
-   * @param actor
-   *          the {@link Actor} to serialize
+   * @param ports
+   *          the ports
    */
   protected void writePorts(final Element vertexElt, final EList<?> ports) {
     for (final Object portObj : ports) {
@@ -636,7 +623,7 @@ public class PiWriter {
   }
 
   /**
-   * Returns an IPath without the project name (project relative IPath) if the file pointed by path is contained by the same project as the file we write
+   * Returns an IPath without the project name (project relative IPath) if the file pointed by path is contained by the same project as the file we write.
    *
    * @param path
    *          the IPath to make project relative
@@ -657,6 +644,16 @@ public class PiWriter {
     return path;
   }
 
+  /**
+   * Write function prototype.
+   *
+   * @param vertexElt
+   *          the vertex elt
+   * @param prototype
+   *          the prototype
+   * @param functionName
+   *          the function name
+   */
   private void writeFunctionPrototype(final Element vertexElt, final FunctionPrototype prototype, final String functionName) {
     final Element protoElt = appendChild(vertexElt, functionName);
     protoElt.setAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME, prototype.getName());
@@ -665,6 +662,14 @@ public class PiWriter {
     }
   }
 
+  /**
+   * Write function parameter.
+   *
+   * @param prototypeElt
+   *          the prototype elt
+   * @param p
+   *          the p
+   */
   private void writeFunctionParameter(final Element prototypeElt, final FunctionParameter p) {
     final Element protoElt = appendChild(prototypeElt, PiIdentifiers.REFINEMENT_PARAMETER);
     protoElt.setAttribute(PiIdentifiers.REFINEMENT_PARAMETER_NAME, p.getName());

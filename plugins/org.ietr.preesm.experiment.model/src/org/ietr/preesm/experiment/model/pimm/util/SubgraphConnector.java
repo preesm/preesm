@@ -72,29 +72,39 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 
+// TODO: Auto-generated Javadoc
 /**
- * Parse and connect hierarchical sub-{@link PiGraph} to a top level {@link PiGraph}
+ * Parse and connect hierarchical sub-{@link PiGraph} to a top level {@link PiGraph}.
  *
  * @author cguy
  * @author kdesnos
- *
  */
 public class SubgraphConnector extends PiMMVisitor {
 
+  /** The current actor. */
   // Actor in the outer graph corresponding to the currently visited graph
   private AbstractActor currentActor = null;
 
+  /** The graph replacements. */
   private final Map<PiGraph, List<ActorByGraphReplacement>> graphReplacements = new HashMap<>();
 
+  /**
+   * Gets the graph replacements.
+   *
+   * @return the graph replacements
+   */
   public Map<PiGraph, List<ActorByGraphReplacement>> getGraphReplacements() {
     return this.graphReplacements;
   }
 
+  /** The current graph. */
   private PiGraph currentGraph = null;
 
   /**
+   * Connect subgraphs.
    *
-   * @param pg the graph process
+   * @param pg
+   *          the graph process
    */
   public void connectSubgraphs(final PiGraph pg) {
     pg.accept(this);
@@ -108,6 +118,11 @@ public class SubgraphConnector extends PiMMVisitor {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitPiGraph(org.ietr.preesm.experiment.model.pimm.PiGraph)
+   */
   @Override
   public void visitPiGraph(final PiGraph pg) {
     final PiGraph oldGraph = this.currentGraph;
@@ -121,6 +136,11 @@ public class SubgraphConnector extends PiMMVisitor {
     this.currentGraph = oldGraph;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitActor(org.ietr.preesm.experiment.model.pimm.Actor)
+   */
   @Override
   public void visitActor(final Actor a) {
     // If the refinement of the Actor a points to the description of
@@ -144,6 +164,14 @@ public class SubgraphConnector extends PiMMVisitor {
     }
   }
 
+  /**
+   * Reconnect pi graph.
+   *
+   * @param a
+   *          the a
+   * @param pg
+   *          the pg
+   */
   /*
    * Connect all the ports of the PiGraph to the Fifos and Dependencies connected to the ports of the Actor
    */
@@ -223,6 +251,11 @@ public class SubgraphConnector extends PiMMVisitor {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataInputInterface(org.ietr.preesm.experiment.model.pimm.DataInputInterface)
+   */
   @Override
   public void visitDataInputInterface(final DataInputInterface dii) {
     // Connect the interface to the incoming fifo from the outer graph, if
@@ -241,6 +274,11 @@ public class SubgraphConnector extends PiMMVisitor {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataOutputInterface(org.ietr.preesm.experiment.model.pimm.DataOutputInterface)
+   */
   @Override
   public void visitDataOutputInterface(final DataOutputInterface doi) {
     // Connect the interface to the outgoing fifo to the outer graph, if any
@@ -258,6 +296,11 @@ public class SubgraphConnector extends PiMMVisitor {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigInputInterface(org.ietr.preesm.experiment.model.pimm.ConfigInputInterface)
+   */
   @Override
   public void visitConfigInputInterface(final ConfigInputInterface cii) {
     // Connect the interface to the incoming dependencies from the outer
@@ -274,6 +317,11 @@ public class SubgraphConnector extends PiMMVisitor {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigOutputInterface(org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface)
+   */
   @Override
   public void visitConfigOutputInterface(final ConfigOutputInterface coi) {
     // Connect the interface to the outgoing dependencies to the outer graph
@@ -289,6 +337,11 @@ public class SubgraphConnector extends PiMMVisitor {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitParameter(org.ietr.preesm.experiment.model.pimm.Parameter)
+   */
   @Override
   public void visitParameter(final Parameter p) {
     // We only do something for ConfigInputInterface (subclass of
@@ -296,133 +349,265 @@ public class SubgraphConnector extends PiMMVisitor {
     // DO NOTHING
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitAbstractActor(org.ietr.preesm.experiment.model.pimm.AbstractActor)
+   */
   @Override
   public void visitAbstractActor(final AbstractActor aa) {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitAbstractVertex(org.ietr.preesm.experiment.model.pimm.AbstractVertex)
+   */
   @Override
   public void visitAbstractVertex(final AbstractVertex av) {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigInputPort(org.ietr.preesm.experiment.model.pimm.ConfigInputPort)
+   */
   @Override
   public void visitConfigInputPort(final ConfigInputPort cip) {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigOutputPort(org.ietr.preesm.experiment.model.pimm.ConfigOutputPort)
+   */
   @Override
   public void visitConfigOutputPort(final ConfigOutputPort cop) {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataPort(org.ietr.preesm.experiment.model.pimm.DataPort)
+   */
   @Override
   public void visitDataPort(final DataPort p) {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataInputPort(org.ietr.preesm.experiment.model.pimm.DataInputPort)
+   */
   @Override
   public void visitDataInputPort(final DataInputPort dip) {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataOutputPort(org.ietr.preesm.experiment.model.pimm.DataOutputPort)
+   */
   @Override
   public void visitDataOutputPort(final DataOutputPort dop) {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDelay(org.ietr.preesm.experiment.model.pimm.Delay)
+   */
   @Override
   public void visitDelay(final Delay d) {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDependency(org.ietr.preesm.experiment.model.pimm.Dependency)
+   */
   @Override
   public void visitDependency(final Dependency d) {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitExpression(org.ietr.preesm.experiment.model.pimm.Expression)
+   */
   @Override
   public void visitExpression(final Expression e) {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitFifo(org.ietr.preesm.experiment.model.pimm.Fifo)
+   */
   @Override
   public void visitFifo(final Fifo f) {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitInterfaceActor(org.ietr.preesm.experiment.model.pimm.InterfaceActor)
+   */
   @Override
   public void visitInterfaceActor(final InterfaceActor ia) {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitISetter(org.ietr.preesm.experiment.model.pimm.ISetter)
+   */
   @Override
   public void visitISetter(final ISetter is) {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitParameterizable(org.ietr.preesm.experiment.model.pimm.Parameterizable)
+   */
   @Override
   public void visitParameterizable(final Parameterizable p) {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitPort(org.ietr.preesm.experiment.model.pimm.Port)
+   */
   @Override
   public void visitPort(final Port p) {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitRefinement(org.ietr.preesm.experiment.model.pimm.Refinement)
+   */
   @Override
   public void visitRefinement(final Refinement r) {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitFunctionParameter(org.ietr.preesm.experiment.model.pimm.FunctionParameter)
+   */
   @Override
   public void visitFunctionParameter(final FunctionParameter functionParameter) {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitFunctionPrototype(org.ietr.preesm.experiment.model.pimm.FunctionPrototype)
+   */
   @Override
   public void visitFunctionPrototype(final FunctionPrototype functionPrototype) {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitBroadcastActor(org.ietr.preesm.experiment.model.pimm.BroadcastActor)
+   */
   @Override
   public void visitBroadcastActor(final BroadcastActor ba) {
     // Do nothing
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitJoinActor(org.ietr.preesm.experiment.model.pimm.JoinActor)
+   */
   @Override
   public void visitJoinActor(final JoinActor ja) {
     // Do nothing
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitForkActor(org.ietr.preesm.experiment.model.pimm.ForkActor)
+   */
   @Override
   public void visitForkActor(final ForkActor fa) {
     // Do nothing
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitRoundBufferActor(org.ietr.preesm.experiment.model.pimm.RoundBufferActor)
+   */
   @Override
   public void visitRoundBufferActor(final RoundBufferActor rba) {
     // Do nothing
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitExecutableActor(org.ietr.preesm.experiment.model.pimm.ExecutableActor)
+   */
   @Override
   public void visitExecutableActor(final ExecutableActor ea) {
     throw new UnsupportedOperationException();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitHRefinement(org.ietr.preesm.experiment.model.pimm.HRefinement)
+   */
   @Override
   public void visitHRefinement(final HRefinement hRefinement) {
     throw new UnsupportedOperationException();
   }
 
   /**
-   *
+   * The Class ActorByGraphReplacement.
    */
   public class ActorByGraphReplacement {
-    public Actor   toBeRemoved;
+
+    /** The to be removed. */
+    public Actor toBeRemoved;
+
+    /** The to be added. */
     public PiGraph toBeAdded;
 
+    /**
+     * Instantiates a new actor by graph replacement.
+     *
+     * @param toBeRemoved
+     *          the to be removed
+     * @param toBeAdded
+     *          the to be added
+     */
     public ActorByGraphReplacement(final Actor toBeRemoved, final PiGraph toBeAdded) {
       this.toBeRemoved = toBeRemoved;
       this.toBeAdded = toBeAdded;

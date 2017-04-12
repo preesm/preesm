@@ -38,53 +38,81 @@
 package org.ietr.preesm.core.architecture.route;
 
 import java.util.List;
-
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.architecture.slam.component.Dma;
 
+// TODO: Auto-generated Javadoc
 /**
- * Route step where the sender uses a dma to send data in parallel with its
- * processing
- * 
+ * Route step where the sender uses a dma to send data in parallel with its processing.
+ *
  * @author mpelcat
  */
 public class DmaRouteStep extends MessageRouteStep {
 
-	private Dma dma;
+  /** The dma. */
+  private final Dma dma;
 
-	/**
-	 * The route step type determines how the communication will be simulated.
-	 */
-	public static final String type = "DmaRouteStep";
+  /**
+   * The route step type determines how the communication will be simulated.
+   */
+  public static final String type = "DmaRouteStep";
 
-	public DmaRouteStep(ComponentInstance sender,
-			List<ComponentInstance> nodes, ComponentInstance receiver, Dma dma) {
-		super(sender, nodes, receiver);
-		this.dma = dma;
-	}
+  /**
+   * Instantiates a new dma route step.
+   *
+   * @param sender
+   *          the sender
+   * @param nodes
+   *          the nodes
+   * @param receiver
+   *          the receiver
+   * @param dma
+   *          the dma
+   */
+  public DmaRouteStep(final ComponentInstance sender, final List<ComponentInstance> nodes, final ComponentInstance receiver, final Dma dma) {
+    super(sender, nodes, receiver);
+    this.dma = dma;
+  }
 
-	/**
-	 * The route step type determines how the communication will be simulated.
-	 */
-	@Override
-	public String getType() {
-		return type;
-	}
+  /**
+   * The route step type determines how the communication will be simulated.
+   *
+   * @return the type
+   */
+  @Override
+  public String getType() {
+    return DmaRouteStep.type;
+  }
 
-	public Dma getDma() {
-		return dma;
-	}
+  /**
+   * Gets the dma.
+   *
+   * @return the dma
+   */
+  public Dma getDma() {
+    return this.dma;
+  }
 
-	@Override
-	public String toString() {
-		String trace = super.toString();
-		trace = trace.substring(0, trace.length() - 1);
-		trace += "[" + dma + "]}";
-		return trace;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.core.architecture.route.MessageRouteStep#toString()
+   */
+  @Override
+  public String toString() {
+    String trace = super.toString();
+    trace = trace.substring(0, trace.length() - 1);
+    trace += "[" + this.dma + "]}";
+    return trace;
+  }
 
-	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		return new DmaRouteStep(getSender(), getNodes(), getReceiver(), dma);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.core.architecture.route.MessageRouteStep#clone()
+   */
+  @Override
+  protected Object clone() throws CloneNotSupportedException {
+    return new DmaRouteStep(getSender(), getNodes(), getReceiver(), this.dma);
+  }
 }

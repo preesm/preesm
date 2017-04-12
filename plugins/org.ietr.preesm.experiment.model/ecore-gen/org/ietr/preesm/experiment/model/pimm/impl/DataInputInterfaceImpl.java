@@ -44,50 +44,61 @@ import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> An implementation of the model object '
- * <em><b>Source Interface</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Source Interface</b></em>'. <!-- end-user-doc -->
  * <p>
  * </p>
  *
  * @generated
  */
-public class DataInputInterfaceImpl extends InterfaceActorImpl implements
-		DataInputInterface {
+public class DataInputInterfaceImpl extends InterfaceActorImpl implements DataInputInterface {
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 */
-	protected DataInputInterfaceImpl() {
-		super();
-		kind = PiIdentifiers.DATA_INPUT_INTERFACE;
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   */
+  protected DataInputInterfaceImpl() {
+    super();
+    this.kind = PiIdentifiers.DATA_INPUT_INTERFACE;
 
-		// Add the unique output port of the Source Interface
-		// The port intentionally has no name 
-		DataOutputPort port = PiMMFactory.eINSTANCE.createDataOutputPort();
-		port.setName(null);
-		this.getDataOutputPorts().add(port);
-	}
+    // Add the unique output port of the Source Interface
+    // The port intentionally has no name
+    final DataOutputPort port = PiMMFactory.eINSTANCE.createDataOutputPort();
+    port.setName(null);
+    getDataOutputPorts().add(port);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return PiMMPackage.Literals.DATA_INPUT_INTERFACE;
-	}
-	
-	@Override
-	public void accept(PiMMVisitor v) {
-		v.visitDataInputInterface(this);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return PiMMPackage.Literals.DATA_INPUT_INTERFACE;
+  }
 
-	@Override
-	public void setName(String value) {
-		super.setName(value);
-		for (DataOutputPort p : getDataOutputPorts()) {
-			p.setName(value);
-		}
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
+   */
+  @Override
+  public void accept(final PiMMVisitor v) {
+    v.visitDataInputInterface(this);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#setName(java.lang.String)
+   */
+  @Override
+  public void setName(final String value) {
+    super.setName(value);
+    for (final DataOutputPort p : getDataOutputPorts()) {
+      p.setName(value);
+    }
+  }
 } // SourceInterfaceImpl

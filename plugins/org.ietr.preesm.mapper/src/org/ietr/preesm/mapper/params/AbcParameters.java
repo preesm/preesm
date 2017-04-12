@@ -40,76 +40,92 @@ package org.ietr.preesm.mapper.params;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.mapper.abc.AbcType;
 import org.ietr.preesm.mapper.abc.edgescheduling.EdgeSchedType;
 
+// TODO: Auto-generated Javadoc
 /**
- * Parameters applied to the current Abc
- * 
+ * Parameters applied to the current Abc.
+ *
  * @author mpelcat
  */
 public class AbcParameters {
 
-	protected Map<String, String> textParameters = null;
+  /** The text parameters. */
+  protected Map<String, String> textParameters = null;
 
-	/**
-	 * Simulator type
-	 */
-	private AbcType simulatorType = null;
+  /** Simulator type. */
+  private AbcType simulatorType = null;
 
-	/**
-	 * Edge scheduling type
-	 */
-	private EdgeSchedType edgeSchedType = null;
+  /** Edge scheduling type. */
+  private EdgeSchedType edgeSchedType = null;
 
-	/**
-	 * true if loads are minimized while minimizing other parameters
-	 */
-	private boolean balanceLoads = false;
+  /** true if loads are minimized while minimizing other parameters. */
+  private boolean balanceLoads = false;
 
-	/**
-	 * Constructor creating a new text parameter
-	 */
-	public AbcParameters(AbcType simulatorType, EdgeSchedType edgeSchedType,
-			boolean balanceLoads) {
-		textParameters = new HashMap<String, String>();
-		this.simulatorType = simulatorType;
-		this.edgeSchedType = edgeSchedType;
-		this.balanceLoads = balanceLoads;
+  /**
+   * Constructor creating a new text parameter.
+   *
+   * @param simulatorType
+   *          the simulator type
+   * @param edgeSchedType
+   *          the edge sched type
+   * @param balanceLoads
+   *          the balance loads
+   */
+  public AbcParameters(final AbcType simulatorType, final EdgeSchedType edgeSchedType,
+      final boolean balanceLoads) {
+    this.textParameters = new HashMap<>();
+    this.simulatorType = simulatorType;
+    this.edgeSchedType = edgeSchedType;
+    this.balanceLoads = balanceLoads;
 
-		textParameters.put("simulatorType", simulatorType.toString());
-		textParameters.put("edgeSchedType", edgeSchedType.toString());
-		textParameters.put("balanceLoads", Boolean.toString(balanceLoads));
-	}
+    this.textParameters.put("simulatorType", simulatorType.toString());
+    this.textParameters.put("edgeSchedType", edgeSchedType.toString());
+    this.textParameters.put("balanceLoads", Boolean.toString(balanceLoads));
+  }
 
-	/**
-	 * Constructor from textual parameters
-	 */
-	public AbcParameters(Map<String, String> textParameters) {
-		this.textParameters = textParameters;
-		this.simulatorType = AbcType.fromString(textParameters
-				.get("simulatorType"));
-		this.edgeSchedType = EdgeSchedType.fromString(textParameters
-				.get("edgeSchedType"));
-		this.balanceLoads = Boolean.valueOf(textParameters.get("balanceLoads"));
+  /**
+   * Constructor from textual parameters.
+   *
+   * @param textParameters
+   *          the text parameters
+   */
+  public AbcParameters(final Map<String, String> textParameters) {
+    this.textParameters = textParameters;
+    this.simulatorType = AbcType.fromString(textParameters.get("simulatorType"));
+    this.edgeSchedType = EdgeSchedType.fromString(textParameters.get("edgeSchedType"));
+    this.balanceLoads = Boolean.valueOf(textParameters.get("balanceLoads"));
 
-		WorkflowLogger
-				.getLogger()
-				.log(Level.INFO,
-						"The Abc parameters are: simulatorType=looselyTimed/approximatelyTimed/AccuratelyTimed; edgeSchedType=Simple/Switcher; balanceLoads=true/false");
-	}
+    WorkflowLogger.getLogger().log(Level.INFO,
+        "The Abc parameters are: simulatorType=looselyTimed/approximatelyTimed/AccuratelyTimed; edgeSchedType=Simple/Switcher; balanceLoads=true/false");
+  }
 
-	public AbcType getSimulatorType() {
-		return simulatorType;
-	}
+  /**
+   * Gets the simulator type.
+   *
+   * @return the simulator type
+   */
+  public AbcType getSimulatorType() {
+    return this.simulatorType;
+  }
 
-	public EdgeSchedType getEdgeSchedType() {
-		return edgeSchedType;
-	}
+  /**
+   * Gets the edge sched type.
+   *
+   * @return the edge sched type
+   */
+  public EdgeSchedType getEdgeSchedType() {
+    return this.edgeSchedType;
+  }
 
-	public boolean isBalanceLoads() {
-		return balanceLoads;
-	}
+  /**
+   * Checks if is balance loads.
+   *
+   * @return true, if is balance loads
+   */
+  public boolean isBalanceLoads() {
+    return this.balanceLoads;
+  }
 }

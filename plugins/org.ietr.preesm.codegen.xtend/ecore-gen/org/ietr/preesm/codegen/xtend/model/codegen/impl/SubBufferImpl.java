@@ -46,300 +46,338 @@ import org.ietr.preesm.codegen.xtend.model.codegen.Buffer;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> An implementation of the model object '
- * <em><b>Sub Buffer</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Sub Buffer</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SubBufferImpl#getContainer
- * <em>Container</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SubBufferImpl#getOffset
- * <em>Offset</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SubBufferImpl#getContainer <em>Container</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SubBufferImpl#getOffset <em>Offset</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @generated
  */
 public class SubBufferImpl extends BufferImpl implements SubBuffer {
-	/**
-	 * The cached value of the '{@link #getContainer() <em>Container</em>}'
-	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getContainer()
-	 * @generated
-	 * @ordered
-	 */
-	protected Buffer container;
+  /**
+   * The cached value of the '{@link #getContainer() <em>Container</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getContainer()
+   * @generated
+   * @ordered
+   */
+  protected Buffer container;
 
-	/**
-	 * The default value of the '{@link #getOffset() <em>Offset</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getOffset()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final int OFFSET_EDEFAULT = 0;
+  /**
+   * The default value of the '{@link #getOffset() <em>Offset</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getOffset()
+   * @generated
+   * @ordered
+   */
+  protected static final int OFFSET_EDEFAULT = 0;
 
-	/**
-	 * The cached value of the '{@link #getOffset() <em>Offset</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getOffset()
-	 * @generated
-	 * @ordered
-	 */
-	protected int offset = OFFSET_EDEFAULT;
+  /**
+   * The cached value of the '{@link #getOffset() <em>Offset</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getOffset()
+   * @generated
+   * @ordered
+   */
+  protected int offset = SubBufferImpl.OFFSET_EDEFAULT;
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	protected SubBufferImpl() {
-		super();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @generated
+   */
+  protected SubBufferImpl() {
+    super();
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return CodegenPackage.Literals.SUB_BUFFER;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return CodegenPackage.Literals.SUB_BUFFER;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public Buffer getContainer() {
-		if (container != null && container.eIsProxy()) {
-			InternalEObject oldContainer = (InternalEObject) container;
-			container = (Buffer) eResolveProxy(oldContainer);
-			if (container != oldContainer) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							CodegenPackage.SUB_BUFFER__CONTAINER, oldContainer,
-							container));
-			}
-		}
-		return container;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the container
+   * @generated
+   */
+  @Override
+  public Buffer getContainer() {
+    if ((this.container != null) && this.container.eIsProxy()) {
+      final InternalEObject oldContainer = (InternalEObject) this.container;
+      this.container = (Buffer) eResolveProxy(oldContainer);
+      if (this.container != oldContainer) {
+        if (eNotificationRequired()) {
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.SUB_BUFFER__CONTAINER, oldContainer, this.container));
+        }
+      }
+    }
+    return this.container;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public Buffer basicGetContainer() {
-		return container;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the buffer
+   * @generated
+   */
+  public Buffer basicGetContainer() {
+    return this.container;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public NotificationChain basicSetContainer(Buffer newContainer,
-			NotificationChain msgs) {
-		Buffer oldContainer = container;
-		container = newContainer;
-		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this,
-					Notification.SET, CodegenPackage.SUB_BUFFER__CONTAINER,
-					oldContainer, newContainer);
-			if (msgs == null)
-				msgs = notification;
-			else
-				msgs.add(notification);
-		}
-		return msgs;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newContainer
+   *          the new container
+   * @param msgs
+   *          the msgs
+   * @return the notification chain
+   * @generated
+   */
+  public NotificationChain basicSetContainer(final Buffer newContainer, NotificationChain msgs) {
+    final Buffer oldContainer = this.container;
+    this.container = newContainer;
+    if (eNotificationRequired()) {
+      final ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, CodegenPackage.SUB_BUFFER__CONTAINER, oldContainer, newContainer);
+      if (msgs == null) {
+        msgs = notification;
+      } else {
+        msgs.add(notification);
+      }
+    }
+    return msgs;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 */
-	@Override
-	public void setContainer(Buffer newContainer) {
-		if (newContainer != container) {
-			NotificationChain msgs = null;
-			if (container != null)
-				msgs = ((InternalEObject) container).eInverseRemove(this,
-						CodegenPackage.BUFFER__CHILDRENS, Buffer.class, msgs);
-			if (newContainer != null)
-				msgs = ((InternalEObject) newContainer).eInverseAdd(this,
-						CodegenPackage.BUFFER__CHILDRENS, Buffer.class, msgs);
-			msgs = basicSetContainer(newContainer, msgs);
-			if (msgs != null)
-				msgs.dispatch();
-		} else if (eNotificationRequired()) {
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.SUB_BUFFER__CONTAINER, newContainer,
-					newContainer));
-		}
-		if (getCreator() != null) {
-			newContainer.getUsers().add(getCreator());
-		}
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newContainer
+   *          the new container
+   */
+  @Override
+  public void setContainer(final Buffer newContainer) {
+    if (newContainer != this.container) {
+      NotificationChain msgs = null;
+      if (this.container != null) {
+        msgs = ((InternalEObject) this.container).eInverseRemove(this, CodegenPackage.BUFFER__CHILDRENS, Buffer.class, msgs);
+      }
+      if (newContainer != null) {
+        msgs = ((InternalEObject) newContainer).eInverseAdd(this, CodegenPackage.BUFFER__CHILDRENS, Buffer.class, msgs);
+      }
+      msgs = basicSetContainer(newContainer, msgs);
+      if (msgs != null) {
+        msgs.dispatch();
+      }
+    } else if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.SUB_BUFFER__CONTAINER, newContainer, newContainer));
+    }
+    if (getCreator() != null) {
+      newContainer.getUsers().add(getCreator());
+    }
+  }
 
-	@Override
-	public void setCreator(Block newCreator) {
-		super.setCreator(newCreator);
-		Buffer container = getContainer();
-		if (container != null) {
-			container.getUsers().add(newCreator);
-		}
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.VariableImpl#setCreator(org.ietr.preesm.codegen.xtend.model.codegen.Block)
+   */
+  @Override
+  public void setCreator(final Block newCreator) {
+    super.setCreator(newCreator);
+    final Buffer container = getContainer();
+    if (container != null) {
+      container.getUsers().add(newCreator);
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public int getOffset() {
-		return offset;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the offset
+   * @generated
+   */
+  @Override
+  public int getOffset() {
+    return this.offset;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public void setOffset(int newOffset) {
-		int oldOffset = offset;
-		offset = newOffset;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.SUB_BUFFER__OFFSET, oldOffset, offset));
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newOffset
+   *          the new offset
+   * @generated
+   */
+  @Override
+  public void setOffset(final int newOffset) {
+    final int oldOffset = this.offset;
+    this.offset = newOffset;
+    if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.SUB_BUFFER__OFFSET, oldOffset, this.offset));
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eInverseAdd(InternalEObject otherEnd,
-			int featureID, NotificationChain msgs) {
-		switch (featureID) {
-		case CodegenPackage.SUB_BUFFER__CONTAINER:
-			if (container != null)
-				msgs = ((InternalEObject) container).eInverseRemove(this,
-						CodegenPackage.BUFFER__CHILDRENS, Buffer.class, msgs);
-			return basicSetContainer((Buffer) otherEnd, msgs);
-		}
-		return super.eInverseAdd(otherEnd, featureID, msgs);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param otherEnd
+   *          the other end
+   * @param featureID
+   *          the feature ID
+   * @param msgs
+   *          the msgs
+   * @return the notification chain
+   * @generated
+   */
+  @Override
+  public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, NotificationChain msgs) {
+    switch (featureID) {
+      case CodegenPackage.SUB_BUFFER__CONTAINER:
+        if (this.container != null) {
+          msgs = ((InternalEObject) this.container).eInverseRemove(this, CodegenPackage.BUFFER__CHILDRENS, Buffer.class, msgs);
+        }
+        return basicSetContainer((Buffer) otherEnd, msgs);
+    }
+    return super.eInverseAdd(otherEnd, featureID, msgs);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd,
-			int featureID, NotificationChain msgs) {
-		switch (featureID) {
-		case CodegenPackage.SUB_BUFFER__CONTAINER:
-			return basicSetContainer(null, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param otherEnd
+   *          the other end
+   * @param featureID
+   *          the feature ID
+   * @param msgs
+   *          the msgs
+   * @return the notification chain
+   * @generated
+   */
+  @Override
+  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+    switch (featureID) {
+      case CodegenPackage.SUB_BUFFER__CONTAINER:
+        return basicSetContainer(null, msgs);
+    }
+    return super.eInverseRemove(otherEnd, featureID, msgs);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-		case CodegenPackage.SUB_BUFFER__CONTAINER:
-			if (resolve)
-				return getContainer();
-			return basicGetContainer();
-		case CodegenPackage.SUB_BUFFER__OFFSET:
-			return getOffset();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param resolve
+   *          the resolve
+   * @param coreType
+   *          the core type
+   * @return the object
+   * @generated
+   */
+  @Override
+  public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
+    switch (featureID) {
+      case CodegenPackage.SUB_BUFFER__CONTAINER:
+        if (resolve) {
+          return getContainer();
+        }
+        return basicGetContainer();
+      case CodegenPackage.SUB_BUFFER__OFFSET:
+        return getOffset();
+    }
+    return super.eGet(featureID, resolve, coreType);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-		case CodegenPackage.SUB_BUFFER__CONTAINER:
-			setContainer((Buffer) newValue);
-			return;
-		case CodegenPackage.SUB_BUFFER__OFFSET:
-			setOffset((Integer) newValue);
-			return;
-		}
-		super.eSet(featureID, newValue);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param newValue
+   *          the new value
+   * @generated
+   */
+  @Override
+  public void eSet(final int featureID, final Object newValue) {
+    switch (featureID) {
+      case CodegenPackage.SUB_BUFFER__CONTAINER:
+        setContainer((Buffer) newValue);
+        return;
+      case CodegenPackage.SUB_BUFFER__OFFSET:
+        setOffset((Integer) newValue);
+        return;
+    }
+    super.eSet(featureID, newValue);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public void eUnset(int featureID) {
-		switch (featureID) {
-		case CodegenPackage.SUB_BUFFER__CONTAINER:
-			setContainer((Buffer) null);
-			return;
-		case CodegenPackage.SUB_BUFFER__OFFSET:
-			setOffset(OFFSET_EDEFAULT);
-			return;
-		}
-		super.eUnset(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @generated
+   */
+  @Override
+  public void eUnset(final int featureID) {
+    switch (featureID) {
+      case CodegenPackage.SUB_BUFFER__CONTAINER:
+        setContainer((Buffer) null);
+        return;
+      case CodegenPackage.SUB_BUFFER__OFFSET:
+        setOffset(SubBufferImpl.OFFSET_EDEFAULT);
+        return;
+    }
+    super.eUnset(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-		case CodegenPackage.SUB_BUFFER__CONTAINER:
-			return container != null;
-		case CodegenPackage.SUB_BUFFER__OFFSET:
-			return offset != OFFSET_EDEFAULT;
-		}
-		return super.eIsSet(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @return true, if successful
+   * @generated
+   */
+  @Override
+  public boolean eIsSet(final int featureID) {
+    switch (featureID) {
+      case CodegenPackage.SUB_BUFFER__CONTAINER:
+        return this.container != null;
+      case CodegenPackage.SUB_BUFFER__OFFSET:
+        return this.offset != SubBufferImpl.OFFSET_EDEFAULT;
+    }
+    return super.eIsSet(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public String toString() {
-		if (eIsProxy())
-			return super.toString();
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the string
+   * @generated
+   */
+  @Override
+  public String toString() {
+    if (eIsProxy()) {
+      return super.toString();
+    }
 
-		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (offset: ");
-		result.append(offset);
-		result.append(')');
-		return result.toString();
-	}
+    final StringBuffer result = new StringBuffer(super.toString());
+    result.append(" (offset: ");
+    result.append(this.offset);
+    result.append(')');
+    return result.toString();
+  }
 } // SubBufferImpl

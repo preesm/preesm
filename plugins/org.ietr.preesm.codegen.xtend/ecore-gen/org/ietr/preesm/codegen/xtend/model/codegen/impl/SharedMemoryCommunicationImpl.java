@@ -37,165 +37,176 @@
 package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
 import org.eclipse.emf.common.notify.Notification;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
 import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> An implementation of the model object '
- * <em><b>Shared Memory Communication</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Shared Memory Communication</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SharedMemoryCommunicationImpl#getSemaphore
- * <em>Semaphore</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.SharedMemoryCommunicationImpl#getSemaphore <em>Semaphore</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @generated
  */
-public class SharedMemoryCommunicationImpl extends CommunicationImpl implements
-		SharedMemoryCommunication {
-	/**
-	 * The cached value of the '{@link #getSemaphore() <em>Semaphore</em>}'
-	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getSemaphore()
-	 * @generated
-	 * @ordered
-	 */
-	protected Semaphore semaphore;
+public class SharedMemoryCommunicationImpl extends CommunicationImpl implements SharedMemoryCommunication {
+  /**
+   * The cached value of the '{@link #getSemaphore() <em>Semaphore</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getSemaphore()
+   * @generated
+   * @ordered
+   */
+  protected Semaphore semaphore;
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	protected SharedMemoryCommunicationImpl() {
-		super();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @generated
+   */
+  protected SharedMemoryCommunicationImpl() {
+    super();
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return CodegenPackage.Literals.SHARED_MEMORY_COMMUNICATION;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return CodegenPackage.Literals.SHARED_MEMORY_COMMUNICATION;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public Semaphore getSemaphore() {
-		if (semaphore != null && semaphore.eIsProxy()) {
-			InternalEObject oldSemaphore = (InternalEObject) semaphore;
-			semaphore = (Semaphore) eResolveProxy(oldSemaphore);
-			if (semaphore != oldSemaphore) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(
-							this,
-							Notification.RESOLVE,
-							CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE,
-							oldSemaphore, semaphore));
-			}
-		}
-		return semaphore;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the semaphore
+   * @generated
+   */
+  @Override
+  public Semaphore getSemaphore() {
+    if ((this.semaphore != null) && this.semaphore.eIsProxy()) {
+      final InternalEObject oldSemaphore = (InternalEObject) this.semaphore;
+      this.semaphore = (Semaphore) eResolveProxy(oldSemaphore);
+      if (this.semaphore != oldSemaphore) {
+        if (eNotificationRequired()) {
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE, oldSemaphore, this.semaphore));
+        }
+      }
+    }
+    return this.semaphore;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public Semaphore basicGetSemaphore() {
-		return semaphore;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the semaphore
+   * @generated
+   */
+  public Semaphore basicGetSemaphore() {
+    return this.semaphore;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public void setSemaphore(Semaphore newSemaphore) {
-		Semaphore oldSemaphore = semaphore;
-		semaphore = newSemaphore;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE,
-					oldSemaphore, semaphore));
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newSemaphore
+   *          the new semaphore
+   * @generated
+   */
+  @Override
+  public void setSemaphore(final Semaphore newSemaphore) {
+    final Semaphore oldSemaphore = this.semaphore;
+    this.semaphore = newSemaphore;
+    if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE, oldSemaphore, this.semaphore));
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-		case CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE:
-			if (resolve)
-				return getSemaphore();
-			return basicGetSemaphore();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param resolve
+   *          the resolve
+   * @param coreType
+   *          the core type
+   * @return the object
+   * @generated
+   */
+  @Override
+  public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
+    switch (featureID) {
+      case CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE:
+        if (resolve) {
+          return getSemaphore();
+        }
+        return basicGetSemaphore();
+    }
+    return super.eGet(featureID, resolve, coreType);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-		case CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE:
-			setSemaphore((Semaphore) newValue);
-			return;
-		}
-		super.eSet(featureID, newValue);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param newValue
+   *          the new value
+   * @generated
+   */
+  @Override
+  public void eSet(final int featureID, final Object newValue) {
+    switch (featureID) {
+      case CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE:
+        setSemaphore((Semaphore) newValue);
+        return;
+    }
+    super.eSet(featureID, newValue);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public void eUnset(int featureID) {
-		switch (featureID) {
-		case CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE:
-			setSemaphore((Semaphore) null);
-			return;
-		}
-		super.eUnset(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @generated
+   */
+  @Override
+  public void eUnset(final int featureID) {
+    switch (featureID) {
+      case CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE:
+        setSemaphore((Semaphore) null);
+        return;
+    }
+    super.eUnset(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-		case CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE:
-			return semaphore != null;
-		}
-		return super.eIsSet(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @return true, if successful
+   * @generated
+   */
+  @Override
+  public boolean eIsSet(final int featureID) {
+    switch (featureID) {
+      case CodegenPackage.SHARED_MEMORY_COMMUNICATION__SEMAPHORE:
+        return this.semaphore != null;
+    }
+    return super.eIsSet(featureID);
+  }
 
 } // SharedMemoryCommunicationImpl

@@ -36,39 +36,75 @@
 
 package org.ietr.preesm.mapper.abc.edgescheduling;
 
+// TODO: Auto-generated Javadoc
 /**
- * Time interval for the transfer scheduling
- * 
+ * Time interval for the transfer scheduling.
+ *
  * @author mpelcat
  */
 public class Interval {
 
-	private long startTime;
-	private long duration;
-	private int totalOrderIndex;
+  /** The start time. */
+  private final long startTime;
 
-	public Interval(long duration, long startTime, int totalOrderIndex) {
-		super();
-		this.duration = duration;
-		this.startTime = startTime;
-		this.totalOrderIndex = totalOrderIndex;
-	}
+  /** The duration. */
+  private final long duration;
 
-	public long getStartTime() {
-		return startTime;
-	}
+  /** The total order index. */
+  private final int totalOrderIndex;
 
-	public long getDuration() {
-		return duration;
-	}
+  /**
+   * Instantiates a new interval.
+   *
+   * @param duration
+   *          the duration
+   * @param startTime
+   *          the start time
+   * @param totalOrderIndex
+   *          the total order index
+   */
+  public Interval(final long duration, final long startTime, final int totalOrderIndex) {
+    super();
+    this.duration = duration;
+    this.startTime = startTime;
+    this.totalOrderIndex = totalOrderIndex;
+  }
 
-	public int getTotalOrderIndex() {
-		return totalOrderIndex;
-	}
+  /**
+   * Gets the start time.
+   *
+   * @return the start time
+   */
+  public long getStartTime() {
+    return this.startTime;
+  }
 
-	@Override
-	public String toString() {
-		return "<" + startTime + "," + duration + "," + totalOrderIndex + ">";
-	}
+  /**
+   * Gets the duration.
+   *
+   * @return the duration
+   */
+  public long getDuration() {
+    return this.duration;
+  }
+
+  /**
+   * Gets the total order index.
+   *
+   * @return the total order index
+   */
+  public int getTotalOrderIndex() {
+    return this.totalOrderIndex;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return "<" + this.startTime + "," + this.duration + "," + this.totalOrderIndex + ">";
+  }
 
 }

@@ -67,73 +67,267 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 
+// TODO: Auto-generated Javadoc
 /**
- *
+ * The Class PiMMVisitor.
  */
 public abstract class PiMMVisitor {
+
+  /**
+   * Visit.
+   *
+   * @param v
+   *          the v
+   */
   public void visit(final PiMMVisitable v) {
     v.accept(this);
   }
 
+  /**
+   * Visit abstract actor.
+   *
+   * @param aa
+   *          the aa
+   */
   public abstract void visitAbstractActor(AbstractActor aa);
 
+  /**
+   * Visit abstract vertex.
+   *
+   * @param av
+   *          the av
+   */
   public abstract void visitAbstractVertex(AbstractVertex av);
 
+  /**
+   * Visit actor.
+   *
+   * @param a
+   *          the a
+   */
   public abstract void visitActor(Actor a);
 
+  /**
+   * Visit config input interface.
+   *
+   * @param cii
+   *          the cii
+   */
   public abstract void visitConfigInputInterface(ConfigInputInterface cii);
 
+  /**
+   * Visit config input port.
+   *
+   * @param cip
+   *          the cip
+   */
   public abstract void visitConfigInputPort(ConfigInputPort cip);
 
+  /**
+   * Visit config output interface.
+   *
+   * @param coi
+   *          the coi
+   */
   public abstract void visitConfigOutputInterface(ConfigOutputInterface coi);
 
+  /**
+   * Visit config output port.
+   *
+   * @param cop
+   *          the cop
+   */
   public abstract void visitConfigOutputPort(ConfigOutputPort cop);
 
+  /**
+   * Visit data input interface.
+   *
+   * @param dii
+   *          the dii
+   */
   public abstract void visitDataInputInterface(DataInputInterface dii);
 
+  /**
+   * Visit data input port.
+   *
+   * @param dip
+   *          the dip
+   */
   public abstract void visitDataInputPort(DataInputPort dip);
 
+  /**
+   * Visit data output interface.
+   *
+   * @param doi
+   *          the doi
+   */
   public abstract void visitDataOutputInterface(DataOutputInterface doi);
 
+  /**
+   * Visit data output port.
+   *
+   * @param dop
+   *          the dop
+   */
   public abstract void visitDataOutputPort(DataOutputPort dop);
 
+  /**
+   * Visit delay.
+   *
+   * @param d
+   *          the d
+   */
   public abstract void visitDelay(Delay d);
 
+  /**
+   * Visit dependency.
+   *
+   * @param d
+   *          the d
+   */
   public abstract void visitDependency(Dependency d);
 
+  /**
+   * Visit expression.
+   *
+   * @param e
+   *          the e
+   */
   public abstract void visitExpression(Expression e);
 
+  /**
+   * Visit fifo.
+   *
+   * @param f
+   *          the f
+   */
   public abstract void visitFifo(Fifo f);
 
+  /**
+   * Visit interface actor.
+   *
+   * @param ia
+   *          the ia
+   */
   public abstract void visitInterfaceActor(InterfaceActor ia);
 
+  /**
+   * Visit I setter.
+   *
+   * @param is
+   *          the is
+   */
   public abstract void visitISetter(ISetter is);
 
+  /**
+   * Visit parameter.
+   *
+   * @param p
+   *          the p
+   */
   public abstract void visitParameter(Parameter p);
 
+  /**
+   * Visit parameterizable.
+   *
+   * @param p
+   *          the p
+   */
   public abstract void visitParameterizable(Parameterizable p);
 
+  /**
+   * Visit pi graph.
+   *
+   * @param pg
+   *          the pg
+   */
   public abstract void visitPiGraph(PiGraph pg);
 
+  /**
+   * Visit port.
+   *
+   * @param p
+   *          the p
+   */
   public abstract void visitPort(Port p);
 
+  /**
+   * Visit refinement.
+   *
+   * @param r
+   *          the r
+   */
   public abstract void visitRefinement(Refinement r);
 
+  /**
+   * Visit function parameter.
+   *
+   * @param f
+   *          the f
+   */
   public abstract void visitFunctionParameter(FunctionParameter f);
 
+  /**
+   * Visit function prototype.
+   *
+   * @param f
+   *          the f
+   */
   public abstract void visitFunctionPrototype(FunctionPrototype f);
 
+  /**
+   * Visit H refinement.
+   *
+   * @param h
+   *          the h
+   */
   public abstract void visitHRefinement(HRefinement h);
 
+  /**
+   * Visit data port.
+   *
+   * @param p
+   *          the p
+   */
   public abstract void visitDataPort(DataPort p);
 
+  /**
+   * Visit broadcast actor.
+   *
+   * @param ba
+   *          the ba
+   */
   public abstract void visitBroadcastActor(BroadcastActor ba);
 
+  /**
+   * Visit join actor.
+   *
+   * @param ja
+   *          the ja
+   */
   public abstract void visitJoinActor(JoinActor ja);
 
+  /**
+   * Visit fork actor.
+   *
+   * @param fa
+   *          the fa
+   */
   public abstract void visitForkActor(ForkActor fa);
 
+  /**
+   * Visit round buffer actor.
+   *
+   * @param rba
+   *          the rba
+   */
   public abstract void visitRoundBufferActor(RoundBufferActor rba);
 
+  /**
+   * Visit executable actor.
+   *
+   * @param ea
+   *          the ea
+   */
   public abstract void visitExecutableActor(ExecutableActor ea);
 }

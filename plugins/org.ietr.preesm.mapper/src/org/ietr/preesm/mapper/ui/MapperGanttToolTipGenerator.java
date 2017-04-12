@@ -41,40 +41,38 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.gantt.Task;
 import org.jfree.data.gantt.TaskSeriesCollection;
 
+// TODO: Auto-generated Javadoc
 /**
- * Tooltip object
- * 
+ * Tooltip object.
+ *
  * @author mpelcat
  */
 public class MapperGanttToolTipGenerator implements CategoryToolTipGenerator {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.jfree.chart.labels.CategoryToolTipGenerator#generateToolTip(org.jfree
-	 * .data.category.CategoryDataset, int, int)
-	 */
-	@Override
-	public String generateToolTip(CategoryDataset set, int row, int column) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.jfree.chart.labels.CategoryToolTipGenerator#generateToolTip(org.jfree
+   * .data.category.CategoryDataset, int, int)
+   */
+  @Override
+  public String generateToolTip(final CategoryDataset set, final int row, final int column) {
 
-		String tooltip = new String();
+    String tooltip = new String();
 
-		TaskSeriesCollection collection = (TaskSeriesCollection) set;
+    final TaskSeriesCollection collection = (TaskSeriesCollection) set;
 
-		if ((collection.getSeries(0).getItemCount() > column)
-				&& (collection.getSeries(0).get(column).getSubtaskCount() > row)) {
-			Task currentTask = collection.getSeries(0).get(column)
-					.getSubtask(row);
-			long startTime = currentTask.getDuration().getStart().getTime();
-			long endTime = currentTask.getDuration().getEnd().getTime();
+    if ((collection.getSeries(0).getItemCount() > column)
+        && (collection.getSeries(0).get(column).getSubtaskCount() > row)) {
+      final Task currentTask = collection.getSeries(0).get(column).getSubtask(row);
+      final long startTime = currentTask.getDuration().getStart().getTime();
+      final long endTime = currentTask.getDuration().getEnd().getTime();
 
-			tooltip = currentTask.getDescription() + "("
-					+ startTime + "-" + endTime + "-" + (endTime - startTime)
-					+ ")";
-		}
+      tooltip = currentTask.getDescription() + "(" + startTime + "-" + endTime + "-"
+          + (endTime - startTime) + ")";
+    }
 
-		return tooltip;
-	}
+    return tooltip;
+  }
 
 }

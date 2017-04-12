@@ -39,47 +39,63 @@ package org.ietr.preesm.mapper.abc.edgescheduling;
 
 import org.ietr.preesm.mapper.abc.order.OrderManager;
 
+// TODO: Auto-generated Javadoc
 /**
- * Methods common to every edge schedulers
- * 
+ * Methods common to every edge schedulers.
+ *
  * @author mpelcat
  */
 public abstract class AbstractEdgeSched implements IEdgeSched {
 
-	/**
-	 * Contains the rank list of all the vertices in an implementation
-	 */
-	protected OrderManager orderManager = null;
+  /** Contains the rank list of all the vertices in an implementation. */
+  protected OrderManager orderManager = null;
 
-	public AbstractEdgeSched(OrderManager orderManager) {
-		super();
-		this.orderManager = orderManager;
-	}
+  /**
+   * Instantiates a new abstract edge sched.
+   *
+   * @param orderManager
+   *          the order manager
+   */
+  public AbstractEdgeSched(final OrderManager orderManager) {
+    super();
+    this.orderManager = orderManager;
+  }
 
-	/**
-	 * Gets the edge scheduler from an edge scheduler type
-	 */
-	public static IEdgeSched getInstance(EdgeSchedType edgeSchedType,
-			OrderManager orderManager) {
+  /**
+   * Gets the edge scheduler from an edge scheduler type.
+   *
+   * @param edgeSchedType
+   *          the edge sched type
+   * @param orderManager
+   *          the order manager
+   * @return single instance of AbstractEdgeSched
+   */
+  public static IEdgeSched getInstance(final EdgeSchedType edgeSchedType,
+      final OrderManager orderManager) {
 
-		AbstractEdgeSched edgeSched = null;
+    AbstractEdgeSched edgeSched = null;
 
-		if (edgeSchedType == EdgeSchedType.Simple) {
-			edgeSched = new SimpleEdgeSched(orderManager);
-		} else if (edgeSchedType == EdgeSchedType.Switcher) {
-			edgeSched = new SwitcherEdgeSched(orderManager);
-		} else if (edgeSchedType == EdgeSchedType.Advanced) {
-			edgeSched = new AdvancedEdgeSched(orderManager);
-		} else {
-			// Default scheduler
-			edgeSched = new SimpleEdgeSched(orderManager);
-		}
+    if (edgeSchedType == EdgeSchedType.Simple) {
+      edgeSched = new SimpleEdgeSched(orderManager);
+    } else if (edgeSchedType == EdgeSchedType.Switcher) {
+      edgeSched = new SwitcherEdgeSched(orderManager);
+    } else if (edgeSchedType == EdgeSchedType.Advanced) {
+      edgeSched = new AdvancedEdgeSched(orderManager);
+    } else {
+      // Default scheduler
+      edgeSched = new SimpleEdgeSched(orderManager);
+    }
 
-		return edgeSched;
-	}
+    return edgeSched;
+  }
 
-	@Override
-	public OrderManager getOrderManager() {
-		return orderManager;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched#getOrderManager()
+   */
+  @Override
+  public OrderManager getOrderManager() {
+    return this.orderManager;
+  }
 }

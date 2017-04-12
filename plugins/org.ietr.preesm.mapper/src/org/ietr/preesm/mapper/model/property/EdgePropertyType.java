@@ -39,36 +39,59 @@ package org.ietr.preesm.mapper.model.property;
 
 import org.ietr.dftools.algorithm.model.AbstractEdgePropertyType;
 
+// TODO: Auto-generated Javadoc
 /**
- * Extending propertyType
- * 
+ * Extending propertyType.
+ *
  * @author mpelcat
  */
 public class EdgePropertyType extends AbstractEdgePropertyType<Integer> {
 
-	int time;
+  /** The time. */
+  int time;
 
-	public EdgePropertyType(int time) {
-		super();
-		this.time = time;
+  /**
+   * Instantiates a new edge property type.
+   *
+   * @param time
+   *          the time
+   */
+  public EdgePropertyType(final int time) {
+    super();
+    this.time = time;
 
-	}
+  }
 
-	@Override
-	public AbstractEdgePropertyType<Integer> clone() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#clone()
+   */
+  @Override
+  public AbstractEdgePropertyType<Integer> clone() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-	@Override
-	public int intValue() {
-		// TODO Auto-generated method stub
-		return time;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#intValue()
+   */
+  @Override
+  public int intValue() {
+    // TODO Auto-generated method stub
+    return this.time;
+  }
 
-	@Override
-	public String toString() {
-		return String.format("%d", time);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#toString()
+   */
+  @Override
+  public String toString() {
+    return String.format("%d", this.time);
+  }
 
 }

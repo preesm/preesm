@@ -76,12 +76,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+// TODO: Auto-generated Javadoc
 /**
- * Parser for the PiMM Model in the Pi format
+ * Parser for the PiMM Model in the Pi format.
  *
  * @author kdesnos
  * @author jheulot
- *
  */
 public class PiParser {
 
@@ -91,14 +91,15 @@ public class PiParser {
    *
    * <p>
    * This method will iterate over the properties of the element so it might not be a good idea to use it in a method that would successively retrieve all
-   * properties of the element.</p>
+   * properties of the element.
+   * </p>
    *
+   * @author Jonathan Piat
    * @param elt
    *          The element containing the property
    * @param propertyName
    *          The name of the property
    * @return The property value or null if the property was not found
-   * @author Jonathan Piat
    */
   protected static String getProperty(final Element elt, final String propertyName) {
     final NodeList childList = elt.getChildNodes();
@@ -110,11 +111,15 @@ public class PiParser {
     return null;
   }
 
-  /**
-   * The URI of the parsed file
-   */
+  /** The URI of the parsed file. */
   private final URI documentURI;
 
+  /**
+   * Instantiates a new pi parser.
+   *
+   * @param uri
+   *          the uri
+   */
   public PiParser(final URI uri) {
     this.documentURI = uri;
   }
@@ -177,6 +182,14 @@ public class PiParser {
     return actor;
   }
 
+  /**
+   * Parses the refinement.
+   *
+   * @param nodeElt
+   *          the node elt
+   * @param actor
+   *          the actor
+   */
   private void parseRefinement(final Element nodeElt, final Actor actor) {
     final String refinement = PiParser.getProperty(nodeElt, PiIdentifiers.REFINEMENT);
     if ((refinement != null) && !refinement.isEmpty()) {
@@ -213,6 +226,15 @@ public class PiParser {
     }
   }
 
+  /**
+   * Parses the function prototype.
+   *
+   * @param protoElt
+   *          the proto elt
+   * @param protoName
+   *          the proto name
+   * @return the function prototype
+   */
   private FunctionPrototype parseFunctionPrototype(final Element protoElt, final String protoName) {
     final FunctionPrototype proto = PiMMFactory.eINSTANCE.createFunctionPrototype();
 
@@ -232,6 +254,13 @@ public class PiParser {
     return proto;
   }
 
+  /**
+   * Parses the function parameter.
+   *
+   * @param elt
+   *          the elt
+   * @return the function parameter
+   */
   private FunctionParameter parseFunctionParameter(final Element elt) {
     final FunctionParameter param = PiMMFactory.eINSTANCE.createFunctionParameter();
 
@@ -368,8 +397,8 @@ public class PiParser {
   /**
    * Parse a node {@link Element} with kind "fifo".
    *
-   * @param nodeElt
-   *          the {@link Element} to parse
+   * @param edgeElt
+   *          the edge elt
    * @param graph
    *          the deserialized {@link PiGraph}
    */
@@ -427,7 +456,7 @@ public class PiParser {
   }
 
   /**
-   * Retrieve and parse the graph element of the Pi description
+   * Retrieve and parse the graph element of the Pi description.
    *
    * @param rootElt
    *          The root element (that must have a graph child)
@@ -575,10 +604,10 @@ public class PiParser {
   }
 
   /**
-   * Parse the root element of the Pi description
+   * Parse the root element of the Pi description.
    *
-   * @param parentElt
-   *          The Element to fill (could be removed later if it is always rootElt)
+   * @param rootElt
+   *          the root elt
    * @param graph
    *          The deserialized {@link PiGraph}
    */
@@ -771,7 +800,7 @@ public class PiParser {
   }
 
   /**
-   * Transform a project relative path to workspace relative path
+   * Transform a project relative path to workspace relative path.
    *
    * @param path
    *          the IPath to transform

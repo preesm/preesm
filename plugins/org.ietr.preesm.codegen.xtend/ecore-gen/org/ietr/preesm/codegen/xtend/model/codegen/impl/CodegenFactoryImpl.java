@@ -40,513 +40,606 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
-
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
+import org.ietr.preesm.codegen.xtend.model.codegen.ActorBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.ActorCall;
+import org.ietr.preesm.codegen.xtend.model.codegen.Block;
+import org.ietr.preesm.codegen.xtend.model.codegen.Buffer;
+import org.ietr.preesm.codegen.xtend.model.codegen.CallBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.CodegenFactory;
+import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
+import org.ietr.preesm.codegen.xtend.model.codegen.Communication;
+import org.ietr.preesm.codegen.xtend.model.codegen.CommunicationNode;
+import org.ietr.preesm.codegen.xtend.model.codegen.Constant;
+import org.ietr.preesm.codegen.xtend.model.codegen.ConstantString;
+import org.ietr.preesm.codegen.xtend.model.codegen.CoreBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.Delimiter;
+import org.ietr.preesm.codegen.xtend.model.codegen.Direction;
+import org.ietr.preesm.codegen.xtend.model.codegen.FifoCall;
+import org.ietr.preesm.codegen.xtend.model.codegen.FifoOperation;
+import org.ietr.preesm.codegen.xtend.model.codegen.FunctionCall;
+import org.ietr.preesm.codegen.xtend.model.codegen.LoopBlock;
+import org.ietr.preesm.codegen.xtend.model.codegen.NullBuffer;
+import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
+import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
+import org.ietr.preesm.codegen.xtend.model.codegen.SharedMemoryCommunication;
+import org.ietr.preesm.codegen.xtend.model.codegen.SpecialCall;
+import org.ietr.preesm.codegen.xtend.model.codegen.SpecialType;
+import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
 
-import org.ietr.preesm.codegen.xtend.model.codegen.*;
-
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!--
- * end-user-doc -->
- * 
+ * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!-- end-user-doc -->
+ *
  * @generated
  */
 public class CodegenFactoryImpl extends EFactoryImpl implements CodegenFactory {
-	/**
-	 * Creates the default factory implementation. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public static CodegenFactory init() {
-		try {
-			CodegenFactory theCodegenFactory = (CodegenFactory) EPackage.Registry.INSTANCE
-					.getEFactory(CodegenPackage.eNS_URI);
-			if (theCodegenFactory != null) {
-				return theCodegenFactory;
-			}
-		} catch (Exception exception) {
-			EcorePlugin.INSTANCE.log(exception);
-		}
-		return new CodegenFactoryImpl();
-	}
 
-	/**
-	 * Creates an instance of the factory. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public CodegenFactoryImpl() {
-		super();
-	}
+  /**
+   * Creates the default factory implementation. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @return the codegen factory
+   * @generated
+   */
+  public static CodegenFactory init() {
+    try {
+      final CodegenFactory theCodegenFactory = (CodegenFactory) EPackage.Registry.INSTANCE.getEFactory(CodegenPackage.eNS_URI);
+      if (theCodegenFactory != null) {
+        return theCodegenFactory;
+      }
+    } catch (final Exception exception) {
+      EcorePlugin.INSTANCE.log(exception);
+    }
+    return new CodegenFactoryImpl();
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public EObject create(EClass eClass) {
-		switch (eClass.getClassifierID()) {
-		case CodegenPackage.BLOCK:
-			return createBlock();
-		case CodegenPackage.BUFFER:
-			return createBuffer();
-		case CodegenPackage.SUB_BUFFER:
-			return createSubBuffer();
-		case CodegenPackage.CONSTANT:
-			return createConstant();
-		case CodegenPackage.FUNCTION_CALL:
-			return createFunctionCall();
-		case CodegenPackage.COMMUNICATION:
-			return createCommunication();
-		case CodegenPackage.CORE_BLOCK:
-			return createCoreBlock();
-		case CodegenPackage.ACTOR_BLOCK:
-			return createActorBlock();
-		case CodegenPackage.LOOP_BLOCK:
-			return createLoopBlock();
-		case CodegenPackage.ACTOR_CALL:
-			return createActorCall();
-		case CodegenPackage.CALL_BLOCK:
-			return createCallBlock();
-		case CodegenPackage.SPECIAL_CALL:
-			return createSpecialCall();
-		case CodegenPackage.FIFO_CALL:
-			return createFifoCall();
-		case CodegenPackage.COMMUNICATION_NODE:
-			return createCommunicationNode();
-		case CodegenPackage.SEMAPHORE:
-			return createSemaphore();
-		case CodegenPackage.SHARED_MEMORY_COMMUNICATION:
-			return createSharedMemoryCommunication();
-		case CodegenPackage.CONSTANT_STRING:
-			return createConstantString();
-		case CodegenPackage.NULL_BUFFER:
-			return createNullBuffer();
-		default:
-			throw new IllegalArgumentException("The class '" + eClass.getName()
-					+ "' is not a valid classifier");
-		}
-	}
+  /**
+   * Creates an instance of the factory. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @generated
+   */
+  public CodegenFactoryImpl() {
+    super();
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public Object createFromString(EDataType eDataType, String initialValue) {
-		switch (eDataType.getClassifierID()) {
-		case CodegenPackage.DIRECTION:
-			return createDirectionFromString(eDataType, initialValue);
-		case CodegenPackage.DELIMITER:
-			return createDelimiterFromString(eDataType, initialValue);
-		case CodegenPackage.SPECIAL_TYPE:
-			return createSpecialTypeFromString(eDataType, initialValue);
-		case CodegenPackage.FIFO_OPERATION:
-			return createFifoOperationFromString(eDataType, initialValue);
-		case CodegenPackage.PORT_DIRECTION:
-			return createPortDirectionFromString(eDataType, initialValue);
-		case CodegenPackage.RANGE:
-			return createrangeFromString(eDataType, initialValue);
-		default:
-			throw new IllegalArgumentException("The datatype '"
-					+ eDataType.getName() + "' is not a valid classifier");
-		}
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param eClass
+   *          the e class
+   * @return the e object
+   * @generated
+   */
+  @Override
+  public EObject create(final EClass eClass) {
+    switch (eClass.getClassifierID()) {
+      case CodegenPackage.BLOCK:
+        return createBlock();
+      case CodegenPackage.BUFFER:
+        return createBuffer();
+      case CodegenPackage.SUB_BUFFER:
+        return createSubBuffer();
+      case CodegenPackage.CONSTANT:
+        return createConstant();
+      case CodegenPackage.FUNCTION_CALL:
+        return createFunctionCall();
+      case CodegenPackage.COMMUNICATION:
+        return createCommunication();
+      case CodegenPackage.CORE_BLOCK:
+        return createCoreBlock();
+      case CodegenPackage.ACTOR_BLOCK:
+        return createActorBlock();
+      case CodegenPackage.LOOP_BLOCK:
+        return createLoopBlock();
+      case CodegenPackage.ACTOR_CALL:
+        return createActorCall();
+      case CodegenPackage.CALL_BLOCK:
+        return createCallBlock();
+      case CodegenPackage.SPECIAL_CALL:
+        return createSpecialCall();
+      case CodegenPackage.FIFO_CALL:
+        return createFifoCall();
+      case CodegenPackage.COMMUNICATION_NODE:
+        return createCommunicationNode();
+      case CodegenPackage.SEMAPHORE:
+        return createSemaphore();
+      case CodegenPackage.SHARED_MEMORY_COMMUNICATION:
+        return createSharedMemoryCommunication();
+      case CodegenPackage.CONSTANT_STRING:
+        return createConstantString();
+      case CodegenPackage.NULL_BUFFER:
+        return createNullBuffer();
+      default:
+        throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public String convertToString(EDataType eDataType, Object instanceValue) {
-		switch (eDataType.getClassifierID()) {
-		case CodegenPackage.DIRECTION:
-			return convertDirectionToString(eDataType, instanceValue);
-		case CodegenPackage.DELIMITER:
-			return convertDelimiterToString(eDataType, instanceValue);
-		case CodegenPackage.SPECIAL_TYPE:
-			return convertSpecialTypeToString(eDataType, instanceValue);
-		case CodegenPackage.FIFO_OPERATION:
-			return convertFifoOperationToString(eDataType, instanceValue);
-		case CodegenPackage.PORT_DIRECTION:
-			return convertPortDirectionToString(eDataType, instanceValue);
-		case CodegenPackage.RANGE:
-			return convertrangeToString(eDataType, instanceValue);
-		default:
-			throw new IllegalArgumentException("The datatype '"
-					+ eDataType.getName() + "' is not a valid classifier");
-		}
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param eDataType
+   *          the e data type
+   * @param initialValue
+   *          the initial value
+   * @return the object
+   * @generated
+   */
+  @Override
+  public Object createFromString(final EDataType eDataType, final String initialValue) {
+    switch (eDataType.getClassifierID()) {
+      case CodegenPackage.DIRECTION:
+        return createDirectionFromString(eDataType, initialValue);
+      case CodegenPackage.DELIMITER:
+        return createDelimiterFromString(eDataType, initialValue);
+      case CodegenPackage.SPECIAL_TYPE:
+        return createSpecialTypeFromString(eDataType, initialValue);
+      case CodegenPackage.FIFO_OPERATION:
+        return createFifoOperationFromString(eDataType, initialValue);
+      case CodegenPackage.PORT_DIRECTION:
+        return createPortDirectionFromString(eDataType, initialValue);
+      case CodegenPackage.RANGE:
+        return createrangeFromString(eDataType, initialValue);
+      default:
+        throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public Block createBlock() {
-		BlockImpl block = new BlockImpl();
-		return block;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param eDataType
+   *          the e data type
+   * @param instanceValue
+   *          the instance value
+   * @return the string
+   * @generated
+   */
+  @Override
+  public String convertToString(final EDataType eDataType, final Object instanceValue) {
+    switch (eDataType.getClassifierID()) {
+      case CodegenPackage.DIRECTION:
+        return convertDirectionToString(eDataType, instanceValue);
+      case CodegenPackage.DELIMITER:
+        return convertDelimiterToString(eDataType, instanceValue);
+      case CodegenPackage.SPECIAL_TYPE:
+        return convertSpecialTypeToString(eDataType, instanceValue);
+      case CodegenPackage.FIFO_OPERATION:
+        return convertFifoOperationToString(eDataType, instanceValue);
+      case CodegenPackage.PORT_DIRECTION:
+        return convertPortDirectionToString(eDataType, instanceValue);
+      case CodegenPackage.RANGE:
+        return convertrangeToString(eDataType, instanceValue);
+      default:
+        throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public Buffer createBuffer() {
-		BufferImpl buffer = new BufferImpl();
-		return buffer;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the block
+   * @generated
+   */
+  @Override
+  public Block createBlock() {
+    final BlockImpl block = new BlockImpl();
+    return block;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public SubBuffer createSubBuffer() {
-		SubBufferImpl subBuffer = new SubBufferImpl();
-		return subBuffer;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the buffer
+   * @generated
+   */
+  @Override
+  public Buffer createBuffer() {
+    final BufferImpl buffer = new BufferImpl();
+    return buffer;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public Constant createConstant() {
-		ConstantImpl constant = new ConstantImpl();
-		return constant;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the sub buffer
+   * @generated
+   */
+  @Override
+  public SubBuffer createSubBuffer() {
+    final SubBufferImpl subBuffer = new SubBufferImpl();
+    return subBuffer;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public FunctionCall createFunctionCall() {
-		FunctionCallImpl functionCall = new FunctionCallImpl();
-		return functionCall;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the constant
+   * @generated
+   */
+  @Override
+  public Constant createConstant() {
+    final ConstantImpl constant = new ConstantImpl();
+    return constant;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public Communication createCommunication() {
-		CommunicationImpl communication = new CommunicationImpl();
-		return communication;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the function call
+   * @generated
+   */
+  @Override
+  public FunctionCall createFunctionCall() {
+    final FunctionCallImpl functionCall = new FunctionCallImpl();
+    return functionCall;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public CoreBlock createCoreBlock() {
-		CoreBlockImpl coreBlock = new CoreBlockImpl();
-		return coreBlock;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the communication
+   * @generated
+   */
+  @Override
+  public Communication createCommunication() {
+    final CommunicationImpl communication = new CommunicationImpl();
+    return communication;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public ActorBlock createActorBlock() {
-		ActorBlockImpl actorBlock = new ActorBlockImpl();
-		return actorBlock;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the core block
+   * @generated
+   */
+  @Override
+  public CoreBlock createCoreBlock() {
+    final CoreBlockImpl coreBlock = new CoreBlockImpl();
+    return coreBlock;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public LoopBlock createLoopBlock() {
-		LoopBlockImpl loopBlock = new LoopBlockImpl();
-		return loopBlock;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the actor block
+   * @generated
+   */
+  @Override
+  public ActorBlock createActorBlock() {
+    final ActorBlockImpl actorBlock = new ActorBlockImpl();
+    return actorBlock;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public ActorCall createActorCall() {
-		ActorCallImpl actorCall = new ActorCallImpl();
-		return actorCall;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the loop block
+   * @generated
+   */
+  @Override
+  public LoopBlock createLoopBlock() {
+    final LoopBlockImpl loopBlock = new LoopBlockImpl();
+    return loopBlock;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public CallBlock createCallBlock() {
-		CallBlockImpl callBlock = new CallBlockImpl();
-		return callBlock;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the actor call
+   * @generated
+   */
+  @Override
+  public ActorCall createActorCall() {
+    final ActorCallImpl actorCall = new ActorCallImpl();
+    return actorCall;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public SpecialCall createSpecialCall() {
-		SpecialCallImpl specialCall = new SpecialCallImpl();
-		return specialCall;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the call block
+   * @generated
+   */
+  @Override
+  public CallBlock createCallBlock() {
+    final CallBlockImpl callBlock = new CallBlockImpl();
+    return callBlock;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public FifoCall createFifoCall() {
-		FifoCallImpl fifoCall = new FifoCallImpl();
-		return fifoCall;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the special call
+   * @generated
+   */
+  @Override
+  public SpecialCall createSpecialCall() {
+    final SpecialCallImpl specialCall = new SpecialCallImpl();
+    return specialCall;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public CommunicationNode createCommunicationNode() {
-		CommunicationNodeImpl communicationNode = new CommunicationNodeImpl();
-		return communicationNode;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the fifo call
+   * @generated
+   */
+  @Override
+  public FifoCall createFifoCall() {
+    final FifoCallImpl fifoCall = new FifoCallImpl();
+    return fifoCall;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public Semaphore createSemaphore() {
-		SemaphoreImpl semaphore = new SemaphoreImpl();
-		return semaphore;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the communication node
+   * @generated
+   */
+  @Override
+  public CommunicationNode createCommunicationNode() {
+    final CommunicationNodeImpl communicationNode = new CommunicationNodeImpl();
+    return communicationNode;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public SharedMemoryCommunication createSharedMemoryCommunication() {
-		SharedMemoryCommunicationImpl sharedMemoryCommunication = new SharedMemoryCommunicationImpl();
-		return sharedMemoryCommunication;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the semaphore
+   * @generated
+   */
+  @Override
+  public Semaphore createSemaphore() {
+    final SemaphoreImpl semaphore = new SemaphoreImpl();
+    return semaphore;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public ConstantString createConstantString() {
-		ConstantStringImpl constantString = new ConstantStringImpl();
-		return constantString;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the shared memory communication
+   * @generated
+   */
+  @Override
+  public SharedMemoryCommunication createSharedMemoryCommunication() {
+    final SharedMemoryCommunicationImpl sharedMemoryCommunication = new SharedMemoryCommunicationImpl();
+    return sharedMemoryCommunication;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public NullBuffer createNullBuffer() {
-		NullBufferImpl nullBuffer = new NullBufferImpl();
-		return nullBuffer;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the constant string
+   * @generated
+   */
+  @Override
+  public ConstantString createConstantString() {
+    final ConstantStringImpl constantString = new ConstantStringImpl();
+    return constantString;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public Direction createDirectionFromString(EDataType eDataType,
-			String initialValue) {
-		Direction result = Direction.get(initialValue);
-		if (result == null)
-			throw new IllegalArgumentException("The value '" + initialValue
-					+ "' is not a valid enumerator of '" + eDataType.getName()
-					+ "'");
-		return result;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the null buffer
+   * @generated
+   */
+  @Override
+  public NullBuffer createNullBuffer() {
+    final NullBufferImpl nullBuffer = new NullBufferImpl();
+    return nullBuffer;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public String convertDirectionToString(EDataType eDataType,
-			Object instanceValue) {
-		return instanceValue == null ? null : instanceValue.toString();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param eDataType
+   *          the e data type
+   * @param initialValue
+   *          the initial value
+   * @return the direction
+   * @generated
+   */
+  public Direction createDirectionFromString(final EDataType eDataType, final String initialValue) {
+    final Direction result = Direction.get(initialValue);
+    if (result == null) {
+      throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+    }
+    return result;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public Delimiter createDelimiterFromString(EDataType eDataType,
-			String initialValue) {
-		Delimiter result = Delimiter.get(initialValue);
-		if (result == null)
-			throw new IllegalArgumentException("The value '" + initialValue
-					+ "' is not a valid enumerator of '" + eDataType.getName()
-					+ "'");
-		return result;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param eDataType
+   *          the e data type
+   * @param instanceValue
+   *          the instance value
+   * @return the string
+   * @generated
+   */
+  public String convertDirectionToString(final EDataType eDataType, final Object instanceValue) {
+    return instanceValue == null ? null : instanceValue.toString();
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public String convertDelimiterToString(EDataType eDataType,
-			Object instanceValue) {
-		return instanceValue == null ? null : instanceValue.toString();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param eDataType
+   *          the e data type
+   * @param initialValue
+   *          the initial value
+   * @return the delimiter
+   * @generated
+   */
+  public Delimiter createDelimiterFromString(final EDataType eDataType, final String initialValue) {
+    final Delimiter result = Delimiter.get(initialValue);
+    if (result == null) {
+      throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+    }
+    return result;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public SpecialType createSpecialTypeFromString(EDataType eDataType,
-			String initialValue) {
-		SpecialType result = SpecialType.get(initialValue);
-		if (result == null)
-			throw new IllegalArgumentException("The value '" + initialValue
-					+ "' is not a valid enumerator of '" + eDataType.getName()
-					+ "'");
-		return result;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param eDataType
+   *          the e data type
+   * @param instanceValue
+   *          the instance value
+   * @return the string
+   * @generated
+   */
+  public String convertDelimiterToString(final EDataType eDataType, final Object instanceValue) {
+    return instanceValue == null ? null : instanceValue.toString();
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public String convertSpecialTypeToString(EDataType eDataType,
-			Object instanceValue) {
-		return instanceValue == null ? null : instanceValue.toString();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param eDataType
+   *          the e data type
+   * @param initialValue
+   *          the initial value
+   * @return the special type
+   * @generated
+   */
+  public SpecialType createSpecialTypeFromString(final EDataType eDataType, final String initialValue) {
+    final SpecialType result = SpecialType.get(initialValue);
+    if (result == null) {
+      throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+    }
+    return result;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public FifoOperation createFifoOperationFromString(EDataType eDataType,
-			String initialValue) {
-		FifoOperation result = FifoOperation.get(initialValue);
-		if (result == null)
-			throw new IllegalArgumentException("The value '" + initialValue
-					+ "' is not a valid enumerator of '" + eDataType.getName()
-					+ "'");
-		return result;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param eDataType
+   *          the e data type
+   * @param instanceValue
+   *          the instance value
+   * @return the string
+   * @generated
+   */
+  public String convertSpecialTypeToString(final EDataType eDataType, final Object instanceValue) {
+    return instanceValue == null ? null : instanceValue.toString();
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public String convertFifoOperationToString(EDataType eDataType,
-			Object instanceValue) {
-		return instanceValue == null ? null : instanceValue.toString();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param eDataType
+   *          the e data type
+   * @param initialValue
+   *          the initial value
+   * @return the fifo operation
+   * @generated
+   */
+  public FifoOperation createFifoOperationFromString(final EDataType eDataType, final String initialValue) {
+    final FifoOperation result = FifoOperation.get(initialValue);
+    if (result == null) {
+      throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+    }
+    return result;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public PortDirection createPortDirectionFromString(EDataType eDataType,
-			String initialValue) {
-		PortDirection result = PortDirection.get(initialValue);
-		if (result == null)
-			throw new IllegalArgumentException("The value '" + initialValue
-					+ "' is not a valid enumerator of '" + eDataType.getName()
-					+ "'");
-		return result;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param eDataType
+   *          the e data type
+   * @param instanceValue
+   *          the instance value
+   * @return the string
+   * @generated
+   */
+  public String convertFifoOperationToString(final EDataType eDataType, final Object instanceValue) {
+    return instanceValue == null ? null : instanceValue.toString();
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public String convertPortDirectionToString(EDataType eDataType,
-			Object instanceValue) {
-		return instanceValue == null ? null : instanceValue.toString();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param eDataType
+   *          the e data type
+   * @param initialValue
+   *          the initial value
+   * @return the port direction
+   * @generated
+   */
+  public PortDirection createPortDirectionFromString(final EDataType eDataType, final String initialValue) {
+    final PortDirection result = PortDirection.get(initialValue);
+    if (result == null) {
+      throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+    }
+    return result;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public org.ietr.preesm.memory.script.Range createrangeFromString(
-			EDataType eDataType, String initialValue) {
-		return (org.ietr.preesm.memory.script.Range) super.createFromString(
-				eDataType, initialValue);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param eDataType
+   *          the e data type
+   * @param instanceValue
+   *          the instance value
+   * @return the string
+   * @generated
+   */
+  public String convertPortDirectionToString(final EDataType eDataType, final Object instanceValue) {
+    return instanceValue == null ? null : instanceValue.toString();
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public String convertrangeToString(EDataType eDataType, Object instanceValue) {
-		return super.convertToString(eDataType, instanceValue);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param eDataType
+   *          the e data type
+   * @param initialValue
+   *          the initial value
+   * @return the org.ietr.preesm.memory.script. range
+   * @generated
+   */
+  public org.ietr.preesm.memory.script.Range createrangeFromString(final EDataType eDataType, final String initialValue) {
+    return (org.ietr.preesm.memory.script.Range) super.createFromString(eDataType, initialValue);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public CodegenPackage getCodegenPackage() {
-		return (CodegenPackage) getEPackage();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param eDataType
+   *          the e data type
+   * @param instanceValue
+   *          the instance value
+   * @return the string
+   * @generated
+   */
+  public String convertrangeToString(final EDataType eDataType, final Object instanceValue) {
+    return super.convertToString(eDataType, instanceValue);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @deprecated
-	 * @generated
-	 */
-	@Deprecated
-	public static CodegenPackage getPackage() {
-		return CodegenPackage.eINSTANCE;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the codegen package
+   * @generated
+   */
+  @Override
+  public CodegenPackage getCodegenPackage() {
+    return (CodegenPackage) getEPackage();
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the package
+   * @deprecated
+   * @generated
+   */
+  @Deprecated
+  public static CodegenPackage getPackage() {
+    return CodegenPackage.eINSTANCE;
+  }
 
 } // CodegenFactoryImpl

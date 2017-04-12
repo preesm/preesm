@@ -36,10 +36,9 @@
 package org.ietr.preesm.codegen.xtend.model.codegen;
 
 /**
- * <!-- begin-user-doc --> A representation of the model object '
- * <em><b>Null Buffer</b></em>'. <!-- end-user-doc -->
- * 
- * 
+ * <!-- begin-user-doc --> A representation of the model object ' <em><b>Null Buffer</b></em>'. <!-- end-user-doc -->
+ *
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getNullBuffer()
  * @model
  * @generated

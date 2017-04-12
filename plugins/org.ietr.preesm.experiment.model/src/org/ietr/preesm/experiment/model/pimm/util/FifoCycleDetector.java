@@ -47,8 +47,9 @@ import org.ietr.preesm.experiment.model.pimm.Dependency;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
+// TODO: Auto-generated Javadoc
 /**
- * This class provide an Ecore switch to detect cycle dependencies on FIfos
+ * This class provide an Ecore switch to detect cycle dependencies on FIfos.
  */
 public class FifoCycleDetector extends PiMMSwitch<Void> {
 
@@ -90,6 +91,7 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
   }
 
   /**
+   * Instantiates a new fifo cycle detector.
    *
    * @param fastDetection
    *          whether the detection will stop at the first detected cycle (true) or list all cycles (false)
@@ -132,6 +134,11 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
     this.cycles.add(cycle);
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#casePiGraph(org.ietr.preesm.experiment.model.pimm.PiGraph)
+   */
   @Override
   public Void casePiGraph(final PiGraph graph) {
 
@@ -153,6 +160,11 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
     return null;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseAbstractActor(org.ietr.preesm.experiment.model.pimm.AbstractActor)
+   */
   @Override
   public Void caseAbstractActor(final AbstractActor actor) {
     // Visit the AbstractActor and its successors if it was not already done
@@ -191,6 +203,11 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
     return null;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseDataInputPort(org.ietr.preesm.experiment.model.pimm.DataInputPort)
+   */
   @Override
   public Void caseDataInputPort(final DataInputPort port) {
     // Visit the owner of the data input port only if it is a AbstractActor
@@ -239,6 +256,11 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
     this.ignoredFifos.clear();
   }
 
+  /**
+   * Gets the cycles.
+   *
+   * @return the cycles
+   */
   public List<List<AbstractActor>> getCycles() {
     return this.cycles;
   }
@@ -253,6 +275,12 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
     return this.cycles.size() > 0;
   }
 
+  /**
+   * Adds the ignored fifos.
+   *
+   * @param fifos
+   *          the fifos
+   */
   public void addIgnoredFifos(final Collection<Fifo> fifos) {
     this.ignoredFifos.addAll(fifos);
   }
@@ -263,6 +291,7 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
    *
    * @param cycle
    *          A list of {@link AbstractActor} forming a Cycle.
+   * @return the list
    */
   public static List<Fifo> findCycleFeedbackFifos(final List<AbstractActor> cycle) {
     // Find the Fifos between each pair of actor of the cycle

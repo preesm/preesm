@@ -37,7 +37,6 @@
 package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
 import java.util.Collection;
-
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
@@ -51,326 +50,338 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.PortDirection;
 import org.ietr.preesm.codegen.xtend.model.codegen.Variable;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> An implementation of the model object '
- * <em><b>Call</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Call</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getParameters
- * <em>Parameters</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getName
- * <em>Name</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getEReference0
- * <em>EReference0</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getParameterDirections
- * <em>Parameter Directions</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getParameters <em>Parameters</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getName <em>Name</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getEReference0 <em>EReference0</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.CallImpl#getParameterDirections <em>Parameter Directions</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @generated
  */
 public abstract class CallImpl extends EObjectImpl implements Call {
-	/**
-	 * The cached value of the '{@link #getParameters() <em>Parameters</em>}'
-	 * reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getParameters()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<Variable> parameters;
+  /**
+   * The cached value of the '{@link #getParameters() <em>Parameters</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getParameters()
+   * @generated
+   * @ordered
+   */
+  protected EList<Variable> parameters;
 
-	/**
-	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getName()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String NAME_EDEFAULT = null;
+  /**
+   * The default value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getName()
+   * @generated
+   * @ordered
+   */
+  protected static final String NAME_EDEFAULT = null;
 
-	/**
-	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getName()
-	 * @generated
-	 * @ordered
-	 */
-	protected String name = NAME_EDEFAULT;
+  /**
+   * The cached value of the '{@link #getName() <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getName()
+   * @generated
+   * @ordered
+   */
+  protected String name = CallImpl.NAME_EDEFAULT;
 
-	/**
-	 * The cached value of the '{@link #getEReference0() <em>EReference0</em>}'
-	 * reference. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getEReference0()
-	 * @generated
-	 * @ordered
-	 */
-	protected Call eReference0;
+  /**
+   * The cached value of the '{@link #getEReference0() <em>EReference0</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getEReference0()
+   * @generated
+   * @ordered
+   */
+  protected Call eReference0;
 
-	/**
-	 * The cached value of the '{@link #getParameterDirections()
-	 * <em>Parameter Directions</em>}' attribute list. <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * 
-	 * @see #getParameterDirections()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<PortDirection> parameterDirections;
+  /**
+   * The cached value of the '{@link #getParameterDirections() <em>Parameter Directions</em>}' attribute list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getParameterDirections()
+   * @generated
+   * @ordered
+   */
+  protected EList<PortDirection> parameterDirections;
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	protected CallImpl() {
-		super();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @generated
+   */
+  protected CallImpl() {
+    super();
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return CodegenPackage.Literals.CALL;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return CodegenPackage.Literals.CALL;
+  }
 
-	/**
-	 * <!-- begin-user-doc --><!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public EList<Variable> getParameters() {
-		if (parameters == null) {
-			parameters = new EObjectResolvingEList<Variable>(Variable.class,
-					this, CodegenPackage.CALL__PARAMETERS);
-		}
-		return parameters;
-	}
+  /**
+   * <!-- begin-user-doc --><!-- end-user-doc -->.
+   *
+   * @return the parameters
+   * @generated
+   */
+  @Override
+  public EList<Variable> getParameters() {
+    if (this.parameters == null) {
+      this.parameters = new EObjectResolvingEList<>(Variable.class, this, CodegenPackage.CALL__PARAMETERS);
+    }
+    return this.parameters;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public String getName() {
-		return name;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the name
+   * @generated
+   */
+  @Override
+  public String getName() {
+    return this.name;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public void setName(String newName) {
-		String oldName = name;
-		name = newName;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.CALL__NAME, oldName, name));
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newName
+   *          the new name
+   * @generated
+   */
+  @Override
+  public void setName(final String newName) {
+    final String oldName = this.name;
+    this.name = newName;
+    if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.CALL__NAME, oldName, this.name));
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public Call getEReference0() {
-		if (eReference0 != null && eReference0.eIsProxy()) {
-			InternalEObject oldEReference0 = (InternalEObject) eReference0;
-			eReference0 = (Call) eResolveProxy(oldEReference0);
-			if (eReference0 != oldEReference0) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							CodegenPackage.CALL__EREFERENCE0, oldEReference0,
-							eReference0));
-			}
-		}
-		return eReference0;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e reference 0
+   * @generated
+   */
+  @Override
+  public Call getEReference0() {
+    if ((this.eReference0 != null) && this.eReference0.eIsProxy()) {
+      final InternalEObject oldEReference0 = (InternalEObject) this.eReference0;
+      this.eReference0 = (Call) eResolveProxy(oldEReference0);
+      if (this.eReference0 != oldEReference0) {
+        if (eNotificationRequired()) {
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, CodegenPackage.CALL__EREFERENCE0, oldEReference0, this.eReference0));
+        }
+      }
+    }
+    return this.eReference0;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public Call basicGetEReference0() {
-		return eReference0;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the call
+   * @generated
+   */
+  public Call basicGetEReference0() {
+    return this.eReference0;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public void setEReference0(Call newEReference0) {
-		Call oldEReference0 = eReference0;
-		eReference0 = newEReference0;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CodegenPackage.CALL__EREFERENCE0, oldEReference0,
-					eReference0));
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newEReference0
+   *          the new e reference 0
+   * @generated
+   */
+  @Override
+  public void setEReference0(final Call newEReference0) {
+    final Call oldEReference0 = this.eReference0;
+    this.eReference0 = newEReference0;
+    if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.CALL__EREFERENCE0, oldEReference0, this.eReference0));
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public EList<PortDirection> getParameterDirections() {
-		if (parameterDirections == null) {
-			parameterDirections = new EDataTypeEList<PortDirection>(
-					PortDirection.class, this,
-					CodegenPackage.CALL__PARAMETER_DIRECTIONS);
-		}
-		return parameterDirections;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the parameter directions
+   * @generated
+   */
+  @Override
+  public EList<PortDirection> getParameterDirections() {
+    if (this.parameterDirections == null) {
+      this.parameterDirections = new EDataTypeEList<>(PortDirection.class, this, CodegenPackage.CALL__PARAMETER_DIRECTIONS);
+    }
+    return this.parameterDirections;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * 
-	 */
-	@Override
-	public void addParameter(Variable variable, PortDirection direction) {
-		getParameters().add(variable);
-		getParameterDirections().add(direction);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param variable
+   *          the variable
+   * @param direction
+   *          the direction
+   */
+  @Override
+  public void addParameter(final Variable variable, final PortDirection direction) {
+    getParameters().add(variable);
+    getParameterDirections().add(direction);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * 
-	 */
-	@Override
-	public void removeParameter(Variable variable) {
-		// Must remove the port direction
-		// TODO: implement this method
-		// Ensure that you remove @generated or mark it @generated NOT
-		throw new UnsupportedOperationException();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param variable
+   *          the variable
+   */
+  @Override
+  public void removeParameter(final Variable variable) {
+    // Must remove the port direction
+    // TODO: implement this method
+    // Ensure that you remove @generated or mark it @generated NOT
+    throw new UnsupportedOperationException();
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-		case CodegenPackage.CALL__PARAMETERS:
-			return getParameters();
-		case CodegenPackage.CALL__NAME:
-			return getName();
-		case CodegenPackage.CALL__EREFERENCE0:
-			if (resolve)
-				return getEReference0();
-			return basicGetEReference0();
-		case CodegenPackage.CALL__PARAMETER_DIRECTIONS:
-			return getParameterDirections();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param resolve
+   *          the resolve
+   * @param coreType
+   *          the core type
+   * @return the object
+   * @generated
+   */
+  @Override
+  public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
+    switch (featureID) {
+      case CodegenPackage.CALL__PARAMETERS:
+        return getParameters();
+      case CodegenPackage.CALL__NAME:
+        return getName();
+      case CodegenPackage.CALL__EREFERENCE0:
+        if (resolve) {
+          return getEReference0();
+        }
+        return basicGetEReference0();
+      case CodegenPackage.CALL__PARAMETER_DIRECTIONS:
+        return getParameterDirections();
+    }
+    return super.eGet(featureID, resolve, coreType);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-		case CodegenPackage.CALL__NAME:
-			setName((String) newValue);
-			return;
-		case CodegenPackage.CALL__EREFERENCE0:
-			setEReference0((Call) newValue);
-			return;
-		case CodegenPackage.CALL__PARAMETER_DIRECTIONS:
-			getParameterDirections().clear();
-			getParameterDirections().addAll(
-					(Collection<? extends PortDirection>) newValue);
-			return;
-		}
-		super.eSet(featureID, newValue);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param newValue
+   *          the new value
+   * @generated
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  public void eSet(final int featureID, final Object newValue) {
+    switch (featureID) {
+      case CodegenPackage.CALL__NAME:
+        setName((String) newValue);
+        return;
+      case CodegenPackage.CALL__EREFERENCE0:
+        setEReference0((Call) newValue);
+        return;
+      case CodegenPackage.CALL__PARAMETER_DIRECTIONS:
+        getParameterDirections().clear();
+        getParameterDirections().addAll((Collection<? extends PortDirection>) newValue);
+        return;
+    }
+    super.eSet(featureID, newValue);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public void eUnset(int featureID) {
-		switch (featureID) {
-		case CodegenPackage.CALL__NAME:
-			setName(NAME_EDEFAULT);
-			return;
-		case CodegenPackage.CALL__EREFERENCE0:
-			setEReference0((Call) null);
-			return;
-		case CodegenPackage.CALL__PARAMETER_DIRECTIONS:
-			getParameterDirections().clear();
-			return;
-		}
-		super.eUnset(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @generated
+   */
+  @Override
+  public void eUnset(final int featureID) {
+    switch (featureID) {
+      case CodegenPackage.CALL__NAME:
+        setName(CallImpl.NAME_EDEFAULT);
+        return;
+      case CodegenPackage.CALL__EREFERENCE0:
+        setEReference0((Call) null);
+        return;
+      case CodegenPackage.CALL__PARAMETER_DIRECTIONS:
+        getParameterDirections().clear();
+        return;
+    }
+    super.eUnset(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-		case CodegenPackage.CALL__PARAMETERS:
-			return parameters != null && !parameters.isEmpty();
-		case CodegenPackage.CALL__NAME:
-			return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT
-					.equals(name);
-		case CodegenPackage.CALL__EREFERENCE0:
-			return eReference0 != null;
-		case CodegenPackage.CALL__PARAMETER_DIRECTIONS:
-			return parameterDirections != null
-					&& !parameterDirections.isEmpty();
-		}
-		return super.eIsSet(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @return true, if successful
+   * @generated
+   */
+  @Override
+  public boolean eIsSet(final int featureID) {
+    switch (featureID) {
+      case CodegenPackage.CALL__PARAMETERS:
+        return (this.parameters != null) && !this.parameters.isEmpty();
+      case CodegenPackage.CALL__NAME:
+        return CallImpl.NAME_EDEFAULT == null ? this.name != null : !CallImpl.NAME_EDEFAULT.equals(this.name);
+      case CodegenPackage.CALL__EREFERENCE0:
+        return this.eReference0 != null;
+      case CodegenPackage.CALL__PARAMETER_DIRECTIONS:
+        return (this.parameterDirections != null) && !this.parameterDirections.isEmpty();
+    }
+    return super.eIsSet(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public String toString() {
-		if (eIsProxy())
-			return super.toString();
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the string
+   * @generated
+   */
+  @Override
+  public String toString() {
+    if (eIsProxy()) {
+      return super.toString();
+    }
 
-		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (name: ");
-		result.append(name);
-		result.append(", parameterDirections: ");
-		result.append(parameterDirections);
-		result.append(')');
-		return result.toString();
-	}
+    final StringBuffer result = new StringBuffer(super.toString());
+    result.append(" (name: ");
+    result.append(this.name);
+    result.append(", parameterDirections: ");
+    result.append(this.parameterDirections);
+    result.append(')');
+    return result.toString();
+  }
 
 } // CallImpl

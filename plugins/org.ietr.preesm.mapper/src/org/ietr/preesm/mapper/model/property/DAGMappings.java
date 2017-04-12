@@ -39,92 +39,121 @@ package org.ietr.preesm.mapper.model.property;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
-
+// TODO: Auto-generated Javadoc
 /**
- * MapperDAG stores mapping properties shared by several of its vertices that
- * have relative constraints. If the mapping of a vertex in the group is modified,
- * all mappings of the vertices in the group are modified.
- * 
+ * MapperDAG stores mapping properties shared by several of its vertices that have relative
+ * constraints. If the mapping of a vertex in the group is modified, all mappings of the vertices in
+ * the group are modified.
+ *
  * @author mpelcat
  */
 public class DAGMappings {
 
-	/**
-	 * A mapping is associated to IDs of the vertices belonging to it (for fast
-	 * access).
-	 */
-	Map<String, VertexMapping> mappings = null;
-	public DAGMappings() {
-		super();
-		mappings = new HashMap<String, VertexMapping>();
-	}
+  /**
+   * A mapping is associated to IDs of the vertices belonging to it (for fast access).
+   */
+  Map<String, VertexMapping> mappings = null;
 
+  /**
+   * Instantiates a new DAG mappings.
+   */
+  public DAGMappings() {
+    super();
+    this.mappings = new HashMap<>();
+  }
 
-	public VertexMapping getMapping(String vertexId) {
-		return mappings.get(vertexId);
-	}
-	
-	/**
-	 * Associates vertices by making them share a created VertexMapping object
-	 */
-	public void associate(Set<MapperDAGVertex> vertices) {
-		VertexMapping newMapping = new VertexMapping();
-		for (MapperDAGVertex v : vertices) {
-			put(v.getName(), newMapping);
-		}
-	}
-	
-	/**
-	 * Dedicates a created VertexMapping object to a single vertex
-	 */
-	public void dedicate(MapperDAGVertex vertex) {
-		VertexMapping newMapping = new VertexMapping();
-		put(vertex.getName(), newMapping);
-	}
-	
-	/**
-	 * Associating a vertex to an existing mapping
-	 */
-	private void put(String vertexId, VertexMapping m) {
-		mappings.put(vertexId, m);
-		m.addVertexID(vertexId);
-	}
+  /**
+   * Gets the mapping.
+   *
+   * @param vertexId
+   *          the vertex id
+   * @return the mapping
+   */
+  public VertexMapping getMapping(final String vertexId) {
+    return this.mappings.get(vertexId);
+  }
 
-	/**
-	 * Associating a vertex to an existing mapping
-	 */
-	public void remove(MapperDAGVertex vertex) {
-		mappings.get(vertex.getName()).removeVertexID(vertex.getName());
-		mappings.remove(vertex.getName());
-	}
+  /**
+   * Associates vertices by making them share a created VertexMapping object.
+   *
+   * @param vertices
+   *          the vertices
+   */
+  public void associate(final Set<MapperDAGVertex> vertices) {
+    final VertexMapping newMapping = new VertexMapping();
+    for (final MapperDAGVertex v : vertices) {
+      put(v.getName(), newMapping);
+    }
+  }
 
-	/**
-	 * Cloning the common mappings of vertices and ensuring that several vertices with same group share the same mapping object
-	 */
-	@Override
-	public Object clone() {
-		Map<VertexMapping,VertexMapping> relateOldAndNew = new HashMap<VertexMapping,VertexMapping>();
-		DAGMappings newMappings = new DAGMappings();
-		for(String s : mappings.keySet()){
-			VertexMapping m = mappings.get(s);
-			if(relateOldAndNew.containsKey(m)){
-				newMappings.put(s,relateOldAndNew.get(m));
-			} else {
-				VertexMapping newM = mappings.get(s).clone();
-				relateOldAndNew.put(m, newM);
-				newMappings.put(s,newM);
-			}
-		}
-		return newMappings;
-	}
-	@Override
-	public String toString() {
-		return mappings.toString();
-	}
-	
-	
-	
+  /**
+   * Dedicates a created VertexMapping object to a single vertex.
+   *
+   * @param vertex
+   *          the vertex
+   */
+  public void dedicate(final MapperDAGVertex vertex) {
+    final VertexMapping newMapping = new VertexMapping();
+    put(vertex.getName(), newMapping);
+  }
+
+  /**
+   * Associating a vertex to an existing mapping.
+   *
+   * @param vertexId
+   *          the vertex id
+   * @param m
+   *          the m
+   */
+  private void put(final String vertexId, final VertexMapping m) {
+    this.mappings.put(vertexId, m);
+    m.addVertexID(vertexId);
+  }
+
+  /**
+   * Associating a vertex to an existing mapping.
+   *
+   * @param vertex
+   *          the vertex
+   */
+  public void remove(final MapperDAGVertex vertex) {
+    this.mappings.get(vertex.getName()).removeVertexID(vertex.getName());
+    this.mappings.remove(vertex.getName());
+  }
+
+  /**
+   * Cloning the common mappings of vertices and ensuring that several vertices with same group
+   * share the same mapping object.
+   *
+   * @return the object
+   */
+  @Override
+  public Object clone() {
+    final Map<VertexMapping, VertexMapping> relateOldAndNew = new HashMap<>();
+    final DAGMappings newMappings = new DAGMappings();
+    for (final String s : this.mappings.keySet()) {
+      final VertexMapping m = this.mappings.get(s);
+      if (relateOldAndNew.containsKey(m)) {
+        newMappings.put(s, relateOldAndNew.get(m));
+      } else {
+        final VertexMapping newM = this.mappings.get(s).clone();
+        relateOldAndNew.put(m, newM);
+        newMappings.put(s, newM);
+      }
+    }
+    return newMappings;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return this.mappings.toString();
+  }
+
 }

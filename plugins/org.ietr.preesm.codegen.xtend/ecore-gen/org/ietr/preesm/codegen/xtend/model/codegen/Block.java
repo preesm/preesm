@@ -37,121 +37,100 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
 
 import org.eclipse.emf.common.util.EList;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> A {@link Block} represents a block of code of the
- * code generation. In C language, a code block usually is delimited by a pair
- * of braces <code>{}</code>.<br>
- * Each {@link Block} contains a set of {@link #getDeclarations() declarations}
- * and a set of {@link #getCodeElts() code elements} which are respectively
- * similar to variable declarations and statement in C. Since a {@link Block} is
- * a {@link CodeElt code element} itself, {@link Block blocks} can contain other
- * blocks (e.g. a for-loop block).<!-- end-user-doc -->
- * 
+ * <!-- begin-user-doc --> A {@link Block} represents a block of code of the code generation. In C language, a code block usually is delimited by a pair of
+ * braces <code>{}</code>.<br>
+ * Each {@link Block} contains a set of {@link #getDeclarations() declarations} and a set of {@link #getCodeElts() code elements} which are respectively similar
+ * to variable declarations and statement in C. Since a {@link Block} is a {@link CodeElt code element} itself, {@link Block blocks} can contain other blocks
+ * (e.g. a for-loop block).<!-- end-user-doc -->
+ *
  * <p>
  * The following features are supported:
  * <ul>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getCodeElts <em>
- * Code Elts</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDeclarations
- * <em>Declarations</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getName <em>Name
- * </em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDefinitions
- * <em>Definitions</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getCodeElts <em> Code Elts</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDeclarations <em>Declarations</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getName <em>Name </em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDefinitions <em>Definitions</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBlock()
  * @model
  * @generated
  */
 public interface Block extends CodeElt {
-	/**
-	 * Returns the value of the '<em><b>Code Elts</b></em>' containment
-	 * reference list. The list contents are of type
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.CodeElt}. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Code Elts</em>' containment reference list
-	 * isn't clear, there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Code Elts</em>' containment reference list.
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBlock_CodeElts()
-	 * @model containment="true"
-	 * @generated
-	 */
-	EList<CodeElt> getCodeElts();
+  /**
+   * Returns the value of the '<em><b>Code Elts</b></em>' containment reference list. The list contents are of type
+   * {@link org.ietr.preesm.codegen.xtend.model.codegen.CodeElt}. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Code Elts</em>' containment reference list isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Code Elts</em>' containment reference list.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBlock_CodeElts()
+   * @model containment="true"
+   * @generated
+   */
+  EList<CodeElt> getCodeElts();
 
-	/**
-	 * Returns the value of the '<em><b>Declarations</b></em>' containment
-	 * reference list. The list contents are of type
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable}. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Declarations</em>' containment reference list
-	 * isn't clear, there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Declarations</em>' containment reference
-	 *         list.
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBlock_Declarations()
-	 * @model containment="true"
-	 * @generated
-	 */
-	EList<Variable> getDeclarations();
+  /**
+   * Returns the value of the '<em><b>Declarations</b></em>' containment reference list. The list contents are of type
+   * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable}. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Declarations</em>' containment reference list isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Declarations</em>' containment reference list.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBlock_Declarations()
+   * @model containment="true"
+   * @generated
+   */
+  EList<Variable> getDeclarations();
 
-	/**
-	 * Returns the value of the '<em><b>Name</b></em>' attribute. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Name</em>' attribute isn't clear, there really
-	 * should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Name</em>' attribute.
-	 * @see #setName(String)
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBlock_Name()
-	 * @model
-	 * @generated
-	 */
-	String getName();
+  /**
+   * Returns the value of the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Name</em>' attribute isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Name</em>' attribute.
+   * @see #setName(String)
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBlock_Name()
+   * @model
+   * @generated
+   */
+  String getName();
 
-	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getName
-	 * <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Name</em>' attribute.
-	 * @see #getName()
-	 * @generated
-	 */
-	void setName(String value);
+  /**
+   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getName <em>Name</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   *
+   * @param value
+   *          the new value of the '<em>Name</em>' attribute.
+   * @see #getName()
+   * @generated
+   */
+  void setName(String value);
 
-	/**
-	 * Returns the value of the '<em><b>Definitions</b></em>' containment
-	 * reference list. The list contents are of type
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable}. It is
-	 * bidirectional and its opposite is '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator
-	 * <em>Creator</em>}'. <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Definitions</em>' containment reference list
-	 * isn't clear, there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Definitions</em>' containment reference
-	 *         list.
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBlock_Definitions()
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator
-	 * @model opposite="creator" containment="true"
-	 * @generated
-	 */
-	EList<Variable> getDefinitions();
+  /**
+   * Returns the value of the '<em><b>Definitions</b></em>' containment reference list. The list contents are of type
+   * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable}. It is bidirectional and its opposite is '
+   * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator <em>Creator</em>}'. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Definitions</em>' containment reference list isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Definitions</em>' containment reference list.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getBlock_Definitions()
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator
+   * @model opposite="creator" containment="true"
+   * @generated
+   */
+  EList<Variable> getDefinitions();
 
 } // Block

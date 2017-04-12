@@ -37,7 +37,6 @@
 package org.ietr.preesm.experiment.model.pimm.impl;
 
 import java.util.List;
-
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
@@ -55,259 +54,299 @@ import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.PiMMPackage;
 import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>HRefinement</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>HRefinement</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl#getLoopPrototype <em>Loop Prototype</em>}</li>
- *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl#getInitPrototype <em>Init Prototype</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl#getLoopPrototype <em>Loop Prototype</em>}</li>
+ * <li>{@link org.ietr.preesm.experiment.model.pimm.impl.HRefinementImpl#getInitPrototype <em>Init Prototype</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
 public class HRefinementImpl extends RefinementImpl implements HRefinement {
-	/**
-	 * The cached value of the '{@link #getLoopPrototype() <em>Loop Prototype</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getLoopPrototype()
-	 * @generated
-	 * @ordered
-	 */
-	protected FunctionPrototype loopPrototype;
-	/**
-	 * The cached value of the '{@link #getInitPrototype() <em>Init Prototype</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getInitPrototype()
-	 * @generated
-	 * @ordered
-	 */
-	protected FunctionPrototype initPrototype;
+  /**
+   * The cached value of the '{@link #getLoopPrototype() <em>Loop Prototype</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getLoopPrototype()
+   * @generated
+   * @ordered
+   */
+  protected FunctionPrototype loopPrototype;
+  /**
+   * The cached value of the '{@link #getInitPrototype() <em>Init Prototype</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getInitPrototype()
+   * @generated
+   * @ordered
+   */
+  protected FunctionPrototype initPrototype;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	protected HRefinementImpl() {
-		super();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @generated
+   */
+  protected HRefinementImpl() {
+    super();
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return PiMMPackage.Literals.HREFINEMENT;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return PiMMPackage.Literals.HREFINEMENT;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public FunctionPrototype getLoopPrototype() {
-		if (loopPrototype != null && loopPrototype.eIsProxy()) {
-			InternalEObject oldLoopPrototype = (InternalEObject)loopPrototype;
-			loopPrototype = (FunctionPrototype)eResolveProxy(oldLoopPrototype);
-			if (loopPrototype != oldLoopPrototype) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE, oldLoopPrototype, loopPrototype));
-			}
-		}
-		return loopPrototype;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the loop prototype
+   * @generated
+   */
+  @Override
+  public FunctionPrototype getLoopPrototype() {
+    if ((this.loopPrototype != null) && this.loopPrototype.eIsProxy()) {
+      final InternalEObject oldLoopPrototype = (InternalEObject) this.loopPrototype;
+      this.loopPrototype = (FunctionPrototype) eResolveProxy(oldLoopPrototype);
+      if (this.loopPrototype != oldLoopPrototype) {
+        if (eNotificationRequired()) {
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE, oldLoopPrototype, this.loopPrototype));
+        }
+      }
+    }
+    return this.loopPrototype;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public FunctionPrototype basicGetLoopPrototype() {
-		return loopPrototype;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the function prototype
+   * @generated
+   */
+  public FunctionPrototype basicGetLoopPrototype() {
+    return this.loopPrototype;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setLoopPrototype(FunctionPrototype newLoopPrototype) {
-		FunctionPrototype oldLoopPrototype = loopPrototype;
-		loopPrototype = newLoopPrototype;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE, oldLoopPrototype, loopPrototype));
-	}
-	
-	@Override
-	public AbstractActor getAbstractActor() {
-		if (getLoopPrototype() != null) {
-			// Create the actor returned by the function
-			AbstractActor result = PiMMFactory.eINSTANCE.createActor();
-			
-			// Create all its ports corresponding to parameters of the 
-			// prototype
-			FunctionPrototype loopProto = getLoopPrototype();
-			List<FunctionParameter> loopParameters = loopProto.getParameters();
-			for(FunctionParameter param : loopParameters){
-				if(!param.isIsConfigurationParameter()){
-					// Data Port
-					if(param.getDirection().equals(Direction.IN)){
-						// Data Input
-						DataInputPort port = PiMMFactory.eINSTANCE.createDataInputPort();
-						port.setName(param.getName());
-						result.getDataInputPorts().add(port);
-					} else {
-						// Data Output
-						DataOutputPort port = PiMMFactory.eINSTANCE.createDataOutputPort();
-						port.setName(param.getName());
-						result.getDataOutputPorts().add(port);
-					}
-				} else {
-					// Config Port
-					if(param.getDirection().equals(Direction.IN)){
-						// Config Input
-						ConfigInputPort port = PiMMFactory.eINSTANCE.createConfigInputPort();
-						port.setName(param.getName());
-						result.getConfigInputPorts().add(port);
-					} else {
-						// Config Output
-						ConfigOutputPort port = PiMMFactory.eINSTANCE.createConfigOutputPort();
-						port.setName(param.getName());
-						result.getConfigOutputPorts().add(port);
-					}
-				}
-			}
-			
-			return result;
-		} else {
-			return null;
-		}
-		
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newLoopPrototype
+   *          the new loop prototype
+   * @generated
+   */
+  @Override
+  public void setLoopPrototype(final FunctionPrototype newLoopPrototype) {
+    final FunctionPrototype oldLoopPrototype = this.loopPrototype;
+    this.loopPrototype = newLoopPrototype;
+    if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE, oldLoopPrototype, this.loopPrototype));
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public FunctionPrototype getInitPrototype() {
-		if (initPrototype != null && initPrototype.eIsProxy()) {
-			InternalEObject oldInitPrototype = (InternalEObject)initPrototype;
-			initPrototype = (FunctionPrototype)eResolveProxy(oldInitPrototype);
-			if (initPrototype != oldInitPrototype) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.HREFINEMENT__INIT_PROTOTYPE, oldInitPrototype, initPrototype));
-			}
-		}
-		return initPrototype;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.impl.RefinementImpl#getAbstractActor()
+   */
+  @Override
+  public AbstractActor getAbstractActor() {
+    if (getLoopPrototype() != null) {
+      // Create the actor returned by the function
+      final AbstractActor result = PiMMFactory.eINSTANCE.createActor();
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public FunctionPrototype basicGetInitPrototype() {
-		return initPrototype;
-	}
+      // Create all its ports corresponding to parameters of the
+      // prototype
+      final FunctionPrototype loopProto = getLoopPrototype();
+      final List<FunctionParameter> loopParameters = loopProto.getParameters();
+      for (final FunctionParameter param : loopParameters) {
+        if (!param.isIsConfigurationParameter()) {
+          // Data Port
+          if (param.getDirection().equals(Direction.IN)) {
+            // Data Input
+            final DataInputPort port = PiMMFactory.eINSTANCE.createDataInputPort();
+            port.setName(param.getName());
+            result.getDataInputPorts().add(port);
+          } else {
+            // Data Output
+            final DataOutputPort port = PiMMFactory.eINSTANCE.createDataOutputPort();
+            port.setName(param.getName());
+            result.getDataOutputPorts().add(port);
+          }
+        } else {
+          // Config Port
+          if (param.getDirection().equals(Direction.IN)) {
+            // Config Input
+            final ConfigInputPort port = PiMMFactory.eINSTANCE.createConfigInputPort();
+            port.setName(param.getName());
+            result.getConfigInputPorts().add(port);
+          } else {
+            // Config Output
+            final ConfigOutputPort port = PiMMFactory.eINSTANCE.createConfigOutputPort();
+            port.setName(param.getName());
+            result.getConfigOutputPorts().add(port);
+          }
+        }
+      }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setInitPrototype(FunctionPrototype newInitPrototype) {
-		FunctionPrototype oldInitPrototype = initPrototype;
-		initPrototype = newInitPrototype;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.HREFINEMENT__INIT_PROTOTYPE, oldInitPrototype, initPrototype));
-	}
+      return result;
+    } else {
+      return null;
+    }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-			case PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE:
-				if (resolve) return getLoopPrototype();
-				return basicGetLoopPrototype();
-			case PiMMPackage.HREFINEMENT__INIT_PROTOTYPE:
-				if (resolve) return getInitPrototype();
-				return basicGetInitPrototype();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-			case PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE:
-				setLoopPrototype((FunctionPrototype)newValue);
-				return;
-			case PiMMPackage.HREFINEMENT__INIT_PROTOTYPE:
-				setInitPrototype((FunctionPrototype)newValue);
-				return;
-		}
-		super.eSet(featureID, newValue);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the inits the prototype
+   * @generated
+   */
+  @Override
+  public FunctionPrototype getInitPrototype() {
+    if ((this.initPrototype != null) && this.initPrototype.eIsProxy()) {
+      final InternalEObject oldInitPrototype = (InternalEObject) this.initPrototype;
+      this.initPrototype = (FunctionPrototype) eResolveProxy(oldInitPrototype);
+      if (this.initPrototype != oldInitPrototype) {
+        if (eNotificationRequired()) {
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, PiMMPackage.HREFINEMENT__INIT_PROTOTYPE, oldInitPrototype, this.initPrototype));
+        }
+      }
+    }
+    return this.initPrototype;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void eUnset(int featureID) {
-		switch (featureID) {
-			case PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE:
-				setLoopPrototype((FunctionPrototype)null);
-				return;
-			case PiMMPackage.HREFINEMENT__INIT_PROTOTYPE:
-				setInitPrototype((FunctionPrototype)null);
-				return;
-		}
-		super.eUnset(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the function prototype
+   * @generated
+   */
+  public FunctionPrototype basicGetInitPrototype() {
+    return this.initPrototype;
+  }
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE:
-				return loopPrototype != null;
-			case PiMMPackage.HREFINEMENT__INIT_PROTOTYPE:
-				return initPrototype != null;
-		}
-		return super.eIsSet(featureID);
-	}
-	
-	@Override
-	public void accept(PiMMVisitor v) {
-		v.visitHRefinement(this);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newInitPrototype
+   *          the new inits the prototype
+   * @generated
+   */
+  @Override
+  public void setInitPrototype(final FunctionPrototype newInitPrototype) {
+    final FunctionPrototype oldInitPrototype = this.initPrototype;
+    this.initPrototype = newInitPrototype;
+    if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.HREFINEMENT__INIT_PROTOTYPE, oldInitPrototype, this.initPrototype));
+    }
+  }
 
-} //HRefinementImpl
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param resolve
+   *          the resolve
+   * @param coreType
+   *          the core type
+   * @return the object
+   * @generated
+   */
+  @Override
+  public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
+    switch (featureID) {
+      case PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE:
+        if (resolve) {
+          return getLoopPrototype();
+        }
+        return basicGetLoopPrototype();
+      case PiMMPackage.HREFINEMENT__INIT_PROTOTYPE:
+        if (resolve) {
+          return getInitPrototype();
+        }
+        return basicGetInitPrototype();
+    }
+    return super.eGet(featureID, resolve, coreType);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param newValue
+   *          the new value
+   * @generated
+   */
+  @Override
+  public void eSet(final int featureID, final Object newValue) {
+    switch (featureID) {
+      case PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE:
+        setLoopPrototype((FunctionPrototype) newValue);
+        return;
+      case PiMMPackage.HREFINEMENT__INIT_PROTOTYPE:
+        setInitPrototype((FunctionPrototype) newValue);
+        return;
+    }
+    super.eSet(featureID, newValue);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @generated
+   */
+  @Override
+  public void eUnset(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE:
+        setLoopPrototype((FunctionPrototype) null);
+        return;
+      case PiMMPackage.HREFINEMENT__INIT_PROTOTYPE:
+        setInitPrototype((FunctionPrototype) null);
+        return;
+    }
+    super.eUnset(featureID);
+  }
+
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @return true, if successful
+   * @generated
+   */
+  @Override
+  public boolean eIsSet(final int featureID) {
+    switch (featureID) {
+      case PiMMPackage.HREFINEMENT__LOOP_PROTOTYPE:
+        return this.loopPrototype != null;
+      case PiMMPackage.HREFINEMENT__INIT_PROTOTYPE:
+        return this.initPrototype != null;
+    }
+    return super.eIsSet(featureID);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.experiment.model.pimm.impl.RefinementImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
+   */
+  @Override
+  public void accept(final PiMMVisitor v) {
+    v.visitHRefinement(this);
+  }
+
+} // HRefinementImpl

@@ -37,142 +37,122 @@ package org.ietr.preesm.codegen.xtend.model.codegen;
 
 import org.eclipse.emf.common.util.EList;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> A {@link Variable} is an object that will be used
- * several time in the generated code.<br>
- * It usually is {@link Block#getDeclarations() declared} within a {@link Block
- * code block} before being used as a parameter to the
- * {@link Block#getCodeElts() code elements} of this {@link Block code block}. <br>
- * Each {@link Variable} has a {@link #getName() name} and a {@link #getType()
- * type}. <!-- end-user-doc -->
- * 
+ * <!-- begin-user-doc --> A {@link Variable} is an object that will be used several time in the generated code.<br>
+ * It usually is {@link Block#getDeclarations() declared} within a {@link Block code block} before being used as a parameter to the {@link Block#getCodeElts()
+ * code elements} of this {@link Block code block}. <br>
+ * Each {@link Variable} has a {@link #getName() name} and a {@link #getType() type}. <!-- end-user-doc -->
+ *
  * <p>
  * The following features are supported:
  * <ul>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getName <em>
- * Name</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getType <em>
- * Type</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator
- * <em>Creator</em>}</li>
- * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getUsers <em>
- * Users</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getName <em> Name</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getType <em> Type</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator <em>Creator</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getUsers <em> Users</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getVariable()
  * @model abstract="true"
  * @generated
  */
 public interface Variable extends Commentable {
-	/**
-	 * Returns the value of the '<em><b>Name</b></em>' attribute. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Name</em>' attribute isn't clear, there really
-	 * should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Name</em>' attribute.
-	 * @see #setName(String)
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getVariable_Name()
-	 * @model id="true" required="true"
-	 * @generated
-	 */
-	String getName();
+  /**
+   * Returns the value of the '<em><b>Name</b></em>' attribute. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Name</em>' attribute isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Name</em>' attribute.
+   * @see #setName(String)
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getVariable_Name()
+   * @model id="true" required="true"
+   * @generated
+   */
+  String getName();
 
-	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getName
-	 * <em>Name</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Name</em>' attribute.
-	 * @see #getName()
-	 * @generated
-	 */
-	void setName(String value);
+  /**
+   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getName <em>Name</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   *
+   * @param value
+   *          the new value of the '<em>Name</em>' attribute.
+   * @see #getName()
+   * @generated
+   */
+  void setName(String value);
 
-	/**
-	 * Returns the value of the '<em><b>Type</b></em>' attribute. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Type</em>' attribute isn't clear, there really
-	 * should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Type</em>' attribute.
-	 * @see #setType(String)
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getVariable_Type()
-	 * @model required="true"
-	 * @generated
-	 */
-	String getType();
+  /**
+   * Returns the value of the '<em><b>Type</b></em>' attribute. <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Type</em>' attribute isn't clear, there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Type</em>' attribute.
+   * @see #setType(String)
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getVariable_Type()
+   * @model required="true"
+   * @generated
+   */
+  String getType();
 
-	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getType
-	 * <em>Type</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Type</em>' attribute.
-	 * @see #getType()
-	 * @generated
-	 */
-	void setType(String value);
+  /**
+   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getType <em>Type</em>}' attribute. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   *
+   * @param value
+   *          the new value of the '<em>Type</em>' attribute.
+   * @see #getType()
+   * @generated
+   */
+  void setType(String value);
 
-	/**
-	 * Returns the value of the '<em><b>Creator</b></em>' reference. <!--
-	 * begin-user-doc -->
-	 * <p>
-	 * The {@link #getCreator() creator} of a {@link Variable} is the
-	 * {@link Block} that declare and define the {@link Variable}.
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Creator</em>' reference.
-	 * @see #setCreator(Block)
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getVariable_Creator()
-	 * @model required="true"
-	 * @generated
-	 */
-	Block getCreator();
+  /**
+   * Returns the value of the '<em><b>Creator</b></em>' reference. <!-- begin-user-doc -->
+   * <p>
+   * The {@link #getCreator() creator} of a {@link Variable} is the {@link Block} that declare and define the {@link Variable}.
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Creator</em>' reference.
+   * @see #setCreator(Block)
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getVariable_Creator()
+   * @model required="true"
+   * @generated
+   */
+  Block getCreator();
 
-	/**
-	 * Sets the value of the '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator
-	 * <em>Creator</em>}' reference. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Creator</em>' reference.
-	 * @see #getCreator()
-	 * @generated
-	 */
-	void setCreator(Block value);
+  /**
+   * Sets the value of the ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Variable#getCreator <em>Creator</em>}' reference. <!-- begin-user-doc --> <!--
+   * end-user-doc -->
+   *
+   * @param value
+   *          the new value of the '<em>Creator</em>' reference.
+   * @see #getCreator()
+   * @generated
+   */
+  void setCreator(Block value);
 
-	/**
-	 * Returns the value of the '<em><b>Users</b></em>' reference list. The list
-	 * contents are of type
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Block}. It is
-	 * bidirectional and its opposite is '
-	 * {@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDeclarations
-	 * <em>Declarations</em>}'. <!-- begin-user-doc -->
-	 * <p>
-	 * The {@link #getUsers() users} of a {@link Variable} are the {@link Block
-	 * Blocks} using the {@link Variable}. One of the {@link #getUsers() users}
-	 * of the variable is also its {@link #getCreator() creator}.
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Users</em>' reference list.
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getVariable_Users()
-	 * @see org.ietr.preesm.codegen.xtend.model.codegen.Block#getDeclarations
-	 * @model opposite="declarations" required="true" changeable="false"
-	 * @generated
-	 */
-	EList<Block> getUsers();
+  /**
+   * Returns the value of the '<em><b>Users</b></em>' reference list. The list contents are of type {@link org.ietr.preesm.codegen.xtend.model.codegen.Block}.
+   * It is bidirectional and its opposite is ' {@link org.ietr.preesm.codegen.xtend.model.codegen.Block#getDeclarations <em>Declarations</em>}'. <!--
+   * begin-user-doc -->
+   * <p>
+   * The {@link #getUsers() users} of a {@link Variable} are the {@link Block Blocks} using the {@link Variable}. One of the {@link #getUsers() users} of the
+   * variable is also its {@link #getCreator() creator}.
+   * </p>
+   * <!-- end-user-doc -->
+   *
+   * @return the value of the '<em>Users</em>' reference list.
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage#getVariable_Users()
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.Block#getDeclarations
+   * @model opposite="declarations" required="true" changeable="false"
+   * @generated
+   */
+  EList<Block> getUsers();
 
 } // Variable

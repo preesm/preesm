@@ -36,48 +36,94 @@
 
 package org.ietr.preesm.core.scenario;
 
+// TODO: Auto-generated Javadoc
 /**
- * Representing the speed of a memcopy for a given operator type.
- * This speed is composed of 2 elements: setupTime and timePerUnit
- * 
+ * Representing the speed of a memcopy for a given operator type. This speed is composed of 2 elements: setupTime and timePerUnit
+ *
  * @author mpelcat
  */
 public class MemCopySpeed {
 
-	private String operatorDef;
-	
-	private long setupTime;
-	
-	private float timePerUnit;
+  /** The operator def. */
+  private String operatorDef;
 
-	public MemCopySpeed(String operatorDef, long setupTime, float timePerUnit) {
-		super();
-		this.operatorDef = operatorDef;
-		this.setupTime = setupTime;
-		this.timePerUnit = timePerUnit;
-	}
+  /** The setup time. */
+  private long setupTime;
 
-	public String getOperatorDef() {
-		return operatorDef;
-	}
+  /** The time per unit. */
+  private float timePerUnit;
 
-	public long getSetupTime() {
-		return setupTime;
-	}
+  /**
+   * Instantiates a new mem copy speed.
+   *
+   * @param operatorDef
+   *          the operator def
+   * @param setupTime
+   *          the setup time
+   * @param timePerUnit
+   *          the time per unit
+   */
+  public MemCopySpeed(final String operatorDef, final long setupTime, final float timePerUnit) {
+    super();
+    this.operatorDef = operatorDef;
+    this.setupTime = setupTime;
+    this.timePerUnit = timePerUnit;
+  }
 
-	public float getTimePerUnit() {
-		return timePerUnit;
-	}
+  /**
+   * Gets the operator def.
+   *
+   * @return the operator def
+   */
+  public String getOperatorDef() {
+    return this.operatorDef;
+  }
 
-	public void setOperatorDef(String operatorDef) {
-		this.operatorDef = operatorDef;
-	}
+  /**
+   * Gets the setup time.
+   *
+   * @return the setup time
+   */
+  public long getSetupTime() {
+    return this.setupTime;
+  }
 
-	public void setSetupTime(Long setupTime) {
-		this.setupTime = setupTime;
-	}
+  /**
+   * Gets the time per unit.
+   *
+   * @return the time per unit
+   */
+  public float getTimePerUnit() {
+    return this.timePerUnit;
+  }
 
-	public void setTimePerUnit(Float timePerUnit) {
-		this.timePerUnit = timePerUnit;
-	}
+  /**
+   * Sets the operator def.
+   *
+   * @param operatorDef
+   *          the new operator def
+   */
+  public void setOperatorDef(final String operatorDef) {
+    this.operatorDef = operatorDef;
+  }
+
+  /**
+   * Sets the setup time.
+   *
+   * @param setupTime
+   *          the new setup time
+   */
+  public void setSetupTime(final Long setupTime) {
+    this.setupTime = setupTime;
+  }
+
+  /**
+   * Sets the time per unit.
+   *
+   * @param timePerUnit
+   *          the new time per unit
+   */
+  public void setTimePerUnit(final Float timePerUnit) {
+    this.timePerUnit = timePerUnit;
+  }
 }

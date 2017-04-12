@@ -42,246 +42,340 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
 import org.ietr.preesm.mapper.model.MapperDAGVertex;
 
+// TODO: Auto-generated Javadoc
 /**
- * A schedule represents the consecutive tasks mapped on a single component
- * 
+ * A schedule represents the consecutive tasks mapped on a single component.
+ *
  * @author mpelcat
  */
 public class Schedule {
 
-	/**
-	 * The ordered list of vertices in this schedule
-	 */
-	private LinkedList<MapperDAGVertex> elementList;
+  /** The ordered list of vertices in this schedule. */
+  private final LinkedList<MapperDAGVertex> elementList;
 
-	/**
-	 * The total time of the schedule vertices
-	 */
-	private long busyTime;
+  /** The total time of the schedule vertices. */
+  private long busyTime;
 
-	public Schedule() {
+  /**
+   * Instantiates a new schedule.
+   */
+  public Schedule() {
 
-		super();
-		this.elementList = new LinkedList<MapperDAGVertex>();
-		resetBusyTime();
-	}
+    super();
+    this.elementList = new LinkedList<>();
+    resetBusyTime();
+  }
 
-	/**
-	 * Appends a vertex at the end of the schedule
-	 */
-	public void addLast(MapperDAGVertex vertex) {
-		if (!contains(vertex)) {
-			if (vertex.getTiming().hasCost()) {
-				busyTime += vertex.getTiming().getCost();
-			}
-			elementList.addLast(vertex);
-		}
-	}
+  /**
+   * Appends a vertex at the end of the schedule.
+   *
+   * @param vertex
+   *          the vertex
+   */
+  public void addLast(final MapperDAGVertex vertex) {
+    if (!contains(vertex)) {
+      if (vertex.getTiming().hasCost()) {
+        this.busyTime += vertex.getTiming().getCost();
+      }
+      this.elementList.addLast(vertex);
+    }
+  }
 
-	/**
-	 * Inserts a vertex at the beginning of the schedule
-	 */
-	public void addFirst(MapperDAGVertex vertex) {
-		if (!contains(vertex)) {
-			if (vertex.getTiming().hasCost()) {
-				busyTime += vertex.getTiming().getCost();
-			}
-			elementList.addFirst(vertex);
-		}
-	}
+  /**
+   * Inserts a vertex at the beginning of the schedule.
+   *
+   * @param vertex
+   *          the vertex
+   */
+  public void addFirst(final MapperDAGVertex vertex) {
+    if (!contains(vertex)) {
+      if (vertex.getTiming().hasCost()) {
+        this.busyTime += vertex.getTiming().getCost();
+      }
+      this.elementList.addFirst(vertex);
+    }
+  }
 
-	/**
-	 * Inserts a vertex after the given one
-	 */
-	public void insertAfter(MapperDAGVertex previous, MapperDAGVertex vertex) {
-		
-		if (!contains(vertex)) {
-			// Updating schedule busy time
-			if (vertex.getTiming().hasCost()) {
-				busyTime += vertex.getTiming().getCost();
-			}
+  /**
+   * Inserts a vertex after the given one.
+   *
+   * @param previous
+   *          the previous
+   * @param vertex
+   *          the vertex
+   */
+  public void insertAfter(final MapperDAGVertex previous, final MapperDAGVertex vertex) {
 
-			int prevIndex = indexOf(previous);
-			if (prevIndex >= 0) {
-				if (prevIndex + 1 < elementList.size()) {
-					MapperDAGVertex next = elementList.get(prevIndex + 1);
-					elementList.add(indexOf(next), vertex);
-				} else {
-					elementList.addLast(vertex);
-				}
-			}
-		}
-	}
+    if (!contains(vertex)) {
+      // Updating schedule busy time
+      if (vertex.getTiming().hasCost()) {
+        this.busyTime += vertex.getTiming().getCost();
+      }
 
-	/**
-	 * Inserts a vertex at the given index
-	 */
-	public void insertAtIndex(MapperDAGVertex vertex, int index) {
-		if (!contains(vertex)) {
-			if (vertex.getTiming().hasCost()) {
-				busyTime += vertex.getTiming().getCost();
-			}
+      final int prevIndex = indexOf(previous);
+      if (prevIndex >= 0) {
+        if ((prevIndex + 1) < this.elementList.size()) {
+          final MapperDAGVertex next = this.elementList.get(prevIndex + 1);
+          this.elementList.add(indexOf(next), vertex);
+        } else {
+          this.elementList.addLast(vertex);
+        }
+      }
+    }
+  }
 
-			if (index >= 0) {
-				elementList.add(index, vertex);
-			}
-		}
-	}
+  /**
+   * Inserts a vertex at the given index.
+   *
+   * @param vertex
+   *          the vertex
+   * @param index
+   *          the index
+   */
+  public void insertAtIndex(final MapperDAGVertex vertex, final int index) {
+    if (!contains(vertex)) {
+      if (vertex.getTiming().hasCost()) {
+        this.busyTime += vertex.getTiming().getCost();
+      }
 
-	/**
-	 * Inserts a vertex before the given one
-	 */
-	public void insertBefore(MapperDAGVertex next, MapperDAGVertex vertex) {
-		if (!contains(vertex)) {
-			if (vertex.getTiming().hasCost()) {
-				busyTime += vertex.getTiming().getCost();
-			}
+      if (index >= 0) {
+        this.elementList.add(index, vertex);
+      }
+    }
+  }
 
-			int nextIndex = indexOf(next);
-			if (nextIndex >= 0) {
-				elementList.add(nextIndex, vertex);
-			}
-		}
-	}
+  /**
+   * Inserts a vertex before the given one.
+   *
+   * @param next
+   *          the next
+   * @param vertex
+   *          the vertex
+   */
+  public void insertBefore(final MapperDAGVertex next, final MapperDAGVertex vertex) {
+    if (!contains(vertex)) {
+      if (vertex.getTiming().hasCost()) {
+        this.busyTime += vertex.getTiming().getCost();
+      }
 
-	public void clear() {
-		resetBusyTime();
+      final int nextIndex = indexOf(next);
+      if (nextIndex >= 0) {
+        this.elementList.add(nextIndex, vertex);
+      }
+    }
+  }
 
-		elementList.clear();
-	}
+  /**
+   * Clear.
+   */
+  public void clear() {
+    resetBusyTime();
 
-	public void resetBusyTime() {
-		busyTime = 0;
-	}
+    this.elementList.clear();
+  }
 
-	public void remove(MapperDAGVertex element) {
-		if (elementList.contains(element)) {
-			if (element.getTiming().hasCost()) {
-				busyTime -= element.getTiming().getCost();
-			}
+  /**
+   * Reset busy time.
+   */
+  public void resetBusyTime() {
+    this.busyTime = 0;
+  }
 
-			elementList.remove(element);
-		}
-	}
+  /**
+   * Removes the.
+   *
+   * @param element
+   *          the element
+   */
+  public void remove(final MapperDAGVertex element) {
+    if (this.elementList.contains(element)) {
+      if (element.getTiming().hasCost()) {
+        this.busyTime -= element.getTiming().getCost();
+      }
 
-	// Access without modification
+      this.elementList.remove(element);
+    }
+  }
 
-	public MapperDAGVertex get(int i) {
-		return elementList.get(i);
-	}
+  // Access without modification
 
-	public MapperDAGVertex getLast() {
-		return elementList.getLast();
-	}
+  /**
+   * Gets the.
+   *
+   * @param i
+   *          the i
+   * @return the mapper DAG vertex
+   */
+  public MapperDAGVertex get(final int i) {
+    return this.elementList.get(i);
+  }
 
-	/**
-	 * Gets the previous vertex in the current schedule
-	 */
-	public MapperDAGVertex getPrevious(MapperDAGVertex vertex) {
-		int index = indexOf(vertex);
-		if (index <= 0) {
-			return null;
-		} else {
-			return (elementList.get(index - 1));
-		}
-	}
+  /**
+   * Gets the last.
+   *
+   * @return the last
+   */
+  public MapperDAGVertex getLast() {
+    return this.elementList.getLast();
+  }
 
-	/**
-	 * Gets the next vertex in the current schedule
-	 */
-	public MapperDAGVertex getNext(MapperDAGVertex vertex) {
-		int currentIndex = indexOf(vertex);
-		if (currentIndex < 0 || (currentIndex >= elementList.size() - 1)) {
-			return null;
-		} else {
-			return (elementList.get(currentIndex + 1));
-		}
-	}
+  /**
+   * Gets the previous vertex in the current schedule.
+   *
+   * @param vertex
+   *          the vertex
+   * @return the previous
+   */
+  public MapperDAGVertex getPrevious(final MapperDAGVertex vertex) {
+    final int index = indexOf(vertex);
+    if (index <= 0) {
+      return null;
+    } else {
+      return (this.elementList.get(index - 1));
+    }
+  }
 
-	/**
-	 * Gets the next vertices in the current schedule
-	 */
-	public Set<MapperDAGVertex> getSuccessors(MapperDAGVertex vertex) {
-		Set<MapperDAGVertex> vSet = new HashSet<MapperDAGVertex>();
-		int currentIndex = indexOf(vertex);
-		if (currentIndex < 0 || currentIndex >= elementList.size()) {
-			return null;
-		}
+  /**
+   * Gets the next vertex in the current schedule.
+   *
+   * @param vertex
+   *          the vertex
+   * @return the next
+   */
+  public MapperDAGVertex getNext(final MapperDAGVertex vertex) {
+    final int currentIndex = indexOf(vertex);
+    if ((currentIndex < 0) || (currentIndex >= (this.elementList.size() - 1))) {
+      return null;
+    } else {
+      return (this.elementList.get(currentIndex + 1));
+    }
+  }
 
-		for (int i = currentIndex + 1; i < elementList.size(); i++) {
-			vSet.add(elementList.get(i));
-		}
-		return vSet;
-	}
+  /**
+   * Gets the next vertices in the current schedule.
+   *
+   * @param vertex
+   *          the vertex
+   * @return the successors
+   */
+  public Set<MapperDAGVertex> getSuccessors(final MapperDAGVertex vertex) {
+    final Set<MapperDAGVertex> vSet = new HashSet<>();
+    final int currentIndex = indexOf(vertex);
+    if ((currentIndex < 0) || (currentIndex >= this.elementList.size())) {
+      return null;
+    }
 
-	/**
-	 * Giving the index of the vertex if present in the list
-	 */
-	public int indexOf(MapperDAGVertex v) {
-		return elementList.indexOf(getScheduleElt(v));
-	}
+    for (int i = currentIndex + 1; i < this.elementList.size(); i++) {
+      vSet.add(this.elementList.get(i));
+    }
+    return vSet;
+  }
 
-	/**
-	 * Giving the vertex if present in the list
-	 */
-	public MapperDAGVertex getScheduleElt(MapperDAGVertex v) {
-		int index = elementList.indexOf(v);
+  /**
+   * Giving the index of the vertex if present in the list.
+   *
+   * @param v
+   *          the v
+   * @return the int
+   */
+  public int indexOf(final MapperDAGVertex v) {
+    return this.elementList.indexOf(getScheduleElt(v));
+  }
 
-		// Searching in synchronized vertices
-		if (index != -1) {
-			return v;
-		}
+  /**
+   * Giving the vertex if present in the list.
+   *
+   * @param v
+   *          the v
+   * @return the schedule elt
+   */
+  public MapperDAGVertex getScheduleElt(final MapperDAGVertex v) {
+    final int index = this.elementList.indexOf(v);
 
-		return null;
-	}
+    // Searching in synchronized vertices
+    if (index != -1) {
+      return v;
+    }
 
-	/**
-	 * Looks into the synchronized vertices to extract the vertex
-	 */
-	public boolean contains(MapperDAGVertex v) {
-		return getScheduleElt(v) != null;
-	}
+    return null;
+  }
 
-	public boolean isEmpty() {
-		return elementList.isEmpty();
-	}
+  /**
+   * Looks into the synchronized vertices to extract the vertex.
+   *
+   * @param v
+   *          the v
+   * @return true, if successful
+   */
+  public boolean contains(final MapperDAGVertex v) {
+    return getScheduleElt(v) != null;
+  }
 
-	public List<MapperDAGVertex> getList() {
-		return Collections.unmodifiableList(elementList);
-	}
+  /**
+   * Checks if is empty.
+   *
+   * @return true, if is empty
+   */
+  public boolean isEmpty() {
+    return this.elementList.isEmpty();
+  }
 
-	@Override
-	public String toString() {
-		return elementList.toString();
-	}
+  /**
+   * Gets the list.
+   *
+   * @return the list
+   */
+  public List<MapperDAGVertex> getList() {
+    return Collections.unmodifiableList(this.elementList);
+  }
 
-	/**
-	 * Converts this schedule to a list associating a vertex to its rank
-	 */
-	public VertexOrderList toOrderList() {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return this.elementList.toString();
+  }
 
-		VertexOrderList order = new VertexOrderList();
+  /**
+   * Converts this schedule to a list associating a vertex to its rank.
+   *
+   * @return the vertex order list
+   */
+  public VertexOrderList toOrderList() {
 
-		for (MapperDAGVertex elt : elementList) {
-			if (elt instanceof MapperDAGVertex) {
-				MapperDAGVertex v = elt;
-				VertexOrderList.OrderProperty op = order.new OrderProperty(
-						v.getName(), indexOf(v));
-				order.addLast(op);
-			}
-		}
+    final VertexOrderList order = new VertexOrderList();
 
-		return order;
-	}
+    for (final MapperDAGVertex elt : this.elementList) {
+      if (elt instanceof MapperDAGVertex) {
+        final MapperDAGVertex v = elt;
+        final VertexOrderList.OrderProperty op = order.new OrderProperty(v.getName(), indexOf(v));
+        order.addLast(op);
+      }
+    }
 
-	public long getBusyTime() {
-		return busyTime;
-	}
+    return order;
+  }
 
-	public int size() {
-		return elementList.size();
-	}
+  /**
+   * Gets the busy time.
+   *
+   * @return the busy time
+   */
+  public long getBusyTime() {
+    return this.busyTime;
+  }
+
+  /**
+   * Size.
+   *
+   * @return the int
+   */
+  public int size() {
+    return this.elementList.size();
+  }
 }

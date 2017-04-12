@@ -42,127 +42,146 @@ import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
 import org.ietr.dftools.algorithm.model.sdf.SDFEdge;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 
-
+// TODO: Auto-generated Javadoc
 /**
- * Represents the type of a vertex in its propertybeans
- * 
+ * Represents the type of a vertex in its propertybeans.
+ *
  * @author mpelcat
  */
 public class VertexType {
-	
-	/**
-	 * String used to qualify receive actors
-	 */
-	public static final String TYPE_RECEIVE = "receive";
-	/**
-	 * String used to qualify send actors
-	 */
-	public static final String TYPE_SEND = "send";
-	/**
-	 * String used to qualify task actors
-	 */
-	public static final String TYPE_TASK = "task";
 
-	/**
-	 * VertexType representing a receive operation
-	 */
-	public static final VertexType RECEIVE = new VertexType(TYPE_RECEIVE);
+  /** String used to qualify receive actors. */
+  public static final String TYPE_RECEIVE = "receive";
 
-	/**
-	 * VertexType representing a send operation
-	 */
-	public static final VertexType SEND = new VertexType(TYPE_SEND);
+  /** String used to qualify send actors. */
+  public static final String TYPE_SEND = "send";
 
-	/**
-	 * VertexType representing a task
-	 */
-	public static final VertexType TASK = new VertexType(TYPE_TASK);
+  /** String used to qualify task actors. */
+  public static final String TYPE_TASK = "task";
 
-	/**
-	 * Returns true if this receive operation leads to a send operation
-	 */
-	static public boolean isIntermediateReceive(SDFAbstractVertex vertex) {
+  /** VertexType representing a receive operation. */
+  public static final VertexType RECEIVE = new VertexType(VertexType.TYPE_RECEIVE);
 
-		VertexType vType = (VertexType) vertex.getPropertyBean().getValue(
-				ImplementationPropertyNames.Vertex_vertexType);
+  /** VertexType representing a send operation. */
+  public static final VertexType SEND = new VertexType(VertexType.TYPE_SEND);
 
-		// If the communication operation is an intermediate step of a route
-		if (vType.isReceive()) {
-			for (SDFEdge outEdge : ((SDFGraph) vertex.getBase())
-					.outgoingEdgesOf(vertex)) {
+  /** VertexType representing a task. */
+  public static final VertexType TASK = new VertexType(VertexType.TYPE_TASK);
 
-				VertexType nextVType = (VertexType) outEdge
-						.getTarget()
-						.getPropertyBean()
-						.getValue(ImplementationPropertyNames.Vertex_vertexType);
+  /**
+   * Returns true if this receive operation leads to a send operation.
+   *
+   * @param vertex
+   *          the vertex
+   * @return true, if is intermediate receive
+   */
+  public static boolean isIntermediateReceive(final SDFAbstractVertex vertex) {
 
-				if (nextVType.isSend()) {
-					return true;
-				}
-			}
-		}
+    final VertexType vType = (VertexType) vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType);
 
-		return false;
-	}
+    // If the communication operation is an intermediate step of a route
+    if (vType.isReceive()) {
+      for (final SDFEdge outEdge : ((SDFGraph) vertex.getBase()).outgoingEdgesOf(vertex)) {
 
-	/**
-	 * Returns true if this send operation follows a receive operation
-	 */
-	static public boolean isIntermediateSend(SDFAbstractVertex vertex) {
+        final VertexType nextVType = (VertexType) outEdge.getTarget().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType);
 
-		VertexType vType = (VertexType) vertex.getPropertyBean().getValue(
-				ImplementationPropertyNames.Vertex_vertexType);
+        if (nextVType.isSend()) {
+          return true;
+        }
+      }
+    }
 
-		// If the communication operation is an intermediate step of a route
-		if (vType.isSend()) {
-			SDFEdge inEdge = (SDFEdge) (((SDFGraph) vertex.getBase())
-					.incomingEdgesOf(vertex).toArray()[0]);
-			VertexType prevVType = (VertexType) inEdge.getSource()
-					.getPropertyBean()
-					.getValue(ImplementationPropertyNames.Vertex_vertexType);
+    return false;
+  }
 
-			if (prevVType.isReceive())
-				return true;
-		}
+  /**
+   * Returns true if this send operation follows a receive operation.
+   *
+   * @param vertex
+   *          the vertex
+   * @return true, if is intermediate send
+   */
+  public static boolean isIntermediateSend(final SDFAbstractVertex vertex) {
 
-		return false;
-	}
+    final VertexType vType = (VertexType) vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType);
 
-	/**
-	 * VertexType representing a task
-	 */
-	private String type = "";
+    // If the communication operation is an intermediate step of a route
+    if (vType.isSend()) {
+      final SDFEdge inEdge = (SDFEdge) (((SDFGraph) vertex.getBase()).incomingEdgesOf(vertex).toArray()[0]);
+      final VertexType prevVType = (VertexType) inEdge.getSource().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType);
 
-	private VertexType(String type) {
-		super();
-		this.type = type;
-	}
+      if (prevVType.isReceive()) {
+        return true;
+      }
+    }
 
-	@Override
-	public boolean equals(Object obj) {
+    return false;
+  }
 
-		if (obj instanceof VertexType) {
-			return (((VertexType) obj).type.equals(type));
-		}
-		return false;
-	}
+  /** VertexType representing a task. */
+  private String type = "";
 
-	public boolean isReceive() {
-		return (this == RECEIVE);
-	}
+  /**
+   * Instantiates a new vertex type.
+   *
+   * @param type
+   *          the type
+   */
+  private VertexType(final String type) {
+    super();
+    this.type = type;
+  }
 
-	public boolean isSend() {
-		return (this == SEND);
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(final Object obj) {
 
-	public boolean isTask() {
-		return (this == TASK);
-	}
+    if (obj instanceof VertexType) {
+      return (((VertexType) obj).type.equals(this.type));
+    }
+    return false;
+  }
 
-	@Override
-	public String toString() {
-		// TODO Auto-generated method stub
-		return type;
-	}
+  /**
+   * Checks if is receive.
+   *
+   * @return true, if is receive
+   */
+  public boolean isReceive() {
+    return (this == VertexType.RECEIVE);
+  }
+
+  /**
+   * Checks if is send.
+   *
+   * @return true, if is send
+   */
+  public boolean isSend() {
+    return (this == VertexType.SEND);
+  }
+
+  /**
+   * Checks if is task.
+   *
+   * @return true, if is task
+   */
+  public boolean isTask() {
+    return (this == VertexType.TASK);
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    // TODO Auto-generated method stub
+    return this.type;
+  }
 
 }

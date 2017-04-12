@@ -37,7 +37,6 @@
 package org.ietr.preesm.codegen.xtend.model.codegen.impl;
 
 import java.util.Collection;
-
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
@@ -51,388 +50,419 @@ import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.SubBuffer;
 import org.ietr.preesm.memory.script.Range;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> An implementation of the model object '
- * <em><b>Buffer</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Buffer</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferImpl#getSize
- * <em>Size</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferImpl#getChildrens
- * <em>Childrens</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferImpl#getTypeSize
- * <em>Type Size</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferImpl#getMergedRange
- * <em>Merged Range</em>}</li>
- * <li>
- * {@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferImpl#isLocal
- * <em>Local</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferImpl#getSize <em>Size</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferImpl#getChildrens <em>Childrens</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferImpl#getTypeSize <em>Type Size</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferImpl#getMergedRange <em>Merged Range</em>}</li>
+ * <li>{@link org.ietr.preesm.codegen.xtend.model.codegen.impl.BufferImpl#isLocal <em>Local</em>}</li>
  * </ul>
  *
  * @generated
  */
 public class BufferImpl extends VariableImpl implements Buffer {
-	/**
-	 * The default value of the '{@link #getSize() <em>Size</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getSize()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final int SIZE_EDEFAULT = 0;
+  /**
+   * The default value of the '{@link #getSize() <em>Size</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getSize()
+   * @generated
+   * @ordered
+   */
+  protected static final int SIZE_EDEFAULT = 0;
 
-	/**
-	 * The cached value of the '{@link #getSize() <em>Size</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getSize()
-	 * @generated
-	 * @ordered
-	 */
-	protected int size = SIZE_EDEFAULT;
+  /**
+   * The cached value of the '{@link #getSize() <em>Size</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getSize()
+   * @generated
+   * @ordered
+   */
+  protected int size = BufferImpl.SIZE_EDEFAULT;
 
-	/**
-	 * The cached value of the '{@link #getChildrens() <em>Childrens</em>}'
-	 * reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getChildrens()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<SubBuffer> childrens;
+  /**
+   * The cached value of the '{@link #getChildrens() <em>Childrens</em>}' reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getChildrens()
+   * @generated
+   * @ordered
+   */
+  protected EList<SubBuffer> childrens;
 
-	/**
-	 * The default value of the '{@link #getTypeSize() <em>Type Size</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getTypeSize()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final int TYPE_SIZE_EDEFAULT = 0;
+  /**
+   * The default value of the '{@link #getTypeSize() <em>Type Size</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getTypeSize()
+   * @generated
+   * @ordered
+   */
+  protected static final int TYPE_SIZE_EDEFAULT = 0;
 
-	/**
-	 * The cached value of the '{@link #getTypeSize() <em>Type Size</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getTypeSize()
-	 * @generated
-	 * @ordered
-	 */
-	protected int typeSize = TYPE_SIZE_EDEFAULT;
+  /**
+   * The cached value of the '{@link #getTypeSize() <em>Type Size</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getTypeSize()
+   * @generated
+   * @ordered
+   */
+  protected int typeSize = BufferImpl.TYPE_SIZE_EDEFAULT;
 
-	/**
-	 * The cached value of the '{@link #getMergedRange() <em>Merged Range</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getMergedRange()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<Range> mergedRange;
+  /**
+   * The cached value of the '{@link #getMergedRange() <em>Merged Range</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #getMergedRange()
+   * @generated
+   * @ordered
+   */
+  protected EList<Range> mergedRange;
 
-	/**
-	 * The default value of the '{@link #isLocal() <em>Local</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #isLocal()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final boolean LOCAL_EDEFAULT = false;
+  /**
+   * The default value of the '{@link #isLocal() <em>Local</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #isLocal()
+   * @generated
+   * @ordered
+   */
+  protected static final boolean LOCAL_EDEFAULT = false;
 
-	/**
-	 * The cached value of the '{@link #isLocal() <em>Local</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #isLocal()
-	 * @generated
-	 * @ordered
-	 */
-	protected boolean local = LOCAL_EDEFAULT;
+  /**
+   * The cached value of the '{@link #isLocal() <em>Local</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+   *
+   * @see #isLocal()
+   * @generated
+   * @ordered
+   */
+  protected boolean local = BufferImpl.LOCAL_EDEFAULT;
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	protected BufferImpl() {
-		super();
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @generated
+   */
+  protected BufferImpl() {
+    super();
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return CodegenPackage.Literals.BUFFER;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return CodegenPackage.Literals.BUFFER;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public int getSize() {
-		return size;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the size
+   * @generated
+   */
+  @Override
+  public int getSize() {
+    return this.size;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public void setSize(int newSize) {
-		int oldSize = size;
-		size = newSize;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.BUFFER__SIZE, oldSize, size));
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newSize
+   *          the new size
+   * @generated
+   */
+  @Override
+  public void setSize(final int newSize) {
+    final int oldSize = this.size;
+    this.size = newSize;
+    if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.BUFFER__SIZE, oldSize, this.size));
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public EList<SubBuffer> getChildrens() {
-		if (childrens == null) {
-			childrens = new EObjectWithInverseResolvingEList<SubBuffer>(SubBuffer.class, this,
-					CodegenPackage.BUFFER__CHILDRENS, CodegenPackage.SUB_BUFFER__CONTAINER);
-		}
-		return childrens;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the childrens
+   * @generated
+   */
+  @Override
+  public EList<SubBuffer> getChildrens() {
+    if (this.childrens == null) {
+      this.childrens = new EObjectWithInverseResolvingEList<>(SubBuffer.class, this, CodegenPackage.BUFFER__CHILDRENS, CodegenPackage.SUB_BUFFER__CONTAINER);
+    }
+    return this.childrens;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public int getTypeSize() {
-		return typeSize;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the type size
+   * @generated
+   */
+  @Override
+  public int getTypeSize() {
+    return this.typeSize;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public void setTypeSize(int newTypeSize) {
-		int oldTypeSize = typeSize;
-		typeSize = newTypeSize;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.BUFFER__TYPE_SIZE, oldTypeSize,
-					typeSize));
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newTypeSize
+   *          the new type size
+   * @generated
+   */
+  @Override
+  public void setTypeSize(final int newTypeSize) {
+    final int oldTypeSize = this.typeSize;
+    this.typeSize = newTypeSize;
+    if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.BUFFER__TYPE_SIZE, oldTypeSize, this.typeSize));
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public EList<Range> getMergedRange() {
-		return mergedRange;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the merged range
+   * @generated
+   */
+  @Override
+  public EList<Range> getMergedRange() {
+    return this.mergedRange;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public void setMergedRange(EList<Range> newMergedRange) {
-		EList<Range> oldMergedRange = mergedRange;
-		mergedRange = newMergedRange;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.BUFFER__MERGED_RANGE, oldMergedRange,
-					mergedRange));
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newMergedRange
+   *          the new merged range
+   * @generated
+   */
+  @Override
+  public void setMergedRange(final EList<Range> newMergedRange) {
+    final EList<Range> oldMergedRange = this.mergedRange;
+    this.mergedRange = newMergedRange;
+    if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.BUFFER__MERGED_RANGE, oldMergedRange, this.mergedRange));
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public boolean isLocal() {
-		return local;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return true, if is local
+   * @generated
+   */
+  @Override
+  public boolean isLocal() {
+    return this.local;
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	public void setLocal(boolean newLocal) {
-		boolean oldLocal = local;
-		local = newLocal;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.BUFFER__LOCAL, oldLocal, local));
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param newLocal
+   *          the new local
+   * @generated
+   */
+  @Override
+  public void setLocal(final boolean newLocal) {
+    final boolean oldLocal = this.local;
+    this.local = newLocal;
+    if (eNotificationRequired()) {
+      eNotify(new ENotificationImpl(this, Notification.SET, CodegenPackage.BUFFER__LOCAL, oldLocal, this.local));
+    }
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-		case CodegenPackage.BUFFER__CHILDRENS:
-			return ((InternalEList<InternalEObject>) (InternalEList<?>) getChildrens()).basicAdd(otherEnd, msgs);
-		}
-		return super.eInverseAdd(otherEnd, featureID, msgs);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param otherEnd
+   *          the other end
+   * @param featureID
+   *          the feature ID
+   * @param msgs
+   *          the msgs
+   * @return the notification chain
+   * @generated
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+    switch (featureID) {
+      case CodegenPackage.BUFFER__CHILDRENS:
+        return ((InternalEList<InternalEObject>) (InternalEList<?>) getChildrens()).basicAdd(otherEnd, msgs);
+    }
+    return super.eInverseAdd(otherEnd, featureID, msgs);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-		case CodegenPackage.BUFFER__CHILDRENS:
-			return ((InternalEList<?>) getChildrens()).basicRemove(otherEnd, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param otherEnd
+   *          the other end
+   * @param featureID
+   *          the feature ID
+   * @param msgs
+   *          the msgs
+   * @return the notification chain
+   * @generated
+   */
+  @Override
+  public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+    switch (featureID) {
+      case CodegenPackage.BUFFER__CHILDRENS:
+        return ((InternalEList<?>) getChildrens()).basicRemove(otherEnd, msgs);
+    }
+    return super.eInverseRemove(otherEnd, featureID, msgs);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-		case CodegenPackage.BUFFER__SIZE:
-			return getSize();
-		case CodegenPackage.BUFFER__CHILDRENS:
-			return getChildrens();
-		case CodegenPackage.BUFFER__TYPE_SIZE:
-			return getTypeSize();
-		case CodegenPackage.BUFFER__MERGED_RANGE:
-			return getMergedRange();
-		case CodegenPackage.BUFFER__LOCAL:
-			return isLocal();
-		}
-		return super.eGet(featureID, resolve, coreType);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param resolve
+   *          the resolve
+   * @param coreType
+   *          the core type
+   * @return the object
+   * @generated
+   */
+  @Override
+  public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
+    switch (featureID) {
+      case CodegenPackage.BUFFER__SIZE:
+        return getSize();
+      case CodegenPackage.BUFFER__CHILDRENS:
+        return getChildrens();
+      case CodegenPackage.BUFFER__TYPE_SIZE:
+        return getTypeSize();
+      case CodegenPackage.BUFFER__MERGED_RANGE:
+        return getMergedRange();
+      case CodegenPackage.BUFFER__LOCAL:
+        return isLocal();
+    }
+    return super.eGet(featureID, resolve, coreType);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public void eSet(int featureID, Object newValue) {
-		switch (featureID) {
-		case CodegenPackage.BUFFER__SIZE:
-			setSize((Integer) newValue);
-			return;
-		case CodegenPackage.BUFFER__CHILDRENS:
-			getChildrens().clear();
-			getChildrens().addAll((Collection<? extends SubBuffer>) newValue);
-			return;
-		case CodegenPackage.BUFFER__TYPE_SIZE:
-			setTypeSize((Integer) newValue);
-			return;
-		case CodegenPackage.BUFFER__MERGED_RANGE:
-			setMergedRange((EList<Range>) newValue);
-			return;
-		case CodegenPackage.BUFFER__LOCAL:
-			setLocal((Boolean) newValue);
-			return;
-		}
-		super.eSet(featureID, newValue);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @param newValue
+   *          the new value
+   * @generated
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  public void eSet(final int featureID, final Object newValue) {
+    switch (featureID) {
+      case CodegenPackage.BUFFER__SIZE:
+        setSize((Integer) newValue);
+        return;
+      case CodegenPackage.BUFFER__CHILDRENS:
+        getChildrens().clear();
+        getChildrens().addAll((Collection<? extends SubBuffer>) newValue);
+        return;
+      case CodegenPackage.BUFFER__TYPE_SIZE:
+        setTypeSize((Integer) newValue);
+        return;
+      case CodegenPackage.BUFFER__MERGED_RANGE:
+        setMergedRange((EList<Range>) newValue);
+        return;
+      case CodegenPackage.BUFFER__LOCAL:
+        setLocal((Boolean) newValue);
+        return;
+    }
+    super.eSet(featureID, newValue);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public void eUnset(int featureID) {
-		switch (featureID) {
-		case CodegenPackage.BUFFER__SIZE:
-			setSize(SIZE_EDEFAULT);
-			return;
-		case CodegenPackage.BUFFER__CHILDRENS:
-			getChildrens().clear();
-			return;
-		case CodegenPackage.BUFFER__TYPE_SIZE:
-			setTypeSize(TYPE_SIZE_EDEFAULT);
-			return;
-		case CodegenPackage.BUFFER__MERGED_RANGE:
-			setMergedRange((EList<Range>) null);
-			return;
-		case CodegenPackage.BUFFER__LOCAL:
-			setLocal(LOCAL_EDEFAULT);
-			return;
-		}
-		super.eUnset(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @generated
+   */
+  @Override
+  public void eUnset(final int featureID) {
+    switch (featureID) {
+      case CodegenPackage.BUFFER__SIZE:
+        setSize(BufferImpl.SIZE_EDEFAULT);
+        return;
+      case CodegenPackage.BUFFER__CHILDRENS:
+        getChildrens().clear();
+        return;
+      case CodegenPackage.BUFFER__TYPE_SIZE:
+        setTypeSize(BufferImpl.TYPE_SIZE_EDEFAULT);
+        return;
+      case CodegenPackage.BUFFER__MERGED_RANGE:
+        setMergedRange((EList<Range>) null);
+        return;
+      case CodegenPackage.BUFFER__LOCAL:
+        setLocal(BufferImpl.LOCAL_EDEFAULT);
+        return;
+    }
+    super.eUnset(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-		case CodegenPackage.BUFFER__SIZE:
-			return size != SIZE_EDEFAULT;
-		case CodegenPackage.BUFFER__CHILDRENS:
-			return childrens != null && !childrens.isEmpty();
-		case CodegenPackage.BUFFER__TYPE_SIZE:
-			return typeSize != TYPE_SIZE_EDEFAULT;
-		case CodegenPackage.BUFFER__MERGED_RANGE:
-			return mergedRange != null;
-		case CodegenPackage.BUFFER__LOCAL:
-			return local != LOCAL_EDEFAULT;
-		}
-		return super.eIsSet(featureID);
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @param featureID
+   *          the feature ID
+   * @return true, if successful
+   * @generated
+   */
+  @Override
+  public boolean eIsSet(final int featureID) {
+    switch (featureID) {
+      case CodegenPackage.BUFFER__SIZE:
+        return this.size != BufferImpl.SIZE_EDEFAULT;
+      case CodegenPackage.BUFFER__CHILDRENS:
+        return (this.childrens != null) && !this.childrens.isEmpty();
+      case CodegenPackage.BUFFER__TYPE_SIZE:
+        return this.typeSize != BufferImpl.TYPE_SIZE_EDEFAULT;
+      case CodegenPackage.BUFFER__MERGED_RANGE:
+        return this.mergedRange != null;
+      case CodegenPackage.BUFFER__LOCAL:
+        return this.local != BufferImpl.LOCAL_EDEFAULT;
+    }
+    return super.eIsSet(featureID);
+  }
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	public String toString() {
-		if (eIsProxy())
-			return super.toString();
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the string
+   * @generated
+   */
+  @Override
+  public String toString() {
+    if (eIsProxy()) {
+      return super.toString();
+    }
 
-		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (size: ");
-		result.append(size);
-		result.append(", typeSize: ");
-		result.append(typeSize);
-		result.append(", mergedRange: ");
-		result.append(mergedRange);
-		result.append(", local: ");
-		result.append(local);
-		result.append(')');
-		return result.toString();
-	}
+    final StringBuffer result = new StringBuffer(super.toString());
+    result.append(" (size: ");
+    result.append(this.size);
+    result.append(", typeSize: ");
+    result.append(this.typeSize);
+    result.append(", mergedRange: ");
+    result.append(this.mergedRange);
+    result.append(", local: ");
+    result.append(this.local);
+    result.append(')');
+    return result.toString();
+  }
 
 } // BufferImpl

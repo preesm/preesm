@@ -45,7 +45,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -61,156 +60,180 @@ import org.ietr.preesm.experiment.model.pimm.Actor;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 
+// TODO: Auto-generated Javadoc
 /**
- * Importing timings in a scenario from a csv file. 
- * task names are rows while operator types are columns
- * 
+ * Importing timings in a scenario from a csv file. task names are rows while operator types are columns
+ *
  * @author jheulot
  */
 public class CsvTimingParser {
 
-	private PreesmScenario scenario = null;
+  /** The scenario. */
+  private PreesmScenario scenario = null;
 
-	public CsvTimingParser(PreesmScenario scenario) {
-		super();
-		this.scenario = scenario;
-	}
+  /**
+   * Instantiates a new csv timing parser.
+   *
+   * @param scenario
+   *          the scenario
+   */
+  public CsvTimingParser(final PreesmScenario scenario) {
+    super();
+    this.scenario = scenario;
+  }
 
-	public void parse(String url, Set<String> opDefIds)
-			throws InvalidModelException, FileNotFoundException {
-		WorkflowLogger
-				.getLogger()
-				.log(Level.INFO,
-						"Importing timings from a csv sheet. Non precised timings are kept unmodified.");
+  /**
+   * Parses the.
+   *
+   * @param url
+   *          the url
+   * @param opDefIds
+   *          the op def ids
+   * @throws InvalidModelException
+   *           the invalid model exception
+   * @throws FileNotFoundException
+   *           the file not found exception
+   */
+  public void parse(final String url, final Set<String> opDefIds) throws InvalidModelException, FileNotFoundException {
+    WorkflowLogger.getLogger().log(Level.INFO, "Importing timings from a csv sheet. Non precised timings are kept unmodified.");
 
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-		Activator.updateWorkspace();
+    Activator.updateWorkspace();
 
-		Path path = new Path(url);
-		IFile file = workspace.getRoot().getFile(path);
-		try {
-			Map<String, Map<String, String>> timings = new HashMap<>();
-			BufferedReader br = new BufferedReader(new InputStreamReader(file.getContents()));
-			
-			String line;
-			
-			/* Read header */
-			line = br.readLine();
-			String[] opNames = line.split(",");
-			if(opNames.length <= 1 || ! opNames[0].equals("Actors")){
-				WorkflowLogger.getLogger().log(
-						Level.WARNING,
-						"Timing csv file must have an header line starting with \"Actors\"\nNothing done");
-				return;
-			}
-								
-			/* Parse the whole file to create the timings Map */
-			while (( line = br.readLine()) != null) {
-				String[] cells = line.split(",");
-				if(cells.length > 1){
-					Map<String, String> timing = new HashMap<>();
-					
-					for(int i=1; i<cells.length; i++){
-						timing.put(opNames[i], cells[i]);
-					}
-					
-					timings.put(cells[0], timing);					
-				}
-		    }
+    final Path path = new Path(url);
+    final IFile file = workspace.getRoot().getFile(path);
+    try {
+      final Map<String, Map<String, String>> timings = new HashMap<>();
+      final BufferedReader br = new BufferedReader(new InputStreamReader(file.getContents()));
 
-			parseTimings(timings, opDefIds);
+      String line;
 
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
-	}
+      /* Read header */
+      line = br.readLine();
+      final String[] opNames = line.split(",");
+      if ((opNames.length <= 1) || !opNames[0].equals("Actors")) {
+        WorkflowLogger.getLogger().log(Level.WARNING, "Timing csv file must have an header line starting with \"Actors\"\nNothing done");
+        return;
+      }
 
-	private void parseTimings(
-			Map<String, Map<String, String>> timings, 
-			Set<String> opDefIds)
-			throws FileNotFoundException, InvalidModelException, CoreException {
-		// Depending on the type of SDF graph we process (IBSDF or PISDF), call
-		// one or the other method
-		if (scenario.isIBSDFScenario()) {
-			throw new InvalidModelException();
-		}
+      /* Parse the whole file to create the timings Map */
+      while ((line = br.readLine()) != null) {
+        final String[] cells = line.split(",");
+        if (cells.length > 1) {
+          final Map<String, String> timing = new HashMap<>();
 
-		else if (scenario.isPISDFScenario()) {
-			PiGraph currentGraph = ScenarioParser.getPiGraph(scenario.getAlgorithmURL());
-			parseTimingsForPISDFGraph(
-					timings, 
-					currentGraph, 
-					opDefIds);
-		}
+          for (int i = 1; i < cells.length; i++) {
+            timing.put(opNames[i], cells[i]);
+          }
 
-	}
+          timings.put(cells[0], timing);
+        }
+      }
 
-	private void parseTimingsForPISDFGraph(
-			Map<String, Map<String, String>> timings, 
-			PiGraph currentGraph,
-			Set<String> opDefIds) {
-		// Each of the vertices of the graph is either itself a graph
-		// (hierarchical vertex), in which case we call recursively this method;
-		// a standard actor, in which case we parser its timing; or a special
-		// vertex, in which case we do nothing
-		for (AbstractActor vertex : currentGraph.getVertices()) {
-			// Handle connected graphs from hierarchical vertices
-			if (vertex instanceof PiGraph) {
-				parseTimingsForPISDFGraph(timings, (PiGraph) vertex, opDefIds);
-			} else if (vertex instanceof Actor) {
-				Actor actor = (Actor) vertex;
+      parseTimings(timings, opDefIds);
 
-				// Handle unconnected graphs from hierarchical vertices
-				Refinement refinement = actor.getRefinement();
-				AbstractActor subgraph = null;
-				if (refinement != null)
-					subgraph = refinement.getAbstractActor();
+    } catch (final IOException e) {
+      e.printStackTrace();
+    } catch (final CoreException e) {
+      e.printStackTrace();
+    }
+  }
 
-				if (subgraph != null && subgraph instanceof PiGraph) {
-					parseTimingsForPISDFGraph(timings, (PiGraph) subgraph, opDefIds);
-				}
-				// If the actor is not hierarchical, parse its timing
-				else {
-					parseTimingForVertex(timings, vertex.getName(), opDefIds);
-				}
-			}
-		}
+  /**
+   * Parses the timings.
+   *
+   * @param timings
+   *          the timings
+   * @param opDefIds
+   *          the op def ids
+   * @throws FileNotFoundException
+   *           the file not found exception
+   * @throws InvalidModelException
+   *           the invalid model exception
+   * @throws CoreException
+   *           the core exception
+   */
+  private void parseTimings(final Map<String, Map<String, String>> timings, final Set<String> opDefIds)
+      throws FileNotFoundException, InvalidModelException, CoreException {
+    // Depending on the type of SDF graph we process (IBSDF or PISDF), call
+    // one or the other method
+    if (this.scenario.isIBSDFScenario()) {
+      throw new InvalidModelException();
+    } else if (this.scenario.isPISDFScenario()) {
+      final PiGraph currentGraph = ScenarioParser.getPiGraph(this.scenario.getAlgorithmURL());
+      parseTimingsForPISDFGraph(timings, currentGraph, opDefIds);
+    }
 
-	}
+  }
 
-	private void parseTimingForVertex(
-			Map<String, Map<String, String>> timings, 
-			String vertexName,
-			Set<String> opDefIds) {
-		// For each kind of processing elements, we look for a timing for given vertex
-		for (String opDefId : opDefIds) {
-			if (!opDefId.isEmpty() && !vertexName.isEmpty()) {
-				// Get the timing we are looking for
-				try{
-					String expression = timings.get(vertexName).get(opDefId);
-					Timing timing = new Timing(
-						opDefId, 
-						vertexName,
-						expression
-					);
+  /**
+   * Parses the timings for PISDF graph.
+   *
+   * @param timings
+   *          the timings
+   * @param currentGraph
+   *          the current graph
+   * @param opDefIds
+   *          the op def ids
+   */
+  private void parseTimingsForPISDFGraph(final Map<String, Map<String, String>> timings, final PiGraph currentGraph, final Set<String> opDefIds) {
+    // Each of the vertices of the graph is either itself a graph
+    // (hierarchical vertex), in which case we call recursively this method;
+    // a standard actor, in which case we parser its timing; or a special
+    // vertex, in which case we do nothing
+    for (final AbstractActor vertex : currentGraph.getVertices()) {
+      // Handle connected graphs from hierarchical vertices
+      if (vertex instanceof PiGraph) {
+        parseTimingsForPISDFGraph(timings, (PiGraph) vertex, opDefIds);
+      } else if (vertex instanceof Actor) {
+        final Actor actor = (Actor) vertex;
 
-					scenario.getTimingManager().addTiming(timing);
+        // Handle unconnected graphs from hierarchical vertices
+        final Refinement refinement = actor.getRefinement();
+        AbstractActor subgraph = null;
+        if (refinement != null) {
+          subgraph = refinement.getAbstractActor();
+        }
 
-					WorkflowLogger.getLogger().log(
-							Level.INFO,
-							"Importing timing: " + timing.toString());
-					
-				}catch(Exception e){
-					WorkflowLogger.getLogger().log(
-							Level.INFO,
-							"Cannot retreive timing for (" 
-									+ vertexName + ", "
-									+ opDefId + ")");					
-				}
-			}
-		}
-	}
+        if ((subgraph != null) && (subgraph instanceof PiGraph)) {
+          parseTimingsForPISDFGraph(timings, (PiGraph) subgraph, opDefIds);
+        } else {
+          // If the actor is not hierarchical, parse its timing
+          parseTimingForVertex(timings, vertex.getName(), opDefIds);
+        }
+      }
+    }
+
+  }
+
+  /**
+   * Parses the timing for vertex.
+   *
+   * @param timings
+   *          the timings
+   * @param vertexName
+   *          the vertex name
+   * @param opDefIds
+   *          the op def ids
+   */
+  private void parseTimingForVertex(final Map<String, Map<String, String>> timings, final String vertexName, final Set<String> opDefIds) {
+    // For each kind of processing elements, we look for a timing for given vertex
+    for (final String opDefId : opDefIds) {
+      if (!opDefId.isEmpty() && !vertexName.isEmpty()) {
+        // Get the timing we are looking for
+        try {
+          final String expression = timings.get(vertexName).get(opDefId);
+          final Timing timing = new Timing(opDefId, vertexName, expression);
+
+          this.scenario.getTimingManager().addTiming(timing);
+
+          WorkflowLogger.getLogger().log(Level.INFO, "Importing timing: " + timing.toString());
+
+        } catch (final Exception e) {
+          WorkflowLogger.getLogger().log(Level.INFO, "Cannot retreive timing for (" + vertexName + ", " + opDefId + ")");
+        }
+      }
+    }
+  }
 }

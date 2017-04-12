@@ -39,43 +39,54 @@ import org.eclipse.emf.ecore.EClass;
 import org.ietr.preesm.codegen.xtend.model.codegen.CodegenPackage;
 import org.ietr.preesm.codegen.xtend.model.codegen.Semaphore;
 
+// TODO: Auto-generated Javadoc
 /**
- * <!-- begin-user-doc --> An implementation of the model object '
- * <em><b>Semaphore</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Semaphore</b></em>'. <!-- end-user-doc -->
  * <p>
  * </p>
- * 
+ *
  * @generated
  */
 public class SemaphoreImpl extends VariableImpl implements Semaphore {
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	protected SemaphoreImpl() {
-		super();
-	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	@Override
-	protected EClass eStaticClass() {
-		return CodegenPackage.Literals.SEMAPHORE;
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @generated
+   */
+  protected SemaphoreImpl() {
+    super();
+  }
 
-	@Override
-	public String getType() {
-		return "Semaphore";
-	}
+  /**
+   * <!-- begin-user-doc --> <!-- end-user-doc -->.
+   *
+   * @return the e class
+   * @generated
+   */
+  @Override
+  protected EClass eStaticClass() {
+    return CodegenPackage.Literals.SEMAPHORE;
+  }
 
-	@Override
-	public void setType(String newType) {
-		System.err.println("Cannot set the type of a Codegen.Semaphore"
-				+ "because type is always Semaphore.");
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.VariableImpl#getType()
+   */
+  @Override
+  public String getType() {
+    return "Semaphore";
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.VariableImpl#setType(java.lang.String)
+   */
+  @Override
+  public void setType(final String newType) {
+    System.err.println("Cannot set the type of a Codegen.Semaphore" + "because type is always Semaphore.");
+  }
 
 } // SemaphoreImpl

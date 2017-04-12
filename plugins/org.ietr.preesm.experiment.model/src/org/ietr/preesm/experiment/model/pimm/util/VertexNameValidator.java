@@ -41,6 +41,7 @@ import org.eclipse.jface.dialogs.IInputValidator;
 import org.ietr.preesm.experiment.model.pimm.AbstractVertex;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 
+// TODO: Auto-generated Javadoc
 /**
  * This validator is used to check whether a vertex in a graph already has a given name.
  *
@@ -49,14 +50,19 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
  */
 public class VertexNameValidator implements IInputValidator {
 
-  protected PiGraph     graph;
+  /** The graph. */
+  protected PiGraph graph;
+
+  /** The existing names. */
   protected Set<String> existingNames;
 
   /**
-   * Constructor of the {@link VertexNameValidator}
+   * Constructor of the {@link VertexNameValidator}.
    *
    * @param graph
    *          the graph to which we want to add/rename a vertex
+   * @param renamedVertex
+   *          the renamed vertex
    */
   public VertexNameValidator(final PiGraph graph, final AbstractVertex renamedVertex) {
     this.graph = graph;
@@ -69,6 +75,11 @@ public class VertexNameValidator implements IInputValidator {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.eclipse.jface.dialogs.IInputValidator#isValid(java.lang.String)
+   */
   @Override
   public String isValid(final String newVertexName) {
     String message = null;
