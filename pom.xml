@@ -173,6 +173,14 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<version>1.6.0</version>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.17</version>
+				<configuration>
+					<configLocation>releng/hooks/VAADER_checkstyle.xml</configLocation>
+				</configuration>
+			</plugin>
 			<!--
 				Disable maven deploy plugin: since generated artifacts
 				will be deployed in a P2 repository, there is no need
