@@ -55,7 +55,9 @@ import org.ietr.preesm.experiment.model.pimm.Actor;
 /**
  * Custom feature in charge of opening an editor for the memory script of an actor.
  *
- * <p>the workbench default editor will be opened.</p>
+ * <p>
+ * the workbench default editor will be opened.
+ * </p>
  *
  * @author kdesnos
  *

@@ -210,7 +210,7 @@ public abstract class ParameterizableImpl extends EObjectImpl implements Paramet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
    */
   @Override
@@ -220,7 +220,7 @@ public abstract class ParameterizableImpl extends EObjectImpl implements Paramet
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.Parameterizable#getInputParameters()
    */
   @Override

@@ -284,7 +284,7 @@ public class CommunicationRouter extends AbstractCommunicationRouter {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.ietr.preesm.mapper.abc.route.AbstractCommunicationRouter#getRoute(org.ietr.preesm.mapper.
    * model.MapperDAGEdge)

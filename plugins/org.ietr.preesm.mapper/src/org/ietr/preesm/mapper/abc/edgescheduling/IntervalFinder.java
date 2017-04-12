@@ -75,7 +75,7 @@ public class IntervalFinder {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override

@@ -67,7 +67,7 @@ public class UpdatePortFeature extends AbstractUpdateFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.func.IUpdate#canUpdate(org.eclipse.graphiti.features.context.IUpdateContext)
    */
   @Override
@@ -78,7 +78,7 @@ public class UpdatePortFeature extends AbstractUpdateFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.func.IUpdate#updateNeeded(org.eclipse.graphiti.features.context.IUpdateContext)
    */
   @Override
@@ -121,7 +121,7 @@ public class UpdatePortFeature extends AbstractUpdateFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.func.IUpdate#update(org.eclipse.graphiti.features.context.IUpdateContext)
    */
   @Override

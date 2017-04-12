@@ -75,7 +75,7 @@ public class CreateDataOutputInterfaceFeature extends AbstractCreateFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.func.ICreate#canCreate(org.eclipse.graphiti.features.context.ICreateContext)
    */
   @Override
@@ -85,7 +85,7 @@ public class CreateDataOutputInterfaceFeature extends AbstractCreateFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.func.ICreate#create(org.eclipse.graphiti.features.context.ICreateContext)
    */
   @Override
@@ -122,7 +122,7 @@ public class CreateDataOutputInterfaceFeature extends AbstractCreateFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
    */
   @Override

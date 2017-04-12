@@ -51,7 +51,7 @@ public class NewScenarioFileWizard extends BasicNewFileResourceWizard {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard#addPages()
    */
   @Override
@@ -62,7 +62,7 @@ public class NewScenarioFileWizard extends BasicNewFileResourceWizard {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard#initializeDefaultPageImageDescriptor()
    */
   @Override
@@ -72,7 +72,7 @@ public class NewScenarioFileWizard extends BasicNewFileResourceWizard {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard#performFinish()
    */
   @Override

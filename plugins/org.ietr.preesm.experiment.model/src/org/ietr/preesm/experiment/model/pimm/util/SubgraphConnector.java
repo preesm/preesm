@@ -120,7 +120,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitPiGraph(org.ietr.preesm.experiment.model.pimm.PiGraph)
    */
   @Override
@@ -138,7 +138,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitActor(org.ietr.preesm.experiment.model.pimm.Actor)
    */
   @Override
@@ -253,7 +253,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataInputInterface(org.ietr.preesm.experiment.model.pimm.DataInputInterface)
    */
   @Override
@@ -276,7 +276,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataOutputInterface(org.ietr.preesm.experiment.model.pimm.DataOutputInterface)
    */
   @Override
@@ -298,7 +298,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigInputInterface(org.ietr.preesm.experiment.model.pimm.ConfigInputInterface)
    */
   @Override
@@ -319,7 +319,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigOutputInterface(org.ietr.preesm.experiment.model.pimm.ConfigOutputInterface)
    */
   @Override
@@ -339,7 +339,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitParameter(org.ietr.preesm.experiment.model.pimm.Parameter)
    */
   @Override
@@ -351,7 +351,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitAbstractActor(org.ietr.preesm.experiment.model.pimm.AbstractActor)
    */
   @Override
@@ -361,7 +361,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitAbstractVertex(org.ietr.preesm.experiment.model.pimm.AbstractVertex)
    */
   @Override
@@ -371,7 +371,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigInputPort(org.ietr.preesm.experiment.model.pimm.ConfigInputPort)
    */
   @Override
@@ -381,7 +381,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitConfigOutputPort(org.ietr.preesm.experiment.model.pimm.ConfigOutputPort)
    */
   @Override
@@ -391,7 +391,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataPort(org.ietr.preesm.experiment.model.pimm.DataPort)
    */
   @Override
@@ -401,7 +401,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataInputPort(org.ietr.preesm.experiment.model.pimm.DataInputPort)
    */
   @Override
@@ -411,7 +411,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDataOutputPort(org.ietr.preesm.experiment.model.pimm.DataOutputPort)
    */
   @Override
@@ -421,7 +421,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDelay(org.ietr.preesm.experiment.model.pimm.Delay)
    */
   @Override
@@ -431,7 +431,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitDependency(org.ietr.preesm.experiment.model.pimm.Dependency)
    */
   @Override
@@ -441,7 +441,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitExpression(org.ietr.preesm.experiment.model.pimm.Expression)
    */
   @Override
@@ -451,7 +451,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitFifo(org.ietr.preesm.experiment.model.pimm.Fifo)
    */
   @Override
@@ -461,7 +461,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitInterfaceActor(org.ietr.preesm.experiment.model.pimm.InterfaceActor)
    */
   @Override
@@ -471,7 +471,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitISetter(org.ietr.preesm.experiment.model.pimm.ISetter)
    */
   @Override
@@ -481,7 +481,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitParameterizable(org.ietr.preesm.experiment.model.pimm.Parameterizable)
    */
   @Override
@@ -491,7 +491,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitPort(org.ietr.preesm.experiment.model.pimm.Port)
    */
   @Override
@@ -501,7 +501,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitRefinement(org.ietr.preesm.experiment.model.pimm.Refinement)
    */
   @Override
@@ -511,7 +511,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitFunctionParameter(org.ietr.preesm.experiment.model.pimm.FunctionParameter)
    */
   @Override
@@ -521,7 +521,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitFunctionPrototype(org.ietr.preesm.experiment.model.pimm.FunctionPrototype)
    */
   @Override
@@ -531,7 +531,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitBroadcastActor(org.ietr.preesm.experiment.model.pimm.BroadcastActor)
    */
   @Override
@@ -541,7 +541,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitJoinActor(org.ietr.preesm.experiment.model.pimm.JoinActor)
    */
   @Override
@@ -551,7 +551,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitForkActor(org.ietr.preesm.experiment.model.pimm.ForkActor)
    */
   @Override
@@ -561,7 +561,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitRoundBufferActor(org.ietr.preesm.experiment.model.pimm.RoundBufferActor)
    */
   @Override
@@ -571,7 +571,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitExecutableActor(org.ietr.preesm.experiment.model.pimm.ExecutableActor)
    */
   @Override
@@ -581,7 +581,7 @@ public class SubgraphConnector extends PiMMVisitor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor#visitHRefinement(org.ietr.preesm.experiment.model.pimm.HRefinement)
    */
   @Override

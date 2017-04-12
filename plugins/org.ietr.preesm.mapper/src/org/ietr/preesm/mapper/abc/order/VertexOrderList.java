@@ -110,7 +110,7 @@ public class VertexOrderList {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override

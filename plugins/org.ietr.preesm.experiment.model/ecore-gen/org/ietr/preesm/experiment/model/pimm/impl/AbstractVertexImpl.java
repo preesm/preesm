@@ -220,7 +220,7 @@ public abstract class AbstractVertexImpl extends ParameterizableImpl implements 
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.AbstractVertex#getPortNamed(java.lang.String)
    */
   @Override
@@ -241,7 +241,7 @@ public abstract class AbstractVertexImpl extends ParameterizableImpl implements 
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.ParameterizableImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
    */
   @Override

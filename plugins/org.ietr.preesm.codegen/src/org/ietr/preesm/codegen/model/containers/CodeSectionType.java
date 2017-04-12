@@ -111,7 +111,7 @@ public class CodeSectionType {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   @Override

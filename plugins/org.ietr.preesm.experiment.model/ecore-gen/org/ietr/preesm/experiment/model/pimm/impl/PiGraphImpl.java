@@ -311,7 +311,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getVertexNamed(java.lang.String)
    */
   @Override
@@ -347,7 +347,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getVerticesNames()
    */
   @Override
@@ -361,7 +361,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getParametersNames()
    */
   @Override
@@ -375,7 +375,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getFifoIded(java.lang.String)
    */
   @Override
@@ -406,7 +406,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
    */
   @Override
@@ -476,7 +476,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getParameterNamedWithParent(java.lang.String, java.lang.String)
    */
   @Override
@@ -512,7 +512,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getAllParameters()
    */
   @Override
@@ -537,7 +537,7 @@ public class PiGraphImpl extends AbstractActorImpl implements PiGraph {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.PiGraph#getAllVertices()
    */
   @Override

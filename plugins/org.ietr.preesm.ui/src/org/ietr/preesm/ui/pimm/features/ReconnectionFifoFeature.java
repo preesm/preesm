@@ -75,7 +75,7 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#canReconnect(org.eclipse.graphiti.features.context.IReconnectionContext)
    */
   @Override
@@ -133,7 +133,7 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
    */
   @Override
@@ -143,7 +143,7 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#postReconnect(org.eclipse.graphiti.features.context.IReconnectionContext)
    */
   @Override
@@ -182,7 +182,7 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#preReconnect(org.eclipse.graphiti.features.context.IReconnectionContext)
    */
   @Override

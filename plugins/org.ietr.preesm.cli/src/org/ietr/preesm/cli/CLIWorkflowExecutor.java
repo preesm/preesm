@@ -93,7 +93,7 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.IApplicationContext)
    */
   @Override
@@ -218,7 +218,7 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.equinox.app.IApplication#stop()
    */
   @Override

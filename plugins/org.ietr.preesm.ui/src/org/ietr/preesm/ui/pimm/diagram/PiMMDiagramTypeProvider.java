@@ -62,7 +62,7 @@ public class PiMMDiagramTypeProvider extends AbstractDiagramTypeProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.dt.AbstractDiagramTypeProvider#getAvailableToolBehaviorProviders()
    */
   @Override
@@ -77,7 +77,7 @@ public class PiMMDiagramTypeProvider extends AbstractDiagramTypeProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.dt.AbstractDiagramTypeProvider#isAutoUpdateAtStartup()
    */
   @Override

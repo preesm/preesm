@@ -191,7 +191,7 @@ public class SubBufferImpl extends BufferImpl implements SubBuffer {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.VariableImpl#setCreator(org.ietr.preesm.codegen.xtend.model.codegen.Block)
    */
   @Override

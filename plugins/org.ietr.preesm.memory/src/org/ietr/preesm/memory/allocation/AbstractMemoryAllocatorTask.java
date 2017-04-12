@@ -317,7 +317,7 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
 
     tStart = System.currentTimeMillis();
     allocator.allocate();
-    long tFinish = System.currentTimeMillis();
+    final long tFinish = System.currentTimeMillis();
 
     // Check the correct allocation
     try {
@@ -352,7 +352,7 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
     this.logger.log(Level.INFO, log);
   }
 
-  private String computeLog(final MemoryAllocator allocator, long tStart, String sAllocator, long tFinish) {
+  private String computeLog(final MemoryAllocator allocator, final long tStart, final String sAllocator, final long tFinish) {
     String unit = "bytes";
     float size = allocator.getMemorySize();
     if (size > 1024) {
@@ -368,7 +368,7 @@ public abstract class AbstractMemoryAllocatorTask extends AbstractTaskImplementa
       }
     }
 
-    String log = sAllocator + " allocates " + size + " " + unit + " in " + (tFinish - tStart) + " ms.";
+    final String log = sAllocator + " allocates " + size + " " + unit + " in " + (tFinish - tStart) + " ms.";
     return log;
   }
 

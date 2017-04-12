@@ -254,7 +254,7 @@ public abstract class PortImpl extends EObjectImpl implements Port {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
    */
   @Override

@@ -79,7 +79,7 @@ public class CustomTopologicalIterator
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.util.Iterator#hasNext()
    */
   @Override
@@ -89,7 +89,7 @@ public class CustomTopologicalIterator
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.util.Iterator#next()
    */
   @Override

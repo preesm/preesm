@@ -538,8 +538,8 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 
       x = paramPes[0].getGraphicsAlgorithm().getX();
       y = paramPes[0].getGraphicsAlgorithm().getY();
-      int width = paramPes[0].getGraphicsAlgorithm().getWidth();
-      int height = paramPes[0].getGraphicsAlgorithm().getHeight();
+      final int width = paramPes[0].getGraphicsAlgorithm().getWidth();
+      final int height = paramPes[0].getGraphicsAlgorithm().getHeight();
 
       this.totalWidth = java.lang.Math.max(x + width, this.totalWidth);
       this.totalHeight = java.lang.Math.max(y + height, this.totalHeight);
@@ -792,8 +792,8 @@ public class ExportSVGFeature extends AbstractCustomFeature {
 
       x = actorPes[0].getGraphicsAlgorithm().getX();
       y = actorPes[0].getGraphicsAlgorithm().getY();
-      int width = actorPes[0].getGraphicsAlgorithm().getWidth();
-      int height = actorPes[0].getGraphicsAlgorithm().getHeight();
+      final int width = actorPes[0].getGraphicsAlgorithm().getWidth();
+      final int height = actorPes[0].getGraphicsAlgorithm().getHeight();
 
       this.totalWidth = java.lang.Math.max(x + width, this.totalWidth);
       this.totalHeight = java.lang.Math.max(y + height, this.totalHeight);

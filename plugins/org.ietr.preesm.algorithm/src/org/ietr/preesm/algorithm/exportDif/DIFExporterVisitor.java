@@ -59,13 +59,19 @@ import org.ietr.preesm.core.scenario.Timing;
  * format. The visitor should be used only on Single-rate SDF. Each actor of the graph can be given
  * a parameter "nb_node" which will be used in the exported format.
  *
- * <p>All edges with delays are removed from the exported graph.</p>
+ * <p>
+ * All edges with delays are removed from the exported graph.
+ * </p>
  *
- * <p>All actors of the graph should have an execution time for cores of type x86.</p>
+ * <p>
+ * All actors of the graph should have an execution time for cores of type x86.
+ * </p>
  *
- * <p>This class is a quick solution to convert very specific graph to the DIF. It is not well coded
+ * <p>
+ * This class is a quick solution to convert very specific graph to the DIF. It is not well coded
  * and should be replaced with a better solution in the future. (Or simply removed if not used
- * anymore)</p>
+ * anymore)
+ * </p>
  *
  * @author kdesnos
  * @see http://www.ece.umd.edu/DSPCAD/dif/index.htm

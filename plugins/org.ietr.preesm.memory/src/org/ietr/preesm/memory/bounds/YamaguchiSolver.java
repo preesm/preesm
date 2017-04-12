@@ -47,8 +47,10 @@ import org.jgrapht.graph.SimpleGraph;
 /**
  * This class is used to solve the Maximum-Weight Clique Problem on an undirected weighted graph.
  *
- * <p>The algorithm implemented in this class is the exact algorithm proposed by Kazauki Yamaguchi and Sumio Masuda in
- * <a href = "http://www.ieice.org/proceedings/ITC-CSCC2008/pdf/p317_F3-1.pdf"> this paper </a>.</p>
+ * <p>
+ * The algorithm implemented in this class is the exact algorithm proposed by Kazauki Yamaguchi and Sumio Masuda in
+ * <a href = "http://www.ieice.org/proceedings/ITC-CSCC2008/pdf/p317_F3-1.pdf"> this paper </a>.
+ * </p>
  *
  *
  * @author kdesnos

@@ -68,7 +68,7 @@ public class BLevelIterator extends ImplementationIterator {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.mapper.tools.ImplementationIterator#compare(org.ietr.preesm.mapper.model.
    * MapperDAGVertex, org.ietr.preesm.mapper.model.MapperDAGVertex)
    */

@@ -77,7 +77,7 @@ public class CreateConfigInputInterfaceFeature extends AbstractCreateFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.func.ICreate#canCreate(org.eclipse.graphiti.features.context.ICreateContext)
    */
   @Override
@@ -87,7 +87,7 @@ public class CreateConfigInputInterfaceFeature extends AbstractCreateFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.func.ICreate#create(org.eclipse.graphiti.features.context.ICreateContext)
    */
   @Override

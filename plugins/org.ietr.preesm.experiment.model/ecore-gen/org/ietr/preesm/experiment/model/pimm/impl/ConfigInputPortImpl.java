@@ -296,7 +296,7 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.PortImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
    */
   @Override
@@ -306,7 +306,7 @@ public class ConfigInputPortImpl extends PortImpl implements ConfigInputPort {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.PortImpl#getName()
    */
   @Override

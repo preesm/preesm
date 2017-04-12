@@ -75,7 +75,7 @@ public class GetComponentsScheduleVisitor implements IGraphVisitor<DirectedAcycl
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.AbstractEdge)
    */
   @Override
@@ -85,7 +85,7 @@ public class GetComponentsScheduleVisitor implements IGraphVisitor<DirectedAcycl
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.AbstractGraph)
    */
   @Override
@@ -101,7 +101,7 @@ public class GetComponentsScheduleVisitor implements IGraphVisitor<DirectedAcycl
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.AbstractVertex)
    */
   @Override

@@ -449,7 +449,7 @@ public class VariablesPage extends FormPage implements IPropertyListener {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.forms.editor.FormPage#setActive(boolean)
    */
   @Override

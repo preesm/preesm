@@ -234,7 +234,7 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.Refinement#getFilePath()
    */
   @Override
@@ -244,7 +244,7 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.Refinement#setFilePath(org.eclipse.core.runtime.IPath)
    */
   @Override
@@ -292,7 +292,7 @@ public class RefinementImpl extends EObjectImpl implements Refinement {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
    */
   @Override

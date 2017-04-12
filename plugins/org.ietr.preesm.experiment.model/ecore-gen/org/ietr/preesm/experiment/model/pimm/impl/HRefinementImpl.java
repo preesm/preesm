@@ -153,7 +153,7 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.RefinementImpl#getAbstractActor()
    */
   @Override
@@ -341,7 +341,7 @@ public class HRefinementImpl extends RefinementImpl implements HRefinement {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.RefinementImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
    */
   @Override

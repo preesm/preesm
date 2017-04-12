@@ -64,7 +64,7 @@ public class CLIScenariosGenerator implements IApplication {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.IApplicationContext)
    */
   @Override
@@ -102,7 +102,7 @@ public class CLIScenariosGenerator implements IApplication {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.equinox.app.IApplication#stop()
    */
   @Override

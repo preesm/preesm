@@ -110,7 +110,8 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
    * Return the new Height of the shape. <br>
    * <br>
    *
-   * <p>The new height is computed so that all text are completely visible. Consequently, the method check the width of all Text children shape.<br>
+   * <p>
+   * The new height is computed so that all text are completely visible. Consequently, the method check the width of all Text children shape.<br>
    * <br>
    * <b> The method does not apply the new height to the shape. </b> Use {@link LayoutActorFeature#setNewHeight} for that purpose.
    * </p>
@@ -209,9 +210,11 @@ public class LayoutActorFeature extends AbstractLayoutFeature {
    * Return the new width of the shape. <br>
    * <br>
    *
-   * <p>The new width is computed so that all text are completely visible. Consequently, the method check the width of all Text children shape. <br>
+   * <p>
+   * The new width is computed so that all text are completely visible. Consequently, the method check the width of all Text children shape. <br>
    * <br>
-   * <b> The method does not apply the new width to the shape. </b> Use {@link LayoutActorFeature#setNewWidth} for that purpose.</p>
+   * <b> The method does not apply the new width to the shape. </b> Use {@link LayoutActorFeature#setNewWidth} for that purpose.
+   * </p>
    *
    * @param childrenShapes
    *          the children shapes of the Actor

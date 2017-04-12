@@ -80,7 +80,7 @@ public class RoutingTable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -97,7 +97,7 @@ public class RoutingTable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -145,7 +145,7 @@ public class RoutingTable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
     @Override
@@ -182,7 +182,7 @@ public class RoutingTable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.util.AbstractCollection#toString()
      */
     @Override

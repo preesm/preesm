@@ -59,7 +59,7 @@ public class PiMMMarkerHelper extends EditUIMarkerHelper {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.emf.edit.ui.util.EditUIMarkerHelper#adjustMarker(org.eclipse.core.resources.IMarker, org.eclipse.emf.common.util.Diagnostic,
    * org.eclipse.emf.common.util.Diagnostic)
    */

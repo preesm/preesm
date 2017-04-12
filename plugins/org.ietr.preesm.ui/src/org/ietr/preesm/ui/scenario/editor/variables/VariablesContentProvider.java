@@ -53,7 +53,7 @@ public class VariablesContentProvider implements IStructuredContentProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
    */
   @Override
@@ -70,7 +70,7 @@ public class VariablesContentProvider implements IStructuredContentProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.viewers.IContentProvider#dispose()
    */
   @Override
@@ -81,7 +81,7 @@ public class VariablesContentProvider implements IStructuredContentProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
    */
   @Override

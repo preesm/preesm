@@ -54,7 +54,7 @@ public class CoreConsoleFactory implements IConsoleFactory {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.console.IConsoleFactory#openConsole()
    */
   @Override

@@ -61,7 +61,7 @@ public class TaskSwitcher extends AbstractTaskSched {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#setOrderManager(org.ietr.preesm.
    * mapper.abc.order.OrderManager)
@@ -97,7 +97,7 @@ public class TaskSwitcher extends AbstractTaskSched {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#insertVertex(org.ietr.preesm.mapper
    * .model.MapperDAGVertex)

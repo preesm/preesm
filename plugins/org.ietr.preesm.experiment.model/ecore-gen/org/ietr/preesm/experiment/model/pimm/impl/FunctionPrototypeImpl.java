@@ -257,7 +257,7 @@ public class FunctionPrototypeImpl extends EObjectImpl implements FunctionProtot
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
    */
   @Override
@@ -267,7 +267,7 @@ public class FunctionPrototypeImpl extends EObjectImpl implements FunctionProtot
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.FunctionPrototype#format()
    */
   @Override

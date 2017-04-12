@@ -72,7 +72,7 @@ public class AddRefinementFeature extends AbstractAddFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.func.IAdd#canAdd(org.eclipse.graphiti.features.context.IAddContext)
    */
   @Override
@@ -91,7 +91,7 @@ public class AddRefinementFeature extends AbstractAddFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.func.IAdd#add(org.eclipse.graphiti.features.context.IAddContext)
    */
   @Override

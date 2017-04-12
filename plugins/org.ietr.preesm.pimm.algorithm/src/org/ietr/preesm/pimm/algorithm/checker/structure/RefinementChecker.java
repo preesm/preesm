@@ -80,7 +80,9 @@ public class RefinementChecker {
   /**
    * Check the presence and validity of Refinements of all Actors of the graph
    *
-   * <p>Precondition: graph has been connected through SubgraphConnector.</p>
+   * <p>
+   * Precondition: graph has been connected through SubgraphConnector.
+   * </p>
    *
    * @param graph
    *          PiGraph to check
@@ -120,7 +122,9 @@ public class RefinementChecker {
   /**
    * Check the file extension of the Refinement of an Actor
    *
-   * <p>Precondition: a has a non-null refinement with a non-null and non-empty filePath.</p>
+   * <p>
+   * Precondition: a has a non-null refinement with a non-null and non-empty filePath.
+   * </p>
    *
    * @param a
    *          the Actor for which we want to check the Refinement
@@ -141,7 +145,9 @@ public class RefinementChecker {
   /**
    * Check the existence of the file of the Refinement of an Actor
    *
-   * <p>Precondition: a has a non-null refinement with a non-null and non-empty filePath.</p>
+   * <p>
+   * Precondition: a has a non-null refinement with a non-null and non-empty filePath.
+   * </p>
    *
    * @param a
    *          the Actor for which we want to check the Refinement

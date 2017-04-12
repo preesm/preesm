@@ -130,7 +130,7 @@ public class ApproximatelyTimedAbc extends LatencyAbc {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#getEdgeSchedType()
    */
   @Override

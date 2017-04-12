@@ -74,7 +74,7 @@ public class ConfigInputInterfaceImpl extends ParameterImpl implements ConfigInp
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.ParameterImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
    */
   @Override

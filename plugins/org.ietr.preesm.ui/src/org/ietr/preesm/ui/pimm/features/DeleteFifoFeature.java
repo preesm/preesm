@@ -73,7 +73,7 @@ public class DeleteFifoFeature extends DefaultDeleteFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.ui.features.DefaultDeleteFeature#preDelete(org.eclipse.graphiti.features.context.IDeleteContext)
    */
   @Override
@@ -120,7 +120,7 @@ public class DeleteFifoFeature extends DefaultDeleteFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.ui.features.DefaultDeleteFeature#postDelete(org.eclipse.graphiti.features.context.IDeleteContext)
    */
   @Override

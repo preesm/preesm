@@ -62,7 +62,7 @@ public class RenameDiagram extends RenameParticipant {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant#initialize(java.lang.Object)
    */
   @Override
@@ -86,7 +86,7 @@ public class RenameDiagram extends RenameParticipant {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant#getName()
    */
   @Override
@@ -96,7 +96,7 @@ public class RenameDiagram extends RenameParticipant {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant#checkConditions(org.eclipse.core.runtime.IProgressMonitor,
    * org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext)
    */
@@ -108,7 +108,7 @@ public class RenameDiagram extends RenameParticipant {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant#createPreChange(org.eclipse.core.runtime.IProgressMonitor)
    */
   @Override
@@ -128,7 +128,7 @@ public class RenameDiagram extends RenameParticipant {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant#createChange(org.eclipse.core.runtime.IProgressMonitor)
    */
   @Override

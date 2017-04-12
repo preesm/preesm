@@ -55,7 +55,7 @@ public class SimpleTaskSched extends AbstractTaskSched {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#insertVertex(org.ietr.preesm.mapper
    * .model.MapperDAGVertex)

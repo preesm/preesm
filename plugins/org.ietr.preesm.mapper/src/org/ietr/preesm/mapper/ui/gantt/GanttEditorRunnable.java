@@ -82,7 +82,7 @@ public class GanttEditorRunnable implements Runnable {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Runnable#run()
    */
   @Override

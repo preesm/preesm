@@ -65,7 +65,7 @@ public class GanttEditor extends EditorPart {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
    */
   @Override
@@ -75,7 +75,7 @@ public class GanttEditor extends EditorPart {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.part.EditorPart#doSaveAs()
    */
   @Override
@@ -85,7 +85,7 @@ public class GanttEditor extends EditorPart {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.part.EditorPart#init(org.eclipse.ui.IEditorSite,
    * org.eclipse.ui.IEditorInput)
    */
@@ -112,7 +112,7 @@ public class GanttEditor extends EditorPart {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.part.EditorPart#isDirty()
    */
   @Override
@@ -123,7 +123,7 @@ public class GanttEditor extends EditorPart {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.part.EditorPart#isSaveAsAllowed()
    */
   @Override
@@ -134,7 +134,7 @@ public class GanttEditor extends EditorPart {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
    */
   @Override
@@ -148,7 +148,7 @@ public class GanttEditor extends EditorPart {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
    */
   @Override

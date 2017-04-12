@@ -83,7 +83,7 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
     @Override
@@ -133,7 +133,7 @@ public class TopologicalTaskSched extends AbstractTaskSched {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.ietr.preesm.mapper.abc.taskscheduling.AbstractTaskSched#insertVertex(org.ietr.preesm.mapper
    * .model.MapperDAGVertex)

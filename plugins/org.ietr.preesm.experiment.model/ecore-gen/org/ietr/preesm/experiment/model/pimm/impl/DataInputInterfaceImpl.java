@@ -81,7 +81,7 @@ public class DataInputInterfaceImpl extends InterfaceActorImpl implements DataIn
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
    */
   @Override
@@ -91,7 +91,7 @@ public class DataInputInterfaceImpl extends InterfaceActorImpl implements DataIn
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#setName(java.lang.String)
    */
   @Override

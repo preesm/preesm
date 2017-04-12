@@ -67,7 +67,7 @@ public class DeleteAbstractActorFeature extends DeleteParameterizableFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.ui.pimm.features.DeleteParameterizableFeature#preDelete(org.eclipse.graphiti.features.context.IDeleteContext)
    */
   @Override

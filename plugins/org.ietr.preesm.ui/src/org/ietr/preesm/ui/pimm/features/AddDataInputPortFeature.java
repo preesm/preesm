@@ -82,7 +82,7 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.impl.AbstractFeature#getName()
    */
   @Override
@@ -92,7 +92,7 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#getDescription()
    */
   @Override
@@ -102,7 +102,7 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getPosition()
    */
   @Override
@@ -112,7 +112,7 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#addPortGA(org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm)
    */
   @Override
@@ -132,7 +132,7 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#addPortLabel(org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm, java.lang.String)
    */
   @Override
@@ -156,7 +156,7 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getNewPort(java.lang.String, org.ietr.preesm.experiment.model.pimm.ExecutableActor)
    */
   @Override
@@ -169,7 +169,7 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.ui.pimm.features.AbstractAddActorPortFeature#getPortKind()
    */
   @Override

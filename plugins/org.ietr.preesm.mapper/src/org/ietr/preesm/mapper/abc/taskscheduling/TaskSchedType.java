@@ -55,7 +55,7 @@ public enum TaskSchedType {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Enum#toString()
    */
   @Override

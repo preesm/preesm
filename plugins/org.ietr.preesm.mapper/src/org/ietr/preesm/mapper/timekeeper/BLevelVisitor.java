@@ -125,7 +125,7 @@ public class BLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.
    * AbstractEdge)

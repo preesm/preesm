@@ -83,7 +83,7 @@ public class ConfigOutputInterfaceImpl extends InterfaceActorImpl implements Con
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
    */
   @Override

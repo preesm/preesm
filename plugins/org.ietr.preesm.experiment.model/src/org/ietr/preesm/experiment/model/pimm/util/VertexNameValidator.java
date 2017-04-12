@@ -77,7 +77,7 @@ public class VertexNameValidator implements IInputValidator {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.dialogs.IInputValidator#isValid(java.lang.String)
    */
   @Override

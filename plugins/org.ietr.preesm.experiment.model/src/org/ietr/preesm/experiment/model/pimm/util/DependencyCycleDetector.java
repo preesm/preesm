@@ -127,7 +127,7 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#casePiGraph(org.ietr.preesm.experiment.model.pimm.PiGraph)
    */
   @Override
@@ -153,7 +153,7 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseParameter(org.ietr.preesm.experiment.model.pimm.Parameter)
    */
   @Override
@@ -194,7 +194,7 @@ public class DependencyCycleDetector extends PiMMSwitch<Void> {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseConfigInputPort(org.ietr.preesm.experiment.model.pimm.ConfigInputPort)
    */
   @Override

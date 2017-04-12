@@ -374,8 +374,10 @@ public class InitialLists {
    * constructCPNDominantlist: Construct the CPN dominant List and the other lists necessary for the
    * initial scheduler
    *
-   * <p>A CPN is a node included in a critical path. An IBN is a node from which there is a path
-   * reaching a CPN. An OBN is a node which is neither a CPN nor an IBN.</p>
+   * <p>
+   * A CPN is a node included in a critical path. An IBN is a node from which there is a path
+   * reaching a CPN. An OBN is a node which is neither a CPN nor an IBN.
+   * </p>
    *
    * @param dag
    *          the dag

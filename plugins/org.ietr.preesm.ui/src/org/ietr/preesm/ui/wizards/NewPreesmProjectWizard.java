@@ -76,7 +76,7 @@ public class NewPreesmProjectWizard extends BasicNewProjectResourceWizard {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard#addPages()
    */
   @Override
@@ -90,7 +90,7 @@ public class NewPreesmProjectWizard extends BasicNewProjectResourceWizard {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard#initializeDefaultPageImageDescriptor()
    */
   @Override
@@ -100,7 +100,7 @@ public class NewPreesmProjectWizard extends BasicNewProjectResourceWizard {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard#performFinish()
    */
   @Override

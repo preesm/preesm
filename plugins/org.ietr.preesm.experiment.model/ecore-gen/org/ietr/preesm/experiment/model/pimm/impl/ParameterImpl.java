@@ -536,7 +536,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#setName(java.lang.String)
    */
   @Override
@@ -591,7 +591,7 @@ public class ParameterImpl extends AbstractVertexImpl implements Parameter {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
    */
   @Override

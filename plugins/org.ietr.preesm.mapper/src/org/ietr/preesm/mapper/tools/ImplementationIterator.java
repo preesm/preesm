@@ -113,7 +113,7 @@ public abstract class ImplementationIterator extends
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
    */
   @Override
@@ -146,7 +146,7 @@ public abstract class ImplementationIterator extends
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.util.Iterator#hasNext()
    */
   @Override
@@ -157,7 +157,7 @@ public abstract class ImplementationIterator extends
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.util.Iterator#next()
    */
   @Override

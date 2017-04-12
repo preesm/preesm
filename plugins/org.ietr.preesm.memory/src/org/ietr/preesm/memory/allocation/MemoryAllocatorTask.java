@@ -57,7 +57,7 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
    * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
@@ -138,7 +138,7 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.memory.allocation.AbstractMemoryAllocatorTask#getDefaultParameters()
    */
   @Override
@@ -150,7 +150,7 @@ public class MemoryAllocatorTask extends AbstractMemoryAllocatorTask {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
    */
   @Override

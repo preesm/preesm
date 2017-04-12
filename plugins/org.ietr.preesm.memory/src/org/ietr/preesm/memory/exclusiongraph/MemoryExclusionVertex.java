@@ -284,7 +284,9 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
    * Two {@link MemoryExclusionVertex vertices} are considered equals if their {@link #getSource() source} and {@link #getSink() sink} are equals. Neither the
    * weight nor the explodeImplode attributes of the vertices are taken into account to test the equality.
    *
-   * <p>Do not change the way the comparison is done since several other classes relate on it, like ScriptRunner#updateMEG method.</p>
+   * <p>
+   * Do not change the way the comparison is done since several other classes relate on it, like ScriptRunner#updateMEG method.
+   * </p>
    *
    * @param o
    *          the object to compare.
@@ -382,7 +384,9 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
   }
 
   /**
-   * <p>Method added to enable the use of contains() method in Set &lt;MemoryExclusionVertex&gt;.</p>
+   * <p>
+   * Method added to enable the use of contains() method in Set &lt;MemoryExclusionVertex&gt;.
+   * </p>
    *
    * @return the int
    */

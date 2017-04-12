@@ -140,7 +140,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
    */
   @Override
@@ -160,7 +160,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
    */
   @Override
@@ -302,7 +302,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
    */
   @Override

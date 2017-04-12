@@ -61,7 +61,7 @@ public class SetVisibleAllDependenciesFeature extends AbstractSetVisibleDependen
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.impl.AbstractFeature#getName()
    */
   @Override
@@ -75,7 +75,7 @@ public class SetVisibleAllDependenciesFeature extends AbstractSetVisibleDependen
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#getDescription()
    */
   @Override
@@ -89,7 +89,7 @@ public class SetVisibleAllDependenciesFeature extends AbstractSetVisibleDependen
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
    */
   @Override
@@ -109,7 +109,7 @@ public class SetVisibleAllDependenciesFeature extends AbstractSetVisibleDependen
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
    */
   @Override

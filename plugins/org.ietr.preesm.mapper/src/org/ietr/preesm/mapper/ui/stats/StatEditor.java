@@ -117,7 +117,7 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.forms.editor.SharedHeaderFormEditor#isDirty()
    */
   @Override
@@ -127,7 +127,7 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.part.EditorPart#doSaveAs()
    */
   @Override
@@ -138,7 +138,7 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.part.EditorPart#isSaveAsAllowed()
    */
   @Override
@@ -149,7 +149,7 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
    */
   @Override
@@ -160,7 +160,7 @@ public class StatEditor extends SharedHeaderFormEditor implements IPropertyListe
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.IPropertyListener#propertyChanged(java.lang.Object, int)
    */
   @Override

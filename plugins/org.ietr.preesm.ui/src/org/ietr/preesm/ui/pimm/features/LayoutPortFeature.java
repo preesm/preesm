@@ -72,7 +72,7 @@ public class LayoutPortFeature extends AbstractLayoutFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.func.ILayout#canLayout(org.eclipse.graphiti.features.context.ILayoutContext)
    */
   @Override
@@ -89,7 +89,7 @@ public class LayoutPortFeature extends AbstractLayoutFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.func.ILayout#layout(org.eclipse.graphiti.features.context.ILayoutContext)
    */
   @Override

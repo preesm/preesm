@@ -227,8 +227,7 @@ public class KwokListScheduler {
          * sucessor is mapped if(currentvertex.outgoingEdges().size()>1){ WorkflowLogger
          * .getLogger() .log(Level.SEVERE,
          * "RoundBuffer with several outputs: activate \"SuppressImplodeExplode\" in HSDF to solve
-         * this issue \n or it will be mapped with only one of its sucessors"
-         * ); } }
+         * this issue \n or it will be mapped with only one of its sucessors" ); } }
          */
         // ------------------end of Second half of temp fix----------
 

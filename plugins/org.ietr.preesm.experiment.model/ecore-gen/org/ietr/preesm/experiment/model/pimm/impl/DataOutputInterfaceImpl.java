@@ -82,7 +82,7 @@ public class DataOutputInterfaceImpl extends InterfaceActorImpl implements DataO
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
    */
   @Override
@@ -92,7 +92,7 @@ public class DataOutputInterfaceImpl extends InterfaceActorImpl implements DataO
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.InterfaceActorImpl#setName(java.lang.String)
    */
   @Override

@@ -75,7 +75,7 @@ public abstract class AbstractMemoryScriptTask extends AbstractTaskImplementatio
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
    */
   @Override
@@ -92,7 +92,7 @@ public abstract class AbstractMemoryScriptTask extends AbstractTaskImplementatio
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
    */
   @Override

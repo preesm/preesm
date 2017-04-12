@@ -110,7 +110,7 @@ public class AddOverheadVertexTransaction extends Transaction {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.mapper.abc.transaction.Transaction#execute(java.util.List)
    */
   @Override
@@ -171,7 +171,7 @@ public class AddOverheadVertexTransaction extends Transaction {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.mapper.abc.transaction.Transaction#toString()
    */
   @Override

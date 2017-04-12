@@ -141,7 +141,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#fireNewMappedVertex(org.ietr.preesm.mapper.
    * model.MapperDAGVertex, boolean)
@@ -186,7 +186,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#fireNewUnmappedVertex(org.ietr.preesm.mapper
    * .model.MapperDAGVertex)
@@ -217,7 +217,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#setEdgeCost(org.ietr.preesm.mapper.model.
    * MapperDAGEdge)
@@ -248,7 +248,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#getEdgeSchedType()
    */
   @Override

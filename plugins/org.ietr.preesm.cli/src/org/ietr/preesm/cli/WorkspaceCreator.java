@@ -62,7 +62,9 @@ import org.ietr.preesm.utils.files.FilesManager;
  * This application take a folder path in argument and create a valid Eclipse workspace from .project files found in it with the Preesm project nature. The
  * .metadata (workspace information) folder is created in the current Eclipse workspace.
  *
- * <p>In command-line, workspace folder can be set by using "-data &lt;workspace&gt;" argument.</p>
+ * <p>
+ * In command-line, workspace folder can be set by using "-data &lt;workspace&gt;" argument.
+ * </p>
  *
  * @author cguy
  *

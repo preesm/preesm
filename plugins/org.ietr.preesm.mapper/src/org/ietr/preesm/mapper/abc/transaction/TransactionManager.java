@@ -105,7 +105,7 @@ public class TransactionManager {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   @Override

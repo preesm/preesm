@@ -93,7 +93,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.views.properties.tabbed.AbstractPropertySection#createControls(org.eclipse.swt.widgets.Composite,
    * org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
    */
@@ -298,7 +298,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.views.properties.tabbed.AbstractPropertySection#refresh()
    */
   @Override

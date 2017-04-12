@@ -67,7 +67,7 @@ public class AdvancedEdgeSched extends AbstractEdgeSched {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched#schedule(org.ietr.preesm.mapper.model.
    * special.TransferVertex, org.ietr.preesm.mapper.model.MapperDAGVertex,
@@ -92,7 +92,7 @@ public class AdvancedEdgeSched extends AbstractEdgeSched {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched#getEdgeSchedType()
    */
   @Override

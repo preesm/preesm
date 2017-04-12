@@ -55,7 +55,7 @@ public enum EdgeSchedType {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Enum#toString()
    */
   @Override

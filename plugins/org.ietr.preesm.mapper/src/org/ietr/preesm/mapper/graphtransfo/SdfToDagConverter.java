@@ -318,7 +318,7 @@ public class SdfToDagConverter {
       final Iterator<Timing> listiterator = timelist.iterator();
 
       // Special vertices time computation is delayed until edge sizes are initialized
-      boolean special = SpecialVertexManager.isSpecial(currentVertex);
+      final boolean special = SpecialVertexManager.isSpecial(currentVertex);
       if (!special) {
         if (timelist.size() != 0) {
           // If there is no time defined

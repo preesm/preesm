@@ -203,7 +203,7 @@ public class ConstraintGroup {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   @Override

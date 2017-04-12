@@ -97,7 +97,7 @@ public class DynamicQueuingMapping extends AbstractMapping {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.mapper.AbstractMapping#getDefaultParameters()
    */
   @Override
@@ -115,7 +115,7 @@ public class DynamicQueuingMapping extends AbstractMapping {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.mapper.AbstractMapping#execute(java.util.Map, java.util.Map,
    * org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
    * org.ietr.dftools.workflow.elements.Workflow)

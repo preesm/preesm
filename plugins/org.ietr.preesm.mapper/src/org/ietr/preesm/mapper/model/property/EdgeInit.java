@@ -68,7 +68,7 @@ public class EdgeInit {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Object#clone()
    */
   @Override

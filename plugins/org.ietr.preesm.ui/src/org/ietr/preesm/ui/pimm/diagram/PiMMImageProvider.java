@@ -68,7 +68,7 @@ public class PiMMImageProvider extends AbstractImageProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.ui.platform.AbstractImageProvider#addAvailableImages()
    */
   @Override

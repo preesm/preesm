@@ -285,7 +285,7 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements Ab
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#getPortNamed(java.lang.String)
    */
   @Override
@@ -315,7 +315,7 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements Ab
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.AbstractActor#getPath()
    */
   @Override
@@ -328,7 +328,7 @@ public abstract class AbstractActorImpl extends AbstractVertexImpl implements Ab
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
    */
   @Override

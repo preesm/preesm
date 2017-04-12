@@ -89,7 +89,7 @@ public class SDFTableLabelProvider implements ITableLabelProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
    */
   @Override
@@ -100,7 +100,7 @@ public class SDFTableLabelProvider implements ITableLabelProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
    */
   @Override
@@ -124,7 +124,7 @@ public class SDFTableLabelProvider implements ITableLabelProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
    */
   @Override
@@ -135,7 +135,7 @@ public class SDFTableLabelProvider implements ITableLabelProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
    */
   @Override
@@ -146,7 +146,7 @@ public class SDFTableLabelProvider implements ITableLabelProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
    */
   @Override
@@ -157,7 +157,7 @@ public class SDFTableLabelProvider implements ITableLabelProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
    */
   @Override

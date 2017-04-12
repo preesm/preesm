@@ -71,7 +71,7 @@ public class SemaphoreImpl extends VariableImpl implements Semaphore {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.VariableImpl#getType()
    */
   @Override
@@ -81,7 +81,7 @@ public class SemaphoreImpl extends VariableImpl implements Semaphore {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.codegen.xtend.model.codegen.impl.VariableImpl#setType(java.lang.String)
    */
   @Override

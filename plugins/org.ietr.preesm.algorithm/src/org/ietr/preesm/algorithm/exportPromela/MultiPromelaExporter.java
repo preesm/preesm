@@ -60,7 +60,7 @@ public class MultiPromelaExporter extends AbstractTaskImplementation {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
    * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
    * org.ietr.dftools.workflow.elements.Workflow)
@@ -98,7 +98,7 @@ public class MultiPromelaExporter extends AbstractTaskImplementation {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
    */
   @Override
@@ -112,7 +112,7 @@ public class MultiPromelaExporter extends AbstractTaskImplementation {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
    */
   @Override

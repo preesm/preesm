@@ -69,8 +69,7 @@ public class NewPreesmProjectCreator {
     try {
       NewPreesmProjectCreator.addNatures(project);
 
-      final String[] paths = { "Algo/generated/flatten", "Algo/generated/singlerate",
-          "Algo/generated/DAG", "Archi", "Code/generated", "Code/include", //$NON-NLS-1$ //$NON-NLS-2$
+      final String[] paths = { "Algo/generated/flatten", "Algo/generated/singlerate", "Algo/generated/DAG", "Archi", "Code/generated", "Code/include",
           "Code/lib/cmake_modules", "Code/src", "Scenarios", "Workflows" };
       NewPreesmProjectCreator.addToProjectStructure(project, paths);
     } catch (final CoreException e) {

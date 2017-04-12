@@ -233,9 +233,9 @@ public class AddDelayFeature extends AbstractCustomFeature {
 
       if ((distP1 <= distP1P2) && (distP2 <= distP1P2)) {
         // line equation ax+by+c=0
-        int a = p2.getY() - p1.getY();
-        int b = p1.getX() - p2.getX();
-        int c = -((b * p1.getY()) + (a * p1.getX()));
+        final int a = p2.getY() - p1.getY();
+        final int b = p1.getX() - p2.getX();
+        final int c = -((b * p1.getY()) + (a * p1.getX()));
 
         // Distance of the point to the line
         final double dist = Math.abs((a * posX) + (b * posY) + c) / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));

@@ -69,7 +69,7 @@ public class DirectEditingPortNameFeature extends AbstractDirectEditingFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.func.IDirectEditing#getEditingType()
    */
   @Override
@@ -79,7 +79,7 @@ public class DirectEditingPortNameFeature extends AbstractDirectEditingFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.impl.AbstractDirectEditingFeature#canDirectEdit(org.eclipse.graphiti.features.context.IDirectEditingContext)
    */
   @Override
@@ -98,7 +98,7 @@ public class DirectEditingPortNameFeature extends AbstractDirectEditingFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.func.IDirectEditing#getInitialValue(org.eclipse.graphiti.features.context.IDirectEditingContext)
    */
   @Override
@@ -110,7 +110,7 @@ public class DirectEditingPortNameFeature extends AbstractDirectEditingFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.impl.AbstractDirectEditingFeature#checkValueValid(java.lang.String,
    * org.eclipse.graphiti.features.context.IDirectEditingContext)
    */
@@ -125,7 +125,7 @@ public class DirectEditingPortNameFeature extends AbstractDirectEditingFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.impl.AbstractDirectEditingFeature#setValue(java.lang.String,
    * org.eclipse.graphiti.features.context.IDirectEditingContext)
    */

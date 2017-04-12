@@ -52,7 +52,9 @@ import org.ietr.preesm.experiment.model.pimm.ExecutableActor;
  * This feature try to detect cases when a Diagram or a Network need to be updated according to data contained from other one. It is executed each time a
  * Diagram is opened, thanks to the result of isAutoUpdateAtStartup().
  *
- * <p>This feature only apply on a Diagram. For updates on sub-shapes (instances, ports, etc.) please see updates method in the corresponding patterns.</p>
+ * <p>
+ * This feature only apply on a Diagram. For updates on sub-shapes (instances, ports, etc.) please see updates method in the corresponding patterns.
+ * </p>
  *
  * @author Antoine Lorence
  * @see OrccDiagramTypeProvider#isAutoUpdateAtStartup() Code adapted from ORCC (net.sf.orcc.xdf.ui.features, https://github.com/orcc/orcc)

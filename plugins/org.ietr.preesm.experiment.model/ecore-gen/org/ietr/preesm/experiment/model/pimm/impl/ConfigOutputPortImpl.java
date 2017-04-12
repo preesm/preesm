@@ -288,7 +288,7 @@ public class ConfigOutputPortImpl extends DataOutputPortImpl implements ConfigOu
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.DataOutputPortImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
    */
   @Override

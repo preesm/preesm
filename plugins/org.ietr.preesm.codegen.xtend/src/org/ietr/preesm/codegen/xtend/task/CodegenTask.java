@@ -123,7 +123,7 @@ public class CodegenTask extends AbstractTaskImplementation {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
    */
   @Override
@@ -152,7 +152,7 @@ public class CodegenTask extends AbstractTaskImplementation {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
    */
   @Override

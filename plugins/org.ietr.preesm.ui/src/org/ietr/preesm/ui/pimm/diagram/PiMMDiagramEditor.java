@@ -58,7 +58,7 @@ public class PiMMDiagramEditor extends DiagramEditor implements IGotoMarker {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.ui.editor.DiagramEditor#createDiagramBehavior()
    */
   @Override
@@ -68,7 +68,7 @@ public class PiMMDiagramEditor extends DiagramEditor implements IGotoMarker {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.ide.IGotoMarker#gotoMarker(org.eclipse.core.resources.IMarker)
    */
   @Override

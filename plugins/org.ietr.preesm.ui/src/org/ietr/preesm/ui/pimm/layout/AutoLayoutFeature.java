@@ -949,7 +949,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
           return Math.abs(p1.getX() - pX) - Math.abs(p2.getX() - pX);
         });
 
-        int posY = ((bPoints.get(0).getY() + bPoints.get(1).getY()) - AddDelayFeature.DELAY_SIZE) / 2;
+        final int posY = ((bPoints.get(0).getY() + bPoints.get(1).getY()) - AddDelayFeature.DELAY_SIZE) / 2;
 
         // Move the delay to this position
         final ContainerShape pe = DiagramPiGraphLinkHelper.getDelayPE(diagram, fifo);

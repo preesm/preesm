@@ -102,7 +102,7 @@ public class DeleteParameterizableFeature extends DefaultDeleteFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.ui.features.DefaultDeleteFeature#preDelete(org.eclipse.graphiti.features.context.IDeleteContext)
    */
   @Override

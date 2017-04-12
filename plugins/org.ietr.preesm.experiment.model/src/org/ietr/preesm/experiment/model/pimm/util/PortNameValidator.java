@@ -98,7 +98,7 @@ public class PortNameValidator implements IInputValidator {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.dialogs.IInputValidator#isValid(java.lang.String)
    */
   @Override

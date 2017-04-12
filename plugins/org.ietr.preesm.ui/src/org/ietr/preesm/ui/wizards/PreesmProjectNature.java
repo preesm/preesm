@@ -63,7 +63,7 @@ public class PreesmProjectNature implements IProjectNature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.core.resources.IProjectNature#configure()
    */
   @Override
@@ -72,7 +72,7 @@ public class PreesmProjectNature implements IProjectNature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.core.resources.IProjectNature#deconfigure()
    */
   @Override
@@ -81,7 +81,7 @@ public class PreesmProjectNature implements IProjectNature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.core.resources.IProjectNature#getProject()
    */
   @Override
@@ -91,7 +91,7 @@ public class PreesmProjectNature implements IProjectNature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.core.resources.IProjectNature#setProject(org.eclipse.core.resources.IProject)
    */
   @Override

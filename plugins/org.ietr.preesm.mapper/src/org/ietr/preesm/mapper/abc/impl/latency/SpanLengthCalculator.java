@@ -84,7 +84,7 @@ public class SpanLengthCalculator extends InfiniteHomogeneousAbc {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.ietr.preesm.mapper.abc.impl.latency.InfiniteHomogeneousAbc#setEdgeCost(org.ietr.preesm.
    * mapper.model.MapperDAGEdge)

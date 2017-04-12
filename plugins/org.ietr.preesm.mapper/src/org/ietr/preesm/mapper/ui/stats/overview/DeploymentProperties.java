@@ -122,7 +122,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
    */
   @Override
@@ -147,7 +147,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.viewers.IContentProvider#dispose()
    */
   @Override
@@ -158,7 +158,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer,
    * java.lang.Object, java.lang.Object)
    */
@@ -170,7 +170,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
    */
   @Override
@@ -181,7 +181,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
    */
   @Override
@@ -211,7 +211,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.
    * ILabelProviderListener)
    */
@@ -222,7 +222,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object,
    * java.lang.String)
    */
@@ -233,7 +233,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.
    * ILabelProviderListener)
    */

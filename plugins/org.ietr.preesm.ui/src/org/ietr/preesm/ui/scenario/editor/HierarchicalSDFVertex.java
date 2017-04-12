@@ -63,7 +63,7 @@ public class HierarchicalSDFVertex implements IHierarchicalVertex {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.ui.scenario.editor.IHierarchicalVertex#getStoredVertex()
    */
   @Override
@@ -73,7 +73,7 @@ public class HierarchicalSDFVertex implements IHierarchicalVertex {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.ui.scenario.editor.IHierarchicalVertex#getName()
    */
   @Override
@@ -112,7 +112,7 @@ public class HierarchicalSDFVertex implements IHierarchicalVertex {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   @Override

@@ -284,8 +284,10 @@ public class PFastAlgorithm extends Observable {
   /**
    * map = perform the Pfast Algo (it is the main thread)
    *
-   * <p>// Determine if we want the Pfast solution or a population of good solution to perform another
-   * algorithm.</p>
+   * <p>
+   * // Determine if we want the Pfast solution or a population of good solution to perform another
+   * algorithm.
+   * </p>
    *
    * @param dag
    *          the dag

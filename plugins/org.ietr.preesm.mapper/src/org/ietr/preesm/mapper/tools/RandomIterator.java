@@ -53,7 +53,8 @@ import java.util.Set;
 /**
  * Provides a random iteration over the given list of unknown object.
  *
- * @param <E> The generic type to iterate over.
+ * @param <E>
+ *          The generic type to iterate over.
  */
 public class RandomIterator<E> implements Iterator<E> {
 

@@ -135,7 +135,7 @@ public class OperatorCheckStateListener implements ICheckStateListener, PaintLis
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events.PaintEvent)
    */
   @Override

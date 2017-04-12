@@ -174,8 +174,8 @@ class PFastCallable implements Callable<MapperDAG> {
 
     // performing the fast algorithm
     final FastAlgorithm algo = new FastAlgorithm(initialLists, this.scenario);
-    MapperDAG outputDAG = algo.map(this.threadName, this.abcParams, this.fastParams, callableDAG,
-        callableArchi, this.alreadyMapped, true, this.isDisplaySolutions, null,
+    final MapperDAG outputDAG = algo.map(this.threadName, this.abcParams, this.fastParams,
+        callableDAG, callableArchi, this.alreadyMapped, true, this.isDisplaySolutions, null,
         initialLists.getCpnDominant(), callableBlockingNodes, initialLists.getCriticalpath(),
         taskSched);
 

@@ -159,7 +159,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -198,7 +198,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -231,7 +231,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -252,7 +252,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.memory.bounds.AbstractMaximumWeightCliqueSolver#adjacentVerticesOf(org.ietr.preesm.memory.exclusiongraph.IWeightedVertex)
    */
   @Override
@@ -370,7 +370,7 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.memory.bounds.AbstractMaximumWeightCliqueSolver#solve()
    */
   @Override

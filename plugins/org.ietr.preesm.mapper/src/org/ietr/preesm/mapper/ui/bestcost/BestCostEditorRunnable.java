@@ -68,7 +68,7 @@ public class BestCostEditorRunnable implements Runnable {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Runnable#run()
    */
   @Override

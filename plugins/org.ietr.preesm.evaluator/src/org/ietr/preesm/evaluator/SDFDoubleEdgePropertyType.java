@@ -67,7 +67,7 @@ public class SDFDoubleEdgePropertyType extends AbstractEdgePropertyType<Double> 
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#clone()
    */
   @Override
@@ -77,7 +77,7 @@ public class SDFDoubleEdgePropertyType extends AbstractEdgePropertyType<Double> 
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#intValue()
    */
   @Override
@@ -87,7 +87,7 @@ public class SDFDoubleEdgePropertyType extends AbstractEdgePropertyType<Double> 
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#toString()
    */
   @Override
@@ -97,7 +97,7 @@ public class SDFDoubleEdgePropertyType extends AbstractEdgePropertyType<Double> 
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#getValue()
    */
   @Override

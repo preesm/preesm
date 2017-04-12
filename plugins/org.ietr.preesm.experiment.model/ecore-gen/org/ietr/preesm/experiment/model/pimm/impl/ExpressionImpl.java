@@ -287,7 +287,7 @@ public class ExpressionImpl extends EObjectImpl implements Expression {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
    */
   @Override

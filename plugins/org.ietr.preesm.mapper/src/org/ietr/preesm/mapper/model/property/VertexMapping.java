@@ -66,7 +66,7 @@ public class VertexMapping extends GroupProperty {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.mapper.model.property.GroupProperty#clone()
    */
   @Override
@@ -135,7 +135,7 @@ public class VertexMapping extends GroupProperty {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.mapper.model.property.GroupProperty#toString()
    */
   @Override

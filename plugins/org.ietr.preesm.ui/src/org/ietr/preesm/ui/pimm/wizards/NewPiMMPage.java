@@ -150,7 +150,7 @@ public class NewPiMMPage extends WizardNewFileCreationPage {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.dialogs.WizardNewFileCreationPage#getInitialContents()
    */
   @Override

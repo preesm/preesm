@@ -66,7 +66,7 @@ public class DeGreefAllocator extends MemoryAllocator {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.memory.allocation.MemoryAllocator#allocate()
    */
   @Override
@@ -225,7 +225,7 @@ public class DeGreefAllocator extends MemoryAllocator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -238,7 +238,7 @@ public class DeGreefAllocator extends MemoryAllocator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -254,7 +254,7 @@ public class DeGreefAllocator extends MemoryAllocator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -302,7 +302,7 @@ public class DeGreefAllocator extends MemoryAllocator {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     @Override

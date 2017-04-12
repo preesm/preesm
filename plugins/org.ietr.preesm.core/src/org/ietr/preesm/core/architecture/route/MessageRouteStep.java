@@ -183,7 +183,7 @@ public class MessageRouteStep extends AbstractRouteStep {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   @Override
@@ -198,7 +198,7 @@ public class MessageRouteStep extends AbstractRouteStep {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.core.architecture.route.AbstractRouteStep#clone()
    */
   @Override

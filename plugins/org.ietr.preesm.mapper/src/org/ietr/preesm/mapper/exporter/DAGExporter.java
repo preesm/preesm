@@ -91,7 +91,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.ietr.dftools.algorithm.exporter.GMLExporter#exportNode(org.ietr.dftools.algorithm.model.
    * AbstractVertex, org.w3c.dom.Element)
@@ -140,7 +140,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.ietr.dftools.algorithm.exporter.GMLExporter#exportEdge(org.ietr.dftools.algorithm.model.
    * AbstractEdge, org.w3c.dom.Element)
@@ -185,7 +185,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.ietr.dftools.algorithm.exporter.GMLExporter#exportGraph(org.ietr.dftools.algorithm.model.
    * AbstractGraph)
@@ -219,7 +219,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.algorithm.exporter.GMLExporter#export(org.ietr.dftools.algorithm.model.
    * AbstractGraph, java.lang.String)
    */
@@ -236,7 +236,7 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.ietr.dftools.algorithm.exporter.GMLExporter#exportPort(org.ietr.dftools.algorithm.model.
    * AbstractVertex, org.w3c.dom.Element)

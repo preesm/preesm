@@ -48,8 +48,10 @@ import org.jgrapht.graph.SimpleGraph;
 /**
  * This class is used to solve the Maximum-Weight Clique Problem on an undirected weighted graph.
  *
- * <p>The algorithm implemented in this class is the exact algorithm proposed by Patric R.J. Ostergard in
- * <a href = "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.25.4408"> this paper </a>.</p>
+ * <p>
+ * The algorithm implemented in this class is the exact algorithm proposed by Patric R.J. Ostergard in
+ * <a href = "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.25.4408"> this paper </a>.
+ * </p>
  *
  *
  * @author kdesnos
@@ -63,14 +65,18 @@ public class OstergardSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
   /**
    * cost corresponds to the c(i) function in <a href = "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.25.4408"> this paper </a>.
    *
-   * <p>It stores the weight of the heaviest clique found for the Subset S<sub>i</sub>.</p>
+   * <p>
+   * It stores the weight of the heaviest clique found for the Subset S<sub>i</sub>.
+   * </p>
    */
   protected ArrayList<Integer> cost;
 
   /**
    * dcost corresponds to the d(i) function in <a href = "http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.25.4408"> this paper </a>.
    *
-   * <p>It stores the weight of the heaviest clique found for the Subset S'<sub>i</sub>.</p>
+   * <p>
+   * It stores the weight of the heaviest clique found for the Subset S'<sub>i</sub>.
+   * </p>
    */
   protected ArrayList<Integer> dcost;
 
@@ -95,7 +101,9 @@ public class OstergardSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
   /**
    ** Initialize the MaximumWeightCliqueSolver with a graph instance.
    *
-   * <p>The D(i) speedup will not be used</p>
+   * <p>
+   * The D(i) speedup will not be used
+   * </p>
    *
    * @param graph
    *          the graph to analyze.
@@ -134,7 +142,9 @@ public class OstergardSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
   /**
    * This method returns the subset S<sub>i</sub> of the orderedVertexSet.
    *
-   * <p>S<sub>i</sub> is defined as S<sub>i</sub> = {v<sub>i</sub>,v<sub>i+1</sub>, ... , v<sub>n</sub> }</p>
+   * <p>
+   * S<sub>i</sub> is defined as S<sub>i</sub> = {v<sub>i</sub>,v<sub>i+1</sub>, ... , v<sub>n</sub> }
+   * </p>
    *
    * @param i
    *          the vertex index of the desired subset

@@ -179,7 +179,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.forms.editor.SharedHeaderFormEditor#isDirty()
    */
   @Override
@@ -189,7 +189,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.part.EditorPart#doSaveAs()
    */
   @Override
@@ -200,7 +200,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.part.EditorPart#isSaveAsAllowed()
    */
   @Override
@@ -210,7 +210,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.IPropertyListener#propertyChanged(java.lang.Object, int)
    */
   @Override

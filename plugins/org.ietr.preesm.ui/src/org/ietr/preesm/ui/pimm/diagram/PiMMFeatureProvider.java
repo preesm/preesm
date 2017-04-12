@@ -181,7 +181,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.impl.AbstractFeatureProvider#getAddFeature(org.eclipse.graphiti.features.context.IAddContext)
    */
   @Override
@@ -249,7 +249,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.impl.AbstractFeatureProvider#getCreateConnectionFeatures()
    */
   @Override
@@ -259,7 +259,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.impl.AbstractFeatureProvider#getCreateFeatures()
    */
   @Override
@@ -271,7 +271,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getCustomFeatures(org.eclipse.graphiti.features.context.ICustomContext)
    */
   @Override
@@ -336,7 +336,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getDeleteFeature(org.eclipse.graphiti.features.context.IDeleteContext)
    */
   @Override
@@ -380,7 +380,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.impl.AbstractFeatureProvider#getDirectEditingFeature(org.eclipse.graphiti.features.context.IDirectEditingContext)
    */
   @Override
@@ -395,7 +395,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.impl.AbstractFeatureProvider#getLayoutFeature(org.eclipse.graphiti.features.context.ILayoutContext)
    */
   @Override
@@ -423,7 +423,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getMoveAnchorFeature(org.eclipse.graphiti.features.context.IMoveAnchorContext)
    */
   @Override
@@ -434,7 +434,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getMoveShapeFeature(org.eclipse.graphiti.features.context.IMoveShapeContext)
    */
   @Override
@@ -449,7 +449,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.features.impl.AbstractFeatureProvider#getReconnectionFeature(org.eclipse.graphiti.features.context.IReconnectionContext)
    */
   @Override
@@ -471,7 +471,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getRemoveFeature(org.eclipse.graphiti.features.context.IRemoveContext)
    */
   @Override
@@ -500,7 +500,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getResizeShapeFeature(org.eclipse.graphiti.features.context.IResizeShapeContext)
    */
   @Override
@@ -543,7 +543,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getUpdateFeature(org.eclipse.graphiti.features.context.IUpdateContext)
    */
   @Override

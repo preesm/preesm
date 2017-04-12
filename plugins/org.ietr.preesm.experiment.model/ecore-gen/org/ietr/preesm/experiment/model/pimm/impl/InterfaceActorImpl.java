@@ -249,7 +249,7 @@ public class InterfaceActorImpl extends AbstractActorImpl implements InterfaceAc
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractVertexImpl#setName(java.lang.String)
    */
   @Override
@@ -281,7 +281,7 @@ public class InterfaceActorImpl extends AbstractActorImpl implements InterfaceAc
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.AbstractActorImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
    */
   @Override

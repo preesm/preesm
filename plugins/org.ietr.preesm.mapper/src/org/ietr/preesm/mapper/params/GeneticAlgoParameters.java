@@ -96,7 +96,7 @@ public class GeneticAlgoParameters {
 
     WorkflowLogger.getLogger().log(Level.INFO,
         "The Genetic algo parameters are: generationNumber; populationSize;"
-        + "pfastused2makepopulation=true/false; fastTime in seconds; fastLocalSearchTime in seconds; fastNumber");
+            + "pfastused2makepopulation=true/false; fastTime in seconds; fastLocalSearchTime in seconds; fastNumber");
   }
 
   /**

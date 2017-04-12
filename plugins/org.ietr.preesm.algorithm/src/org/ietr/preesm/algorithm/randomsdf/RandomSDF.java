@@ -60,11 +60,15 @@ import org.ietr.preesm.core.scenario.Timing;
  * options: - Number of vertices - Minimum/maximum number of input/output per actor -
  * Minimum/maximum input/output rates - Minimum/maximum execution time
  *
- * <p>The Workflow element must have a scenario, a sdf and an architecture as inputs and outputs a SDF
- * and a Scenario</p>
+ * <p>
+ * The Workflow element must have a scenario, a sdf and an architecture as inputs and outputs a SDF
+ * and a Scenario
+ * </p>
  *
- * <p>This Workflow element is experimental and probably have many flaws. It should be used with great
- * caution.</p>
+ * <p>
+ * This Workflow element is experimental and probably have many flaws. It should be used with great
+ * caution.
+ * </p>
  *
  * @author kdesnos
  *

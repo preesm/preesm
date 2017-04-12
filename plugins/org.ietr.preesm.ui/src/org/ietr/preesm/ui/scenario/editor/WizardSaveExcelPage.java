@@ -69,7 +69,7 @@ public class WizardSaveExcelPage extends WizardNewFileCreationPage {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.dialogs.WizardNewFileCreationPage#getInitialContents()
    */
   @Override

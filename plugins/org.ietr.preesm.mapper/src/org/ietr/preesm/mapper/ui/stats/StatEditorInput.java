@@ -122,7 +122,7 @@ public class StatEditorInput implements IEditorInput {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.IEditorInput#exists()
    */
   @Override
@@ -133,7 +133,7 @@ public class StatEditorInput implements IEditorInput {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.IEditorInput#getImageDescriptor()
    */
   @Override
@@ -144,7 +144,7 @@ public class StatEditorInput implements IEditorInput {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.IEditorInput#getName()
    */
   @Override
@@ -160,7 +160,7 @@ public class StatEditorInput implements IEditorInput {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.IEditorInput#getPersistable()
    */
   @Override
@@ -171,7 +171,7 @@ public class StatEditorInput implements IEditorInput {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.ui.IEditorInput#getToolTipText()
    */
   @Override
@@ -181,7 +181,7 @@ public class StatEditorInput implements IEditorInput {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
    */
   @SuppressWarnings({ "unchecked", "rawtypes" })

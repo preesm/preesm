@@ -52,7 +52,7 @@ public class SDFGraphVariablesMapSection extends MapSection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.graphiti.ui.properties.MapSection#createControls(org.eclipse.swt.widgets.Composite,
    * org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
    */

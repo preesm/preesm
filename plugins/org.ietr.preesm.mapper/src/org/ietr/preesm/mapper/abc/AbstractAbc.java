@@ -221,7 +221,7 @@ public abstract class AbstractAbc implements IAbc {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.mapper.abc.IAbc#getDAG()
    */
   @Override
@@ -259,7 +259,7 @@ public abstract class AbstractAbc implements IAbc {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.mapper.abc.IAbc#getScenario()
    */
   @Override
@@ -291,7 +291,7 @@ public abstract class AbstractAbc implements IAbc {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.mapper.abc.IAbc#getFinalCost(org.ietr.preesm.mapper.model.MapperDAGVertex)
    */
   @Override
@@ -299,7 +299,7 @@ public abstract class AbstractAbc implements IAbc {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.mapper.abc.IAbc#getFinalCost(org.ietr.dftools.architecture.slam.
    * ComponentInstance)
    */
@@ -874,7 +874,7 @@ public abstract class AbstractAbc implements IAbc {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.mapper.abc.IAbc#getType()
    */
   @Override

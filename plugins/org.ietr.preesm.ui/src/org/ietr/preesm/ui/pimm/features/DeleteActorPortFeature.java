@@ -70,7 +70,7 @@ public class DeleteActorPortFeature extends DefaultDeleteFeature {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.ui.features.DefaultDeleteFeature#delete(org.eclipse.graphiti.features.context.IDeleteContext)
    */
   @Override

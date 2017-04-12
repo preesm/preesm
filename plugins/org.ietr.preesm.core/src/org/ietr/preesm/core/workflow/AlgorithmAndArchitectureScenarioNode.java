@@ -130,7 +130,7 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
    */
   @Override

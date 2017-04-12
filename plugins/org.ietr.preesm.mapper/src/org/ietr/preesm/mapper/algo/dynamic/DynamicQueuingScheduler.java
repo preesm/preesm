@@ -182,10 +182,8 @@ public class DynamicQueuingScheduler {
     /*
      * }else{ // Curent vertex is a RoundBuffer // Do not map round buffer until their immediate
      * sucessor is mapped if(currentvertex.outgoingEdges().size()>1){ WorkflowLogger .getLogger()
-     * .log(Level.SEVERE,
-     * "RoundBuffer with several outputs: activate \"SuppressImplodeExplode\" in HSDF to solve this issue \n or it
-     *  will be mapped with only one of its sucessors"
-     * ); } }
+     * .log(Level.SEVERE, "RoundBuffer with several outputs: activate \"SuppressImplodeExplode\" in
+     * HSDF to solve this issue \n or it will be mapped with only one of its sucessors" ); } }
      */
     // ------------------end of Second half of temp fix----------
   }

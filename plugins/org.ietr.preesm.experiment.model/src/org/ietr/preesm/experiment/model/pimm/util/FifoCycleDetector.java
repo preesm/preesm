@@ -136,7 +136,7 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#casePiGraph(org.ietr.preesm.experiment.model.pimm.PiGraph)
    */
   @Override
@@ -162,7 +162,7 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseAbstractActor(org.ietr.preesm.experiment.model.pimm.AbstractActor)
    */
   @Override
@@ -205,7 +205,7 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseDataInputPort(org.ietr.preesm.experiment.model.pimm.DataInputPort)
    */
   @Override

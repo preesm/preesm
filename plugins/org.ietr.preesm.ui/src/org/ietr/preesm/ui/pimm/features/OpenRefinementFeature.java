@@ -55,7 +55,9 @@ import org.ietr.preesm.experiment.model.pimm.Actor;
 /**
  * Custom feature in charge of opening an editor for the refinement of an actor.
  *
- * <p>If the refinement is a Pi file, the associated diagram will be opened. Otherwise, the workbench default editor will be opened.</p>
+ * <p>
+ * If the refinement is a Pi file, the associated diagram will be opened. Otherwise, the workbench default editor will be opened.
+ * </p>
  *
  * @author kdesnos
  *

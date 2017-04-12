@@ -108,7 +108,7 @@ public class MapperDAGEdge extends DAGEdge {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.algorithm.model.dag.DAGEdge#toString()
    */
   @Override

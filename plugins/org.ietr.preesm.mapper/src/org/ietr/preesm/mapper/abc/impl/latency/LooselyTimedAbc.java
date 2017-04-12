@@ -81,7 +81,7 @@ public class LooselyTimedAbc extends LatencyAbc {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#fireNewMappedVertex(org.ietr.preesm.mapper.
    * model.MapperDAGVertex, boolean)
@@ -133,7 +133,7 @@ public class LooselyTimedAbc extends LatencyAbc {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.mapper.abc.impl.latency.LatencyAbc#getEdgeSchedType()
    */
   @Override

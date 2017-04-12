@@ -91,7 +91,7 @@ public class ExcelVariablesWriter extends ExcelWriter {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
    */
   @Override
@@ -100,7 +100,7 @@ public class ExcelVariablesWriter extends ExcelWriter {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
    */
   @Override
@@ -139,7 +139,7 @@ public class ExcelVariablesWriter extends ExcelWriter {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.ui.scenario.editor.ExcelWriter#addCells(jxl.write.WritableSheet)
    */
   @Override

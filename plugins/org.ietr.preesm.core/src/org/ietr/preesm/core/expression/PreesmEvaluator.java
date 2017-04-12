@@ -54,7 +54,7 @@ public class PreesmEvaluator implements EvaluatorI {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.nfunk.jep.EvaluatorI#eval(org.nfunk.jep.Node)
    */
   @Override

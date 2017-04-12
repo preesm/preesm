@@ -271,7 +271,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
    */
   @Override
@@ -432,7 +432,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events.PaintEvent)
    */
   @Override

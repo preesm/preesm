@@ -297,7 +297,7 @@ public class DataInputPortImpl extends DataPortImpl implements DataInputPort {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.PortImpl#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
    */
   @Override
@@ -307,7 +307,7 @@ public class DataInputPortImpl extends DataPortImpl implements DataInputPort {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.impl.PortImpl#getName()
    */
   @Override

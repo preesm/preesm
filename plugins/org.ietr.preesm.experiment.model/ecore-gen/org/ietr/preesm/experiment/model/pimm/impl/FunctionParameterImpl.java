@@ -394,7 +394,7 @@ public class FunctionParameterImpl extends EObjectImpl implements FunctionParame
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable#accept(org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor)
    */
   @Override

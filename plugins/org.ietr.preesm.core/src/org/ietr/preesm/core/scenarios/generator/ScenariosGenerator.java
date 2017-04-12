@@ -70,9 +70,13 @@ import org.ietr.preesm.experiment.model.pimm.PiGraph;
 /**
  * Class to generate a set of PreesmScenarios from several architectures and algorithms
  *
- * <p>A PreesmScenario is generated for each possible pair of algorithm and architecture.</p>
+ * <p>
+ * A PreesmScenario is generated for each possible pair of algorithm and architecture.
+ * </p>
  *
- * <p>Timings, constraints, and simulation parameters are set to default values (see the createScenario method)</p>
+ * <p>
+ * Timings, constraints, and simulation parameters are set to default values (see the createScenario method)
+ * </p>
  *
  * @author cguy
  *

@@ -74,7 +74,7 @@ public class Parameter extends Variable {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Object#clone()
    */
   @Override
@@ -96,7 +96,7 @@ public class Parameter extends Variable {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.nfunk.jep.Variable#getValue()
    */
   @Override
@@ -116,7 +116,7 @@ public class Parameter extends Variable {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.nfunk.jep.Variable#setValue(java.lang.Object)
    */
   @Override

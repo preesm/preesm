@@ -96,10 +96,13 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
   }
 
   /**
+   * <p>
    * This method returns the subset of vertex adjacent to vertex.
+   * </p>
    *
-   * <p>In order to speed-up the algorithm, the result of a getN call for a vertex vi is stored in memory. Although this will use a lot of memory, this will
-   * avoid the heavy computation induced for vertices with a lot of edges.<br>
+   * <p>
+   * In order to speed-up the algorithm, the result of a getN call for a vertex vi is stored in memory. Although this will use a lot of memory, this will avoid
+   * the heavy computation induced for vertices with a lot of edges.<br>
    * <b>The returned subset should not be modified as it would corrupt the backed-up copy. Make a copy for local use.</b><br>
    * </p>
    *

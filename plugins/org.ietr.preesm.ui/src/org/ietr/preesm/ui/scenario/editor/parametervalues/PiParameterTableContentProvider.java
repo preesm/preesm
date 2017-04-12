@@ -59,7 +59,7 @@ public class PiParameterTableContentProvider implements IStructuredContentProvid
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.viewers.IContentProvider#dispose()
    */
   @Override
@@ -68,7 +68,7 @@ public class PiParameterTableContentProvider implements IStructuredContentProvid
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
    */
   @Override
@@ -78,7 +78,7 @@ public class PiParameterTableContentProvider implements IStructuredContentProvid
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
    */
   @Override

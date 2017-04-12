@@ -95,7 +95,7 @@ public class DmaRouteStep extends MessageRouteStep {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.core.architecture.route.MessageRouteStep#toString()
    */
   @Override
@@ -108,7 +108,7 @@ public class DmaRouteStep extends MessageRouteStep {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.core.architecture.route.MessageRouteStep#clone()
    */
   @Override

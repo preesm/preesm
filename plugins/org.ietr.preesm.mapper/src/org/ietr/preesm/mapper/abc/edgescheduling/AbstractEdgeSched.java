@@ -91,7 +91,7 @@ public abstract class AbstractEdgeSched implements IEdgeSched {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.mapper.abc.edgescheduling.IEdgeSched#getOrderManager()
    */
   @Override

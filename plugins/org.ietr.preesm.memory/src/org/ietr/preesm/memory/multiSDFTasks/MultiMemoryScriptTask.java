@@ -58,7 +58,7 @@ public class MultiMemoryScriptTask extends AbstractMemoryScriptTask {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
    * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
    */
@@ -109,7 +109,7 @@ public class MultiMemoryScriptTask extends AbstractMemoryScriptTask {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.memory.script.AbstractMemoryScriptTask#getDefaultParameters()
    */
   @Override
@@ -126,7 +126,7 @@ public class MultiMemoryScriptTask extends AbstractMemoryScriptTask {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.ietr.preesm.memory.script.AbstractMemoryScriptTask#monitorMessage()
    */
   @Override

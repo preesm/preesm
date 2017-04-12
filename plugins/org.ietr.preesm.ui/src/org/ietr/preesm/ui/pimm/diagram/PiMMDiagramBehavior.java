@@ -62,7 +62,7 @@ public class PiMMDiagramBehavior extends DiagramBehavior {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.graphiti.ui.editor.DiagramBehavior#createMarkerBehavior()
    */
   @Override
