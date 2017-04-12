@@ -43,7 +43,7 @@ import org.nfunk.jep.Variable;
 /**
  * The Class Parameter.
  */
-public class Parameter extends Variable {
+public class Parameter extends Variable implements Cloneable {
 
   /** The sdx index. */
   public int sdxIndex;

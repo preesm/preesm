@@ -397,76 +397,80 @@ public class CodegenModelGenerator {
       // and SE is corrupted in case of multistep com.
     }
 
-    // Retrieve the vertex that must be before/after the communication.
-    DAGVertex producerOrConsumer = null;
-    if (newComm.getDirection().equals(Direction.SEND)) {
-      // Get the producer.
-      producerOrConsumer = this.dag.incomingEdgesOf(dagVertex).iterator().next().getSource();
-    } else {
-      producerOrConsumer = this.dag.outgoingEdgesOf(dagVertex).iterator().next().getTarget();
-    }
-
-    // Get the corresponding call
-    final Call prodOrConsumerCall = this.dagVertexCalls.get(producerOrConsumer);
-    final int index = operatorBlock.getLoopBlock().getCodeElts().indexOf(prodOrConsumerCall);
-    // If the index was found
-    if (index != -1) {
-      if (newComm.getDelimiter().equals(Delimiter.START)) {
-        // Insert after the producer/consumer
-        operatorBlock.getLoopBlock().getCodeElts().add(index + 1, newComm);
+    if (newComm != null) {
+      // Retrieve the vertex that must be before/after the communication.
+      DAGVertex producerOrConsumer = null;
+      Direction direction = newComm.getDirection();
+      if (direction.equals(Direction.SEND)) {
+        // Get the producer.
+        producerOrConsumer = this.dag.incomingEdgesOf(dagVertex).iterator().next().getSource();
       } else {
-        // Insert before the producer/consumer
-        operatorBlock.getLoopBlock().getCodeElts().add(index, newComm);
+        producerOrConsumer = this.dag.outgoingEdgesOf(dagVertex).iterator().next().getTarget();
       }
 
-      // Save the communication in the dagVertexCalls map only if it is a
-      // SS or a ER
-      if ((newComm.getDelimiter().equals(Delimiter.START) && newComm.getDirection().equals(Direction.SEND))
-          || (newComm.getDelimiter().equals(Delimiter.END) && newComm.getDirection().equals(Direction.RECEIVE))) {
-        this.dagVertexCalls.put(dagVertex, newComm);
-      }
-    } else {
-      // The index was not found, this may happen when a multi-step
-      // communication occurs
-      // The receive end of the first step of a multistep communication
-      // will be the first to be processed.
-      if (newComm.getDelimiter().equals(Delimiter.END) && newComm.getDirection().equals(Direction.RECEIVE)) {
-        // Insert it according to its scheduled place.
-        final int dagVertexSchedulingOrder = (Integer) dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder, Integer.class);
-        int insertionIndex = 0;
-        for (final CodeElt codeElt : operatorBlock.getLoopBlock().getCodeElts()) {
-          // Iterate over the calls of the current operator
-          if (codeElt instanceof Call) {
-            final DAGVertex vertex = this.dagVertexCalls.inverse().get(codeElt);
-
-            if (vertex == null) {
-              // this will happen when a ReceiveStart or a Receive
-              // End is encountered, since they have no
-              // corresponding vertices in the DAG
-            } else if ((Integer) vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder,
-                Integer.class) > dagVertexSchedulingOrder) {
-              break;
-            }
-          }
-          insertionIndex++;
+      // Get the corresponding call
+      final Call prodOrConsumerCall = this.dagVertexCalls.get(producerOrConsumer);
+      final int index = operatorBlock.getLoopBlock().getCodeElts().indexOf(prodOrConsumerCall);
+      // If the index was found
+      if (index != -1) {
+        if (newComm.getDelimiter().equals(Delimiter.START)) {
+          // Insert after the producer/consumer
+          operatorBlock.getLoopBlock().getCodeElts().add(index + 1, newComm);
+        } else {
+          // Insert before the producer/consumer
+          operatorBlock.getLoopBlock().getCodeElts().add(index, newComm);
         }
-        // Do the insertion
-        operatorBlock.getLoopBlock().getCodeElts().add(insertionIndex, newComm);
-        this.dagVertexCalls.put(dagVertex, newComm);
-      } else if (newComm.getDelimiter().equals(Delimiter.START) && newComm.getDirection().equals(Direction.RECEIVE)) {
-        // In multistep communications, RS will be processed (inserted)
-        // before the associated "consumer" (a SS) is inserted. In such
-        // case, the RS is simply inserted right before its associated
-        // RE. When the SS is processed, it will automatically be
-        // inserted right after its producer (i.e. the RE) and hence,
-        // just before the RS. (This imply that the SS performes a copy
-        // of the data during its execution, which is to be expected in
-        // multistep comm)
 
-        final int insertionIndex = operatorBlock.getLoopBlock().getCodeElts().indexOf(newComm.getReceiveEnd());
-        // Do the insertion
-        operatorBlock.getLoopBlock().getCodeElts().add(insertionIndex + 1, newComm);
-        // Do not save RS in dagVertexCalls !
+        // Save the communication in the dagVertexCalls map only if it is a
+        // SS or a ER
+        if ((newComm.getDelimiter().equals(Delimiter.START) && direction.equals(Direction.SEND))
+            || (newComm.getDelimiter().equals(Delimiter.END) && direction.equals(Direction.RECEIVE))) {
+          this.dagVertexCalls.put(dagVertex, newComm);
+        }
+      } else {
+        // The index was not found, this may happen when a multi-step
+        // communication occurs
+        // The receive end of the first step of a multistep communication
+        // will be the first to be processed.
+        if (newComm.getDelimiter().equals(Delimiter.END) && direction.equals(Direction.RECEIVE)) {
+          // Insert it according to its scheduled place.
+          final int dagVertexSchedulingOrder = (Integer) dagVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder,
+              Integer.class);
+          int insertionIndex = 0;
+          for (final CodeElt codeElt : operatorBlock.getLoopBlock().getCodeElts()) {
+            // Iterate over the calls of the current operator
+            if (codeElt instanceof Call) {
+              final DAGVertex vertex = this.dagVertexCalls.inverse().get(codeElt);
+
+              if (vertex == null) {
+                // this will happen when a ReceiveStart or a Receive
+                // End is encountered, since they have no
+                // corresponding vertices in the DAG
+              } else if ((Integer) vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_schedulingOrder,
+                  Integer.class) > dagVertexSchedulingOrder) {
+                break;
+              }
+            }
+            insertionIndex++;
+          }
+          // Do the insertion
+          operatorBlock.getLoopBlock().getCodeElts().add(insertionIndex, newComm);
+          this.dagVertexCalls.put(dagVertex, newComm);
+        } else if (newComm.getDelimiter().equals(Delimiter.START) && direction.equals(Direction.RECEIVE)) {
+          // In multistep communications, RS will be processed (inserted)
+          // before the associated "consumer" (a SS) is inserted. In such
+          // case, the RS is simply inserted right before its associated
+          // RE. When the SS is processed, it will automatically be
+          // inserted right after its producer (i.e. the RE) and hence,
+          // just before the RS. (This imply that the SS performes a copy
+          // of the data during its execution, which is to be expected in
+          // multistep comm)
+
+          final int insertionIndex = operatorBlock.getLoopBlock().getCodeElts().indexOf(newComm.getReceiveEnd());
+          // Do the insertion
+          operatorBlock.getLoopBlock().getCodeElts().add(insertionIndex + 1, newComm);
+          // Do not save RS in dagVertexCalls !
+        }
       }
     }
   }
@@ -1703,10 +1707,14 @@ public class CodegenModelGenerator {
     }
 
     // Retrieve the ActorPrototype
-    final IPath rawPath = idlFile.getRawLocation();
-    final String rawLocation = rawPath.toOSString();
-    final ActorPrototypes prototypes = IDLPrototypeFactory.INSTANCE.create(rawLocation);
-    return prototypes;
+    if (idlFile != null) {
+      final IPath rawPath = idlFile.getRawLocation();
+      final String rawLocation = rawPath.toOSString();
+      final ActorPrototypes prototypes = IDLPrototypeFactory.INSTANCE.create(rawLocation);
+      return prototypes;
+    } else {
+      throw new NullPointerException();
+    }
   }
 
   /**

@@ -108,30 +108,33 @@ public class WorkspaceCreator implements IApplication {
    *           the core exception
    */
   private void searchForProjects(final File searchFolder) throws CoreException {
-
+    if (searchFolder == null) {
+      throw new NullPointerException();
+    }
     if (!searchFolder.isDirectory()) {
       throw new RuntimeException("Bad path to search project: " + searchFolder.getPath());
     } else {
       final File[] children = searchFolder.listFiles();
-      for (final File child : children) {
-        if (child.isDirectory()) {
-          searchForProjects(child);
-        } else if (child.getName().equals(IProjectDescription.DESCRIPTION_FILE_NAME)) {
-          final IPath projectPath = new Path(child.getAbsolutePath());
+      if (children != null) {
+        for (final File child : children) {
+          if (child.isDirectory()) {
+            searchForProjects(child);
+          } else if (child.getName().equals(IProjectDescription.DESCRIPTION_FILE_NAME)) {
+            final IPath projectPath = new Path(child.getAbsolutePath());
 
-          final IProjectDescription description = this.workspace.loadProjectDescription(projectPath);
+            final IProjectDescription description = this.workspace.loadProjectDescription(projectPath);
 
-          if (description.hasNature(this.nature)) {
-            final IProject project = this.workspace.getRoot().getProject(description.getName());
+            if (description.hasNature(this.nature)) {
+              final IProject project = this.workspace.getRoot().getProject(description.getName());
 
-            if (project.exists()) {
-              project.close(this.progressMonitor);
-              ;
-              CLIWorkflowLogger.traceln("A project named " + project.getName() + " is already registered, " + "deleting previous project from Workspace: ");
+              if (project.exists()) {
+                project.close(this.progressMonitor);
+                CLIWorkflowLogger.traceln("A project named " + project.getName() + " is already registered, " + "deleting previous project from Workspace: ");
+              }
+              project.create(description, this.progressMonitor);
+              project.open(this.progressMonitor);
+              CLIWorkflowLogger.traceln("New project registered: " + project.getName());
             }
-            project.create(description, this.progressMonitor);
-            project.open(this.progressMonitor);
-            CLIWorkflowLogger.traceln("New project registered: " + project.getName());
           }
         }
       }
