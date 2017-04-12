@@ -67,70 +67,73 @@ import org.ietr.preesm.experiment.model.pimm.Port;
 import org.ietr.preesm.experiment.model.pimm.Refinement;
 import org.ietr.preesm.experiment.model.pimm.RoundBufferActor;
 
+/**
+ *
+ */
 public abstract class PiMMVisitor {
-	public void visit(PiMMVisitable v) {
-		v.accept(this);
-	}
+  public void visit(final PiMMVisitable v) {
+    v.accept(this);
+  }
 
-	public abstract void visitAbstractActor(AbstractActor aa);
+  public abstract void visitAbstractActor(AbstractActor aa);
 
-	public abstract void visitAbstractVertex(AbstractVertex av);
+  public abstract void visitAbstractVertex(AbstractVertex av);
 
-	public abstract void visitActor(Actor a);
+  public abstract void visitActor(Actor a);
 
-	public abstract void visitConfigInputInterface(ConfigInputInterface cii);
+  public abstract void visitConfigInputInterface(ConfigInputInterface cii);
 
-	public abstract void visitConfigInputPort(ConfigInputPort cip);
+  public abstract void visitConfigInputPort(ConfigInputPort cip);
 
-	public abstract void visitConfigOutputInterface(ConfigOutputInterface coi);
+  public abstract void visitConfigOutputInterface(ConfigOutputInterface coi);
 
-	public abstract void visitConfigOutputPort(ConfigOutputPort cop);
+  public abstract void visitConfigOutputPort(ConfigOutputPort cop);
 
-	public abstract void visitDataInputInterface(DataInputInterface dii);
+  public abstract void visitDataInputInterface(DataInputInterface dii);
 
-	public abstract void visitDataInputPort(DataInputPort dip);
+  public abstract void visitDataInputPort(DataInputPort dip);
 
-	public abstract void visitDataOutputInterface(DataOutputInterface doi);
+  public abstract void visitDataOutputInterface(DataOutputInterface doi);
 
-	public abstract void visitDataOutputPort(DataOutputPort dop);
+  public abstract void visitDataOutputPort(DataOutputPort dop);
 
-	public abstract void visitDelay(Delay d);
+  public abstract void visitDelay(Delay d);
 
-	public abstract void visitDependency(Dependency d);
+  public abstract void visitDependency(Dependency d);
 
-	public abstract void visitExpression(Expression e);
+  public abstract void visitExpression(Expression e);
 
-	public abstract void visitFifo(Fifo f);
+  public abstract void visitFifo(Fifo f);
 
-	public abstract void visitInterfaceActor(InterfaceActor ia);
+  public abstract void visitInterfaceActor(InterfaceActor ia);
 
-	public abstract void visitISetter(ISetter is);
+  public abstract void visitISetter(ISetter is);
 
-	public abstract void visitParameter(Parameter p);
+  public abstract void visitParameter(Parameter p);
 
-	public abstract void visitParameterizable(Parameterizable p);
+  public abstract void visitParameterizable(Parameterizable p);
 
-	public abstract void visitPiGraph(PiGraph pg);
+  public abstract void visitPiGraph(PiGraph pg);
 
-	public abstract void visitPort(Port p);
+  public abstract void visitPort(Port p);
 
-	public abstract void visitRefinement(Refinement r);
+  public abstract void visitRefinement(Refinement r);
 
-	public abstract void visitFunctionParameter(FunctionParameter f);
+  public abstract void visitFunctionParameter(FunctionParameter f);
 
-	public abstract void visitFunctionPrototype(FunctionPrototype f);
+  public abstract void visitFunctionPrototype(FunctionPrototype f);
 
-	public abstract void visitHRefinement(HRefinement h);
+  public abstract void visitHRefinement(HRefinement h);
 
-	public abstract void visitDataPort(DataPort p);
+  public abstract void visitDataPort(DataPort p);
 
-	public abstract void visitBroadcastActor(BroadcastActor ba);
+  public abstract void visitBroadcastActor(BroadcastActor ba);
 
-	public abstract void visitJoinActor(JoinActor ja);
+  public abstract void visitJoinActor(JoinActor ja);
 
-	public abstract void visitForkActor(ForkActor fa);
+  public abstract void visitForkActor(ForkActor fa);
 
-	public abstract void visitRoundBufferActor(RoundBufferActor rba) ;
+  public abstract void visitRoundBufferActor(RoundBufferActor rba);
 
-	public abstract void visitExecutableActor(ExecutableActor ea);
+  public abstract void visitExecutableActor(ExecutableActor ea);
 }

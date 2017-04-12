@@ -35,6 +35,9 @@
  *******************************************************************************/
 package org.ietr.preesm.experiment.model.pimm.util;
 
+/**
+ *
+ */
 public interface PiMMVisitable {
-	public void accept(PiMMVisitor v);
+  public void accept(PiMMVisitor v);
 }
