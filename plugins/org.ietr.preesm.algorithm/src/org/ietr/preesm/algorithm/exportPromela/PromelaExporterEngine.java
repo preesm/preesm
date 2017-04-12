@@ -36,7 +36,6 @@
 package org.ietr.preesm.algorithm.exportPromela;
 
 import java.io.File;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -46,37 +45,52 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 
+// TODO: Auto-generated Javadoc
 /**
- * 
- * @author kdesnos
+ * The Class PromelaExporterEngine.
  *
+ * @author kdesnos
  */
 public class PromelaExporterEngine {
 
-	public void printSDFGraphToPromelaFile(SDFGraph sdf, PreesmScenario scenario, IPath path, boolean fifoShared,
-			boolean synchronousActor) {
-		/// Create the exporter
-		PromelaPrinter exporter = new PromelaPrinter(sdf, scenario);
-		exporter.setFifoSharedAlloc(fifoShared);
-		exporter.setSynchronousActor(synchronousActor);
+  /**
+   * Prints the SDF graph to promela file.
+   *
+   * @param sdf
+   *          the sdf
+   * @param scenario
+   *          the scenario
+   * @param path
+   *          the path
+   * @param fifoShared
+   *          the fifo shared
+   * @param synchronousActor
+   *          the synchronous actor
+   */
+  public void printSDFGraphToPromelaFile(final SDFGraph sdf, final PreesmScenario scenario,
+      IPath path, final boolean fifoShared, final boolean synchronousActor) {
+    /// Create the exporter
+    final PromelaPrinter exporter = new PromelaPrinter(sdf, scenario);
+    exporter.setFifoSharedAlloc(fifoShared);
+    exporter.setSynchronousActor(synchronousActor);
 
-		try {
-			if (path.getFileExtension() == null || !path.getFileExtension().equals("pml")) {
-				path = path.addFileExtension("pml");
-			}
-			IWorkspace workspace = ResourcesPlugin.getWorkspace();
-			IFile iFile = workspace.getRoot().getFile(path);
-			if (!iFile.exists()) {
-				iFile.create(null, false, new NullProgressMonitor());
-			}
-			File file = new File(iFile.getRawLocation().toOSString());
+    try {
+      if ((path.getFileExtension() == null) || !path.getFileExtension().equals("pml")) {
+        path = path.addFileExtension("pml");
+      }
+      final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+      final IFile iFile = workspace.getRoot().getFile(path);
+      if (!iFile.exists()) {
+        iFile.create(null, false, new NullProgressMonitor());
+      }
+      final File file = new File(iFile.getRawLocation().toOSString());
 
-			// Write the result into the text file
-			exporter.write(file);
+      // Write the result into the text file
+      exporter.write(file);
 
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
-	}
+    } catch (final CoreException e) {
+      e.printStackTrace();
+    }
+  }
 
 }

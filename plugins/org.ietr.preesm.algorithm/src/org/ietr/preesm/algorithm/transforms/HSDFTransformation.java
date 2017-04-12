@@ -42,7 +42,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -55,106 +54,117 @@ import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.algorithm.optimization.clean.joinfork.JoinForkCleaner;
 
+// TODO: Auto-generated Javadoc
 /**
- * Class used to transform a SDF graph into a HSDF graph. Actually into a single
- * rate graph (close enough :->)
- * 
+ * Class used to transform a SDF graph into a HSDF graph. Actually into a single rate graph (close
+ * enough :->)
+ *
  * @author jpiat
  * @author mpelcat
- * 
+ *
  */
 public class HSDFTransformation extends AbstractTaskImplementation {
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
+   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs,
+      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
+      final Workflow workflow) throws WorkflowException {
 
-		Map<String, Object> outputs = new HashMap<String, Object>();
-		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
+    final Map<String, Object> outputs = new HashMap<>();
+    final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
 
-		Logger logger = WorkflowLogger.getLogger();
+    final Logger logger = WorkflowLogger.getLogger();
 
-		try {
+    try {
 
-			logger.setLevel(Level.FINEST);
-			logger.log(Level.FINER,
-					"Transforming application " + algorithm.getName()
-							+ " to HSDF");
-			VisitorOutput.setLogger(logger);
-			if (algorithm.validateModel(WorkflowLogger.getLogger())) {
+      logger.setLevel(Level.FINEST);
+      logger.log(Level.FINER, "Transforming application " + algorithm.getName() + " to HSDF");
+      VisitorOutput.setLogger(logger);
+      if (algorithm.validateModel(WorkflowLogger.getLogger())) {
 
-				ToHSDFVisitor toHsdf = new ToHSDFVisitor();
-				
-				SDFGraph hsdf = null; 
-				try {
-					algorithm.accept(toHsdf);
-					hsdf = toHsdf.getOutput();
-					logger.log(Level.FINER, "Minimize special actors");
-					JoinForkCleaner.cleanJoinForkPairsFrom(hsdf);
-				} catch (SDF4JException e) {
-					e.printStackTrace();
-					throw (new WorkflowException(e.getMessage()));
-				} catch (InvalidExpressionException e) {
-					e.printStackTrace();
-					throw (new WorkflowException(e.getMessage()));
-				}
-				logger.log(Level.FINER, "HSDF transformation complete");
-				
+        final ToHSDFVisitor toHsdf = new ToHSDFVisitor();
 
-				
-				logger.log(Level.INFO, "HSDF with " + hsdf.vertexSet().size()
-						+ " vertices and " + hsdf.edgeSet().size() + " edges.");
+        SDFGraph hsdf = null;
+        try {
+          algorithm.accept(toHsdf);
+          hsdf = toHsdf.getOutput();
+          logger.log(Level.FINER, "Minimize special actors");
+          JoinForkCleaner.cleanJoinForkPairsFrom(hsdf);
+        } catch (final SDF4JException e) {
+          e.printStackTrace();
+          throw (new WorkflowException(e.getMessage()));
+        } catch (final InvalidExpressionException e) {
+          e.printStackTrace();
+          throw (new WorkflowException(e.getMessage()));
+        }
+        logger.log(Level.FINER, "HSDF transformation complete");
 
-				String explImplSuppr;
-				if ((explImplSuppr = parameters.get("ExplodeImplodeSuppr")) != null) {
-					if (explImplSuppr.equals("true")) {
-						logger.log(Level.INFO, "Removing implode/explode ");
-						ForkJoinRemover.supprImplodeExplode(hsdf);
-						// Kdesnos addition for csv stat. can be removed 
-						System.out.print(hsdf.vertexSet().size()+";"+hsdf.edgeSet().size()+";");
-					}
-				}
+        logger.log(Level.INFO, "HSDF with " + hsdf.vertexSet().size() + " vertices and "
+            + hsdf.edgeSet().size() + " edges.");
 
-				outputs.put("SDF", hsdf);
-			} else {
-				throw (new WorkflowException("Graph not valid, not schedulable"));
-			}
-		} catch (SDF4JException e) {
-			throw (new WorkflowException(e.getMessage()));
-		}
+        String explImplSuppr;
+        if ((explImplSuppr = parameters.get("ExplodeImplodeSuppr")) != null) {
+          if (explImplSuppr.equals("true")) {
+            logger.log(Level.INFO, "Removing implode/explode ");
+            ForkJoinRemover.supprImplodeExplode(hsdf);
+            // Kdesnos addition for csv stat. can be removed
+            System.out.print(hsdf.vertexSet().size() + ";" + hsdf.edgeSet().size() + ";");
+          }
+        }
 
-		return outputs;
-	}
+        outputs.put("SDF", hsdf);
+      } else {
+        throw (new WorkflowException("Graph not valid, not schedulable"));
+      }
+    } catch (final SDF4JException e) {
+      throw (new WorkflowException(e.getMessage()));
+    }
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> param = new HashMap<String, String>();
-		param.put("ExplodeImplodeSuppr", "false");
-		return param;
-	}
+    return outputs;
+  }
 
-	@Override
-	public String monitorMessage() {
-		return "HSDF Transformation.";
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> param = new HashMap<>();
+    param.put("ExplodeImplodeSuppr", "false");
+    return param;
+  }
 
-	/*
-	 * @Override public TaskResult transform(SDFGraph algorithm, TextParameters
-	 * params) throws PreesmException { try { Logger logger =
-	 * AbstractWorkflowLogger.getLogger(); logger.setLevel(Level.FINEST);
-	 * logger.log(Level.FINER, "Transforming application " + algorithm.getName()
-	 * + " to HSDF"); VisitorOutput.setLogger(logger); if
-	 * (algorithm.validateModel(AbstractWorkflowLogger.getLogger())) {
-	 * org.ietr.dftools.algorithm.model.sdf.visitors.OptimizedToHSDFVisitor toHsdf
-	 * = new OptimizedToHSDFVisitor(); try { algorithm.accept(toHsdf); } catch
-	 * (SDF4JException e) { e.printStackTrace(); throw (new
-	 * PreesmException(e.getMessage())); } logger.log(Level.FINER,
-	 * "HSDF transformation complete"); TaskResult result = new TaskResult();
-	 * result.setSDF((SDFGraph) toHsdf.getOutput()); return result; } else {
-	 * throw (new PreesmException("Graph not valid, not schedulable")); } }
-	 * catch (SDF4JException e) { throw (new PreesmException(e.getMessage())); }
-	 * }
-	 */
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "HSDF Transformation.";
+  }
+
+  /*
+   * @Override public TaskResult transform(SDFGraph algorithm, TextParameters params) throws
+   * PreesmException { try { Logger logger = AbstractWorkflowLogger.getLogger();
+   * logger.setLevel(Level.FINEST); logger.log(Level.FINER, "Transforming application " +
+   * algorithm.getName() + " to HSDF"); VisitorOutput.setLogger(logger); if
+   * (algorithm.validateModel(AbstractWorkflowLogger.getLogger())) {
+   * org.ietr.dftools.algorithm.model.sdf.visitors.OptimizedToHSDFVisitor toHsdf = new
+   * OptimizedToHSDFVisitor(); try { algorithm.accept(toHsdf); } catch (SDF4JException e) {
+   * e.printStackTrace(); throw (new PreesmException(e.getMessage())); } logger.log(Level.FINER,
+   * "HSDF transformation complete"); TaskResult result = new TaskResult(); result.setSDF((SDFGraph)
+   * toHsdf.getOutput()); return result; } else { throw (new
+   * PreesmException("Graph not valid, not schedulable")); } } catch (SDF4JException e) { throw (new
+   * PreesmException(e.getMessage())); } }
+   */
 
 }

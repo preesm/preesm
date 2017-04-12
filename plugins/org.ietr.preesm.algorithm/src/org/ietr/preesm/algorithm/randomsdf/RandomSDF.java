@@ -40,7 +40,6 @@ package org.ietr.preesm.algorithm.randomsdf;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.generator.SDFRandomGraph;
 import org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex;
@@ -55,159 +54,190 @@ import org.ietr.preesm.core.scenario.ConstraintGroupManager;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.core.scenario.Timing;
 
+// TODO: Auto-generated Javadoc
 /**
- * This Workflow element is used to generate random SDF graphs The user can
- * define the following options: - Number of vertices - Minimum/maximum number
- * of input/output per actor - Minimum/maximum input/output rates -
- * Minimum/maximum execution time
- * 
- * The Workflow element must have a scenario, a sdf and an architecture as
- * inputs and outputs a SDF and a Scenario
- * 
- * This Workflow element is experimental and probably have many flaws. It should
- * be used with great caution.
- * 
+ * This Workflow element is used to generate random SDF graphs The user can define the following
+ * options: - Number of vertices - Minimum/maximum number of input/output per actor -
+ * Minimum/maximum input/output rates - Minimum/maximum execution time
+ *
+ * <p>The Workflow element must have a scenario, a sdf and an architecture as inputs and outputs a SDF
+ * and a Scenario</p>
+ *
+ * <p>This Workflow element is experimental and probably have many flaws. It should be used with great
+ * caution.</p>
+ *
  * @author kdesnos
  *
  */
 public class RandomSDF extends AbstractTaskImplementation {
 
-	private int nbVertex;
-	private int minInDegree;
-	private int maxInDegree;
-	private int minOutDegree;
-	private int maxOutDegree;
-	private int minRate;
-	private int maxRate;
-	private int minTime;
-	private int maxTime;
-	// All prod./Cons. rate will be multiplied by the value.
-	// This does not change the consistency, only make
-	// the production/consumption rates to be more significant
-	private int rateMultiplier;
+  /** The nb vertex. */
+  private int nbVertex;
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /** The min in degree. */
+  private int minInDegree;
 
-		retrieveParameters(parameters);
+  /** The max in degree. */
+  private int maxInDegree;
 
-		// Retrieve inputs
-		Map<String, Object> outputs = new HashMap<String, Object>();
-		SDFGraph sdf = (SDFGraph) inputs.get("SDF");
+  /** The min out degree. */
+  private int minOutDegree;
 
-		Design architecture = (Design) inputs.get("architecture");
-		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+  /** The max out degree. */
+  private int maxOutDegree;
 
-		// Creates a random SDF graph
-		SDFRandomGraph graphGenerator = new SDFRandomGraph();
-		SDFGraph generatedGraph = null;
-		try {
-			generatedGraph = graphGenerator.createRandomGraph(nbVertex,
-					minInDegree, maxInDegree, minOutDegree, maxOutDegree,
-					minRate, maxRate, rateMultiplier);
-		} catch (SDF4JException e1) {
-			e1.printStackTrace();
-		}
+  /** The min rate. */
+  private int minRate;
 
-		if (generatedGraph != null) {
-			Random generator = new Random();
+  /** The max rate. */
+  private int maxRate;
 
-			sdf = generatedGraph;
+  /** The min time. */
+  private int minTime;
 
-			// If the generated graph is not null, update
-			// the scenario so that all task can be scheduled
-			// on all operators, and all have the same runtime.
-			HashMap<String, Integer> verticesNames = new HashMap<String, Integer>();
-			for (SDFAbstractVertex vertex : sdf.vertexSet()) {
-				int time = generator.nextInt(maxTime - minTime + 1) + minTime;
-				verticesNames.put(vertex.getName(), time);
-				vertex.setInfo(vertex.getName());
-				vertex.setId(vertex.getName());
-				// vertex.getPropertyBean().setValue("TIMING_PROPERTY", time);
-			}
+  /** The max time. */
+  private int maxTime;
+  // All prod./Cons. rate will be multiplied by the value.
+  // This does not change the consistency, only make
+  /** The rate multiplier. */
+  // the production/consumption rates to be more significant
+  private int rateMultiplier;
 
-			ConstraintGroupManager constraint = scenario
-					.getConstraintGroupManager();
-			for (ComponentInstance component : architecture
-					.getComponentInstances()) {
-				constraint.addConstraints(component.getInstanceName(),
-						verticesNames.keySet());
-				for (SDFAbstractVertex vertex : sdf.vertexSet()) {
-					Timing t = scenario.getTimingManager().addTiming(
-							vertex.getName(),
-							component.getComponent().getVlnv().getName());
-					t.setTime(verticesNames.get(vertex.getName()));
-				}
-			}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
+   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs,
+      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
+      final Workflow workflow) throws WorkflowException {
 
-		}
+    retrieveParameters(parameters);
 
-		outputs.put("scenario", scenario);
-		outputs.put("SDF", sdf);
-		return outputs;
-	}
+    // Retrieve inputs
+    final Map<String, Object> outputs = new HashMap<>();
+    SDFGraph sdf = (SDFGraph) inputs.get("SDF");
 
-	/**
-	 * This method retrieve the parameters set by the user
-	 * 
-	 * @param parameters
-	 *            the list of parameters and their values
-	 */
-	private void retrieveParameters(Map<String, String> parameters) {
-		String param = parameters.get("nbVertex");
-		nbVertex = (param != null) ? Integer.decode(param) : 10;
+    final Design architecture = (Design) inputs.get("architecture");
+    final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 
-		param = parameters.get("minInDegree");
-		minInDegree = (param != null) ? Integer.decode(param) : 1;
+    // Creates a random SDF graph
+    final SDFRandomGraph graphGenerator = new SDFRandomGraph();
+    SDFGraph generatedGraph = null;
+    try {
+      generatedGraph = graphGenerator.createRandomGraph(this.nbVertex, this.minInDegree,
+          this.maxInDegree, this.minOutDegree, this.maxOutDegree, this.minRate, this.maxRate,
+          this.rateMultiplier);
+    } catch (final SDF4JException ex) {
+      ex.printStackTrace();
+    }
 
-		param = parameters.get("maxInDegree");
-		maxInDegree = (param != null) ? Integer.decode(param) : 5;
+    if (generatedGraph != null) {
+      final Random generator = new Random();
 
-		param = parameters.get("minOutDegree");
-		minOutDegree = (param != null) ? Integer.decode(param) : 1;
+      sdf = generatedGraph;
 
-		param = parameters.get("maxOutDegree");
-		maxOutDegree = (param != null) ? Integer.decode(param) : 5;
+      // If the generated graph is not null, update
+      // the scenario so that all task can be scheduled
+      // on all operators, and all have the same runtime.
+      final HashMap<String, Integer> verticesNames = new HashMap<>();
+      for (final SDFAbstractVertex vertex : sdf.vertexSet()) {
+        final int time = generator.nextInt((this.maxTime - this.minTime) + 1) + this.minTime;
+        verticesNames.put(vertex.getName(), time);
+        vertex.setInfo(vertex.getName());
+        vertex.setId(vertex.getName());
+        // vertex.getPropertyBean().setValue("TIMING_PROPERTY", time);
+      }
 
-		param = parameters.get("minRate");
-		minRate = (param != null) ? Integer.decode(param) : 1;
+      final ConstraintGroupManager constraint = scenario.getConstraintGroupManager();
+      for (final ComponentInstance component : architecture.getComponentInstances()) {
+        constraint.addConstraints(component.getInstanceName(), verticesNames.keySet());
+        for (final SDFAbstractVertex vertex : sdf.vertexSet()) {
+          final Timing t = scenario.getTimingManager().addTiming(vertex.getName(),
+              component.getComponent().getVlnv().getName());
+          t.setTime(verticesNames.get(vertex.getName()));
+        }
+      }
 
-		param = parameters.get("maxRate");
-		maxRate = (param != null) ? Integer.decode(param) : 4;
+    }
 
-		param = parameters.get("minTime");
-		minTime = (param != null) ? Integer.decode(param) : 100;
+    outputs.put("scenario", scenario);
+    outputs.put("SDF", sdf);
+    return outputs;
+  }
 
-		param = parameters.get("maxTime");
-		maxTime = (param != null) ? Integer.decode(param) : 1000;
+  /**
+   * This method retrieve the parameters set by the user.
+   *
+   * @param parameters
+   *          the list of parameters and their values
+   */
+  private void retrieveParameters(final Map<String, String> parameters) {
+    String param = parameters.get("nbVertex");
+    this.nbVertex = (param != null) ? Integer.decode(param) : 10;
 
-		param = parameters.get("rateMultiplier");
-		rateMultiplier = (param != null) ? Integer.decode(param) : 1000;
-	}
+    param = parameters.get("minInDegree");
+    this.minInDegree = (param != null) ? Integer.decode(param) : 1;
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = new HashMap<String, String>();
+    param = parameters.get("maxInDegree");
+    this.maxInDegree = (param != null) ? Integer.decode(param) : 5;
 
-		parameters.put("nbVertex", "10");
-		parameters.put("minInDegree", "1");
-		parameters.put("maxInDegree", "5");
-		parameters.put("minOutDegree", "1");
-		parameters.put("maxOutDegree", "5");
-		parameters.put("minRate", "1");
-		parameters.put("maxRate", "4");
-		parameters.put("minTime", "100");
-		parameters.put("maxTime", "1000");
-		parameters.put("rateMultiplier", "1000");
+    param = parameters.get("minOutDegree");
+    this.minOutDegree = (param != null) ? Integer.decode(param) : 1;
 
-		return parameters;
-	}
+    param = parameters.get("maxOutDegree");
+    this.maxOutDegree = (param != null) ? Integer.decode(param) : 5;
 
-	@Override
-	public String monitorMessage() {
-		return "Generating random SDF.";
-	}
+    param = parameters.get("minRate");
+    this.minRate = (param != null) ? Integer.decode(param) : 1;
+
+    param = parameters.get("maxRate");
+    this.maxRate = (param != null) ? Integer.decode(param) : 4;
+
+    param = parameters.get("minTime");
+    this.minTime = (param != null) ? Integer.decode(param) : 100;
+
+    param = parameters.get("maxTime");
+    this.maxTime = (param != null) ? Integer.decode(param) : 1000;
+
+    param = parameters.get("rateMultiplier");
+    this.rateMultiplier = (param != null) ? Integer.decode(param) : 1000;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new HashMap<>();
+
+    parameters.put("nbVertex", "10");
+    parameters.put("minInDegree", "1");
+    parameters.put("maxInDegree", "5");
+    parameters.put("minOutDegree", "1");
+    parameters.put("maxOutDegree", "5");
+    parameters.put("minRate", "1");
+    parameters.put("maxRate", "4");
+    parameters.put("minTime", "100");
+    parameters.put("maxTime", "1000");
+    parameters.put("rateMultiplier", "1000");
+
+    return parameters;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Generating random SDF.";
+  }
 
 }

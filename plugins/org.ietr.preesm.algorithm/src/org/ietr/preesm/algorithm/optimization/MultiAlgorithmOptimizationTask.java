@@ -40,7 +40,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
@@ -48,57 +47,77 @@ import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.algorithm.optimization.clean.joinfork.JoinForkCleaner;
 
+// TODO: Auto-generated Javadoc
 /**
- * Head class to launch optimizations on a SDFGraph
- * 
+ * Head class to launch optimizations on a SDFGraph.
+ *
  * @author cguy
- * 
  */
 public class MultiAlgorithmOptimizationTask extends AbstractTaskImplementation {
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
+   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs,
+      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
+      final Workflow workflow) throws WorkflowException {
 
-		// Get the SDFGraph to optimize
-		@SuppressWarnings("unchecked")
-		Set<SDFGraph> graphs = (Set<SDFGraph>) inputs.get(KEY_SDF_GRAPHS_SET);
+    // Get the SDFGraph to optimize
+    @SuppressWarnings("unchecked")
+    final Set<SDFGraph> graphs = (Set<SDFGraph>) inputs
+        .get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPHS_SET);
 
-		// First pass is to clean the graph from useless pairs of join-fork
-		// vertices which can hinder scheduling
+    // First pass is to clean the graph from useless pairs of join-fork
+    // vertices which can hinder scheduling
 
-		// JoinForkCleaner evaluates some rates and delays expressions, and thus
-		// can throw InvalidExpressionExceptions, even if at this point of the
-		// workflow, there should have been already raised
-		for(SDFGraph graph : graphs){
-			try {
-				while(JoinForkCleaner.cleanJoinForkPairsFrom(graph));
-			} catch (InvalidExpressionException e) {
-				System.err.println("SDFGraph " + graph.getName()
-						+ " contains invalid expressions.");
-				e.printStackTrace();
-			} catch (SDF4JException e) {
-				System.err.println("Error when cleaning fork/join pairs in SDFGraph " + graph.getName());
-				e.printStackTrace();
-			}
-		}
+    // JoinForkCleaner evaluates some rates and delays expressions, and thus
+    // can throw InvalidExpressionExceptions, even if at this point of the
+    // workflow, there should have been already raised
+    for (final SDFGraph graph : graphs) {
+      try {
+        while (JoinForkCleaner.cleanJoinForkPairsFrom(graph)) {
+          ;
+        }
+      } catch (final InvalidExpressionException e) {
+        System.err.println("SDFGraph " + graph.getName() + " contains invalid expressions.");
+        e.printStackTrace();
+      } catch (final SDF4JException e) {
+        System.err.println("Error when cleaning fork/join pairs in SDFGraph " + graph.getName());
+        e.printStackTrace();
+      }
+    }
 
-		Map<String, Object> outputs = new HashMap<String, Object>();
-		outputs.put(KEY_SDF_GRAPHS_SET, graphs);
-		return outputs;
-	}
+    final Map<String, Object> outputs = new HashMap<>();
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPHS_SET, graphs);
+    return outputs;
+  }
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		return Collections.emptyMap();
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    return Collections.emptyMap();
+  }
 
-	@Override
-	public String monitorMessage() {
-		return "Starting optimization of SDFGraph";
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Starting optimization of SDFGraph";
+  }
 
 }

@@ -40,7 +40,6 @@ package org.ietr.preesm.algorithm.exportDif;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -57,74 +56,94 @@ import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.utils.paths.PathTools;
 
+// TODO: Auto-generated Javadoc
 /**
- * Workflow element taking a *Single-Rate* SDF and the scenario as inputs and
- * writing the corresponding graph in the DIF format as an output.
- * 
+ * Workflow element taking a *Single-Rate* SDF and the scenario as inputs and writing the
+ * corresponding graph in the DIF format as an output.
+ *
  * @author kdesnos
- * 
+ *
  */
 public class DIFExporter extends AbstractTaskImplementation {
 
-	static final public String PARAM_PATH = "path";
-	static final public String VALUE_PATH_DEFAULT = "./Code/DIF/graph.dif";
+  /** The Constant PARAM_PATH. */
+  public static final String PARAM_PATH = "path";
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /** The Constant VALUE_PATH_DEFAULT. */
+  public static final String VALUE_PATH_DEFAULT = "./Code/DIF/graph.dif";
 
-		// Rem: Logger is used to display messages in the console
-		//Logger logger = WorkflowLogger.getLogger();
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
+   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs,
+      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
+      final Workflow workflow) throws WorkflowException {
 
-		// Retrieve the inputs
-		SDFGraph sdf = (SDFGraph) inputs.get("SDF");
-		PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
+    // Rem: Logger is used to display messages in the console
+    // Logger logger = WorkflowLogger.getLogger();
 
-		// The visitor that will create the DIF File
-		DIFExporterVisitor exporter = new DIFExporterVisitor(scenario);
+    // Retrieve the inputs
+    final SDFGraph sdf = (SDFGraph) inputs.get("SDF");
+    final PreesmScenario scenario = (PreesmScenario) inputs.get("scenario");
 
-		try {
+    // The visitor that will create the DIF File
+    final DIFExporterVisitor exporter = new DIFExporterVisitor(scenario);
 
-			// Locate the output file
-			String sPath = PathTools.getAbsolutePath(parameters.get("path"),
-					workflow.getProjectName());
-			IPath path = new Path(sPath);
-			if (path.getFileExtension() == null
-					|| !path.getFileExtension().equals("dif")) {
-				path = path.addFileExtension("dif");
-			}
-			IWorkspace workspace = ResourcesPlugin.getWorkspace();
-			IFile iFile = workspace.getRoot().getFile(path);
-			if (!iFile.exists()) {
-				iFile.create(null, false, new NullProgressMonitor());
-			}
-			File file = new File(iFile.getRawLocation().toOSString());
+    try {
 
-			// Apply the visitor to the graph
-			sdf.accept(exporter);
+      // Locate the output file
+      final String sPath = PathTools.getAbsolutePath(parameters.get("path"),
+          workflow.getProjectName());
+      IPath path = new Path(sPath);
+      if ((path.getFileExtension() == null) || !path.getFileExtension().equals("dif")) {
+        path = path.addFileExtension("dif");
+      }
+      final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+      final IFile iFile = workspace.getRoot().getFile(path);
+      if (!iFile.exists()) {
+        iFile.create(null, false, new NullProgressMonitor());
+      }
+      final File file = new File(iFile.getRawLocation().toOSString());
 
-			// Write the result into the text file
-			exporter.write(file);
+      // Apply the visitor to the graph
+      sdf.accept(exporter);
 
-		} catch (SDF4JException | CoreException e) {
-			e.printStackTrace();
-		}
+      // Write the result into the text file
+      exporter.write(file);
 
-		// Output output
-		Map<String, Object> output = new HashMap<String, Object>();
-		return output;
-	}
+    } catch (SDF4JException | CoreException e) {
+      e.printStackTrace();
+    }
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put(PARAM_PATH, VALUE_PATH_DEFAULT);
-		return parameters;
-	}
+    // Output output
+    final Map<String, Object> output = new HashMap<>();
+    return output;
+  }
 
-	@Override
-	public String monitorMessage() {
-		return "Exporting DIF File";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new HashMap<>();
+    parameters.put(DIFExporter.PARAM_PATH, DIFExporter.VALUE_PATH_DEFAULT);
+    return parameters;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Exporting DIF File";
+  }
 }

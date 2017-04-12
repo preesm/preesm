@@ -38,7 +38,6 @@ package org.ietr.preesm.algorithm.exportPromela;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -46,55 +45,78 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.utils.paths.PathTools;
 
+// TODO: Auto-generated Javadoc
 /**
  * Workflow task {@link PromelaExporter} for multi-SDF workflows.
- * 
+ *
  * @author kdesnos
  *
  */
 public class MultiPromelaExporter extends AbstractTaskImplementation {
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
-			IProgressMonitor monitor, String nodeName, Workflow workflow) throws WorkflowException {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
+   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs,
+      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
+      final Workflow workflow) throws WorkflowException {
 
-		// Retrieve the inputs
-		@SuppressWarnings("unchecked")
-		Set<SDFGraph> sdfs = (Set<SDFGraph>) inputs.get(KEY_SDF_GRAPHS_SET);
-		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
+    // Retrieve the inputs
+    @SuppressWarnings("unchecked")
+    final Set<SDFGraph> sdfs = (Set<SDFGraph>) inputs
+        .get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPHS_SET);
+    final PreesmScenario scenario = (PreesmScenario) inputs
+        .get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
-		String paramFifo = (String) parameters.get(PromelaExporter.PARAM_FIFO_POLICY);
-		boolean fifoShared = paramFifo.equalsIgnoreCase(PromelaExporter.VALUE_FIFO_SHARED);
+    final String paramFifo = parameters.get(PromelaExporter.PARAM_FIFO_POLICY);
+    final boolean fifoShared = paramFifo.equalsIgnoreCase(PromelaExporter.VALUE_FIFO_SHARED);
 
-		String paramActor = (String) parameters.get(PromelaExporter.PARAM_ACTOR_POLICY);
-		boolean synchronousActor = Boolean.parseBoolean(paramActor);
+    final String paramActor = parameters.get(PromelaExporter.PARAM_ACTOR_POLICY);
+    final boolean synchronousActor = Boolean.parseBoolean(paramActor);
 
-		// Locate the output file
-		String sPath = PathTools.getAbsolutePath(parameters.get("path"), workflow.getProjectName());
-		IPath path = new Path(sPath);
+    // Locate the output file
+    final String sPath = PathTools.getAbsolutePath(parameters.get("path"),
+        workflow.getProjectName());
+    final IPath path = new Path(sPath);
 
-		for (SDFGraph sdf : sdfs) {
-			PromelaExporterEngine engine = new PromelaExporterEngine();
-			engine.printSDFGraphToPromelaFile(sdf, scenario, path, fifoShared, synchronousActor);
-		}
+    for (final SDFGraph sdf : sdfs) {
+      final PromelaExporterEngine engine = new PromelaExporterEngine();
+      engine.printSDFGraphToPromelaFile(sdf, scenario, path, fifoShared, synchronousActor);
+    }
 
-		return new HashMap<String, Object>();
-	}
+    return new HashMap<>();
+  }
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put(PromelaExporter.PARAM_PATH, PromelaExporter.VALUE_PATH_DEFAULT);
-		parameters.put(PromelaExporter.PARAM_FIFO_POLICY, PromelaExporter.VALUE_FIFO_DEFAULT);
-		parameters.put(PromelaExporter.PARAM_ACTOR_POLICY, PromelaExporter.VALUE_ACTOR_DEFAULT);
-		return parameters;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new HashMap<>();
+    parameters.put(PromelaExporter.PARAM_PATH, PromelaExporter.VALUE_PATH_DEFAULT);
+    parameters.put(PromelaExporter.PARAM_FIFO_POLICY, PromelaExporter.VALUE_FIFO_DEFAULT);
+    parameters.put(PromelaExporter.PARAM_ACTOR_POLICY, PromelaExporter.VALUE_ACTOR_DEFAULT);
+    return parameters;
+  }
 
-	@Override
-	public String monitorMessage() {
-		return "Exporting Promela code";
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Exporting Promela code";
+  }
 }

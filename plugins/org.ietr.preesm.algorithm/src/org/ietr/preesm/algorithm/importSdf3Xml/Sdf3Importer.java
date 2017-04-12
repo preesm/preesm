@@ -39,7 +39,6 @@ package org.ietr.preesm.algorithm.importSdf3Xml;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -48,67 +47,90 @@ import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.scenario.PreesmScenario;
 import org.ietr.preesm.utils.paths.PathTools;
 
+// TODO: Auto-generated Javadoc
 /**
- * This class is a {@link Workflow} task that parse a SDF in the SDF3 XML format
- * and output its corresponding {@link SDFGraph}.
- * 
+ * This class is a {@link Workflow} task that parse a SDF in the SDF3 XML format and output its
+ * corresponding {@link SDFGraph}.
+ *
  * @author kdesnos
- * 
+ *
  */
 public class Sdf3Importer extends AbstractTaskImplementation {
 
-	static final public String PARAM_PATH = "path";
-	static final public String VALUE_PATH_DEFAULT = "./Code/SDF3/graph.xml";
+  /** The Constant PARAM_PATH. */
+  public static final String PARAM_PATH = "path";
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /** The Constant VALUE_PATH_DEFAULT. */
+  public static final String VALUE_PATH_DEFAULT = "./Code/SDF3/graph.xml";
 
-		// Rem: Logger is used to display messages in the console
-		Logger logger = WorkflowLogger.getLogger();
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
+   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs,
+      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
+      final Workflow workflow) throws WorkflowException {
 
-		// Retrieve the inputs
-		Design architecture = (Design) inputs.get(KEY_ARCHITECTURE);
-		PreesmScenario scenario = (PreesmScenario) inputs.get(KEY_SCENARIO);
+    // Rem: Logger is used to display messages in the console
+    final Logger logger = WorkflowLogger.getLogger();
 
-		// Locate the intput file
-		String sPath = PathTools.getAbsolutePath(parameters.get("path"),
-				workflow.getProjectName());
-		IPath path = new Path(sPath);
+    // Retrieve the inputs
+    final Design architecture = (Design) inputs
+        .get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
+    final PreesmScenario scenario = (PreesmScenario) inputs
+        .get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
-		SDF3ImporterEngine engine = new SDF3ImporterEngine();
+    // Locate the intput file
+    final String sPath = PathTools.getAbsolutePath(parameters.get("path"),
+        workflow.getProjectName());
+    final IPath path = new Path(sPath);
 
-		SDFGraph graph = engine
-				.importFrom(path, scenario, architecture, logger);
+    final SDF3ImporterEngine engine = new SDF3ImporterEngine();
 
-		Map<String, Object> outputs = null;
+    final SDFGraph graph = engine.importFrom(path, scenario, architecture, logger);
 
-		// If there was no problem while parsing the graph
-		if (graph != null) {
-			// put it in the outputs
-			outputs = new HashMap<String, Object>();
-			outputs.put(KEY_SDF_GRAPH, graph);
-			outputs.put(KEY_SCENARIO, scenario);
-		}
+    Map<String, Object> outputs = null;
 
-		return outputs;
-	}
+    // If there was no problem while parsing the graph
+    if (graph != null) {
+      // put it in the outputs
+      outputs = new HashMap<>();
+      outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH, graph);
+      outputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
+    }
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put(PARAM_PATH, VALUE_PATH_DEFAULT);
-		return parameters;
-	}
+    return outputs;
+  }
 
-	@Override
-	public String monitorMessage() {
-		return "Importing SDF3 Xml File";
-	}
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new HashMap<>();
+    parameters.put(Sdf3Importer.PARAM_PATH, Sdf3Importer.VALUE_PATH_DEFAULT);
+    return parameters;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Importing SDF3 Xml File";
+  }
 
 }

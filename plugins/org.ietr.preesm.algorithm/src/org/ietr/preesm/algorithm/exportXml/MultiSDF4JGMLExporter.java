@@ -38,7 +38,6 @@ package org.ietr.preesm.algorithm.exportXml;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -46,38 +45,61 @@ import org.ietr.dftools.algorithm.model.sdf.SDFGraph;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
+import org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MultiSDF4JGMLExporter.
+ */
 public class MultiSDF4JGMLExporter extends AbstractTaskImplementation {
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
+   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs,
+      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
+      final Workflow workflow) throws WorkflowException {
 
-		IPath xmlPath = new Path(parameters.get("path"));
+    final IPath xmlPath = new Path(parameters.get("path"));
 
-		@SuppressWarnings("unchecked")
-		Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs.get(KEY_SDF_GRAPHS_SET);
-		SDF2GraphmlExporter exporter = new SDF2GraphmlExporter();
-		
-		for (SDFGraph algorithm : algorithms) {
-			exporter.export(algorithm, xmlPath);
-		}
+    @SuppressWarnings("unchecked")
+    final Set<SDFGraph> algorithms = (Set<SDFGraph>) inputs
+        .get(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPHS_SET);
+    final SDF2GraphmlExporter exporter = new SDF2GraphmlExporter();
 
-		return new HashMap<String, Object>();
-	}
+    for (final SDFGraph algorithm : algorithms) {
+      exporter.export(algorithm, xmlPath);
+    }
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = new HashMap<String, String>();
+    return new HashMap<>();
+  }
 
-		parameters.put("path", "");
-		return parameters;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new HashMap<>();
 
-	@Override
-	public String monitorMessage() {
-		return "Exporting algorithms graphs";
-	}
+    parameters.put("path", "");
+    return parameters;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Exporting algorithms graphs";
+  }
 
 }

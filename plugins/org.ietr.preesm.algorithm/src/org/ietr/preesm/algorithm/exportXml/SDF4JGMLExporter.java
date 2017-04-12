@@ -39,7 +39,6 @@ package org.ietr.preesm.algorithm.exportXml;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -48,32 +47,53 @@ import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class SDF4JGMLExporter.
+ */
 public class SDF4JGMLExporter extends AbstractTaskImplementation {
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map,
+   * java.util.Map, org.eclipse.core.runtime.IProgressMonitor, java.lang.String,
+   * org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs,
+      final Map<String, String> parameters, final IProgressMonitor monitor, final String nodeName,
+      final Workflow workflow) throws WorkflowException {
 
-		IPath xmlPath = new Path(parameters.get("path"));
+    final IPath xmlPath = new Path(parameters.get("path"));
 
-		SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
-		SDF2GraphmlExporter exporter = new SDF2GraphmlExporter();
-		exporter.export(algorithm, xmlPath);
-		
-		return new HashMap<String, Object>();
-	}
+    final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
+    final SDF2GraphmlExporter exporter = new SDF2GraphmlExporter();
+    exporter.export(algorithm, xmlPath);
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = new HashMap<String, String>();
+    return new HashMap<>();
+  }
 
-		parameters.put("path", "");
-		return parameters;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new HashMap<>();
 
-	@Override
-	public String monitorMessage() {
-		return "Exporting algorithm graph";
-	}
+    parameters.put("path", "");
+    return parameters;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Exporting algorithm graph";
+  }
 }
