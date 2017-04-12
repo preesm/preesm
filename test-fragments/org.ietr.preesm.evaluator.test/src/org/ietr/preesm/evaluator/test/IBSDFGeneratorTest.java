@@ -36,7 +36,6 @@
 package org.ietr.preesm.evaluator.test;
 
 import java.io.IOException;
-
 import org.ietr.dftools.algorithm.model.parameters.InvalidExpressionException;
 import org.ietr.dftools.algorithm.model.visitors.SDF4JException;
 import org.ietr.preesm.evaluator.IBSDFGenerator;
@@ -44,36 +43,26 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * Generator of hierarchical graphs (IBSDF) from alive SDF graphs generated with
- * <a href="https://github.com/bbodin/turbine/">Turbine</a>, the only parameter
- * to give is the number of actors. Used independently from the throughput
- * evaluator to create instances for test
+ * Generator of hierarchical graphs (IBSDF) from alive SDF graphs generated with <a href="https://github.com/bbodin/turbine/">Turbine</a>, the only parameter to
+ * give is the number of actors. Used independently from the throughput evaluator to create instances for test
  *
  * @author blaunay
  *
  */
 public class IBSDFGeneratorTest {
 
-	/**
-	 * Main method for tests and generate IBSDF graphs
-	 *
-	 * @param args
-	 * @throws IOException
-	 * @throws InterruptedException
-	 * @throws SDF4JException
-	 * @throws InvalidExpressionException
-	 */
-	@Test
-	/*
-	 * The tested class requires system specific configuration (turbine
-	 * installed and path configured ...)
-	 * TODO: ask Hamza Deroui about it
-	 */
-	@Ignore
-	public void testGenerator() throws IOException, InterruptedException, SDF4JException, InvalidExpressionException {
-		IBSDFGenerator x = new IBSDFGenerator(50);
-		x.graphSet_gen();
-		x.hierarchize();
+  /**
+   * Main method for tests and generate IBSDF graphs
+   */
+  @Test
+  /*
+   * The tested class requires system specific configuration (turbine installed and path configured ...) TODO: ask Hamza Deroui about it
+   */
+  @Ignore
+  public void testGenerator() throws IOException, InterruptedException, SDF4JException, InvalidExpressionException {
+    final IBSDFGenerator x = new IBSDFGenerator(50);
+    x.graphSet_gen();
+    x.hierarchize();
 
-	}
+  }
 }
