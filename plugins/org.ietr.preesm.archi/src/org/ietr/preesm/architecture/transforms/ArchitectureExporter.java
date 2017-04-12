@@ -40,47 +40,58 @@ package org.ietr.preesm.architecture.transforms;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
+// TODO: Auto-generated Javadoc
 /**
- * Exporter for IP-XACT multicore architectures
- * 
+ * Exporter for IP-XACT multicore architectures.
+ *
  * @author mpelcat
- * 
  */
 public class ArchitectureExporter extends AbstractTaskImplementation {
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
-		/*
-		 * String path = parameters.get("path"); MultiCoreArchitecture archi =
-		 * (MultiCoreArchitecture) inputs .get("architecture"); DesignWriter
-		 * writer = new DesignWriter(archi); writer.generateArchitectureDOM();
-		 * writer.writeDom(path);
-		 */
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
+    /*
+     * String path = parameters.get("path"); MultiCoreArchitecture archi = (MultiCoreArchitecture) inputs .get("architecture"); DesignWriter writer = new
+     * DesignWriter(archi); writer.generateArchitectureDOM(); writer.writeDom(path);
+     */
 
-		WorkflowLogger.getLogger().log(Level.SEVERE,
-				"ArchitectureExporter is no more supported");
-		return new HashMap<String, Object>();
-	}
+    WorkflowLogger.getLogger().log(Level.SEVERE, "ArchitectureExporter is no more supported");
+    return new HashMap<>();
+  }
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = new HashMap<String, String>();
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new HashMap<>();
 
-		parameters.put("path", "");
-		return parameters;
-	}
+    parameters.put("path", "");
+    return parameters;
+  }
 
-	@Override
-	public String monitorMessage() {
-		return "Exporting architecture.";
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Exporting architecture.";
+  }
 }

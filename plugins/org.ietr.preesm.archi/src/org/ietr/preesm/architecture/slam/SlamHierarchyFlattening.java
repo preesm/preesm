@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.architecture.slam.process.SlamFlattener;
@@ -50,57 +49,72 @@ import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 
+// TODO: Auto-generated Javadoc
 /**
- * Flattening the hierarchy of a given S-LAM architecture
- * 
+ * Flattening the hierarchy of a given S-LAM architecture.
+ *
  * @author mpelcat
- * 
  */
 public class SlamHierarchyFlattening extends AbstractTaskImplementation {
 
-	@Override
-	public Map<String, Object> execute(Map<String, Object> inputs,
-			Map<String, String> parameters, IProgressMonitor monitor,
-			String nodeName, Workflow workflow) throws WorkflowException {
-		Map<String, Object> outputs = new HashMap<String, Object>();
-		Design design = (Design) inputs.get("architecture");
-		String depthS = parameters.get("depth");
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map, org.eclipse.core.runtime.IProgressMonitor,
+   * java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   */
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters, final IProgressMonitor monitor,
+      final String nodeName, final Workflow workflow) throws WorkflowException {
+    final Map<String, Object> outputs = new HashMap<>();
+    final Design design = (Design) inputs.get("architecture");
+    final String depthS = parameters.get("depth");
 
-		int depth;
-		if (depthS != null) {
-			depth = Integer.decode(depthS);
-		} else {
-			depth = 1;
-		}
+    int depth;
+    if (depthS != null) {
+      depth = Integer.decode(depthS);
+    } else {
+      depth = 1;
+    }
 
-		Logger logger = WorkflowLogger.getLogger();
-		logger.log(Level.INFO, "flattening " + depth + " level(s) of hierarchy");
+    final Logger logger = WorkflowLogger.getLogger();
+    logger.log(Level.INFO, "flattening " + depth + " level(s) of hierarchy");
 
-		// Copier copier = new Copier();
-		// EObject result = copier.copy(design);
-		// copier.copyReferences();
+    // Copier copier = new Copier();
+    // EObject result = copier.copy(design);
+    // copier.copyReferences();
 
-		SlamFlattener flattener = new SlamFlattener();
-		flattener.flatten(design, depth);
+    final SlamFlattener flattener = new SlamFlattener();
+    flattener.flatten(design, depth);
 
-		Design resultGraph = design;
-		logger.log(Level.INFO, "flattening complete");
+    final Design resultGraph = design;
+    logger.log(Level.INFO, "flattening complete");
 
-		outputs.put("architecture", resultGraph);
+    outputs.put("architecture", resultGraph);
 
-		return outputs;
-	}
+    return outputs;
+  }
 
-	@Override
-	public Map<String, String> getDefaultParameters() {
-		Map<String, String> parameters = new HashMap<String, String>();
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   */
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new HashMap<>();
 
-		parameters.put("depth", "1");
-		return parameters;
-	}
+    parameters.put("depth", "1");
+    return parameters;
+  }
 
-	@Override
-	public String monitorMessage() {
-		return "Flattening an S-LAM model hierarchy.";
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   */
+  @Override
+  public String monitorMessage() {
+    return "Flattening an S-LAM model hierarchy.";
+  }
 }
