@@ -162,16 +162,14 @@ public class PFastAlgorithm extends Observable {
       final int nodesmin, final Set<Set<String>> subSet) {
 
     // initialization
-    MapperDAGVertex currentvertex;
     int nbsubsets = 0;
     int nbnodes = 0;
-    final List<MapperDAGVertex> BNlist = new ArrayList<>();
-    BNlist.addAll(initialLists.getBlockingNodes());
-    Set<String> tempSet = null;
-    nbnodes = nbnodes(BNlist, nbsubsets, nodesmin);
+    final List<MapperDAGVertex> blockingNodelist = new ArrayList<>();
+    blockingNodelist.addAll(initialLists.getBlockingNodes());
+    nbnodes = nbnodes(blockingNodelist, nbsubsets, nodesmin);
 
     // find number of thread possible
-    nbsubsets = setThreadNumber(BNlist, nboperator, nodesmin);
+    nbsubsets = setThreadNumber(blockingNodelist, nboperator, nodesmin);
 
     if (nbsubsets == 0) {
       WorkflowLogger.getLogger().log(Level.SEVERE,
@@ -179,23 +177,20 @@ public class PFastAlgorithm extends Observable {
     }
 
     // find number of nodes per thread
-    nbnodes = nbnodes(BNlist, nbsubsets, nodesmin);
-
-    Iterator<MapperDAGVertex> riter = BNlist.iterator();
-    Iterator<Set<String>> itera = subSet.iterator();
+    nbnodes = nbnodes(blockingNodelist, nbsubsets, nodesmin);
     subSet.add(new HashSet<String>());
 
     // Put the nodes of the BlockingNodes List in the Sublist
     for (int i = 0; i < nbsubsets; i++) {
       subSet.add(new HashSet<String>());
-      itera = subSet.iterator();
-      tempSet = itera.next();
+      Iterator<Set<String>> itera = subSet.iterator();
+      Set<String> tempSet = itera.next();
       for (int j = 0; j < nbnodes; j++) {
-        if (!(subSet.containsAll(BNlist))) {
-          riter = BNlist.iterator();
-          currentvertex = riter.next();
+        if (!(subSet.containsAll(blockingNodelist))) {
+          Iterator<MapperDAGVertex> riter = blockingNodelist.iterator();
+          MapperDAGVertex currentvertex = riter.next();
           tempSet.add(new String(currentvertex.getName()));
-          BNlist.remove(currentvertex);
+          blockingNodelist.remove(currentvertex);
 
         }
       }

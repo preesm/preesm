@@ -335,7 +335,7 @@ public class PiParser {
     if (source instanceof ExecutableActor) {
 
       String sourcePortName = edgeElt.getAttribute(PiIdentifiers.DEPENDENCY_SOURCE_PORT);
-      sourcePortName = (sourcePortName == "") ? null : sourcePortName;
+      sourcePortName = (sourcePortName.isEmpty()) ? null : sourcePortName;
       final ConfigOutputPort oPort = (ConfigOutputPort) ((ExecutableActor) source).getPortNamed(sourcePortName);
       if (oPort == null) {
         throw new RuntimeException("Edge source port " + sourcePortName + " does not exist for vertex " + setterName);
@@ -348,7 +348,7 @@ public class PiParser {
 
     if (target instanceof ExecutableActor) {
       String targetPortName = edgeElt.getAttribute(PiIdentifiers.DEPENDENCY_TARGET_PORT);
-      targetPortName = (targetPortName == "") ? null : targetPortName;
+      targetPortName = (targetPortName.isEmpty()) ? null : targetPortName;
       final ConfigInputPort iPort = (ConfigInputPort) ((AbstractVertex) target).getPortNamed(targetPortName);
       if (iPort == null) {
         throw new RuntimeException("Dependency target port " + targetPortName + " does not exist for vertex " + getterName);
@@ -426,9 +426,9 @@ public class PiParser {
     fifo.setType(type);
     // Get the sourcePort and targetPort
     String sourcePortName = edgeElt.getAttribute(PiIdentifiers.FIFO_SOURCE_PORT);
-    sourcePortName = (sourcePortName == "") ? null : sourcePortName;
+    sourcePortName = (sourcePortName.isEmpty()) ? null : sourcePortName;
     String targetPortName = edgeElt.getAttribute(PiIdentifiers.FIFO_TARGET_PORT);
-    targetPortName = (targetPortName == "") ? null : targetPortName;
+    targetPortName = (targetPortName.isEmpty()) ? null : targetPortName;
     final DataOutputPort oPort = (DataOutputPort) source.getPortNamed(sourcePortName);
     final DataInputPort iPort = (DataInputPort) target.getPortNamed(targetPortName);
 
@@ -787,7 +787,7 @@ public class PiParser {
         actor = PiMMFactory.eINSTANCE.createRoundBufferActor();
         break;
       default:
-        break;
+        throw new IllegalArgumentException("Given node element has an unknown kind");
     }
 
     // Get the actor properties

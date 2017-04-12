@@ -111,28 +111,31 @@ public class CsvTimingParser {
 
       /* Read header */
       line = br.readLine();
-      final String[] opNames = line.split(",");
-      if ((opNames.length <= 1) || !opNames[0].equals("Actors")) {
-        WorkflowLogger.getLogger().log(Level.WARNING, "Timing csv file must have an header line starting with \"Actors\"\nNothing done");
-        return;
-      }
-
-      /* Parse the whole file to create the timings Map */
-      while ((line = br.readLine()) != null) {
-        final String[] cells = line.split(",");
-        if (cells.length > 1) {
-          final Map<String, String> timing = new HashMap<>();
-
-          for (int i = 1; i < cells.length; i++) {
-            timing.put(opNames[i], cells[i]);
-          }
-
-          timings.put(cells[0], timing);
+      if (line != null) {
+        final String[] opNames = line.split(",");
+        if ((opNames.length <= 1) || !opNames[0].equals("Actors")) {
+          WorkflowLogger.getLogger().log(Level.WARNING, "Timing csv file must have an header line starting with \"Actors\"\nNothing done");
+          return;
         }
+
+        /* Parse the whole file to create the timings Map */
+        while ((line = br.readLine()) != null) {
+          final String[] cells = line.split(",");
+          if (cells.length > 1) {
+            final Map<String, String> timing = new HashMap<>();
+
+            for (int i = 1; i < cells.length; i++) {
+              timing.put(opNames[i], cells[i]);
+            }
+
+            timings.put(cells[0], timing);
+          }
+        }
+
+        parseTimings(timings, opDefIds);
+      } else {
+        throw new IllegalArgumentException("Given URL points to an empty file");
       }
-
-      parseTimings(timings, opDefIds);
-
     } catch (final IOException e) {
       e.printStackTrace();
     } catch (final CoreException e) {

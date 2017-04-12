@@ -67,9 +67,9 @@ public enum EdgeSchedType {
       return "Switcher";
     } else if (this == Advanced) {
       return "Advanced";
+    } else {
+      throw new UnsupportedOperationException();
     }
-
-    return null;
   }
 
   /**

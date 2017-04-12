@@ -415,13 +415,13 @@ public class HeuristicSolver<V extends IWeightedVertex<Integer> & Comparable<V>,
       // 3 - Search for the vertex to remove
       for (final Entry<V, VertexCost> entry : costsList.entrySet()) {
 
-        final boolean equalGain = (entry.getValue().getNbEdges() == selectedEntry.getValue().getNbEdges());
+        final boolean equalGain = (entry.getValue().getNbEdges().intValue() == selectedEntry.getValue().getNbEdges().intValue());
         // The less edges the vertex has, the greater the density gain
         // will be
         final boolean largerGain = (entry.getValue().getNbEdges() < selectedEntry.getValue().getNbEdges());
-        final boolean smallerWeight = (entry.getValue().getNeighborsWeight() < selectedEntry.getValue().getNeighborsWeight());
-        final boolean equalWeight = (entry.getValue().getNeighborsWeight() == selectedEntry.getValue().getNeighborsWeight());
-        final boolean smallerVertexWeight = (entry.getKey().getWeight() < selectedEntry.getKey().getWeight());
+        final boolean smallerWeight = (entry.getValue().getNeighborsWeight().intValue() < selectedEntry.getValue().getNeighborsWeight().intValue());
+        final boolean equalWeight = (entry.getValue().getNeighborsWeight().intValue() == selectedEntry.getValue().getNeighborsWeight().intValue());
+        final boolean smallerVertexWeight = (entry.getKey().getWeight().intValue() < selectedEntry.getKey().getWeight().intValue());
 
         // Explanation :
         // The vertex with the lowest neighborhood weight is selected.

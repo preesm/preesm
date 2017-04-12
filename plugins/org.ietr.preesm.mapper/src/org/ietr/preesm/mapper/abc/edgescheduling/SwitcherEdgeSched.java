@@ -92,9 +92,11 @@ public class SwitcherEdgeSched extends AbstractEdgeSched {
 
       if ((targetIndex - sourceIndex) > 0) {
         final Random r = new Random();
-        int randomVal = Math.abs(r.nextInt());
+        int nextInt = r.nextInt(Integer.MAX_VALUE);
+        int randomVal = Math.abs(nextInt);
         randomVal = randomVal % (targetIndex - sourceIndex);
-        this.orderManager.insertAtIndex(sourceIndex + randomVal, vertex);
+        final int index = sourceIndex + randomVal;
+        this.orderManager.insertAtIndex(index, vertex);
       } else {
         this.orderManager.insertAfter(source, vertex);
       }

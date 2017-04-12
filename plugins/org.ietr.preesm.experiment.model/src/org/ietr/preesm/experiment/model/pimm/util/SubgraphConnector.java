@@ -263,7 +263,7 @@ public class SubgraphConnector extends PiMMVisitor {
     if (this.currentActor != null) {
       DataInputPort correspondingPort = null;
       for (final DataInputPort dip : this.currentActor.getDataInputPorts()) {
-        if (dip.getName() == dii.getName()) {
+        if (dip.getName().equals(dii.getName())) {
           correspondingPort = dip;
           break;
         }
@@ -285,7 +285,7 @@ public class SubgraphConnector extends PiMMVisitor {
     if (this.currentActor != null) {
       DataOutputPort correspondingPort = null;
       for (final DataOutputPort dop : this.currentActor.getDataOutputPorts()) {
-        if (dop.getName() == doi.getName()) {
+        if (dop.getName().equals(doi.getName())) {
           correspondingPort = dop;
           break;
         }
@@ -307,7 +307,7 @@ public class SubgraphConnector extends PiMMVisitor {
     // graph
     ConfigInputPort correspondingPort = null;
     for (final ConfigInputPort cip : this.currentActor.getConfigInputPorts()) {
-      if (cip.getName() == cii.getName()) {
+      if (cip.getName().equals(cii.getName())) {
         correspondingPort = cip;
         break;
       }
@@ -327,7 +327,7 @@ public class SubgraphConnector extends PiMMVisitor {
     // Connect the interface to the outgoing dependencies to the outer graph
     ConfigOutputPort correspondingPort = null;
     for (final ConfigOutputPort cop : this.currentActor.getConfigOutputPorts()) {
-      if (cop.getName() == coi.getName()) {
+      if (cop.getName().equals(coi.getName())) {
         correspondingPort = cop;
         break;
       }

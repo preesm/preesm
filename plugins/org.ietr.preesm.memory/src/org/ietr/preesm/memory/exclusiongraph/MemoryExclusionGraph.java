@@ -310,7 +310,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
             if (!between.contains(correspondingEdge)) {
               this.addEdge(headMemoryNode, memObject);
             }
-          } else if (memObject.getSource() == memObject.getSink()) {
+          } else if (memObject.getSource().equals(memObject.getSink())) {
             // For Working memory
             if (!betweenVert.contains(memObject)) {
               this.addEdge(headMemoryNode, memObject);
@@ -1532,15 +1532,13 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         }
       }
 
-      // Compute the list of all actors between
-      // init and end
+      // Compute the list of all actors between init and end
       Set<DAGVertex> verticesBetween = null;
       {
         final Set<DAGVertex> endPredecessors = scheduledDAG.getPredecessorVerticesOf(dagEndVertex);
         final Set<DAGVertex> initSuccessors = scheduledDAG.getSuccessorVerticesOf(dagInitVertex);
         verticesBetween = (new HashSet<>(initSuccessors));
         verticesBetween.retainAll(endPredecessors);
-        verticesBetween.removeAll(addedEdges);
       }
 
       // retrieve the head MObj for current fifo

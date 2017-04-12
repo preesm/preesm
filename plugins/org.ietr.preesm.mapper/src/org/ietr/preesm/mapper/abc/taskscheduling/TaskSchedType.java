@@ -67,9 +67,9 @@ public enum TaskSchedType {
       return "Switcher";
     } else if (this == Topological) {
       return "Topological";
+    } else {
+      throw new UnsupportedOperationException();
     }
-
-    return null;
   }
 
   /**

@@ -63,7 +63,7 @@ import org.jgrapht.alg.DirectedNeighborIndex;
  * @author pmenuet
  * @author mpelcat
  */
-public class InitialLists {
+public class InitialLists implements Cloneable {
 
   /** The blocking nodes. */
   // List of the nodes with a link with the critical path

@@ -252,6 +252,10 @@ public class ScenarioParser {
    * @return the parameter
    */
   private Parameter parseParameterValue(final Element paramValueElt, final PiGraph graph) {
+    if (graph == null) {
+      throw new IllegalArgumentException();
+    }
+
     Parameter currentParameter = null;
 
     final String type = paramValueElt.getAttribute("type");

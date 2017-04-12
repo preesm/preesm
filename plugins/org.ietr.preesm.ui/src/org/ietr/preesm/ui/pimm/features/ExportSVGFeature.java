@@ -690,17 +690,14 @@ public class ExportSVGFeature extends AbstractCustomFeature {
      * @return the integer
      */
     public Integer caseConfigInputInterface(final Parameter cii) {
-      int x = 0;
-      int y = 0;
-      int width = 0;
-      int height = 0;
       final PictogramElement[] ciiPes = ExportSVGFeature.this.fp.getAllPictogramElementsForBusinessObject(cii);
-      if (ciiPes != null) {
-        x = ciiPes[2].getGraphicsAlgorithm().getX();
-        y = ciiPes[2].getGraphicsAlgorithm().getY();
-        width = ciiPes[2].getGraphicsAlgorithm().getWidth();
-        height = ciiPes[2].getGraphicsAlgorithm().getHeight();
+      if (ciiPes == null) {
+        throw new IllegalStateException();
       }
+      int x = ciiPes[2].getGraphicsAlgorithm().getX();
+      int y = ciiPes[2].getGraphicsAlgorithm().getY();
+      int width = ciiPes[2].getGraphicsAlgorithm().getWidth();
+      int height = ciiPes[2].getGraphicsAlgorithm().getHeight();
 
       this.totalWidth = java.lang.Math.max(x + width, this.totalWidth);
       this.totalHeight = java.lang.Math.max(y + height, this.totalHeight);
@@ -709,28 +706,27 @@ public class ExportSVGFeature extends AbstractCustomFeature {
       this.svg.appendChild(ciiNode);
       ciiNode.setAttribute("id", cii.getName());
       ciiNode.setAttribute("transform", "translate(" + x + "," + y + ")");
-      {
-        final Element polygon = this.doc.createElement("polygon");
-        final Polygon polyPe = (Polygon) ciiPes[0].getGraphicsAlgorithm();
-        ciiNode.appendChild(polygon);
-        String points = "";
-        for (final Point p : polyPe.getPoints()) {
-          points += (p.getX() + 3) + "," + (p.getY() + 16) + " ";
-        }
-        polygon.setAttribute("points", points);
-        polygon.setAttribute("fill", "rgb(187, 218, 247)");
-        polygon.setAttribute("stroke", "rgb(98,131,167)");
-        polygon.setAttribute("stroke-width", "3px");
-
-        final Element text = this.doc.createElement("text");
-        ciiNode.appendChild(text);
-        text.setAttribute("x", "" + (width / 2));
-        text.setAttribute("y", "10");
-        text.setAttribute("fill", "black");
-        text.setAttribute("text-anchor", "middle");
-        addFontToSVG(text, getFont(cii));
-        text.appendChild(this.doc.createTextNode(cii.getName()));
+      final Element polygon = this.doc.createElement("polygon");
+      PictogramElement pictogramElement = ciiPes[0];
+      final Polygon polyPe = (Polygon) pictogramElement.getGraphicsAlgorithm();
+      ciiNode.appendChild(polygon);
+      String points = "";
+      for (final Point p : polyPe.getPoints()) {
+        points += (p.getX() + 3) + "," + (p.getY() + 16) + " ";
       }
+      polygon.setAttribute("points", points);
+      polygon.setAttribute("fill", "rgb(187, 218, 247)");
+      polygon.setAttribute("stroke", "rgb(98,131,167)");
+      polygon.setAttribute("stroke-width", "3px");
+
+      final Element text = this.doc.createElement("text");
+      ciiNode.appendChild(text);
+      text.setAttribute("x", "" + (width / 2));
+      text.setAttribute("y", "10");
+      text.setAttribute("fill", "black");
+      text.setAttribute("text-anchor", "middle");
+      addFontToSVG(text, getFont(cii));
+      text.appendChild(this.doc.createTextNode(cii.getName()));
       return 0;
     }
 

@@ -37,11 +37,13 @@
 package org.ietr.preesm.ui.pimm.features;
 
 import java.util.List;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IRemoveContext;
 import org.eclipse.graphiti.features.context.impl.RemoveContext;
+import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -106,12 +108,17 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
         break;
       }
     }
+    if (preConnection == null) {
+      throw new IllegalStateException();
+    }
     // There is only one outgoing connection, the Fifo one.
     final Connection postConnection = cba.getOutgoingConnections().get(0);
 
     // Copy the bendpoints to the unique remaining connection.
     // Reconnect it.
-    ((FreeFormConnection) postConnection).getBendpoints().addAll(0, ((FreeFormConnection) preConnection).getBendpoints());
+    EList<Point> preBendPoints = ((FreeFormConnection) preConnection).getBendpoints();
+    EList<Point> postBendPoints = ((FreeFormConnection) postConnection).getBendpoints();
+    postBendPoints.addAll(0, preBendPoints);
     postConnection.setStart(preConnection.getStart());
 
     // Remove the preConnection (but not the associated Fifo)

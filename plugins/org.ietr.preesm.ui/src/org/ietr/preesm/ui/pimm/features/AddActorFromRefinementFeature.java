@@ -86,7 +86,7 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
     } else {
       final String fileExtension = ((IFile) context.getNewObject()).getFileExtension();
 
-      if (fileExtension.equals("pi") || fileExtension.equals("h") || fileExtension.equals("idl")) {
+      if ("pi".equals(fileExtension) || "h".equals(fileExtension) || "idl".equals(fileExtension)) {
         return true;
       }
       return false;

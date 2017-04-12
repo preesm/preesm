@@ -176,8 +176,8 @@ public class ImplementationCleaner {
 
     if (((prev != null) && (next != null)) && ((edges == null) || edges.isEmpty())) {
       // TODO: Remove, only for debug
-      if (prev.getEffectiveOperator().getInstanceName() != next.getEffectiveOperator()
-          .getInstanceName()) {
+      if (! prev.getEffectiveOperator().getInstanceName().equals(next.getEffectiveOperator()
+          .getInstanceName())) {
         System.out.println("wrong!!");
       }
       adder.addPrecedenceEdge(prev, next);

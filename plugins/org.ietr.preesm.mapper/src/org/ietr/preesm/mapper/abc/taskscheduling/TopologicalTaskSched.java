@@ -140,6 +140,12 @@ public class TopologicalTaskSched extends AbstractTaskSched {
    */
   @Override
   public void insertVertex(final MapperDAGVertex vertex) {
+    if (vertex == null) {
+      throw new IllegalArgumentException();
+    }
+    if (this.topolist == null) {
+      throw new IllegalStateException();
+    }
     int topoOrder = this.topolist.indexOf(vertex);
     boolean inserted = false;
 
