@@ -180,6 +180,14 @@
 				<configuration>
 					<configLocation>releng/hooks/VAADER_checkstyle.xml</configLocation>
 				</configuration>
+				<dependencies>
+					<dependency>
+						<!-- Override checkstyle version -->
+						<groupId>com.puppycrawl.tools</groupId>
+						<artifactId>checkstyle</artifactId>
+						<version>7.6.1</version>
+					</dependency>
+				</dependencies> 
 			</plugin>
 			<!--
 				Disable maven deploy plugin: since generated artifacts
