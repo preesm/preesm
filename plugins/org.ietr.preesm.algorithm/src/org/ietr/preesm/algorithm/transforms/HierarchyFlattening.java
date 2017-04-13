@@ -77,9 +77,10 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
 		}
 
 		Logger logger = WorkflowLogger.getLogger();
+		HSDFBuildLoops loopBuilder = new HSDFBuildLoops();
 
 		if (depth == 0) {
-			outputs.put("SDF", algorithm.clone());
+			outputs.put("SDF", loopBuilder.execute(algorithm.clone())); /* we now extract repetition vector into non-flattened hierarchical actors. */
 			logger.log(Level.INFO, "flattening depth = 0: no flattening");
 			return outputs;
 		}
@@ -104,7 +105,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
 					}
 					logger.log(Level.INFO, "flattening complete");
 					SDFGraph resultGraph = flattener.getFlattenedGraph();//flatHier.getOutput();
-					outputs.put("SDF", resultGraph);
+					outputs.put("SDF", loopBuilder.execute(resultGraph));
 				} else {
 					throw (new WorkflowException(
 							"Graph not valid, not schedulable"));
@@ -115,7 +116,7 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
 		} else {
 			logger.log(Level.SEVERE,
 					"Inconsistent Hierarchy, graph can't be flattened");
-			outputs.put("SDF", algorithm.clone());
+			outputs.put("SDF", loopBuilder.execute(algorithm.clone()));
 			throw (new WorkflowException(
 					"Inconsistent Hierarchy, graph can't be flattened"));
 		}

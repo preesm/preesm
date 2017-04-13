@@ -47,6 +47,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -64,6 +66,7 @@ import org.ietr.dftools.algorithm.model.sdf.esdf.SDFEndVertex;
 import org.ietr.dftools.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.ietr.dftools.architecture.slam.ComponentInstance;
 import org.ietr.dftools.workflow.WorkflowException;
+import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.DataType;
 import org.ietr.preesm.core.types.ImplementationPropertyNames;
@@ -230,6 +233,11 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 		}
 		return newNode;
 	};
+	
+	private void p(String s) {
+		Logger logger = WorkflowLogger.getLogger();
+		logger.log(Level.INFO, "Memory Exclusion Graph " + s);
+	}
 
 	/**
 	 * Build the memory objects corresponding to the fifos of the input
@@ -499,10 +507,12 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 			// If the current vertex has some working memory, create the
 			// associated MemoryExclusionGraphVertex
 			Integer wMem = (Integer) vertexDAG.getCorrespondingSDFVertex().getPropertyBean().getValue("working_memory");
+			//p("MemoryExclusionGraph vertex " + vertexDAG.getName());
 			if (wMem != null) {
 				MemoryExclusionVertex workingMemoryNode = new MemoryExclusionVertex(vertexDAG.getName(),
 						vertexDAG.getName(), wMem);
 				this.addVertex(workingMemoryNode);
+				//p("Working Memory found " + workingMemoryNode.getName() + " " + wMem.toString());
 				// Currently, there is no special alignment for working memory.
 				// So we always assume a unitary typesize.
 				workingMemoryNode.setPropertyValue(MemoryExclusionVertex.TYPE_SIZE, 1);
@@ -791,6 +801,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 		if (wMemAlloc != null) {
 			Map<MemoryExclusionVertex, Integer> wMemAllocCopy = new HashMap<MemoryExclusionVertex, Integer>();
 			for (Entry<MemoryExclusionVertex, Integer> wMem : wMemAlloc.entrySet()) {
+				//p("MemoryExclusion graph wMemAllocCopy put " + wMem.getValue());
 				wMemAllocCopy.put(mObjMap.get(wMem.getKey()), wMem.getValue());
 			}
 			result.setPropertyValue(WORKING_MEM_ALLOCATION, wMemAllocCopy);
