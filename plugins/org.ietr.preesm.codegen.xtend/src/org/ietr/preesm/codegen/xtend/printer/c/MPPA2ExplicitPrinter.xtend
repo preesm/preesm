@@ -125,7 +125,7 @@ class MPPA2ExplicitPrinter extends CPrinter {
 		/* Scratchpad buffer size */
 		int «buffer.name»_size = 
 		char *local_buffer;
-		«buffer.type» «buffer.name»[«buffer.size»]; // «buffer.comment» size:= «buffer.size»*«buffer.type»
+		«buffer.type» «buffer.name»[«buffer.size»] __attribute__ ((aligned(64))); // «buffer.comment» size:= «buffer.size»*«buffer.type» aligned on data cache line
 		«{	var out = ""
 			local_buffer_size = 0
 			scratch_pad_buffer = buffer.name
