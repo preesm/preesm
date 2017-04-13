@@ -57,9 +57,6 @@ import org.ietr.preesm.experiment.model.pimm.util.PiIdentifiers;
  */
 public class MoveDownActorPortFeature extends MoveUpActorPortFeature {
 
-  /** The has done changes. */
-  protected boolean hasDoneChanges = false;
-
   /** The Constant HINT. */
   public static final String HINT = "down";
 

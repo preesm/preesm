@@ -177,7 +177,6 @@ public class UpdateDiagramFeature extends DefaultUpdateDiagramFeature {
     }
     if (version == UpdateDiagramFeature.VERSION_2) {
       updateFromVersion2(diagram);
-      version = UpdateDiagramFeature.VERSION_3;
     }
   }
 

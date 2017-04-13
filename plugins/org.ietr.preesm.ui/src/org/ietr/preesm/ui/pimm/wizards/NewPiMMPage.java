@@ -80,6 +80,9 @@ public class NewPiMMPage extends WizardNewFileCreationPage {
       final IFile file = (IFile) obj;
       final String ext = file.getFileExtension();
       this.graphName = file.getName();
+      if (this.graphName == null) {
+        throw new RuntimeException();
+      }
       final int idx = this.graphName.indexOf(ext);
       if (idx != -1) {
         this.graphName = this.graphName.substring(0, idx - 1);

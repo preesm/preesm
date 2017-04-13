@@ -710,7 +710,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
                   Graphiti.getGaCreateService().createPoint(actorGA.getX() + (actorGA.getWidth() / 2), currentY));
             } else {
               int xPos = actorGA.getX();
-              xPos += (index == 0) ? currentX + actorGA.getWidth() : -currentX;
+              xPos -= currentX;
               // Add a new bendpoint on top of it
               ffc.getBendpoints().add(ffc.getBendpoints().size(), Graphiti.getGaCreateService().createPoint(xPos, currentY));
               // Add a new bendpoint next to it
