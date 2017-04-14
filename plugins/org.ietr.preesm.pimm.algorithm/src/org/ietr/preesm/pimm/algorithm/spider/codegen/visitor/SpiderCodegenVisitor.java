@@ -102,6 +102,8 @@ import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderTypeConverter.P
 public class SpiderCodegenVisitor extends PiMMVisitor {
 	private SpiderPreProcessVisitor preprocessor;
 
+	private SpiderCodegen callerSpiderCodegen;
+
 	// Ordered set for methods prototypes
 	private LinkedHashSet<String> prototypes = new LinkedHashSet<String>();
 
@@ -145,11 +147,10 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 		currentMethod.append(a);
 	}
 
-	public SpiderCodegenVisitor(StringBuilder topMethod,
-			SpiderPreProcessVisitor prepocessor,
-			Map<AbstractActor, Map<String, String>> timings,
-			Map<AbstractActor, Set<String>> constraints,
-			Map<String, DataType> dataTypes) {
+	public SpiderCodegenVisitor(SpiderCodegen callerSpiderCodegen, StringBuilder topMethod,
+			SpiderPreProcessVisitor prepocessor, Map<AbstractActor, Map<String, String>> timings,
+			Map<AbstractActor, Set<String>> constraints, Map<String, DataType> dataTypes) {
+		this.callerSpiderCodegen = callerSpiderCodegen;
 		this.currentMethod = topMethod;
 		this.preprocessor = prepocessor;
 		this.portMap = preprocessor.getPortMap();
@@ -444,10 +445,18 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 
 		if (aa instanceof Actor && !(aa instanceof PiGraph)) {
 			if (constraints.get(aa) != null) {
-				for (String core : constraints.get(aa)) {
-					append("\tSpider::isExecutableOnPE(");
-					append(vertexName + ", ");
-					append(SpiderNameGenerator.getCoreName(core) + ");\n");
+				// Check if the actor is enabled on all PEs.
+				Set<String> peNames = constraints.get(aa);
+				if (peNames.containsAll(callerSpiderCodegen.getCoreIds().keySet())) {
+					append("\tSpider::isExecutableOnAllPE(");
+					append(vertexName + ");\n");
+				} else {
+					// Not all the PEs are enabled for the actor
+					for (String core : constraints.get(aa)) {
+						append("\tSpider::isExecutableOnPE(");
+						append(vertexName + ", ");
+						append(SpiderNameGenerator.getCoreName(core) + ");\n");
+					}
 				}
 			}else{
 				WorkflowLogger.getLogger().log(Level.WARNING, "Actor " + aa.getName() + " does not have a valid operator to execute on");
