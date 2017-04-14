@@ -103,6 +103,8 @@ import org.ietr.preesm.pimm.algorithm.spider.codegen.utils.SpiderTypeConverter.P
 public class SpiderCodegenVisitor extends PiMMVisitor {
 	private SpiderPreProcessVisitor preprocessor;
 
+	private SpiderCodegen callerSpiderCodegen;
+
 	// Ordered set for methods prototypes
 	private LinkedHashSet<String> prototypes = new LinkedHashSet<String>();
 
@@ -115,7 +117,7 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 	private StringBuilder currentMethod;
 	private StringBuilder currentStaticDependentParams;
 	private StringBuilder currentDynamicDependentParams;
-	
+
 	private PiGraph currentGraph;
 	private List<PiGraph> currentSubGraphs;
 
@@ -146,11 +148,10 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 		currentMethod.append(a);
 	}
 
-	public SpiderCodegenVisitor(StringBuilder topMethod,
-			SpiderPreProcessVisitor prepocessor,
-			Map<AbstractActor, Map<String, String>> timings,
-			Map<AbstractActor, Set<String>> constraints,
-			Map<String, DataType> dataTypes) {
+	public SpiderCodegenVisitor(SpiderCodegen callerSpiderCodegen, StringBuilder topMethod,
+			SpiderPreProcessVisitor prepocessor, Map<AbstractActor, Map<String, String>> timings,
+			Map<AbstractActor, Set<String>> constraints, Map<String, DataType> dataTypes) {
+		this.callerSpiderCodegen = callerSpiderCodegen;
 		this.currentMethod = topMethod;
 		this.preprocessor = prepocessor;
 		this.portMap = preprocessor.getPortMap();
@@ -231,33 +232,34 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 		prototype.append("PiSDFGraph* ");
 		prototype.append(SpiderNameGenerator.getMethodName(pg));
 		prototype.append("(");
-		
+
 		definition.append(prototype.toString());
-		
+
 		List<Parameter> l = new LinkedList<Parameter>();
 		l.addAll(pg.getAllParameters());
 		Collections.sort(l, new Comparator<Parameter>() {
 			@Override
-	        public int compare(Parameter p1, Parameter p2){
-	            return  p1.getName().compareTo(p2.getName());
-	        }
+			public int compare(Parameter p1, Parameter p2) {
+				return p1.getName().compareTo(p2.getName());
+			}
 		});
-		
-		for(Parameter p : l){
-			if(p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()){
-				if(parameters_proto.length() > 0){
+
+		for (Parameter p : l) {
+			if (p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()) {
+				if (parameters_proto.length() > 0) {
 					parameters_proto.append(", ");
 					parameters_def.append(", ");
 				}
-				parameters_proto.append("Param " + p.getName() + " = " + ((int) Double.parseDouble(p.getExpression().evaluate())));
+				parameters_proto.append(
+						"Param " + p.getName() + " = " + ((int) Double.parseDouble(p.getExpression().evaluate())));
 				parameters_def.append("Param " + p.getName());
 			}
 		}
 
 		prototype.append(parameters_proto);
 		definition.append(parameters_def);
-		
-		prototype.append(");\n");	
+
+		prototype.append(");\n");
 		definition.append(")");
 		prototypes.add(prototype.toString());
 		append(definition);
@@ -293,12 +295,10 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 		}
 
 		// Create a graph and a top vertex
-		append("\tPiSDFGraph* graph = Spider::createGraph(\n"
-				+ "\t\t/*Edges*/    " + pg.getFifos().size() + ",\n"
-				+ "\t\t/*Params*/   " + pg.getParameters().size() + ",\n"
-				+ "\t\t/*InputIf*/  " + nInIf + ",\n" + "\t\t/*OutputIf*/ "
-				+ nOutif + ",\n" + "\t\t/*Config*/   " + nConfig + ",\n"
-				+ "\t\t/*Body*/     " + nBody + ");\n");
+		append("\tPiSDFGraph* graph = Spider::createGraph(\n" + "\t\t/*Edges*/    " + pg.getFifos().size() + ",\n"
+				+ "\t\t/*Params*/   " + pg.getParameters().size() + ",\n" + "\t\t/*InputIf*/  " + nInIf + ",\n"
+				+ "\t\t/*OutputIf*/ " + nOutif + ",\n" + "\t\t/*Config*/   " + nConfig + ",\n" + "\t\t/*Body*/     "
+				+ nBody + ");\n");
 
 		// Generating parameters
 		append("\n\t/* Parameters */\n");
@@ -309,7 +309,7 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 		}
 		currentMethod.append(currentStaticDependentParams);
 		currentMethod.append(currentDynamicDependentParams);
-		
+
 		// Generating vertices
 		append("\n\t/* Vertices */\n");
 		for (AbstractActor v : pg.getVertices()) {
@@ -380,22 +380,22 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 		append(" = Spider::addHierVertex(\n");
 		append("\t\t/*Graph*/   graph,\n");
 		append("\t\t/*Name*/    \"" + aa.getName() + "\",\n");
-		append("\t\t/*Graph*/   " + SpiderNameGenerator.getMethodName(subGraph) + "(");		
-		
+		append("\t\t/*Graph*/   " + SpiderNameGenerator.getMethodName(subGraph) + "(");
+
 		List<Parameter> l = new LinkedList<Parameter>();
 		l.addAll(subGraph.getAllParameters());
 		Collections.sort(l, new Comparator<Parameter>() {
 			@Override
-	        public int compare(Parameter p1, Parameter p2){
-	            return  p1.getName().compareTo(p2.getName());
-	        }
+			public int compare(Parameter p1, Parameter p2) {
+				return p1.getName().compareTo(p2.getName());
+			}
 		});
-		for(Parameter p : l){
-			if(p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()){
-				append(", " + p.getName());				
+		for (Parameter p : l) {
+			if (p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()) {
+				append(", " + p.getName());
 			}
 		}
-		
+
 		append("),\n");
 		append("\t\t/*InData*/  " + aa.getDataInputPorts().size() + ",\n");
 		append("\t\t/*OutData*/ " + aa.getDataOutputPorts().size() + ",\n");
@@ -415,10 +415,10 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 			vertexName = generateConfigVertex(aa);
 		else if (aa instanceof PiGraph)
 			vertexName = generateHierarchicalVertex(aa);
-		else if (aa.getName() == "end"){
-			visitEndActor(aa);		
+		else if (aa.getName() == "end") {
+			visitEndActor(aa);
 			return;
-		}else
+		} else
 			vertexName = generateBodyVertex(aa);
 
 		// Add connections to parameters if necessary
@@ -427,8 +427,7 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 				append("\tSpider::addOutParam(");
 				append(vertexName + ", ");
 				append(portMap.get(cop) + ", ");
-				append(SpiderNameGenerator.getParameterName((Parameter) d
-						.getGetter().eContainer()));
+				append(SpiderNameGenerator.getParameterName((Parameter) d.getGetter().eContainer()));
 				append(");\n");
 			}
 		}
@@ -438,20 +437,28 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 			append("\tSpider::addInParam(");
 			append(vertexName + ", ");
 			append(portMap.get(cip) + ", ");
-			append(SpiderNameGenerator.getParameterName((Parameter) cip
-					.getIncomingDependency().getSetter()));
+			append(SpiderNameGenerator.getParameterName((Parameter) cip.getIncomingDependency().getSetter()));
 			append(");\n");
 		}
 
 		if (aa instanceof Actor && !(aa instanceof PiGraph)) {
 			if (constraints.get(aa) != null) {
-				for (String core : constraints.get(aa)) {
-					append("\tSpider::isExecutableOnPE(");
-					append(vertexName + ", ");
-					append(SpiderNameGenerator.getCoreName(core) + ");\n");
+				// Check if the actor is enabled on all PEs.
+				Set<String> peNames = constraints.get(aa);
+				if (peNames.containsAll(callerSpiderCodegen.getCoreIds().keySet())) {
+					append("\tSpider::isExecutableOnAllPE(");
+					append(vertexName + ");\n");
+				} else {
+					// Not all the PEs are enabled for the actor
+					for (String core : constraints.get(aa)) {
+						append("\tSpider::isExecutableOnPE(");
+						append(vertexName + ", ");
+						append(SpiderNameGenerator.getCoreName(core) + ");\n");
+					}
 				}
-			}else{
-				WorkflowLogger.getLogger().log(Level.WARNING, "Actor " + aa.getName() + " does not have a valid operator to execute on");
+			} else {
+				WorkflowLogger.getLogger().log(Level.WARNING,
+						"Actor " + aa.getName() + " does not have a valid operator to execute on");
 			}
 		}
 
@@ -489,8 +496,7 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 			append("\tSpider::addInParam(");
 			append(vertexName + ", ");
 			append(portMap.get(cip) + ", ");
-			append(SpiderNameGenerator.getParameterName((Parameter) cip
-					.getIncomingDependency().getSetter()));
+			append(SpiderNameGenerator.getParameterName((Parameter) cip.getIncomingDependency().getSetter()));
 			append(");\n");
 		}
 		append("\n");
@@ -511,8 +517,7 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 			append("\tSpider::addInParam(");
 			append(vertexName + ", ");
 			append(portMap.get(cip) + ", ");
-			append(SpiderNameGenerator.getParameterName((Parameter) cip
-					.getIncomingDependency().getSetter()));
+			append(SpiderNameGenerator.getParameterName((Parameter) cip.getIncomingDependency().getSetter()));
 			append(");\n");
 		}
 		append("\n");
@@ -534,61 +539,52 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 		if (dataTypes.containsKey(f.getType())) {
 			typeSize = dataTypes.get(f.getType()).getSize();
 		} else {
-			WorkflowLogger
-					.getLogger()
-					.warning(
-							"Type "
-									+ f.getType()
-									+ " is not defined in scenario (considered size = 1).");
+			WorkflowLogger.getLogger()
+					.warning("Type " + f.getType() + " is not defined in scenario (considered size = 1).");
 			typeSize = 1;
 		}
 
 		AbstractVertex srcActor = (AbstractVertex) srcPort.eContainer();
 		AbstractVertex snkActor = (AbstractVertex) snkPort.eContainer();
-		
+
 		String srcProd = srcPort.getExpression().getString();
 		String snkProd = snkPort.getExpression().getString();
 
-		
 		/* Change port name in prod/cons/delay */
-		for(ConfigInputPort cfgPort : srcActor.getConfigInputPorts()){
-			String paramName = ((Parameter)cfgPort.getIncomingDependency().getSetter()).getName();
-			srcProd = srcProd.replaceAll("\\b"+cfgPort.getName()+"\\b", paramName);
+		for (ConfigInputPort cfgPort : srcActor.getConfigInputPorts()) {
+			String paramName = ((Parameter) cfgPort.getIncomingDependency().getSetter()).getName();
+			srcProd = srcProd.replaceAll("\\b" + cfgPort.getName() + "\\b", paramName);
 		}
 
-		for(ConfigInputPort cfgPort : snkActor.getConfigInputPorts()){
-			String paramName = ((Parameter)cfgPort.getIncomingDependency().getSetter()).getName();
-			snkProd = snkProd.replaceAll("\\b"+cfgPort.getName()+"\\b", paramName);
+		for (ConfigInputPort cfgPort : snkActor.getConfigInputPorts()) {
+			String paramName = ((Parameter) cfgPort.getIncomingDependency().getSetter()).getName();
+			snkProd = snkProd.replaceAll("\\b" + cfgPort.getName() + "\\b", paramName);
 		}
 
 		String delay = "0";
-		if (f.getDelay() != null){
-			delay   = f.getDelay().getExpression().getString();
-			
-			for(ConfigInputPort cfgPort : f.getDelay().getConfigInputPorts()){
-				String paramName = ((Parameter)cfgPort.getIncomingDependency().getSetter()).getName();
-				delay   = delay.replaceAll("\\b"+cfgPort.getName()+"\\b", paramName);
+		if (f.getDelay() != null) {
+			delay = f.getDelay().getExpression().getString();
+
+			for (ConfigInputPort cfgPort : f.getDelay().getConfigInputPorts()) {
+				String paramName = ((Parameter) cfgPort.getIncomingDependency().getSetter()).getName();
+				delay = delay.replaceAll("\\b" + cfgPort.getName() + "\\b", paramName);
 			}
 		}
-		
 
-		append("\t\t/*Src*/ "
-				+ SpiderNameGenerator.getVertexName(srcActor) 
-				+ ", /*SrcPrt*/ " + portMap.get(srcPort)
-//				+ ", /*Prod*/ \"(" + srcProd + ")*sizeof(" + f.getType() + ")\",\n");
+		append("\t\t/*Src*/ " + SpiderNameGenerator.getVertexName(srcActor) + ", /*SrcPrt*/ " + portMap.get(srcPort)
+		// + ", /*Prod*/ \"(" + srcProd + ")*sizeof(" + f.getType() + ")\",\n");
 				+ ", /*Prod*/ \"(" + srcProd + ")*" + typeSize + "\",\n");
 
-		append("\t\t/*Snk*/ "
-				+ SpiderNameGenerator.getVertexName(snkActor) 
-				+ ", /*SnkPrt*/ " + portMap.get(snkPort)
-//				+ ", /*Cons*/ \"(" + snkProd + ")*sizeof(" + f.getType() + ")\",\n");
+		append("\t\t/*Snk*/ " + SpiderNameGenerator.getVertexName(snkActor) + ", /*SnkPrt*/ " + portMap.get(snkPort)
+		// + ", /*Cons*/ \"(" + snkProd + ")*sizeof(" + f.getType() + ")\",\n");
 				+ ", /*Cons*/ \"(" + snkProd + ")*" + typeSize + "\",\n");
 
 		if (f.getDelay() != null)
-//			append("\t\t/*Delay*/ \"(" + delay + ")*sizeof(" + f.getType() + ")\",0);\n\n");
+			// append("\t\t/*Delay*/ \"(" + delay + ")*sizeof(" + f.getType() +
+			// ")\",0);\n\n");
 			append("\t\t/*Delay*/ \"(" + delay + ")*" + typeSize + "\",0);\n\n");
 		else
-			append("\t\t/*Delay*/ \"0\",0);\n\n");			
+			append("\t\t/*Delay*/ \"0\",0);\n\n");
 	}
 
 	/**
@@ -598,45 +594,33 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 	public void visitParameter(Parameter p) {
 		String paramName = SpiderNameGenerator.getParameterName(p);
 
-
 		if (!p.isLocallyStatic()) {
-			if(p.getConfigInputPorts().size() == 1
-					&& ! (p.getConfigInputPorts().get(0).getIncomingDependency().getSetter() instanceof Parameter)){
+			if (p.getConfigInputPorts().size() == 1
+					&& !(p.getConfigInputPorts().get(0).getIncomingDependency().getSetter() instanceof Parameter)) {
 				/* DYNAMIC */
-				append("\tPiSDFParam *"
-						+ paramName
-						+ " = Spider::addDynamicParam(graph, " + "\"" + p.getName() + "\""
-						+ ");\n");				
-			}else{
+				append("\tPiSDFParam *" + paramName + " = Spider::addDynamicParam(graph, " + "\"" + p.getName() + "\""
+						+ ");\n");
+			} else {
 				/* DYNAMIC DEPENDANT */
-				currentStaticDependentParams.append(
-						"\tPiSDFParam *"
-						+ paramName
-						+ " = Spider::addDynamicDependentParam(graph, " + "\"" + p.getName() + "\", \""
-						+ p.getExpression().getString()
-						+ "\");\n");				
+				currentStaticDependentParams
+						.append("\tPiSDFParam *" + paramName + " = Spider::addDynamicDependentParam(graph, " + "\""
+								+ p.getName() + "\", \"" + p.getExpression().getString() + "\");\n");
 			}
 		} else if (p.getGraphPort() instanceof ConfigInputPort) {
 			/* HERITED */
-			append("\tPiSDFParam *"
-					+ paramName
-					+ " = Spider::addHeritedParam(graph, " + "\"" + p.getName() + "\", "
+			append("\tPiSDFParam *" + paramName + " = Spider::addHeritedParam(graph, " + "\"" + p.getName() + "\", "
 					+ portMap.get(p.getGraphPort()) + ");\n");
 		} else if (p.getConfigInputPorts().isEmpty()) {
 			/* STATIC */
-			append("\tPiSDFParam *"
-					+ paramName
-					+ " = Spider::addStaticParam(graph, " + "\"" + p.getName() + "\", "
-					+ p.getName() // (int) Double.parseDouble(p.getExpression().evaluate())
+			append("\tPiSDFParam *" + paramName + " = Spider::addStaticParam(graph, " + "\"" + p.getName() + "\", "
+					+ p.getName() // (int)
+									// Double.parseDouble(p.getExpression().evaluate())
 					+ ");\n");
 		} else {
 			/* STATIC DEPENDANT */
-			currentDynamicDependentParams.append(
-					"\tPiSDFParam *"
-					+ paramName
-					+ " = Spider::addStaticDependentParam(graph, " + "\"" + p.getName() + "\", \""
-					+ p.getExpression().getString()
-					+ "\");\n");
+			currentDynamicDependentParams
+					.append("\tPiSDFParam *" + paramName + " = Spider::addStaticDependentParam(graph, " + "\""
+							+ p.getName() + "\", \"" + p.getExpression().getString() + "\");\n");
 		}
 	}
 
@@ -655,8 +639,7 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 			append("\tSpider::addInParam(");
 			append(SpiderNameGenerator.getVertexName(ba) + ", ");
 			append(portMap.get(cip) + ", ");
-			append(SpiderNameGenerator.getParameterName((Parameter) cip
-					.getIncomingDependency().getSetter()));
+			append(SpiderNameGenerator.getParameterName((Parameter) cip.getIncomingDependency().getSetter()));
 			append(");\n");
 		}
 		append("\n");
@@ -676,13 +659,12 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 			append("\tSpider::addInParam(");
 			append(SpiderNameGenerator.getVertexName(aa) + ", ");
 			append(portMap.get(cip) + ", ");
-			append(SpiderNameGenerator.getParameterName((Parameter) cip
-					.getIncomingDependency().getSetter()));
+			append(SpiderNameGenerator.getParameterName((Parameter) cip.getIncomingDependency().getSetter()));
 			append(");\n");
 		}
 		append("\n");
 	}
-	
+
 	@Override
 	public void visitJoinActor(JoinActor ja) {
 		append("\tPiSDFVertex* " + SpiderNameGenerator.getVertexName(ja));
@@ -698,8 +680,7 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 			append("\tSpider::addInParam(");
 			append(SpiderNameGenerator.getVertexName(ja) + ", ");
 			append(portMap.get(cip) + ", ");
-			append(SpiderNameGenerator.getParameterName((Parameter) cip
-					.getIncomingDependency().getSetter()));
+			append(SpiderNameGenerator.getParameterName((Parameter) cip.getIncomingDependency().getSetter()));
 			append(");\n");
 		}
 		append("\n");
@@ -720,8 +701,7 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 			append("\tSpider::addInParam(");
 			append(SpiderNameGenerator.getVertexName(fa) + ", ");
 			append(portMap.get(cip) + ", ");
-			append(SpiderNameGenerator.getParameterName((Parameter) cip
-					.getIncomingDependency().getSetter()));
+			append(SpiderNameGenerator.getParameterName((Parameter) cip.getIncomingDependency().getSetter()));
 			append(");\n");
 		}
 		append("\n");
@@ -742,13 +722,11 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 			append("\tSpider::addInParam(");
 			append(SpiderNameGenerator.getVertexName(rba) + ", ");
 			append(portMap.get(cip) + ", ");
-			append(SpiderNameGenerator.getParameterName((Parameter) cip
-					.getIncomingDependency().getSetter()));
+			append(SpiderNameGenerator.getParameterName((Parameter) cip.getIncomingDependency().getSetter()));
 			append(");\n");
 		}
 		append("\n");
 	}
-
 
 	@Override
 	public void visitConfigOutputInterface(ConfigOutputInterface coi) {
@@ -831,14 +809,12 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 	}
 
 	@Override
-	public void visitFunctionParameter(
-			FunctionParameterImpl functionParameterImpl) {
+	public void visitFunctionParameter(FunctionParameterImpl functionParameterImpl) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void visitFunctionPrototype(
-			FunctionPrototypeImpl functionPrototypeImpl) {
+	public void visitFunctionPrototype(FunctionPrototypeImpl functionPrototypeImpl) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -846,7 +822,7 @@ public class SpiderCodegenVisitor extends PiMMVisitor {
 	public void visitHRefinement(HRefinementImpl hRefinementImpl) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public void visitExecutableActor(ExecutableActor ea) {
 		throw new UnsupportedOperationException();
