@@ -54,7 +54,7 @@ The fact that you are presently reading this means that you have had knowledge o
 
 	<!-- Checkstyle extension for M2E -->
    <includes
-         id="com.basistech.m2e.code.quality.checkstyle.feature.feature.group"
+         id="com.basistech.m2e.code.quality.checkstyle.feature"
          version="0.0.0"/>
 
 
