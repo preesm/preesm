@@ -44,7 +44,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- can be changed to a local repo using an URI like file:///path/to/repo
 			 Note: plain paths like '/path/to/repo' without file:// will not work-->
-		<preesm.p2.repo>http://preesm.sourceforge.net/gensite/update-site/complete/</preesm.p2.repo>
+		<complete.p2.repo>http://preesm.sourceforge.net/gensite/update-site/complete/</complete.p2.repo>
 	</properties>
 
 	<repositories>
@@ -58,7 +58,7 @@
 		<repository>
 			<id>Preesm</id>
 			<layout>p2</layout>
-			<url>${preesm.p2.repo}</url>
+			<url>${complete.p2.repo}</url>
 		</repository>
 	</repositories>
 
@@ -288,7 +288,7 @@
 									<goal>source-feature</goal>
 								</goals>
 								<configuration>
-									<labelSuffix> Sources</labelSuffix>
+									<labelSuffix>&nbsp;Sources</labelSuffix>
 								</configuration>
 							</execution>
 						</executions>
