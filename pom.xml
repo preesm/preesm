@@ -173,6 +173,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<version>1.6.0</version>
 			</plugin>
+			<!-- Enable checkstyle and specify custom configuration file -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
@@ -287,6 +288,9 @@
 								<goals>
 									<goal>source-feature</goal>
 								</goals>
+								<configuration>
+									<labelSuffix> Sources</labelSuffix>
+								</configuration>
 							</execution>
 						</executions>
 					</plugin>
