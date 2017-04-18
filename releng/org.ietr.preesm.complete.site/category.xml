@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.ietr.preesm.feature_2.2.6.qualifier.jar" id="org.ietr.preesm.feature" version="2.2.6.qualifier">
+   <feature id="org.ietr.preesm.feature">
       <category name="PREESM"/>
    </feature>
-   <feature url="features/org.ietr.preesm.dev.feature_2.2.6.qualifier.jar" id="org.ietr.preesm.dev.feature" version="2.2.6.qualifier">
+   <feature id="org.ietr.preesm.dev.feature">
       <category name="dev_components"/>
    </feature>
    <feature id="org.ietr.preesm.feature.source">

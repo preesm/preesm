@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.ietr.preesm.dev.feature"
-      label="All in One Preesm Developper Requirements"
+      label="All in One PREESM Developper Requirements"
       version="2.2.6.qualifier">
 
    <description url="http://preesm.sourceforge.net/website/">
-      This feature embeds all required Eclipse plugins for developping PREESM. That includes XTend, GEF, EMF, Graphiti (Eclipse) Plus SDKs, along with Checkstyle integration for Eclipse, Maven integration for Eclipse (and appropriate extension), and with other IETR dependencies (DFTools and Graphiti).
+      This feature embeds all required Eclipse plugins for developping PREESM. That includes XTend, GEF, EMF, Graphiti (Eclipse) Plus SDKs, along with Checkstyle integration for Eclipse, Maven integration for Eclipse (and appropriate extension), and other IETR dependencies (third party libraries, DFTools and Graphiti).
    </description>
 
    <copyright>

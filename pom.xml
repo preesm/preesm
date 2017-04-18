@@ -54,7 +54,6 @@
 			<layout>p2</layout>
 			<url>http://download.eclipse.org/releases/neon/</url>
 		</repository>
-
 		<!-- add Preesm repository to resolve Graphiti & DFTools -->
 		<repository>
 			<id>Preesm</id>
@@ -188,7 +187,7 @@
 						<artifactId>checkstyle</artifactId>
 						<version>7.6.1</version>
 					</dependency>
-				</dependencies> 
+				</dependencies>
 			</plugin>
 			<!--
 				Disable maven deploy plugin: since generated artifacts
@@ -327,5 +326,4 @@
 			</build>
 		</profile>
 	</profiles>
-
 </project>
