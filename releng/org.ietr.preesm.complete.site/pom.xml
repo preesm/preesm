@@ -37,13 +37,17 @@
 				<version>1.8</version>
 				<executions>
 					<execution>
-						<id>copy-web-resources</id>
+						<id>copy-repo</id>
 						<phase>package</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
 						<configuration>
-							<target name="Copy web resources">
+							<target name="Copy repo">
+								<!-- Copy repo to gensite folder -->
+								<copy todir="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/">
+									<fileset dir="${project.build.directory}/repository/"/>
+								</copy>
 								<!-- Web resources for the current release -->
 								<copy todir="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/web/" >
 									<fileset dir="${basedir}/web" includes="*"/>
@@ -52,8 +56,10 @@
 									<fileset dir="${basedir}" includes="index.html" />
 								</copy>
 								<copy file="${project.build.directory}/category.xml" tofile="${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}/site.xml"/>
-								
+								<!-- Add symlink for latest release -->
+								<symlink link="${project.build.directory}/gensite/update-site/${project.groupId}-latest" resource="${project.groupId}-${project.version}"/>
 							</target>
+							<exportAntProperties>true</exportAntProperties>
 						</configuration>
 					</execution>
 				</executions>
@@ -77,39 +83,19 @@
 				<executions>
 					<execution>
 						<id>copy-current</id>
-						<phase>package</phase>
+						<phase>deploy</phase>
 						<goals>
 							<goal>mirror</goal>
 						</goals>
 						<configuration>
 							<source>
-								<repository><url>${project.baseUri}/target/repository</url></repository>
+								<repository><url>${project.baseUri}/target/gensite/update-site/${project.groupId}-${project.version}</url></repository>
+								<repository><url>${complete.p2.repo}</url></repository>
 							</source>
 							<append>false</append>
 							<compress>false</compress>
 							<includeOptional>true</includeOptional>
-							<destination>${project.build.directory}/gensite/update-site/${project.groupId}-${project.version}</destination>
-						</configuration>
-					</execution>
-					<execution>
-						<id>mirror-complete</id>
-						<phase>package</phase>
-						<goals>
-							<goal>mirror</goal>
-						</goals>
-						<configuration>
-							<source>
-								<!-- Note: if the URL points to a yet-to-exist update 
-									 site, command the following line to prevent the P2
-									 mirror task to fail
-									 -->
-								<repository><url>${preesm.p2.repo}</url></repository>
-								<repository><url>${project.baseUri}/target/repository</url></repository>
-							</source>
-							<append>true</append>
-							<compress>false</compress>
-							<includeOptional>true</includeOptional>
-							<destination>${project.build.directory}/gensite/update-site/complete/</destination>
+							<destination>${project.build.directory}/gensite/update-site/complete</destination>
 						</configuration>
 					</execution>
 				</executions>
