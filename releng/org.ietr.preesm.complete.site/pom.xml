@@ -24,6 +24,7 @@
 					<includeAllDependencies>true</includeAllDependencies>
 					<compress>false</compress>
 					<repositoryName>IETR/INSA - Rennes PREESM Update Site</repositoryName>
+					<skipArchive>true</skipArchive>
 				</configuration>
 			</plugin>
 			
