@@ -188,6 +188,15 @@
 						<version>7.6.1</version>
 					</dependency>
 				</dependencies>
+				<executions>
+					<execution>
+						<id>check-checkstyle</id>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<!--
 				Disable maven deploy plugin: since generated artifacts
