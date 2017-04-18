@@ -47,6 +47,8 @@ import org.ietr.dftools.algorithm.model.AbstractVertex;
 import org.ietr.dftools.algorithm.model.PropertyBean;
 import org.ietr.dftools.algorithm.model.PropertyFactory;
 import org.ietr.dftools.algorithm.model.dag.DAGEdge;
+import org.ietr.dftools.algorithm.model.dag.DAGVertex;
+import org.ietr.dftools.algorithm.model.dag.edag.DAGEndVertex;
 import org.ietr.preesm.core.types.BufferAggregate;
 import org.ietr.preesm.core.types.BufferProperties;
 import org.ietr.preesm.core.types.DataType;
@@ -196,7 +198,13 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 * edge in the dag, i.e. a transfer between actors)
 	 */
 	private DAGEdge edge;
-
+	
+	/**
+	 * The {@link DAGVertex} that corresponds to the actor in the DAG 
+	 * associated to this working memory {@link MemoryExclusionVertex}.
+	 */
+	private DAGVertex vertex;
+	
 	/**
 	 * {@link MemoryExclusionVertex} property associated to a {@link List} of
 	 * {@link Integer} that represent the space <b>in bytes</b> between
@@ -333,6 +341,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 		copy.setIdentifier(getIdentifier());
 		copy.edge = this.edge;
 		copy.explodeImplode = this.explodeImplode;
+		copy.vertex = this.vertex;
 		return copy;
 	}
 
@@ -342,6 +351,14 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph>
 	 */
 	public DAGEdge getEdge() {
 		return edge;
+	}
+
+	public DAGVertex getVertex() {
+		return vertex;
+	}
+
+	public void setVertex(DAGVertex vertex) {
+		this.vertex = vertex;
 	}
 
 	/**

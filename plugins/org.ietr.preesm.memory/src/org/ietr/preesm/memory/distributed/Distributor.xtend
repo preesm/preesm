@@ -860,7 +860,16 @@ class Distributor {
 		} else {
 			// The MObject is not associated to a DAGEdge
 			// It is either a FIFO_head/body or working memory
-			// For now these mobjects are put in shared memory
+			// If this is a working memory object
+			logger.log(Level.INFO, "findMObjBankMixed sink " + mObj.sink + " source " + mObj.source)
+			if(mObj.source == mObj.sink){
+				// This is a wMem mObj
+				// The mObj is allocated in the MEG of the core executing the corresponding actor.
+				var ComponentInstance component component = mObj.vertex.propertyBean.getValue("Operator") as ComponentInstance
+				memory = component.instanceName
+			} else {
+				// For now fifos are allocated in shared memory
+			}
 		}
 
 		var verticesSet = mObjByBank.get(memory)

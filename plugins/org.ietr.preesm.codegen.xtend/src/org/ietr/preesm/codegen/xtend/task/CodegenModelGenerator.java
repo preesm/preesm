@@ -254,7 +254,9 @@ public class CodegenModelGenerator {
 	 */
 	private Map<String, List<Communication>> communications;
 	
-	private Map<SDFEdge, Buffer> linkHSDFEdgeBuffer;
+	private int currentWorkingMemOffset = 0;
+	private int bufCount = 0;
+	private Map<SDFEdge, SubBuffer> linkHSDFEdgeBuffer;
 
 	/**
 	 * Constructor of the {@link CodegenModelGenerator}. The constructor
@@ -298,7 +300,7 @@ public class CodegenModelGenerator {
 		this.dagVertexCalls = HashBiMap.create(dag.vertexSet().size());
 		this.communications = new HashMap<String, List<Communication>>();
 		this.popFifoCalls = new HashMap<SDFInitVertex, FifoCall>();
-		this.linkHSDFEdgeBuffer = new HashMap<SDFEdge, Buffer>();
+		this.linkHSDFEdgeBuffer = new HashMap<SDFEdge, SubBuffer>();
 
 	}
 
@@ -986,6 +988,9 @@ public class CodegenModelGenerator {
 							+ " Associate a refinement to this actor before generating code.");
 				}
 			}
+			//this.linkHSDFEdgeBuffer.clear();
+			//this.currentWorkingMemOffset = 0;
+			//this.bufCount = 0;
 		}
 		return 0;
 	}
@@ -1217,10 +1222,9 @@ public class CodegenModelGenerator {
 					Integer.class);
 
 			@SuppressWarnings("unchecked")
-			Map<MemoryExclusionVertex, Integer> exMem = (Map<MemoryExclusionVertex, Integer>) (meg.getPropertyBean().getValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION));
+			Map<MemoryExclusionVertex, Integer> workingMemoryAllocation = (Map<MemoryExclusionVertex, Integer>) (meg.getPropertyBean().getValue(MemoryExclusionGraph.WORKING_MEM_ALLOCATION));
 
-			//p("CodegenModelGeneration generateBuffers sizeWorkingMem " + exMem.toString());
-			//p("CodegenModelGeneration generateBuffers size " + size);
+			p("CodegenModelGeneration generateBuffers sizeWorkingMem " + workingMemoryAllocation.toString() + " size " + size);
 
 			Buffer mainBuffer = CodegenFactory.eINSTANCE.createBuffer();
 			mainBuffer.setSize(size);
@@ -1229,20 +1233,26 @@ public class CodegenModelGenerator {
 			mainBuffer.setTypeSize(1); // char is 1 byte
 			mainBuffers.put(memoryBank, mainBuffer);
 
-			Buffer workingMemBuffer = null;
-			if(exMem.entrySet().isEmpty() == false){
+			p("CodegenModelGneration generateBuffers " + mainBuffer.getName() + " size " + mainBuffer.getSize());
+
+			SubBuffer workingMemBuffer = null;
+			if(workingMemoryAllocation.entrySet().isEmpty() == false){
 				int weight = 0;
-				for(Entry<MemoryExclusionVertex, Integer> e : exMem.entrySet()){
+				for(Entry<MemoryExclusionVertex, Integer> e : workingMemoryAllocation.entrySet()){
 					MemoryExclusionVertex mObj = e.getKey();
 					//Integer offset = e.getValue();
+					//p("CodegenModelGen working mem alloc " + e.getKey().getName());
 					weight = mObj.getWeight();
+					workingMemBuffer = CodegenFactory.eINSTANCE.createSubBuffer();
+					workingMemBuffer.setContainer(mainBuffer);
+					workingMemBuffer.setOffset(e.getValue());
+					workingMemBuffer.setSize(weight);
+					workingMemBuffer.setName("wMem_"+mObj.getVertex().getName());
+					//workingMemBuffer.setName("wMem_");
+					workingMemBuffer.setType("char");
+					workingMemBuffer.setTypeSize(1); // char is 1 byte
+					mainBuffers.put(memoryBank, workingMemBuffer);
 				}
-				workingMemBuffer = CodegenFactory.eINSTANCE.createBuffer();
-				workingMemBuffer.setSize(weight);
-				workingMemBuffer.setName(memoryBank + "working_mem");
-				workingMemBuffer.setType("char");
-				workingMemBuffer.setTypeSize(1); // char is 1 byte
-				mainBuffers.put(memoryBank, workingMemBuffer);
 			}
 
 			@SuppressWarnings("unchecked")
@@ -1612,9 +1622,6 @@ public class CodegenModelGenerator {
 		return new AbstractMap.SimpleEntry<List<Variable>, List<PortDirection>>(
 				new ArrayList<Variable>(variableList.values()), new ArrayList<PortDirection>(directionList.values()));
 	}
-	
-	private int currentWorkingMemOffset = 0;
-	private int bufCount = 0;
 
 	/**
 	 * This method generates the list of variable corresponding to a prototype
@@ -1685,7 +1692,7 @@ public class CodegenModelGenerator {
 				//p("Actor " + sdfVertex.getName() + " is an output vertex of hirarchical actor " + dagVertex.getName());
 			}
 		}
-		
+
 		// Retrieve the Variable corresponding to the arguments of the prototype
 		// This loop manages only buffers (data buffer and NOT parameters)
 		for (CodeGenArgument arg : prototype.getArguments().keySet()) {
@@ -1922,7 +1929,6 @@ public class CodegenModelGenerator {
 			bufIter.setIterSize(bufIterSize);
 			bufIter.setSize(bufSize);
 
-			
 			if( arg.getDirection() == CodeGenArgument.INPUT){
 				loopBlock.getInBuffers().add(bufIter);
 			}else if(arg.getDirection() == CodeGenArgument.OUTPUT){
@@ -1930,19 +1936,20 @@ public class CodegenModelGenerator {
 			}else{
 				throw new CodegenException("Args INPUT / OUTPUT failed\n");
 			}
-			
+
 			/* register to call block */
+			if (var instanceof Constant) {
+				var.setCreator(operatorBlock);
+			}
 			var.getUsers().add(operatorBlock);
-			//registerCallVariableToCoreBlock(operatorBlock, bufIter);
-
-
-			//if(isInputActorTmp == true || isOutputActorTmp == true){
-			//	bufIter.setIterSize(subBufferProperties.getSize() / rep);
-			//	bufIter.setSize(subBufferProperties.getSize());	
-			//}else{
-			//	bufIter.setIterSize(7);
-			//	bufIter.setSize(7788999);
-			//}
+			var.setCreator(operatorBlock);
+			//registerCallVariableToCoreBlock(operatorBlock, var);
+			/*
+			if(var.getCreator() == null)
+			{
+				throw new CodegenException("GenerateRepeatedCallVariable " + var.getName() + " getCreator is null boooo");
+			}
+			*/
 
 			variableList.put(prototype.getArguments().get(arg), bufIter);
 			directionList.put(prototype.getArguments().get(arg), dir);
@@ -3101,13 +3108,12 @@ public class CodegenModelGenerator {
 			// have creator since their value is directly used.
 			// Consequently the used block can also be declared as the creator
 			// Logger logger = WorkflowLogger.getLogger();
-			// logger.log(Level.INFO, "Codegen registerCallVariableToCoreBlock "
-			// + var.getName());
+			//p("Codegen registerCallVariableToCoreBlock " + var.getName());
 			if (var instanceof Constant) {
 				var.setCreator(operatorBlock);
-				// logger.log(Level.INFO, "Creator " +
-				// var.getCreator().getName());
+				//p("Codegen registerCallVariableToCoreBlock Creator " + var.getCreator().getName());
 			}
+			//var.setCreator(operatorBlock);
 			var.getUsers().add(operatorBlock);
 		}
 	}

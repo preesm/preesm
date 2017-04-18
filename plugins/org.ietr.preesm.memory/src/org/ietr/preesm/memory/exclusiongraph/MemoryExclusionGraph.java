@@ -47,10 +47,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.ietr.dftools.algorithm.iterators.DAGIterator;
@@ -511,6 +511,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 			if (wMem != null) {
 				MemoryExclusionVertex workingMemoryNode = new MemoryExclusionVertex(vertexDAG.getName(),
 						vertexDAG.getName(), wMem);
+				workingMemoryNode.setVertex(vertexDAG);
 				this.addVertex(workingMemoryNode);
 				//p("Working Memory found " + workingMemoryNode.getName() + " " + wMem.toString());
 				// Currently, there is no special alignment for working memory.
